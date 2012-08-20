@@ -24,6 +24,10 @@
  */
 package org.bitrepository.access.getfile;
 
+import java.io.File;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -35,21 +39,11 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.client.TestEventHandler;
-import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
-import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.fileexchange.TestFileStore;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.io.File;
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Test class for the 'GetFileClient'.
@@ -57,19 +51,13 @@ import java.util.concurrent.TimeUnit;
 public class GetFileClientComponentTest extends AbstractGetFileClientTest {
    
     private static FilePart NO_FILE_PART = null;
-    
-    @BeforeMethod (alwaysRun=true)
-    @Override
-    public void beforeMethodSetup() throws Exception {
-        super.beforeMethodSetup();
-    }
 
     @Test(groups = {"regressiontest"})
     public void verifyGetFileClientFromFactory() throws Exception {
         Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(componentSettings, securityManager, TEST_CLIENT_ID)
-                instanceof CollectionBasedGetFileClient, 
+                instanceof ConversationBasedGetFileClient,
                 "The default GetFileClient from the Access factory should be of the type '" + 
-                        CollectionBasedGetFileClient.class.getName() + "'.");
+                        ConversationBasedGetFileClient.class.getName() + "'.");
     }
 
     @Test(groups = {"regressiontest"})
@@ -237,7 +225,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
     }
 
-    //@Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest"})
     public void chooseFastestPillarGetFileClientWithIdentifyTimeout() throws Exception {
         addDescription("Verify that the FastestPillarGetFile works correct without receiving responses from all " +
                 "pillars.");
@@ -325,7 +313,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getType(), OperationEventType.IDENTIFY_TIMEOUT);
     }
 
-    //@Test(groups = {"regressiontest"}) /* Disabled due to not being able to determine why the timeout don't occur */
+    @Test(groups = {"regressiontest"})
     public void conversationTimeout() throws Exception {
         addDescription("Tests the the GetFileClient handles lack of IdentifyPillarResponses gracefully  ");
         addStep("Set the number of pillars to 1 and a 3 second timeout for the conversation.", "");
@@ -451,9 +439,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
      * @return A new GetFileClient(Wrapper).
      */
     private GetFileClient createGetFileClient() {
-        MessageBus messageBus = new ActiveMQMessageBus(componentSettings.getMessageBusConfiguration(), securityManager);
-        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(componentSettings, securityManager);
-        return new GetFileClientTestWrapper(new CollectionBasedGetFileClient(
+        return new GetFileClientTestWrapper(new ConversationBasedGetFileClient(
                 messageBus, conversationMediator, componentSettings, TEST_CLIENT_ID), testEventManager);
     }
 }

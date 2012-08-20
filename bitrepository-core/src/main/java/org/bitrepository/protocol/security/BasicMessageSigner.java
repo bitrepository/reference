@@ -35,7 +35,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 
 /**
- * Class to handle signing of messages.  
+ * Handles signing of messages.
  */
 public class BasicMessageSigner implements MessageSigner {
 
@@ -50,7 +50,7 @@ public class BasicMessageSigner implements MessageSigner {
     
     /**
      * Sets the privateKeyEntry member and initializes the objects that's needed for signing messages.
-     * @param PrivateKeyEntry the PrivatKeyEntry holding the private key and certificate needed for creating a signature.   
+     * @param privateKeyEntry the PrivatKeyEntry holding the private key and certificate needed for creating a signature.
      */
     public void setPrivateKeyEntry(PrivateKeyEntry privateKeyEntry) {
         if(privateKeyEntry == null) {
@@ -70,7 +70,7 @@ public class BasicMessageSigner implements MessageSigner {
     
     /**
      * Creates the CMS signature for a message. 
-     * @param messageData, the message data that is to be signed. 
+     * @param messageData the message data that is to be signed.
      * @return the CMS signature for the message. 
      * @throws MessageSigningException in case signing fails. 
      */

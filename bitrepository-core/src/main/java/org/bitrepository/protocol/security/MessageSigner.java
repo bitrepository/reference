@@ -38,7 +38,7 @@ public interface MessageSigner {
     
     /**
      * Method to sign a message.
-     * @param The messages in byte raw byte form
+     * @param messageData The messages in byte raw byte form
      * @return The raw signature. 
      * @throws MessageSigningException if the signing fails. 
      */

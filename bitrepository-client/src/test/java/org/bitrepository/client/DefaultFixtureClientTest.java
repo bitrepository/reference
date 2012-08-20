@@ -103,6 +103,10 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
         IntegrationTest.messageBus.addListener(pillar2DestinationId, pillar2Destination.getMessageListener());
     }
 
+    /**
+     * Used for creating a new conversationMediator between tests, and for tests needing to use a differently configured
+     * mediator.
+     */
     protected void renewConversationMediator() {
         if (conversationMediator != null) {
             conversationMediator.shutdown();

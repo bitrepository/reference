@@ -28,9 +28,8 @@ package org.bitrepository.protocol.security.exception;
 @SuppressWarnings("serial")
 public class PermissionStoreException extends Exception {
 
-    /** 
-     * Constructor for PermissionStoreException
-     * @param message, the reason for creating the exception.
+    /**
+     * @param message the reason for creating the exception.
      */
     public PermissionStoreException(String message) {
         super(message);
@@ -38,8 +37,8 @@ public class PermissionStoreException extends Exception {
     
     /**
      * Constructor for PermissionStoreException
-     * @param message, the message describing the reason for the exception
-     * @param e, the exception that caused the creation of PermissionStoreException
+     * @param message the message describing the reason for the exception
+     * @param e the exception that caused the creation of PermissionStoreException
      */
     public PermissionStoreException(String message, Throwable e) {
         super(message, e);

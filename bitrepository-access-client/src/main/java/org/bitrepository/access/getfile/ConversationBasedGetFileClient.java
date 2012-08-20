@@ -25,9 +25,8 @@
 package org.bitrepository.access.getfile;
 
 import java.net.URL;
-
 import org.bitrepository.access.getfile.conversation.GetFileConversationContext;
-import org.bitrepository.access.getfile.conversation.SimpleGetFileConversation;
+import org.bitrepository.access.getfile.conversation.IdentifyingPillarsForGetFile;
 import org.bitrepository.access.getfile.selectors.FastestPillarSelectorForGetFile;
 import org.bitrepository.access.getfile.selectors.GetFileSelector;
 import org.bitrepository.access.getfile.selectors.SpecificPillarSelectorForGetFile;
@@ -47,17 +46,14 @@ import org.slf4j.LoggerFactory;
  * This class is just a thin wrapper which creates a conversion each time a operation is started. The conversations 
  * takes over the rest of the operation handling.
  */
-public class CollectionBasedGetFileClient extends AbstractClient implements GetFileClient {
-    /** The log for this class. */
+public class ConversationBasedGetFileClient extends AbstractClient implements GetFileClient {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    /** The constructor
-     * 
-     * @param messageBus The message bus to use.
-     * @param settings The settings to use.
+    /**
+     * @see AbstractClient
      */
-    public CollectionBasedGetFileClient(MessageBus messageBus, ConversationMediator conversationMediator, Settings settings,
-            String clientID) {
+    public ConversationBasedGetFileClient(MessageBus messageBus, ConversationMediator conversationMediator, Settings settings,
+                                          String clientID) {
         super(settings, conversationMediator, messageBus, clientID);
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
@@ -106,7 +102,6 @@ public class CollectionBasedGetFileClient extends AbstractClient implements GetF
             String fileID, FilePart filePart, URL uploadUrl, EventHandler eventHandler) {
         GetFileConversationContext context = new GetFileConversationContext(fileID, uploadUrl, filePart, selector, 
                 settings, messageBus, clientID, eventHandler, null);
-        SimpleGetFileConversation conversation = new SimpleGetFileConversation(context);
-        startConversation(conversation);
+        startConversation(context, new IdentifyingPillarsForGetFile(context));
     }
 }

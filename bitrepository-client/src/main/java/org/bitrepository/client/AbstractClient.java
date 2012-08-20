@@ -25,6 +25,9 @@
 package org.bitrepository.client;
 
 import org.bitrepository.client.conversation.Conversation;
+import org.bitrepository.client.conversation.ConversationContext;
+import org.bitrepository.client.conversation.GeneralConversationState;
+import org.bitrepository.client.conversation.StateBasedConversation;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
@@ -82,9 +85,11 @@ public class AbstractClient implements BitrepositoryClient {
     
     /**
      * Starts the conversation.
-     * @param conversation The conversation to start.
+     * @param context The context for the new conversion.
      */
-    protected void startConversation(Conversation conversation) {
+    protected void startConversation(ConversationContext context, GeneralConversationState startState) {
+        context.setState(startState);
+        Conversation conversation = new StateBasedConversation(context);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
     }

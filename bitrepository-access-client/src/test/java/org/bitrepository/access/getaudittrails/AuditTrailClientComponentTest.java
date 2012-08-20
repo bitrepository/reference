@@ -21,28 +21,33 @@
  */
 package org.bitrepository.access.getaudittrails;
 
+import java.math.BigInteger;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.access.getaudittrails.client.ConversationBasedAuditTrailClient;
-import org.bitrepository.bitrepositoryelements.*;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
+import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
+import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
-import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.client.eventhandler.OperationEvent;
-import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
-import org.bitrepository.client.conversation.mediator.ConversationMediator;
-import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.settings.collectionsettings.GetAuditTrailSettings;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.math.BigInteger;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Test the default AuditTrailClient.
@@ -66,9 +71,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         ALL_FILE_IDS = new FileIDs();
         ALL_FILE_IDS.setAllFileIDs("TRUE");
     }
-    /**
-     * Test class for the 'AuditTrailClient'.
-     */
+
     @Test(groups = {"regressiontest"})
     public void verifyAuditTrailClientFromFactory() throws Exception {
         Assert.assertTrue(AccessComponentFactory.getInstance().createAuditTrailClient(
@@ -620,8 +623,6 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
      * @return A new AuditTrailClient(Wrapper).
      */
     private AuditTrailClient createAuditTrailClient() {
-        MessageBus messageBus = new ActiveMQMessageBus(componentSettings.getMessageBusConfiguration(), securityManager);
-        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(componentSettings, securityManager);
         return new AuditTrailClientTestWrapper(new ConversationBasedAuditTrailClient(
                 componentSettings, conversationMediator, messageBus, TEST_CLIENT_ID) , testEventManager);
     }

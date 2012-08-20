@@ -26,9 +26,8 @@ package org.bitrepository.access.getchecksums;
 
 import java.net.URL;
 import java.util.Collection;
-
 import org.bitrepository.access.getchecksums.conversation.GetChecksumsConversationContext;
-import org.bitrepository.access.getchecksums.conversation.SimpleGetChecksumsConversation;
+import org.bitrepository.access.getchecksums.conversation.IdentifyPillarsForGetChecksums;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.AbstractClient;
@@ -46,18 +45,14 @@ import org.slf4j.LoggerFactory;
  * This class is just a thin wrapper which creates a conversion each time a operation is started. The conversations 
  * takes over the rest of the operation handling.
  */
-public class CollectionBasedGetChecksumsClient extends AbstractClient implements GetChecksumsClient {
-    /** The log for this class. */
+public class ConversationBasedGetChecksumsClient extends AbstractClient implements GetChecksumsClient {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
-     * The constructor.
-     * @param messageBus The messagebus for communication.
-     * @param conversationMediator2 
-     * @param settings The settings for this instance.
+     * @see AbstractClient
      */
-    public CollectionBasedGetChecksumsClient(MessageBus messageBus, ConversationMediator conversationMediator, 
-            Settings settings, String clientID) {
+    public ConversationBasedGetChecksumsClient(MessageBus messageBus, ConversationMediator conversationMediator,
+                                               Settings settings, String clientID) {
         super(settings, conversationMediator, messageBus, clientID);
     }
 
@@ -75,8 +70,6 @@ public class CollectionBasedGetChecksumsClient extends AbstractClient implements
         GetChecksumsConversationContext context = new GetChecksumsConversationContext(fileIDs, 
                 checksumSpec, addressForResult, settings, messageBus, clientID, 
                 eventHandler, auditTrailInformation);
-        SimpleGetChecksumsConversation conversation = new SimpleGetChecksumsConversation(context);
-        startConversation(conversation);
+        startConversation(context, new IdentifyPillarsForGetChecksums(context));
     }
-    
 }

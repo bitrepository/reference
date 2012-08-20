@@ -63,7 +63,7 @@ public abstract class GeneralConversationState {
      *     <li>Sends the request which triggers the responses for this state.</li>
      * </ol>
      */
-    public synchronized final void start() {
+    public final void start() {
         timer.schedule(stateTimeoutTask, getTimeout());
         sendRequest();
         try {
@@ -74,7 +74,7 @@ public abstract class GeneralConversationState {
              * and we should just proceed finishing the conversation. */
             setNewState(getNextState());
         } catch (UnableToFinishException e) {
-            // TODO How should this be handled?
+            getContext().getMonitor().operationFailed(e);
         }
     }
 
@@ -84,7 +84,7 @@ public abstract class GeneralConversationState {
      * concrete states {@link #processMessage(MessageResponse)}.
      * @param message The message to handle.
      */
-    public synchronized final void handleMessage(Message message) {
+    public final void handleMessage(Message message) {
         if (!(message instanceof MessageResponse)) {
             getContext().getMonitor().outOfSequenceMessage(
                     "Can only handle responses, but received " + message.getClass().getSimpleName());
@@ -111,9 +111,7 @@ public abstract class GeneralConversationState {
     private class StateTimerTask extends TimerTask {
         @Override
         public void run() {
-            synchronized(this) {
-                setNewState(handleStateTimeout());
-            }
+            setNewState(handleStateTimeout());
         }
     }
 

@@ -32,21 +32,18 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.deletefile.conversation.DeleteFileConversationContext;
-import org.bitrepository.modify.deletefile.conversation.SimpleDeleteFileConversation;
+import org.bitrepository.modify.deletefile.conversation.IdentifyPillarsForDeleteFile;
 import org.bitrepository.modify.deletefile.selector.AllPillarsSelectorForDeleteFile;
 import org.bitrepository.modify.deletefile.selector.SpecificPillarSelectorForDeleteFile;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ConversationBasedDeleteFileClient extends AbstractClient implements DeleteFileClient {   
-    /** The log for this class.*/
+public class ConversationBasedDeleteFileClient extends AbstractClient implements DeleteFileClient {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     /**
-     * Constructor.
-     * @param messageBus The messagebus for communication.
-     * @param settings The configurations and settings.
+     * @see AbstractClient
      */
     public ConversationBasedDeleteFileClient(MessageBus messageBus, ConversationMediator conversationMediator, 
             Settings settings, String clientID) {
@@ -71,8 +68,7 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
                 new SpecificPillarSelectorForDeleteFile(settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
                         pillarId), 
                 checksumForPillar, checksumRequested, settings, messageBus, clientID, eventHandler, auditTrailInformation);
-        SimpleDeleteFileConversation conversation = new SimpleDeleteFileConversation(context);
-        startConversation(conversation);
+        startConversation(context, new IdentifyPillarsForDeleteFile(context));
     }
     
     @Override
@@ -91,8 +87,6 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
         DeleteFileConversationContext context = new DeleteFileConversationContext(fileId, 
                 new AllPillarsSelectorForDeleteFile(settings.getCollectionSettings().getClientSettings().getPillarIDs()), 
                 checksumForPillar, checksumRequested, settings, messageBus, clientID, eventHandler, auditTrailInformation);
-        SimpleDeleteFileConversation conversation = new SimpleDeleteFileConversation(context);
-        startConversation(conversation);
+        startConversation(context, new IdentifyPillarsForDeleteFile(context));
     }
-    
 }

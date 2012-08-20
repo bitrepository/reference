@@ -45,8 +45,7 @@ public class BasicMessageAuthenticator implements MessageAuthenticator {
     private final PermissionStore permissionStore;
     
     /**
-     * Public constructor
-     * @param PermissionStore the permissionStore holding the known certificates 
+     * @param permissionStore the permissionStore holding the known certificates
      */
     public BasicMessageAuthenticator(PermissionStore permissionStore) {
         this.permissionStore = permissionStore;
@@ -54,8 +53,8 @@ public class BasicMessageAuthenticator implements MessageAuthenticator {
     
     /**
      * Attempts to authenticate the message based on a signature. 
-     * @param messageData, the data that is to be authenticated
-     * @param signatureData, the signature that of the data to be authenticated.
+     * @param messageData the data that is to be authenticated
+     * @param signatureData the signature that of the data to be authenticated.
      * @throws MessageAuthenticationException in case authentication fails.  
      */
     @Override

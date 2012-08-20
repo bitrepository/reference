@@ -26,9 +26,7 @@ import java.security.SecureRandom;
 
 public class SecurityModuleConstants {
 
-    private SecurityModuleConstants() {
-        //Private constructor
-    }
+    private SecurityModuleConstants() {}
     
     /** Constant for selecting the BouncyCastle security provider */
     public static final String BC = "BC";

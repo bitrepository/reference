@@ -25,7 +25,6 @@
 package org.bitrepository.modify.putfile;
 
 import java.net.URL;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.AbstractClient;
@@ -33,8 +32,8 @@ import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.modify.putfile.conversation.IdentifyPillarsForPutFile;
 import org.bitrepository.modify.putfile.conversation.PutFileConversationContext;
-import org.bitrepository.modify.putfile.conversation.SimplePutFileConversation;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,10 +43,9 @@ import org.slf4j.LoggerFactory;
  */
 public class ConversationBasedPutFileClient extends AbstractClient implements PutFileClient {
     private final Logger log = LoggerFactory.getLogger(getClass());
+
     /**
-     * Constructor.
-     * @param messageBus The messagebus for communication.
-     * @param settings The configurations and settings.
+     * @see AbstractClient
      */
     public ConversationBasedPutFileClient(MessageBus messageBus, ConversationMediator conversationMediator, 
             Settings settings, String clientID) {
@@ -71,9 +69,7 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
         PutFileConversationContext context = new PutFileConversationContext(fileId, url, sizeOfFile, 
                 checksumForValidationAtPillar, checksumRequestsForValidation, settings, messageBus, 
                 clientID, eventHandler, auditTrailInformation);
-        
-        SimplePutFileConversation conversation = new SimplePutFileConversation(context);
-        startConversation(conversation);
+        startConversation(context, new IdentifyPillarsForPutFile(context));
     }
 
 }

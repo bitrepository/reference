@@ -119,7 +119,7 @@ public class PermissionStore {
         
     /**
      * Retrieve the certificate based on the signerId.
-     * @param SignerId the identification data of the certificate to retrieve  
+     * @param signer the identification data of the certificate to retrieve
      * @return X509Certificate the certificate represented by the SignerId
      * @throws PermissionStoreException if no certificate can be found based on the SignerId 
      */
@@ -134,9 +134,9 @@ public class PermissionStore {
     }
     
     /**
-     * @param signer, the signerId of the certificate used to sign the message.
-     * @param certificateUser, the user that claims to have used the certificate.
-     * @return true, if the certificateUser has been registered for use of the certificate indicated by signer, 
+     * @param signer the signerId of the certificate used to sign the message.
+     * @param certificateUser the user that claims to have used the certificate.
+     * @return true, if the certificateUser has been registered for use of the certificate indicated by signer,
      *         false otherwise.
      * @throws PermissionStoreException in case no certificate has been registered for the given signerId
      */
@@ -190,9 +190,9 @@ public class PermissionStore {
             
         /**
          * Constructor
-         * @param certificate, the certificate which permissions is to be represented.
-         * @param allowedOperations, the allowed operations related to the certificate.
-         * @param alloedUsers, the allowed users of this certificate, if users are not restricted provide null 
+         * @param certificate the certificate which permissions is to be represented.
+         * @param allowedOperations the allowed operations related to the certificate.
+         * @param allowedUsers the allowed users of this certificate, if users are not restricted provide null
          */
         public CertificatePermission(X509Certificate certificate, Collection<Operation> allowedOperations,
                 Collection<String> allowedUsers) {
@@ -209,7 +209,7 @@ public class PermissionStore {
       
         /**
          *  Test if a certain permission has been registered for this object. 
-         *  @param permission, the permission to test for
+         *  @param permission the permission to test for
          *  @return true if the permission is registered, false otherwise.
          */
         public boolean hasPermission(Operation permission) {
@@ -218,7 +218,7 @@ public class PermissionStore {
         
         /**
          *  Test if a certain certificate user has been registered as one allowed for use of this certificate.
-         *  @param certificateUser, the user to test for
+         *  @param certificateUser the user to test for
          *  @return true if the user has been registered, false otherwise. 
          */
         public boolean isUserAllowed(String certificateUser) {

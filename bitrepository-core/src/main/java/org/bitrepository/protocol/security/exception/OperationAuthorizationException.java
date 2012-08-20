@@ -28,8 +28,7 @@ package org.bitrepository.protocol.security.exception;
 public class OperationAuthorizationException extends Exception {
 
     /**
-     * Constructor for OperationAuthorizationException
-     * @param message, description of why the exception was created 
+     * @param message description of why the exception was created
      */
     public OperationAuthorizationException(String message) {
         super(message);
@@ -37,8 +36,8 @@ public class OperationAuthorizationException extends Exception {
     
     /**
      * Constructor for OperationAuthorizationException
-     * @param message, description of why the exception was created
-     * @param cause, the throwable that caused the exception to be created. 
+     * @param message description of why the exception was created
+     * @param cause the throwable that caused the exception to be created.
      */    
     public OperationAuthorizationException(String message, Throwable cause) {
         super(message, cause);

@@ -21,6 +21,8 @@
  */
 package org.bitrepository.access.getstatus;
 
+import java.math.BigInteger;
+import java.util.List;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getstatus.conversation.StatusCompleteContributorEvent;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
@@ -32,20 +34,13 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusR
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
-import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
-import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.message.TestGetStatusMessageFactory;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.settings.collectionsettings.GetStatusSettings;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.math.BigInteger;
-import java.util.List;
 
 public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
 
@@ -68,11 +63,10 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         public void verifyGetStatusClientFromFactory() throws Exception {
             Assert.assertTrue(AccessComponentFactory.getInstance().createGetStatusClient(
                     componentSettings, securityManager, TEST_CLIENT_ID)
-                    instanceof CollectionBasedGetStatusClient,
+                    instanceof ConversationBasedGetStatusClient,
                     "The default GetStatusClient from the Access factory should be of the type '" +
-                            CollectionBasedGetStatusClient.class.getName() + "'.");
+                            ConversationBasedGetStatusClient.class.getName() + "'.");
         }
-    
         
         @Test(groups = {"regressiontest"})
         public void incompleteSetOfIdendifyResponses() throws Exception {
@@ -185,9 +179,6 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
                     OperationEventType.COMPLETE);
         }
 
-        
-        
-        
         /**
          * Creates a new test GetStatusClient based on the supplied settings.
          *
@@ -196,9 +187,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
          * @return A new GetStatusClient(Wrapper).
          */
         private GetStatusClient createGetStatusClient() {
-            MessageBus messageBus = new ActiveMQMessageBus(componentSettings.getMessageBusConfiguration(), securityManager);
-            ConversationMediator conversationMediator = new CollectionBasedConversationMediator(componentSettings, securityManager);
-            return new GetStatusClientTestWrapper(new CollectionBasedGetStatusClient(
+            return new GetStatusClientTestWrapper(new ConversationBasedGetStatusClient(
                     messageBus, conversationMediator, componentSettings, TEST_CLIENT_ID) , testEventManager);
         }
         
