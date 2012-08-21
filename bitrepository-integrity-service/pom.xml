@@ -38,13 +38,18 @@
     </dependency>
     <dependency>
       <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-server</artifactId>
+      <artifactId>jersey-servlet</artifactId>
       <version>1.13</version>
     </dependency>
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-service</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20090211</version>
     </dependency>
     <!-- provided scope -->
     <dependency>
