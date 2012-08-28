@@ -24,6 +24,20 @@
  */
 package org.bitrepository.protocol.activemq;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.jms.Connection;
+import javax.jms.DeliveryMode;
+import javax.jms.Destination;
+import javax.jms.ExceptionListener;
+import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
@@ -80,19 +94,6 @@ import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import javax.jms.Connection;
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Contains the basic functionality for connection and communicating with the
@@ -419,6 +420,7 @@ public class ActiveMQMessageBus implements MessageBus {
          *
          * @param jmsMessage The message received.
          */
+        @SuppressWarnings("deprecation")
         @Override
         public void onMessage(final javax.jms.Message jmsMessage) {
             String type = null;
