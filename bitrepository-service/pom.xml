@@ -59,4 +59,12 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources/audittrailContributorDb</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+  </build>
 </project>

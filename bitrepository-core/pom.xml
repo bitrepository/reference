@@ -110,9 +110,6 @@
         <filtering>true</filtering>
       </resource>
       <resource>
-        <directory>src/main/resources/audittrailContributorDb</directory>
-      </resource>
-      <resource>
         <directory>src/main/resources/configurations/xml</directory>
       </resource>
       <resource>
