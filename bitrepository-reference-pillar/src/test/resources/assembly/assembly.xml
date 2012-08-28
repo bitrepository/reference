@@ -31,11 +31,12 @@
   <id>distribution</id>
 
   <formats>
-    <format>zip</format>
+    <format>tar.gz</format>
   </formats>
 
   <dependencySets>
     <dependencySet>
+      <scope>test</scope>
       <outputDirectory>lib</outputDirectory>
       <useTransitiveFiltering>true</useTransitiveFiltering>
     </dependencySet>
@@ -44,30 +45,11 @@
   <fileSets>
     <fileSet>
       <outputDirectory>conf</outputDirectory>
-      <fileMode>0740</fileMode>
-      <directoryMode>0740</directoryMode>
-      <directory>../bitrepository-core/target/test-classes/settings/xml/bitrepository-devel/</directory>
-      <excludes>
-        <exclude>xjb-bindings/</exclude>
-      </excludes>
-    </fileSet>
-    <fileSet>
-      <outputDirectory>conf</outputDirectory>
-      <fileMode>0740</fileMode>
-      <directoryMode>0740</directoryMode>
-      <directory>src/main/conf</directory>
-    </fileSet>
-    <fileSet>
-      <outputDirectory>conf</outputDirectory>
-      <fileMode>0740</fileMode>
-      <directoryMode>0740</directoryMode>
-      <directory>src/main/resources</directory>
+      <directory>src/test/resources</directory>
     </fileSet>
     <fileSet>
       <outputDirectory>bin</outputDirectory>
       <directory>src/test/scripts</directory>
-      <fileMode>0740</fileMode>
-      <directoryMode>0740</directoryMode>
       <filtered>true</filtered>
     </fileSet>
   </fileSets>

@@ -92,7 +92,7 @@ if [ ! -d "checksumpillar" ]; then
 	ln -s ../conf/checksumpillar checksumpillar/conf
 fi
 cd checksumpillar/bin
-./checksum-pillar-startup-script.sh
+./checksum-pillar.sh start
 cd $quickstartdir
 
 
@@ -103,7 +103,7 @@ if [ ! -d "reference1pillar" ]; then
 	ln -s ../conf/reference1pillar reference1pillar/conf
 fi
 cd reference1pillar/bin
-./reference-pillar-startup-script.sh
+./reference-pillar.sh start
 cd $quickstartdir
 
 
@@ -114,7 +114,7 @@ if [ ! -d "reference2pillar" ]; then
         ln -s ../conf/reference2pillar reference2pillar/conf
 fi
 cd reference2pillar/bin
-./reference-pillar-startup-script.sh
+./reference-pillar.sh start
 cd $quickstartdir
 
 

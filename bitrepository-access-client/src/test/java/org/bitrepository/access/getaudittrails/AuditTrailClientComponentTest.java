@@ -440,9 +440,9 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                 OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
 
-        addStep("Wait for 5 seconds", "An IDENTIFY_TIMEOUT and IDENTIFICATION_COMPLETE event should be received" +
+        addStep("Wait for 5 seconds", "An IDENTIFY_TIMEOUT, a COMPONENT_FAILED and IDENTIFICATION_COMPLETE event should be received" +
         "Right after this a GetAuditTrailRequest should be sent to pillar1");
-        Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                 OperationEvent.OperationEventType.IDENTIFY_TIMEOUT);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
                 OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);

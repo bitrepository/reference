@@ -62,11 +62,11 @@ class GettingFile extends PerformingOperationState {
     }    
     
     @Override
-    protected void generateCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
+    protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
         if (msg instanceof GetFileFinalResponse) {
             GetFileFinalResponse response = (GetFileFinalResponse) msg;
-            getContext().getMonitor().pillarComplete(
-                    new ContributorEvent(OperationEventType.COMPONENT_COMPLETE, 
+            getContext().getMonitor().contributorComplete(
+                    new ContributorEvent(OperationEventType.COMPONENT_COMPLETE,
                             "Finished getting file " + response.getFileID() + " from " + response.getPillarID(),
                             response.getFrom(), response.getCorrelationID()));
         } else {

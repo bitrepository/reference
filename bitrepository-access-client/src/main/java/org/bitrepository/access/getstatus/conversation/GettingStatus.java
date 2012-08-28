@@ -52,10 +52,10 @@ public class GettingStatus extends PerformingOperationState {
     }
 
     @Override
-    protected void generateCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
+    protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
         if (msg instanceof GetStatusFinalResponse) {
             GetStatusFinalResponse response = (GetStatusFinalResponse) msg;
-            getContext().getMonitor().complete(
+            getContext().getMonitor().contributorComplete(
                     new StatusCompleteContributorEvent(
                             "Received status result from " + response.getContributor(), 
                             response.getContributor(), response.getResultingStatus(), 

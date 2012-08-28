@@ -651,7 +651,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         
         @Override
         public void run() {
-            conversation.failConversation(new OperationFailedEvent(message));
+            conversation.failConversation(new OperationFailedEvent(message, conversation.getConversationID()));
         }
     }
 }
