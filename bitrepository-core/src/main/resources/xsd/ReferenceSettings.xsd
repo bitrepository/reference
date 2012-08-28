@@ -23,9 +23,9 @@
 
 
 <xs:schema targetNamespace="http://bitrepository.org/settings/ReferenceSettings.xsd"
-  attributeFormDefault="unqualified" elementFormDefault="qualified"
-  xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+           attributeFormDefault="unqualified" elementFormDefault="qualified"
+           xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
   <xs:element name="ReferenceSettings">
     <xs:annotation>
@@ -101,7 +101,7 @@
     <xs:complexType>
       <xs:annotation>
         <xs:documentation xml:lang="en">
-            The settings for the org.bitrepository.protocol
+          The settings for the org.bitrepository.protocol
         </xs:documentation>
       </xs:annotation>
       <xs:sequence>
@@ -177,16 +177,16 @@
         <xs:enumeration value="EMERGENCY">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              Will only send an Alarm for the severest protocol level issues 
-              (e.g. invalid message or certificate). 
+              Will only send an Alarm for the severest protocol level issues
+              (e.g. invalid message or certificate).
             </xs:documentation>
           </xs:annotation>
         </xs:enumeration>
         <xs:enumeration value="ERROR">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              Sends an Alarm in the case of checksum errors or if a request does not uphold the 
-              contract in CollectionSettings (e.g. does not contain the required checksums 
+              Sends an Alarm in the case of checksum errors or if a request does not uphold the
+              contract in CollectionSettings (e.g. does not contain the required checksums
               for a put, delete or replace operation).
             </xs:documentation>
           </xs:annotation>
@@ -194,7 +194,7 @@
         <xs:enumeration value="WARNING">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              Sends an Alarm whenever an operation or identification fails (e.g. missing file, 
+              Sends an Alarm whenever an operation or identification fails (e.g. missing file,
               file already exist, etc.).
             </xs:documentation>
           </xs:annotation>
@@ -270,6 +270,18 @@
           The settings for the PutFileClient.
         </xs:documentation>
       </xs:annotation>
+      <xs:sequence>
+        <xs:element name="PartialPutsAllow" type="xs:boolean" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Should the putClient attempt to put files to the pillars, even if only a subset of the pillars
+              are available. Note this will break integrity, but will make the storage of files possible when pillars
+              are unavailable for puts.
+              The default is true.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
 
@@ -291,7 +303,7 @@
       <xs:enumeration value="MonitoringService" />
     </xs:restriction>
   </xs:simpleType>
-    
+
   <xs:element name="MonitoringServiceSettings">
     <xs:complexType>
       <xs:annotation>
@@ -304,7 +316,7 @@
         <xs:element name="CollectionInterval" type="xs:long">
           <xs:annotation>
             <xs:documentation>
-              Interval at which statuses is to be collected from components. Value in milliseconds. 
+              Interval at which statuses is to be collected from components. Value in milliseconds.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
@@ -339,7 +351,7 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="AuditTrailServiceSettings">
     <xs:complexType>
       <xs:annotation>
@@ -388,7 +400,7 @@
         <xs:element name="AuditTrailPreservationTemporaryDirectory" type="xs:string">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              Path to the directory where the temporary audit trail preservation files are stored. 
+              Path to the directory where the temporary audit trail preservation files are stored.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
@@ -436,7 +448,7 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-    
+
   <xs:element name="MailingConfiguration">
     <xs:complexType>
       <xs:sequence>
@@ -476,7 +488,7 @@
       <xs:element name="DriverClass" type="xs:string">
         <xs:annotation>
           <xs:documentation xml:lang="en">
-            The class for the driver for the database. E.g. 
+            The class for the driver for the database. E.g.
             'org.apache.derby.jdbc.EmbeddedDriver' or
             'org.postgresql.Driver'
           </xs:documentation>
@@ -492,14 +504,14 @@
       <xs:element name="Username" type="xs:string" minOccurs="0" maxOccurs="1">
         <xs:annotation>
           <xs:documentation xml:lang="en">
-            OPTIONAL. The username for accessing the database. 
+            OPTIONAL. The username for accessing the database.
           </xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="Password" type="xs:string" minOccurs="0" maxOccurs="1">
         <xs:annotation>
           <xs:documentation xml:lang="en">
-            OPTIONAL. The password for accessing the database. 
+            OPTIONAL. The password for accessing the database.
           </xs:documentation>
         </xs:annotation>
       </xs:element>

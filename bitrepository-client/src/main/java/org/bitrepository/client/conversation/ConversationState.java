@@ -24,21 +24,23 @@
  */
 package org.bitrepository.client.conversation;
 
-import org.bitrepository.protocol.messagebus.SpecificMessageListener;
+import org.bitrepository.bitrepositorymessages.Message;
 
 /**
  * Models a specific state of a conversation.
  */
-public interface ConversationState extends SpecificMessageListener {
+public interface ConversationState {
 
     /**
      * Starts this state.
      */
     void start();
-    
+
     /**
-     * Indicates whether this is a finish state
-     * @return
+     * The general message handler for this state. Will only accept <code>MessageResponses</code>.
+     * Takes care of the general message bookkepping and delegates the specifics of the message handling to the
+     * concrete states.
+     * @param message The message to handle.
      */
-    boolean hasEnded();
+    void handleMessage(Message message);
 }

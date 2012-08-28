@@ -52,7 +52,7 @@ public class IdentifyingAuditTrailContributors extends IdentifyingState {
         initializeMessage(msg);
         msg.setTo(context.getSettings().getCollectionDestination());
         context.getMessageSender().sendMessage(msg);
-        context.getMonitor().identifyPillarsRequestSent("Identifying contributers for audit trails");
+        context.getMonitor().identifyRequestSent("Identifying contributers for audit trails");
     }
 
     @Override

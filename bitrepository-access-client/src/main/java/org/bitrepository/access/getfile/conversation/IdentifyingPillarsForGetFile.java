@@ -62,7 +62,7 @@ public class IdentifyingPillarsForGetFile extends IdentifyingState {
         msg.setTo(context.getSettings().getCollectionDestination());
         msg.setFileID(context.getFileID());
         context.getMessageSender().sendMessage(msg);
-        context.getMonitor().identifyPillarsRequestSent("Identifying pillars for GetFile");
+        context.getMonitor().identifyRequestSent("Identifying pillars for GetFile");
         
     }
 

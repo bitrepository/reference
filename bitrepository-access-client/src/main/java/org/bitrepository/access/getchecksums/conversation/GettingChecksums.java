@@ -51,10 +51,6 @@ public class GettingChecksums extends PerformingOperationState {
     /** Tracks who have responded */
     private final ContributorResponseStatus responseStatus;
 
-    /**
-     * Constructor.
-     * @param conversation The conversation where this state belongs.
-     */
     public GettingChecksums(GetChecksumsConversationContext context, List<SelectedComponentInfo> contributors) {
         super();
         this.context = context;
@@ -66,10 +62,10 @@ public class GettingChecksums extends PerformingOperationState {
     }
 
     @Override
-    protected void generateCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
+    protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
         if (msg instanceof GetChecksumsFinalResponse) {
             GetChecksumsFinalResponse response = (GetChecksumsFinalResponse) msg;
-            getContext().getMonitor().complete(new ChecksumsCompletePillarEvent(
+            getContext().getMonitor().contributorComplete(new ChecksumsCompletePillarEvent(
                     response.getResultingChecksums(), response.getChecksumRequestForExistingFile(),
                     response.getFrom(),"Received checksum result from " + response.getPillarID(),
                     response.getCorrelationID()));

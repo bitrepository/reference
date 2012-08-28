@@ -50,10 +50,6 @@ public class GettingFileIDs extends PerformingOperationState {
     /** The status for the expected responses.*/
     private final ContributorResponseStatus responseStatus;
 
-    /**
-     * Constructor.
-     * @param conversation The conversation where this state belongs.
-     */
     public GettingFileIDs(GetFileIDsConversationContext context, List<SelectedComponentInfo> contributors) {
         super();
         this.context = context;
@@ -81,10 +77,10 @@ public class GettingFileIDs extends PerformingOperationState {
     }
     
     @Override
-    protected void generateCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
+    protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
         if (msg instanceof GetFileIDsFinalResponse) {
             GetFileIDsFinalResponse response = (GetFileIDsFinalResponse)msg;
-            getContext().getMonitor().complete(
+            getContext().getMonitor().contributorComplete(
                     new FileIDsCompletePillarEvent(response.getResultingFileIDs(), response.getFrom(),
                             "FileIDs received from " + response.getFrom(), response.getCorrelationID()));
         } else {

@@ -40,7 +40,7 @@ import org.bitrepository.protocol.ProtocolVersionLoader;
  *
  * ToDo Implement ConversationState and consider moving selected method here when this class is in general usage.
  */
-public abstract class GeneralConversationState {
+public abstract class GeneralConversationState implements ConversationState {
     /** Defines that the timer is a daemon thread. */
     private static final Boolean TIMER_IS_DAEMON = true;
     /** The name of the timer.*/
@@ -49,13 +49,7 @@ public abstract class GeneralConversationState {
     private static final Timer timer = new Timer(NAME_OF_TIMER, TIMER_IS_DAEMON);
     /** The timer task for timeout of identify in this conversation. */
     private final TimerTask stateTimeoutTask = new StateTimerTask();
-    /**
-     * Boolean to indicate whether a operation as a whole was a success. 
-     * The concrete implementation of PerformingOperationState (e.g. PuttingFile, GettingChecksums etc)
-     * should set operationSucceded to false if an operation is judged failed. Which policy to do decide this
-     * is up to the concrete class. 
-     */
-    protected boolean operationSucceded = true;
+
     
     /**
      * Startes the state by: <ol>
@@ -92,12 +86,9 @@ public abstract class GeneralConversationState {
         MessageResponse response = (MessageResponse)message;
         try {
             processMessage(response);
+            setNewState(getNextState());
         } catch (UnexpectedResponseException e) {
             getContext().getMonitor().invalidMessage(response, e);
-        }
-
-        try {
-            setNewState(getNextState());
         } catch (UnableToFinishException e) {
             getContext().getMonitor().operationFailed(e);
         }
@@ -145,7 +136,7 @@ public abstract class GeneralConversationState {
      * Implement by concrete states for handling timeout for the state.
      * @throws UnexpectedResponseException The response could be processed successfully
      */
-    protected abstract void processMessage(MessageResponse response) throws UnexpectedResponseException;
+    protected abstract void processMessage(MessageResponse response) throws UnexpectedResponseException, UnableToFinishException;
 
     /**
      * Implement by concrete states for handling timeout for the state.

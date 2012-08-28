@@ -90,4 +90,8 @@ public class ContributorResponseStatus {
     public final boolean haveAllComponentsResponded() {
         return componentsWithOutstandingResponse.isEmpty();
     }
+
+    public final Set<String> getComponentsWhichShouldRespond() {
+        return componentsWhichShouldRespond;
+    }
 }

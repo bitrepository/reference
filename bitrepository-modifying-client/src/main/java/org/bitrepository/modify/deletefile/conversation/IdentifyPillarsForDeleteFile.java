@@ -57,12 +57,11 @@ public class IdentifyPillarsForDeleteFile extends IdentifyingState {
     protected void processMessage(MessageResponse msg) throws UnexpectedResponseException {
         ResponseCode responseCode = msg.getResponseInfo().getResponseCode();
         if(responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE)) {
-            getContext().getMonitor().pillarIdentified(msg);
+            getContext().getMonitor().contributorIdentified(msg);
         } else if(!responseCode.equals(ResponseCode.FILE_NOT_FOUND_FAILURE)) {
             getContext().getMonitor().contributorFailed(
                     "Received negative response from component " + msg.getFrom() +
                     ":  " + msg.getResponseInfo(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
-            operationSucceded = false;
         } else {
             getContext().getMonitor().warning("Received unexpected response code " +
                     msg.getResponseInfo().getResponseCode() + " from " + msg.getFrom());
@@ -77,7 +76,7 @@ public class IdentifyPillarsForDeleteFile extends IdentifyingState {
         msg.setFileID(context.getFileID());
         msg.setTo(context.getSettings().getCollectionDestination());
         context.getMessageSender().sendMessage(msg);
-        context.getMonitor().identifyPillarsRequestSent("Identifying pillars for delete file");
+        context.getMonitor().identifyRequestSent("Identifying pillars for delete file");
     }
 
     @Override
