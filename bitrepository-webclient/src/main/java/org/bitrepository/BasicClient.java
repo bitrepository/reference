@@ -117,7 +117,7 @@ public class BasicClient {
         }
 
         putClient.putFile(url, fileID, fileSize, checksumDataForNewFile, checksumRequestForNewFile, 
-                eventHandler, "Stuff this Christmas turkey!!");
+                eventHandler, generateAuditTrailMessage("PutFile"));
         return "Placing '" + fileID + "' in Bitrepository :)";
     }
 
@@ -205,7 +205,7 @@ public class BasicClient {
         GetChecksumsEventHandler handler = new GetChecksumsEventHandler(results, eventHandler);
 
         getChecksumClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(),
-                fileIDs, checksumSpecItem, null, handler, "Arf arf, deliver those checksums");
+                fileIDs, checksumSpecItem, null, handler, generateAuditTrailMessage("GetChecksum"));
 
         try {
             while(!results.isDone() && !results.hasFailed()) {
@@ -230,7 +230,7 @@ public class BasicClient {
         }
         try {
             getFileIDsClient.getFileIDs(settings.getCollectionSettings().getClientSettings().getPillarIDs(),
-                    fileIDs, null, handler, "Deliver my fileIDs garrh");
+                    fileIDs, null, handler, generateAuditTrailMessage("GetFileIDs"));
 
             while(!results.isDone() && !results.hasFailed()) {
                 Thread.sleep(500);
@@ -264,7 +264,7 @@ public class BasicClient {
         }      
 
         deleteFileClient.deleteFile(fileID, pillarID, verifyingChecksum, requestedChecksumSpec, 
-                eventHandler, "Kick that file");
+                eventHandler, generateAuditTrailMessage("DeleteFile"));
 
         return "Deleting file";
     }
@@ -310,7 +310,7 @@ public class BasicClient {
         }
 
         replaceFileClient.replaceFile(fileID, pillarID, oldFileChecksumData, oldFileChecksumRequest, url, 
-                newFileSize, newFileChecksumData, newFileChecksumRequest, eventHandler, "Swap away!");
+                newFileSize, newFileChecksumData, newFileChecksumRequest, eventHandler, generateAuditTrailMessage("ReplaceFile"));
 
         return "Replacing file";
     }
@@ -356,5 +356,9 @@ public class BasicClient {
         spec.setChecksumType(ChecksumType.fromValue(checksumType));
 
         return spec;
+    }
+    
+    private String generateAuditTrailMessage(String operationType) {
+        return "Webservice initiation of " + operationType + " operation";
     }
 }

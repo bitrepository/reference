@@ -25,7 +25,6 @@
 package org.bitrepository.integrityservice.web;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -38,6 +37,9 @@ import javax.ws.rs.Produces;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.IntegrityServiceFactory;
 import org.bitrepository.service.scheduler.WorkflowTimerTask;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 @Path("/IntegrityService")
 public class RestIntegrityService {
@@ -54,22 +56,12 @@ public class RestIntegrityService {
     @Path("/getIntegrityStatus/")
     @Produces("application/json")
     public String getIntegrityStatus() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
+        JSONArray array = new JSONArray();
         List<String> pillars = service.getPillarList();
-        Iterator<String> it = pillars.iterator();
-        while(it.hasNext()) {
-            String pillar = it.next();
-            sb.append("{\"pillarID\": \"" + pillar + "\"," +
-                    "\"totalFileCount\": \"" + service.getNumberOfFiles(pillar) + "\"," +
-                    "\"missingFilesCount\": \"" + service.getNumberOfMissingFiles(pillar) + "\"," +
-                    "\"checksumErrorCount\": \"" + service.getNumberOfChecksumErrors(pillar) + "\"}");
-            if(it.hasNext()) {
-                sb.append(",");
-            }
+        for(String pillar : pillars) {
+            array.put(makeIntegrityStatusObj(pillar));
         }
-        sb.append("]");       
-        return sb.toString();
+        return array.toString();
     }
     
     /***
@@ -79,23 +71,12 @@ public class RestIntegrityService {
     @Path("/getWorkflowSetup/")
     @Produces("application/json")
     public String getWorkflowSetup() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
+        JSONArray array = new JSONArray();
         Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows();
-        Iterator<WorkflowTimerTask> it = workflows.iterator();
-        while(it.hasNext()) {
-            WorkflowTimerTask workflowTasl = it.next();
-            
-            sb.append("{\"workflowID\": \"" + workflowTasl.getName() + "\"," +
-                    "\"nextRun\": \"" + workflowTasl.getNextRun() + "\"," +
-                    "\"executionInterval\": \"" + TimeUtils.millisecondsToHuman(workflowTasl.getIntervalBetweenRuns()) 
-                    + "\"}");
-            if(it.hasNext()) {
-                sb.append(",");
-            }
+        for(WorkflowTimerTask workflow : workflows) {
+            array.put(makeWorkflowSetupObj(workflow));
         }
-        sb.append("]");       
-        return sb.toString();
+        return array.toString();
     }
     
     /**
@@ -105,19 +86,19 @@ public class RestIntegrityService {
     @Path("/getWorkflowList/")
     @Produces("application/json")
     public String getWorkflowList() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
+        JSONArray array = new JSONArray();
         Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows();
-        Iterator<WorkflowTimerTask> it = workflows.iterator();
-        while(it.hasNext()) {
-            String name = it.next().getName();
-            sb.append("{\"workflowID\":\"" + name + "\"}");
-            if(it.hasNext()) {
-                sb.append(",");
+        for(WorkflowTimerTask workflow : workflows) {
+            JSONObject obj;       
+            try {
+                obj = new JSONObject();
+                obj.put("workflowID", workflow.getName());
+            } catch (JSONException e) {
+                obj = (JSONObject) JSONObject.NULL;
             }
+            array.put(obj);
         }
-        sb.append("]");
-        return sb.toString();
+        return array.toString();
     }
     
     /**
@@ -136,6 +117,32 @@ public class RestIntegrityService {
             }
         }
         return "No workflow named '" + workflowID + "' was found!";
+    }
+    
+    private JSONObject makeIntegrityStatusObj(String pillarID) {
+        JSONObject obj = new JSONObject();       
+        try {
+            obj.put("pillarID", pillarID);
+            obj.put("totalFileCount", service.getNumberOfFiles(pillarID));
+            obj.put("missingFilesCount",service.getNumberOfMissingFiles(pillarID));
+            obj.put("checksumErrorCount", service.getNumberOfChecksumErrors(pillarID));
+            return obj;
+        } catch (JSONException e) {
+            return (JSONObject) JSONObject.NULL;
+        }
+    }
+    
+    private JSONObject makeWorkflowSetupObj(WorkflowTimerTask workflowTask) {
+        JSONObject obj = new JSONObject();       
+        try {
+            obj.put("workflowID", workflowTask.getName());
+            obj.put("nextRun", workflowTask.getNextRun());
+            obj.put("executionInterval", TimeUtils.millisecondsToHuman(workflowTask.getIntervalBetweenRuns()));
+            obj.put("currentState", workflowTask.currentState());
+            return obj;
+        } catch (JSONException e) {
+            return (JSONObject) JSONObject.NULL;
+        }
     }
     
 }

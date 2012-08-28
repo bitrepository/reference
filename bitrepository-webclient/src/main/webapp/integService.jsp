@@ -33,6 +33,7 @@
 <script>
     $(function() {
         $().updateIntegrityStatus();
+        $().updateWorkflowSetup();
         $("#workflowLauncher").buttonset();
     });
 </script>
@@ -68,7 +69,7 @@
     </script>
     
     <script>
-        $(function(){
+        jQuery.fn.updateWorkflowSetup = function() {
             $.getJSON('<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getWorkflowSetup/',{}, function(j){
                 var htmlTable;
                 htmlTable = "<table class=\"ui-widget ui-widget-content\">";
@@ -76,15 +77,18 @@
                 htmlTable += "<th width=\"200\">Workflow name</th>";
                 htmlTable += "<th>Next run</th>";
                 htmlTable += "<th>Execution interval</th>";
+                htmlTable += "<th>Current state</th>";
                 htmlTable += "</tr></thead><tbody>";
                 for (var i = 0; i < j.length; i++) {
-                    htmlTable += "<tr><td>" + j[i].workflowID + "</td><td>" + j[i].nextRun 
-                        + "</td> <td>" + j[i].executionInterval + "</td></tr>";
-               }
+                    htmlTable += "<tr><td>" + j[i].workflowID + "</td>" +
+                                "<td>" + j[i].nextRun + "</td>" + 
+                                "<td>" + j[i].executionInterval + "</td>" +
+                                "<td>" + j[i].currentState + "</td></tr>";
+                }
                 htmlTable += "</tbody></table>"; 
                 $("#integritySetup").html(htmlTable);
             })
-        })
+        }
     </script>
     
     <script>
@@ -109,9 +113,10 @@
     </script>
     
     <script>
-        var auto_getalarms = setInterval(
+        var auto_getintegrity = setInterval(
         function() {
             $().updateIntegrityStatus();
+            $().updateWorkflowSetup();
             }, 2500);
     </script> 
     
