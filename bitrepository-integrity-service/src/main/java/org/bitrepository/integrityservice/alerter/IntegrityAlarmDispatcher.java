@@ -46,7 +46,7 @@ public class IntegrityAlarmDispatcher extends AlarmDispatcher implements Integri
     @Override
     public void integrityFailed(IntegrityReportModel report) {
         Alarm ad = new Alarm();
-        ad.setAlarmCode(AlarmCode.INCONSISTENT_REQUEST);
+        ad.setAlarmCode(AlarmCode.FAILED_OPERATION);
         ad.setAlarmText(report.generateReport());
         error(ad);
     }
