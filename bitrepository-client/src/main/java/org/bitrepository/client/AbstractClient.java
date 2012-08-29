@@ -1,4 +1,5 @@
 /*
+/*
  * #%L
  * Bitrepository Protocol
  * 
@@ -35,8 +36,6 @@ import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.jms.JMSException;
 
 /**
  * Implements the generic functionality for a reference client
@@ -92,15 +91,5 @@ public class AbstractClient implements BitrepositoryClient {
         Conversation conversation = new StateBasedConversation(context);
         conversationMediator.addConversation(conversation);
         conversation.startConversation();
-    }
-
-    @Override
-    public void shutdown() {
-        try {
-            messageBus.close();
-            // TODO Kill any lingering timer threads
-        } catch (JMSException e) {
-            log.info("Error during shutdown of messagebus ", e);
-        }
     }
 }

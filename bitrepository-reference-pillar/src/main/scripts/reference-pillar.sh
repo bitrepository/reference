@@ -3,7 +3,7 @@
 LOGBACK="-Dlogback.configurationFile=../conf/logback.xml" #configuration directory
 CONFDIR="../conf"
 KEYFILE="../conf/client-01.pem" #key file
-JAVA="/usr/java/jre-1.6.0-sun-1.6.0.33.x86_64/bin/java"
+JAVA="/usr/bin/java"
 JAVA_OPTS="-classpath ../conf:../lib/* org.bitrepository.pillar.referencepillar.ReferencePillarLauncher"
 PIDFILE="referencepillar.pid"
 SCRIPTNAME="referencepillar"

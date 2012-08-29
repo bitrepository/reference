@@ -40,7 +40,7 @@ public class DeleteClientTestWrapper implements DeleteFileClient {
 
     /**
      * Constructor.
-     * @param putClientInstance The instance to wrap and monitor.
+     * @param deleteClientInstance The instance to wrap and monitor.
      * @param eventManager The manager to monitor the operations.
      */
     public DeleteClientTestWrapper(DeleteFileClient deleteClientInstance, TestEventManager eventManager) {
@@ -64,11 +64,5 @@ public class DeleteClientTestWrapper implements DeleteFileClient {
             + checksumRequested + ", eventHandler, " + auditTrailInformation + ")");
         wrappedDeleteClient.deleteFileAtAllPillars(fileId, checksumForPillar, checksumRequested, eventHandler, 
                 auditTrailInformation);        
-    }
-    
-    @Override
-    public void shutdown() {
-        testEventManager.addStimuli("Calling shutdown()");
-        wrappedDeleteClient.shutdown();
     }
 }

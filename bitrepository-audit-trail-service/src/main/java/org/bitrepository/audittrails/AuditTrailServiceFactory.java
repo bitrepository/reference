@@ -124,7 +124,7 @@ public final class AuditTrailServiceFactory {
                 AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
                 AuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, putClient);
                 
-                auditTrailService = new AuditTrailService(store, collector, mediator, preserver);
+                auditTrailService = new AuditTrailService(store, collector, mediator, preserver, settings);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

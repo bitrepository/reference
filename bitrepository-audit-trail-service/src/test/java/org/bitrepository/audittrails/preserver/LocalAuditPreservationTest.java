@@ -141,9 +141,6 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
     }
 
     private class MockPutClient implements PutFileClient {
-        @Override
-        public void shutdown() { }
-
         private URL url = null;
         public URL getUrl() {
             return url;

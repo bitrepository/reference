@@ -70,5 +70,4 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
                 settings, messageBus, clientID, eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForGetFileIDs(context));
     }
-    
 }

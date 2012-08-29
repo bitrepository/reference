@@ -41,10 +41,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for managing the files for the reference pillar. This supports a single BitRespositoryCollectionID.
+ * Class for managing the files for the reference pillar. This supports a single CollectionID.
  */
 public class ReferenceArchive implements FileStore {
-    /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The maximum buffer for the stream interaction.*/
     public static final int MAX_BUFFER_SIZE = 32 * 1024;

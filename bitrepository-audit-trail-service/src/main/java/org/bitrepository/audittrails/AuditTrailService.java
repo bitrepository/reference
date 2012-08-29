@@ -26,21 +26,27 @@ package org.bitrepository.audittrails;
 
 import java.util.Collection;
 import java.util.Date;
-
+import javax.jms.JMSException;
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
 import org.bitrepository.audittrails.preserver.AuditTrailPreserver;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.contributor.ContributorMediator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class to expose the functionality of the AuditTrailService. 
  * Aggregates the needed classes.   
  */
 public class AuditTrailService implements LifeCycledService {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     /** The storage of audit trail information.*/
     private final AuditTrailStore store;
     /** The collector of new audit trails.*/
@@ -49,30 +55,33 @@ public class AuditTrailService implements LifeCycledService {
     private final ContributorMediator mediator;
     /** The preserver of audit trails.*/
     private final AuditTrailPreserver preserver;
-    
+    private final Settings settings;
+
     /**
      * Constructor.
      * @param store The store for the audit trail data.
      * @param collector The collector of new audit trail data.
      * @param mediator The mediator for the communication of this contributor.
      * @param preserver Instance for handling the preservation of audit trails.
+     * @param settings
      */
     public AuditTrailService(AuditTrailStore store, AuditTrailCollector collector, ContributorMediator mediator,
-            AuditTrailPreserver preserver) {
+                             AuditTrailPreserver preserver, Settings settings) {
         ArgumentValidator.checkNotNull(collector, "AuditTrailCollector collector");
         ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
         ArgumentValidator.checkNotNull(mediator, "ContributorMediator mediator");
         ArgumentValidator.checkNotNull(preserver, "AuditTrailPreserver preserver");
-        
+
         this.store = store;
         this.collector = collector;
         this.mediator = mediator;
         this.preserver = preserver;
-        
+        this.settings = settings;
+
         mediator.start();
         preserver.start();
     }
-    
+
     /**
      * Retrieve all AuditTrailEvents matching the criteria from the parameters.
      * All parameters are allowed to be null, meaning that the parameter imposes no restriction on the result
@@ -83,18 +92,18 @@ public class AuditTrailService implements LifeCycledService {
      * @param actor Restrict the results to only be events caused by this actor
      * @param action Restrict the results to only be about this type of action
      */
-    public Collection<AuditTrailEvent> queryAuditTrailEvents(Date fromDate, Date toDate, String fileID, 
-            String reportingComponent, String actor, String action) {
+    public Collection<AuditTrailEvent> queryAuditTrailEvents(Date fromDate, Date toDate, String fileID,
+                                                             String reportingComponent, String actor, String action) {
         FileAction operation;
         if(action != null) {
             operation = FileAction.fromValue(action);
         } else {
             operation = null;
         }
-        
+
         return store.getAuditTrails(fileID, reportingComponent, null, null, actor, operation, fromDate, toDate);
     }
-    
+
     /**
      * Collects all the newest audit trails.
      */
@@ -119,5 +128,13 @@ public class AuditTrailService implements LifeCycledService {
         collector.close();
         store.close();
         mediator.close();
+        MessageBus messageBus = MessageBusManager.getMessageBus(settings.getCollectionID());
+        if ( messageBus != null) {
+            try {
+                MessageBusManager.getMessageBus(settings.getCollectionID()).close();
+            } catch (JMSException e) {
+                log.warn("Failed to close message bus cleanly, " + e.getMessage());
+            }
+        }
     }
 }

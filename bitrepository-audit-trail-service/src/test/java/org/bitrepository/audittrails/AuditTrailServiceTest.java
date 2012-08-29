@@ -52,7 +52,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         ContributorMediator mediator = new MockContributorMediator();
         
         addStep("Instantiate the service.", "Should work.");
-        AuditTrailService service = new AuditTrailService(store, collector, mediator, preserver);
+        AuditTrailService service = new AuditTrailService(store, collector, mediator, preserver, settings);
         service.start();
         
         addStep("Try to collect audit trails.", "Should make a call to the client.");

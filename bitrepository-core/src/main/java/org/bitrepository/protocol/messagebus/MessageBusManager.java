@@ -41,9 +41,7 @@ public final class MessageBusManager {
     private MessageBusManager() {}
 
     /**
-     * Returns a new message bus instance based on the supplied configuration
-     * @param configuration
-     * @return
+     * @return a new message bus instance based on the supplied configuration.
      */
     public synchronized static MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
         String collectionID = settings.getCollectionID();
@@ -51,6 +49,15 @@ public final class MessageBusManager {
             MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
             messageBusMap.put(collectionID, messageBus);
         }
+        return messageBusMap.get(collectionID);
+    }
+
+    /**
+     * Returns a messagebus for the given collection if it exists, else null.
+     * @param collectionID
+     * @return
+     */
+    public synchronized static MessageBus getMessageBus(String collectionID) {
         return messageBusMap.get(collectionID);
     }
 }

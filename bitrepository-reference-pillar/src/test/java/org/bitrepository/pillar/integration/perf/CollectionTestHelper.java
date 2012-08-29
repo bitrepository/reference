@@ -36,7 +36,7 @@ import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
-import org.bitrepository.pillar.integration.TestFileHelper;
+import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.protocol.fileexchange.HttpServerConnector;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
@@ -129,11 +129,5 @@ public class CollectionTestHelper {
             }
         }
         return fileIDs;
-    }
-
-    public void shutdown() {
-        putClient.shutdown();
-        getFileIDsClient.shutdown();
-        deleteFileClient.shutdown();
     }
 }

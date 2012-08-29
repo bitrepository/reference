@@ -26,10 +26,6 @@ import org.bitrepository.client.eventhandler.EventHandler;
 
 public class MockGetStatusClient implements GetStatusClient {
     private int callsToShutdown = 0;
-    @Override
-    public void shutdown() {
-        callsToShutdown++;
-    }
     public int getCallsToShutdown() {
         return callsToShutdown;
     }
