@@ -164,9 +164,15 @@
 
   <!-- 
     Settings for the PutFileClient
-    Currently this section is empty
   -->
-  <PutFileSettings></PutFileSettings>
+  <PutFileSettings>
+    <!--
+    Should the putClient attempt to put files to the pillars, even if only a subset of the pillars
+    are available. Note this will break integrity, but will make the storage of files possible when pillars
+    are unavailable for puts.
+    -->
+    <PartialPutsAllow>true</PartialPutsAllow  >
+  </PutFileSettings>
 
   <!-- 
     Settings for the ReplaceFileClient

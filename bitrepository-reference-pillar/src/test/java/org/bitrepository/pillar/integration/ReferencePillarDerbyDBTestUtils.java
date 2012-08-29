@@ -27,10 +27,10 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import org.bitrepository.service.database.DBConnector;
-import org.bitrepository.service.database.SqlScriptRunner;
+
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.service.database.SqlScriptRunner;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 
 /**
@@ -106,8 +106,6 @@ public class ReferencePillarDerbyDBTestUtils {
      * @param databaseSpecifics Specifies where to create the database.
      */
     private static void createDatabase(DatabaseSpecifics databaseSpecifics, String scriptName) {
-    DBConnector dbConnector = new DBConnector(databaseSpecifics);
-
         DatabaseSpecifics databaseCreationSpecifics = updateDatabaseSpecificsForDBCreation(databaseSpecifics);
         try {
             runScript(databaseCreationSpecifics, scriptName);

@@ -26,26 +26,19 @@ package org.bitrepository.client.eventhandler;
 
 
 /**
- * Indicates and operation has failed to complete.
+ * Indicates a operation has completed succesfully.
  */
-public class OperationFailedEvent extends AbstractOperationEvent {
+public class CompleteEvent extends AbstractOperationEvent {
     private final String[] componentResults;
 
     /**
-     * @param info See {@link #getInfo()}
-     * @param componentResults See {@link #getComponentResults()} ()}
-     */
-    public OperationFailedEvent(String info, String[] componentResults, String conversationID) {
-        super(OperationEventType.FAILED, info, conversationID);
+     * @param info See {@link #getComponentResults()}
+     * @param componentResults See {@link #getInfo()}
+     * @param conversationID See {@link #getConversationID()}
+    */
+    public CompleteEvent(String info, String[] componentResults, String conversationID) {
+        super(OperationEventType.COMPLETE, info, conversationID);
         this.componentResults = componentResults;
-    }
-
-    /**
-     * Plain info constructor.
-     * @param info Message describing the failure.
-     */
-    public OperationFailedEvent(String info, String conversationID) {
-        this(info, null, conversationID);
     }
 
     /** Returns the results for the individual components contributing to this operation */
@@ -55,7 +48,6 @@ public class OperationFailedEvent extends AbstractOperationEvent {
 
     @Override
     public String additionalInfo() {
-        if (componentResults != null) return componentResults.toString();
-        else return "";
+        return componentResults.toString();
     }
 }

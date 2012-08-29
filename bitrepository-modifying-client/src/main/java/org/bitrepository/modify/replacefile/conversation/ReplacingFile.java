@@ -51,10 +51,6 @@ public class ReplacingFile extends PerformingOperationState {
     /** Tracks who have responded */
     private final ContributorResponseStatus responseStatus;
 
-    /**
-     * Constructor.
-     * @param conversation The conversation in this state.
-     */
     public ReplacingFile(ReplaceFileConversationContext context, List<SelectedComponentInfo> contributors) {
         this.context = context;
         this.activeContributors = new HashMap<String,String>();
@@ -65,10 +61,10 @@ public class ReplacingFile extends PerformingOperationState {
     }
 
     @Override
-    protected void generateCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
+    protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
         if (msg instanceof ReplaceFileFinalResponse) {
             ReplaceFileFinalResponse response = (ReplaceFileFinalResponse) msg;
-            getContext().getMonitor().complete(new ReplaceFileCompletePillarEvent(
+            getContext().getMonitor().contributorComplete(new ReplaceFileCompletePillarEvent(
                     response.getChecksumDataForExistingFile(),
                     response.getChecksumDataForNewFile(),
                     response.getPillarID(),

@@ -83,6 +83,10 @@ public class MultipleComponentSelector implements ComponentSelector {
         return !selectedComponents.isEmpty();
     }
 
+    public boolean haveSelectedAllComponents() {
+        return selectedComponents.size() == responseStatus.getComponentsWhichShouldRespond().size();
+    }
+
     /**
      * Method for identifying the components, which needs to be identified for this operation to be finished.
      * @return An array of the IDs of the components which have not yet responded.

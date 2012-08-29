@@ -63,7 +63,7 @@ public class IdentifyPillarsForGetFileIDs extends IdentifyingState {
         msg.setFileIDs(context.getFileIDs());
         msg.setTo(context.getSettings().getCollectionDestination());
         context.getMessageSender().sendMessage(msg);
-        context.getMonitor().identifyPillarsRequestSent("Identifying contributers for get fileIDs");
+        context.getMonitor().identifyRequestSent("Identifying contributers for get fileIDs");
     }
 
     @Override

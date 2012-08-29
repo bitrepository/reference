@@ -45,7 +45,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
             try {
                 if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_COMPLETED)) {
                     getResponseStatus().responseReceived(msg.getFrom());
-                    generateCompleteEvent(msg);
+                    generateContributorCompleteEvent(msg);
                 } else if (MessageUtils.isIdentifyResponse(msg)) {
                     getContext().getMonitor().outOfSequenceMessage("Received identify response from " +
                             msg.getFrom() + " after identification was finished");
@@ -64,11 +64,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     @Override
     protected GeneralConversationState getNextState() throws UnableToFinishException {
         if (getResponseStatus().haveAllComponentsResponded()) {
-            if(operationSucceded) {
-                getContext().getMonitor().complete("Finished operation");
-            } else {
-                getContext().getMonitor().operationFailed("One or more components has failed");
-            }
+            getContext().getMonitor().complete();
             return new FinishedState(getContext());
         } else {
             return this;
@@ -92,7 +88,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
      * @param msg The final response to process into result event.
      * @throws UnexpectedResponseException Unable to generate a result event based on the supplied message.
      */
-    protected abstract void generateCompleteEvent(MessageResponse msg) throws UnexpectedResponseException;
+    protected abstract void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException;
 
     /**
      * @return The concrete response status implemented by the subclass.

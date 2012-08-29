@@ -75,10 +75,10 @@ public class GettingAuditTrails extends PerformingOperationState {
     }
 
     @Override
-    protected void generateCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
+    protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
         if (msg instanceof GetAuditTrailsFinalResponse) {
             GetAuditTrailsFinalResponse response = (GetAuditTrailsFinalResponse)msg;
-            getContext().getMonitor().complete(
+            getContext().getMonitor().contributorComplete(
                     new AuditTrailResult("Audit trails received from " + response.getFrom(),
                             response.getFrom(), response.getResultingAuditTrails()));
         } else {

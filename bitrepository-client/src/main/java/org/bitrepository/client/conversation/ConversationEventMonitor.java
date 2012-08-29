@@ -24,6 +24,8 @@
  */
 package org.bitrepository.client.conversation;
 
+import java.util.LinkedList;
+import java.util.List;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
@@ -47,6 +49,8 @@ public class ConversationEventMonitor {
     private final ConversationLogger log;
     private final String conversationID;
     private final EventHandler eventHandler;
+    private final List<ContributorEvent> contributorCompleteEvents = new LinkedList<ContributorEvent>();
+    private final List<ContributorFailedEvent> contributorFailedEvents = new LinkedList<ContributorFailedEvent>();
 
     /**
      * @param conversationID Used for adding conversation context information to the information distributed
@@ -62,55 +66,40 @@ public class ConversationEventMonitor {
      * Indicates a identify request has been sent to the contributors.
      * @param info Description
      */
-    public void startingConversation(String info) {
-        log.info(info);
-    }
-
-    /**
-     * Indicates a identify request has been sent to the contributors.
-     * @param info Description
-     */
-    public void identifyPillarsRequestSent(String info) {
+    public void identifyRequestSent(String info) {
         log.debug(info);
-        if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(IDENTIFY_REQUEST_SENT, info, conversationID));
-        }
-    }
-
-    /**
-     * Indicates a contributor has been identified and considered for selection.
-     * @param info Description
-     * @param contributorID The pillar identified
-     */
-    public void pillarIdentified(String info, String contributorID) {
-        log.debug(info);
-        if (eventHandler != null) {
-            eventHandler.handleEvent(new ContributorEvent(COMPONENT_IDENTIFIED, info, contributorID, conversationID));
-        }
+        notifyEventListerners(new DefaultEvent(IDENTIFY_REQUEST_SENT, info, conversationID));
     }
 
     /**
      * Indicates a contributor has been identified and considered for selection.
      * @param response The identify response.
      */
-    public void pillarIdentified(MessageResponse response) {
+    public void contributorIdentified(MessageResponse response) {
         String info = "Received positive identification response from " + response.getFrom() + ": " +
                 response.getResponseInfo().getResponseText();
         log.debug(info);
-        if (eventHandler != null) {
-            eventHandler.handleEvent(
-                    new ContributorEvent(COMPONENT_IDENTIFIED, info, response.getFrom(), conversationID));
-        }
+        notifyEventListerners(new ContributorEvent(COMPONENT_IDENTIFIED, info, response.getFrom(), conversationID));
     }
 
     /**
      * Indicates a identify request has timeout without all pillars responding.
      * @param info Description
      */
-    public void identifyPillarTimeout(String info) {
-        log.debug(info);
+    public void identifyContributorsTimeout(String info, List<String> unrespondingContributors) {
+        StringBuilder failureMessage = new StringBuilder(info);
+        if (!unrespondingContributors.isEmpty()) {
+            failureMessage.append("\nMissing contributors: " + unrespondingContributors);
+        }
+        if (!contributorFailedEvents.isEmpty()) {
+            failureMessage.append("\nFailing contributors: " + unrespondingContributors);
+            for (ContributorFailedEvent failedEvent:contributorFailedEvents) {
+                failureMessage.append(failedEvent.getContributorID() + "(" + failedEvent.getInfo() + "),");
+            }
+        }
+        log.debug(failureMessage.toString());
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent( IDENTIFY_TIMEOUT, info, conversationID));
+            eventHandler.handleEvent(new DefaultEvent( IDENTIFY_TIMEOUT, failureMessage.toString(), conversationID));
         }
     }
 
@@ -119,12 +108,9 @@ public class ConversationEventMonitor {
      * @param info Description
      * @param contributorID The pillar identified
      */
-    public void pillarSelected(String info, String contributorID) {
+    public void contributorSelected(String info, String contributorID) {
         log.debug(info);
-        if (eventHandler != null) {
-            eventHandler.handleEvent(
-                    new ContributorEvent(IDENTIFICATION_COMPLETE, info, contributorID, conversationID));
-        }
+        notifyEventListerners(new ContributorEvent(IDENTIFICATION_COMPLETE, info, contributorID, conversationID));
     }
 
     /**
@@ -134,10 +120,7 @@ public class ConversationEventMonitor {
      */
     public void requestSent(String info, String contributorID) {
         log.debug(info);
-        if (eventHandler != null) {
-            eventHandler.handleEvent(
-                    new ContributorEvent(REQUEST_SENT, contributorID, contributorID, conversationID));
-        }
+        notifyEventListerners(new ContributorEvent(REQUEST_SENT, contributorID, contributorID, conversationID));
     }
 
     /**
@@ -147,9 +130,7 @@ public class ConversationEventMonitor {
     public void progress(AbstractOperationEvent progressEvent) {
         progressEvent.setConversationID(conversationID);
         log.debug(progressEvent.getInfo());
-        if (eventHandler != null) {
-            eventHandler.handleEvent(progressEvent);
-        }
+        notifyEventListerners(progressEvent);
     }
 
     /**
@@ -158,10 +139,7 @@ public class ConversationEventMonitor {
      */
     public void progress(String progressInfo, String contributorID) {
         log.debug(progressInfo);
-        if (eventHandler != null) {
-            eventHandler.handleEvent(
-                    new ContributorEvent(PROGRESS, progressInfo, contributorID, conversationID));
-        }
+        notifyEventListerners(new ContributorEvent(PROGRESS, progressInfo, contributorID, conversationID));
     }
 
     /**
@@ -169,47 +147,65 @@ public class ConversationEventMonitor {
      * @param completeEvent Event containing any additional information regarding the completion. Might contain the
      * return value from the operation, in which case the event will be a <code>DefafaultEvent</code> subclass.
      */
-    public void pillarComplete(OperationEvent completeEvent) {
-        log.debug(completeEvent.getInfo());
-        if (eventHandler != null) {
-            eventHandler.handleEvent(completeEvent);
-        }
-    }
-
-    /**
-     * An operation has completed. Note that only one complete event should be sent for each operation, so if multiple
-     * pillars participate in the operation, this event should only be trigged after all the final response has been
-     * received.
-     * @param completeEvent Description of the context
-     */
-    public void complete(AbstractOperationEvent completeEvent) {
-        completeEvent.setConversationID(conversationID);
+    public void contributorComplete(ContributorEvent completeEvent) {
         log.info(completeEvent.getInfo());
-        if (eventHandler != null) {
-            eventHandler.handleEvent(completeEvent);
-        }
+        contributorCompleteEvents.add(completeEvent);
+        notifyEventListerners(completeEvent);
     }
 
     /**
-     * An operation has completed. Note that only one complete event should be sent for each operation, so if multiple
-     * pillars participate in the operation, this event should only be trigged after all the final response has been
-     * received.
-     * @param info Description of the context
+     * A pillar has failed to handle a request successfully.
+     * @param info Cause information
      */
-    public void complete(String info) {
-        log.info(info);
-        if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(
-                    COMPLETE, info, conversationID));
-        }
-    }
-
-    /**
-     * An invalid messages has been received
-     * @param info Description of the context
-     */
-    public void invalidMessage(String info) {
+    public void contributorFailed(String info, String contributor, ResponseCode responseCode) {
         log.warn(info);
+        ContributorFailedEvent failedEvent = new ContributorFailedEvent(info, contributor, responseCode, conversationID);
+        contributorCompleteEvents.add(failedEvent);
+        notifyEventListerners(failedEvent);
+    }
+
+    /**
+     * An operation has completed. Will generate a failed event, if any of the contributers have failed.
+     */
+    public void complete() {
+        if (contributorFailedEvents.isEmpty()) {
+            String message = "Completed successfully\n " + contributorCompleteEvents;
+            log.info(message);
+            notifyEventListerners(new DefaultEvent(COMPLETE, message, conversationID));
+        } else {
+            String message = "Failed operation. Cause:\n" + contributorFailedEvents;
+            log.warn(message);
+            notifyEventListerners(new DefaultEvent(FAILED, message, conversationID));
+        }
+    }
+
+    /**
+     * General failure to complete the operation.
+     * @param info Encapsulates the cause.
+     */
+    public void operationFailed(String info) {
+        log.warn(info);
+        OperationFailedEvent event = new OperationFailedEvent(info, conversationID);
+        notifyEventListerners(event);
+    }
+
+    /**
+     * General failure to complete the operation.
+     * @param exception Encapsulates the cause.
+     */
+    public void operationFailed(Exception exception) {
+        log.warn(exception.getMessage(), exception);
+        OperationFailedEvent event = new OperationFailedEvent(exception.getMessage(), conversationID);
+        notifyEventListerners(event);
+    }
+
+    /**
+     * General failure to complete the operation.
+     * @param event Encapsulates the cause.
+     */
+    public void operationFailed(OperationFailedEvent event) {
+        log.warn(event.getInfo());
+        notifyEventListerners(event);
     }
 
     /**
@@ -220,11 +216,7 @@ public class ConversationEventMonitor {
     public void invalidMessage(Message message, Exception e) {
         log.warn("Received invalid " + message.getClass().getSimpleName() + " from " + message.getFrom() +
                 "\nMessage: " + message, e);
-
-        if (eventHandler != null) {
-            eventHandler.handleEvent(
-                    new ContributorEvent(WARNING, e.getMessage(), message.getFrom(), conversationID));
-        }
+        notifyEventListerners((new ContributorEvent(WARNING, e.getMessage(), message.getFrom(), conversationID)));
     }
 
     /**
@@ -241,9 +233,7 @@ public class ConversationEventMonitor {
      */
     public void warning(String info) {
         log.warn(info);
-        if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(WARNING, info, conversationID));
-        }
+        notifyEventListerners(new DefaultEvent(WARNING, info, conversationID));
     }
 
     /**
@@ -256,10 +246,7 @@ public class ConversationEventMonitor {
             warning(info);
         }
         log.warn(info, e);
-        if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent(WARNING, info + ", " + e.getMessage(),
-                    conversationID));
-        }
+        notifyEventListerners(new DefaultEvent(WARNING, info + ", " + e.getMessage(), conversationID));
     }
 
     /**
@@ -277,51 +264,6 @@ public class ConversationEventMonitor {
      */
     public void debug(String info, Exception e) {
         log.debug(info, e);
-    }
-
-    /**
-     * A pillar has failed to handle a request successfully.
-     * @param info Cause information
-     */
-    public void contributorFailed(String info, String contributor, ResponseCode responseCode) {
-        log.warn(info);
-        if (eventHandler != null) {
-            eventHandler.handleEvent(new ContributorFailedEvent(info, contributor, responseCode,
-                    conversationID));
-        }
-    }
-
-    /**
-     * General failure to complete the operation.
-     * @param info Encapsulates the cause.
-     */
-    public void operationFailed(String info) {
-        OperationFailedEvent event = new OperationFailedEvent(info, conversationID);
-        log.warn(event.getInfo(), event.getException());
-        if (eventHandler != null) {
-            eventHandler.handleEvent(event);
-        }
-    }
-    /**
-     * General failure to complete the operation.
-     * @param exception Encapsulates the cause.
-     */
-    public void operationFailed(Exception exception) {
-        log.warn(exception.getMessage(), exception);
-        OperationFailedEvent event = new OperationFailedEvent(exception.getMessage(), conversationID);
-        if (eventHandler != null) {
-            eventHandler.handleEvent(event);
-        }
-    }
-    /**
-     * General failure to complete the operation.
-     * @param event Encapsulates the cause.
-     */
-    public void operationFailed(OperationFailedEvent event) {
-        log.warn(event.getInfo(), event.getException());
-        if (eventHandler != null) {
-            eventHandler.handleEvent(event);
-        }
     }
 
     /**
@@ -358,6 +300,12 @@ public class ConversationEventMonitor {
         /** Delegates to the normal logger warn */
         public void warn(String info) {
             logger.warn("Conversation(" + conversationID + " ) event:" +info);
+        }
+    }
+
+    private void notifyEventListerners(OperationEvent event) {
+        if (eventHandler != null) {
+            eventHandler.handleEvent(event);
         }
     }
 }

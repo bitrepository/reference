@@ -56,10 +56,10 @@ public class PuttingFile extends PerformingOperationState {
     }
 
     @Override
-    protected void generateCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
+    protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
         if (msg instanceof PutFileFinalResponse) {
             PutFileFinalResponse response = (PutFileFinalResponse) msg;
-            getContext().getMonitor().complete(
+            getContext().getMonitor().contributorComplete(
                     new PutFileCompletePillarEvent(response.getChecksumDataForNewFile(),
                             response.getPillarID(),
                             "Received put file result from " + response.getPillarID(),

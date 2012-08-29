@@ -51,7 +51,7 @@ public class IdentifyingContributorsForGetStatus extends IdentifyingState {
         initializeMessage(request);
         request.setTo(context.getSettings().getCollectionDestination());
         
-        context.getMonitor().identifyPillarsRequestSent("Identifying contributors for getting status");
+        context.getMonitor().identifyRequestSent("Identifying contributors for getting status");
         context.getMessageSender().sendMessage(request);
     }
     

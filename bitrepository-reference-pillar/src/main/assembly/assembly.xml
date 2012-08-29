@@ -64,7 +64,7 @@
             <outputDirectory>conf</outputDirectory>
             <fileMode>0740</fileMode>
             <directoryMode>0740</directoryMode>
-            <directory>../bitrepository-core/src/main/resources/audittrailContributorDb</directory>
+            <directory>../bitrepository-service/src/main/resources/audittrailContributorDb</directory>
         </fileSet>
         <fileSet>
             <outputDirectory>bin</outputDirectory>

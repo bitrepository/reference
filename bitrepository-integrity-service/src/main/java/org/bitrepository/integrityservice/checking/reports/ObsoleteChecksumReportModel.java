@@ -61,7 +61,7 @@ public class ObsoleteChecksumReportModel implements IntegrityReportModel {
         }
         
         StringBuilder res = new StringBuilder();
-        res.append("Files missing their checksum and at which pillars the checksum is missing: \n");
+        res.append("Files where the checksum is obsolete and at which pillars the checksum is missing: \n");
         for(ObsoleteChecksumData oc : obsoleteChecksum.values()) {
             res.append(oc.fileId + " : " + oc.pillarDates + "\n");
         }
