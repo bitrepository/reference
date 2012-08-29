@@ -104,7 +104,6 @@ public class CommandLineArgumentsHandler {
      * @param option The option to add to the command line.
      */
     public void addOption(Option option) {
-        ensureThatCmdHasBeenInitialised();
         options.addOption(option);
     }
     
