@@ -54,9 +54,4 @@ public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
         getChecksumsClientInstance.getChecksums(pillarIDs, fileIDs, checksumSpec, addressForResult, eventHandler, 
                 auditTrailInformation);        
     }
-    
-    @Override
-    public void shutdown() {
-        // Empty
-    }
 }

@@ -26,7 +26,7 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
-import org.bitrepository.pillar.integration.TestFileHelper;
+import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.testng.annotations.BeforeMethod;

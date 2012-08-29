@@ -51,11 +51,6 @@ public class ReplaceClientTestWrapper implements ReplaceFileClient {
     }
 
     @Override
-    public void shutdown() {
-        wrappedReplaceClient.shutdown();
-    }
-
-    @Override
     public void replaceFile(String fileId, String pillarId, ChecksumDataForFileTYPE checksumForDeleteAtPillar,
             ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile,
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile,

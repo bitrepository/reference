@@ -59,9 +59,4 @@ public class PutClientTestWrapper implements PutFileClient {
         wrappedPutClient.putFile(url, fileId, sizeOfFile, checksumForValidationAtPillar, checksumRequestsForValidation, 
                 eventHandler, auditTrailInformation);
     }
-    
-    @Override
-    public void shutdown() {
-        wrappedPutClient.shutdown();
-    }
 }

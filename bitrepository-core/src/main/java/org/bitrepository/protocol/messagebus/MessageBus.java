@@ -28,12 +28,7 @@ import javax.jms.JMSException;
 
 
 /**
- * The communication interface for the message bus in the bitrepository org.bitrepository.org.bitrepository.protocol.
- *
- * If an implementation does not support a method, it may throw {@link UnsupportedOperationException}
- *
- * TODO define a function for reconnecting to the message bus. Part of the
- * issue BITMAG-166
+ * The communication interface for the message bus.
  */
 public interface MessageBus extends MessageSender {
     /**

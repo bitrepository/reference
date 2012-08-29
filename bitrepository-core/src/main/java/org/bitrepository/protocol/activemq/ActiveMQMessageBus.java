@@ -27,7 +27,6 @@ package org.bitrepository.protocol.activemq;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
@@ -37,59 +36,15 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.util.ByteArrayInputStream;
-import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.bitrepositorymessages.Message;
-import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
-import org.bitrepository.protocol.InvalidMessageVersionException;
 import org.bitrepository.protocol.MessageVersionValidator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
-import org.bitrepository.protocol.messagebus.SpecificMessageListener;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.protocol.security.exception.CertificateUseException;
-import org.bitrepository.protocol.security.exception.MessageAuthenticationException;
-import org.bitrepository.protocol.security.exception.OperationAuthorizationException;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,14 +53,8 @@ import org.xml.sax.SAXException;
 /**
  * Contains the basic functionality for connection and communicating with the
  * coordination layer over JMS through active MQ.
- *
- * TODO add retries for whenever a JMS exception is thrown. Currently it is
- * very unstable to connection issues.
- *
- * TODO currently creates only topics.
  */
 public class ActiveMQMessageBus implements MessageBus {
-    /** The Log. */
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     /** The key for storing the message type in a string property in the message headers. */
@@ -157,7 +106,6 @@ public class ActiveMQMessageBus implements MessageBus {
         this.configuration = messageBusConfiguration;
         this.securityManager = securityManager;
         jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
-        // Retrieve factory for connection
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getURL());
 
         try {
@@ -387,40 +335,34 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     /**
-     * Adapter from Active MQ message listener to org.bitrepository.org.bitrepository.protocol message listener.
+     * Adapter from Active MQ message listener to message listener.
      *
-     * This adapts from general Active MQ messages to the org.bitrepository.org.bitrepository.protocol types.
+     * This adapts from general Active MQ messages to the types.
      */
     private class ActiveMQMessageListener implements javax.jms.MessageListener {
         /** The Log. */
         private Logger log = LoggerFactory.getLogger(getClass());
 
-        /** The org.bitrepository.org.bitrepository.protocol message listener that receives the messages. */
+        /** The message listener that receives the messages. */
         private final MessageListener messageListener;
 
         /**
-         * Initialise the adapter from ActiveMQ message listener to org.bitrepository.org.bitrepository.protocol
-         * message listener.
+         * Initialise the adapter from ActiveMQ message listener .
          *
-         * @param listener The org.bitrepository.org.bitrepository.protocol message listener that should receive the
-         *                 messages.
-         * Note this class should be replaced by the ActiveMQGeneralMessageListener class as soon as the
-         *                 SpecificMessageListener class is replace by the MessageListener.
+         * @param listener The message listener that should receive the messages.
          */
         public ActiveMQMessageListener(MessageListener listener) {
             this.messageListener = listener;
         }
 
         /**
-         * When receiving the message, call the appropriate method on the
-         * org.bitrepository.org.bitrepository.protocol message listener.
+         * When receiving the message, call the appropriate method on the message listener.
          *
          * This method acts as a fault barrier for all exceptions from message
          * reception. They are all logged as warnings, but otherwise ignored.
          *
          * @param jmsMessage The message received.
          */
-        @SuppressWarnings("deprecation")
         @Override
         public void onMessage(final javax.jms.Message jmsMessage) {
             String type = null;
@@ -441,104 +383,9 @@ public class ActiveMQMessageBus implements MessageBus {
                 securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature);
                 MessageVersionValidator.validateMessageVersion((Message) content);
                 log.debug("Received message: " + text);
-                if (!(messageListener instanceof SpecificMessageListener)) {
-                    messageListener.onMessage((Message) content);
-                } else {
-                    SpecificMessageListener listener = (SpecificMessageListener)messageListener;
-                    if(content.getClass().equals(AlarmMessage.class)){
-                        listener.onMessage((AlarmMessage) content);
-                    } else if (content.getClass().equals(DeleteFileFinalResponse.class)) {
-                        listener.onMessage((DeleteFileFinalResponse) content);
-                    } else if (content.getClass().equals(DeleteFileProgressResponse.class)) {
-                        listener.onMessage((DeleteFileProgressResponse) content);
-                    } else if (content.getClass().equals(DeleteFileRequest.class)) {
-                        listener.onMessage((DeleteFileRequest) content);
-                    } else if (content.getClass().equals(GetChecksumsFinalResponse.class)) {
-                        listener.onMessage((GetChecksumsFinalResponse) content);
-                    } else if (content.getClass().equals(GetChecksumsRequest.class)) {
-                        listener.onMessage((GetChecksumsRequest) content);
-                    } else if (content.getClass().equals(GetChecksumsProgressResponse.class)) {
-                        listener.onMessage((GetChecksumsProgressResponse) content);
-                    } else if (content.getClass().equals(GetFileFinalResponse.class)) {
-                        listener.onMessage((GetFileFinalResponse) content);
-                    } else if (content.getClass().equals(GetFileIDsFinalResponse.class)) {
-                        listener.onMessage((GetFileIDsFinalResponse) content);
-                    } else if (content.getClass().equals(GetFileIDsRequest.class)) {
-                        listener.onMessage((GetFileIDsRequest) content);
-                    } else if (content.getClass().equals(GetFileIDsProgressResponse.class)) {
-                        listener.onMessage((GetFileIDsProgressResponse) content);
-                    } else if (content.getClass().equals(GetFileRequest.class)) {
-                        listener.onMessage((GetFileRequest) content);
-                    } else if (content.getClass().equals(GetFileProgressResponse.class)) {
-                        listener.onMessage((GetFileProgressResponse) content);
-                    } else if (content.getClass().equals(GetStatusRequest.class)) {
-                        listener.onMessage((GetStatusRequest) content);
-                    } else if (content.getClass().equals(GetStatusProgressResponse.class)) {
-                        listener.onMessage((GetStatusProgressResponse) content);
-                    } else if (content.getClass().equals(GetStatusFinalResponse.class)) {
-                        listener.onMessage((GetStatusFinalResponse) content);
-                    } else if (content.getClass().equals(PutFileFinalResponse.class)) {
-                        listener.onMessage((PutFileFinalResponse) content);
-                    } else if (content.getClass().equals(PutFileRequest.class)) {
-                        listener.onMessage((PutFileRequest) content);
-                    } else if (content.getClass().equals(PutFileProgressResponse.class)) {
-                        listener.onMessage((PutFileProgressResponse) content);
-                    } else if (content.getClass().equals(ReplaceFileFinalResponse.class)) {
-                        listener.onMessage((ReplaceFileFinalResponse) content);
-                    } else if (content.getClass().equals(ReplaceFileRequest.class)) {
-                        listener.onMessage((ReplaceFileRequest) content);
-                    } else if (content.getClass().equals(ReplaceFileProgressResponse.class)) {
-                        listener.onMessage((ReplaceFileProgressResponse) content);
-                    } else if (content.getClass().equals(IdentifyContributorsForGetStatusRequest.class)) {
-                        listener.onMessage((IdentifyContributorsForGetStatusRequest) content);
-                    } else if (content.getClass().equals(IdentifyContributorsForGetStatusResponse.class)) {
-                        listener.onMessage((IdentifyContributorsForGetStatusResponse) content);
-                    } else if (content.getClass().equals(IdentifyContributorsForGetAuditTrailsRequest.class)) {
-                        listener.onMessage((IdentifyContributorsForGetAuditTrailsRequest) content);
-                    } else if (content.getClass().equals(IdentifyContributorsForGetAuditTrailsResponse.class)) {
-                        listener.onMessage((IdentifyContributorsForGetAuditTrailsResponse) content);
-                    } else if (content.getClass().equals(IdentifyPillarsForDeleteFileRequest.class)) {
-                        listener.onMessage((IdentifyPillarsForDeleteFileRequest) content);
-                    } else if (content.getClass().equals(IdentifyPillarsForDeleteFileResponse.class)) {
-                        listener.onMessage((IdentifyPillarsForDeleteFileResponse) content);
-                    } else if (content.getClass().equals(IdentifyPillarsForGetChecksumsResponse.class)) {
-                        listener.onMessage((IdentifyPillarsForGetChecksumsResponse) content);
-                    } else if (content.getClass().equals(IdentifyPillarsForGetChecksumsRequest.class)) {
-                        listener.onMessage((IdentifyPillarsForGetChecksumsRequest) content);
-                    } else if (content.getClass().equals(IdentifyPillarsForGetFileIDsResponse.class)) {
-                        listener.onMessage((IdentifyPillarsForGetFileIDsResponse) content);
-                    } else if (content.getClass().equals(IdentifyPillarsForGetFileIDsRequest.class)) {
-                        listener.onMessage((IdentifyPillarsForGetFileIDsRequest) content);
-                    } else if (content.getClass().equals(IdentifyPillarsForGetFileResponse.class)) {
-                        listener.onMessage((IdentifyPillarsForGetFileResponse) content);
-                    } else if (content.getClass().equals(IdentifyPillarsForGetFileRequest.class)) {
-                        listener.onMessage((IdentifyPillarsForGetFileRequest) content);
-                    } else if (content.getClass().equals(IdentifyPillarsForPutFileResponse.class)) {
-                        listener.onMessage((IdentifyPillarsForPutFileResponse) content);
-                    } else if (content.getClass().equals(IdentifyPillarsForPutFileRequest.class)) {
-                        listener.onMessage((IdentifyPillarsForPutFileRequest) content);
-                    } else if (content.getClass().equals(IdentifyPillarsForReplaceFileResponse.class)) {
-                        listener.onMessage((IdentifyPillarsForReplaceFileResponse) content);
-                    } else if (content.getClass().equals(IdentifyPillarsForReplaceFileRequest.class)) {
-                        listener.onMessage((IdentifyPillarsForReplaceFileRequest) content);
-                    } else if (content.getClass().equals(IdentifyContributorsForGetStatusResponse.class)) {
-                        listener.onMessage((IdentifyContributorsForGetStatusResponse) content);
-                    } else if (content.getClass().equals(IdentifyContributorsForGetStatusRequest.class)) {
-                        listener.onMessage((IdentifyContributorsForGetStatusRequest) content);
-                    } else if (content instanceof Message) {
-                        listener.onMessage((Message) content);
-                    }
-                }
+                messageListener.onMessage((Message) content);
             } catch (SAXException e) {
                 log.error("Error validating message " + jmsMessage, e);
-            } catch (MessageAuthenticationException e) {
-                log.error(e.getMessage(), e);
-            } catch (OperationAuthorizationException e) {
-                log.error(e.getMessage(), e);
-            } catch (CertificateUseException e) {
-                log.error(e.getMessage(), e);
-            } catch (InvalidMessageVersionException e) {
-            	log.error(e.getMessage(), e);
             } catch (Exception e) {
                 log.error("Error handling message. Received type was '" + type + "'.\n{}", text, e);
             }

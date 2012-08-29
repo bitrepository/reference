@@ -106,8 +106,6 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
             return callsForGetFileIDs;
         }
         @Override
-        public void shutdown() {}
-        @Override
         public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
                 EventHandler eventHandler, String auditTrailInformation) {
             callsForGetFileIDs++;
@@ -124,9 +122,6 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
                 URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
             callsForGetChecksums++;
         }
-
-        @Override
-        public void shutdown() { }
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
@@ -150,8 +145,6 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
     }
 
     private class DyingGetChecksumClient implements GetChecksumsClient {
-        @Override
-        public void shutdown() { }
         @Override
         public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec,
                 URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
@@ -178,8 +171,6 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
     }
 
     private class DyingGetFileIDsClient implements GetFileIDsClient {
-        @Override
-        public void shutdown() { }
         @Override
         public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
                 EventHandler eventHandler, String auditTrailInformation) {

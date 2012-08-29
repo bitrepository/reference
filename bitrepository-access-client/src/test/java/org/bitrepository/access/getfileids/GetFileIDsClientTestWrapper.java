@@ -32,7 +32,7 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.jaccept.TestEventManager;
 
 /**
- * Wraps the <code>GetFileIDsClient</code> adding test event logging and functionality for handling blocking calls.
+ * Wraps the <code>GetFileIDsClient</code> adding test event logging and functionality.
  */
 public class GetFileIDsClientTestWrapper implements GetFileIDsClient {
     /** The actual GetFileIDsClient to perform the operations.*/
@@ -56,10 +56,5 @@ public class GetFileIDsClientTestWrapper implements GetFileIDsClient {
         eventManager.addStimuli("Calling getFileIDs(" + pillarIDs + ", " + fileIDs + ", " + addressForResult + ", "
                 + eventHandler + ", " + auditTrailInformation + ")");
         client.getFileIDs(pillarIDs, fileIDs, addressForResult, eventHandler, auditTrailInformation);
-    }
-    
-    @Override
-    public void shutdown() {
-        // Empty
     }
 }

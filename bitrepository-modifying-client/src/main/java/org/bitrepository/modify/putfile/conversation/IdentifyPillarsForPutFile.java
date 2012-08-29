@@ -61,8 +61,9 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
                     break;
                 case DUPLICATE_FILE_FAILURE:
                     if(response.isSetChecksumDataForExistingFile()) {
-                        if(Base16Utils.decodeBase16(response.getChecksumDataForExistingFile().getChecksumValue()).equals(
-                                Base16Utils.decodeBase16(context.getChecksumForValidationAtPillar().getChecksumValue()))) {
+                        if(context.getChecksumForValidationAtPillar() != null &&
+                           Base16Utils.decodeBase16(response.getChecksumDataForExistingFile().getChecksumValue()).equals(
+                           Base16Utils.decodeBase16(context.getChecksumForValidationAtPillar().getChecksumValue()))) {
                             getContext().getMonitor().contributorComplete(
                                     new PutFileCompletePillarEvent(response.getChecksumDataForExistingFile(),
                                             response.getPillarID(),
