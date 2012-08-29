@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.pillar.cache.ChecksumEntry;
 
 import static org.bitrepository.pillar.cache.database.DatabaseConstants.CHECKSUM_TABLE;
@@ -49,6 +50,7 @@ public class ChecksumExtractor {
      * @param connector The connector for the database.
      */
     public ChecksumExtractor(DBConnector connector) {
+        ArgumentValidator.checkNotNull(connector, "DBConnector connector");
         this.connector = connector;
     }
     
@@ -58,6 +60,8 @@ public class ChecksumExtractor {
      * @return The date for the given file.
      */
     public Date extractDateForFile(String fileId) {
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+        
         String sql = "SELECT " + CS_DATE + " FROM " + CHECKSUM_TABLE + " WHERE " + CS_FILE_ID + " = ?";
         return DatabaseUtils.selectDateValue(connector, sql, fileId);
     }
@@ -68,6 +72,8 @@ public class ChecksumExtractor {
      * @return The checksum for the given file.
      */
     public String extractChecksumForFile(String fileId) {
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+        
         String sql = "SELECT " + CS_CHECKSUM + " FROM " + CHECKSUM_TABLE + " WHERE " + CS_FILE_ID + " = ?";
         return DatabaseUtils.selectStringValue(connector, sql, fileId);
     }
@@ -78,6 +84,8 @@ public class ChecksumExtractor {
      * @return Whether the given file exists.
      */
     public boolean hasFile(String fileId) {
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+
         String sql = "SELECT COUNT(*) FROM " + CHECKSUM_TABLE + " WHERE " + CS_FILE_ID + " = ?";
         return DatabaseUtils.selectIntValue(connector, sql, fileId) != 0;
     }
@@ -97,6 +105,8 @@ public class ChecksumExtractor {
      * @return The checksum entry for the file.
      */
     public ChecksumEntry extractSingleEntry(String fileId) {
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+
         String sql = "SELECT " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE 
                 + " WHERE " + CS_FILE_ID + " = ?";
         try {
@@ -147,8 +157,7 @@ public class ChecksumExtractor {
                 }
                 return res;
             } finally {
-
-                if(res != null) {
+                if(resultSet != null) {
                     resultSet.close();
                 }
                 if(ps != null) {
