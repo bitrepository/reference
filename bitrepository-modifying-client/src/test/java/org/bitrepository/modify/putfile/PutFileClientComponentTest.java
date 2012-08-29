@@ -39,6 +39,8 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.common.utils.Base16Utils;
+import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -354,19 +356,15 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     }
 
     @Test(groups={"regressiontest"})
-    public void putClientPillarIdentificationFailed() throws Exception {
-        addDescription("Tests the handling of a identification failure for the PutClient. ");
-        addStep("Initialise the number of pillars to one", "Should be OK.");
-
-        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+    public void fileExistsOnPillarNoChecksum() throws Exception {
+        addDescription("Tests that PutClient handles the presence of a file correctly, when the pillar doesn't return a " +
+                "checksum in the identification response. ");
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
 
-        addStep("Ensure that the test-file is placed on the HTTP server.", "Should be removed an reuploaded.");
-
-        addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.",
-                "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
+        addStep("Call putFile.",
+                "A IdentifyPillarsForGetFileRequest will be sent to the pillar and a " +
+                        "IDENTIFY_REQUEST_SENT should be generated.");
         putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, fileSize,
                 null, null, testEventHandler, "TEST-AUDIT-TRAIL");
 
@@ -374,12 +372,12 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
-        addStep("Send bad identification response for the pillar.", "The client should generate the following events:'"
-                + OperationEventType.COMPONENT_FAILED + "', '" + OperationEventType.IDENTIFICATION_COMPLETE + "', '"
-                + OperationEventType.WARNING + "', '" + OperationEventType.COMPLETE + "'");
-        IdentifyPillarsForPutFileResponse identifyResponse = messageFactory
-                .createIdentifyPillarsForPutFileResponse(
-                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+        addStep("Send a DUPLICATE_FILE_FAILURE response without a checksum.",
+                "The client should generate the following events:'"
+                + OperationEventType.COMPONENT_FAILED + "', '"
+                + OperationEventType.FAILED + "'");
+        IdentifyPillarsForPutFileResponse identifyResponse = messageFactory.createIdentifyPillarsForPutFileResponse(
+                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         ResponseInfo ri = new ResponseInfo();
         ri.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
         ri.setResponseText("Testing the handling of 'DUPLICATE FILE' identification.");
@@ -390,8 +388,44 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
     }
 
+    //@Test(groups={"regressiontest"})
+    public void fileExistsOnPillarDifferentChecksum() throws Exception {
+        addDescription("Tests that PutClient handles the presence of a file correctly, when the pillar " +
+                "returns a checksum different from the file being put. ");
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        PutFileClient putClient = createPutFileClient();
+
+        addStep("Call putFile.",
+                "A IdentifyPillarsForGetFileRequest will be sent to the pillar and a " +
+                        "IDENTIFY_REQUEST_SENT should be generated.");
+        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, fileSize,
+                null, null, testEventHandler, "TEST-AUDIT-TRAIL");
+
+        IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
+        receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+
+        addStep("Send a DUPLICATE_FILE_FAILURE response with a random checksum.",
+                "The client should generate the following events:'"
+                        + OperationEventType.COMPONENT_FAILED + "', '"
+                        + OperationEventType.FAILED + "'");
+        IdentifyPillarsForPutFileResponse identifyResponse = messageFactory.createIdentifyPillarsForPutFileResponse(
+                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+        ResponseInfo ri = new ResponseInfo();
+        ri.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
+        ri.setResponseText("Testing the handling of 'DUPLICATE FILE' identification.");
+        identifyResponse.setResponseInfo(ri);
+        ChecksumDataForFileTYPE csData = TestFileHelper.getDefaultFileChecksum();
+        csData.setChecksumValue(Base16Utils.encodeBase16("aa"));
+        identifyResponse.setChecksumDataForExistingFile(csData);
+        messageBus.sendMessage(identifyResponse);
+
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
+    }
+
     /**
-     * Creates a new test PutFileClient based on the supplied componentSettings.
+     * Creates a new test PutFileClient based on the componentSettings.
      *
      * Note that the normal way of creating client through the module factory would reuse components with settings from
      * previous tests.

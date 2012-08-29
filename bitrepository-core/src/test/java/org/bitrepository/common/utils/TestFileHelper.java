@@ -19,26 +19,24 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.integration;
+package org.bitrepository.common.utils;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Date;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.common.utils.Base16Utils;
-import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 public class TestFileHelper {
     public static final String DEFAULT_FILE_ID = ClientTestMessageFactory.FILE_ID_DEFAULT;
-    public static final String TEST_RESOURCES_PATH = "src/test/resources/";
+    public static final String TEST_RESOURCES_PATH = "src/test/resources/test-files/";
     private static ChecksumDataForFileTYPE DEFAULT_FILE_CHECKSUM;
 
     private TestFileHelper() {}
 
-    public static File getDefaultFile() {
+    public static InputStream getDefaultFile() {
         return getFile(DEFAULT_FILE_ID);
     }
 
@@ -50,12 +48,12 @@ public class TestFileHelper {
             checksumSpecTYPE.setChecksumType(ChecksumType.MD5);
             DEFAULT_FILE_CHECKSUM.setChecksumSpec(checksumSpecTYPE);
             DEFAULT_FILE_CHECKSUM.setChecksumValue(Base16Utils.encodeBase16(
-                    ChecksumUtils.generateChecksum(getDefaultFile(), ChecksumType.MD5)));
+                    ChecksumUtils.generateChecksum(getDefaultFile(), checksumSpecTYPE)));
         }
         return DEFAULT_FILE_CHECKSUM;
     }
 
-    public static String getFileName(File file) {
+    public static String createUniqueFilename(File file) {
         return DEFAULT_FILE_ID + new Date().getTime();
     }
 
@@ -63,10 +61,11 @@ public class TestFileHelper {
         return file.length();
     }
 
-    public static File getFile(String name) {
-        File file = new File(TEST_RESOURCES_PATH, name);
-        assert(file.isFile());
-        return file;
+    public static InputStream getFile(String name) {
+        String fullName = TEST_RESOURCES_PATH+name;
+        InputStream fileStream = TestFileHelper.class.getClassLoader().getResourceAsStream(fullName);
+        assert (fileStream != null) : "Unable to find " + fullName + " in classpath";
+        return fileStream;
     }
 
 
