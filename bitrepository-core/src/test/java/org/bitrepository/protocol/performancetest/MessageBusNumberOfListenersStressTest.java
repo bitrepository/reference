@@ -29,14 +29,14 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.protocol.message.ExampleMessageFactory;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
-import org.bitrepository.protocol.messagebus.AbstractMessageListener;
+import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
@@ -273,7 +273,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
      * a message it received.
      * Otherwise counts the amount of received messages.
      */
-    private class NotificationMessageListener extends AbstractMessageListener {
+    private class NotificationMessageListener implements MessageListener {
         /** The message bus.*/
         private final MessageBus bus;
         /** The amount of messages received.*/
@@ -281,7 +281,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
 
         /**
          * Constructor.
-         * @param confs The configurations for declaring the message bus.
+         * @param conf The configurations for declaring the message bus.
          */
         public NotificationMessageListener(MessageBusConfiguration conf, SecurityManager securityManager) {
             this.bus = new ActiveMQMessageBus(conf, securityManager);
@@ -306,7 +306,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         }
 
         @Override
-        public void onMessage(AlarmMessage message) {
+        public void onMessage(Message message) {
             count++;
             int receivedId = Integer.parseInt(message.getCorrelationID());
             handleMessageDistribution(receivedId);

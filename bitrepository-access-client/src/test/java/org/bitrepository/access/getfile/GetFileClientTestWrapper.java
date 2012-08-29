@@ -55,9 +55,4 @@ public class GetFileClientTestWrapper implements GetFileClient {
                 fileId + ", " + uploadUrl + ", " + pillarId + ")");
         createGetFileClient.getFileFromSpecificPillar(fileId, filePart, uploadUrl, pillarId, eventHandler);
     }
-
-    @Override
-    public void shutdown() {
-        // Empty
-    }
 }

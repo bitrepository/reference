@@ -21,6 +21,7 @@
  */
 package org.bitrepository;
 
+import javax.jms.JMSException;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.GetFileClient;
@@ -35,6 +36,7 @@ import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.modify.replacefile.ReplaceFileClient;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.collectionsettings.CollectionSettings;
 import org.bitrepository.utils.HexUtils;
@@ -91,17 +93,16 @@ public class BasicClient {
                 this.securityManager, clientID);
         replaceFileClient = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings, 
                 this.securityManager, clientID);
-        log.debug("---- Basic client instanciated ----");
+        log.debug("---- Basic client instantiated ----");
 
     }
 
     public void shutdown() {
-        putClient.shutdown();
-        getClient.shutdown();
-        getChecksumClient.shutdown();
-        getFileIDsClient.shutdown();
-        deleteFileClient.shutdown();
-        replaceFileClient.shutdown();
+        try {
+            MessageBusManager.getMessageBus(settings.getCollectionID()).close();
+        } catch (JMSException e) {
+            log.warn("Failed to shutdown message bus cleanly, " + e.getMessage());
+        }
     }
 
     public String putFile(String fileID, long fileSize, URL url, String putChecksum, String putChecksumType,

@@ -26,10 +26,7 @@ import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 
 public class MockAuditClient implements AuditTrailClient {
-    
-    @Override
-    public void shutdown() {}
-    
+
     private EventHandler latestEventHandler = null;
     public EventHandler getLatestEventHandler() {
         return latestEventHandler;

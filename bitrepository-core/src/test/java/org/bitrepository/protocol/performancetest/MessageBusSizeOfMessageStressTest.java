@@ -25,17 +25,17 @@
 package org.bitrepository.protocol.performancetest;
 
 import java.util.Date;
-
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
-import org.bitrepository.protocol.messagebus.AbstractMessageListener;
+import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
@@ -188,7 +188,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
      * It does not reply, it send to the same destination, thus receiving it again.
      * It keeps track of the amount of messages received.
      */
-    private class ResendMessageListener extends AbstractMessageListener {
+    private class ResendMessageListener implements MessageListener {
         /** The message bus.*/
         private final MessageBus bus;
         /** The mocked SecurityManager */
@@ -232,7 +232,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
         }
 
         @Override
-        public void onMessage(AlarmMessage message) {
+        public void onMessage(Message message) {
             count++;
             bus.sendMessage(message);
         }

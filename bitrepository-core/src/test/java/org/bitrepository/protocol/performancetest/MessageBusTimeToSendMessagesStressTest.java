@@ -25,14 +25,14 @@
 package org.bitrepository.protocol.performancetest;
 
 import java.util.Date;
-
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.protocol.message.ExampleMessageFactory;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
-import org.bitrepository.protocol.messagebus.AbstractMessageListener;
+import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
@@ -213,7 +213,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
      * It does not reply, it send to the same destination, thus receiving it again.
      * It keeps track of the amount of messages received.
      */
-    private class CountMessagesListener extends AbstractMessageListener {
+    private class CountMessagesListener implements MessageListener {
         /** The message bus.*/
         private final MessageBus bus;
         /** The amount of messages received.*/
@@ -225,7 +225,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
 
         /**
          * Constructor.
-         * @param confs The configurations for declaring the messagebus.
+         * @param conf The configurations for declaring the messagebus.
          */
         public CountMessagesListener(MessageBusConfiguration conf, SecurityManager securityManager) {
             this.bus = new ActiveMQMessageBus(conf, securityManager);
@@ -250,7 +250,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         }
 
         @Override
-        public void onMessage(AlarmMessage message) {
+        public void onMessage(Message message) {
             count++;
             if(count >= NUMBER_OF_MESSAGES) {
                 stopSending = new Date();

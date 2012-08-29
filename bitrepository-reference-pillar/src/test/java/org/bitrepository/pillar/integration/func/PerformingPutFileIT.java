@@ -23,7 +23,7 @@ package org.bitrepository.pillar.integration.func;
 
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.pillar.integration.TestFileHelper;
+import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;

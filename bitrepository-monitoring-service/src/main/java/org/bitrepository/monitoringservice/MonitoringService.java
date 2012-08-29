@@ -21,6 +21,7 @@
  */
 package org.bitrepository.monitoringservice;
 
+import javax.jms.JMSException;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.common.settings.Settings;
@@ -31,17 +32,20 @@ import org.bitrepository.monitoringservice.status.ComponentStatus;
 import org.bitrepository.monitoringservice.status.ComponentStatusStore;
 import org.bitrepository.monitoringservice.status.StatusStore;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.contributor.ContributorContext;
 
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The monitoring service.
  */
 public class MonitoringService implements LifeCycledService {
-    
+    private final Logger log = LoggerFactory.getLogger(getClass());
     /** The settings. */
     private final Settings settings;
     /** The store of collected statuses */
@@ -97,6 +101,10 @@ public class MonitoringService implements LifeCycledService {
     @Override
     public void shutdown() {
         collector.stop();
-        getStatusClient.shutdown();
+        try {
+            MessageBusManager.getMessageBus(settings.getCollectionID()).close();
+        } catch (JMSException e) {
+            log.warn("Unable to close message bus cleanly " + e.getMessage());
+        }
     }
 }

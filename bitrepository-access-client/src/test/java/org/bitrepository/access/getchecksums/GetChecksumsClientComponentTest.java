@@ -67,7 +67,12 @@ import org.testng.annotations.Test;
 public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
     private TestGetChecksumsMessageFactory testMessageFactory;
     
-    private ChecksumSpecTYPE DEFAULT_CHECKSUM_SPECS;
+    private static final ChecksumSpecTYPE DEFAULT_CHECKSUM_SPECS;
+    static {
+        DEFAULT_CHECKSUM_SPECS = new ChecksumSpecTYPE();
+        DEFAULT_CHECKSUM_SPECS.setChecksumSalt(null);
+        DEFAULT_CHECKSUM_SPECS.setChecksumType(ChecksumType.MD5);
+    }
     
     @BeforeMethod (alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
@@ -75,9 +80,6 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
             testMessageFactory = new TestGetChecksumsMessageFactory(
                     componentSettings.getCollectionID());
         }
-        DEFAULT_CHECKSUM_SPECS = new ChecksumSpecTYPE();
-        DEFAULT_CHECKSUM_SPECS.setChecksumSalt(null);
-        DEFAULT_CHECKSUM_SPECS.setChecksumType(ChecksumType.MD5);
     }
 
     @Test(groups = {"regressiontest"})

@@ -42,9 +42,4 @@ public class AuditTrailClientTestWrapper implements AuditTrailClient {
                 "Calling getAuditTrails(" + componentQueries + ", " + fileID + ", " + urlForResult + ")");
         auditTrailClient.getAuditTrails(componentQueries, fileID, urlForResult, eventHandler, auditTrailInformation);
     }
-
-    @Override
-    public void shutdown() {
-        // Nothing to do
-    }
 }

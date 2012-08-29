@@ -25,7 +25,7 @@ import junit.framework.Assert;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.pillar.integration.TestFileHelper;
+import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;

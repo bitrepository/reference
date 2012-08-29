@@ -38,9 +38,4 @@ public class GetStatusClientTestWrapper implements GetStatusClient {
         testEventManager.addStimuli("Calling getAuditTrails()");
         getStatusClient.getStatus(eventHandler);
     }
-
-    @Override
-    public void shutdown() {
-        // Nothing to do
-    }
 }

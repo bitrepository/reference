@@ -25,14 +25,14 @@
 package org.bitrepository.client.conversation.mediator;
 
 import org.bitrepository.client.conversation.Conversation;
-import org.bitrepository.protocol.messagebus.SpecificMessageListener;
+import org.bitrepository.protocol.messagebus.MessageListener;
 
 /**
  * Keeps track of conversations.
  *
  * Must listen delegate messages to the correct conversations.
  */
-public interface ConversationMediator extends SpecificMessageListener {
+public interface ConversationMediator extends MessageListener {
     /**
      * Will begin listning for messages on the message bus.
      */

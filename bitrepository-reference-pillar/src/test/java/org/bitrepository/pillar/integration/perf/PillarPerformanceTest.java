@@ -29,7 +29,6 @@ import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.pillar.integration.perf.metrics.ConsoleMetricAppender;
 import org.bitrepository.pillar.integration.perf.metrics.MetricAppender;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
-import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 
 public class PillarPerformanceTest extends PillarIntegrationTest {
@@ -43,13 +42,6 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
         super.initializeSuite();
         defineMetricAppenders();
         initializeCollectionHelper();
-    }
-
-    @AfterSuite
-    @Override
-    public void shutdownSuite() {
-        collectionHelper.shutdown();
-        super.shutdownSuite();
     }
 
     private void defineMetricAppenders() {

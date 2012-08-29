@@ -26,18 +26,17 @@ package org.bitrepository.alarm.handling;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.Message;
-import org.bitrepository.protocol.messagebus.AbstractMessageListener;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Receives and distributes the messages to the handler.
  */
-public class AlarmMediator extends AbstractMessageListener {
+public class AlarmMediator implements MessageListener {
     /** The logger.*/
     private Logger log = LoggerFactory.getLogger(this.getClass());
     /** The handler. Where the received messages should be handled.*/
@@ -50,7 +49,7 @@ public class AlarmMediator extends AbstractMessageListener {
     /**
      * Constructor.
      * Sets the parameters of this mediator, and adds itself as a listener to the given destination.
-     * @param messagebus The messagebus for communication.
+     * @param messageBus The messagebus for communication.
      * @param listenerDestination The destination where the handler should be listening for alarms.
      */
     public AlarmMediator(MessageBus messageBus, String listenerDestination) {
