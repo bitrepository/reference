@@ -31,7 +31,7 @@ import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 public class TestFileHelper {
     public static final String DEFAULT_FILE_ID = ClientTestMessageFactory.FILE_ID_DEFAULT;
-    public static final String TEST_RESOURCES_PATH = "src/test/resources/test-files/";
+    public static final String TEST_RESOURCES_PATH = "test-files/";
     private static ChecksumDataForFileTYPE DEFAULT_FILE_CHECKSUM;
 
     private TestFileHelper() {}
@@ -41,15 +41,13 @@ public class TestFileHelper {
     }
 
     public static ChecksumDataForFileTYPE getDefaultFileChecksum() {
-        if(DEFAULT_FILE_CHECKSUM == null) {
-            DEFAULT_FILE_CHECKSUM = new ChecksumDataForFileTYPE();
-            DEFAULT_FILE_CHECKSUM.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
-            ChecksumSpecTYPE checksumSpecTYPE = new ChecksumSpecTYPE();
-            checksumSpecTYPE.setChecksumType(ChecksumType.MD5);
-            DEFAULT_FILE_CHECKSUM.setChecksumSpec(checksumSpecTYPE);
-            DEFAULT_FILE_CHECKSUM.setChecksumValue(Base16Utils.encodeBase16(
-                    ChecksumUtils.generateChecksum(getDefaultFile(), checksumSpecTYPE)));
-        }
+        DEFAULT_FILE_CHECKSUM = new ChecksumDataForFileTYPE();
+        DEFAULT_FILE_CHECKSUM.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+        ChecksumSpecTYPE checksumSpecTYPE = new ChecksumSpecTYPE();
+        checksumSpecTYPE.setChecksumType(ChecksumType.MD5);
+        DEFAULT_FILE_CHECKSUM.setChecksumSpec(checksumSpecTYPE);
+        DEFAULT_FILE_CHECKSUM.setChecksumValue(Base16Utils.encodeBase16(
+                ChecksumUtils.generateChecksum(getDefaultFile(), checksumSpecTYPE)));
         return DEFAULT_FILE_CHECKSUM;
     }
 
