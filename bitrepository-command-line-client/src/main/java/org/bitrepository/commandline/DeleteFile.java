@@ -119,14 +119,13 @@ public class DeleteFile {
      */
     public void performOperation() {
         System.out.println("Performing the DeleteFile operation.");
-        OperationEvent e = deleteTheFile();
-        if(e.getType() == OperationEventType.COMPLETE) {
-            System.out.println("DeleteFile operation successfull for the file '" 
-                    + cmdHandler.getOptionValue(Constants.FILE_ARG) + "': " + e);
+        OperationEvent finalEvent = deleteTheFile();
+        System.out.println("Results of the DeleteFile operation for the file '"
+                + cmdHandler.getOptionValue(Constants.FILE_ARG) + "'" 
+                + ": " + finalEvent);
+        if(finalEvent.getType() == OperationEventType.COMPLETE) {
             System.exit(0);
         } else {
-            System.err.println("DeleteFile failed for the file '" + cmdHandler.getOptionValue(Constants.FILE_ARG) 
-                    + "':" + e);
             System.exit(-1);
         }
     }

@@ -21,7 +21,6 @@
  */
 package org.bitrepository.commandline.utils;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.commons.cli.CommandLine;
@@ -68,14 +67,10 @@ public class CommandLineArgumentsHandler {
     /**
      * Parses the commandline arguments.
      * @param args The command line arguments to pass.
+     * @throws ParseException If the arguments does not parse. E.g. arguments missing or too many arguments.
      */
-    public void parseArguments(String ... args) {
-        try {
-            cmd = parser.parse(options, args);
-        } catch (ParseException e) {
-            String errMsg = "Cannot parse the argumets: " + Arrays.asList(args);
-            throw new IllegalStateException(errMsg, e);
-        }
+    public void parseArguments(String ... args) throws ParseException {
+        cmd = parser.parse(options, args);
     }
     
     /**

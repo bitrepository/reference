@@ -25,6 +25,7 @@ import java.io.File;
 import java.net.URL;
 
 import org.apache.commons.cli.Option;
+import org.apache.commons.cli.ParseException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -76,16 +77,17 @@ public class PutFile {
         try {
             createOptionsForCmdArgumentHandler();
             cmdHandler.parseArguments(args);
-            
-            settings = cmdHandler.loadSettings(COMPONENT_ID);
-            securityManager = cmdHandler.loadSecurityManager(settings);
-            
-            System.out.println("Instantiating the PutFileClient");
-            client = ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager, COMPONENT_ID);
-        } catch (Exception e) {
+        } catch (ParseException e) {
             System.err.println(cmdHandler.listArguments());
-            throw new IllegalArgumentException(e);
+            e.printStackTrace();
+            System.exit(1);
         }
+        
+        settings = cmdHandler.loadSettings(COMPONENT_ID);
+        securityManager = cmdHandler.loadSecurityManager(settings);
+        
+        System.out.println("Instantiating the PutFileClient");
+        client = ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager, COMPONENT_ID);
     }
     
     /**
@@ -93,14 +95,16 @@ public class PutFile {
      */
     public void performOperation() {
         System.out.println("Performing the PutFile operation.");
-        OperationEvent e = putTheFile();
-        if(e.getType() == OperationEventType.COMPLETE) {
-            System.out.println("PutFile operation successfull for the file '" 
-                    + cmdHandler.getOptionValue(Constants.FILE_ARG) + "': " + e);
+        OperationEvent finalEvent = putTheFile();
+        System.out.println("Results of the PutFile operation for the file '"
+                + cmdHandler.getOptionValue(Constants.FILE_ARG) + "'" 
+                + (cmdHandler.hasOption(Constants.FILE_ID_ARG) ? 
+                        " (with the id '" + cmdHandler.getOptionValue(Constants.FILE_ID_ARG) + "')" 
+                        : "") 
+                + ": " + finalEvent);
+        if(finalEvent.getType() == OperationEventType.COMPLETE) {
             System.exit(0);
         } else {
-            System.err.println("PutFile failed for the file '" + cmdHandler.getOptionValue(Constants.FILE_ARG) + "':" 
-                    + e);
             System.exit(-1);
         }
     }
@@ -111,21 +115,21 @@ public class PutFile {
     private void createOptionsForCmdArgumentHandler() {
         cmdHandler.createDefaultOptions();
         
-        Option fileOption = new Option(Constants.FILE_ARG, true, "The path to the file, which is wanted to "
-                + "be put");
+        Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT, 
+                "The path to the file, which is wanted to be put");
         fileOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
         cmdHandler.addOption(fileOption);
         
-        Option checksumOption = new Option(Constants.CHECKSUM_ARG, true, 
-                "[OPTIONAL] The checksum of the file to be put.");
+        Option checksumOption = new Option(Constants.FILE_ID_ARG, Constants.HAS_ARGUMENT, 
+                "[OPTIONAL] A id for the file (default is the name of the file).");
         checksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumOption);
         
-        Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, true, 
+        Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT, 
                 "[OPTIONAL] The algorithm of checksum to request in the response from the pillars.");
         checksumTypeOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumTypeOption);
-        Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, true, 
+        Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT, 
                 "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
         checksumSaltOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
@@ -141,30 +145,59 @@ public class PutFile {
         File f = findTheFile();
         FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange();
         URL url = fileexchange.uploadToServer(f);
+        String fileId = retrieveTheName(f);
         
-        ChecksumDataForFileTYPE validationChecksum = getValidationChecksum();
+        ChecksumDataForFileTYPE validationChecksum = getValidationChecksum(f);
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpec();
         
         CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings);
-        client.putFile(url, f.getName(), f.length(), validationChecksum, requestChecksum, eventHandler, 
-                "Putting the file '" + f.getName() + "' from commandLine.");
+        client.putFile(url, fileId, f.length(), validationChecksum, requestChecksum, eventHandler, 
+                "Putting the file '" + f + "' with the file id '" + fileId + "' from commandLine.");
         
         return eventHandler.getFinish();
     }
     
     /**
-     * Creates the data structure for encapsulating the validation checksums for validation of the PutFile operation.
-     * @return The ChecksumDataForFileTYPE for the pillars to validate the PutFile operation.
+     * Finds the file from the arguments.
+     * @return The requested file.
      */
-    private ChecksumDataForFileTYPE getValidationChecksum() {
-        if(!cmdHandler.hasOption(Constants.CHECKSUM_ARG)) {
-            return null;            
+    private File findTheFile() {
+        String filePath = cmdHandler.getOptionValue(Constants.FILE_ARG);
+        
+        File file = new File(filePath);
+        if(!file.isFile()) {
+            throw new IllegalArgumentException("The file '" + filePath + "' is invalid. It does not exists or it "
+                    + "is a directory.");
         }
         
+        return file;
+    }
+    
+    /**
+     * Extracts the id of the file to be put.
+     * @return The either the value of the file id argument, or no such option, then the name of the file.
+     */
+    private String retrieveTheName(File f) {
+        if(cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
+            return cmdHandler.getOptionValue(Constants.FILE_ID_ARG);
+        } else {
+            return f.getName();
+        }
+    }
+    
+    /**
+     * Creates the data structure for encapsulating the validation checksums for validation of the PutFile operation.
+     * @param file The file to have the checksum calculated.
+     * @return The ChecksumDataForFileTYPE for the pillars to validate the PutFile operation.
+     */
+    private ChecksumDataForFileTYPE getValidationChecksum(File file) {
+        ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settings);
+        String checksum = ChecksumUtils.generateChecksum(file, csSpec);
+            
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         res.setCalculationTimestamp(CalendarUtils.getNow());
-        res.setChecksumSpec(ChecksumUtils.getDefault(settings));
-        res.setChecksumValue(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.CHECKSUM_ARG)));
+        res.setChecksumSpec(csSpec);
+        res.setChecksumValue(Base16Utils.encodeBase16(checksum));
         
         return res;
     }
@@ -184,21 +217,5 @@ public class PutFile {
             res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
         }
         return res;
-    }
-    
-    /**
-     * Finds the file from the arguments.
-     * @return 
-     */
-    private File findTheFile() {
-        String filePath = cmdHandler.getOptionValue(Constants.FILE_ARG);
-        
-        File file = new File(filePath);
-        if(!file.isFile()) {
-            throw new IllegalArgumentException("The file '" + filePath + "' is invalid. It does not exists or it "
-                    + "is a directory.");
-        }
-        
-        return file;
     }
 }

@@ -34,6 +34,8 @@ public class Constants {
     public static final Boolean ARGUMENT_IS_REQUIRED = true;
     /** If an argument is not required.*/
     public static final Boolean ARGUMENT_IS_NOT_REQUIRED = false;
+    /** Whether a given option has an argument.*/
+    public static final Boolean HAS_ARGUMENT = true;
     
     /** The path to the settings.*/ 
     public static final String SETTINGS_ARG = "s";
@@ -42,6 +44,8 @@ public class Constants {
     
     /** The file argument.*/
     public static final String FILE_ARG = "f";
+    /** The argument for the id of the file.*/
+    public static final String FILE_ID_ARG = "i";
     /** The pillar argument.*/
     public static final String PILLAR_ARG = "p";
     /** The checksum of the file.*/
