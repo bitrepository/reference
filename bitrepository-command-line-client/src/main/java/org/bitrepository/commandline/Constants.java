@@ -54,4 +54,7 @@ public class Constants {
     public static final String REQUEST_CHECKSUM_TYPE_ARG = "R";
     /** The argument for the salt of the checksum to request.*/
     public static final String REQUEST_CHECKSUM_SALT_ARG = "S";
+    
+    /** The argument for the location of the results.*/
+    public static final String LOCATION = "l";
 }
