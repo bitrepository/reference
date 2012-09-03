@@ -37,23 +37,23 @@ import org.bitrepository.client.eventhandler.EventHandler;
  */
 public interface GetChecksumsClient extends BitrepositoryClient {
     /**
-     * Method for retrieving a checksums for a set of files from a specific pillar. The method will not block until 
-     * the conversation has finished. It will only initiate the conversation.
+     * Method for retrieving a checksums for a set of files from a set of pillars.
      * <br/>
      * Since every pillar cannot upload their checksums to the same URL, it is extended with the pillarId for the given
      * pillar, e.g.: 'http://upload.url/mypath' + '-pillarId'.
      * <br/>
-     * The results are returned through as an special event through the eventHandler, 
-     * the ChecksumsCompletePillarCompete. 
+     * The results are returned through as a ChecksumsCompletePillarCompete event as the results are returned by the
+     * pilalrs.
      *
-     * @param pillarIDs The list of IDs for the pillars, where the checksum should be retrieved from.
-     * @param fileIDs Defines the set of files.
-     * @param checksumSpec Specification of how the checksums should be calculated.
+     * @param pillarIDs The list of IDs for the pillars, where the checksum should be retrieved from. If null, checksums
+     *                  are requested from all pillars.
+     * @param fileIDs Defines whether checksums should be returned for a single file or all files.
+     * @param checksumSpec Specification of how the type of checksums. If no checksum spec is specified the default
+     * checksum type will be returned.
      * @param addressForResult [OPTIONAL] The address to upload the calculated checksums to. If this is null, then the
      * results will be retrieved through the message.
      * @param eventHandler [OPTIONAL] The handler which should receive notifications of the events occurring in 
-     * connection with the pillar communication. This is allowed to be null.
-     * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation call. 
+     * connection with the pillar communication.
      * 
      */
     public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, 

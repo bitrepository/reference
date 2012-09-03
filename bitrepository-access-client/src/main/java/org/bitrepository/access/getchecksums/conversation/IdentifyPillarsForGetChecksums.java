@@ -32,6 +32,8 @@ import org.bitrepository.client.conversation.IdentifyingState;
 import org.bitrepository.client.conversation.selector.ComponentSelector;
 import org.bitrepository.client.conversation.selector.MultipleComponentSelector;
 
+import java.util.Collection;
+
 /**
  * Models the behavior of a GetChecksums conversation during the identification phase. That is, it begins with the 
  * sending of <code>IdentifyPillarsForGetChecksumsRequest</code> messages and finishes with on the reception of the 
@@ -50,8 +52,13 @@ public class IdentifyPillarsForGetChecksums  extends IdentifyingState {
      */
     public IdentifyPillarsForGetChecksums(GetChecksumsConversationContext context) {
         this.context = context;
-        selector = new PillarSelectorForGetChecksums(
-                context.getSettings().getCollectionSettings().getClientSettings().getPillarIDs());
+        Collection<String> contributors;
+        if (context.getContributors() != null) {
+            contributors = context.getContributors();
+        } else {
+            contributors = context.getSettings().getCollectionSettings().getClientSettings().getPillarIDs();
+        }
+        selector = new PillarSelectorForGetChecksums(contributors);
     }
 
     @Override
