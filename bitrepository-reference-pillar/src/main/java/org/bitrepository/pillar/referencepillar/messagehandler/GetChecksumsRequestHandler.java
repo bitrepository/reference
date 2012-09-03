@@ -179,8 +179,9 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
         getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), 
                 "Calculating the checksum.", message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
-        res.add(getCsManager().getChecksumDataForChecksumSpec(fileids.getFileID(), 
-                message.getChecksumRequestForExistingFile()));
+        ChecksumDataForChecksumSpecTYPE data = getCsManager().getChecksumDataForChecksumSpec(fileids.getFileID(), 
+                message.getChecksumRequestForExistingFile());
+        res.add(data);
         
         return res;
     }

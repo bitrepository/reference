@@ -53,11 +53,11 @@ public class ReferenceChecksumManager {
     private final ChecksumSpecTYPE defaultChecksumSpec;
     
     /**
-     * 
-     * @param archive
-     * @param cache
-     * @param defaultChecksumSpec
-     * @param maxAgeForChecksum
+     * Constructor.
+     * @param archive The archive with the data.
+     * @param cache The storage for the checksums.
+     * @param defaultChecksumSpec The default specifications for the checksums.
+     * @param maxAgeForChecksum The maximum age for the checksums.
      */
     public ReferenceChecksumManager(ReferenceArchive archive, ChecksumStore cache, 
             ChecksumSpecTYPE defaultChecksumSpec, long maxAgeForChecksum) {
@@ -79,10 +79,12 @@ public class ReferenceChecksumManager {
      * @return The entry for the requested type of checksum for the given file.
      */
     public ChecksumEntry getChecksumEntryForFile(String fileId, ChecksumSpecTYPE csType) {
-        if(csType == defaultChecksumSpec) {
+        if(csType.equals(defaultChecksumSpec)) {
+            log.trace("Default checksum specification: {}.", csType);
             ensureChecksumState(fileId);
-            return cache.getEntry(fileId);            
+            return cache.getEntry(fileId);
         } else {
+            log.trace("Non-default checksum specification: {}. Recalculating the checksums.", csType);
             recalculateChecksum(fileId);
             
             File file = archive.getFile(fileId);
@@ -183,9 +185,9 @@ public class ReferenceChecksumManager {
             log.debug("No checksum cached for file '" + fileId + "'. Calculating the checksum.");
             recalculateChecksum(fileId);
         } else {
-            Date minDateForChecksum = new Date(System.currentTimeMillis() - maxAgeForChecksums);
-            if(cache.getCalculationDate(fileId).before(minDateForChecksum)) {
-                log.debug("No checksum cached for file '" + fileId + "'. Calculating the checksum.");                
+            long minDateForChecksum = System.currentTimeMillis() - maxAgeForChecksums;
+            if(cache.getCalculationDate(fileId).getTime() < minDateForChecksum) {
+                log.info("The checksum for the file '" + fileId + "' is too old. Recalculating.");                
                 recalculateChecksum(fileId);
             }
         }

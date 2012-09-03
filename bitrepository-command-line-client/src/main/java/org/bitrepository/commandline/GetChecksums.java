@@ -165,7 +165,8 @@ public class GetChecksums {
      */
     private List<String> getPillarIds() {
         if(cmdHandler.hasOption(Constants.PILLAR_ARG)) {
-            return Arrays.asList(cmdHandler.getOptionValue(Constants.PILLAR_ARG));
+            String pillarId = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
+            return Arrays.asList(pillarId);
         }
         
         return new ArrayList<String>(settings.getCollectionSettings().getClientSettings().getPillarIDs());
