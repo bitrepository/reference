@@ -92,16 +92,17 @@ public class GetFile {
     private void createOptionsForCmdArgumentHandler() {
         cmdHandler.createDefaultOptions();
         
-        Option fileOption = new Option(Constants.FILE_ARG, true, "The id for the file to retrieve.");
+        Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT, "The id for the file to retrieve.");
         fileOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
         cmdHandler.addOption(fileOption);
         
-        Option pillarOption = new Option(Constants.PILLAR_ARG, true, "[OPTIONAL] The id of the pillar where the file "
-                + "should be retrieved from. If no argument, then the file will be retrieved from the fastest pillars.");
+        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, "[OPTIONAL] The id of the "
+                + "pillar where the file should be retrieved from. If no argument, then the file will be retrieved "
+                + "from the fastest pillars.");
         pillarOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(pillarOption);
         
-        Option checksumOption = new Option(Constants.LOCATION, true, 
+        Option checksumOption = new Option(Constants.LOCATION, Constants.HAS_ARGUMENT, 
                 "[OPTIONAL] The location where the file should be placed (either total path or directory). "
                 + "If no argument, then in the directory where the script is located.");
         checksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);

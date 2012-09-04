@@ -90,25 +90,25 @@ public class DeleteFile {
     private void createOptionsForCmdArgumentHandler() {
         cmdHandler.createDefaultOptions();
         
-        Option fileOption = new Option(Constants.FILE_ARG, true, "The id for the file to delete.");
+        Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT, "The id for the file to delete.");
         fileOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
         cmdHandler.addOption(fileOption);
         
-        Option pillarOption = new Option(Constants.PILLAR_ARG, true, "[OPTIONAL] The id of the pillar where the file "
-                + "should be delete. If no argument, then the file will be deleted at all pillars.");
+        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, "[OPTIONAL] The id of the pillar"
+                + " where the file should be delete. If no argument, then the file will be deleted at all pillars.");
         pillarOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(pillarOption);
         
-        Option checksumOption = new Option(Constants.CHECKSUM_ARG, true, 
+        Option checksumOption = new Option(Constants.CHECKSUM_ARG, Constants.HAS_ARGUMENT, 
                 "[OPTIONAL] The checksum of the file to be delete.");
         checksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumOption);
         
-        Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, true, 
+        Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT, 
                 "[OPTIONAL] The algorithm of checksum to request in the response from the pillars.");
         checksumTypeOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumTypeOption);
-        Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, true, 
+        Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT, 
                 "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
         checksumSaltOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);

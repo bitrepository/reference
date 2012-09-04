@@ -90,14 +90,14 @@ public class GetFileIDs {
     private void createOptionsForCmdArgumentHandler() {
         cmdHandler.createDefaultOptions();
         
-        Option fileOption = new Option(Constants.FILE_ARG, true, "[OPTIONAL] The id for the file to retrieve. If no "
-                + "argument, then the file id of all files are retrieved.");
+        Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT, "[OPTIONAL] The id for the file to "
+                + "retrieve. If no argument, then the file id of all files are retrieved.");
         fileOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(fileOption);
         
-        Option pillarOption = new Option(Constants.PILLAR_ARG, true, "[OPTIONAL] The id of the pillar where the "
-                + "fileids should be retrieved from. If no argument, then the fileids will be retrieved from the "
-                + "all pillars.");
+        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, "[OPTIONAL] The id of the "
+                + "pillar where the fileids should be retrieved from. If no argument, then the fileids will be "
+                + "retrieved from the all pillars.");
         pillarOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(pillarOption);
     }
