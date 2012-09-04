@@ -52,9 +52,10 @@ public class DeletingFile extends PerformingOperationState {
     /** Tracks who have responded */
     private final ContributorResponseStatus responseStatus;
 
-    /**
-     * Constructor.
-     * @param context The context of the conversation.
+
+    /*
+     * @param context The conversation context.
+     * @param contributors The list of components the fileIDs should be collected from.
      */
     public DeletingFile(DeleteFileConversationContext context, List<SelectedComponentInfo> contributors) {
         this.context = context;

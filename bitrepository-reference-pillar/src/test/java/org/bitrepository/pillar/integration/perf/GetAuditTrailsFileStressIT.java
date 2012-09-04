@@ -22,8 +22,8 @@ package org.bitrepository.pillar.integration.perf;
  */
 
 import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
-import org.bitrepository.access.getaudittrails.client.BlockingAuditTrailClient;
+import org.bitrepository.access.getaudittrails.AuditTrailClient;
+import org.bitrepository.access.getaudittrails.BlockingAuditTrailClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.bitrepository.protocol.security.DummySecurityManager;

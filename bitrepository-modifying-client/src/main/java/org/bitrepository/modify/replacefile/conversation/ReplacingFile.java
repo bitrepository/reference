@@ -51,6 +51,10 @@ public class ReplacingFile extends PerformingOperationState {
     /** Tracks who have responded */
     private final ContributorResponseStatus responseStatus;
 
+    /*
+     * @param context The conversation context.
+     * @param contributors The list of components the fileIDs should be collected from.
+     */
     public ReplacingFile(ReplaceFileConversationContext context, List<SelectedComponentInfo> contributors) {
         this.context = context;
         this.activeContributors = new HashMap<String,String>();

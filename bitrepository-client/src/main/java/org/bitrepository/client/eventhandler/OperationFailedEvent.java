@@ -25,31 +25,38 @@
 package org.bitrepository.client.eventhandler;
 
 
+import java.util.List;
+
 /**
- * Indicates and operation has failed to complete.
+ * Indicates an operation has failed to complete.
  */
 public class OperationFailedEvent extends AbstractOperationEvent {
-    private final String[] componentResults;
+    private final List<ContributorEvent> componentResults;
 
     /**
      * @param info See {@link #getInfo()}
-     * @param componentResults See {@link #getComponentResults()} ()}
+     * @param componentResults The aggregated list of <code>COMPONENT_COMPLETE</code> events generated during
+     *                         the operation.
+     * @param conversationID See {@link #getConversationID()}
      */
-    public OperationFailedEvent(String info, String[] componentResults, String conversationID) {
+    public OperationFailedEvent(String info, List<ContributorEvent> componentResults, String conversationID) {
         super(OperationEventType.FAILED, info, conversationID);
         this.componentResults = componentResults;
     }
 
     /**
-     * Plain info constructor.
+     * Constructor when no component result are available.
      * @param info Message describing the failure.
      */
     public OperationFailedEvent(String info, String conversationID) {
         this(info, null, conversationID);
     }
 
-    /** Returns the results for the individual components contributing to this operation */
-    public String[] getComponentResults() {
+    /**
+     * Returns the results for the individual components contributing to this operation. The list is just
+     * aggregation of the <code>COMPONENT_COMPLETE</code> events generated during the operation.
+     */
+    public List<ContributorEvent> getComponentResults() {
         return componentResults;
     }
 

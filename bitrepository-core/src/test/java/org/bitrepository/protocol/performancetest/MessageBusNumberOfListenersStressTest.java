@@ -281,7 +281,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
 
         /**
          * Constructor.
-         * @param conf The configurations for declaring the message bus.
+         * @param conf The configuration for defining the message bus.
          */
         public NotificationMessageListener(MessageBusConfiguration conf, SecurityManager securityManager) {
             this.bus = new ActiveMQMessageBus(conf, securityManager);

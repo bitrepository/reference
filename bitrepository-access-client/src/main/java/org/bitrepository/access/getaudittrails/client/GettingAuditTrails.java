@@ -41,6 +41,10 @@ public class GettingAuditTrails extends PerformingOperationState {
     private Map<String,String> activeContributors;
     private ContributorResponseStatus responseStatus;
 
+    /*
+     * @param context The conversation context.
+     * @param contributors The list of components the audit trails should be collected from.
+     */
     public GettingAuditTrails(AuditTrailConversationContext context, List<SelectedComponentInfo> contributors) {
         super();
         this.context = context;

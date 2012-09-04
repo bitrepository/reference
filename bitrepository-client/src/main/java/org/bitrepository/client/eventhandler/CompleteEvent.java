@@ -25,29 +25,41 @@
 package org.bitrepository.client.eventhandler;
 
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
- * Indicates a operation has completed succesfully.
+ * Indicates a operation has completed successfully.
  */
 public class CompleteEvent extends AbstractOperationEvent {
-    private final String[] componentResults;
+    /** See {@link #getInfo()}*/
+    private final List<ContributorEvent> componentResults;
 
     /**
      * @param info See {@link #getComponentResults()}
-     * @param componentResults See {@link #getInfo()}
+     * @param componentResults The aggregated list of <code>COMPONENT_COMPLETE</code> events generated during
+     *                         the operation.
      * @param conversationID See {@link #getConversationID()}
     */
-    public CompleteEvent(String info, String[] componentResults, String conversationID) {
+    public CompleteEvent(String info, List<ContributorEvent> componentResults, String conversationID) {
         super(OperationEventType.COMPLETE, info, conversationID);
         this.componentResults = componentResults;
     }
 
-    /** Returns the results for the individual components contributing to this operation */
-    public String[] getComponentResults() {
+    /**
+     * Returns the results for the individual components contributing to this operation. The list is just
+     * aggregation of the <code>COMPONENT_COMPLETE</code> events generated during the operation.
+     */
+    public List<ContributorEvent> getComponentResults() {
         return componentResults;
     }
 
     @Override
     public String additionalInfo() {
-        return componentResults.toString();
+        if (componentResults != null ) {
+            return Arrays.asList(componentResults).toString();
+        } else {
+            return "";
+        }
     }
 }

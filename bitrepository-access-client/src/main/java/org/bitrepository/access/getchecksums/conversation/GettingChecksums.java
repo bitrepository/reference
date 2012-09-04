@@ -51,6 +51,10 @@ public class GettingChecksums extends PerformingOperationState {
     /** Tracks who have responded */
     private final ContributorResponseStatus responseStatus;
 
+    /*
+     * @param context The conversation context.
+     * @param contributors The list of components the checksums should be collected from.
+     */
     public GettingChecksums(GetChecksumsConversationContext context, List<SelectedComponentInfo> contributors) {
         super();
         this.context = context;

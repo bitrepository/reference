@@ -22,6 +22,7 @@
 package org.bitrepository.access.getchecksums.conversation;
 
 import java.net.URL;
+import java.util.Collection;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
@@ -30,15 +31,18 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
+/** Encapsulates the context for a GetChecksums operation */
 public class GetChecksumsConversationContext extends ConversationContext {
+    private final Collection<String> contributors;
     private final FileIDs fileIDs;
     private final URL urlForResult;
     private final ChecksumSpecTYPE checksumSpec;
 
-    public GetChecksumsConversationContext(FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, URL urlForResult,
+    public GetChecksumsConversationContext(Collection<String> contributors, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, URL urlForResult,
             Settings settings, MessageSender messageSender, String clientID, EventHandler eventHandler,
             String auditTrailInformation) {
         super(settings, messageSender, clientID, eventHandler, auditTrailInformation);
+        this.contributors = contributors;
         this.fileIDs = fileIDs;
         this.urlForResult = urlForResult;       
         this.checksumSpec = checksumSpec;
@@ -55,5 +59,8 @@ public class GetChecksumsConversationContext extends ConversationContext {
     public ChecksumSpecTYPE getChecksumSpec() {
         return checksumSpec;
     }
-    
+
+    public Collection<String> getContributors() {
+        return contributors;
+    }
 }

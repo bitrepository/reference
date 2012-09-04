@@ -26,6 +26,7 @@ package org.bitrepository.common;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 
@@ -39,7 +40,7 @@ public interface FileStore {
      * @return A FileInputStream to the requested file.
      * @throws Exception If a problem occurs during the retrieval of the file.
      */
-    public FileInputStream getFileAsInputstream(String fileID) throws Exception;
+    public FileInputStream getFileAsInputstream(String fileID) throws IOException;
     
     /**
      * Retrieves the wanted file.
@@ -60,7 +61,7 @@ public interface FileStore {
      * @return The collection of file ids in the storage.
      * @throws Exception If anything unexpected occurs.
      */
-    public Collection<String> getAllFileIds() throws Exception;
+    public Collection<String> getAllFileIds();
 
     /**
      * Stores a file given through an InputStream. The file is only intended to be stored in a temporary zone until it 
@@ -71,7 +72,7 @@ public interface FileStore {
      * @throws Exception If anything unexpected occurs (e.g. file already exists, not enough space, etc.)
      * @see #moveToArchive(String)
      */
-    public File downloadFileForValidation(String fileID, InputStream inputStream) throws Exception;
+    public File downloadFileForValidation(String fileID, InputStream inputStream) ;
     
     /**
      * Moves a file from the temporary file zone to the archive.
@@ -79,12 +80,12 @@ public interface FileStore {
      * @throws Exception If anything unexpected occurs (e.g. file already exists, not enough space, etc.)
      * @see #downloadFileForValidation(String, InputStream)
      */
-    public void moveToArchive(String fileID) throws Exception;
- 
+    public void moveToArchive(String fileID);
+
     /**
      * Removes a file from the storage area.
      * @param fileID The id of the file to remove.
      * @throws Exception If anything unexpected occurs (e.g. no such file).
      */
-    public void deleteFile(String fileID) throws Exception;
+    public void deleteFile(String fileID);
 }

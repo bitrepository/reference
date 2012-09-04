@@ -46,6 +46,10 @@ public class PuttingFile extends PerformingOperationState {
     private Map<String,String> activeContributors;
     private ContributorResponseStatus responseStatus;
 
+    /*
+     * @param context The conversation context.
+     * @param contributors The list of components the fileIDs should be collected from.
+     */
     public PuttingFile(PutFileConversationContext context, List<SelectedComponentInfo> contributors) {
         this.context = context;
         this.activeContributors = new HashMap<String,String>();

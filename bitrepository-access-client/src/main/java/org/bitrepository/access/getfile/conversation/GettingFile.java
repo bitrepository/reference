@@ -49,9 +49,9 @@ class GettingFile extends PerformingOperationState {
     private final SelectedPillarForGetFileInfo selectedPillar;
     private ContributorResponseStatus responseStatus;
 
-    /** 
-     * The constructor for the indicated conversation.
-     * @param conversation The related conversation containing context information.
+    /**
+     * @param context The related conversation containing context information.
+     * @param pillar The pillar the file should be requested from.
      */
     public GettingFile(GetFileConversationContext context, SelectedPillarForGetFileInfo pillar) {
         this.context = context;

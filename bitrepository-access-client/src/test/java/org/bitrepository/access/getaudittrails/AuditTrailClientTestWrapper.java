@@ -21,7 +21,6 @@
  */
 package org.bitrepository.access.getaudittrails;
 
-import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.jaccept.TestEventManager;
 
