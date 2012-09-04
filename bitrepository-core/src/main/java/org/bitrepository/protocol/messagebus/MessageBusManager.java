@@ -34,7 +34,10 @@ import org.bitrepository.protocol.security.SecurityManager;
  * The place to get message buses. Only one message bus is created for each collection ID.
  */
 public final class MessageBusManager {
-    /** Map of the loaded mediators */
+    /**
+     * Map of the loaded mediators for the different collectionsIDs.
+     * The keys are the collectionID and the values are the message buses
+     */
     private static final Map<String,MessageBus> messageBusMap = new HashMap<String,MessageBus>();
     
     /** Do not instantiate */

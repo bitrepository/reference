@@ -57,6 +57,10 @@ public class Metrics {
         count++;
     }
 
+    public synchronized long getStartTime() {
+        return startTime;
+    }
+
     public synchronized void mark(String fileID) {
         registerFileStatistic(fileID);
         registerPartStatistic();

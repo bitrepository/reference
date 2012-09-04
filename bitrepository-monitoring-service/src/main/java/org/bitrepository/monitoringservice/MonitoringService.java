@@ -21,6 +21,7 @@
  */
 package org.bitrepository.monitoringservice;
 
+import java.util.Map;
 import javax.jms.JMSException;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getstatus.GetStatusClient;
@@ -31,13 +32,11 @@ import org.bitrepository.monitoringservice.collector.StatusCollector;
 import org.bitrepository.monitoringservice.status.ComponentStatus;
 import org.bitrepository.monitoringservice.status.ComponentStatusStore;
 import org.bitrepository.monitoringservice.status.StatusStore;
-import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.contributor.ContributorContext;
-
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,8 +63,9 @@ public class MonitoringService implements LifeCycledService {
      */
     public MonitoringService(Settings settings, SecurityManager securityManager) {
         this.settings = settings;
-        ContributorContext context = new ContributorContext(ProtocolComponentFactory.getInstance().getMessageBus(settings, 
-                securityManager), settings);
+        ContributorContext context = new ContributorContext(
+                MessageBusManager.getMessageBus(settings, securityManager),
+                settings);
         statusStore = new ComponentStatusStore(settings.getCollectionSettings().getGetStatusSettings().getContributorIDs());
         alerter = new BasicMonitoringServiceAlerter(context, statusStore);
         getStatusClient = AccessComponentFactory.getInstance().createGetStatusClient(settings, securityManager,
@@ -101,10 +101,13 @@ public class MonitoringService implements LifeCycledService {
     @Override
     public void shutdown() {
         collector.stop();
-        try {
-            MessageBusManager.getMessageBus(settings.getCollectionID()).close();
-        } catch (JMSException e) {
-            log.warn("Unable to close message bus cleanly " + e.getMessage());
+        MessageBus messageBus = MessageBusManager.getMessageBus(settings.getCollectionID());
+        if ( messageBus != null) {
+            try {
+                messageBus.close();
+            } catch (JMSException e) {
+                log.warn("Failed to close message bus cleanly, " + e.getMessage());
+            }
         }
     }
 }

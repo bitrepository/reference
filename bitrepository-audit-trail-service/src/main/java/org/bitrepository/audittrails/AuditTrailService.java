@@ -55,6 +55,7 @@ public class AuditTrailService implements LifeCycledService {
     private final ContributorMediator mediator;
     /** The preserver of audit trails.*/
     private final AuditTrailPreserver preserver;
+    /** The AuditTrailService settings.*/
     private final Settings settings;
 
     /**
@@ -63,10 +64,14 @@ public class AuditTrailService implements LifeCycledService {
      * @param collector The collector of new audit trail data.
      * @param mediator The mediator for the communication of this contributor.
      * @param preserver Instance for handling the preservation of audit trails.
-     * @param settings
+     * @param settings The AuditTrailService settings.
      */
-    public AuditTrailService(AuditTrailStore store, AuditTrailCollector collector, ContributorMediator mediator,
-                             AuditTrailPreserver preserver, Settings settings) {
+    public AuditTrailService(
+            AuditTrailStore store,
+            AuditTrailCollector collector,
+            ContributorMediator mediator,
+            AuditTrailPreserver preserver,
+            Settings settings) {
         ArgumentValidator.checkNotNull(collector, "AuditTrailCollector collector");
         ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
         ArgumentValidator.checkNotNull(mediator, "ContributorMediator mediator");
@@ -131,7 +136,7 @@ public class AuditTrailService implements LifeCycledService {
         MessageBus messageBus = MessageBusManager.getMessageBus(settings.getCollectionID());
         if ( messageBus != null) {
             try {
-                MessageBusManager.getMessageBus(settings.getCollectionID()).close();
+                messageBus.close();
             } catch (JMSException e) {
                 log.warn("Failed to close message bus cleanly, " + e.getMessage());
             }
