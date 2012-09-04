@@ -85,12 +85,15 @@ public class ContributorResponseStatus {
     }
 
     /**
-     * Return true all components have responded.
+     * @return true all components have responded.
      */
     public final boolean haveAllComponentsResponded() {
         return componentsWithOutstandingResponse.isEmpty();
     }
 
+    /**
+     * @return The set of components which should respond to the identification request.
+     */
     public final Set<String> getComponentsWhichShouldRespond() {
         return componentsWhichShouldRespond;
     }

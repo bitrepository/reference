@@ -50,6 +50,10 @@ public class GettingFileIDs extends PerformingOperationState {
     /** The status for the expected responses.*/
     private final ContributorResponseStatus responseStatus;
 
+    /*
+     * @param context The conversation context.
+     * @param contributors The list of components the fileIDs should be collected from.
+     */
     public GettingFileIDs(GetFileIDsConversationContext context, List<SelectedComponentInfo> contributors) {
         super();
         this.context = context;

@@ -23,10 +23,10 @@ package org.bitrepository.pillar.integration.perf;
 
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
+import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
-import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.testng.annotations.BeforeMethod;
@@ -44,9 +44,9 @@ public class PutFileStressIT extends PillarPerformanceTest {
 
     @Test( groups = {"pillar-stress-test", "stress-test-pillar-population"})
     public void singleTreadedPut() throws Exception {
-        final int NUMBER_OF_FILES = 10;
-        final int PART_STATISTIC_INTERVAL = 2;
-        addDescription("Attempt to put " + NUMBER_OF_FILES + " files into the pillar one at a time.");
+        final int NUMBER_OF_FILES = 100;
+        final int PART_STATISTIC_INTERVAL = 10;
+        addDescription("Attempt to put " + NUMBER_OF_FILES + " files into the pillar, one at a time.");
         BlockingPutFileClient blockingPutFileClient = new BlockingPutFileClient(putClient);
         String[] fileIDs = TestFileHelper.createFileIDs(NUMBER_OF_FILES, "singleTreadedPutTest");
         Metrics metrics = new Metrics("put", NUMBER_OF_FILES, PART_STATISTIC_INTERVAL);
@@ -65,9 +65,9 @@ public class PutFileStressIT extends PillarPerformanceTest {
 
     @Test( groups = {"pillar-stress-test"})
     public void parallelPut() throws Exception {
-        final int  NUMBER_OF_FILES = 10;
+        final int  NUMBER_OF_FILES = 100;
         final int  PART_STATISTIC_INTERVAL = 10;
-        addDescription("Attempt to put  \" + NUMBER_OF_FILES + \"  files into the pillar at the 'same' time.");
+        addDescription("Attempt to put " + NUMBER_OF_FILES + " files into the pillar at the 'same' time.");
         String[] fileIDs = TestFileHelper.createFileIDs(NUMBER_OF_FILES, "parallelPutTest");
         final Metrics metrics = new Metrics("put", NUMBER_OF_FILES, PART_STATISTIC_INTERVAL);
         metrics.addAppenders(metricAppenders);
@@ -97,6 +97,8 @@ public class PutFileStressIT extends PillarPerformanceTest {
         @Override
         public void handleEvent(OperationEvent event) {
             if (event.getType().equals(OperationEvent.OperationEventType.COMPLETE)) {
+                //CompleteEvent completeEvent = (CompleteEvent)event;
+                // PutFileCompletePillarEvent fileID = (PutFileCompletePillarEvent)completeEvent.getComponentResults()[0];
                 // Todo The current complete event should return a event, so we can detect which file has been affected
                 this.metrics.mark("#" + metrics.getCount());
             } else if (event.getType().equals(OperationEvent.OperationEventType.FAILED)) {

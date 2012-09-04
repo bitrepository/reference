@@ -23,6 +23,7 @@ package org.bitrepository.pillar.integration.perf;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
@@ -45,7 +46,9 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
     }
 
     private void defineMetricAppenders() {
-        metricAppenders.add(new ConsoleMetricAppender());
+        MetricAppender consoleAppender = new ConsoleMetricAppender();
+        consoleAppender.disableSingleMeasurement(true);
+        metricAppenders.add(consoleAppender);
     }
 
     private void initializeCollectionHelper() {
@@ -58,11 +61,12 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
     protected void awaitAsynchronousCompletion(Metrics metrics, int numberOfOperations) {
         while(metrics.getCount() < numberOfOperations) {
             try {
-                Thread.sleep(10000);
+                Thread.sleep(6000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println("...waiting for the last " + (numberOfOperations - metrics.getCount()) + " files");
+            System.out.println("...waiting for the last " + (numberOfOperations - metrics.getCount()) + " files " +
+                    "(" + asPrettyTime(metrics.getStartTime()) + ")");
         }
     }
 
@@ -81,5 +85,43 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
                 this.metrics.registerError(event.getInfo());
             }
         }
+    }
+
+    protected String asPrettyTime(long starttime) {
+        long millis = System.currentTimeMillis() - starttime;
+
+        long days = TimeUnit.MILLISECONDS.toDays(millis);
+        millis -= TimeUnit.DAYS.toMillis(days);
+        long hours = TimeUnit.MILLISECONDS.toHours(millis);
+        millis -= TimeUnit.HOURS.toMillis(hours);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+        millis -= TimeUnit.MINUTES.toMillis(minutes);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+
+        StringBuilder sb = new StringBuilder(64);
+        if (days > 0) {
+        sb.append(days);
+        sb.append("d ");
+        }
+        if (hours > 0) {
+        sb.append(hours);
+        sb.append("h ");
+        }
+        if (minutes > 0 && days < 0 ) {
+        sb.append(minutes);
+        sb.append("m ");
+        }
+
+        if (seconds > 0 && hours < 0 ) {
+        sb.append(seconds);
+        sb.append("s");
+        }
+
+        if (millis > 0 && minutes < 0 ) {
+            sb.append(millis);
+            sb.append("s");
+        }
+
+        return(sb.toString());
     }
 }

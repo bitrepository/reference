@@ -83,6 +83,9 @@ public class MultipleComponentSelector implements ComponentSelector {
         return !selectedComponents.isEmpty();
     }
 
+    /*
+     * @return <code>true</code> if all the expected contributers have been selected.
+     */
     public boolean haveSelectedAllComponents() {
         return selectedComponents.size() == responseStatus.getComponentsWhichShouldRespond().size();
     }

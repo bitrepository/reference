@@ -22,11 +22,12 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access.getaudittrails.client;
+package org.bitrepository.access.getaudittrails;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bitrepository.access.getaudittrails.AuditTrailQuery;
+import org.bitrepository.access.getaudittrails.client.AuditTrailConversationContext;
+import org.bitrepository.access.getaudittrails.client.IdentifyingAuditTrailContributors;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -34,7 +35,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBus;
 
 /**
- * The conversation based implementation of the {@link AuditTrailClient}.
+ * The conversation based implementation of the {@link org.bitrepository.access.getaudittrails.AuditTrailClient}.
  */
 public class ConversationBasedAuditTrailClient extends AbstractClient implements AuditTrailClient {
 

@@ -30,6 +30,7 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.eventhandler.AbstractOperationEvent;
+import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.DefaultEvent;
@@ -171,11 +172,11 @@ public class ConversationEventMonitor {
         if (contributorFailedEvents.isEmpty()) {
             String message = "Completed successfully\n " + contributorCompleteEvents;
             log.info(message);
-            notifyEventListerners(new DefaultEvent(COMPLETE, message, conversationID));
+            notifyEventListerners(new CompleteEvent(message, contributorCompleteEvents, conversationID));
         } else {
-            String message = "Failed operation. Cause:\n" + contributorFailedEvents;
+            String message = "Failed operation. Cause(s):\n" + contributorFailedEvents;
             log.warn(message);
-            notifyEventListerners(new DefaultEvent(FAILED, message, conversationID));
+            notifyEventListerners(new OperationFailedEvent(message, contributorCompleteEvents, conversationID));
         }
     }
 

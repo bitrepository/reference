@@ -31,7 +31,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
-import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
+import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.client.eventhandler.EventHandler;

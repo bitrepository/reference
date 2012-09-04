@@ -38,8 +38,12 @@ public class GettingStatus extends PerformingOperationState {
     private final GetStatusConversationContext context;
     private Map<String,String> activeContributers;
     /** Tracks who have responded */
-    private final ContributorResponseStatus responseStatus;  
-    
+    private final ContributorResponseStatus responseStatus;
+
+    /*
+    * @param context The conversation context.
+    * @param contributors The list of components the fileIDs should be collected from.
+    */
     public GettingStatus(GetStatusConversationContext context, List<SelectedComponentInfo> contributors) {
         super();
         this.context = context;

@@ -24,8 +24,8 @@
  */
 package org.bitrepository.access;
 
-import org.bitrepository.access.getaudittrails.client.AuditTrailClient;
-import org.bitrepository.access.getaudittrails.client.ConversationBasedAuditTrailClient;
+import org.bitrepository.access.getaudittrails.AuditTrailClient;
+import org.bitrepository.access.getaudittrails.ConversationBasedAuditTrailClient;
 import org.bitrepository.access.getchecksums.ConversationBasedGetChecksumsClient;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.ConversationBasedGetFileClient;
