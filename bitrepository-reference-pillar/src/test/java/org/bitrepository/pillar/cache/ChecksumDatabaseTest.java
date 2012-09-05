@@ -25,6 +25,7 @@ import static org.bitrepository.pillar.cache.database.DatabaseConstants.CHECKSUM
 
 import java.io.File;
 import java.sql.Connection;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -122,10 +123,12 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         
         addStep("Check whether the default entry exists.", "It does!");
         Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID));
+        Assert.assertEquals(cache.getFileIDs(), Arrays.asList(DEFAULT_FILE_ID));
         
         addStep("Remove the default entry", "Should no longer exist");
         cache.deleteEntry(DEFAULT_FILE_ID);
         Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
+        Assert.assertEquals(cache.getFileIDs(), Arrays.asList());
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
