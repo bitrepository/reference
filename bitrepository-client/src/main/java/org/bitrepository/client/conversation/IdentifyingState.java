@@ -31,7 +31,7 @@ import org.bitrepository.client.conversation.selector.ComponentSelector;
  * Handles the general identifying state functionality. For common usage this class handles all messages by using
  * the sub classe defined <code>selector</code>.
  *
- * This class also has a default implenentation for the <code>handleStateTimeout()</code>, <code>getNextState()</code>
+ * This class also has a default implementation for the <code>handleStateTimeout()</code>, <code>getNextState()</code>
  * and <code>getTimeout()</code> operations.
  * <code>getNextState()</code>
  * more specialized
@@ -42,10 +42,10 @@ public abstract class IdentifyingState extends GeneralConversationState {
         if (!msg.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)    ) {
             getContext().getMonitor().contributorFailed(
                     "Received negative response from component " + msg.getFrom() +
-                    ":  " + msg.getResponseInfo(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+                            ":  " + msg.getResponseInfo(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
         } else {
             getContext().getMonitor().contributorIdentified(msg);
-    }
+        }
         getSelector().processResponse(msg);
     }
 
@@ -54,15 +54,15 @@ public abstract class IdentifyingState extends GeneralConversationState {
         if (getContext().getState() == this) {
             if (handleIdentificationTimeout()) {
                 getContext().getMonitor().identifyContributorsTimeout(
-                        "Time has run out for looking up contributers." +
-                        " Using contributers based on uncomplete set of responses.",
+                        "Time has run out for looking up contributors." +
+                                " Using contributors based on incomplete set of responses.",
                         getSelector().getOutstandingComponents());
-                getContext().getMonitor().contributorSelected("Identified contributers",
+                getContext().getMonitor().contributorSelected("Identified contributors",
                         getSelector().getContributersAsString());
                 return getOperationState();
             } else {
                 getContext().getMonitor().identifyContributorsTimeout(
-                        "Time has run out for looking up contributers, unable to continue.",
+                        "Time has run out for looking up contributors, unable to continue.",
                         getSelector().getOutstandingComponents());
                 getContext().getMonitor().operationFailed(
                         "Unable to continue with operation, missing contributors");

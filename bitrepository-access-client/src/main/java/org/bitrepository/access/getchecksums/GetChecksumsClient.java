@@ -43,7 +43,7 @@ public interface GetChecksumsClient extends BitrepositoryClient {
      * pillar, e.g.: 'http://upload.url/mypath' + '-pillarId'.
      * <br/>
      * The results are returned through as a ChecksumsCompletePillarCompete event as the results are returned by the
-     * pilalrs.
+     * pillars.
      *
      * @param pillarIDs The list of IDs for the pillars, where the checksum should be retrieved from. If null, checksums
      *                  are requested from all pillars.

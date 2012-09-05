@@ -33,7 +33,7 @@ import org.bitrepository.protocol.messagebus.MessageSender;
 
 /** Encapsulates the context for a GetChecksums operation */
 public class GetChecksumsConversationContext extends ConversationContext {
-    private final Collection<String> contributors;
+    private final Collection<String> pillars;
     private final FileIDs fileIDs;
     private final URL urlForResult;
     private final ChecksumSpecTYPE checksumSpec;
@@ -42,7 +42,7 @@ public class GetChecksumsConversationContext extends ConversationContext {
             Settings settings, MessageSender messageSender, String clientID, EventHandler eventHandler,
             String auditTrailInformation) {
         super(settings, messageSender, clientID, eventHandler, auditTrailInformation);
-        this.contributors = contributors;
+        this.pillars = contributors;
         this.fileIDs = fileIDs;
         this.urlForResult = urlForResult;       
         this.checksumSpec = checksumSpec;
@@ -60,7 +60,7 @@ public class GetChecksumsConversationContext extends ConversationContext {
         return checksumSpec;
     }
 
-    public Collection<String> getContributors() {
-        return contributors;
+    public Collection<String> getPillars() {
+        return pillars;
     }
 }

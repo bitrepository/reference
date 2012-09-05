@@ -74,8 +74,7 @@ public class ContributorResponseStatus {
         } else if (componentsWhichShouldRespond.contains(componentId)) {
             throw new UnexpectedResponseException("Received more than one response from component " + componentId);
         } else {
-            throw new UnexpectedResponseException("Received unexpected response from unknown component " + componentId +
-            ". Known components are: " + componentsWhichShouldRespond);
+            // Normal case, if components replies to a broadcast without being part of the contributor subset.
         }
     }
 

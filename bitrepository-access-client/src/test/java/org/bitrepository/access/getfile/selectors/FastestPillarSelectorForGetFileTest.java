@@ -84,22 +84,12 @@ public class FastestPillarSelectorForGetFileTest extends ExtendedTestCase {
         selector.processResponse(slowPillar.createResponse());
         try { 
             selector.processResponse(slowPillar.createResponse());
-            Assert.fail("Should have throw exception after receiving dublicated response");
+            Assert.fail("Should have throw exception after receiving duplicated response");
         } catch (UnexpectedResponseException uee) {}
         Assert.assertFalse(selector.isFinished(), 
         "Selector thinks it is finished after initially receiving 2 equal response");
 
-        IdentifyPillarsForGetFileResponse response2 = fastPillar.createResponse();
-        response2.setPillarID("Invalid pillar");
-        response2.setFrom("Invalid pillar");
-        try { 
-            selector.processResponse(response2);
-            Assert.fail("Should have throw exception after receiving response from invalid pillar");
-        } catch (UnexpectedResponseException uee) {}
-        Assert.assertFalse(selector.isFinished(), 
-                "Selector thinks it is finished after initially receiving response from invalid pillar");
-                selector.processResponse(fastPillar.createResponse());
-
+        selector.processResponse(fastPillar.createResponse());
         selector.processResponse(mediumPillar.createResponse());
         Assert.assertTrue(selector.isFinished(), "Selector didn't change to finished after 3 response");
         Assert.assertEquals(selector.selectedPillar.getID(), fastPillar.pillarID, "Not pillarID from fastest pillar");
