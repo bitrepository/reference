@@ -24,7 +24,7 @@ package org.bitrepository.modify.deletefile.selector;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.selector.ComponentSelector;
@@ -60,7 +60,9 @@ public abstract class DeleteFileSelector implements ComponentSelector {
         if (response instanceof IdentifyPillarsForDeleteFileResponse) {
             IdentifyPillarsForDeleteFileResponse resp = (IdentifyPillarsForDeleteFileResponse) response;
             responseStatus.responseReceived(resp.getFrom());
-            if (checkPillarResponseForSelection(resp)) {
+            if (checkPillarResponseForSelection(resp)
+                && resp.getResponseInfo().getResponseCode().equals(ResponseCode.FILE_NOT_FOUND_FAILURE)
+               ) {
                 selectedComponents.add(new SelectedComponentInfo(resp.getPillarID(), response.getReplyTo()));
             }
         } else {
@@ -70,16 +72,6 @@ public abstract class DeleteFileSelector implements ComponentSelector {
 
     @Override
     public boolean isFinished() throws UnableToFinishException {
-        /*if (responseStatus.haveAllComponentsResponded()) {
-            if (!selectedComponents.isEmpty()) {
-                return true;
-            } else {
-                throw new UnableToFinishException(
-                        "All expected components have answered, but none where suitable");
-            }
-        } else {
-            return false;
-        }*/
         return responseStatus.haveAllComponentsResponded();
     }
 

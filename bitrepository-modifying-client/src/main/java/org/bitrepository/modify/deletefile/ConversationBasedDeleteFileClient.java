@@ -65,8 +65,7 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
                 + "'. And the audit trail information '" + auditTrailInformation + "'.");
         
         DeleteFileConversationContext context = new DeleteFileConversationContext(fileId, 
-                new SpecificPillarSelectorForDeleteFile(settings.getCollectionSettings().getClientSettings().getPillarIDs(), 
-                        pillarId), 
+                new SpecificPillarSelectorForDeleteFile(pillarId),
                 checksumForPillar, checksumRequested, settings, messageBus, clientID, eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForDeleteFile(context));
     }

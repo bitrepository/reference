@@ -41,7 +41,7 @@ import org.bitrepository.client.exceptions.UnexpectedResponseException;
  * Models the behavior of a DeleteFile conversation during the operation phase. That is, it begins with the sending of
  * <code>DeleteFileRequest</code> messages and finishes with the reception of the <code>DeleteFileFinalResponse</code>
  * messages from all responding pillars. 
- * 
+ *
  * Note that this is only used by the DeleteFileConversation in the same package, therefore the visibility is package 
  * protected.
  */
@@ -51,7 +51,6 @@ public class DeletingFile extends PerformingOperationState {
     private Map<String,String> activeContributors;
     /** Tracks who have responded */
     private final ContributorResponseStatus responseStatus;
-
 
     /*
      * @param context The conversation context.
@@ -78,7 +77,7 @@ public class DeletingFile extends PerformingOperationState {
         } else {
             throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
                     " while waiting for DeleteFile response.");
-        }         
+        }
     }
 
     @Override
@@ -93,13 +92,14 @@ public class DeletingFile extends PerformingOperationState {
         msg.setFileID(context.getFileID());
         msg.setChecksumRequestForExistingFile(context.getChecksumRequestForValidation());
         msg.setChecksumDataForExistingFile(context.getChecksumForValidationAtPillar());
-
-        context.getMonitor().requestSent("Sending request for deleting file", activeContributors.keySet().toString());
-        for(String pillar : activeContributors.keySet()) {
-            msg.setPillarID(pillar);
-            msg.setTo(activeContributors.get(pillar));
-            context.getMessageSender().sendMessage(msg);
-        }        
+        if (!activeContributors.isEmpty()) { // Might not be the case if the files haven't been found on any of the pillars.
+            context.getMonitor().requestSent("Sending request for deleting file", activeContributors.keySet().toString());
+            for(String pillar : activeContributors.keySet()) {
+                msg.setPillarID(pillar);
+                msg.setTo(activeContributors.get(pillar));
+                context.getMessageSender().sendMessage(msg);
+            }
+        }
     }
 
     @Override

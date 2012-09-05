@@ -61,6 +61,8 @@ public interface DeleteFileClient extends BitrepositoryClient {
      * Progress (for each pillar), PillarComplete (for each pillar), Complete
      * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation 
      * call.
+     * @deprecated Should be removed, as the ability to delete all copies of a file from a single is a serious
+     * hole in the security model.
      */
     void deleteFileAtAllPillars(String fileId, ChecksumDataForFileTYPE checksumForPillar, 
             ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation);

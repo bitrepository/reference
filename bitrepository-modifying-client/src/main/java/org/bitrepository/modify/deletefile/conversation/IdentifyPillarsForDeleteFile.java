@@ -59,9 +59,11 @@ public class IdentifyPillarsForDeleteFile extends IdentifyingState {
         if(responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE)) {
             getContext().getMonitor().contributorIdentified(msg);
         } else if(!responseCode.equals(ResponseCode.FILE_NOT_FOUND_FAILURE)) {
-            getContext().getMonitor().contributorFailed(
-                    "Received negative response from component " + msg.getFrom() +
-                    ":  " + msg.getResponseInfo(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+            //Idempotent
+            getContext().getMonitor().contributorIdentified(msg);
+            getContext().getMonitor().contributorComplete(new DeleteFileCompletePillarEvent(
+                    null, msg.getFrom(), "Delete considered complete as file was already missing from the pillar",
+                    context.getConversationID()));
         } else {
             getContext().getMonitor().warning("Received unexpected response code " +
                     msg.getResponseInfo().getResponseCode() + " from " + msg.getFrom());
