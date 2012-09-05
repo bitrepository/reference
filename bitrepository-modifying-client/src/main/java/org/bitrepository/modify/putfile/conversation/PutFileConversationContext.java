@@ -24,6 +24,9 @@ package org.bitrepository.modify.putfile.conversation;
 import java.math.BigInteger;
 import java.net.URL;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.conversation.ConversationContext;
@@ -37,6 +40,8 @@ public class PutFileConversationContext extends ConversationContext {
     private final BigInteger fileSize;
     private final ChecksumDataForFileTYPE checksumForValidationAtPillar;
     private final ChecksumSpecTYPE checksumRequestsForValidation;
+
+    private final Set<String> checksumPillars = new HashSet<String>();
     
     public PutFileConversationContext(String fileID, URL urlForFile, long fileSize, 
             ChecksumDataForFileTYPE checksumForValidationAtPillar, ChecksumSpecTYPE checksumRequestsForValidation, 
@@ -70,4 +75,22 @@ public class PutFileConversationContext extends ConversationContext {
         return checksumRequestsForValidation;
     }
 
+    public ChecksumSpecTYPE getChecksumRequestsForValidation() {
+        return checksumRequestsForValidation;
+    }
+
+    /**
+     * @return The list of checksum pillar detected during the IdentifyPillarsForPutFile phase.
+     */
+    public Set<String> getChecksumPillars() {
+        return Collections.unmodifiableSet(checksumPillars);
+    }
+
+    /**
+     * Use to register checksum pillars.
+     * @param pillarID The pillarID of the Checksum pillar.
+     */
+    public void addChecksumPillar(String pillarID) {
+        checksumPillars.add(pillarID);
+    }
 }

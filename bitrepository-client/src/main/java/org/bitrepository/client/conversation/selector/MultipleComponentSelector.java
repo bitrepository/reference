@@ -58,9 +58,11 @@ public class MultipleComponentSelector implements ComponentSelector {
      * @param response The response identifying a pillar for the DeleteFile operation.
      */
     public void processResponse(MessageResponse response) throws UnexpectedResponseException {
-        responseStatus.responseReceived(response.getFrom());
-        if(response.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)) {
-            selectedComponents.add(new SelectedComponentInfo(response.getFrom(), response.getReplyTo()));                
+        String respondingComponentID = response.getFrom();
+        responseStatus.responseReceived(respondingComponentID);
+        if(response.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE) &&
+                responseStatus.getComponentsWhichShouldRespond().contains(respondingComponentID)) {
+            selectedComponents.add(new SelectedComponentInfo(respondingComponentID, response.getReplyTo()));
         }
     }
 

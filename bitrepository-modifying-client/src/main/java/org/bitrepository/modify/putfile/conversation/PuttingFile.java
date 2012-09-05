@@ -71,7 +71,7 @@ public class PuttingFile extends PerformingOperationState {
         } else {
             throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
                     " while waiting for Put file response.");
-        }        
+        }
     }
 
     @Override
@@ -79,21 +79,36 @@ public class PuttingFile extends PerformingOperationState {
         return responseStatus;
     }
 
+    /**
+     * Will only add ChecksumRequestForNewFile parameter if the pillar hasn't been marked as a Checksum pillar.
+     * @see org.bitrepository.modify.putfile.conversation.PutFileConversationContext#getChecksumPillars().
+     */
     @Override
     protected void sendRequest() {
-        PutFileRequest msg = new PutFileRequest();
-        initializeMessage(msg);
-        msg.setFileAddress(context.getUrlForFile().toExternalForm());
-        msg.setFileID(context.getFileID());
-        msg.setFileSize(context.getFileSize());
-        msg.setChecksumDataForNewFile(context.getChecksumForValidationAtPillar());
-        msg.setChecksumRequestForNewFile(context.getChecksumRequestForValidation());
         context.getMonitor().requestSent("Sending request for put file", activeContributors.keySet().toString());
         for(String pillar : activeContributors.keySet()) {
-            msg.setPillarID(pillar);
-            msg.setTo(activeContributors.get(pillar));
+            PutFileRequest msg = createRequest(pillar);
+            if (!context.getChecksumPillars().contains(pillar)) {
+                msg.setChecksumRequestForNewFile(context.getChecksumRequestForValidation());
+            }
             context.getMessageSender().sendMessage(msg);
         }
+    }
+
+    /**
+     * Will create a PutFileRequest based on the context. The ChecksumRequestForNewFile parameter is not added as this
+     * should only be added in case of full pillars.
+     */
+    private PutFileRequest createRequest(String pillar) {
+        PutFileRequest request = new PutFileRequest();
+        initializeMessage(request);
+        request.setFileAddress(context.getUrlForFile().toExternalForm());
+        request.setFileID(context.getFileID());
+        request.setFileSize(context.getFileSize());
+        request.setChecksumDataForNewFile(context.getChecksumForValidationAtPillar());
+        request.setPillarID(pillar);
+        request.setTo(activeContributors.get(pillar));
+        return request;
     }
 
     @Override

@@ -53,8 +53,8 @@ public class IdentifyPillarsForGetChecksums  extends IdentifyingState {
     public IdentifyPillarsForGetChecksums(GetChecksumsConversationContext context) {
         this.context = context;
         Collection<String> contributors;
-        if (context.getContributors() != null) {
-            contributors = context.getContributors();
+        if (context.getPillars() != null) {
+            contributors = context.getPillars();
         } else {
             contributors = context.getSettings().getCollectionSettings().getClientSettings().getPillarIDs();
         }

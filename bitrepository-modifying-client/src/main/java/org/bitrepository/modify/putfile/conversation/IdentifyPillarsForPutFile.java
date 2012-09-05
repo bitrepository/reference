@@ -90,6 +90,9 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
                             "Received negative response from component " + response.getFrom() + ":  " +
                                     response.getResponseInfo(), response.getFrom(), response.getResponseInfo().getResponseCode());
             }
+            if (response.getPillarChecksumSpec() != null) {
+                context.addChecksumPillar(response.getPillarID());
+            }
             getSelector().processResponse(response);
         } else {
             throw new UnexpectedResponseException("Are currently only expecting IdentifyPillarsForPutFileResponse's");
