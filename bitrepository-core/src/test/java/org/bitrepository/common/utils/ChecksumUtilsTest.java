@@ -30,13 +30,19 @@ import java.security.NoSuchAlgorithmException;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.common.TestValidationUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class ChecksumTest extends ExtendedTestCase {
-    
+public class ChecksumUtilsTest extends ExtendedTestCase {
+    @Test(groups = { "regressiontest" })
+    public void utilityTester() throws Exception {
+        addDescription("Test that the utility class is a proper utility class.");
+        TestValidationUtils.validateUtilityClass(ChecksumUtils.class);
+    }
+
     @Test(groups = { "regressiontest" })
     public void calculateHmacChecksums() throws Exception {
         addDescription("Tests whether the utility class for calculating checksums with HMAC is able to "

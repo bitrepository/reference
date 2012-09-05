@@ -24,12 +24,20 @@ package org.bitrepository.common.utils;
 import java.io.ByteArrayOutputStream;
 
 import org.apache.activemq.util.ByteArrayInputStream;
+import org.bitrepository.common.TestValidationUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class StreamUtilsTest extends ExtendedTestCase {
     String DATA = "The data for the streams.";
+    
+    @Test(groups = { "regressiontest" })
+    public void utilityTester() throws Exception {
+        addDescription("Test that the utility class is a proper utility class.");
+        TestValidationUtils.validateUtilityClass(StreamUtils.class);
+    }
+
     @Test(groups = {"regressiontest"})
     public void streamTester() throws Exception {
         addDescription("Tests the SteamUtils class.");

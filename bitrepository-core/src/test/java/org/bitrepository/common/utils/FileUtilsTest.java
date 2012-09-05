@@ -24,6 +24,7 @@ package org.bitrepository.common.utils;
 import java.io.File;
 
 import org.apache.activemq.util.ByteArrayInputStream;
+import org.bitrepository.common.TestValidationUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -52,6 +53,12 @@ public class FileUtilsTest extends ExtendedTestCase {
         }
     }
     
+    @Test(groups = { "regressiontest" })
+    public void utilityTester() throws Exception {
+        addDescription("Test that the utility class is a proper utility class.");
+        TestValidationUtils.validateUtilityClass(FileUtils.class);
+    }
+
     @Test(groups = {"regressiontest"})
     public void createDirectoryTester() throws Exception {
         addDescription("Test the ability to create directories and delete them.");

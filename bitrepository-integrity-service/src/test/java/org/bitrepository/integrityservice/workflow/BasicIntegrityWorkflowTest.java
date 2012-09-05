@@ -136,7 +136,7 @@ public class BasicIntegrityWorkflowTest extends ExtendedTestCase {
             @Override
             public ObsoleteChecksumReportModel checkObsoleteChecksums(long outdatedInterval) {
                 ObsoleteChecksumReportModel res = super.checkObsoleteChecksums(outdatedInterval);
-                res.reportMissingChecksum(TEST_FILE_1, TEST_PILLAR_1, CalendarUtils.getEpoch());
+                res.reportObsoleteChecksum(TEST_FILE_1, TEST_PILLAR_1, CalendarUtils.getEpoch());
                 return res;
             }
             @Override

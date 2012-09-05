@@ -21,6 +21,7 @@
  */
 package org.bitrepository.common.utils;
 
+import org.bitrepository.common.TestValidationUtils;
 import org.bitrepository.common.utils.Base16Utils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -34,6 +35,12 @@ public class Base16UtilsTest extends ExtendedTestCase {
     private final String DECODED_CHECKSUM = "ff5aca7ae8c80c9a3aeaf9173e4dfd27";
     private final byte[] ENCODED_CHECKSUM = new byte[]{-1,90,-54,122,-24,-56,12,-102,58,-22,-7,23,62,77,-3,39};
 
+    @Test(groups = { "regressiontest" })
+    public void utilityTester() throws Exception {
+        addDescription("Test that the utility class is a proper utility class.");
+        TestValidationUtils.validateUtilityClass(Base16Utils.class);
+    }
+    
     @Test(groups = { "regressiontest" })
     public void encodeChecksum() throws Exception {
         addDescription("Validating the encoding of the checksums.");

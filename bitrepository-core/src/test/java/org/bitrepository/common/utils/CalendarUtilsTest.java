@@ -25,13 +25,20 @@ import java.util.Date;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.bitrepository.common.TestValidationUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class CalendarUtilsTest extends ExtendedTestCase {
     long DATE_IN_MILLIS = 123456789L;
-    
+
+    @Test(groups = { "regressiontest" })
+    public void utilityTester() throws Exception {
+        addDescription("Test that the utility class is a proper utility class.");
+        TestValidationUtils.validateUtilityClass(CalendarUtils.class);
+    }
+
     @Test(groups = {"regressiontest"})
     public void calendarTester() throws Exception {
         addDescription("Test the calendar utility class");
