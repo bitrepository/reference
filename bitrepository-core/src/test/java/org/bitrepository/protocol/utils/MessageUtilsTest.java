@@ -24,11 +24,17 @@ package org.bitrepository.protocol.utils;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.common.TestValidationUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class MessageUtilsTest extends ExtendedTestCase {
+    @Test(groups = {"regressiontest", "integritytest"})
+    public void validateUtilityClass() {
+        addDescription("Validating that the utility class is actually an utility class.");
+        TestValidationUtils.validateUtilityClass(MessageUtils.class);
+    }
     
     @Test(groups = { "regressiontest" })
     public void testPositiveIdentification() throws Exception {

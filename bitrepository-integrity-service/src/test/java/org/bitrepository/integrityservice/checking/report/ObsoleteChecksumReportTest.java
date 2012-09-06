@@ -30,6 +30,7 @@ import org.testng.annotations.Test;
 public class ObsoleteChecksumReportTest extends ExtendedTestCase {
     
     public static final String TEST_PILLAR_1 = "test-pillar-1";
+    public static final String TEST_PILLAR_2 = "test-pillar-2";
     
     public static final String TEST_FILE_1 = "test-file-1";
     
@@ -45,12 +46,28 @@ public class ObsoleteChecksumReportTest extends ExtendedTestCase {
     public void testObsoleteChecksum() {
         addDescription("Tests obsolete checksum report when the file is obsolete at the pillar.");
         ObsoleteChecksumReportModel report = new ObsoleteChecksumReportModel();
-        report.reportMissingChecksum(TEST_FILE_1, TEST_PILLAR_1, CalendarUtils.getEpoch());
+        report.reportObsoleteChecksum(TEST_FILE_1, TEST_PILLAR_1, CalendarUtils.getEpoch());
         
         Assert.assertTrue(report.hasIntegrityIssues(), report.generateReport());
         Assert.assertEquals(report.getObsoleteChecksum().size(), 1);
         Assert.assertTrue(report.getObsoleteChecksum().containsKey(TEST_FILE_1));
         Assert.assertEquals(report.getObsoleteChecksum().get(TEST_FILE_1).getPillarDates().size(), 1);
         Assert.assertTrue(report.getObsoleteChecksum().get(TEST_FILE_1).getPillarDates().containsKey(TEST_PILLAR_1));
-    }    
+    }
+    
+    @Test(groups = {"regressiontest", "integritytest"})
+    public void testTwoPillarsWithObsoleteChecksum() {
+        addDescription("Tests obsolete checksum when two different pillars report the checksum to be obsolete.");
+        ObsoleteChecksumReportModel report = new ObsoleteChecksumReportModel();
+        report.reportObsoleteChecksum(TEST_FILE_1, TEST_PILLAR_1, CalendarUtils.getEpoch());
+        report.reportObsoleteChecksum(TEST_FILE_1, TEST_PILLAR_2, CalendarUtils.getNow());
+        
+        addStep("Validate the report.", "Contains only one file, but both pillars for the given file.");
+        Assert.assertTrue(report.hasIntegrityIssues(), report.generateReport());
+        Assert.assertEquals(report.getObsoleteChecksum().size(), 1);
+        Assert.assertTrue(report.getObsoleteChecksum().containsKey(TEST_FILE_1));
+        Assert.assertEquals(report.getObsoleteChecksum().get(TEST_FILE_1).getPillarDates().size(), 2);
+        Assert.assertTrue(report.getObsoleteChecksum().get(TEST_FILE_1).getPillarDates().containsKey(TEST_PILLAR_1));
+        Assert.assertTrue(report.getObsoleteChecksum().get(TEST_FILE_1).getPillarDates().containsKey(TEST_PILLAR_2));
+    }   
 }

@@ -62,7 +62,7 @@ public class ObsoleteChecksumFinder {
                 
                 if(CalendarUtils.convertFromXMLGregorianCalendar(fileinfo.getDateForLastChecksumCheck()).getTime()
                         < outDated) {
-                    report.reportMissingChecksum(fileId, fileinfo.getPillarId(), 
+                    report.reportObsoleteChecksum(fileId, fileinfo.getPillarId(), 
                             fileinfo.getDateForLastChecksumCheck());
                 }
             }

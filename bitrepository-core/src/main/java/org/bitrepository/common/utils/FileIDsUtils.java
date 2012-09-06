@@ -30,6 +30,9 @@ public class FileIDsUtils {
     /** The constant for all file ids.*/
     private static final String ALL_FILE_IDS = "true";
     
+    /** Private constructor to prevent instantiation.*/
+    private FileIDsUtils() {}
+    
     /**
      * @return The FileIDs for all file ids.
      */
@@ -37,7 +40,6 @@ public class FileIDsUtils {
         FileIDs fileids = new FileIDs();
         fileids.setAllFileIDs(ALL_FILE_IDS);
         return fileids;
-
     }
     
     /**
@@ -47,6 +49,5 @@ public class FileIDsUtils {
         FileIDs fileids = new FileIDs();
         fileids.setFileID(fileId);
         return fileids;
-
     }
 }

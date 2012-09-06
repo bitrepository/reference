@@ -31,7 +31,7 @@ import org.testng.annotations.Test;
 public class FileIDValidatorTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
-    
+
     @BeforeClass (alwaysRun = true)
     public void setup() {
         settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());

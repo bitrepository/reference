@@ -21,30 +21,34 @@
  */
 package org.bitrepository.common.utils;
 
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.common.TestValidationUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class ResponseInfoUtilsTest extends ExtendedTestCase {
+public class FileIDUtilsTest extends ExtendedTestCase {
+    String FILE_ID = "Test-File-Id";
+    
     @Test(groups = { "regressiontest" })
     public void utilityTester() throws Exception {
         addDescription("Test that the utility class is a proper utility class.");
-        TestValidationUtils.validateUtilityClass(ResponseInfoUtils.class);
-    }
-
-    @Test(groups = {"regressiontest"})
-    public void responseInfoTester() throws Exception {
-        addDescription("Test the response info.");
-        addStep("Validate the positive identification response", "Should be 'IDENTIFICATION_POSITIVE'");
-        ResponseInfo ri = ResponseInfoUtils.getPositiveIdentification();
-        Assert.assertEquals(ri.getResponseCode(), ResponseCode.IDENTIFICATION_POSITIVE);
-        
-        addStep("Validate the Progress response", "Should be 'OPERATION_ACCEPTED_PROGRESS'");
-        ri = ResponseInfoUtils.getInitialProgressResponse();
-        Assert.assertEquals(ri.getResponseCode(), ResponseCode.OPERATION_ACCEPTED_PROGRESS);
+        TestValidationUtils.validateUtilityClass(FileIDsUtils.class);
     }
     
+    @Test( groups = {"regressiontest"})
+    public void fileIDsTest() throws Exception {
+        addDescription("Test the utility class for generating FileIDs");
+        addStep("Test 'all file ids'", "is only AllFileIDs");
+        FileIDs allFileIDs = FileIDsUtils.getAllFileIDs();
+        Assert.assertTrue(allFileIDs.isSetAllFileIDs());
+        Assert.assertFalse(allFileIDs.isSetFileID());
+        Assert.assertNull(allFileIDs.getFileID());
+        
+        addStep("Test a specific file id", "Should not be AllFileIDs");
+        FileIDs specificFileIDs = FileIDsUtils.getSpecificFileIDs(FILE_ID);
+        Assert.assertFalse(specificFileIDs.isSetAllFileIDs());
+        Assert.assertTrue(specificFileIDs.isSetFileID());
+        Assert.assertEquals(specificFileIDs.getFileID(), FILE_ID);
+    }
 }

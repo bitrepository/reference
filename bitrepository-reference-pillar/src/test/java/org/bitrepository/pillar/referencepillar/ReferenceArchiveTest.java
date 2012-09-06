@@ -50,7 +50,7 @@ public class ReferenceArchiveTest extends ReferencePillarTest {
     
     private static String EXISTING_FILE = "file1";
     private static String MISSING_FILE = "Missing-filE";
-
+    
     @AfterMethod (alwaysRun=true)
     public void shutdownTests() throws Exception {
         FileUtils.delete(new File(DIR_NAME));
@@ -88,7 +88,7 @@ public class ReferenceArchiveTest extends ReferencePillarTest {
         } catch (Exception e) {
             // expected
         }
-
+        
         addStep("Delete, recreate and delete again", "Should be moved to retain dir twice.");
         archive.deleteFile(EXISTING_FILE);
         createExistingFile();
@@ -101,7 +101,7 @@ public class ReferenceArchiveTest extends ReferencePillarTest {
             archive.deleteFile(MISSING_FILE);
             Assert.fail("Should throw an exception here.");
         } catch (IllegalStateException e) {
-           // Expected.
+            // Expected.
         }
         
         addStep("Replace a file, which does not exist in the filedir.", "Should throw an exception");
@@ -109,26 +109,26 @@ public class ReferenceArchiveTest extends ReferencePillarTest {
             archive.replaceFile(MISSING_FILE);
             Assert.fail("Should throw an exception here.");
         } catch (IllegalStateException e) {
-           // Expected.
+            // Expected.
         }
-
+        
         addStep("Copy a file into the tmpDir and then use replace.", "Should create another file in retain dir and remove the one in tmpDir.");
         FileUtils.copyFile(new File(DIR_NAME + "/retainDir/" + EXISTING_FILE), 
                 new File(DIR_NAME + "/tmpDir/" + EXISTING_FILE));
         archive.replaceFile(EXISTING_FILE);
         Assert.assertFalse(new File(DIR_NAME + "/tmpDir/" + EXISTING_FILE).isFile());
         Assert.assertTrue(new File(DIR_NAME + "/retainDir/" + EXISTING_FILE + ".old.old").isFile());
-
+        
         addStep("Try performing the replace, when the file in the tempdir has been removed.", "Should throw an exception");
         try {
             archive.replaceFile(EXISTING_FILE);
             Assert.fail("Should throw an exception here.");
         } catch (IllegalStateException e) {
-           // Expected.
+            // Expected.
         }
-
+        
         archive.close();
-   }
+    }
     
     private void createExistingFile() throws Exception {
         FileWriter fw = new FileWriter(new File(FILE_DIR_NAME, EXISTING_FILE), false);

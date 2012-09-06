@@ -39,7 +39,7 @@ public class ObsoleteChecksumReportModel implements IntegrityReportModel {
      * @param pillarId The id of the pillar, where the checksum is obsolete.
      * @param date The time stamp for the latest checksum calculation for the given pillar.
      */
-    public void reportMissingChecksum(String fileId, String pillarId, XMLGregorianCalendar date) {
+    public void reportObsoleteChecksum(String fileId, String pillarId, XMLGregorianCalendar date) {
         if(obsoleteChecksum.containsKey(fileId)) {
             obsoleteChecksum.get(fileId).addPillar(pillarId, date);
         } else {
