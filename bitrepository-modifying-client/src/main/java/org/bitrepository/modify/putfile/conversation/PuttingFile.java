@@ -36,6 +36,7 @@ import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.common.utils.ChecksumUtils;
 
 /**
  * The state for the PutFile communication, where the file is put to the pillars (the pillars are requested to retrieve
@@ -88,7 +89,8 @@ public class PuttingFile extends PerformingOperationState {
         context.getMonitor().requestSent("Sending request for put file", activeContributors.keySet().toString());
         for(String pillar : activeContributors.keySet()) {
             PutFileRequest msg = createRequest(pillar);
-            if (!context.getChecksumPillars().contains(pillar)) {
+            if (!context.getChecksumPillars().contains(pillar) ||
+                context.getChecksumRequestForValidation().equals(ChecksumUtils.getDefault(context.getSettings()))) {
                 msg.setChecksumRequestForNewFile(context.getChecksumRequestForValidation());
             }
             context.getMessageSender().sendMessage(msg);
