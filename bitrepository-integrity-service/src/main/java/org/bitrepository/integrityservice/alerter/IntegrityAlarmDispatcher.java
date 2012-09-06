@@ -35,9 +35,7 @@ import org.bitrepository.service.contributor.ContributorContext;
  */
 public class IntegrityAlarmDispatcher extends AlarmDispatcher implements IntegrityAlerter {
     /**
-     * Constructor.
-     * @param settings The settings for the dispatcher.
-     * @param messageBus The bus for sending the alarms.
+     * @param context The settings for the dispatcher.
      */
     public IntegrityAlarmDispatcher(ContributorContext context) {
         super(context);

@@ -75,6 +75,7 @@ public class PutFileConversationContext extends ConversationContext {
         return checksumRequestsForValidation;
     }
 
+    /** The checksum for the file being put. Used to verify the file on the pillar when downloaded. */
     public ChecksumSpecTYPE getChecksumRequestsForValidation() {
         return checksumRequestsForValidation;
     }

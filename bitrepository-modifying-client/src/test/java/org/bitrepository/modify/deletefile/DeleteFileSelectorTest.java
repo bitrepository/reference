@@ -95,8 +95,7 @@ public class DeleteFileSelectorTest extends ExtendedTestCase {
     public void specificPillarSelectorTester() throws Exception {
         addDescription("Tests the " + SpecificPillarSelectorForDeleteFile.class.getName());
         addStep("Setup", "");
-        SpecificPillarSelectorForDeleteFile selector = new SpecificPillarSelectorForDeleteFile(
-                Arrays.asList(PILLAR_ID_1), PILLAR_ID_1);
+        SpecificPillarSelectorForDeleteFile selector = new SpecificPillarSelectorForDeleteFile(PILLAR_ID_1);
         
         addStep("Test the basic funtionallity", "Should return lists.");
         Assert.assertEquals(selector.getOutstandingComponents(), Arrays.asList(PILLAR_ID_1));
@@ -135,7 +134,7 @@ public class DeleteFileSelectorTest extends ExtendedTestCase {
         }
         
         addStep("Good case. New selector and a positive response.", "Should finish");
-        selector = new SpecificPillarSelectorForDeleteFile(Arrays.asList(PILLAR_ID_1), PILLAR_ID_1);
+        selector = new SpecificPillarSelectorForDeleteFile(PILLAR_ID_1);
         IdentifyPillarsForDeleteFileResponse goodResponse = new IdentifyPillarsForDeleteFileResponse();
         goodResponse.setFrom(PILLAR_ID_1);
         goodResponse.setPillarID(PILLAR_ID_1);

@@ -21,19 +21,19 @@
  */
 package org.bitrepository.modify.deletefile.selector;
 
+import java.util.Arrays;
 import java.util.Collection;
-
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 
 public class SpecificPillarSelectorForDeleteFile extends DeleteFileSelector {
-
     private final String choosenPillar;
     
-    public SpecificPillarSelectorForDeleteFile(Collection<String> pillarsWhichShouldRespond, String choosenPillar) {
+    public SpecificPillarSelectorForDeleteFile(String pillarID) {
+        Collection<String> pillarsWhichShouldRespond = Arrays.asList(new String[] { pillarID });
         responseStatus = new ContributorResponseStatus(pillarsWhichShouldRespond);
-        this.choosenPillar = choosenPillar;
+        this.choosenPillar = pillarID;
     }
     
     @Override

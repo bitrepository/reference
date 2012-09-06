@@ -29,8 +29,12 @@ import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /** Models the response state for a given set of components */
 public class ContributorResponseStatus {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final Set<String> componentsWhichShouldRespond;
     private final Set<String> componentsWithOutstandingResponse;
 
@@ -74,7 +78,7 @@ public class ContributorResponseStatus {
         } else if (componentsWhichShouldRespond.contains(componentId)) {
             throw new UnexpectedResponseException("Received more than one response from component " + componentId);
         } else {
-            // Normal case, if components replies to a broadcast without being part of the contributor subset.
+            log.debug("Received response from irrelevant component");
         }
     }
 

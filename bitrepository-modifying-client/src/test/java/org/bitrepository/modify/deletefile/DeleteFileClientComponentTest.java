@@ -25,6 +25,7 @@
 package org.bitrepository.modify.deletefile;
 
 import java.math.BigInteger;
+import java.util.concurrent.TimeUnit;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -39,6 +40,7 @@ import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -155,7 +157,43 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                     || (eventType == OperationEventType.PROGRESS),
                     "Expected either PartiallyComplete or Progress, but was: " + eventType);
         }
+        Assert.assertEquals(testEventHandler.waitForEvent(3, TimeUnit.SECONDS).getType(), OperationEventType.COMPLETE);
+    }
+
+    @Test(groups={"regressiontest"})
+    public void fileAlreadyDeletedFromPillar() throws Exception {
+        addDescription("Test that a delete on a pillar completes successfully when the file is missing " +
+                "(has already been deleted). This is a test of the Idempotent behaviour of the delete client");
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        DeleteFileClient deleteClient = createDeleteFileClient();
+
+        addStep("Request a file to be deleted on pillar1.",
+                "A IdentifyPillarsForDeleteFileRequest should be sent " +
+                        "and a IDENTIFY_REQUEST_SENT event should be generated.");
+        deleteClient.deleteFile(DEFAULT_FILE_ID, PILLAR1_ID, TestFileHelper.getDefaultFileChecksum(), null, testEventHandler, null);
+
+        IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
+                    IdentifyPillarsForDeleteFileRequest.class);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+
+        addStep("Send a identify response from Pillar1 with a missing file response.",
+                "The client should generate a COMPONENT_IDENTIFIED, a COMPONENT_COMPLETE and " +
+                        "an IDENTIFICATION_COMPLETE event.");
+        IdentifyPillarsForDeleteFileResponse identifyResponse = messageFactory.createIdentifyPillarsForDeleteFileResponse(
+                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
+            identifyResponse.getResponseInfo().setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
+            messageBus.sendMessage(identifyResponse);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+
+        addStep("The client should then continue to the performing phase and finish immediately as the pillar " +
+                "has already had the file removed apparently .",
+                "The client should generate a COMPLETE event.");
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
+
+        addStep("Send a identify response from Pillar2", "The response should be ignored");
+        Assert.assertNull(testEventHandler.waitForEvent());
     }
 
     @Test(groups={"regressiontest"})

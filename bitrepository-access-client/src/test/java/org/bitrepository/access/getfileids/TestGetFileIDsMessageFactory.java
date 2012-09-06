@@ -94,7 +94,7 @@ public class TestGetFileIDsMessageFactory extends ClientTestMessageFactory {
         identifyPillarsForGetFileIdsResponse.setPillarID(pillarId);
         identifyPillarsForGetFileIdsResponse.setFileIDs(receivedIdentifyRequestMessage.getFileIDs());
         identifyPillarsForGetFileIdsResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
-        identifyPillarsForGetFileIdsResponse.setResponseInfo(IDENTIFY_INFO_DEFAULT);
+        identifyPillarsForGetFileIdsResponse.setResponseInfo(createPositiveResponseInfo());
         identifyPillarsForGetFileIdsResponse.setFrom(pillarId);
         return identifyPillarsForGetFileIdsResponse;
     }
