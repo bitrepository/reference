@@ -23,6 +23,7 @@ package org.bitrepository.client.conversation;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.client.conversation.selector.ComponentSelector;
@@ -39,6 +40,7 @@ import org.bitrepository.client.conversation.selector.ComponentSelector;
 public abstract class IdentifyingState extends GeneralConversationState {
     @Override
     protected void processMessage(MessageResponse msg) throws UnexpectedResponseException, UnableToFinishException {
+
         if (!msg.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)    ) {
             getContext().getMonitor().contributorFailed(
                     "Received negative response from component " + msg.getFrom() +
@@ -77,7 +79,11 @@ public abstract class IdentifyingState extends GeneralConversationState {
 
     @Override
     protected GeneralConversationState getNextState() throws UnableToFinishException {
-        if (getSelector().isFinished()) {
+        if (!continueWithOperation()) {
+            getContext().getMonitor().operationFailed(
+                    "Unable to continue with operation, a component has failed");
+            return new FinishedState(getContext());
+        } else if (getSelector().isFinished()) {
             getContext().getMonitor().contributorSelected(
                     "Identified contributors", getSelector().getContributersAsString());
             return getOperationState();
@@ -112,5 +118,17 @@ public abstract class IdentifyingState extends GeneralConversationState {
      */
     protected boolean handleIdentificationTimeout() {
         return getSelector().hasSelectedComponent();
+    }
+
+    /**
+     * @return false if a critical failure has occured, so the operation needs to be abandoned.
+     * The default implementation will always return true, but this can be overridden by subclasses.
+     */
+    protected boolean continueWithOperation() {
+        return true;
+    }
+
+    protected ContributorResponseStatus getResponseStatus() {
+        return getSelector().getResponseStatus();
     }
 }

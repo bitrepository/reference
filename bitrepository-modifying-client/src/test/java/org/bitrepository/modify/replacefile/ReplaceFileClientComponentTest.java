@@ -384,7 +384,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(replaceFileFinalResponse);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
     }
     
     /**

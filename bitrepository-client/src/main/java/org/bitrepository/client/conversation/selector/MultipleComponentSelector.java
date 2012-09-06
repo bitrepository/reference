@@ -35,9 +35,7 @@ import java.util.List;
 /**
  * The general selector for choosing multiple contributors during the identification phase of a operation.
  */
-public class MultipleComponentSelector implements ComponentSelector {
-    /** Used for tracking who has answered. */
-    protected final ContributorResponseStatus responseStatus;
+public class MultipleComponentSelector extends ComponentSelector {
     protected final List<SelectedComponentInfo> selectedComponents = new LinkedList<SelectedComponentInfo>();
 
     /**

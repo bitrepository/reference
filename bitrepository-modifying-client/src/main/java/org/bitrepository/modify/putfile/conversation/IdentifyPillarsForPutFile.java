@@ -149,4 +149,8 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
         return "Identifying pillars for put file";
     }
 
+    @Override
+    public boolean continueWithOperation() {
+        return !context.getMonitor().hasFailures();
+    }
 }

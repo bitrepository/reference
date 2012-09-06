@@ -157,7 +157,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                     || (eventType == OperationEventType.PROGRESS),
                     "Expected either PartiallyComplete or Progress, but was: " + eventType);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent(3, TimeUnit.SECONDS).getType(), OperationEventType.COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
     }
 
     @Test(groups={"regressiontest"})
@@ -181,7 +181,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                         "an IDENTIFICATION_COMPLETE event.");
         IdentifyPillarsForDeleteFileResponse identifyResponse = messageFactory.createIdentifyPillarsForDeleteFileResponse(
                 receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
-            identifyResponse.getResponseInfo().setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
+            identifyResponse.getResponseInfo().setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             messageBus.sendMessage(identifyResponse);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_COMPLETE);
@@ -193,7 +193,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
 
         addStep("Send a identify response from Pillar2", "The response should be ignored");
-        Assert.assertNull(testEventHandler.waitForEvent());
+        Assert.assertNull(testEventHandler.waitForEvent(3, TimeUnit.SECONDS));
     }
 
     @Test(groups={"regressiontest"})
@@ -321,7 +321,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     }
     
     @Test(groups={"regressiontest"})
-    public void deleteClientPillarFailed() throws Exception {
+    public void deleteClientPillarFailedDuringPerform() throws Exception {
         addDescription("Tests the handling of a operation failure for the DeleteClient. ");
         addStep("Initialise the number of pillars to one", "Should be OK.");
 
@@ -390,7 +390,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
 
         addStep("Send a failed response message to the DeleteClient.", 
-                "Should be caught by the event handler. First a PillarFailed, then a Complete.");
+                "Should be caught by the event handler. First a COMPONENT_FAILED, then a COMPLETE.");
         if(useMockupPillar()) {
             DeleteFileFinalResponse deleteFileFinalResponse = messageFactory.createDeleteFileFinalResponse(
                     receivedDeleteFileRequest, PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
@@ -401,7 +401,72 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(deleteFileFinalResponse);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
+    }
+
+    @Test(groups={"regressiontest"})
+    public void deleteClientSpecifiedPillarFailedDuringIdentification() throws Exception {
+        addDescription("Tests the handling of a identification failure for a pillar for the DeleteClient. ");
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        DeleteFileClient deleteClient = createDeleteFileClient();
+
+        addStep("Request a file to be deleted on the pillar1.",
+                "A IdentifyPillarsForDeleteFileRequest should be sent.");
+        deleteClient.deleteFile(
+                DEFAULT_FILE_ID, PILLAR1_ID, TestFileHelper.getDefaultFileChecksum(), null, testEventHandler, null);
+
+        IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
+                    IdentifyPillarsForDeleteFileRequest.class);
+
+        addStep("Send a failed response from pillar1.",
+                "The client should generate a COMPONENT_FAILED followed by a OperationEventType.FAILED.");
+
+            IdentifyPillarsForDeleteFileResponse identifyResponse
+                    = messageFactory.createIdentifyPillarsForDeleteFileResponse(receivedIdentifyRequestMessage,
+                    PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
+        identifyResponse.getResponseInfo().setResponseCode(ResponseCode.IDENTIFICATION_NEGATIVE);
+        messageBus.sendMessage(identifyResponse);
+
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
+    }
+
+    @Test(groups={"regressiontest"})
+    public void deleteClientOtherPillarFailedDuringIdentification() throws Exception {
+        addDescription("Tests the handling of a identification failure for a pillar for the DeleteClient. ");
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        DeleteFileClient deleteClient = createDeleteFileClient();
+
+        addStep("Request a file to be deleted on the pillar1.",
+                "A IdentifyPillarsForDeleteFileRequest should be sent and a IDENTIFY_REQUEST_SENT event should be generated.");
+        deleteClient.deleteFile(
+                DEFAULT_FILE_ID, PILLAR1_ID, TestFileHelper.getDefaultFileChecksum(), null, testEventHandler, null);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+
+        IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
+                IdentifyPillarsForDeleteFileRequest.class);
+
+        addStep("Send a failed response from pillar2.",
+                "The response should be ignored as it isn't relevant for the operation.");
+        IdentifyPillarsForDeleteFileResponse identifyResponse
+                = messageFactory.createIdentifyPillarsForDeleteFileResponse(receivedIdentifyRequestMessage,
+                PILLAR2_ID, pillar2DestinationId, DEFAULT_FILE_ID);
+        identifyResponse.getResponseInfo().setResponseCode(ResponseCode.IDENTIFICATION_NEGATIVE);
+        messageBus.sendMessage(identifyResponse);
+        Assert.assertNull(testEventHandler.waitForEvent(3, TimeUnit.SECONDS));
+
+        addStep("Send a ok response from pillar1.",
+                "The client should generate th following events: COMPONENT_IDENTIFIED, IDENTIFICATION_COMPLETE and " +
+                        "REQUEST_SENT. A delete request should be sent to pillar1");
+        IdentifyPillarsForDeleteFileResponse identifyResponse2 =
+                messageFactory.createIdentifyPillarsForDeleteFileResponse(receivedIdentifyRequestMessage,
+                    PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
+            messageBus.sendMessage(identifyResponse2);
+        Assert.assertNotNull(pillar1Destination.waitForMessage(DeleteFileRequest.class));
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
     }
 
     /**

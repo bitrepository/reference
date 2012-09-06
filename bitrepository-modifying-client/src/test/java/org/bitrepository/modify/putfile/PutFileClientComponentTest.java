@@ -353,7 +353,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(putFileFinalResponse);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
     }
 
     @Test(groups={"regressiontest"})

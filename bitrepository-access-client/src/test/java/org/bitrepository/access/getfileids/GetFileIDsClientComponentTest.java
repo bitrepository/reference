@@ -24,6 +24,10 @@
  */
 package org.bitrepository.access.getfileids;
 
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
+import javax.xml.bind.JAXBException;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.FileIDs;
@@ -40,20 +44,11 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReque
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
-import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
-import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import javax.xml.bind.JAXBException;
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Test class for the 'GetFileIDsClient'.
@@ -458,7 +453,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
         }
 
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
     }
 
 

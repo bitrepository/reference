@@ -28,24 +28,21 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.selector.ComponentSelector;
-import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 
-public abstract class DeleteFileSelector implements ComponentSelector {
-    
+public abstract class DeleteFileSelector extends ComponentSelector {
     /** Used for tracking who has answered. */
-    protected ContributorResponseStatus responseStatus;
     protected final List<SelectedComponentInfo> selectedComponents = new LinkedList<SelectedComponentInfo>();
 
     /**
      * Method to determine if a pillar should be chosen for deleting the file. 
      */
-    abstract protected boolean checkPillarResponseForSelection(IdentifyPillarsForDeleteFileResponse response) 
+    abstract protected boolean checkPillarResponseForSelection(IdentifyPillarsForDeleteFileResponse response)
             throws UnexpectedResponseException;
 
-    
+
     /**
      * Method for processing a IdentifyPillarsForDeleteFileResponse. Checks whether the response is from the
      * expected pillar.
@@ -61,13 +58,13 @@ public abstract class DeleteFileSelector implements ComponentSelector {
             IdentifyPillarsForDeleteFileResponse resp = (IdentifyPillarsForDeleteFileResponse) response;
             responseStatus.responseReceived(resp.getFrom());
             if (checkPillarResponseForSelection(resp)
-                && !resp.getResponseInfo().getResponseCode().equals(ResponseCode.FILE_NOT_FOUND_FAILURE)
-               ) {
+                    && !resp.getResponseInfo().getResponseCode().equals(ResponseCode.FILE_NOT_FOUND_FAILURE)
+                    ) {
                 selectedComponents.add(new SelectedComponentInfo(resp.getPillarID(), response.getReplyTo()));
             }
         } else {
             throw new UnexpectedResponseException("Are currently only expecting IdentifyPillarsForGetFileResponse's");
-        } 
+        }
     }
 
     @Override
@@ -100,5 +97,5 @@ public abstract class DeleteFileSelector implements ComponentSelector {
     public String getContributersAsString() {
         return getSelectedComponents().toString();
     }
-        
+
 }

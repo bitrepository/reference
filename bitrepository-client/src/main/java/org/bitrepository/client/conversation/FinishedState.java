@@ -24,7 +24,9 @@
  */
 package org.bitrepository.client.conversation;
 
+import java.util.LinkedList;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 
 /**
@@ -32,6 +34,8 @@ import org.bitrepository.common.exceptions.UnableToFinishException;
  */
 public class FinishedState extends GeneralConversationState {
     protected final ConversationContext context;
+    protected final ContributorResponseStatus dummyResponseStatus =
+            new ContributorResponseStatus(new LinkedList<String>());
     
     public FinishedState(ConversationContext context) {
         this.context = context;
@@ -58,6 +62,11 @@ public class FinishedState extends GeneralConversationState {
     }
 
     @Override
+    protected boolean isComponentRelevant(String componentID) {
+        return false;
+    }
+
+    @Override
     public void sendRequest() {
         // Nothing to do.
     }
@@ -69,7 +78,7 @@ public class FinishedState extends GeneralConversationState {
     }
 
     /**
-     * Never occures, this is the final state
+     * Never occures, this is the final state.
      * @return
      */
     @Override
@@ -77,4 +86,10 @@ public class FinishedState extends GeneralConversationState {
         // What to do?
         return this;
     }
+
+    @Override
+    protected ContributorResponseStatus getResponseStatus() {
+        return dummyResponseStatus;
+    }
+
 }

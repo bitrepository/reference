@@ -33,19 +33,20 @@ import java.util.List;
 /** Can be used to select a single component to run an operation on by handling the identify responses. <p>
  * The algorithm for selecting the component is implemented in the concrete classes.
  */
-public interface ComponentSelector {
+public abstract class ComponentSelector {
+    /** Used for tracking who has answered. */
+    protected ContributorResponseStatus responseStatus;
 
     /**
-     *
      * @return A string representation of the selected contributors.
      */
-    String getContributersAsString();
+    public abstract String getContributersAsString();
 
     /**
      * Method for identifying the components, which needs to be identified for this operation to be finished.
      * @return An array of the IDs of the components which have not yet responded.
      */
-    List<String> getOutstandingComponents();
+    public abstract List<String> getOutstandingComponents();
     
     /**
      * Returns true if all the need information to select a pillar has been processed. <p>
@@ -54,15 +55,22 @@ public interface ComponentSelector {
      * has finished.
      * @throws UnableToFinishException Indicates that the selector was unable to find a component. 
      */
-    boolean isFinished() throws UnableToFinishException;
+    public abstract boolean isFinished() throws UnableToFinishException;
 
     /**
      * @return <code>true</code> if any components have been selected, else <code>false</code>.
      */
-    boolean hasSelectedComponent();
+    public abstract boolean hasSelectedComponent();
 
     /**
      * @param response The response to handle.
      */
-    void processResponse(MessageResponse response)  throws UnexpectedResponseException;
+    public abstract void processResponse(MessageResponse response)  throws UnexpectedResponseException;
+
+    /**
+     * @return The concrete response status.
+     */
+    public ContributorResponseStatus getResponseStatus() {
+        return responseStatus;
+    }
 }

@@ -113,11 +113,11 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Sends a response from pillar2.",
-                "A COMPONENT_IDENTIFIED should be generated.");
+                "This should be ignored.");
         IdentifyPillarsForGetChecksumsResponse identifyResponse2 = testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
                 receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(identifyResponse2);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+        testEventHandler.verifyNoEventsAreReceived();
 
         addStep("Sends a response from pillar1.",
                 "A getChecksumRequest should be sendt to pillar1 and the following events should be received: " +
@@ -359,7 +359,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         }
 
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
     }
 
     /**

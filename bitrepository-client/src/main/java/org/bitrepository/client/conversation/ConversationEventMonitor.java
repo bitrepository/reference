@@ -161,7 +161,7 @@ public class ConversationEventMonitor {
     public void contributorFailed(String info, String contributor, ResponseCode responseCode) {
         log.warn(info);
         ContributorFailedEvent failedEvent = new ContributorFailedEvent(info, contributor, responseCode, conversationID);
-        contributorCompleteEvents.add(failedEvent);
+        contributorFailedEvents.add(failedEvent);
         notifyEventListerners(failedEvent);
     }
 
@@ -265,6 +265,10 @@ public class ConversationEventMonitor {
      */
     public void debug(String info, Exception e) {
         log.debug(info, e);
+    }
+
+    public boolean hasFailures() {
+        return !contributorFailedEvents.isEmpty();
     }
 
     /**

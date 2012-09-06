@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
-import org.bitrepository.access.getaudittrails.ConversationBasedAuditTrailClient;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -264,7 +263,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
 
     @Test(groups = {"regressiontest"})
     public void negativeGetAuditTrailsResponse() throws InterruptedException {
-        addDescription("Verify that the GetAuditTrail client works correct when receiving a negativ " +
+        addDescription("Verify that the GetAuditTrail client works correct when receiving a negative " +
         "GetAuditTrails response from one contributers.");
 
         addStep("Create a AuditTrailClient.", "");
@@ -336,7 +335,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(result2Event.getType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
         Assert.assertEquals(result2Event.getAuditTrailEvents(), result2);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(),
-                OperationEvent.OperationEventType.COMPLETE);
+                OperationEvent.OperationEventType.FAILED);
     }
 
     @Test(groups = {"regressiontest"})

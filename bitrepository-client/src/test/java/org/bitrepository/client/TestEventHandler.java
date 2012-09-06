@@ -24,13 +24,13 @@
  */
 package org.bitrepository.client;
 
-import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.eventhandler.OperationEvent;
-import org.jaccept.TestEventManager;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.OperationEvent;
+import org.jaccept.TestEventManager;
+import org.testng.Assert;
 
 /** Used to listen for operation event and store them for later retrieval by a test. */
 public class TestEventHandler implements EventHandler {
@@ -68,5 +68,10 @@ public class TestEventHandler implements EventHandler {
 
     public OperationEvent waitForEvent(long timeout, TimeUnit unit) throws InterruptedException {
         return eventQueue.poll(timeout, unit);
+    }
+
+
+    public void verifyNoEventsAreReceived() throws InterruptedException {
+        Assert.assertNull(waitForEvent(3,TimeUnit.SECONDS));
     }
 }

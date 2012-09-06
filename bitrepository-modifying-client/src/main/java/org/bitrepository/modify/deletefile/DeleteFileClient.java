@@ -64,6 +64,7 @@ public interface DeleteFileClient extends BitrepositoryClient {
      * @deprecated Should be removed, as the ability to delete all copies of a file from a single is a serious
      * hole in the security model.
      */
+    @Deprecated
     void deleteFileAtAllPillars(String fileId, ChecksumDataForFileTYPE checksumForPillar, 
             ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation);
     

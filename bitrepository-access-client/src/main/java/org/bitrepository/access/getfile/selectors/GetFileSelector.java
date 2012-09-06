@@ -23,19 +23,14 @@ package org.bitrepository.access.getfile.selectors;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.selector.ComponentSelector;
-import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 
-public abstract class GetFileSelector implements ComponentSelector {
-    /** Used for tracking who has answered. */
-    ContributorResponseStatus responseStatus;
-    SelectedPillarForGetFileInfo selectedPillar = null; 
- 
+public abstract class GetFileSelector extends ComponentSelector {
+    SelectedPillarForGetFileInfo selectedPillar = null;
     
     @Override
     public void processResponse(MessageResponse response) throws UnexpectedResponseException {

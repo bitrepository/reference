@@ -21,14 +21,12 @@
  */
 package org.bitrepository.client.conversation;
 
+import java.util.Arrays;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.protocol.utils.MessageUtils;
-
-import java.util.Arrays;
 
 /**
  * Handles the booking of performing the request phase messaging. Only the specialized workflow steps are required to
@@ -89,9 +87,4 @@ public abstract class PerformingOperationState extends GeneralConversationState 
      * @throws UnexpectedResponseException Unable to generate a result event based on the supplied message.
      */
     protected abstract void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException;
-
-    /**
-     * @return The concrete response status implemented by the subclass.
-     */
-    protected abstract ContributorResponseStatus getResponseStatus();
 }

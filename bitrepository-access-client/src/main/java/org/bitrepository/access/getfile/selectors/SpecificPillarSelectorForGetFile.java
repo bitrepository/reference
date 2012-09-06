@@ -28,7 +28,6 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 
 public class SpecificPillarSelectorForGetFile extends GetFileSelector {
-
     private final String choosenPillar;
     
     public SpecificPillarSelectorForGetFile(Collection<String> pillarsWhichShouldRespond, String choosenPillar) {

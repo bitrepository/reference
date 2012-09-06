@@ -61,24 +61,19 @@ public class ContributorResponseStatus {
     }
 
     /**
-     * Maintains the bookkeeping regarding which components have responded. 
-     * 
-     * @throws UnexpectedResponseException This can mean: <ol>
-     * <li>A null componentID</li>
-     * <li>A response has already been received from this component</li>
-     * <li>No response was expected from this component</li>
-     * </ol>
-     *  
+     * Maintains the bookkeeping regarding which components have responded.
+     *
      */
     public final void responseReceived(String componentId) throws UnexpectedResponseException {
         if (componentId == null) {
             throw new UnexpectedResponseException("Received response with null componentID");
         } else if (componentsWithOutstandingResponse.contains(componentId)) {
             componentsWithOutstandingResponse.remove(componentId);
-        } else if (componentsWhichShouldRespond.contains(componentId)) {
+        } else if (!componentsWithOutstandingResponse.contains(componentId) &&
+                componentsWhichShouldRespond.contains(componentId)) {
             throw new UnexpectedResponseException("Received more than one response from component " + componentId);
         } else {
-            log.debug("Received response from irrelevant component");
+            log.debug("Received response from irrelevant component " + componentId);
         }
     }
 

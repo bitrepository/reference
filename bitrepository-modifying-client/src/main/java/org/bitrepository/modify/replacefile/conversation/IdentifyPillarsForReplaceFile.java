@@ -73,5 +73,9 @@ public class IdentifyPillarsForReplaceFile extends IdentifyingState {
     protected String getName() {
         return "Identifying pillars for replace file";
     }
-    
+
+    @Override
+    public boolean continueWithOperation() {
+        return !context.getMonitor().hasFailures();
+    }
 }

@@ -30,6 +30,7 @@ import java.util.TimerTask;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.protocol.ProtocolVersionLoader;
@@ -83,6 +84,11 @@ public abstract class GeneralConversationState implements ConversationState {
             getContext().getMonitor().outOfSequenceMessage(
                     "Can only handle responses, but received " + message.getClass().getSimpleName());
         }
+        if (!isComponentRelevant(message.getFrom())) {
+            getContext().getMonitor().debug("Ignoring message from irrelevant component " + message.getFrom());
+            return;
+        }
+
         MessageResponse response = (MessageResponse)message;
         try {
             processMessage(response);
@@ -168,4 +174,20 @@ public abstract class GeneralConversationState implements ConversationState {
      * 'Identify contributers for Audit Trails'
      */
     protected abstract String getName();
+
+
+    /**
+     * @return The concrete response status implemented by the subclass.
+     */
+    protected abstract ContributorResponseStatus getResponseStatus();
+
+    /**
+     * Indicates whether a components should be ignored, eg. it's response is relevant.
+     * @param componentID The ID of the component to check
+     * @return <code>true</code> if the message from this component should be processed, else false.
+     */
+    protected boolean isComponentRelevant(String componentID) {
+        return getResponseStatus().getComponentsWhichShouldRespond().contains(componentID);
+    }
+
 }
