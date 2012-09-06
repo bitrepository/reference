@@ -60,7 +60,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
             IdentifyContributorsForGetAuditTrailsRequest request, String componentID, String replyTo) {
         IdentifyContributorsForGetAuditTrailsResponse response = new IdentifyContributorsForGetAuditTrailsResponse();
         setResponseDetails(response, request, componentID,  replyTo);
-        response.setResponseInfo(IDENTIFY_INFO_DEFAULT);
+        response.setResponseInfo(createPositiveResponseInfo());
         return response;
     }
 

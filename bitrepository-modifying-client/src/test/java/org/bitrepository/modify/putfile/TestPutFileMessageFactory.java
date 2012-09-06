@@ -110,7 +110,7 @@ public class TestPutFileMessageFactory extends ClientTestMessageFactory {
         ipfpfResponse.setPillarID(pillarId);
         ipfpfResponse.setReplyTo(pillarDestinationId);
         ipfpfResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
-        ipfpfResponse.setResponseInfo(IDENTIFY_INFO_DEFAULT);
+        ipfpfResponse.setResponseInfo(createPositiveResponseInfo());
         ipfpfResponse.setFrom(pillarId);
 
         ipfpfResponse.setPillarChecksumSpec(null);

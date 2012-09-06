@@ -115,21 +115,11 @@ public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
         identifyResponse.setFrom(pillarId);
         identifyResponse.setPillarChecksumSpec(null);
         identifyResponse.setFileID(fileId);
-        identifyResponse.setResponseInfo(IDENTIFY_INFO_DEFAULT);
+        identifyResponse.setResponseInfo(createPositiveResponseInfo());
 
         return identifyResponse;
     }
 
-    /**
-     * Method to create specific DeleteFileRequest.
-     * @param pillarId The id of the pillar to request for Delete.
-     * @param toTopic The destination to send the message.
-     * @param replyTo The where responses should be received.
-     * @param correlationId The id of the message.
-     * @param fileAddress The address where the file to be delete can be retrieved from the pillar.
-     * @param filesize The size of the file.
-     * @return The requested DeleteFileRequest.
-     */
     public DeleteFileRequest createDeleteFileRequest(String pillarId, String toTopic, String replyTo, 
             String correlationId, String fileId, ChecksumDataForFileTYPE checksumData, 
             ChecksumSpecTYPE checksumType, String from) {

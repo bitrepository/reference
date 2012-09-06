@@ -44,17 +44,14 @@ public abstract class ClientTestMessageFactory extends TestMessageFactory {
     protected static final ResponseCode RESPONSE_CODE_DEFAULT = ResponseCode.OPERATION_ACCEPTED_PROGRESS;
     protected static final ResponseCode IDENTIFY_RESPONSE_CODE_DEFAULT = ResponseCode.IDENTIFICATION_POSITIVE;
     protected static final TimeMeasureTYPE TIME_TO_DELIVER_DEFAULT = new TimeMeasureTYPE();
+
+    //Todo All the static defined constants below should be replaced by create method, to avoid single tests cases
+    // break other tests by modifying the shared instances of these constants.
     static {
         TIME_TO_DELIVER_DEFAULT.setTimeMeasureUnit(TIME_MEASURE_UNIT_DEFAULT);
         TIME_TO_DELIVER_DEFAULT.setTimeMeasureValue(TIME_MEASURE_VALUE_DEFAULT);
     }
 
-    protected static final ResponseInfo IDENTIFY_INFO_DEFAULT = new ResponseInfo();
-    static {
-        IDENTIFY_INFO_DEFAULT.setResponseCode(IDENTIFY_RESPONSE_CODE_DEFAULT);
-        IDENTIFY_INFO_DEFAULT.setResponseText("Positive identification");
-    }
-    
     protected static final ResponseInfo PROGRESS_INFO_DEFAULT = new ResponseInfo();
     static {
         PROGRESS_INFO_DEFAULT.setResponseCode(RESPONSE_CODE_DEFAULT);
@@ -87,4 +84,10 @@ public abstract class ClientTestMessageFactory extends TestMessageFactory {
         response.setFrom(componentID);
     }
 
+    protected ResponseInfo createPositiveResponseInfo() {
+        ResponseInfo responseInfo = new ResponseInfo();
+        responseInfo.setResponseCode(IDENTIFY_RESPONSE_CODE_DEFAULT);
+        responseInfo.setResponseText("Positive identification");
+        return responseInfo;
+    }
 }

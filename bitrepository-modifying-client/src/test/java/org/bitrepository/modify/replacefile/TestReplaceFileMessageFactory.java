@@ -97,7 +97,7 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
         ipfrfResponse.setPillarID(pillarId);
         ipfrfResponse.setReplyTo(pillarDestinationId);
         ipfrfResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
-        ipfrfResponse.setResponseInfo(IDENTIFY_INFO_DEFAULT);
+        ipfrfResponse.setResponseInfo(createPositiveResponseInfo());
         ipfrfResponse.setFileID(receivedIdentifyRequestMessage.getFileID());
         ipfrfResponse.setFrom(pillarId);
 

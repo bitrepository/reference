@@ -61,7 +61,7 @@ public abstract class DeleteFileSelector implements ComponentSelector {
             IdentifyPillarsForDeleteFileResponse resp = (IdentifyPillarsForDeleteFileResponse) response;
             responseStatus.responseReceived(resp.getFrom());
             if (checkPillarResponseForSelection(resp)
-                && resp.getResponseInfo().getResponseCode().equals(ResponseCode.FILE_NOT_FOUND_FAILURE)
+                && !resp.getResponseInfo().getResponseCode().equals(ResponseCode.FILE_NOT_FOUND_FAILURE)
                ) {
                 selectedComponents.add(new SelectedComponentInfo(resp.getPillarID(), response.getReplyTo()));
             }
