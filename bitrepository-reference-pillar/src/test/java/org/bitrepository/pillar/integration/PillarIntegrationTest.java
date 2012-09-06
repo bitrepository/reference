@@ -64,8 +64,6 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     }
 
     protected void stopEmbeddedReferencePillar() {
-        if (testConfiguration.useEmbeddedPillar()) {
-        }
     }
 
     private void loadTestSettings() {
