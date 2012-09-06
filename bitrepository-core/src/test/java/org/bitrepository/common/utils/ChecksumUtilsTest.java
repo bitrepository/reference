@@ -25,12 +25,15 @@
 package org.bitrepository.common.utils;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.TestValidationUtils;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -144,6 +147,28 @@ public class ChecksumUtilsTest extends ExtendedTestCase {
     }
 
     @Test(groups = { "regressiontest" })
+    public void testChecksumOnFile() throws Exception {
+        addDescription("Test the checksum calculation on a file");
+        addStep("Setup", "");
+        ChecksumSpecTYPE csMD5 = new ChecksumSpecTYPE();
+        csMD5.setChecksumType(ChecksumType.MD5);
+
+        File testFile = new File("src/test/resources/test-files/default-test-file.txt");
+        Assert.assertTrue(testFile.isFile());
+        
+        addStep("Calculate the checksum of the file with the different ways of defining the MD5 without salt", 
+                "Same result from each");
+        String cs1 = ChecksumUtils.generateChecksum(testFile, csMD5);
+        String cs2 = ChecksumUtils.generateChecksum(testFile, ChecksumType.MD5);
+        String cs3 = ChecksumUtils.generateChecksum(testFile, ChecksumType.MD5, null);
+        
+        Assert.assertEquals(cs1, cs2);
+        Assert.assertEquals(cs1, cs3);
+        Assert.assertEquals(cs2, cs3);
+    }
+
+    
+    @Test(groups = { "regressiontest" })
     public void testChecksumAlgorithmValidation() throws Exception {
         addDescription("Test the algorithm validation for every single possible checksum algorithm.");
         for (ChecksumType csType : ChecksumType.values()) {
@@ -224,6 +249,18 @@ public class ChecksumUtilsTest extends ExtendedTestCase {
         } catch (NoSuchAlgorithmException e) {
             // expected
         }
+    }
+    
+    @Test(groups = { "regressiontest" })
+    public void testDefaultChecksum() throws Exception {
+        addDescription("Test the extraction of the default checksum from settings.");
+        addStep("Setup the settings", "Loading the test settings");
+        Settings settings = TestSettingsProvider.reloadSettings("ChecksumUtils");
         
+        addStep("Use utils to extract default checksum spec", "Should be the one defined in Settings.");
+        ChecksumSpecTYPE csType = ChecksumUtils.getDefault(settings);
+        Assert.assertEquals(csType.getChecksumType().name(), 
+                settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType());
+        Assert.assertNull(csType.getChecksumSalt(), "Should not contain any salt.");
     }
 }

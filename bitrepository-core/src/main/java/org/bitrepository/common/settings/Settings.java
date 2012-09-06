@@ -26,7 +26,6 @@ package org.bitrepository.common.settings;
 
 import java.util.List;
 
-import org.bitrepository.protocol.messagebus.destination.DestinationHelper;
 import org.bitrepository.settings.collectionsettings.CollectionSettings;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.bitrepository.settings.collectionsettings.Permission;

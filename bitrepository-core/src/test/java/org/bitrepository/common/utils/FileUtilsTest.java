@@ -61,7 +61,7 @@ public class FileUtilsTest extends ExtendedTestCase {
 
     @Test(groups = {"regressiontest"})
     public void createDirectoryTester() throws Exception {
-        addDescription("Test the ability to create directories and delete them.");
+        addDescription("Test the ability to create directories.");
         addStep("Test the ability to create a directory", "Should be created by utility.");
         File dir = new File(DIR);
         Assert.assertFalse(dir.exists());
@@ -71,7 +71,23 @@ public class FileUtilsTest extends ExtendedTestCase {
         Assert.assertTrue(dir.isDirectory());
         Assert.assertEquals(dir.getAbsolutePath(), madeDir.getAbsolutePath());
         
+        addStep("Test error scenarios, when the directory path is a file", "Should throw exception");
+        File testFile = new File(dir, TEST_FILE_NAME);
+        Assert.assertTrue(testFile.createNewFile());
+
+        try {
+            FileUtils.retrieveDirectory(testFile.getPath());
+            Assert.fail("Should throw an exception");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
+    
+    @Test(groups = {"regressiontest"})
+    public void createSubDirectoryTester() throws Exception {
+        addDescription("Test the ability to create sub directories.");
         addStep("Test the ability to create sub-directories", "Should be created by utility");
+        File dir = FileUtils.retrieveDirectory(DIR);
         File subdir = new File(dir, SUB_DIR);
         Assert.assertFalse(subdir.exists());
         File madeSubdir = FileUtils.retrieveSubDirectory(dir, SUB_DIR);
@@ -80,10 +96,46 @@ public class FileUtilsTest extends ExtendedTestCase {
         Assert.assertTrue(subdir.isDirectory());
         Assert.assertEquals(subdir.getAbsolutePath(), madeSubdir.getAbsolutePath());
         
-        addStep("Test delete", "Should remove both directory and sub-directory");
+        addStep("Test that it fails if the 'directory' is actually a file", "Throws exception");
+        File testFile = new File(dir, TEST_FILE_NAME);
+        Assert.assertTrue(testFile.createNewFile());
+
+        try {
+            FileUtils.retrieveSubDirectory(testFile, SUB_DIR);
+            Assert.fail("Should throw an exception");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+        
+        addStep("Test that it fails, if the parent directory does not allow writing", "Throws exception");
+        FileUtils.delete(subdir);
+        try {
+            dir.setWritable(false);
+            FileUtils.retrieveSubDirectory(dir, SUB_DIR);
+            Assert.fail("Should throw an exception");
+        } catch (IllegalStateException e) {
+            // expected
+        } finally {
+            dir.setWritable(true);
+        }
+    }
+    
+    @Test(groups = {"regressiontest"})
+    public void createDeleteDirectoryTester() throws Exception {
+        addDescription("Test the ability to delete directories.");
+        addStep("Test deleting a directory with file and subdirectory", "Removes directory, sub-directory and file");
+        File dir = FileUtils.retrieveDirectory(DIR);
+        File subdir = FileUtils.retrieveSubDirectory(dir, SUB_DIR);
+        Assert.assertTrue(dir.exists());
+        Assert.assertTrue(subdir.exists());
+        File testFile = new File(dir, TEST_FILE_NAME);
+        Assert.assertTrue(testFile.createNewFile());
+        Assert.assertTrue(testFile.exists());
+        
         FileUtils.delete(dir);
         Assert.assertFalse(dir.exists());
         Assert.assertFalse(subdir.exists());
+        Assert.assertFalse(testFile.exists());
     }
     
     @Test(groups = {"regressiontest"})
@@ -149,4 +201,19 @@ public class FileUtilsTest extends ExtendedTestCase {
         FileUtils.unzip(zipFile, dir);
         Assert.assertEquals(dir.listFiles().length, 2);
     }
+    
+//    @Test(groups = {"regressiontest"})
+//    public void unzipFileTester() throws Exception {
+//        addDescription("Test unzipping a file.");
+//        addStep("Setup", "");
+//        File dir = FileUtils.retrieveDirectory(DIR);
+//        File zipFile = new File("src/test/resources/test-files/test.jar");
+//        Assert.assertTrue(zipFile.isFile(), zipFile.getAbsolutePath());
+//        Assert.assertEquals(dir.listFiles().length, 0);
+//
+//        addStep("Unzip the zipfile to the directory", "Should place a file and a directory inside the dir");
+//        FileUtils.unzip(zipFile, dir);
+//        Assert.assertEquals(dir.listFiles().length, 2);
+//    }
+
 }
