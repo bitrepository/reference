@@ -25,15 +25,18 @@
 package org.bitrepository.protocol;
 
 import java.util.Date;
+
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.common.JaxbHelper;
+import org.bitrepository.common.TestValidationUtils;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -49,7 +52,11 @@ public class MessageBusTest extends IntegrationTest {
      * have been consumed by a listener.*/
     static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 500;
 
-
+    @Test(groups = { "regressiontest" })
+    public void utilityTester() throws Exception {
+        addDescription("Test that the utility class is a proper utility class.");
+        TestValidationUtils.validateUtilityClass(MessageBusManager.class);
+    }
 
     @Test(groups = { "regressiontest" })
     public final void messageBusConnectionTest() {
@@ -58,6 +65,20 @@ public class MessageBusTest extends IntegrationTest {
                 + "<i>MessageBusConnection</i> connection class",
                 "No exceptions should be thrown");
         Assert.assertNotNull(ProtocolComponentFactory.getInstance().getMessageBus(componentSettings, securityManager));
+    }
+
+    @Test(groups = { "regressiontest" })
+    public final void messageBusManagerTest() {
+        addDescription("Verify the message bus manager");
+        addStep("Test the extraction of the messagebus from the manager.", 
+                "Null before it has been instantiated, and otherwise the same");
+        componentSettings.getCollectionSettings().setCollectionID("A completely different id");
+        Assert.assertNull(MessageBusManager.getMessageBus(componentSettings.getCollectionID()));
+        MessageBus b1 = MessageBusManager.getMessageBus(componentSettings, securityManager);
+        Assert.assertNotNull(b1);
+        MessageBus b2 = MessageBusManager.getMessageBus(componentSettings.getCollectionID());
+        Assert.assertNotNull(b2);
+        Assert.assertEquals(b1, b2);
     }
 
     @Test(groups = { "regressiontest" })

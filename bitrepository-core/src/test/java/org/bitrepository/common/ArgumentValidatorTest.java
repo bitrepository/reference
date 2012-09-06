@@ -29,7 +29,12 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class ValidatorTest extends ExtendedTestCase {
+public class ArgumentValidatorTest extends ExtendedTestCase {
+    @Test(groups = { "regressiontest" })
+    public void utilityTester() throws Exception {
+        addDescription("Test that the utility class is a proper utility class.");
+        TestValidationUtils.validateUtilityClass(ArgumentValidator.class);
+    }
     
     @Test(groups = { "regressiontest" })
     public void testArgumentValidatorObject() throws Exception {
