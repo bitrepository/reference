@@ -191,13 +191,12 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         } catch (JMSException e) {
             throw new RuntimeException(e);
         }
-        if (useEmbeddedMessageBus()) {
-            if(broker != null) {
-                try {
-                    broker.stop();
-                } catch (Exception e) {
-                    // No reason to pollute the test output with this
-                }
+
+        if(broker != null) {
+            try {
+                broker.stop();
+            } catch (Exception e) {
+                // No reason to pollute the test output with this
             }
         }
     }
