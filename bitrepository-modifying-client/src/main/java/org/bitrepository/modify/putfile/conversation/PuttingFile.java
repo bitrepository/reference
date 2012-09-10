@@ -89,9 +89,11 @@ public class PuttingFile extends PerformingOperationState {
         context.getMonitor().requestSent("Sending request for put file", activeContributors.keySet().toString());
         for(String pillar : activeContributors.keySet()) {
             PutFileRequest msg = createRequest(pillar);
-            if (!context.getChecksumPillars().contains(pillar) ||
-                context.getChecksumRequestForValidation().equals(ChecksumUtils.getDefault(context.getSettings()))) {
-                msg.setChecksumRequestForNewFile(context.getChecksumRequestForValidation());
+            if (context.getChecksumRequestForValidation() != null) {
+                if (!isChecksumPillar(pillar) ||
+                        context.getChecksumRequestForValidation().equals(ChecksumUtils.getDefault(context.getSettings()))) {
+                    msg.setChecksumRequestForNewFile(context.getChecksumRequestForValidation());
+                }
             }
             context.getMessageSender().sendMessage(msg);
         }
@@ -123,4 +125,7 @@ public class PuttingFile extends PerformingOperationState {
         return "Putting file";
     }
 
+    private boolean isChecksumPillar(String pillarID) {
+        return context.getChecksumPillars().contains(pillarID);
+    }
 }

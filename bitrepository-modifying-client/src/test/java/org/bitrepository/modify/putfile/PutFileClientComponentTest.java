@@ -577,7 +577,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     @Test(groups={"regressiontest"})
     public void defaultReturnChecksumsWithChecksumPillar() throws Exception {
         addDescription("Tests that PutClient handles the presence of a ChecksumPillar correctly, when a return" +
-                " checksum of default type is requested (which a checksum pillar can provide) is requested. ");
+                " checksum of default type is requested (which a checksum pillar can provide). ");
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
@@ -623,16 +623,64 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         PutFileRequest receivedPutFileRequest2 =
                 pillar2Destination.waitForMessage(PutFileRequest.class);
         Assert.assertEquals(receivedPutFileRequest2.getChecksumRequestForNewFile(), checksumSpecTYPE);
-
     }
 
-    /**
-     * Creates a new test PutFileClient based on the componentSettings.
-     *
-     * Note that the normal way of creating client through the module factory would reuse components with settings from
-     * previous tests.
-     * @return A new PutFileClient(Wrapper).
-     */
+    @Test(groups={"regressiontest"})
+    public void noReturnChecksumsWithChecksumPillar() throws Exception {
+        addDescription("Tests that PutClient handles the presence of a ChecksumPillar correctly, when no return" +
+                " checksum is requested.");
+
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        PutFileClient putClient = createPutFileClient();
+
+        addStep("Call putFile while requesting a salted checksum to be returned.",
+                "A IdentifyPillarsForGetFileRequest will be sent to the pillar and a " +
+                        "IDENTIFY_REQUEST_SENT should be generated.");
+        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, fileSize,
+                null, null, testEventHandler, "TEST-AUDIT-TRAIL");
+
+        IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
+                IdentifyPillarsForPutFileRequest.class);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+
+        addStep("Send an identification response with a PillarChecksumSpec element set, indicating that this is a " +
+                "checksum pillar.",
+                "An COMPONENT_IDENTIFIED event should be generate.");
+        IdentifyPillarsForPutFileResponse identifyResponse = messageFactory.createIdentifyPillarsForPutFileResponse(
+                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+        ChecksumSpecTYPE checksumSpecTYPEFromPillar = new ChecksumSpecTYPE();
+        checksumSpecTYPEFromPillar.setChecksumType(ChecksumType.MD5);
+        identifyResponse.setPillarChecksumSpec(checksumSpecTYPEFromPillar);
+        messageBus.sendMessage(identifyResponse);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+
+        addStep("Send an normal identification response from pillar2.",
+                "An COMPONENT_IDENTIFIED event should be generate followed by a IDENTIFICATION_COMPLETE and a " +
+                        "REQUEST_SENT. \nRequests for put files should be received, neither requesting a return " +
+                        "checksum.");
+        IdentifyPillarsForPutFileResponse identifyResponse2 = messageFactory.createIdentifyPillarsForPutFileResponse(
+                receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
+        messageBus.sendMessage(identifyResponse2);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        PutFileRequest receivedPutFileRequest1 =
+                pillar1Destination.waitForMessage(PutFileRequest.class);
+        Assert.assertNull(receivedPutFileRequest1.getChecksumRequestForNewFile());
+
+        PutFileRequest receivedPutFileRequest2 =
+                pillar2Destination.waitForMessage(PutFileRequest.class);
+        Assert.assertNull(receivedPutFileRequest2.getChecksumRequestForNewFile());
+    }
+
+
+        /**
+        * Creates a new test PutFileClient based on the componentSettings.
+        *
+        * Note that the normal way of creating client through the module factory would reuse components with settings from
+        * previous tests.
+        * @return A new PutFileClient(Wrapper).
+        */
     private PutFileClient createPutFileClient() {
         return new PutClientTestWrapper(new ConversationBasedPutFileClient(
                 messageBus, conversationMediator, componentSettings, TEST_CLIENT_ID)
