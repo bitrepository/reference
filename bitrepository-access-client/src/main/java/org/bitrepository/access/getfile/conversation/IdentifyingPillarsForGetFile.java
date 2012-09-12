@@ -24,11 +24,15 @@
  */
 package org.bitrepository.access.getfile.conversation;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.GeneralConversationState;
 import org.bitrepository.client.conversation.IdentifyingState;
 import org.bitrepository.client.conversation.selector.ComponentSelector;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.common.exceptions.UnableToFinishException;
 
 
 /**
@@ -43,6 +47,19 @@ public class IdentifyingPillarsForGetFile extends IdentifyingState {
      */
     public IdentifyingPillarsForGetFile(GetFileConversationContext context) {
         this.context = context;
+    }
+
+    /**
+     * Overrides the default behaviour of generating COMPONENT_FAILURE events on none-positive identify responses.
+     * This is because the getFile operation is able to succeed if just one pillar is able to service the getFile
+     * request.
+     */
+    @Override
+    protected void processMessage(MessageResponse msg) throws UnexpectedResponseException, UnableToFinishException {
+        if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)    ) {
+            getContext().getMonitor().contributorIdentified(msg);
+        }
+        getSelector().processResponse(msg);
     }
 
     @Override

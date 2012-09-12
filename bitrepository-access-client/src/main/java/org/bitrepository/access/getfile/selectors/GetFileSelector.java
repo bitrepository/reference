@@ -80,5 +80,4 @@ public abstract class GetFileSelector extends ComponentSelector {
             return false;
         }
     }
-    
 }
