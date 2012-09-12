@@ -151,6 +151,6 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
 
     @Override
     public boolean continueWithOperation() {
-        return !context.getMonitor().hasFailures();
+        return !context.getMonitor().hasFailed();
     }
 }

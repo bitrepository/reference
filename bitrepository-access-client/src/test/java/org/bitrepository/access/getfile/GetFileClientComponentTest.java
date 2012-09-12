@@ -302,13 +302,11 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 "The callback listener should notify of the response and the client should send a GetFileRequest message to " +
                         "the pillar");
 
-        if (useMockupPillar()) {
-            IdentifyPillarsForGetFileResponse identifyResponse =
-                    testMessageFactory.createIdentifyPillarsForGetFileResponse(
-                            receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
-            messageBus.sendMessage(identifyResponse);
-            pillar1Destination.waitForMessage(GetFileRequest.class);
-        }
+        IdentifyPillarsForGetFileResponse identifyResponse =
+                testMessageFactory.createIdentifyPillarsForGetFileResponse(
+                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+        messageBus.sendMessage(identifyResponse);
+        pillar1Destination.waitForMessage(GetFileRequest.class);
 
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -409,7 +407,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
         IdentifyPillarsForGetFileResponse identificationResponse1 = testMessageFactory.createIdentifyPillarsForGetFileResponse(
                 receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
-        identificationResponse1.getResponseInfo().setResponseCode(ResponseCode.IDENTIFICATION_NEGATIVE);
+        identificationResponse1.getResponseInfo().setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);
         messageBus.sendMessage(identificationResponse1);
         testEventHandler.verifyNoEventsAreReceived();
 
@@ -434,7 +432,6 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
     }
-
 
     /**
      * Creates a new test GetFileClient based on the supplied componentSettings. 

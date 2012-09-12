@@ -47,6 +47,7 @@ public class IdentifyingPillarsForGetFile extends IdentifyingState {
      */
     public IdentifyingPillarsForGetFile(GetFileConversationContext context) {
         this.context = context;
+        context.getMonitor().markAsFailedOnContributorFailure(false);
     }
 
     /**
@@ -58,6 +59,11 @@ public class IdentifyingPillarsForGetFile extends IdentifyingState {
     protected void processMessage(MessageResponse msg) throws UnexpectedResponseException, UnableToFinishException {
         if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)    ) {
             getContext().getMonitor().contributorIdentified(msg);
+        } else if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.REQUEST_NOT_SUPPORTED)) {
+            getContext().getMonitor().debug("Response received indicating that the operation not supported for pillar " +
+                    msg.getFrom());
+        } else {
+            getContext().getMonitor().contributorFailed(msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
         }
         getSelector().processResponse(msg);
     }
