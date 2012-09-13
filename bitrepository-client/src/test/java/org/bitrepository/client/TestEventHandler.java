@@ -72,6 +72,6 @@ public class TestEventHandler implements EventHandler {
 
 
     public void verifyNoEventsAreReceived() throws InterruptedException {
-        Assert.assertNull(waitForEvent(3,TimeUnit.SECONDS));
+        Assert.assertNull(waitForEvent(1,TimeUnit.SECONDS));
     }
 }

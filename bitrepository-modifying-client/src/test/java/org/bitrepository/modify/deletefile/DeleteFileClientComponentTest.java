@@ -25,7 +25,6 @@
 package org.bitrepository.modify.deletefile;
 
 import java.math.BigInteger;
-import java.util.concurrent.TimeUnit;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -39,6 +38,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRespo
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.modify.ModifyComponentFactory;
@@ -193,7 +193,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
 
         addStep("Send a identify response from Pillar2", "The response should be ignored");
-        Assert.assertNull(testEventHandler.waitForEvent(3, TimeUnit.SECONDS));
+        testEventHandler.verifyNoEventsAreReceived();
     }
 
     @Test(groups={"regressiontest"})
@@ -454,19 +454,142 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                 PILLAR2_ID, pillar2DestinationId, DEFAULT_FILE_ID);
         identifyResponse.getResponseInfo().setResponseCode(ResponseCode.IDENTIFICATION_NEGATIVE);
         messageBus.sendMessage(identifyResponse);
-        Assert.assertNull(testEventHandler.waitForEvent(3, TimeUnit.SECONDS));
+        testEventHandler.verifyNoEventsAreReceived();
 
         addStep("Send a ok response from pillar1.",
-                "The client should generate th following events: COMPONENT_IDENTIFIED, IDENTIFICATION_COMPLETE and " +
+                "The client should generate the following events: COMPONENT_IDENTIFIED, IDENTIFICATION_COMPLETE and " +
                         "REQUEST_SENT. A delete request should be sent to pillar1");
         IdentifyPillarsForDeleteFileResponse identifyResponse2 =
                 messageFactory.createIdentifyPillarsForDeleteFileResponse(receivedIdentifyRequestMessage,
                     PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
-            messageBus.sendMessage(identifyResponse2);
-        Assert.assertNotNull(pillar1Destination.waitForMessage(DeleteFileRequest.class));
+         messageBus.sendMessage(identifyResponse2);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        DeleteFileRequest receivedDeleteFileRequest = pillar1Destination.waitForMessage(DeleteFileRequest.class);
+
+        addStep("Send a final response message from pillar 1 to the DeleteClient.",
+                "Should produce a COMPONENT_COMPLETE event followed by a COMPLETE event.");
+        messageBus.sendMessage(messageFactory.createDeleteFileFinalResponse(
+                receivedDeleteFileRequest, PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID));
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
+    }
+
+    @Test(groups={"regressiontest"})
+    public void deleteOnChecksumPillar() throws Exception {
+        addDescription("Verify that the DeleteClient works correctly when a checksum pillar is present. ");
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        DeleteFileClient deleteClient = createDeleteFileClient();
+
+        addStep("Request a file to be deleted on the pillar1.",
+                "A IdentifyPillarsForDeleteFileRequest should be sent and a IDENTIFY_REQUEST_SENT event should be generated.");
+        deleteClient.deleteFile(
+                DEFAULT_FILE_ID, PILLAR1_ID, TestFileHelper.getDefaultFileChecksum(), null, testEventHandler, null);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+
+        IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
+                IdentifyPillarsForDeleteFileRequest.class);
+
+        addStep("Send an identification response from pillar2.",
+                "This should be ignored, eg. no events should be generated.");
+        IdentifyPillarsForDeleteFileResponse identifyResponse2 =
+                messageFactory.createIdentifyPillarsForDeleteFileResponse(receivedIdentifyRequestMessage,
+                        PILLAR2_ID, pillar2DestinationId, DEFAULT_FILE_ID);
+        messageBus.sendMessage(identifyResponse2);
+        testEventHandler.verifyNoEventsAreReceived();
+
+        addStep("Send a response from pillar1 with PillarChecksumSpec element set, indicating that this is a " +
+                "checksum pillar.",
+                "Following events should be generated: COMPONENT_IDENTIFIED, IDENTIFICATION_COMPLETE and a REQUEST_SENT." +
+                        "a request should be sent to pillar1");
+        IdentifyPillarsForDeleteFileResponse identifyResponse
+                = messageFactory.createIdentifyPillarsForDeleteFileResponse(receivedIdentifyRequestMessage,
+                PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
+        ChecksumSpecTYPE checksumSpecTYPEFromPillar = new ChecksumSpecTYPE();
+        checksumSpecTYPEFromPillar.setChecksumType(ChecksumType.MD5);
+        identifyResponse.setPillarChecksumSpec(checksumSpecTYPEFromPillar);
+        messageBus.sendMessage(identifyResponse);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        Assert.assertNotNull(pillar1Destination.waitForMessage(DeleteFileRequest.class));
+        pillar2Destination.checkNoMessageIsReceived(DeleteFileRequest.class);
+    }
+
+    @Test(groups={"regressiontest"})
+    public void deleteOnChecksumPillarWithDefaultReturnChecksumType() throws Exception {
+        addDescription("Verify that the DeleteClient works correctly when a return checksum of the default type" +
+                "is requested. ");
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        DeleteFileClient deleteClient = createDeleteFileClient();
+
+        addStep("Request a file to be deleted on the pillar1. The call should include a request for a check sum of the " +
+                "default type",
+                "A IdentifyPillarsForDeleteFileRequest should be sent and a IDENTIFY_REQUEST_SENT event should be " +
+                        "generated.");
+        ChecksumSpecTYPE checksumSpecTYPE = new ChecksumSpecTYPE();
+        checksumSpecTYPE.setChecksumType(ChecksumType.MD5);
+        deleteClient.deleteFile( DEFAULT_FILE_ID, PILLAR1_ID, TestFileHelper.getDefaultFileChecksum(),
+                checksumSpecTYPE, testEventHandler, null);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
+                IdentifyPillarsForDeleteFileRequest.class);
+
+        addStep("Send a response from pillar1 with PillarChecksumSpec element set, indicating that this is a " +
+                "checksum pillar.",
+                "Following events should be generated: COMPONENT_IDENTIFIED, IDENTIFICATION_COMPLETE and a " +
+                        "REQUEST_SENT. A request should be sent to pillar1 with a request for return of a checksum " +
+                        "of the default type ");
+        IdentifyPillarsForDeleteFileResponse identifyResponse
+                = messageFactory.createIdentifyPillarsForDeleteFileResponse(receivedIdentifyRequestMessage,
+                PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
+        ChecksumSpecTYPE checksumSpecTYPEFromPillar = new ChecksumSpecTYPE();
+        checksumSpecTYPEFromPillar.setChecksumType(ChecksumType.MD5);
+        identifyResponse.setPillarChecksumSpec(checksumSpecTYPEFromPillar);
+        messageBus.sendMessage(identifyResponse);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        DeleteFileRequest receivedPutFileRequest1 = pillar1Destination.waitForMessage(DeleteFileRequest.class);
+        Assert.assertEquals(receivedPutFileRequest1.getChecksumRequestForExistingFile(), checksumSpecTYPE);
+    }
+
+    @Test(groups={"regressiontest"})
+    public void deleteOnChecksumPillarWithSaltedReturnChecksumType() throws Exception {
+        addDescription("Verify that the DeleteClient works correctly when a return checksum with a salt " +
+                "is requested. ");
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        DeleteFileClient deleteClient = createDeleteFileClient();
+
+        addStep("Request a file to be deleted on the pillar1. The call should include a request for a salted check sum ",
+                "A IdentifyPillarsForDeleteFileRequest should be sent and a IDENTIFY_REQUEST_SENT event should be " +
+                        "generated.");
+        ChecksumSpecTYPE checksumSpecTYPE = new ChecksumSpecTYPE();
+        checksumSpecTYPE.setChecksumType(ChecksumType.MD5);
+        checksumSpecTYPE.setChecksumSalt(Base16Utils.encodeBase16("aa"));
+        deleteClient.deleteFile( DEFAULT_FILE_ID, PILLAR1_ID, TestFileHelper.getDefaultFileChecksum(),
+                checksumSpecTYPE, testEventHandler, null);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
+                IdentifyPillarsForDeleteFileRequest.class);
+
+        addStep("Send a response from pillar1 with PillarChecksumSpec element set, indicating that this is a " +
+                "checksum pillar.",
+                "Following events should be generated: COMPONENT_IDENTIFIED, IDENTIFICATION_COMPLETE and a " +
+                        "REQUEST_SENT. A request should be sent to pillar1 without a request for a return checksum.");
+        IdentifyPillarsForDeleteFileResponse identifyResponse
+                = messageFactory.createIdentifyPillarsForDeleteFileResponse(receivedIdentifyRequestMessage,
+                PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
+        ChecksumSpecTYPE checksumSpecTYPEFromPillar = new ChecksumSpecTYPE();
+        checksumSpecTYPEFromPillar.setChecksumType(ChecksumType.MD5);
+        identifyResponse.setPillarChecksumSpec(checksumSpecTYPEFromPillar);
+        messageBus.sendMessage(identifyResponse);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        DeleteFileRequest receivedPutFileRequest1 = pillar1Destination.waitForMessage(DeleteFileRequest.class);
+        Assert.assertNull(receivedPutFileRequest1.getChecksumRequestForExistingFile());
     }
 
     /**

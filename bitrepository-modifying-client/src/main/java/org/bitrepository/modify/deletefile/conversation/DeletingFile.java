@@ -36,6 +36,7 @@ import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.common.utils.ChecksumUtils;
 
 /**
  * Models the behavior of a DeleteFile conversation during the operation phase. That is, it begins with the sending of
@@ -87,20 +88,37 @@ public class DeletingFile extends PerformingOperationState {
 
     @Override
     protected void sendRequest() {
-        DeleteFileRequest msg = new DeleteFileRequest();
-        initializeMessage(msg);
-        msg.setFileID(context.getFileID());
-        msg.setChecksumRequestForExistingFile(context.getChecksumRequestForValidation());
-        msg.setChecksumDataForExistingFile(context.getChecksumForValidationAtPillar());
         if (!activeContributors.isEmpty()) { // Might not be the case if the files haven't been found on any of the pillars.
             context.getMonitor().requestSent("Sending request for deleting file", activeContributors.keySet().toString());
             for(String pillar : activeContributors.keySet()) {
+                DeleteFileRequest msg = createRequest(pillar);
+                if (context.getChecksumRequestForValidation() != null) {
+                    if (!isChecksumPillar(pillar) ||
+                        context.getChecksumRequestForValidation().equals(ChecksumUtils.getDefault(context.getSettings()))) {
+                        msg.setChecksumRequestForExistingFile(context.getChecksumRequestForValidation());
+                    }
+                }
                 msg.setPillarID(pillar);
                 msg.setTo(activeContributors.get(pillar));
                 context.getMessageSender().sendMessage(msg);
             }
         }
     }
+
+    /**
+     * Will create a PutFileRequest based on the context. The ChecksumRequestForNewFile parameter is not added as this
+     * should only be added in case of full pillars.
+     */
+    private DeleteFileRequest createRequest(String pillar) {
+        DeleteFileRequest request = new DeleteFileRequest();
+        initializeMessage(request);
+        request.setFileID(context.getFileID());
+        request.setChecksumDataForExistingFile(context.getChecksumForValidationAtPillar());
+        request.setPillarID(pillar);
+        request.setTo(activeContributors.get(pillar));
+        return request;
+    }
+
 
     @Override
     protected ConversationContext getContext() {
@@ -112,4 +130,7 @@ public class DeletingFile extends PerformingOperationState {
         return "Deleting file";
     }
 
+    private boolean isChecksumPillar(String pillarID) {
+        return context.getChecksumPillars().contains(pillarID);
+    }
 }

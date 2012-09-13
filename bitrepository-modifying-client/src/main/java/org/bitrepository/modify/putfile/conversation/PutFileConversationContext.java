@@ -40,7 +40,7 @@ public class PutFileConversationContext extends ConversationContext {
     private final BigInteger fileSize;
     private final ChecksumDataForFileTYPE checksumForValidationAtPillar;
     private final ChecksumSpecTYPE checksumRequestsForValidation;
-
+    /** @see #addChecksumPillar(String) */
     private final Set<String> checksumPillars = new HashSet<String>();
     
     public PutFileConversationContext(String fileID, URL urlForFile, long fileSize, 

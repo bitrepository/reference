@@ -21,6 +21,9 @@
  */
 package org.bitrepository.modify.deletefile.conversation;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import org.bitrepository.modify.deletefile.selector.DeleteFileSelector;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -34,7 +37,8 @@ public class DeleteFileConversationContext extends ConversationContext {
     private final ChecksumDataForFileTYPE checksumForValidationAtPillar;
     private final ChecksumSpecTYPE checksumRequestsForValidation;
     private final DeleteFileSelector selector;
-
+    /** @see #addChecksumPillar(String) */
+    private final Set<String> checksumPillars = new HashSet<String>();
     
     public DeleteFileConversationContext(String fileID, DeleteFileSelector selector,
             ChecksumDataForFileTYPE checksumForValidationAtPillar, ChecksumSpecTYPE checksumRequestsForValidation, 
@@ -63,4 +67,18 @@ public class DeleteFileConversationContext extends ConversationContext {
         return selector;
     }
 
+    /**
+     * @return The list of checksum pillar detected during the IdentifyPillarsForPutFile phase.
+     */
+    public Set<String> getChecksumPillars() {
+        return Collections.unmodifiableSet(checksumPillars);
+    }
+
+    /**
+     * Use to register checksum pillars.
+     * @param pillarID The pillarID of the Checksum pillar.
+     */
+    public void addChecksumPillar(String pillarID) {
+        checksumPillars.add(pillarID);
+    }
 }

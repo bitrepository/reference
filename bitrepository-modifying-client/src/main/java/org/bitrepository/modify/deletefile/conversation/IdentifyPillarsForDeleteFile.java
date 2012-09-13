@@ -26,6 +26,7 @@ package org.bitrepository.modify.deletefile.conversation;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.GeneralConversationState;
@@ -55,23 +56,32 @@ public class IdentifyPillarsForDeleteFile extends IdentifyingState {
 
     @Override
     protected void processMessage(MessageResponse msg) throws UnexpectedResponseException {
-        ResponseCode responseCode = msg.getResponseInfo().getResponseCode();
-        if(responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE)) {
-            getContext().getMonitor().contributorIdentified(msg);
-        } else if(responseCode.equals(ResponseCode.FILE_NOT_FOUND_FAILURE)) {
-            //Idempotent
-            getContext().getMonitor().contributorIdentified(msg);
-            getContext().getMonitor().contributorComplete(new DeleteFileCompletePillarEvent(
-                    null, msg.getFrom(), "Delete considered complete as file was already missing from the pillar",
-                    context.getConversationID()));
+        if(msg instanceof IdentifyPillarsForDeleteFileResponse) {
+            IdentifyPillarsForDeleteFileResponse response = (IdentifyPillarsForDeleteFileResponse) msg;
+            ResponseCode responseCode = response.getResponseInfo().getResponseCode();
+            if(responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE)) {
+                getContext().getMonitor().contributorIdentified(response);
+            } else if(responseCode.equals(ResponseCode.FILE_NOT_FOUND_FAILURE)) {
+                //Idempotent
+                getContext().getMonitor().contributorIdentified(response);
+                getContext().getMonitor().contributorComplete(new DeleteFileCompletePillarEvent(
+                        null, response.getFrom(),
+                        "Delete considered complete as file was already missing from the pillar",
+                        context.getConversationID()));
+            } else {
+                getContext().getMonitor().contributorFailed(
+                        response.getResponseInfo().getResponseText(), response.getFrom(),
+                        response.getResponseInfo().getResponseCode());
+            }
+            if (response.getPillarChecksumSpec() != null) {
+                context.addChecksumPillar(response.getPillarID());
+            }
+            getSelector().processResponse(response);
         } else {
-            getContext().getMonitor().contributorFailed(
-                    "Received negative response from component " + msg.getFrom() +
-                            ":  " + msg.getResponseInfo(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+            throw new UnexpectedResponseException("Are currently only expecting IdentifyPillarsForDeleteFileResponse's");
         }
-        getSelector().processResponse(msg);
     }
-    
+
     @Override
     protected void sendRequest() {
         IdentifyPillarsForDeleteFileRequest msg = new IdentifyPillarsForDeleteFileRequest();
