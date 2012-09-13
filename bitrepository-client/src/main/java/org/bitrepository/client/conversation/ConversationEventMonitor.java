@@ -46,12 +46,12 @@ import static org.bitrepository.client.eventhandler.OperationEvent.OperationEven
  * Encapsulates the concrete handling of conversation events. Should be called every time a conversation event happens.
  */
 public class ConversationEventMonitor {
-    /** The log for this class. */
     private final ConversationLogger log;
     private final String conversationID;
     private final EventHandler eventHandler;
     private final List<ContributorEvent> contributorCompleteEvents = new LinkedList<ContributorEvent>();
     private final List<ContributorFailedEvent> contributorFailedEvents = new LinkedList<ContributorFailedEvent>();
+    private boolean failOnComponentFailure = true;
 
     /**
      * @param conversationID Used for adding conversation context information to the information distributed
@@ -170,7 +170,7 @@ public class ConversationEventMonitor {
      */
     public void complete() {
         if (contributorFailedEvents.isEmpty()) {
-            String message = "Completed successfully\n " + contributorCompleteEvents;
+            String message = "Completed successfully.";
             log.info(message);
             notifyEventListerners(new CompleteEvent(message, contributorCompleteEvents, conversationID));
         } else {
@@ -267,8 +267,22 @@ public class ConversationEventMonitor {
         log.debug(info, e);
     }
 
-    public boolean hasFailures() {
-        return !contributorFailedEvents.isEmpty();
+    /**
+     * Should this operation be considered failed, eg. something critical has gone wrong.
+     * Note that a operation may be considered a success, even if some contributors are unable to respond successfully.
+     */
+    public boolean hasFailed() {
+        return !contributorFailedEvents.isEmpty() && failOnComponentFailure;
+    }
+
+    /**
+     * Indicates whether a operation should be consider failed because one or more of the contributors have failed.
+     * This is <code>true</code> by default.
+     *
+     * Note that the operation can be falied explicitly by calling the operationFailed method.
+     */
+    public void markAsFailedOnContributorFailure(boolean enable) {
+        failOnComponentFailure = enable;
     }
 
     /**
