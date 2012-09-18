@@ -171,4 +171,24 @@ public class ArchiveDirectory {
         
         FileUtils.moveFile(oldFile, retainFile);
     }
+
+    /**
+     * The file to remove from the temporary directory. The file is just moved from the fileDir to the retainDir.
+     * This should be used e.g. to clean up after a failed PutFile. 
+     * @param fileId The id of the file to remove from tmpdir.
+     */
+    public void removeFileFromTmp(String fileId) {
+        File oldFile = new File(tmpDir, fileId);
+        if(!oldFile.isFile()) {
+            throw new IllegalStateException("Cannot locate the file to delete '" + oldFile.getAbsolutePath() + "'!");
+        }
+        File retainFile = new File(retainDir, fileId);
+        
+        // If a version of the file already has been retained, then it should be deprecated.
+        if(retainFile.exists()) {
+            FileUtils.deprecateFile(retainFile);
+        }
+        
+        FileUtils.moveFile(oldFile, retainFile);
+    }
 }

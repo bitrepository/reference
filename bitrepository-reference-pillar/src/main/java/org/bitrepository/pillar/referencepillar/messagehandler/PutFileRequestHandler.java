@@ -73,10 +73,14 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
 
     @Override
     public void processRequest(PutFileRequest message) throws RequestHandlerException {
-        validateMessage(message);
-        tellAboutProgress(message);
-        retrieveFile(message);
-        sendFinalResponse(message);
+        try {
+            validateMessage(message);
+            tellAboutProgress(message);
+            retrieveFile(message);
+            sendFinalResponse(message);
+        } finally {
+            getArchive().ensureFileNotInTmpDir(message.getFileID());
+        }
     }
 
     @Override
@@ -176,7 +180,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
     private void retrieveFile(PutFileRequest message) throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
-
+        
         try {
             getArchive().downloadFileForValidation(message.getFileID(), 
                     fe.downloadFromServer(new URL(message.getFileAddress())));
@@ -193,7 +197,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
             getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the validation "
                     + "checksum for the file before putting it into archive.", message.getAuditTrailInformation(), 
                     FileAction.CHECKSUM_CALCULATED);
-
+            
             ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
             String calculatedChecksum = getCsManager().getChecksumForTempFile(message.getFileID(), 
                     csType.getChecksumSpec());

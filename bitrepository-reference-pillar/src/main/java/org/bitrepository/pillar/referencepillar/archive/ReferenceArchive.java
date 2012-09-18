@@ -192,6 +192,20 @@ public class ReferenceArchive implements FileStore {
     }
     
     /**
+     * Ensures that no such file exists within the tmp directory.
+     * 
+     * @param fileId The id of the file to clean up after.
+     */
+    public void ensureFileNotInTmpDir(String fileId) {
+        for(ArchiveDirectory dir : directories) {
+            if(dir.hasFileInTempDir(fileId)) {
+                log.info("Removing tmp file '" + fileId + "' from tmp dir '" + dir + "'.");
+                dir.removeFileFromTmp(fileId);
+            }
+        }
+    }
+    
+    /**
      * Finds the directory with the most space left.
      * @return The archive directory with the most space left.
      */
