@@ -28,39 +28,27 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsReque
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.GeneralConversationState;
 import org.bitrepository.client.conversation.IdentifyingState;
-import org.bitrepository.client.conversation.selector.ComponentSelector;
-import org.bitrepository.client.conversation.selector.MultipleComponentSelector;
+import org.bitrepository.common.utils.FileIDsUtils;
 
 /**
- * Models the behavior of a GetFileIDs conversation during the identification phase. That is, it begins with the 
- * sending of <code>IdentifyPillarsForGetFileIDsRequest</code> messages and finishes with on the reception of the 
- * <code>IdentifyPillarsForGetFileIDsResponse</code> messages from the responding pillars.
- * 
- * Note that this is only used by the GetFileIDsConversation in the same package, therefore the visibility is package 
- * protected.
- * This is the initial state for the whole GetFileIDs communication.
+ * Models the behavior of a GetFileIDs conversation during the identification phase.
  */
 public class IdentifyPillarsForGetFileIDs extends IdentifyingState {
     private final GetFileIDsConversationContext context;
-    private final MultipleComponentSelector selector;
 
     /**
-     * Constructor.
-     * @param conversation The conversation where this belongs.
+     * @param context The for this conversation.
      */
     public IdentifyPillarsForGetFileIDs(GetFileIDsConversationContext context) {
-        super();
+        super(context.getContributors());
         this.context = context;
-        selector = new GetFileIDsContributorSelector(
-                context.getSettings().getCollectionSettings().getClientSettings().getPillarIDs());
     }
-    
-    
+
     @Override
     protected void sendRequest() {
         IdentifyPillarsForGetFileIDsRequest msg = new IdentifyPillarsForGetFileIDsRequest();
         initializeMessage(msg);
-        msg.setFileIDs(context.getFileIDs());
+        msg.setFileIDs(FileIDsUtils.createFileIDs(context.getFileID()));
         msg.setTo(context.getSettings().getCollectionDestination());
         context.getMessageSender().sendMessage(msg);
         context.getMonitor().identifyRequestSent("Identifying contributers for get fileIDs");
@@ -72,18 +60,12 @@ public class IdentifyPillarsForGetFileIDs extends IdentifyingState {
     }
 
     @Override
-    protected String getName() {
-        return "Identify pillars for GetFileIDs";
-    }
-
-    @Override
-    public ComponentSelector getSelector() {
-        return selector;
+    protected String getPrimitiveName() {
+        return "IdentifyPillarsForGetFileIDs";
     }
 
     @Override
     public GeneralConversationState getOperationState() {
-        return new GettingFileIDs(context, selector.getSelectedComponents());
+        return new GettingFileIDs(context, getSelector().getSelectedComponents());
     }
-
 }

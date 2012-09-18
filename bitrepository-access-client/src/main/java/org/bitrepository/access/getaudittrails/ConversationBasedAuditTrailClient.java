@@ -25,6 +25,8 @@
 package org.bitrepository.access.getaudittrails;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import org.bitrepository.access.getaudittrails.client.AuditTrailConversationContext;
 import org.bitrepository.access.getaudittrails.client.IdentifyingAuditTrailContributors;
@@ -56,7 +58,7 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
         }
         AuditTrailConversationContext context = new AuditTrailConversationContext(
                 componentQueries, fileID, urlForResult,
-                settings, messageBus, clientID, eventHandler, auditTrailInformation);
+                settings, messageBus, clientID, getContributors(componentQueries), eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyingAuditTrailContributors(context));
     }
 
@@ -78,5 +80,13 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
             componentQueryList.add(new AuditTrailQuery(contributer));
         }
         return componentQueryList.toArray(new AuditTrailQuery[componentQueryList.size()]);
+    }
+
+    private Collection<String> getContributors(AuditTrailQuery[] queries) {
+        Collection<String> contributors = new HashSet<String>();
+        for (AuditTrailQuery query: queries) {
+            contributors.add(query.getComponentID());
+        }
+        return contributors;
     }
 }

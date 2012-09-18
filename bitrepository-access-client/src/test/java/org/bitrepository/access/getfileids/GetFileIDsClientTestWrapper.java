@@ -52,9 +52,9 @@ public class GetFileIDsClientTestWrapper implements GetFileIDsClient {
     
     @Override
     public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
-            EventHandler eventHandler, String auditTrailInformation) {
+            EventHandler eventHandler) {
         eventManager.addStimuli("Calling getFileIDs(" + pillarIDs + ", " + fileIDs + ", " + addressForResult + ", "
-                + eventHandler + ", " + auditTrailInformation + ")");
-        client.getFileIDs(pillarIDs, fileIDs, addressForResult, eventHandler, auditTrailInformation);
+                + eventHandler + ")");
+        client.getFileIDs(pillarIDs, fileIDs, addressForResult, eventHandler);
     }
 }

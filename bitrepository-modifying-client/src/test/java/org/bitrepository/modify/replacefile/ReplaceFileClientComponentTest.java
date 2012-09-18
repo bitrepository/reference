@@ -39,6 +39,7 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
@@ -308,6 +309,43 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
     }
 
+    @Test(groups={"regressiontest"})
+    public void saltedReturnChecksumsForNewFileWithChecksumPillar() throws Exception {
+        addDescription("Tests that the ReplaceClient handles the presence of a ChecksumPillar correctly, " +
+                "when a salted return checksum (which a checksum pillar can't provide) is requested for the new file.");
+
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        ReplaceFileClient replaceClient = createReplaceFileClient();
+
+        addStep("Call replaceFile while requesting a salted checksum to be returned.",
+                "A IdentifyPillarsForGetFileRequest will be sent to the pillar and a " +
+                        "IDENTIFY_REQUEST_SENT should be generated.");
+        ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
+        checksumRequest.setChecksumType(ChecksumType.MD5);
+        checksumRequest.setChecksumSalt(Base16Utils.encodeBase16("aa"));
+        replaceClient.replaceFile(DEFAULT_FILE_ID, PILLAR1_ID, DEFAULT_OLD_CHECKSUM_DATA, null,
+                httpServer.getURL(DEFAULT_FILE_ID), 0, DEFAULT_NEW_CHECKSUM_DATA, checksumRequest, testEventHandler, null);
+
+        IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
+                IdentifyPillarsForReplaceFileRequest.class);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+
+        addStep("Send an identification response with a PillarChecksumSpec element set, indicating that this is a " +
+                "checksum pillar.",
+                "An COMPONENT_IDENTIFIED event should be generate followed by a COMPONENT_IDENTIFIED, " +
+                        "a IDENTIFICATION_COMPLETE and a REQUEST_SENT event. A replace request should be set to the " +
+                        "checksum pillar without a request for a salted return checksum for the new file");
+        IdentifyPillarsForReplaceFileResponse identifyResponse = messageFactory.createIdentifyPillarsForReplaceFileResponse(
+                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+        markAsChecksumPillarResponse(identifyResponse);
+        messageBus.sendMessage(identifyResponse);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        ReplaceFileRequest receivedReplaceFileRequest1 = pillar1Destination.waitForMessage(ReplaceFileRequest.class);
+        Assert.assertNull(receivedReplaceFileRequest1.getChecksumRequestForNewFile());
+    }
+
     /**
      * Creates a new test PutFileClient based on the supplied componentSettings. 
      *
@@ -326,5 +364,9 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         checksumData.setChecksumValue(checksum.getBytes());
         checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
         return checksumData;
+    }
+
+    private void markAsChecksumPillarResponse(IdentifyPillarsForReplaceFileResponse identifyResponse) {
+        identifyResponse.setPillarChecksumSpec(ChecksumUtils.getDefault(componentSettings));
     }
 }

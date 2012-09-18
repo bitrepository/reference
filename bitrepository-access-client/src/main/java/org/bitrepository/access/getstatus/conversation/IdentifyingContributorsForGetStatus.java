@@ -21,28 +21,17 @@
  */
 package org.bitrepository.access.getstatus.conversation;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.GeneralConversationState;
 import org.bitrepository.client.conversation.IdentifyingState;
-import org.bitrepository.client.conversation.selector.ComponentSelector;
-import org.bitrepository.client.conversation.selector.MultipleComponentSelector;
 
 public class IdentifyingContributorsForGetStatus extends IdentifyingState {
     private final GetStatusConversationContext context;
-    private final MultipleComponentSelector selector;
 
     public IdentifyingContributorsForGetStatus(GetStatusConversationContext context) {
-        super();
+        super(context.getContributors());
         this.context = context;
-        List<String> expectedContributers = new ArrayList<String>(
-                context.getSettings().getCollectionSettings().getGetStatusSettings().getContributorIDs().size());
-        for (String contributor : context.getSettings().getCollectionSettings().getGetStatusSettings().getContributorIDs()) {
-            expectedContributers.add(contributor);
-        }
-        selector = new GetStatusContributorSelector(expectedContributers);
     }
     
     @Override
@@ -61,17 +50,12 @@ public class IdentifyingContributorsForGetStatus extends IdentifyingState {
     }
 
     @Override
-    protected String getName() {
-        return "Identify contributers for Get Status";
+    protected String getPrimitiveName() {
+        return "IdentifyContributorsForGetStatus";
     }
 
-    @Override
-    public ComponentSelector getSelector() {
-        return selector;
-    }
     @Override
     public GeneralConversationState getOperationState() {
-        return new GettingStatus(context, selector.getSelectedComponents());
+        return new GettingStatus(context, getSelector().getSelectedComponents());
     }
-
 }

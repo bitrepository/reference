@@ -156,7 +156,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         URL fileIDsUrl = new URL(FILE_ADDRESS + "-id");
         
         getFileIDs.getFileIDs(clientSettings.getCollectionSettings().getClientSettings().getPillarIDs(),
-                fileIdsForGetFileIDs, fileIDsUrl, testEventHandler, "AuditTrail: TESTING!!!");
+                fileIdsForGetFileIDs, fileIDsUrl, testEventHandler);
         
         addStep("Validate the sequence of operation events for the getChecksumClient", 
                 "Should be in correct order.");

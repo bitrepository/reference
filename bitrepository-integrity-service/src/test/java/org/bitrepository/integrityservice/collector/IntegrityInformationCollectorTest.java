@@ -107,7 +107,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         }
         @Override
         public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
-                EventHandler eventHandler, String auditTrailInformation) {
+                EventHandler eventHandle) {
             callsForGetFileIDs++;
         }
     }
@@ -173,7 +173,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
     private class DyingGetFileIDsClient implements GetFileIDsClient {
         @Override
         public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
-                EventHandler eventHandler, String auditTrailInformation) {
+                EventHandler eventHandler) {
             throw new RuntimeException("My purpose is to die!");
         }
     }

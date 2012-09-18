@@ -127,8 +127,7 @@ public class GetFileIDs {
         
         CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings);
         
-        client.getFileIDs(pillarids, fileids, null, eventHandler, "Retrieving the file ids '" + fileids + "' from "
-                + "pillars '" + pillarids + "'");
+        client.getFileIDs(pillarids, fileids, null, eventHandler);
         
         return eventHandler.getFinish();
     }

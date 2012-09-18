@@ -24,37 +24,32 @@
  */
 package org.bitrepository.client.eventhandler;
 
-
 import java.util.List;
 
 /**
- * Indicates a operation has completed successfully.
+ * Event for a specific contributor.
  */
-public class CompleteEvent extends AbstractOperationEvent {
-    /** See {@link #getInfo()}*/
-    private final List<ContributorEvent> componentResults;
+public class ContributorsIdentifiedEvent extends AbstractOperationEvent {
+    private final List<String> contributorIDs;
 
     /**
-     * @param info See {@link #getComponentResults()}
-     * @param componentResults The aggregated list of <code>COMPONENT_COMPLETE</code> events generated during
-     *                         the operation.
-     * @param conversationID See {@link #getConversationID()}
-    */
-    public CompleteEvent(String info, List<ContributorEvent> componentResults, String conversationID) {
-        super(OperationEventType.COMPLETE, info, conversationID);
-        this.componentResults = componentResults;
-    }
-
-    /**
-     * Returns the results for the individual components contributing to this operation. The list is just
-     * aggregation of the <code>COMPONENT_COMPLETE</code> events generated during the operation.
+     * @param contributorIDs The lis of IDs of the contributor this event relates to.
+     * @param conversationID The ID of the conversation, which caused this event.
      */
-    public List<ContributorEvent> getComponentResults() {
-        return componentResults;
+    public ContributorsIdentifiedEvent(List<String> contributorIDs, String conversationID) {
+        super(OperationEventType.IDENTIFICATION_COMPLETE, "", conversationID);
+        this.contributorIDs = contributorIDs;
     }
 
+    /**
+     * Returns the ID of the pillar this event relates to.
+     */
+    public List<String> getContributorIDs() {
+        return contributorIDs;
+    }
+    
     @Override
     public String additionalInfo() {
-        return "";
+        return "Contributors: " + getContributorIDs();
     }
 }

@@ -69,7 +69,7 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
         try {
             auditManager.addAuditEvent("" + fileIDs.getFileID(), "IntegrityService", 
                     "Collecting file ids from '" + pillarIDs + "'", auditTrailInformation, FileAction.INTEGRITY_CHECK);
-            getFileIDsClient.getFileIDs(pillarIDs, fileIDs, null, eventHandler, auditTrailInformation);
+            getFileIDsClient.getFileIDs(pillarIDs, fileIDs, null, eventHandler);
         } catch (Exception e) {
             // Barrier
             log.error("Unexpected failure!", e);

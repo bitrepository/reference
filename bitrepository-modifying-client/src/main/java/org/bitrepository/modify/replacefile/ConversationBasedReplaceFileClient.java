@@ -25,6 +25,7 @@
 package org.bitrepository.modify.replacefile;
 
 import java.net.URL;
+import java.util.Arrays;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.AbstractClient;
@@ -34,8 +35,6 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.replacefile.conversation.IdentifyPillarsForReplaceFile;
 import org.bitrepository.modify.replacefile.conversation.ReplaceFileConversationContext;
-import org.bitrepository.modify.replacefile.pillarselector.AllPillarsSelectorForReplaceFile;
-import org.bitrepository.modify.replacefile.pillarselector.SpecificPillarSelectorForReplaceFile;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,12 +75,10 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
                 + "', and the new file has the checksum '" + checksumForNewFileValidationAtPillar + "' and requesting "
                 + "the checksum '" + checksumRequestsForNewFile + "'. With the audittrail '" + auditTrailInformation 
                 + "'");
-        ReplaceFileConversationContext context = new ReplaceFileConversationContext(fileId, 
-                new SpecificPillarSelectorForReplaceFile(
-                        settings.getCollectionSettings().getClientSettings().getPillarIDs(), pillarId), 
+        ReplaceFileConversationContext context = new ReplaceFileConversationContext(fileId,
                 sizeOfNewFile, url, checksumForDeleteAtPillar, checksumRequestedForDeletedFile, 
                 checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, settings, messageBus, 
-                clientID, eventHandler, auditTrailInformation);
+                clientID, Arrays.asList(pillarId), eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForReplaceFile(context));
     }
     
@@ -106,12 +103,10 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
                 + "', and the new file has the checksum '" + checksumForNewFileValidationAtPillar + "' and requesting "
                 + "the checksum '" + checksumRequestsForNewFile + "'. With the audittrail '" + auditTrailInformation 
                 + "'");
-        ReplaceFileConversationContext context = new ReplaceFileConversationContext(fileId, 
-                new AllPillarsSelectorForReplaceFile(
-                        settings.getCollectionSettings().getClientSettings().getPillarIDs()), 
+        ReplaceFileConversationContext context = new ReplaceFileConversationContext(fileId,
                 sizeOfNewFile, url, checksumForDeleteAtPillar, checksumRequestedForDeletedFile, 
                 checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, settings, messageBus, 
-                clientID, eventHandler, auditTrailInformation);
+                clientID, settings.getCollectionSettings().getClientSettings().getPillarIDs(), eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForReplaceFile(context));
     }
     

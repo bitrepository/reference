@@ -65,9 +65,9 @@
 //        
 //        addStep("Remove the workflow from the scheduler two times", 
 //                "Should not be any workflows in the scheduler, and only successfully remove workflow once.");
-//        Assert.assertTrue(scheduler.removeWorkflow(testWorkflow.getName()));
+//        Assert.assertTrue(scheduler.removeWorkflow(testWorkflow.getPrimitiveName()));
 //        Assert.assertEquals(scheduler.getWorkflows().size(), 0, "Should not be any workflows in the scheduler.");
-//        Assert.assertFalse(scheduler.removeWorkflow(testWorkflow.getName()));
+//        Assert.assertFalse(scheduler.removeWorkflow(testWorkflow.getPrimitiveName()));
 //    }
 //    
 //    @Test(groups = {"regressiontest", "integrationtest"})

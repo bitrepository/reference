@@ -24,9 +24,9 @@
  */
 package org.bitrepository.client.conversation;
 
+import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
@@ -38,8 +38,6 @@ import org.bitrepository.protocol.ProtocolVersionLoader;
 /**
  * Implements the generic conversation state functionality, 
  * like timeouts and the definition of the common state attributes.
- *
- * ToDo Implement ConversationState and consider moving selected method here when this class is in general usage.
  */
 public abstract class GeneralConversationState implements ConversationState {
     /** Defines that the timer is a daemon thread. */
@@ -50,53 +48,62 @@ public abstract class GeneralConversationState implements ConversationState {
     private static final Timer timer = new Timer(NAME_OF_TIMER, TIMER_IS_DAEMON);
     /** The timer task for timeout of identify in this conversation. */
     private final TimerTask stateTimeoutTask = new StateTimerTask();
+    /** For response bookkeeping */
+    private final ContributorResponseStatus responseStatus;
 
-    
+    protected GeneralConversationState(Collection<String> expectedContributors) {
+        responseStatus = new ContributorResponseStatus(expectedContributors);
+    }
+
     /**
      * Startes the state by: <ol>
      *     <li>Starting the timeout timer.</li>
      *     <li>Sends the request which triggers the responses for this state.</li>
      * </ol>
      */
-    public final void start() {
-        timer.schedule(stateTimeoutTask, getTimeout());
-        sendRequest();
-        try {
-            /* As some operations can have an identification phase succeeding without having any active
-             * contributors, we need to check if the state is already done just after we started it. 
-             * This could be if trying to delete a file in the collection that is not present and all
-             * pillars thus answer FILE_NOT_FOUND. In that case no pillars will be asked to delete a file
-             * and we should just proceed finishing the conversation. */
-            setNewState(getNextState());
-        } catch (UnableToFinishException e) {
-            getContext().getMonitor().operationFailed(e);
+    public void start() {
+        if (!responseStatus.getOutstandComponents().isEmpty()) {
+            timer.schedule(stateTimeoutTask, getTimeoutValue());
+            sendRequest();
+        } else {
+            // No contributors need to be called for the operation to finish.
+            changeState();
         }
     }
 
     /**
      * The general message handler for this state. Will only accept <code>MessageResponses</code>.
-     * Takes care of the general message bookkepping and delegates the specifics of the message handling to the
+     * Takes care of the general message bookkeeping and delegates the specifics of the message handling to the
      * concrete states {@link #processMessage(MessageResponse)}.
      * @param message The message to handle.
      */
     public final void handleMessage(Message message) {
         if (!(message instanceof MessageResponse)) {
-            getContext().getMonitor().outOfSequenceMessage(
-                    "Can only handle responses, but received " + message.getClass().getSimpleName());
+            getContext().getMonitor().warning("Unable to handle none-response type message " + message);
+            return;
         }
-        if (!isComponentRelevant(message.getFrom())) {
-            getContext().getMonitor().debug("Ignoring message from irrelevant component " + message.getFrom());
+        MessageResponse response = (MessageResponse)message;
+
+        if (!canHandleResponseType(response)) {
+            getContext().getMonitor().outOfSequenceMessage(response);
+            return;
+        }
+        if (!responseStatus.getComponentsWhichShouldRespond().contains(message.getFrom())) {
+            getContext().getMonitor().debug("Ignoring message from irrelevant component " + response.getFrom());
             return;
         }
 
-        MessageResponse response = (MessageResponse)message;
         try {
+            responseStatus.responseReceived(response);
             processMessage(response);
-            setNewState(getNextState());
+            if (responseStatus.haveAllComponentsResponded()) {
+                stateTimeoutTask.cancel();
+                changeState();
+            }
         } catch (UnexpectedResponseException e) {
-            getContext().getMonitor().invalidMessage(response, e);
+            getContext().getMonitor().invalidMessage(message, e);
         } catch (UnableToFinishException e) {
-            getContext().getMonitor().operationFailed(e);
+            failConversation(e.getMessage());
         }
     }
 
@@ -108,20 +115,32 @@ public abstract class GeneralConversationState implements ConversationState {
     private class StateTimerTask extends TimerTask {
         @Override
         public void run() {
-            setNewState(handleStateTimeout());
+            try {
+                logStateTimeout();
+                changeState();
+            } catch (UnableToFinishException e) {
+                failConversation(e.getMessage());
+            }
         }
     }
 
     /**
-     * Handles the change to the new state.
-     * @param newState The state to change to.
+     * Changes to the next state.
      */
-    private void setNewState(GeneralConversationState newState) {
-        if (newState != this){
-            stateTimeoutTask.cancel();
-            getContext().setState(newState);
-            newState.start();
+    private void changeState() {
+        try {
+            GeneralConversationState nextState = completeState();
+            getContext().setState(nextState);
+            nextState.start();
+        } catch (UnableToFinishException e) {
+            failConversation(e.getMessage());
         }
+    }
+
+    private void failConversation(String message) {
+        stateTimeoutTask.cancel();
+        getContext().getMonitor().operationFailed(message);
+        getContext().setState(new FinishedState(getContext()));
     }
 
     protected void initializeMessage(MessageRequest msg) {
@@ -134,20 +153,26 @@ public abstract class GeneralConversationState implements ConversationState {
         msg.setFrom(getContext().getClientID());
     }
 
+    /** Returns a list of components where a identify response hasn't been received. */
+    protected Collection<String> getOutstandingComponents() {
+        return responseStatus.getOutstandComponents();
+    }
+
+    /** Must be implemented by subclasses to log informative timeout information */
+    protected abstract void logStateTimeout() throws UnableToFinishException ;
+
     /**
      * Implement by concrete states for sending the request starting this state.
      */
     protected abstract void sendRequest();
-    /**
-     * Implement by concrete states for handling timeout for the state.
-     * @throws UnexpectedResponseException The response could be processed successfully
-     */
-    protected abstract void processMessage(MessageResponse response) throws UnexpectedResponseException, UnableToFinishException;
 
     /**
-     * Implement by concrete states for handling timeout for the state.
+     * Implement by concrete states. Only messages from the indicated contributors and with the right type
+     * will be delegate to this method.
+     * @throws UnexpectedResponseException The response could not be processed successfully.
      */
-    protected abstract GeneralConversationState handleStateTimeout();
+    protected abstract void processMessage(MessageResponse response)
+            throws UnexpectedResponseException, UnableToFinishException;
 
     /**
      * @return The conversation context used for this conversation.
@@ -155,39 +180,30 @@ public abstract class GeneralConversationState implements ConversationState {
     protected abstract ConversationContext getContext();
 
     /**
-     * Called to get the next state when all responses have been received. This would be: <ul>
-     *     <li>The operation state if this is a identification state.</li>
-     *     <li>The finished state if this is the operation state</li>
-     * </ul>
-     * Note that if the implementing class must also handle the sending of events in case of a state change.
-     * @return The next state after this one.
+     * Completes the state by generating any state/primitive finish events, create the following state and
+     * return it.
+     * @return An instance of the state following this state. Will be called if the moveToNextState
+     * has returned true.
+     * @exception UnableToFinishException Thrown in case that it is impossible to create a valid ned state.
      */
-    protected abstract GeneralConversationState getNextState() throws UnableToFinishException;
+    protected abstract GeneralConversationState completeState() throws UnableToFinishException;
 
     /**
      * Gives access to the concrete timeout for the state.
      */
-    protected abstract long getTimeout();
+    protected abstract long getTimeoutValue();
 
     /**
      * Informative naming of the process this state is performing. Used for logging. Examples are 'Delete files',
      * 'Identify contributers for Audit Trails'
      */
-    protected abstract String getName();
-
-
-    /**
-     * @return The concrete response status implemented by the subclass.
-     */
-    protected abstract ContributorResponseStatus getResponseStatus();
+    protected abstract String getPrimitiveName();
 
     /**
-     * Indicates whether a components should be ignored, eg. it's response is relevant.
-     * @param componentID The ID of the component to check
-     * @return <code>true</code> if the message from this component should be processed, else false.
+     * Implemented by concrete classes to indicate whether the state expects responses of this type.
      */
-    protected boolean isComponentRelevant(String componentID) {
-        return getResponseStatus().getComponentsWhichShouldRespond().contains(componentID);
+    private boolean canHandleResponseType(MessageResponse response) {
+        String responseType = response.getClass().getSimpleName();
+        return responseType.contains(getPrimitiveName());
     }
-
 }

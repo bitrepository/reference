@@ -26,7 +26,6 @@ package org.bitrepository.client.conversation;
 
 import java.util.LinkedList;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 
 /**
@@ -34,10 +33,9 @@ import org.bitrepository.common.exceptions.UnableToFinishException;
  */
 public class FinishedState extends GeneralConversationState {
     protected final ConversationContext context;
-    protected final ContributorResponseStatus dummyResponseStatus =
-            new ContributorResponseStatus(new LinkedList<String>());
     
     public FinishedState(ConversationContext context) {
+        super(new LinkedList<String>());
         this.context = context;
     }
 
@@ -47,23 +45,28 @@ public class FinishedState extends GeneralConversationState {
     }
 
     @Override
-    protected GeneralConversationState getNextState() throws UnableToFinishException {
-        return this;
+    public void start(){
+        // Nothing to do.
     }
 
     @Override
-    protected long getTimeout() {
+    protected GeneralConversationState completeState() throws UnableToFinishException {
+        throw new UnsupportedOperationException("No state exists after finished state");
+    }
+
+    @Override
+    protected long getTimeoutValue() {
         return context.getSettings().getReferenceSettings().getClientSettings().getConversationTimeout().longValue();
     }
 
     @Override
-    protected String getName() {
+    protected String getPrimitiveName() {
         return "Finished";
     }
 
     @Override
-    protected boolean isComponentRelevant(String componentID) {
-        return false;
+    protected void logStateTimeout() throws UnableToFinishException {
+        throw new UnsupportedOperationException("Finished state should never timeout");
     }
 
     @Override
@@ -73,23 +76,7 @@ public class FinishedState extends GeneralConversationState {
 
     @Override
     protected void processMessage(MessageResponse message) {
-        context.getMonitor().outOfSequenceMessage("Received " + message.getClass().getName() +
-                " with replyTo " + message.getReplyTo() + " after the conversation has ended.");
-    }
-
-    /**
-     * Never occures, this is the final state.
-     * @return
-     */
-    @Override
-    protected GeneralConversationState handleStateTimeout() {
-        // What to do?
-        return this;
-    }
-
-    @Override
-    protected ContributorResponseStatus getResponseStatus() {
-        return dummyResponseStatus;
+        context.getMonitor().outOfSequenceMessage(message);
     }
 
 }

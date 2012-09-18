@@ -24,11 +24,13 @@
  */
 package org.bitrepository.client.conversation.selector;
 
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
-
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.protocol.utils.MessageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,40 +48,28 @@ public class ContributorResponseStatus {
         this.componentsWhichShouldRespond = new HashSet<String>(componentsWhichShouldRespond);
         this.componentsWithOutstandingResponse = new HashSet<String>(componentsWhichShouldRespond);
     }
-    
-    /**
-     * Use for operation response bookkeeping.
-     * @param componentssWhichShouldRespond An array of selected component specifying which components are expected to respond. 
-     */
-    public ContributorResponseStatus(SelectedComponentInfo[] componentssWhichShouldRespond) {
-        this.componentsWhichShouldRespond = new HashSet<String>();
-        this.componentsWithOutstandingResponse = new HashSet<String>();
-        for (SelectedComponentInfo pillar: componentssWhichShouldRespond) {
-            this.componentsWhichShouldRespond.add(pillar.getID());
-            this.componentsWithOutstandingResponse.add(pillar.getID());
-        }
-    }
 
     /**
      * Maintains the bookkeeping regarding which components have responded.
      *
      */
-    public final void responseReceived(String componentId) throws UnexpectedResponseException {
-        if (componentId == null) {
-            throw new UnexpectedResponseException("Received response with null componentID");
-        } else if (componentsWithOutstandingResponse.contains(componentId)) {
-            componentsWithOutstandingResponse.remove(componentId);
-        } else if (!componentsWithOutstandingResponse.contains(componentId) &&
-                componentsWhichShouldRespond.contains(componentId)) {
-            throw new UnexpectedResponseException("Received more than one response from component " + componentId);
-        } else {
-            log.debug("Received response from irrelevant component " + componentId);
+    public final void responseReceived(MessageResponse response) throws UnexpectedResponseException {
+        if (MessageUtils.isEndMessageForPrimitive(response)) {
+            String componentID = response.getFrom();
+            if (componentsWithOutstandingResponse.contains(componentID)) {
+                componentsWithOutstandingResponse.remove(componentID);
+            } else if (!componentsWithOutstandingResponse.contains(componentID) &&
+                    componentsWhichShouldRespond.contains(componentID)) {
+                log.debug("Received more than one response from component " + componentID);
+            } else {
+                log.debug("Received response from irrelevant component " + componentID);
+            }
         }
     }
 
     /** Returns a list of components where a identify response hasen't been received. */ 
-    public String[] getOutstandComponents() {
-        return componentsWithOutstandingResponse.toArray(new String[componentsWithOutstandingResponse.size()]);
+    public Collection<String> getOutstandComponents() {
+        return Collections.unmodifiableCollection(componentsWithOutstandingResponse);
     }
 
     /**

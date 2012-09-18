@@ -21,79 +21,63 @@
  */
 package org.bitrepository.client.conversation;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
-import org.bitrepository.common.exceptions.UnableToFinishException;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.client.conversation.selector.ComponentSelector;
+import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.common.exceptions.UnableToFinishException;
 
 /**
  * Handles the general identifying state functionality. For common usage this class handles all messages by using
  * the sub classe defined <code>selector</code>.
  *
  * This class also has a default implementation for the <code>handleStateTimeout()</code>, <code>getNextState()</code>
- * and <code>getTimeout()</code> operations.
+ * and <code>getTimeoutValue()</code> operations.
  * <code>getNextState()</code>
  * more specialized
  */
 public abstract class IdentifyingState extends GeneralConversationState {
-    @Override
-    protected void processMessage(MessageResponse msg) throws UnexpectedResponseException, UnableToFinishException {
+    private ComponentSelector selector = new ComponentSelector();
 
-        if (!msg.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)    ) {
-            getContext().getMonitor().contributorFailed(
-                    "Received negative response from component " + msg.getFrom() +
-                            ":  " + msg.getResponseInfo(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
-        } else {
+    protected IdentifyingState(Collection<String> expectedContributors) {
+        super(expectedContributors);
+    }
+
+    @Override
+    protected final void processMessage(MessageResponse msg) throws UnexpectedResponseException, UnableToFinishException {
+        if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)) {
             getContext().getMonitor().contributorIdentified(msg);
-        }
-        getSelector().processResponse(msg);
-    }
-
-    @Override
-    protected GeneralConversationState handleStateTimeout() {
-        if (getContext().getState() == this) {
-            if (handleIdentificationTimeout()) {
-                getContext().getMonitor().identifyContributorsTimeout(
-                        "Time has run out for looking up contributors." +
-                                " Using contributors based on incomplete set of responses.",
-                        getSelector().getOutstandingComponents());
-                getContext().getMonitor().contributorSelected("Identified contributors",
-                        getSelector().getContributersAsString());
-                return getOperationState();
-            } else {
-                getContext().getMonitor().identifyContributorsTimeout(
-                        "Time has run out for looking up contributors, unable to continue.",
-                        getSelector().getOutstandingComponents());
-                getContext().getMonitor().operationFailed(
-                        "Unable to continue with operation, missing contributors");
-                return new FinishedState(getContext());
-            }
+            getSelector().selectComponent(msg);
+            checkForChecksumPillar(msg);
+        } else if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.REQUEST_NOT_SUPPORTED)) {
+            getContext().getMonitor().debug(
+                    "Response received indicating that the operation is not supported for pillar " + msg.getFrom());
         } else {
-            getContext().getMonitor().warning("Identification timeout, but " +
-                    "the conversation state has already changed to " + getContext().getState());
-            return new FinishedState(getContext());
+            handleFailureResponse(msg);
         }
     }
 
     @Override
-    protected GeneralConversationState getNextState() throws UnableToFinishException {
-        if (!continueWithOperation()) {
-            getContext().getMonitor().operationFailed(
-                    "Unable to continue with operation, a component has failed");
-            return new FinishedState(getContext());
-        } else if (getSelector().isFinished()) {
-            getContext().getMonitor().contributorSelected(
-                    "Identified contributors", getSelector().getContributersAsString());
+    protected void logStateTimeout() {
+        getContext().getMonitor().identifyContributorsTimeout(getOutstandingComponents());
+    }
+
+    @Override
+    protected final GeneralConversationState completeState() throws UnableToFinishException {
+        if (canFinish()) {
+            generateContributorsSelectedEvent(getSelector().getSelectedComponents());
             return getOperationState();
         } else {
-            return this;
+            throw new UnableToFinishException("Unable to continue operation, contributors unavailable.");
         }
     }
 
     @Override
-    protected long getTimeout() {
+    protected long getTimeoutValue() {
         return getContext().getSettings().getCollectionSettings().getClientSettings().getIdentificationTimeout()
                 .longValue();
     }
@@ -101,34 +85,53 @@ public abstract class IdentifyingState extends GeneralConversationState {
     /**
      * @return The concrete selector from the implementing subclass.
      */
-    public abstract ComponentSelector getSelector();
+    protected final ComponentSelector getSelector() {
+        return selector;
+    }
+
+    /**
+     * @return The concrete selector from the implementing subclass.
+     */
+    protected void setSelector(ComponentSelector customSelector) {
+        selector = customSelector;
+    }
 
     /**
      * @return The performing state object to be used after the identification is finished.
      */
-    public abstract GeneralConversationState getOperationState();
+    protected abstract GeneralConversationState getOperationState() throws UnableToFinishException;
 
     /**
-     * Can be used by subclass the subclass to finish the identification. If the identification is incomplete,
-     * a informative IDENTIFICATION_FAILED should be generate.
-     *
-     * The default implementation is just to return true if a components has been selected by the selector, else false.
-     *
-     * @return Whether the conversation should continue to the operation phase or be considered failed. Only
+     * Implements the default handling of failure responses. May be overridden by operation specific behaviour,
+     * idempotent behaviour f.ex,.
      */
-    protected boolean handleIdentificationTimeout() {
-        return getSelector().hasSelectedComponent();
+    protected void handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
+        getContext().getMonitor().contributorFailed(
+                msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+    }
+
+    private void generateContributorsSelectedEvent(Collection<SelectedComponentInfo> selectedComponentInfo) {
+        List<String> selectedComponentIDs = new LinkedList<String>();
+        for (SelectedComponentInfo componentInfo:selectedComponentInfo) {
+            selectedComponentIDs.add(componentInfo.getID());
+        }
+        getContext().getMonitor().contributorsSelected(selectedComponentIDs);
     }
 
     /**
-     * @return false if a critical failure has occured, so the operation needs to be abandoned.
-     * The default implementation will always return true, but this can be overridden by subclasses.
+     * Indicates whether the identification state can finish, eg. can continue to the operation phase.
+     * The default implementation is to return true if at least one a contributor has identified.
+     * has been selected. May be overridden by concrete classes.
      */
-    protected boolean continueWithOperation() {
-        return true;
+    protected boolean canFinish() {
+        return !getSelector().getSelectedComponents().isEmpty();
     }
 
-    protected ContributorResponseStatus getResponseStatus() {
-        return getSelector().getResponseStatus();
+    /**
+     * Can be used by some operation to mark the responding pillar as checksum pillar if this is relevant for the
+     * operation. The default implementation is to do nothing
+     */
+    protected void checkForChecksumPillar(MessageResponse msg) {
+
     }
 }

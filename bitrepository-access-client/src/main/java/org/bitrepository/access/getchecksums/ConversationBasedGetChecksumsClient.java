@@ -61,12 +61,17 @@ public class ConversationBasedGetChecksumsClient extends AbstractClient implemen
             URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
         validateFileID(fileIDs.getFileID());
+
+        if (pillarIDs == null) {
+            pillarIDs = settings.getCollectionSettings().getClientSettings().getPillarIDs();
+        }
         
         log.info("Requesting the checksum of the file '" + fileIDs.getFileID() + "' from the pillars '"
                 + pillarIDs + "' with the specifications '" + checksumSpec + "'. "
                 + "The result should be uploaded to '" + addressForResult + "'.");
-        GetChecksumsConversationContext context = new GetChecksumsConversationContext(pillarIDs, fileIDs,
-                checksumSpec, addressForResult, settings, messageBus, clientID, eventHandler, auditTrailInformation);
+        GetChecksumsConversationContext context = new GetChecksumsConversationContext(
+                fileIDs.getFileID(), checksumSpec, addressForResult, settings, messageBus, clientID, pillarIDs,
+                eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForGetChecksums(context));
     }
 }

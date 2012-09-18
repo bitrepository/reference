@@ -51,8 +51,9 @@ public class ConversationBasedGetStatusClient extends AbstractClient implements 
     public void getStatus(EventHandler eventHandler) {
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
         log.info("Requesting status for collection of components.");
-        GetStatusConversationContext context = new GetStatusConversationContext(settings, messageBus, 
-                eventHandler, "", clientID);
+        GetStatusConversationContext context = new GetStatusConversationContext(
+                settings, messageBus, eventHandler, clientID,
+                settings.getCollectionSettings().getGetStatusSettings().getContributorIDs());
         startConversation(context, new IdentifyingContributorsForGetStatus(context));
     }
 }

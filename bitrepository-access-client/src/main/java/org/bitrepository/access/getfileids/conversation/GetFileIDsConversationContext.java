@@ -22,27 +22,20 @@
 package org.bitrepository.access.getfileids.conversation;
 
 import java.net.URL;
-
-import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.common.settings.Settings;
+import java.util.Collection;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
 public class GetFileIDsConversationContext extends ConversationContext {
-    private final FileIDs fileIDs;
     private final URL urlForResult;
 
-    public GetFileIDsConversationContext(FileIDs fileIDs, URL urlForResult,
-            Settings settings, MessageSender messageSender, String clientID, EventHandler eventHandler,
-            String auditTrailInformation) {
-        super(settings, messageSender, clientID, eventHandler, auditTrailInformation);
-        this.fileIDs = fileIDs;
+    public GetFileIDsConversationContext(String fileID, URL urlForResult,
+            Settings settings, MessageSender messageSender, String clientID, Collection<String> contributors,
+            EventHandler eventHandler) {
+        super(settings, messageSender, clientID, fileID, contributors, eventHandler, null);
         this.urlForResult = urlForResult;
-    }
-
-    public FileIDs getFileIDs() {
-        return fileIDs;
     }
 
     public URL getUrlForResult() {

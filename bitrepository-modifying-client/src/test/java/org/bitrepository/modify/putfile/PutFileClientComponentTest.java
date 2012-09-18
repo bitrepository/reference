@@ -555,8 +555,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
-        PutFileRequest receivedPutFileRequest1 =
-                pillar1Destination.waitForMessage(PutFileRequest.class);
+        PutFileRequest receivedPutFileRequest1 = pillar1Destination.waitForMessage(PutFileRequest.class);
         Assert.assertNull(receivedPutFileRequest1.getChecksumRequestForNewFile());
 
         PutFileRequest receivedPutFileRequest2 =

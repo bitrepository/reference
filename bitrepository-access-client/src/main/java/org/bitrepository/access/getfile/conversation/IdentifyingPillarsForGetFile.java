@@ -24,15 +24,12 @@
  */
 package org.bitrepository.access.getfile.conversation;
 
-import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.access.getfile.selectors.FastestPillarSelectorForGetFile;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.GeneralConversationState;
 import org.bitrepository.client.conversation.IdentifyingState;
-import org.bitrepository.client.conversation.selector.ComponentSelector;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
-import org.bitrepository.common.exceptions.UnableToFinishException;
+import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 
 
 /**
@@ -46,36 +43,18 @@ public class IdentifyingPillarsForGetFile extends IdentifyingState {
      * @param context The related context related to the conversation containing information.
      */
     public IdentifyingPillarsForGetFile(GetFileConversationContext context) {
+        super(context.getContributors());
         this.context = context;
         context.getMonitor().markAsFailedOnContributorFailure(false);
-    }
-
-    /**
-     * Overrides the default behaviour of generating COMPONENT_FAILURE events on none-positive identify responses.
-     * This is because the getFile operation is able to succeed if just one pillar is able to service the getFile
-     * request.
-     */
-    @Override
-    protected void processMessage(MessageResponse msg) throws UnexpectedResponseException, UnableToFinishException {
-        if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)    ) {
-            getContext().getMonitor().contributorIdentified(msg);
-        } else if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.REQUEST_NOT_SUPPORTED)) {
-            getContext().getMonitor().debug("Response received indicating that the operation not supported for pillar " +
-                    msg.getFrom());
-        } else {
-            getContext().getMonitor().contributorFailed(msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+        if (context.getContributors().size() > 1) {
+            setSelector(new FastestPillarSelectorForGetFile());
         }
-        getSelector().processResponse(msg);
-    }
-
-    @Override
-    public ComponentSelector getSelector() {
-        return context.getSelector();
     }
 
     @Override
     public GeneralConversationState getOperationState() {
-        return new GettingFile(context, context.getSelector().getSelectedComponent());
+        return new GettingFile(context, getSelectedPillar());
+
     }
 
     @Override
@@ -95,8 +74,11 @@ public class IdentifyingPillarsForGetFile extends IdentifyingState {
     }
 
     @Override
-    protected String getName() {
-        return "Identify pillars for GetFile";
+    protected String getPrimitiveName() {
+        return "IdentifyPillarsForGetFile";
     }
 
+    private SelectedComponentInfo getSelectedPillar() {
+        return getSelector().getSelectedComponents().iterator().next();
+    }
 }

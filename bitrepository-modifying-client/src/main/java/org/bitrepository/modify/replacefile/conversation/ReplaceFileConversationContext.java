@@ -24,7 +24,7 @@ package org.bitrepository.modify.replacefile.conversation;
 import java.math.BigInteger;
 import java.net.URL;
 
-import org.bitrepository.modify.replacefile.pillarselector.ReplaceFileSelector;
+import java.util.Collection;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.conversation.ConversationContext;
@@ -33,24 +33,19 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
 public class ReplaceFileConversationContext extends ConversationContext {
-    private final String fileID;
-    private final ReplaceFileSelector selector;
     private final BigInteger sizeOfNewFile;
     private final URL urlForFile;
     private final ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar;
     private final ChecksumSpecTYPE checksumRequestsForNewFile;
     private final ChecksumDataForFileTYPE checksumForDeleteAtPillar; 
     private final ChecksumSpecTYPE checksumRequestedForDeletedFile;
-
     
-    public ReplaceFileConversationContext(String fileID, ReplaceFileSelector selector, long sizeOfNewFile, URL urlForFile,
+    public ReplaceFileConversationContext(String fileID, long sizeOfNewFile, URL urlForFile,
             ChecksumDataForFileTYPE checksumForDeleteAtPillar, ChecksumSpecTYPE checksumRequestedForDeletedFile,
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile, 
-            Settings settings, MessageSender messageSender, String clientID, EventHandler eventHandler,
-            String auditTrailInformation) {
-        super(settings, messageSender, clientID, eventHandler, auditTrailInformation);
-        this.fileID = fileID;
-        this.selector = selector;
+            Settings settings, MessageSender messageSender, String clientID, Collection<String> contributors,
+            EventHandler eventHandler,String auditTrailInformation) {
+        super(settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
         this.urlForFile = urlForFile;
         this.sizeOfNewFile = new BigInteger(Long.toString(sizeOfNewFile));
         this.checksumForDeleteAtPillar = checksumForDeleteAtPillar;
@@ -59,10 +54,6 @@ public class ReplaceFileConversationContext extends ConversationContext {
         this.checksumRequestsForNewFile = checksumRequestsForNewFile;
     }
 
-    public String getFileID() {
-        return fileID;
-    }
-    
     public ChecksumDataForFileTYPE getChecksumForNewFileValidationAtPillar() {
         return checksumForNewFileValidationAtPillar;
     }
@@ -83,12 +74,7 @@ public class ReplaceFileConversationContext extends ConversationContext {
         return sizeOfNewFile;
     }
     
-    public ReplaceFileSelector getSelector() {
-        return selector;
-    }
-    
     public URL getUrlForFile() {
         return urlForFile;
-    } 
-
+    }
 }

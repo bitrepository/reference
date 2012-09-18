@@ -38,7 +38,7 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.client.TestEventHandler;
-import org.bitrepository.client.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.ContributorsIdentifiedEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -60,7 +60,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     @Test(groups = {"regressiontest"})
     public void getFileFromSpecificPillarWithFilePart() throws Exception {
-        addDescription("Tests whether a specific message is sent by the GetClient, when only a single pillar " +
+        addDescription("Tests that the GetClient client works for a single pillar " +
                 "participates. Also validate, that the 'FilePart' can be used.");
         addStep("Set the number of pillars to 1", "");
 
@@ -91,11 +91,10 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 "The callback listener should notify of the response and the client should send a GetFileRequest message to " +
                         "the pillar");
 
-        GetFileRequest receivedGetFileRequest = null;
         IdentifyPillarsForGetFileResponse identifyResponse = testMessageFactory.createIdentifyPillarsForGetFileResponse(
                 receivedIdentifyRequestMessage, chosenPillar, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
-        receivedGetFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class);
+        GetFileRequest receivedGetFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class);
         Assert.assertEquals(receivedGetFileRequest,
                 testMessageFactory.createGetFileRequest(receivedGetFileRequest, filePart, chosenPillar,
                         pillar1DestinationId, TEST_CLIENT_ID));
@@ -163,43 +162,41 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 "The event handler should receive the following events: " +
                 "3 x PillarIdentified, a PillarSelected and a RequestSent");
 
-        if (useMockupPillar()) {
-            IdentifyPillarsForGetFileResponse averageReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
-                    receivedIdentifyRequestMessage, averagePillarID, pillar2DestinationId);
-            TimeMeasureTYPE averageTime = new TimeMeasureTYPE();
-            averageTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
-            averageTime.setTimeMeasureValue(BigInteger.valueOf(100L));
-            averageReply.setTimeToDeliver(averageTime);
-            messageBus.sendMessage(averageReply);
+        IdentifyPillarsForGetFileResponse averageReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
+                receivedIdentifyRequestMessage, averagePillarID, pillar2DestinationId);
+        TimeMeasureTYPE averageTime = new TimeMeasureTYPE();
+        averageTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
+        averageTime.setTimeMeasureValue(BigInteger.valueOf(100L));
+        averageReply.setTimeToDeliver(averageTime);
+        messageBus.sendMessage(averageReply);
 
-            IdentifyPillarsForGetFileResponse fastReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
-                    receivedIdentifyRequestMessage, fastPillarID, pillar1DestinationId);
-            TimeMeasureTYPE fastTime = new TimeMeasureTYPE();
-            fastTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
-            fastTime.setTimeMeasureValue(BigInteger.valueOf(10L));
-            fastReply.setTimeToDeliver(fastTime);
-            messageBus.sendMessage(fastReply);
+        IdentifyPillarsForGetFileResponse fastReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
+                receivedIdentifyRequestMessage, fastPillarID, pillar1DestinationId);
+        TimeMeasureTYPE fastTime = new TimeMeasureTYPE();
+        fastTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
+        fastTime.setTimeMeasureValue(BigInteger.valueOf(10L));
+        fastReply.setTimeToDeliver(fastTime);
+        messageBus.sendMessage(fastReply);
 
-            IdentifyPillarsForGetFileResponse slowReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
-                    receivedIdentifyRequestMessage, slowPillarID, pillar2DestinationId);
-            TimeMeasureTYPE slowTime = new TimeMeasureTYPE();
-            slowTime.setTimeMeasureValue(BigInteger.valueOf(1L));
-            slowTime.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
-            slowReply.setTimeToDeliver(slowTime);
-            messageBus.sendMessage(slowReply);
+        IdentifyPillarsForGetFileResponse slowReply = testMessageFactory.createIdentifyPillarsForGetFileResponse(
+                receivedIdentifyRequestMessage, slowPillarID, pillar2DestinationId);
+        TimeMeasureTYPE slowTime = new TimeMeasureTYPE();
+        slowTime.setTimeMeasureValue(BigInteger.valueOf(1L));
+        slowTime.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
+        slowReply.setTimeToDeliver(slowTime);
+        messageBus.sendMessage(slowReply);
 
-            GetFileRequest receivedGetFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class);
-            Assert.assertEquals(receivedGetFileRequest,
-                    testMessageFactory.createGetFileRequest(receivedGetFileRequest, NO_FILE_PART, fastPillarID,
-                            pillar1DestinationId, TEST_CLIENT_ID));
-        }
+        GetFileRequest receivedGetFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class);
+        Assert.assertEquals(receivedGetFileRequest,
+                testMessageFactory.createGetFileRequest(receivedGetFileRequest, NO_FILE_PART, fastPillarID,
+                        pillar1DestinationId, TEST_CLIENT_ID));
 
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
-        ContributorEvent event = (ContributorEvent) testEventHandler.waitForEvent();
+        ContributorsIdentifiedEvent event = (ContributorsIdentifiedEvent) testEventHandler.waitForEvent();
         Assert.assertEquals(event.getType(), OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(event.getContributorID(), fastPillarID);
+        Assert.assertEquals(event.getContributorIDs().get(0), fastPillarID);
         Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
     }
 

@@ -50,9 +50,8 @@ public interface GetFileIDsClient {
      * @param fileIDs The ids for the requested files. 
      * @param addressForResult The address for delivering the results of the operation. If this is null, then it is 
      * returned through the messages.
-     * @param eventHandler The eventHandler to keep track of the operation. 
-     * @param auditTrailInformation The auditTrailInformation for the requests.
+     * @param eventHandler The eventHandler to keep track of the operation.
      */
-    public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult, EventHandler eventHandler, 
-            String auditTrailInformation);
+    public void getFileIDs(
+            Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult, EventHandler eventHandler);
 }

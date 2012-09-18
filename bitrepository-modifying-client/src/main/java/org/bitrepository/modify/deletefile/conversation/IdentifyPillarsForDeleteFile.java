@@ -31,54 +31,46 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.GeneralConversationState;
 import org.bitrepository.client.conversation.IdentifyingState;
-import org.bitrepository.client.conversation.selector.ComponentSelector;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.common.exceptions.UnableToFinishException;
 
 /**
- * The first state of the DeleteFile communication. The identification of the pillars involved.
+ * Handles the identification of the deleteFile Contributors.
  */
 public class IdentifyPillarsForDeleteFile extends IdentifyingState {
     private final DeleteFileConversationContext context;
 
     public IdentifyPillarsForDeleteFile(DeleteFileConversationContext context) {
+        super(context.getContributors());
         this.context = context;
     }
 
     @Override
-    public ComponentSelector getSelector() {
-        return context.getSelector();
-    }
-
-    @Override
     public GeneralConversationState getOperationState() {
-        return new DeletingFile(context, context.getSelector().getSelectedComponents());
+        return new DeletingFile(context, getSelector().getSelectedComponents());
     }
 
+    /**
+     * Extends the default behaviour with a idempotent aspects. This assumes that the delete on a pillar is successful if
+     * if the file is already absent.
+     *
+     * Any other none-positive response is handled as a fatal problem.
+     */
     @Override
-    protected void processMessage(MessageResponse msg) throws UnexpectedResponseException {
-        if(msg instanceof IdentifyPillarsForDeleteFileResponse) {
-            IdentifyPillarsForDeleteFileResponse response = (IdentifyPillarsForDeleteFileResponse) msg;
-            ResponseCode responseCode = response.getResponseInfo().getResponseCode();
-            if(responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE)) {
-                getContext().getMonitor().contributorIdentified(response);
-            } else if(responseCode.equals(ResponseCode.FILE_NOT_FOUND_FAILURE)) {
-                //Idempotent
-                getContext().getMonitor().contributorIdentified(response);
-                getContext().getMonitor().contributorComplete(new DeleteFileCompletePillarEvent(
-                        null, response.getFrom(),
-                        "Delete considered complete as file was already missing from the pillar",
-                        context.getConversationID()));
-            } else {
-                getContext().getMonitor().contributorFailed(
-                        response.getResponseInfo().getResponseText(), response.getFrom(),
-                        response.getResponseInfo().getResponseCode());
-            }
-            if (response.getPillarChecksumSpec() != null) {
-                context.addChecksumPillar(response.getPillarID());
-            }
-            getSelector().processResponse(response);
+    protected void handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
+        IdentifyPillarsForDeleteFileResponse response = (IdentifyPillarsForDeleteFileResponse) msg;
+        ResponseCode responseCode = response.getResponseInfo().getResponseCode();
+        if(responseCode.equals(ResponseCode.FILE_NOT_FOUND_FAILURE)) {
+            //Idempotent
+            getContext().getMonitor().contributorIdentified(response);
+            getContext().getMonitor().contributorComplete(new DeleteFileCompletePillarEvent(
+                    null, response.getFrom(),
+                    "Delete considered complete as file was already missing from the pillar",
+                    context.getConversationID()));
         } else {
-            throw new UnexpectedResponseException("Are currently only expecting IdentifyPillarsForDeleteFileResponse's");
+            getContext().getMonitor().contributorFailed(
+                    msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+            throw new UnableToFinishException("Can not continue with delete operation, as " + msg.getFrom() +
+                    " is unable to perform the deletion.");
         }
     }
 
@@ -98,12 +90,20 @@ public class IdentifyPillarsForDeleteFile extends IdentifyingState {
     }
 
     @Override
-    protected String getName() {
-        return "Identifying pillars for delete file";
+    protected String getPrimitiveName() {
+        return "IdentifyPillarsForDeleteFile";
     }
 
     @Override
-    public boolean continueWithOperation() {
-        return !context.getMonitor().hasFailed();
+    protected boolean canFinish() {
+        return (getOutstandingComponents().isEmpty());
+    }
+
+    @Override
+    protected void checkForChecksumPillar(MessageResponse msg) {
+        IdentifyPillarsForDeleteFileResponse response = (IdentifyPillarsForDeleteFileResponse) msg;
+        if (response.getPillarChecksumSpec() != null) {
+            context.addChecksumPillar(response.getPillarID());
+        }
     }
 }

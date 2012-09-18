@@ -21,33 +21,55 @@
  */
 package org.bitrepository.client.conversation;
 
-import org.bitrepository.common.settings.Settings;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.CorrelationIDGenerator;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
 /**
- * Encapsulates the shared state between a conversation and the related conversation states.
+ * Encapsulates the shared state for a conversation.
  */
 public class ConversationContext {
     private final String conversationID;
     private final Settings settings;
     private final MessageSender messageSender;
     private final String clientID;
+    private final String fileID;
+    private final Collection<String> contributors;
     private final ConversationEventMonitor monitor;
     private final String auditTrailInformation;
     private GeneralConversationState state;
+    private final Set<String> checksumPillars = new HashSet<String>();
 
+    /**
+     * Encapsulates the common state maintained in a conversation. Will typically be subclasses to provide
+     * operation specific attributes.
+     * @param settings
+     * @param messageSender
+     * @param clientID
+     * @param fileID
+     * @param contributors
+     * @param eventHandler
+     * @param auditTrailInformation
+     */
     public ConversationContext(
             Settings settings,
             MessageSender messageSender,
             String clientID,
+            String fileID,
+            Collection<String> contributors,
             EventHandler eventHandler,
             String auditTrailInformation) {
         this.settings = settings;
         this.messageSender = messageSender;
         this.conversationID = CorrelationIDGenerator.generateConversationID();
         this.clientID = clientID;
+        this.fileID = fileID;
+        this.contributors = contributors;
         this.monitor = new ConversationEventMonitor(conversationID, eventHandler);
         this.auditTrailInformation = auditTrailInformation;
     }
@@ -81,5 +103,28 @@ public class ConversationContext {
     }
     public void setState(GeneralConversationState state) {
         this.state = state;
+    }
+
+    public String getFileID() {
+        return fileID;
+    }
+
+    public Collection<String> getContributors() {
+        return contributors;
+    }
+
+    /**
+     * @return The list of checksum pillar detected during the IdentifyPillarsForPutFile phase.
+     */
+    public Set<String> getChecksumPillars() {
+        return Collections.unmodifiableSet(checksumPillars);
+    }
+
+    /**
+     * Use to register checksum pillars.
+     * @param pillarID The pillarID of the Checksum pillar.
+     */
+    public void addChecksumPillar(String pillarID) {
+        checksumPillars.add(pillarID);
     }
 }

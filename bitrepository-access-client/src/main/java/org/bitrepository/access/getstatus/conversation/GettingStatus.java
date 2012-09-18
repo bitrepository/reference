@@ -21,58 +21,35 @@
  */
 package org.bitrepository.access.getstatus.conversation;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.Collection;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
-import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 
 public class GettingStatus extends PerformingOperationState {
     private final GetStatusConversationContext context;
-    private Map<String,String> activeContributers;
-    /** Tracks who have responded */
-    private final ContributorResponseStatus responseStatus;
 
     /*
     * @param context The conversation context.
     * @param contributors The list of components the fileIDs should be collected from.
     */
-    public GettingStatus(GetStatusConversationContext context, List<SelectedComponentInfo> contributors) {
-        super();
+    public GettingStatus(GetStatusConversationContext context, Collection<SelectedComponentInfo> contributors) {
+        super(contributors);
         this.context = context;
-        this.activeContributers = new HashMap<String,String>();
-        for (SelectedComponentInfo contributorInfo : contributors) {
-            activeContributers.put(contributorInfo.getID(), contributorInfo.getDestination());
-        }
-
-        this.responseStatus = new ContributorResponseStatus(activeContributers.keySet());
     }
 
     @Override
     protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
-        if (msg instanceof GetStatusFinalResponse) {
-            GetStatusFinalResponse response = (GetStatusFinalResponse) msg;
-            getContext().getMonitor().contributorComplete(
-                    new StatusCompleteContributorEvent(
-                            "Received status result from " + response.getContributor(), 
-                            response.getContributor(), response.getResultingStatus(), 
-                            getContext().getConversationID()));
-         } else {
-            throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
-                    " while waiting for Get Status response.");
-        }        
-    }
-
-    @Override
-    protected ContributorResponseStatus getResponseStatus() {
-        return responseStatus;
+        GetStatusFinalResponse response = (GetStatusFinalResponse) msg;
+        getContext().getMonitor().contributorComplete(
+                new StatusCompleteContributorEvent(
+                        "Received status result from " + response.getContributor(),
+                        response.getContributor(), response.getResultingStatus(),
+                        getContext().getConversationID()));
     }
 
     @Override
@@ -80,11 +57,11 @@ public class GettingStatus extends PerformingOperationState {
         GetStatusRequest request = new GetStatusRequest();
         initializeMessage(request);
 
-        context.getMonitor().requestSent("Sending GetStatusRequest", activeContributers.keySet().toString());
-        for(String ID : activeContributers.keySet()) {
+        context.getMonitor().requestSent("Sending GetStatusRequest", activeContributors.keySet().toString());
+        for(String ID : activeContributors.keySet()) {
             request.setContributor(ID);
-            request.setTo(activeContributers.get(ID));
-            context.getMessageSender().sendMessage(request); 
+            request.setTo(activeContributors.get(ID));
+            context.getMessageSender().sendMessage(request);
         }
     }
 
@@ -94,9 +71,7 @@ public class GettingStatus extends PerformingOperationState {
     }
 
     @Override
-    protected String getName() {
-        return "Getting status's";
+    protected String getPrimitiveName() {
+        return "GetStatus";
     }
-
-
 }

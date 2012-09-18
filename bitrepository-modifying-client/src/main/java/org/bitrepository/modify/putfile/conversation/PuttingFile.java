@@ -24,16 +24,12 @@
  */
 package org.bitrepository.modify.putfile.conversation;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.Collection;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
-import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.utils.ChecksumUtils;
@@ -44,20 +40,14 @@ import org.bitrepository.common.utils.ChecksumUtils;
  */
 public class PuttingFile extends PerformingOperationState {
     private final PutFileConversationContext context;
-    private Map<String,String> activeContributors;
-    private ContributorResponseStatus responseStatus;
 
     /*
      * @param context The conversation context.
      * @param contributors The list of components the fileIDs should be collected from.
      */
-    public PuttingFile(PutFileConversationContext context, List<SelectedComponentInfo> contributors) {
+    public PuttingFile(PutFileConversationContext context, Collection<SelectedComponentInfo> contributors) {
+        super(contributors);
         this.context = context;
-        this.activeContributors = new HashMap<String,String>();
-        for (SelectedComponentInfo contributorInfo : contributors) {
-            activeContributors.put(contributorInfo.getID(), contributorInfo.getDestination());
-        }
-        this.responseStatus = new ContributorResponseStatus(activeContributors.keySet());
     }
 
     @Override
@@ -73,11 +63,6 @@ public class PuttingFile extends PerformingOperationState {
             throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
                     " while waiting for Put file response.");
         }
-    }
-
-    @Override
-    protected ContributorResponseStatus getResponseStatus() {
-        return responseStatus;
     }
 
     /**
@@ -121,11 +106,7 @@ public class PuttingFile extends PerformingOperationState {
     }
 
     @Override
-    protected String getName() {
-        return "Putting file";
-    }
-
-    private boolean isChecksumPillar(String pillarID) {
-        return context.getChecksumPillars().contains(pillarID);
+    protected String getPrimitiveName() {
+        return "PutFile";
     }
 }

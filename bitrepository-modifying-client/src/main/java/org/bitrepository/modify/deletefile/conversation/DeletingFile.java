@@ -24,16 +24,12 @@
  */
 package org.bitrepository.modify.deletefile.conversation;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.Collection;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
-import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.utils.ChecksumUtils;
@@ -49,59 +45,39 @@ import org.bitrepository.common.utils.ChecksumUtils;
 public class DeletingFile extends PerformingOperationState {
     private final DeleteFileConversationContext context;
 
-    private Map<String,String> activeContributors;
-    /** Tracks who have responded */
-    private final ContributorResponseStatus responseStatus;
-
     /*
      * @param context The conversation context.
      * @param contributors The list of components the fileIDs should be collected from.
      */
-    public DeletingFile(DeleteFileConversationContext context, List<SelectedComponentInfo> contributors) {
+    public DeletingFile(DeleteFileConversationContext context, Collection<SelectedComponentInfo> contributors) {
+        super(contributors);
         this.context = context;
-        this.activeContributors = new HashMap<String,String>();
-        for (SelectedComponentInfo contributorInfo : contributors) {
-            activeContributors.put(contributorInfo.getID(), contributorInfo.getDestination());
-        }
-        this.responseStatus = new ContributorResponseStatus(activeContributors.keySet());
     }
 
     @Override
     protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
-        if (msg instanceof DeleteFileFinalResponse) {
-            DeleteFileFinalResponse response = (DeleteFileFinalResponse) msg;
-            getContext().getMonitor().contributorComplete(new DeleteFileCompletePillarEvent(
-                    response.getChecksumDataForExistingFile(),
-                    response.getPillarID(),
-                    "Received delete file result from " + response.getPillarID(),
-                    response.getCorrelationID()));
-        } else {
-            throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
-                    " while waiting for DeleteFile response.");
-        }
-    }
-
-    @Override
-    protected ContributorResponseStatus getResponseStatus() {
-        return responseStatus;
+        DeleteFileFinalResponse response = (DeleteFileFinalResponse) msg;
+        getContext().getMonitor().contributorComplete(new DeleteFileCompletePillarEvent(
+                response.getChecksumDataForExistingFile(),
+                response.getPillarID(),
+                "Received delete file result from " + response.getPillarID(),
+                response.getCorrelationID()));
     }
 
     @Override
     protected void sendRequest() {
-        if (!activeContributors.isEmpty()) { // Might not be the case if the files haven't been found on any of the pillars.
-            context.getMonitor().requestSent("Sending request for deleting file", activeContributors.keySet().toString());
-            for(String pillar : activeContributors.keySet()) {
-                DeleteFileRequest msg = createRequest(pillar);
-                if (context.getChecksumRequestForValidation() != null) {
-                    if (!isChecksumPillar(pillar) ||
+        context.getMonitor().requestSent("Sending request for deleting file", activeContributors.keySet().toString());
+        for(String pillar : activeContributors.keySet()) {
+            DeleteFileRequest msg = createRequest(pillar);
+            if (context.getChecksumRequestForValidation() != null) {
+                if (!isChecksumPillar(pillar) ||
                         context.getChecksumRequestForValidation().equals(ChecksumUtils.getDefault(context.getSettings()))) {
-                        msg.setChecksumRequestForExistingFile(context.getChecksumRequestForValidation());
-                    }
+                    msg.setChecksumRequestForExistingFile(context.getChecksumRequestForValidation());
                 }
-                msg.setPillarID(pillar);
-                msg.setTo(activeContributors.get(pillar));
-                context.getMessageSender().sendMessage(msg);
             }
+            msg.setPillarID(pillar);
+            msg.setTo(activeContributors.get(pillar));
+            context.getMessageSender().sendMessage(msg);
         }
     }
 
@@ -126,11 +102,7 @@ public class DeletingFile extends PerformingOperationState {
     }
 
     @Override
-    protected String getName() {
-        return "Deleting file";
-    }
-
-    private boolean isChecksumPillar(String pillarID) {
-        return context.getChecksumPillars().contains(pillarID);
+    protected String getPrimitiveName() {
+        return "DeleteFile";
     }
 }

@@ -50,4 +50,12 @@ public class FileIDsUtils {
         fileids.setFileID(fileId);
         return fileids;
     }
+
+    /**
+     * @return Return a fileID for allFIles if null is supplied, else a FileID for the specific file.
+     */
+    public static FileIDs createFileIDs(String fileId) {
+        if (fileId == null) return getAllFileIDs();
+        else return getSpecificFileIDs(fileId);
+    }
 }

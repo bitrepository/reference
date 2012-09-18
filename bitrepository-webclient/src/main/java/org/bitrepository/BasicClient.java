@@ -231,7 +231,7 @@ public class BasicClient {
         }
         try {
             getFileIDsClient.getFileIDs(settings.getCollectionSettings().getClientSettings().getPillarIDs(),
-                    fileIDs, null, handler, generateAuditTrailMessage("GetFileIDs"));
+                    fileIDs, null, handler);
 
             while(!results.isDone() && !results.hasFailed()) {
                 Thread.sleep(500);

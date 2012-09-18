@@ -24,6 +24,7 @@
  */
 package org.bitrepository.client.conversation;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -33,6 +34,7 @@ import org.bitrepository.client.eventhandler.AbstractOperationEvent;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
+import org.bitrepository.client.eventhandler.ContributorsIdentifiedEvent;
 import org.bitrepository.client.eventhandler.DefaultEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
@@ -84,16 +86,15 @@ public class ConversationEventMonitor {
     }
 
     /**
-     * Indicates a identify request has timeout without all pillars responding.
-     * @param info Description
+     * Indicates a identify request has timeout without all contributors responding.
      */
-    public void identifyContributorsTimeout(String info, List<String> unrespondingContributors) {
-        StringBuilder failureMessage = new StringBuilder(info);
+    public void identifyContributorsTimeout(Collection<String> unrespondingContributors) {
+        StringBuilder failureMessage = new StringBuilder("Time has run out for looking up contributors");
         if (!unrespondingContributors.isEmpty()) {
-            failureMessage.append("\nMissing contributors: " + unrespondingContributors);
+            failureMessage.append("\nThe following contributors didn't respond: " + unrespondingContributors);
         }
         if (!contributorFailedEvents.isEmpty()) {
-            failureMessage.append("\nFailing contributors: " + unrespondingContributors);
+            failureMessage.append("\nThe following contributors failed: " + unrespondingContributors);
             for (ContributorFailedEvent failedEvent:contributorFailedEvents) {
                 failureMessage.append(failedEvent.getContributorID() + "(" + failedEvent.getInfo() + "),");
             }
@@ -106,12 +107,11 @@ public class ConversationEventMonitor {
 
     /**
      * Indicates a contributor has been selected for a operation request.
-     * @param info Description
-     * @param contributorID The pillar identified
+     * @param contributorIDList The contributors identified
      */
-    public void contributorSelected(String info, String contributorID) {
-        log.debug(info);
-        notifyEventListerners(new ContributorEvent(IDENTIFICATION_COMPLETE, info, contributorID, conversationID));
+    public void contributorsSelected(List<String> contributorIDList) {
+        log.debug("Contributors selected: " + contributorIDList);
+        notifyEventListerners(new ContributorsIdentifiedEvent(contributorIDList, conversationID));
     }
 
     /**
@@ -222,10 +222,9 @@ public class ConversationEventMonitor {
 
     /**
      * A message has been received with isn't consistent with the current conversation state.
-     * @param info Problem description
      */
-    public void outOfSequenceMessage(String info) {
-        log.warn(info);
+    public void outOfSequenceMessage(Message message) {
+        log.warn("Can not handle messages of type " + message.getClass().getSimpleName());
     }
 
     /**

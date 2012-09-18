@@ -85,8 +85,7 @@ public class CollectionTestHelper {
                     throw new RuntimeException("Unable to clean repository, " + event.getInfo());
                 }
             }
-        },
-                "Requesting fileIDS for cleanup"
+        }
         );
     }
 

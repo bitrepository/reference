@@ -58,7 +58,7 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
 
     @Override
     public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
-            EventHandler eventHandler, String auditTrailInformation) {
+            EventHandler eventHandler) {
         ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "Collection<String> pillarIDs");
         ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
         validateFileID(fileIDs.getFileID());
@@ -66,8 +66,8 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
         log.info("Requesting the checksum of the file '" + fileIDs.getFileID() + "' from the pillars '"
                 + pillarIDs + "'. The result should be uploaded to '" + addressForResult + "'.");
         
-        GetFileIDsConversationContext context = new GetFileIDsConversationContext(fileIDs, addressForResult, 
-                settings, messageBus, clientID, eventHandler, auditTrailInformation);
+        GetFileIDsConversationContext context = new GetFileIDsConversationContext(
+                fileIDs.getFileID(), addressForResult, settings, messageBus, clientID, pillarIDs, eventHandler);
         startConversation(context, new IdentifyPillarsForGetFileIDs(context));
     }
 }

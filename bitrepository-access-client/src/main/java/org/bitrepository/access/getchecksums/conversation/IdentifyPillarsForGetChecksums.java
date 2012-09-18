@@ -24,15 +24,11 @@
  */
 package org.bitrepository.access.getchecksums.conversation;
 
-import org.bitrepository.access.getchecksums.selector.PillarSelectorForGetChecksums;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.GeneralConversationState;
 import org.bitrepository.client.conversation.IdentifyingState;
-import org.bitrepository.client.conversation.selector.ComponentSelector;
-import org.bitrepository.client.conversation.selector.MultipleComponentSelector;
-
-import java.util.Collection;
+import org.bitrepository.common.utils.FileIDsUtils;
 
 /**
  * Models the behavior of a GetChecksums conversation during the identification phase. That is, it begins with the 
@@ -43,32 +39,20 @@ import java.util.Collection;
  * protected.
  * This is the initial state for the whole GetChecksums communication.
  */
-public class IdentifyPillarsForGetChecksums  extends IdentifyingState {
+public class IdentifyPillarsForGetChecksums extends IdentifyingState {
     private final GetChecksumsConversationContext context;
-    private final MultipleComponentSelector selector;
     
     /**
      * @param context The context shared between the getChecksum operation states.
      */
     public IdentifyPillarsForGetChecksums(GetChecksumsConversationContext context) {
+        super(context.getContributors());
         this.context = context;
-        Collection<String> contributors;
-        if (context.getPillars() != null) {
-            contributors = context.getPillars();
-        } else {
-            contributors = context.getSettings().getCollectionSettings().getClientSettings().getPillarIDs();
-        }
-        selector = new PillarSelectorForGetChecksums(contributors);
-    }
-
-    @Override
-    public ComponentSelector getSelector() {
-        return selector;
     }
 
     @Override
     public GeneralConversationState getOperationState() {
-        return new GettingChecksums(context, selector.getSelectedComponents());
+        return new GettingChecksums(context, getSelector().getSelectedComponents());
     }
 
     @Override
@@ -76,7 +60,7 @@ public class IdentifyPillarsForGetChecksums  extends IdentifyingState {
         IdentifyPillarsForGetChecksumsRequest msg = new IdentifyPillarsForGetChecksumsRequest();
         initializeMessage(msg);
         msg.setTo(context.getSettings().getCollectionDestination());
-        msg.setFileIDs(context.getFileIDs());
+        msg.setFileIDs(FileIDsUtils.createFileIDs(context.getFileID()));
         msg.setChecksumRequestForExistingFile(context.getChecksumSpec());
         context.getMessageSender().sendMessage(msg);
         context.getMonitor().identifyRequestSent("Identifying pillars for GetChecksums");
@@ -88,8 +72,8 @@ public class IdentifyPillarsForGetChecksums  extends IdentifyingState {
     }
 
     @Override
-    protected String getName() {
-        return "Identify pillars for GetChecksums";
+    protected String getPrimitiveName() {
+        return "IdentifyPillarsForGetChecksums";
     }
 
 }

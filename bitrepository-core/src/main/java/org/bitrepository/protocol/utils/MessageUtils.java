@@ -28,7 +28,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
  * Utility class for validating message responses.
  */
 public class MessageUtils {
-    /** Private constructor to prevent instantation of this utility class.*/
+    /** Private constructor to prevent instantiation of this utility class. */
     private MessageUtils() {}
 
     /**
@@ -62,5 +62,17 @@ public class MessageUtils {
         ResponseCode responseCode = response.getResponseInfo().getResponseCode();
         return responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE) ||
                responseCode.equals(ResponseCode.IDENTIFICATION_NEGATIVE);
+    }
+
+    /**
+     * Tells whether the supplied message can be considered a end response for a primitive, eg. ends a serie of
+     * identify or operation responses.
+     */
+    public static boolean isEndMessageForPrimitive(MessageResponse response) {
+        ResponseCode responseCode = response.getResponseInfo().getResponseCode();
+        return  !(
+                responseCode.equals(ResponseCode.OPERATION_PROGRESS) ||
+                responseCode.equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS)
+        );
     }
 }

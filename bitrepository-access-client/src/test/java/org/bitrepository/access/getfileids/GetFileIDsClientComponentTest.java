@@ -104,7 +104,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
         addStep("Request the delivery of the file ids of a file from the pillar(s). A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");
         getFileIDsClient.getFileIDs(componentSettings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs,
-                deliveryUrl, testEventHandler, "TEST-AUDIT");
+                deliveryUrl, testEventHandler);
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
@@ -200,7 +200,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
         addStep("Request the delivery of the file ids of a file from the pillar(s). A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");
         getFileIDsClient.getFileIDs(componentSettings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs,
-                null, testEventHandler, "TEST-AUDIT");
+                null, testEventHandler);
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
@@ -308,7 +308,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
         addStep("Request the delivery of the file id of a file from the pillar(s). A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");
         GetFileIDsClient.getFileIDs(componentSettings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs,
-                deliveryUrl, testEventHandler, "TEST-AUDIT");
+                deliveryUrl, testEventHandler);
 
         if (useMockupPillar()) {
             collectionReceiver.waitForMessage(IdentifyPillarsForGetFileIDsRequest.class);
@@ -317,7 +317,6 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Wait for at least 3 seconds", "An IdentifyPillarTimeout event should be received");
         Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.IDENTIFY_TIMEOUT);
-        //Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getType(), OperationEventType.FAILED);
     }
 
     @Test(groups = {"regressiontest"})
@@ -348,7 +347,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
         addStep("Request the delivery of the file id of a file from the pillar(s). A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");
         GetFileIDsClient.getFileIDs(componentSettings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs,
-                deliveryUrl, testEventHandler, "TEST-AUDIT");
+                deliveryUrl, testEventHandler);
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
@@ -406,7 +405,7 @@ public class GetFileIDsClientComponentTest extends DefaultFixtureClientTest {
         addStep("Request the delivery of the file id of a file from the pillar(s). A callback listener should be supplied.",
         "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");
         GetFileIDsClient.getFileIDs(componentSettings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs,
-                deliveryUrl, testEventHandler, "TEST-AUDIT");
+                deliveryUrl, testEventHandler);
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {

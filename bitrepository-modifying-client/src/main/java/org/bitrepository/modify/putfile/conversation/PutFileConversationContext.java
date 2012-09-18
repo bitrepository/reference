@@ -23,10 +23,7 @@ package org.bitrepository.modify.putfile.conversation;
 
 import java.math.BigInteger;
 import java.net.URL;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.conversation.ConversationContext;
@@ -35,28 +32,20 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
 public class PutFileConversationContext extends ConversationContext {
-    private final String fileID;
     private final URL urlForFile;
     private final BigInteger fileSize;
     private final ChecksumDataForFileTYPE checksumForValidationAtPillar;
     private final ChecksumSpecTYPE checksumRequestsForValidation;
-    /** @see #addChecksumPillar(String) */
-    private final Set<String> checksumPillars = new HashSet<String>();
     
-    public PutFileConversationContext(String fileID, URL urlForFile, long fileSize, 
+    public PutFileConversationContext(String fileID, URL urlForFile, long fileSize,
             ChecksumDataForFileTYPE checksumForValidationAtPillar, ChecksumSpecTYPE checksumRequestsForValidation, 
-            Settings settings, MessageSender messageSender, String clientID, EventHandler eventHandler,
-            String auditTrailInformation) {
-        super(settings, messageSender, clientID, eventHandler, auditTrailInformation);
-        this.fileID = fileID;
+            Settings settings, MessageSender messageSender, String clientID, Collection<String> contributors,
+            EventHandler eventHandler, String auditTrailInformation) {
+        super(settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
         this.urlForFile = urlForFile;        
         this.fileSize = new BigInteger(Long.toString(fileSize));
         this.checksumForValidationAtPillar = checksumForValidationAtPillar;
         this.checksumRequestsForValidation = checksumRequestsForValidation;
-    }
-
-    public String getFileID() {
-        return fileID;
     }
 
     public URL getUrlForFile() {
@@ -78,20 +67,5 @@ public class PutFileConversationContext extends ConversationContext {
     /** The checksum for the file being put. Used to verify the file on the pillar when downloaded. */
     public ChecksumSpecTYPE getChecksumRequestsForValidation() {
         return checksumRequestsForValidation;
-    }
-
-    /**
-     * @return The list of checksum pillar detected during the IdentifyPillarsForPutFile phase.
-     */
-    public Set<String> getChecksumPillars() {
-        return Collections.unmodifiableSet(checksumPillars);
-    }
-
-    /**
-     * Use to register checksum pillars.
-     * @param pillarID The pillarID of the Checksum pillar.
-     */
-    public void addChecksumPillar(String pillarID) {
-        checksumPillars.add(pillarID);
     }
 }

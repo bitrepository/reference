@@ -62,7 +62,6 @@ public class OperationFailedEvent extends AbstractOperationEvent {
 
     @Override
     public String additionalInfo() {
-        if (componentResults != null) return componentResults.toString();
-        else return "";
+        return "";
     }
 }

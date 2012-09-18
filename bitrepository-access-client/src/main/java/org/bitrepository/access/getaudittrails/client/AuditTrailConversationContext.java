@@ -21,42 +21,31 @@
  */
 package org.bitrepository.access.getaudittrails.client;
 
+import java.util.Collection;
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
 public class AuditTrailConversationContext extends ConversationContext {
     private final AuditTrailQuery[] componentQueries;
-    private final String fileID;
     private final String urlForResult;
-    private final String clientID;
 
-    public AuditTrailConversationContext(AuditTrailQuery[] componentQueries, String fileID, String urlForResult,
-            Settings settings, MessageSender messageSender, String clientID, EventHandler eventHandler,
+    public AuditTrailConversationContext(
+            AuditTrailQuery[] componentQueries, String fileID, String urlForResult, Settings settings,
+            MessageSender messageSender, String clientID, Collection<String> contributors, EventHandler eventHandler,
             String auditTrailInformation) {
-        super(settings, messageSender, clientID, eventHandler, auditTrailInformation);
+        super(settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
         this.componentQueries = componentQueries;
-        this.fileID = fileID;
         this.urlForResult = urlForResult;
-        this.clientID = clientID;
-        
     }
 
     public AuditTrailQuery[] getComponentQueries() {
         return componentQueries;
     }
 
-    public String getFileID() {
-        return fileID;
-    }
-
     public String getUrlForResult() {
         return urlForResult;
-    }
-    
-    public String getClientID() {
-        return clientID;
     }
 }

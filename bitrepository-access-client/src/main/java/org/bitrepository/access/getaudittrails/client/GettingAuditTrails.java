@@ -21,38 +21,27 @@
  */
 package org.bitrepository.access.getaudittrails.client;
 
+import java.math.BigInteger;
+import java.util.Collection;
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
-import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
-
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
 
 public class GettingAuditTrails extends PerformingOperationState {
     private final AuditTrailConversationContext context;
-    private Map<String,String> activeContributors;
-    private ContributorResponseStatus responseStatus;
 
     /*
      * @param context The conversation context.
      * @param contributors The list of components the audit trails should be collected from.
      */
-    public GettingAuditTrails(AuditTrailConversationContext context, List<SelectedComponentInfo> contributors) {
-        super();
+    public GettingAuditTrails(AuditTrailConversationContext context, Collection<SelectedComponentInfo> contributors) {
+        super(contributors);
         this.context = context;
-        this.activeContributors = new HashMap<String,String>();
-        for (SelectedComponentInfo contributorInfo : contributors) {
-            activeContributors.put(contributorInfo.getID(), contributorInfo.getDestination());
-        }
-        this.responseStatus = new ContributorResponseStatus(activeContributors.keySet());
     }
 
     @Override
@@ -80,15 +69,10 @@ public class GettingAuditTrails extends PerformingOperationState {
 
     @Override
     protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
-        if (msg instanceof GetAuditTrailsFinalResponse) {
-            GetAuditTrailsFinalResponse response = (GetAuditTrailsFinalResponse)msg;
-            getContext().getMonitor().contributorComplete(
-                    new AuditTrailResult("Audit trails received from " + response.getFrom(),
-                            response.getFrom(), response.getResultingAuditTrails()));
-        } else {
-            throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
-                    " while waiting for Audit Trail response.");
-        }
+        GetAuditTrailsFinalResponse response = (GetAuditTrailsFinalResponse)msg;
+        getContext().getMonitor().contributorComplete(
+                new AuditTrailResult("Audit trails received from " + response.getFrom(),
+                        response.getFrom(), response.getResultingAuditTrails()));
     }
 
     @Override
@@ -97,12 +81,7 @@ public class GettingAuditTrails extends PerformingOperationState {
     }
 
     @Override
-    protected String getName() {
-        return "Fetch audit trails";
-    }
-
-    @Override
-    protected ContributorResponseStatus getResponseStatus() {
-        return responseStatus;
+    protected String getPrimitiveName() {
+        return "GetAuditTrails";
     }
 }

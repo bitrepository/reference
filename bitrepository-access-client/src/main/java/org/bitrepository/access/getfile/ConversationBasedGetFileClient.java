@@ -25,11 +25,10 @@
 package org.bitrepository.access.getfile;
 
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
 import org.bitrepository.access.getfile.conversation.GetFileConversationContext;
 import org.bitrepository.access.getfile.conversation.IdentifyingPillarsForGetFile;
-import org.bitrepository.access.getfile.selectors.FastestPillarSelectorForGetFile;
-import org.bitrepository.access.getfile.selectors.GetFileSelector;
-import org.bitrepository.access.getfile.selectors.SpecificPillarSelectorForGetFile;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
@@ -66,10 +65,10 @@ public class ConversationBasedGetFileClient extends AbstractClient implements Ge
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
         validateFileID(fileID);
         
-        log.info("Requesting fastest retrieval of the file '" + fileID);
-        getFile(messageBus, settings, new FastestPillarSelectorForGetFile(
-                settings.getCollectionSettings().getClientSettings().getPillarIDs()), 
-                fileID, filePart, uploadUrl, eventHandler);
+        log.info("Requesting the file '" + fileID + " from the fastest pillar");
+        getFile(messageBus, settings, fileID, filePart,
+                settings.getCollectionSettings().getClientSettings().getPillarIDs(),
+                 uploadUrl, eventHandler);
     }
 
     @Override
@@ -81,27 +80,15 @@ public class ConversationBasedGetFileClient extends AbstractClient implements Ge
         validateFileID(fileID);
         
         log.info("Requesting the file '" + fileID + "' from pillar '" + pillarID + "'.");
-        getFile(messageBus, settings, new SpecificPillarSelectorForGetFile(
-                settings.getCollectionSettings().getClientSettings().getPillarIDs(), pillarID), 
-                fileID, filePart, uploadUrl, eventHandler);
+        getFile(messageBus, settings, fileID, filePart, Arrays.asList(pillarID),
+                uploadUrl, eventHandler);
     }
 
-    /**
-     * Asynchronous(Non-blocking) method for starting the getFile process get by using a new conversation.
-     * 
-     * @param messageBus The message bus.
-     * @param settings The settings.
-     * @param selector Defines the algorithm for choosing the pillar to deliver the file.
-     * @param fileID The id of the file.
-     * @param filePart The part of the file (if null, then the whole file is retrieved).
-     * @param uploadUrl The delivery URL for the results. 
-     * @param eventHandler The eventhandler.
-     * @see GetFileClient
-     */
-    private void getFile(MessageBus messageBus, Settings settings, GetFileSelector selector, 
-            String fileID, FilePart filePart, URL uploadUrl, EventHandler eventHandler) {
-        GetFileConversationContext context = new GetFileConversationContext(fileID, uploadUrl, filePart, selector, 
-                settings, messageBus, clientID, eventHandler, null);
+    private void getFile(MessageBus messageBus, Settings settings,
+            String fileID, FilePart filePart, Collection<String> contributors, URL uploadUrl, EventHandler eventHandler) {
+        GetFileConversationContext context = new GetFileConversationContext(
+                fileID, uploadUrl, filePart, contributors, settings, messageBus, clientID, eventHandler, null
+        );
         startConversation(context, new IdentifyingPillarsForGetFile(context));
     }
 }

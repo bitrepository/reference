@@ -58,7 +58,6 @@ public class SelectedComponentInfo {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ": componentID=" + componentID
-                + ", componentTopic=" + componentTopic;
+        return getClass().getSimpleName() + ": componentID=" + componentID + ", componentTopic=" + componentTopic;
     }
 }

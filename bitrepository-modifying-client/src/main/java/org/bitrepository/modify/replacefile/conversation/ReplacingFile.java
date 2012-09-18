@@ -24,85 +24,81 @@
  */
 package org.bitrepository.modify.replacefile.conversation;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.Collection;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
-import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.common.utils.ChecksumUtils;
 
 /**
  * Models the behavior of a ReplaceFile conversation during the operation phase. That is, it begins with the sending of
  * <code>ReplaceFileRequest</code> messages and finishes with the reception of the 
  * <code>ReplaceFileFinalResponse</code> messages from all responding pillars. 
- * 
+ *
  * Note that this is only used by the ReplaceFileConversation in the same package, therefore the visibility is package 
  * protected.
  */
 public class ReplacingFile extends PerformingOperationState {
     private final ReplaceFileConversationContext context;
-    private Map<String,String> activeContributors;
-    /** Tracks who have responded */
-    private final ContributorResponseStatus responseStatus;
 
     /*
      * @param context The conversation context.
      * @param contributors The list of components the fileIDs should be collected from.
      */
-    public ReplacingFile(ReplaceFileConversationContext context, List<SelectedComponentInfo> contributors) {
+    public ReplacingFile(ReplaceFileConversationContext context, Collection<SelectedComponentInfo> contributors) {
+        super(contributors);
         this.context = context;
-        this.activeContributors = new HashMap<String,String>();
-        for (SelectedComponentInfo contributorInfo : contributors) {
-            activeContributors.put(contributorInfo.getID(), contributorInfo.getDestination());
-        }
-        this.responseStatus = new ContributorResponseStatus(activeContributors.keySet());
     }
 
     @Override
     protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
-        if (msg instanceof ReplaceFileFinalResponse) {
-            ReplaceFileFinalResponse response = (ReplaceFileFinalResponse) msg;
-            getContext().getMonitor().contributorComplete(new ReplaceFileCompletePillarEvent(
-                    response.getChecksumDataForExistingFile(),
-                    response.getChecksumDataForNewFile(),
-                    response.getPillarID(),
-                    "Received replace file result from " + response.getPillarID(),
-                    response.getCorrelationID()));
-        } else {
-            throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
-                    " while waiting for ReplaceFile response.");
-        }      
-    }
-
-    @Override
-    protected ContributorResponseStatus getResponseStatus() {
-        return responseStatus;
+        ReplaceFileFinalResponse response = (ReplaceFileFinalResponse) msg;
+        getContext().getMonitor().contributorComplete(new ReplaceFileCompletePillarEvent(
+                response.getChecksumDataForExistingFile(),
+                response.getChecksumDataForNewFile(),
+                response.getPillarID(),
+                "Received replace file result from " + response.getPillarID(),
+                response.getCorrelationID()));
     }
 
     @Override
     protected void sendRequest() {
+        context.getMonitor().requestSent("Sending request for replace file", activeContributors.keySet().toString());
+        for(String pillar : activeContributors.keySet()) {
+            ReplaceFileRequest msg = createRequest(pillar);
+            if (context.getChecksumRequestsForNewFile() != null) {
+                if (!isChecksumPillar(pillar) ||
+                        context.getChecksumRequestsForNewFile().equals(
+                                ChecksumUtils.getDefault(context.getSettings()))) {
+                    msg.setChecksumRequestForNewFile(context.getChecksumRequestsForNewFile());
+                }
+            }
+            if (context.getChecksumRequestedForDeletedFile() != null) {
+                if (!isChecksumPillar(pillar) ||
+                        context.getChecksumRequestedForDeletedFile().equals(
+                                ChecksumUtils.getDefault(context.getSettings()))) {
+                    msg.setChecksumRequestForExistingFile(context.getChecksumRequestedForDeletedFile());
+                }
+            }
+            context.getMessageSender().sendMessage(msg);
+        }
+    }
+
+    private ReplaceFileRequest createRequest(String pillarID) {
         ReplaceFileRequest msg = new ReplaceFileRequest();
         initializeMessage(msg);
         msg.setChecksumDataForExistingFile(context.getChecksumForDeleteAtPillar());
         msg.setChecksumDataForNewFile(context.getChecksumForNewFileValidationAtPillar());
-        msg.setChecksumRequestForExistingFile(context.getChecksumRequestedForDeletedFile());
-        msg.setChecksumRequestForNewFile(context.getChecksumRequestsForNewFile());
         msg.setFileAddress(context.getUrlForFile().toExternalForm());
         msg.setFileID(context.getFileID());
         msg.setFileSize(context.getSizeOfNewFile());
-        
-        context.getMonitor().requestSent("Sending request for replace file", activeContributors.keySet().toString());
-        for(String pillar : activeContributors.keySet()) {
-            msg.setPillarID(pillar);
-            msg.setTo(activeContributors.get(pillar));
-            context.getMessageSender().sendMessage(msg);
-        }
+        msg.setPillarID(pillarID);
+        msg.setTo(activeContributors.get(pillarID));
+        return msg;
     }
 
     @Override
@@ -111,8 +107,8 @@ public class ReplacingFile extends PerformingOperationState {
     }
 
     @Override
-    protected String getName() {
-        return "Replacing file";
+    protected String getPrimitiveName() {
+        return "ReplaceFile";
     }
 
 }

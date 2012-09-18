@@ -24,6 +24,7 @@
  */
 package org.bitrepository.modify.deletefile;
 
+import java.util.Arrays;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.AbstractClient;
@@ -33,8 +34,6 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.deletefile.conversation.DeleteFileConversationContext;
 import org.bitrepository.modify.deletefile.conversation.IdentifyPillarsForDeleteFile;
-import org.bitrepository.modify.deletefile.selector.AllPillarsSelectorForDeleteFile;
-import org.bitrepository.modify.deletefile.selector.SpecificPillarSelectorForDeleteFile;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,9 +63,9 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
                 + "' with checksum '" + checksumForPillar + "', while requested checksum '" + checksumRequested 
                 + "'. And the audit trail information '" + auditTrailInformation + "'.");
         
-        DeleteFileConversationContext context = new DeleteFileConversationContext(fileId, 
-                new SpecificPillarSelectorForDeleteFile(pillarId),
-                checksumForPillar, checksumRequested, settings, messageBus, clientID, eventHandler, auditTrailInformation);
+        DeleteFileConversationContext context = new DeleteFileConversationContext(fileId,
+                checksumForPillar, checksumRequested, settings, messageBus, clientID,
+                Arrays.asList(pillarId), eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForDeleteFile(context));
     }
     
@@ -83,9 +82,9 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
         + checksumForPillar + "', while requested checksum '" + checksumRequested 
         + "'. And the audit trail information '" + auditTrailInformation + "'.");
         
-        DeleteFileConversationContext context = new DeleteFileConversationContext(fileId, 
-                new AllPillarsSelectorForDeleteFile(settings.getCollectionSettings().getClientSettings().getPillarIDs()), 
-                checksumForPillar, checksumRequested, settings, messageBus, clientID, eventHandler, auditTrailInformation);
+        DeleteFileConversationContext context = new DeleteFileConversationContext(fileId,
+                checksumForPillar, checksumRequested, settings, messageBus, clientID,
+                settings.getCollectionSettings().getClientSettings().getPillarIDs(),eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForDeleteFile(context));
     }
 }

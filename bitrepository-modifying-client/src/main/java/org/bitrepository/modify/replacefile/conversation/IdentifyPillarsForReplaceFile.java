@@ -25,10 +25,12 @@
 package org.bitrepository.modify.replacefile.conversation;
 
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.GeneralConversationState;
 import org.bitrepository.client.conversation.IdentifyingState;
-import org.bitrepository.client.conversation.selector.ComponentSelector;
+import org.bitrepository.common.exceptions.UnableToFinishException;
 
 /**
  * The first state of the ReplaceFile communication. The identification of the pillars involved.
@@ -37,21 +39,33 @@ public class IdentifyPillarsForReplaceFile extends IdentifyingState {
     private final ReplaceFileConversationContext context;
 
     /**
-     * Constructor.
      * @param context The conversation's context.
      */
     public IdentifyPillarsForReplaceFile(ReplaceFileConversationContext context) {
+        super(context.getContributors());
         this.context = context;
     }
 
+
+    /**
+     * Extends the default behaviour with a idempotent aspects. This assumes that the replace on a pillar is successful if
+     * if new file is the one already present on the pillar.
+     *
+     * Any other none-positive response is handled as a fatal problem.
+     */
     @Override
-    public ComponentSelector getSelector() {
-        return context.getSelector();
+    protected void handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
+        //ToDo implement idem potent behaviour
+        IdentifyPillarsForReplaceFileResponse response = (IdentifyPillarsForReplaceFileResponse) msg;
+        getContext().getMonitor().contributorFailed(
+                msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+        throw new UnableToFinishException("Can not continue with replace operation, as " + msg.getFrom() +
+                " is unable to perform the deletion.");
     }
 
     @Override
     public GeneralConversationState getOperationState() {
-        return new ReplacingFile(context, context.getSelector().getSelectedComponents());
+        return new ReplacingFile(context, getSelector().getSelectedComponents());
     }
 
     @Override
@@ -70,12 +84,20 @@ public class IdentifyPillarsForReplaceFile extends IdentifyingState {
     }
 
     @Override
-    protected String getName() {
-        return "Identifying pillars for replace file";
+    protected String getPrimitiveName() {
+        return "IdentifyPillarsForReplaceFile";
     }
 
     @Override
-    public boolean continueWithOperation() {
-        return !context.getMonitor().hasFailed();
+    protected boolean canFinish() {
+        return (getOutstandingComponents().isEmpty());
+    }
+
+    @Override
+    protected void checkForChecksumPillar(MessageResponse msg) {
+        IdentifyPillarsForReplaceFileResponse response = (IdentifyPillarsForReplaceFileResponse) msg;
+        if (response.getPillarChecksumSpec() != null) {
+            context.addChecksumPillar(response.getPillarID());
+        }
     }
 }

@@ -21,29 +21,17 @@
  */
 package org.bitrepository.access.getaudittrails.client;
 
-import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.GeneralConversationState;
 import org.bitrepository.client.conversation.IdentifyingState;
-import org.bitrepository.client.conversation.selector.ComponentSelector;
-import org.bitrepository.client.conversation.selector.MultipleComponentSelector;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class IdentifyingAuditTrailContributors extends IdentifyingState {
     private final AuditTrailConversationContext context;
-    private final MultipleComponentSelector selector;
 
     public IdentifyingAuditTrailContributors(AuditTrailConversationContext context) {
-        super();
+        super(context.getContributors());
         this.context = context;
-        List<String> expectedContributors = new ArrayList<String>(context.getComponentQueries().length);
-        for (AuditTrailQuery entry:context.getComponentQueries()) {
-            expectedContributors.add(entry.getComponentID());
-        }
-        selector = new AuditTrailContributorSelector(expectedContributors);
     }
 
     @Override
@@ -61,17 +49,12 @@ public class IdentifyingAuditTrailContributors extends IdentifyingState {
     }
 
     @Override
-    protected String getName() {
-        return "Identify contributers for Audit Trails";
-    }
-
-    @Override
-    public ComponentSelector getSelector() {
-        return selector;
+    protected String getPrimitiveName() {
+        return "IdentifyContributorsForGetAuditTrails";
     }
 
     @Override
     public GeneralConversationState getOperationState() {
-        return new GettingAuditTrails(context, selector.getSelectedComponents());
+        return new GettingAuditTrails(context, getSelector().getSelectedComponents());
     }
 }

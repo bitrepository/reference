@@ -24,18 +24,15 @@
  */
 package org.bitrepository.access.getchecksums.conversation;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.Collection;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
-import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.common.utils.FileIDsUtils;
 
 /**
  * Models the behavior of a GetChecksums conversation during the operation phase. That is, it begins with the 
@@ -47,22 +44,14 @@ import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
  */
 public class GettingChecksums extends PerformingOperationState {
     private final GetChecksumsConversationContext context;
-    private Map<String,String> activeContributors;
-    /** Tracks who have responded */
-    private final ContributorResponseStatus responseStatus;
 
     /*
      * @param context The conversation context.
      * @param contributors The list of components the checksums should be collected from.
      */
-    public GettingChecksums(GetChecksumsConversationContext context, List<SelectedComponentInfo> contributors) {
-        super();
+    public GettingChecksums(GetChecksumsConversationContext context, Collection<SelectedComponentInfo> contributors) {
+        super(contributors);
         this.context = context;
-        this.activeContributors = new HashMap<String,String>();
-        for (SelectedComponentInfo contributorInfo : contributors) {
-            activeContributors.put(contributorInfo.getID(), contributorInfo.getDestination());
-        }
-        this.responseStatus = new ContributorResponseStatus(activeContributors.keySet());
     }
 
     @Override
@@ -80,16 +69,11 @@ public class GettingChecksums extends PerformingOperationState {
     }
 
     @Override
-    protected ContributorResponseStatus getResponseStatus() {
-        return responseStatus;
-    }
-
-    @Override
     protected void sendRequest() {
         GetChecksumsRequest msg = new GetChecksumsRequest();
         initializeMessage(msg);
         msg.setChecksumRequestForExistingFile(context.getChecksumSpec());
-        msg.setFileIDs(context.getFileIDs());
+        msg.setFileIDs(FileIDsUtils.createFileIDs(context.getFileID()));
         context.getMonitor().requestSent("Sending request for getting checksums", activeContributors.keySet().toString());
         for(String pillar : activeContributors.keySet()) {
             msg.setPillarID(pillar);
@@ -107,8 +91,8 @@ public class GettingChecksums extends PerformingOperationState {
     }
 
     @Override
-    protected String getName() {
-        return "Getting checksums";
+    protected String getPrimitiveName() {
+        return "GetChecksums";
     }
     
 }

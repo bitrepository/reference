@@ -24,88 +24,68 @@
  */
 package org.bitrepository.access.getfileids.conversation;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
-import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.common.utils.FileIDsUtils;
 
 /**
  * Models the behavior of a GetFileIDs conversation during the operation phase. That is, it begins with the 
  * sending of <code>GetFileIDsRequest</code> messages and finishes with on the reception of the 
  * <code>GetFileIDsFinalResponse</code> messages from the responding pillars.
- * 
+ *
  * Note that this is only used by the GetFileIDsConversation in the same package, therefore the visibility is package 
  * protected.
  */
 public class GettingFileIDs extends PerformingOperationState {
     private final GetFileIDsConversationContext context;
-    private Map<String,String> activeContributors;
-    /** The status for the expected responses.*/
-    private final ContributorResponseStatus responseStatus;
 
     /*
      * @param context The conversation context.
      * @param contributors The list of components the fileIDs should be collected from.
      */
-    public GettingFileIDs(GetFileIDsConversationContext context, List<SelectedComponentInfo> contributors) {
-        super();
+    public GettingFileIDs(GetFileIDsConversationContext context, Collection<SelectedComponentInfo> contributors) {
+        super(contributors);
         this.context = context;
-        this.activeContributors = new HashMap<String,String>();
-        for (SelectedComponentInfo contributorInfo : contributors) {
-            activeContributors.put(contributorInfo.getID(), contributorInfo.getDestination());
-        }
-        this.responseStatus = new ContributorResponseStatus(activeContributors.keySet());
     }
-    
+
     @Override
     protected void sendRequest() {
         context.getMonitor().requestSent("Sending request for get fileIDs", activeContributors.keySet().toString());
         for(String pillar : activeContributors.keySet()) {
             GetFileIDsRequest msg = new GetFileIDsRequest();
             initializeMessage(msg);
-            msg.setFileIDs(context.getFileIDs());
+            msg.setFileIDs(FileIDsUtils.createFileIDs(context.getFileID()));
             if(context.getUrlForResult() != null) {
-                msg.setResultAddress(context.getUrlForResult().toExternalForm() + "-" + pillar);    
+                msg.setResultAddress(context.getUrlForResult().toExternalForm() + "-" + pillar);
             }
             msg.setPillarID(pillar);
             msg.setTo(activeContributors.get(pillar));
             context.getMessageSender().sendMessage(msg);
         }
     }
-    
+
     @Override
     protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
-        if (msg instanceof GetFileIDsFinalResponse) {
-            GetFileIDsFinalResponse response = (GetFileIDsFinalResponse)msg;
-            getContext().getMonitor().contributorComplete(
-                    new FileIDsCompletePillarEvent(response.getResultingFileIDs(), response.getFrom(),
-                            "FileIDs received from " + response.getFrom(), response.getCorrelationID()));
-        } else {
-            throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
-                    " while waiting for FileIDs response.");
-        }
+        GetFileIDsFinalResponse response = (GetFileIDsFinalResponse)msg;
+        getContext().getMonitor().contributorComplete(
+                new FileIDsCompletePillarEvent(response.getResultingFileIDs(), response.getFrom(),
+                        "FileIDs received from " + response.getFrom(), response.getCorrelationID()));
+
     }
-    
+
     @Override
     protected ConversationContext getContext() {
         return context;
     }
 
     @Override
-    protected String getName() {
-        return "Get fileIDs";
+    protected String getPrimitiveName() {
+        return "GetFileIDs";
     }
-
-    @Override
-    protected ContributorResponseStatus getResponseStatus() {
-        return responseStatus;
-    }
-
 }

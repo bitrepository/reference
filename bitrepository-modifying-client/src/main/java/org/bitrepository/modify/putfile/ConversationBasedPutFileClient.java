@@ -67,8 +67,8 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
         validateFileID(fileId);
         
         PutFileConversationContext context = new PutFileConversationContext(fileId, url, sizeOfFile, 
-                checksumForValidationAtPillar, checksumRequestsForValidation, settings, messageBus, 
-                clientID, eventHandler, auditTrailInformation);
+                checksumForValidationAtPillar, checksumRequestsForValidation, settings, messageBus,
+                clientID, settings.getCollectionSettings().getClientSettings().getPillarIDs(), eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForPutFile(context));
     }
 

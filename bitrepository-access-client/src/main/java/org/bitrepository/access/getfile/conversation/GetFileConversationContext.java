@@ -22,54 +22,32 @@
 package org.bitrepository.access.getfile.conversation;
 
 import java.net.URL;
-
-import org.bitrepository.access.getfile.selectors.GetFileSelector;
+import java.util.Collection;
 import org.bitrepository.bitrepositoryelements.FilePart;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
 /**
  * The context for the conversation for the GetFile operation.
  */
 public class GetFileConversationContext extends ConversationContext {
-    /** @see getFileID() */
-    private final String fileID;
-    /** @see getFilePart() */
     private FilePart filePart;
-    /** @see getUrlForResult() */
     private final URL urlForResult;
-    /** @see getSelector() */
-    private final GetFileSelector selector;
 
     /**
-     * Constructor.
-     * @param fileID The id of the file to retrieve.
-     * @param urlForResult The address for the delivery of the results.
+     * @see ConversationContext for general parameter documentation.
      * @param filePart The part of the file. Null if whole file is wanted.
-     * @param selector The selector for choosing the pillar to retrieve from.
-     * @param settings The settings.
-     * @param messageSender The message sender.
-     * @param clientID The id of the client.
-     * @param eventHandler The eventhandler. 
-     * @param auditTrailInformation The audit trail information for the conversation.
+     * @param urlForResult
      */
-    public GetFileConversationContext(String fileID, URL urlForResult, FilePart filePart, GetFileSelector selector,
+    public GetFileConversationContext(
+            String fileID, URL urlForResult, FilePart filePart, Collection<String> contributors,
             Settings settings, MessageSender messageSender, String clientID, EventHandler eventHandler,
             String auditTrailInformation) {
-        super(settings, messageSender, clientID, eventHandler, auditTrailInformation);
-        this.fileID = fileID;
+        super(settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
         this.filePart = filePart;
         this.urlForResult = urlForResult;
-        this.selector = selector;
-    }
-
-    /**
-     * @return The id of the file to retrieve.
-     */
-    public String getFileID() {
-        return fileID;
     }
 
     /**
@@ -84,12 +62,5 @@ public class GetFileConversationContext extends ConversationContext {
      */
     public URL getUrlForResult() {
         return urlForResult;
-    }
-    
-    /**
-     * @return The selector for selecting the pillar, where the file is to be retrieved.
-     */
-    public GetFileSelector getSelector() {
-        return selector;
     }
 }

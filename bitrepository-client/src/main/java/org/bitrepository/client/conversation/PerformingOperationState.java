@@ -22,17 +22,35 @@
 package org.bitrepository.client.conversation;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.exceptions.UnableToFinishException;
-import org.bitrepository.protocol.utils.MessageUtils;
 
 /**
  * Handles the booking of performing the request phase messaging. Only the specialized workflow steps are required to
  * be implemented the subclass.
  */
 public abstract class PerformingOperationState extends GeneralConversationState {
+    protected Map<String,String> activeContributors;
+
+    protected PerformingOperationState(Collection<SelectedComponentInfo> expectedContributors) {
+        super(toComponentIDs(expectedContributors));
+        this.activeContributors = new HashMap<String,String>();
+        for (SelectedComponentInfo contributorInfo : expectedContributors) {
+            activeContributors.put(contributorInfo.getID(), contributorInfo.getDestination());
+        }
+    }
+
+    protected PerformingOperationState(String componentID) {
+        super(Arrays.asList(componentID));
+    }
 
     @Override
     protected void processMessage(MessageResponse msg) {
@@ -42,16 +60,10 @@ public abstract class PerformingOperationState extends GeneralConversationState 
         } else {
             try {
                 if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_COMPLETED)) {
-                    getResponseStatus().responseReceived(msg.getFrom());
                     generateContributorCompleteEvent(msg);
-                } else if (MessageUtils.isIdentifyResponse(msg)) {
-                    getContext().getMonitor().outOfSequenceMessage("Received identify response from " +
-                            msg.getFrom() + " after identification was finished");
                 } else {
-                    getResponseStatus().responseReceived(msg.getFrom());
                     getContext().getMonitor().contributorFailed(
-                            "Received negative response from component " + msg.getFrom() + ":  " +
-                                    msg.getResponseInfo(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+                            msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
                 }
             } catch(UnexpectedResponseException ure ) {
                 getContext().getMonitor().warning(ure.getMessage());
@@ -60,25 +72,24 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     }
 
     @Override
-    protected GeneralConversationState getNextState() throws UnableToFinishException {
-        if (getResponseStatus().haveAllComponentsResponded()) {
+    protected void logStateTimeout() throws UnableToFinishException {
+        throw new UnableToFinishException("Failed to receive responses from all contributors before timeout(" +
+                getTimeoutValue() + "ms)");
+    }
+
+    @Override
+    protected long getTimeoutValue() {
+        return getContext().getSettings().getCollectionSettings().getClientSettings().getOperationTimeout().longValue();
+    }
+
+    @Override
+    protected GeneralConversationState completeState() throws UnableToFinishException {
+        if (getOutstandingComponents().isEmpty()) {
             getContext().getMonitor().complete();
             return new FinishedState(getContext());
         } else {
-            return this;
+            throw new UnableToFinishException("All contributors haven't responded");
         }
-    }
-
-    @Override
-    protected GeneralConversationState handleStateTimeout() {
-        getContext().getMonitor().operationFailed(getName() + " operation timed out, " +
-                "the following contributors didn't respond: " + Arrays.toString(getResponseStatus().getOutstandComponents()));
-        return new FinishedState(getContext());
-    }
-
-    @Override
-    protected long getTimeout() {
-        return getContext().getSettings().getCollectionSettings().getClientSettings().getOperationTimeout().longValue();
     }
 
     /**
@@ -87,4 +98,17 @@ public abstract class PerformingOperationState extends GeneralConversationState 
      * @throws UnexpectedResponseException Unable to generate a result event based on the supplied message.
      */
     protected abstract void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException;
+
+    private static Collection<String> toComponentIDs(Collection<SelectedComponentInfo> contributors) {
+        Iterator<SelectedComponentInfo> iterator = contributors.iterator();
+        Collection componentIDs = new HashSet();
+        while (iterator.hasNext()) {
+            componentIDs.add(iterator.next().getID());
+        }
+        return componentIDs;
+    }
+
+    protected boolean isChecksumPillar(String pillarID) {
+        return getContext().getChecksumPillars().contains(pillarID);
+    }
 }

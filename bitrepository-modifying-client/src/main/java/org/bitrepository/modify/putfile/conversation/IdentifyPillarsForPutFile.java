@@ -31,101 +31,68 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.GeneralConversationState;
 import org.bitrepository.client.conversation.IdentifyingState;
-import org.bitrepository.client.conversation.selector.ComponentSelector;
-import org.bitrepository.client.conversation.selector.MultipleComponentSelector;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.common.utils.Base16Utils;
 
 /**
- * The first state of the PutFile communication. The identification of the pillars involved.
+ * Handles the identification phase of the PutFile operation.
  */
 public class IdentifyPillarsForPutFile extends IdentifyingState {
     private final PutFileConversationContext context;
-    private final MultipleComponentSelector selector;
 
+    /**
+     * @param context The shared conversation context.
+     */
     public IdentifyPillarsForPutFile(PutFileConversationContext context) {
+        super(context.getContributors());
         this.context = context;
-        selector = new PutFilePillarSelector(
-                context.getSettings().getCollectionSettings().getClientSettings().getPillarIDs());
     }
 
+    /**
+     * Extends the default behaviour with a idempotent aspects. This assumes that the put to a pillar is successful if
+     * the same file already exists.
+     *
+     * The existence of a different file on the other hand is a fatal problem.
+     */
     @Override
-    protected void processMessage(MessageResponse msg) throws UnexpectedResponseException, UnableToFinishException {
-        if(msg instanceof IdentifyPillarsForPutFileResponse) {
-            IdentifyPillarsForPutFileResponse response = (IdentifyPillarsForPutFileResponse) msg;
-            ResponseCode responseCode = response.getResponseInfo().getResponseCode();
-            switch (responseCode) {
-                case IDENTIFICATION_POSITIVE:
-                    getContext().getMonitor().contributorIdentified(response);
-                    break;
-                case DUPLICATE_FILE_FAILURE:
-                    if(response.isSetChecksumDataForExistingFile()) {
-                        if(context.getChecksumForValidationAtPillar() != null &&
-                           Base16Utils.decodeBase16(response.getChecksumDataForExistingFile().getChecksumValue()).equals(
-                           Base16Utils.decodeBase16(context.getChecksumForValidationAtPillar().getChecksumValue()))) {
-                            getContext().getMonitor().contributorComplete(
-                                    new PutFileCompletePillarEvent(response.getChecksumDataForExistingFile(),
-                                            response.getPillarID(),
-                                            "File already existed on " + response.getPillarID(),
-                                            response.getCorrelationID()));
-                        } else {
-                            getContext().getMonitor().contributorFailed(
-                                    "Received negative response from component " + response.getFrom() +
-                                            ":  " + response.getResponseInfo() + " (existing file checksum does not match)",
-                                    response.getFrom(), response.getResponseInfo().getResponseCode());
-                            throw new UnableToFinishException("Can not put file " + context.getFileID() +
-                                    ", as an different file already exists on pillar " + response.getPillarID());
-                        }
+    protected void handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
+        IdentifyPillarsForPutFileResponse response = (IdentifyPillarsForPutFileResponse) msg;
+        ResponseCode responseCode = response.getResponseInfo().getResponseCode();
+        switch (responseCode) {
+            case DUPLICATE_FILE_FAILURE:
+                if(response.isSetChecksumDataForExistingFile()) {
+                    if(context.getChecksumForValidationAtPillar() != null &&
+                            Base16Utils.decodeBase16(response.getChecksumDataForExistingFile().getChecksumValue()).equals(
+                                    Base16Utils.decodeBase16(context.getChecksumForValidationAtPillar().getChecksumValue()))) {
+                        getContext().getMonitor().contributorComplete(
+                                new PutFileCompletePillarEvent(response.getChecksumDataForExistingFile(),
+                                        response.getPillarID(),
+                                        "File already existed on " + response.getPillarID(),
+                                        response.getCorrelationID()));
                     } else {
                         getContext().getMonitor().contributorFailed(
-                                "Received negative response from component " + response.getFrom() + ":  " +
-                                        response.getResponseInfo(), response.getFrom(), response.getResponseInfo().getResponseCode());
+                                "Received negative response from component " + response.getFrom() +
+                                        ":  " + response.getResponseInfo() + " (existing file checksum does not match)",
+                                response.getFrom(), response.getResponseInfo().getResponseCode());
                         throw new UnableToFinishException("Can not put file " + context.getFileID() +
-                                ", as an file already exists on pillar " + response.getPillarID());
+                                ", as an different file already exists on pillar " + response.getPillarID());
                     }
-                    break;
-                default:
+                } else {
                     getContext().getMonitor().contributorFailed(
                             "Received negative response from component " + response.getFrom() + ":  " +
                                     response.getResponseInfo(), response.getFrom(), response.getResponseInfo().getResponseCode());
-            }
-            if (response.getPillarChecksumSpec() != null) {
-                context.addChecksumPillar(response.getPillarID());
-            }
-            getSelector().processResponse(response);
-        } else {
-            throw new UnexpectedResponseException("Are currently only expecting IdentifyPillarsForPutFileResponse's");
+                    throw new UnableToFinishException("Can not put file " + context.getFileID() +
+                            ", as an file already exists on pillar " + response.getPillarID());
+                }
+                break;
+            default:
+                super.handleFailureResponse(msg);
         }
     }
 
     @Override
-    public ComponentSelector getSelector() {
-        return selector;
-    }
-
-    @Override
-    public GeneralConversationState getOperationState() {
-        return new PuttingFile(context, selector.getSelectedComponents());
-    }
-
-    @Override
-    protected boolean handleIdentificationTimeout() {
-        boolean isPartialPutsAllowed = true;
-        if (context.getSettings().getReferenceSettings().getPutFileSettings() != null &&
-                context.getSettings().getReferenceSettings().getPutFileSettings().isSetPartialPutsAllow()) {
-            isPartialPutsAllowed = context.getSettings().getReferenceSettings().getPutFileSettings().isPartialPutsAllow();
-        }
-
-        if(selector.hasSelectedComponent()) {
-            if (isPartialPutsAllowed || selector.haveSelectedAllComponents()) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+    public GeneralConversationState getOperationState() throws UnableToFinishException {
+        return new PuttingFile(context, getSelector().getSelectedComponents());
     }
 
     @Override
@@ -145,12 +112,34 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
     }
 
     @Override
-    protected String getName() {
-        return "Identifying pillars for put file";
+    protected String getPrimitiveName() {
+        return "IdentifyPillarsForPutFile";
+    }
+
+    /**
+     * Extends the default behaviour with the possiblity of putting to a subset of pillars, if the
+     * isSetPartialPutsAllow settings is true.
+     * */
+    @Override
+    protected boolean canFinish() {
+        return (isPartialPutsAllowed() && getSelector().getSelectedComponents().size() > 0 ||
+                getOutstandingComponents().isEmpty());
+    }
+
+    private boolean isPartialPutsAllowed() {
+        boolean isPartialPutsAllowed = true;
+        if (context.getSettings().getReferenceSettings().getPutFileSettings() != null &&
+                context.getSettings().getReferenceSettings().getPutFileSettings().isSetPartialPutsAllow()) {
+            isPartialPutsAllowed = context.getSettings().getReferenceSettings().getPutFileSettings().isPartialPutsAllow();
+        }
+        return isPartialPutsAllowed;
     }
 
     @Override
-    public boolean continueWithOperation() {
-        return !context.getMonitor().hasFailed();
+    protected void checkForChecksumPillar(MessageResponse msg) {
+        IdentifyPillarsForPutFileResponse response = (IdentifyPillarsForPutFileResponse) msg;
+        if (response.getPillarChecksumSpec() != null) {
+            context.addChecksumPillar(response.getPillarID());
+        }
     }
 }

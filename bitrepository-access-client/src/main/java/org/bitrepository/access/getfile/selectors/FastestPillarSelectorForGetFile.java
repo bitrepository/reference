@@ -21,30 +21,29 @@
  */
 package org.bitrepository.access.getfile.selectors;
 
-import java.util.Collection;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.client.conversation.selector.ComponentSelector;
+import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 
-public class FastestPillarSelectorForGetFile extends GetFileSelector {
-    
-    public FastestPillarSelectorForGetFile(Collection<String> pillarsWhichShouldRespond) {
-        responseStatus = new ContributorResponseStatus(pillarsWhichShouldRespond);
-    }
-    
-    protected boolean checkPillarResponseForSelection(IdentifyPillarsForGetFileResponse response) {
-        if (!ResponseCode.IDENTIFICATION_POSITIVE.equals(
-                response.getResponseInfo().getResponseCode())) {
-            return false;
-        } 
-        if (selectedPillar == null || TimeMeasurementUtils.compare(response.getTimeToDeliver(), 
-                selectedPillar.getTimeToDeliver()) < 0) {
-            return true;
-        } 
-        return false;
+public class FastestPillarSelectorForGetFile extends ComponentSelector {
+    private TimeMeasureTYPE fastestTimeToDeliver;
+
+    public synchronized void selectComponent(MessageResponse message) throws UnexpectedResponseException {
+        IdentifyPillarsForGetFileResponse response = (IdentifyPillarsForGetFileResponse)message;
+        if (fastestTimeToDeliver == null ) {
+            fastestTimeToDeliver = response.getTimeToDeliver();
+        }
+        if (isFaster(response)) {
+            fastestTimeToDeliver = response.getTimeToDeliver();
+            selectedComponents.clear();
+            super.selectComponent(message);
+        }
     }
 
-    
-
+    protected boolean isFaster(IdentifyPillarsForGetFileResponse response) {
+        return TimeMeasurementUtils.compare(response.getTimeToDeliver(), fastestTimeToDeliver) <= 0;
+    }
 }
