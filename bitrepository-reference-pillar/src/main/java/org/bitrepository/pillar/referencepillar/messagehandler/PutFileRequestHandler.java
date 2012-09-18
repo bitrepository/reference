@@ -125,9 +125,15 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
     /**
      * Validates that enough space exists is left in the archive.
      * Otherwise an {@link InvalidMessageException} with the appropriate errorcode is thrown.
+     * If the no size is defined in the message, then it is not checked.
      * @param message The request with the size of the file.
      */
     private void checkSpaceForStoringNewFile(PutFileRequest message) throws RequestHandlerException {
+        if(message.getFileSize() == null) {
+            log.debug("No size for the file to be put.");
+            return;
+        }
+        
         BigInteger fileSize = message.getFileSize();
         
         long useableSizeLeft = getArchive().sizeLeftInArchive() 

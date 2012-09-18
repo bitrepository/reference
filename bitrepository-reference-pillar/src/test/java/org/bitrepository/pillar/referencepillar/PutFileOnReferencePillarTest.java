@@ -298,4 +298,24 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
     }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void referencePillarPutFileWithNullSize() throws Exception {
+        addDescription("Tests that it is possible to identify and perform the PutFile operation without the filesize.");
+
+        addStep("Test the Identify", "Should give positive response.");
+        messageBus.sendMessage(msgFactory.createIdentifyPillarsForPutFileRequest(DEFAULT_FILE_ID, null));
+        IdentifyPillarsForPutFileResponse identifyResponse = clientTopic.waitForMessage(IdentifyPillarsForPutFileResponse.class);
+        Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.IDENTIFICATION_POSITIVE);
+        
+        addStep("Test the operation", "Should complete successfully.");
+        messageBus.sendMessage(msgFactory.createPutFileRequest(null, 
+                null, FILE_ADDRESS, DEFAULT_FILE_ID, null));
+        PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.OPERATION_COMPLETED);
+        Assert.assertTrue(archive.hasFile(DEFAULT_FILE_ID));
+
+    }
 }
