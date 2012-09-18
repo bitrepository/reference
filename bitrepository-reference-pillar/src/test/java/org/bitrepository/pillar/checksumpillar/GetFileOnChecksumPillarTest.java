@@ -80,7 +80,7 @@ public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
                         receivedIdentifyResponse.getTimeToDeliver(),
                         receivedIdentifyResponse.getTo()));
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
-                ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);      
+                ResponseCode.IDENTIFICATION_NEGATIVE);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
