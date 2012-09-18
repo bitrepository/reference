@@ -110,7 +110,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
                 DEFAULT_MD5_CHECKSUM);
 
         Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
-        Assert.assertEquals(audits.getCallsForAuditEvent(), 1, "Should only deliver 1 audit, since we cannot calculate the checksum on the fly.");
+        Assert.assertEquals(audits.getCallsForAuditEvent(), 0, "Should not deliver audits");
     }
 
     @Test( groups = {"regressiontest", "pillartest"})

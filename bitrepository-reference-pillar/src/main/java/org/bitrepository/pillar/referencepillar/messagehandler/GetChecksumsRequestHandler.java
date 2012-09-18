@@ -165,10 +165,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
      */
     private List<ChecksumDataForChecksumSpecTYPE> calculateChecksumResults(GetChecksumsRequest message) {
         log.debug("Starting to calculate the checksum of the requested files.");
-        
         FileIDs fileids = message.getFileIDs();
-        getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), 
-                "Calculating the requested checksums.", message.getAuditTrailInformation(), FileAction.GET_CHECKSUMS);
 
         if(fileids.isSetAllFileIDs()) {
             log.debug("Calculating the checksum for all the files.");

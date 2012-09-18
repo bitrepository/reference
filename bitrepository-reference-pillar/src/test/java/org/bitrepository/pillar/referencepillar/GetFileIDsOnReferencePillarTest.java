@@ -136,8 +136,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertEquals(finalResponse.getResultingFileIDs().getResultAddress(), FILE_IDS_DELIVERY_ADDRESS);
         Assert.assertEquals(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size(), 1);        
         Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
-        Assert.assertEquals(audits.getCallsForAuditEvent(), 1, "Should deliver 1 audit. Handling of the GetFileIDs "
-                + "operation");
+        Assert.assertEquals(audits.getCallsForAuditEvent(), 0, "Should not deliver audits.");
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -219,9 +218,6 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
         
         Assert.assertEquals(finalResponse.getResultingFileIDs().getResultAddress(), FILE_IDS_DELIVERY_ADDRESS);
         Assert.assertNull(finalResponse.getResultingFileIDs().getFileIDsData(), "Results should be delivered through URL");        
-        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
-        Assert.assertEquals(audits.getCallsForAuditEvent(), 1, "Should deliver 1 audit. Handling of the GetFileIDs "
-                + "operation");
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

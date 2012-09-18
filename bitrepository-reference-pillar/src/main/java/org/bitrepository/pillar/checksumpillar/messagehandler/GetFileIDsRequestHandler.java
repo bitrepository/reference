@@ -36,7 +36,6 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetFileIDsResults;
-import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
@@ -155,9 +154,6 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
     private ResultingFileIDs performGetFileIDsOperation(GetFileIDsRequest message) throws RequestHandlerException {
         ResultingFileIDs res = new ResultingFileIDs();
         FileIDsData data = retrieveFileIDsData(message.getFileIDs());
-        
-        getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), "Getting the requested "
-                + "file ids.", message.getAuditTrailInformation(), FileAction.GET_FILEID);
         
         String resultingAddress = message.getResultAddress();
         if(resultingAddress == null) {
