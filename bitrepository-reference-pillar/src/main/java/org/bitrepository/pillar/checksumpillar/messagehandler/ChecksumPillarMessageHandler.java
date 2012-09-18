@@ -92,7 +92,7 @@ public abstract class ChecksumPillarMessageHandler<T> extends PillarMessageHandl
         
         if(!(checksumType.equals(csSpec))) {
             ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+            ri.setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);
             ri.setResponseText("Cannot handle the checksum specification '" + csSpec + "'."
                     + "This checksum pillar can only handle '" + checksumType + "'");
             throw new InvalidMessageException(ri);

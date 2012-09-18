@@ -301,7 +301,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
 
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
-                ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+                ResponseCode.REQUEST_NOT_SUPPORTED);
         Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
     }
     
@@ -324,7 +324,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
 
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
-                ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+                ResponseCode.REQUEST_NOT_SUPPORTED);
         Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
     }
     
@@ -343,7 +343,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
 
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
-                ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+                ResponseCode.REQUEST_NOT_SUPPORTED);
         Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
     }
     
@@ -362,7 +362,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
 
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
-                ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+                ResponseCode.REQUEST_NOT_SUPPORTED);
         Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
     }
     

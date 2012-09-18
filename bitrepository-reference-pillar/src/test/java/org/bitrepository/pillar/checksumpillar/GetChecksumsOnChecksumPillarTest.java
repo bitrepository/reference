@@ -251,6 +251,6 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
         addStep("Retrieve the IdentifyResponse for the GetChecksums request and validate it.",
                 "The pillar gives a negative identification.");
         IdentifyPillarsForGetChecksumsResponse response = clientTopic.waitForMessage(IdentifyPillarsForGetChecksumsResponse.class);
-        Assert.assertEquals(response.getResponseInfo().getResponseCode(), ResponseCode.IDENTIFICATION_NEGATIVE);
+        Assert.assertEquals(response.getResponseInfo().getResponseCode(), ResponseCode.REQUEST_NOT_SUPPORTED);
     }
 }

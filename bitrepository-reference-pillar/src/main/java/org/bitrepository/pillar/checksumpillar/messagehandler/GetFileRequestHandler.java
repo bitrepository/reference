@@ -61,7 +61,7 @@ public class GetFileRequestHandler extends ChecksumPillarMessageHandler<GetFileR
                 message.getAuditTrailInformation(), FileAction.FAILURE);
 
         ResponseInfo ri = new ResponseInfo();
-        ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+        ri.setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);
         ri.setResponseText("The Checksum pillar is unable to deliver actual files.");
         throw new IllegalOperationException(ri);
     }

@@ -27,7 +27,6 @@ package org.bitrepository.pillar.checksumpillar.messagehandler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -38,7 +37,6 @@ import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.service.exception.IdentifyContributorException;
-import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 
 /**
@@ -65,37 +63,12 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
     public void processRequest(IdentifyPillarsForGetChecksumsRequest message) throws RequestHandlerException {
         validateMessage(message);
         checkThatAllRequestedFilesAreAvailable(message);
-        validateChecksumSpec(message.getChecksumRequestForExistingFile());
         respondSuccesfullIdentification(message);
     }
 
     @Override
     public MessageResponse generateFailedResponse(IdentifyPillarsForGetChecksumsRequest message) {
         return createFinalResponse(message);
-    }
-    
-    /**
-     * Validates the checksum specification.
-     * A null as checksum argument is ignored.
-     * Similar to the inherited one, but returns a 'IDENTIFICATION_NEGATIVE' instead of
-     * the default 'REQUEST_NOT_UNDERSTOOD_FAILURE'. 
-     * 
-     * @param csSpec The checksum specification to validate. 
-     * @throws InvalidMessageException If the checksum does not validate.
-     */
-    @Override
-    protected void validateChecksumSpec(ChecksumSpecTYPE csSpec) throws InvalidMessageException {
-        if(csSpec == null) {
-            return;
-        }
-        
-        if(!(getChecksumType().equals(csSpec))) {
-            ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.IDENTIFICATION_NEGATIVE);
-            ri.setResponseText("Cannot handle the checksum specification '" + csSpec + "'."
-                    + "This checksum pillar can only handle '" + getChecksumType() + "'");
-            throw new InvalidMessageException(ri);
-        }
     }
     
     /**
