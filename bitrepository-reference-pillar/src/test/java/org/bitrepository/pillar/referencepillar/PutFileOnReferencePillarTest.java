@@ -303,13 +303,13 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
     public void referencePillarPutFileTestWithNullSize() throws Exception {
         addDescription("Tests that it is possible to identify and perform the PutFile operation without the filesize.");
 
-        addStep("Test the Identify", "Should give positive response.");
+        addStep("Send a IdentifyPillarForPutFileRequest with undefined FileSize", "Pillar gives positive identification response.");
         messageBus.sendMessage(msgFactory.createIdentifyPillarsForPutFileRequest(DEFAULT_FILE_ID, null));
         IdentifyPillarsForPutFileResponse identifyResponse = clientTopic.waitForMessage(IdentifyPillarsForPutFileResponse.class);
         Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
         
-        addStep("Test the operation", "Should complete successfully.");
+        addStep("Send a PutFileRequest with undefined fileSize", "Pillar gives completes the operation successfully.");
         messageBus.sendMessage(msgFactory.createPutFileRequest(null, 
                 null, FILE_ADDRESS, DEFAULT_FILE_ID, null));
         PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
