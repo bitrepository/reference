@@ -33,7 +33,9 @@ import org.bitrepository.protocol.messagebus.MessageSender;
 public class GetChecksumsConversationContext extends ConversationContext {
     private final URL urlForResult;
     private final ChecksumSpecTYPE checksumSpec;
-
+    /**
+     * Extends the {@link ConversationContext} constructor with {@link org.bitrepository.access.getchecksums.GetChecksumsClient} specific parameters
+     */
     public GetChecksumsConversationContext(String fileID, ChecksumSpecTYPE checksumSpec, URL urlForResult,
             Settings settings, MessageSender messageSender, String clientID,  Collection<String> contributors,
             EventHandler eventHandler, String auditTrailInformation) {

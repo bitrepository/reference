@@ -78,6 +78,9 @@ public class IdentifyingPillarsForGetFile extends IdentifyingState {
         return "IdentifyPillarsForGetFile";
     }
 
+    /**
+     * Helper method to extract the single selected pillar fron the generic selector's SelectedComponents list.
+     */
     private SelectedComponentInfo getSelectedPillar() {
         return getSelector().getSelectedComponents().iterator().next();
     }

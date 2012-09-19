@@ -35,6 +35,7 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.settings.Settings;
@@ -255,5 +256,12 @@ public final class ChecksumUtils {
         res.setChecksumType(ChecksumType.valueOf(
                 settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType()));
         return res;
+    }
+
+    public static boolean areEqual(ChecksumDataForFileTYPE checksum1, ChecksumDataForFileTYPE checksum2) {
+        return  (checksum1 == null && checksum2 == null) ||
+                ((checksum1 != null && checksum2 != null) &&
+                Base16Utils.decodeBase16(checksum1.getChecksumValue()).equals(
+                Base16Utils.decodeBase16(checksum2.getChecksumValue())));
     }
 }

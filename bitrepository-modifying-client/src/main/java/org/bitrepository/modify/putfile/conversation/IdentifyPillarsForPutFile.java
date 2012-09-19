@@ -32,7 +32,7 @@ import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.GeneralConversationState;
 import org.bitrepository.client.conversation.IdentifyingState;
 import org.bitrepository.common.exceptions.UnableToFinishException;
-import org.bitrepository.common.utils.Base16Utils;
+import org.bitrepository.common.utils.ChecksumUtils;
 
 /**
  * Handles the identification phase of the PutFile operation.
@@ -61,9 +61,8 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
         switch (responseCode) {
             case DUPLICATE_FILE_FAILURE:
                 if(response.isSetChecksumDataForExistingFile()) {
-                    if(context.getChecksumForValidationAtPillar() != null &&
-                            Base16Utils.decodeBase16(response.getChecksumDataForExistingFile().getChecksumValue()).equals(
-                                    Base16Utils.decodeBase16(context.getChecksumForValidationAtPillar().getChecksumValue()))) {
+                    if(ChecksumUtils.areEqual(
+                            response.getChecksumDataForExistingFile(),context.getChecksumForValidationAtPillar())) {
                         getContext().getMonitor().contributorComplete(
                                 new PutFileCompletePillarEvent(response.getChecksumDataForExistingFile(),
                                         response.getPillarID(),

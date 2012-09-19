@@ -48,12 +48,12 @@ public class ConversationContext {
     /**
      * Encapsulates the common state maintained in a conversation. Will typically be subclasses to provide
      * operation specific attributes.
-     * @param settings
-     * @param messageSender
-     * @param clientID
-     * @param fileID
-     * @param contributors
-     * @param eventHandler
+     * @param settings The settings to use in this conversation context.
+     * @param messageSender The messageSender to use in this conversation context.
+     * @param clientID The clientID to use in this conversation context.
+     * @param fileID Optional fileID to use in this conversation context.
+     * @param contributors The contributors to use in this conversation context.
+     * @param eventHandler The eventHandler to use in this conversation context.
      * @param auditTrailInformation
      */
     public ConversationContext(

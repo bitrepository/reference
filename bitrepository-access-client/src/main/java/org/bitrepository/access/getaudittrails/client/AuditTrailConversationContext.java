@@ -28,10 +28,16 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
+/**
+ * models the conversation context for the {@link org.bitrepository.access.getaudittrails.AuditTrailClient}
+ */
 public class AuditTrailConversationContext extends ConversationContext {
     private final AuditTrailQuery[] componentQueries;
     private final String urlForResult;
 
+    /**
+     * Extends the {@link ConversationContext} constructor with {@link org.bitrepository.access.getaudittrails.AuditTrailClient} specific parameters
+     */
     public AuditTrailConversationContext(
             AuditTrailQuery[] componentQueries, String fileID, String urlForResult, Settings settings,
             MessageSender messageSender, String clientID, Collection<String> contributors, EventHandler eventHandler,

@@ -51,6 +51,11 @@ public abstract class GeneralConversationState implements ConversationState {
     /** For response bookkeeping */
     private final ContributorResponseStatus responseStatus;
 
+    /**
+     *
+     * @param expectedContributors The collection of components to monitor responses from. This conversation
+     *                             phase is considered finished when all contributors have responded.
+     */
     protected GeneralConversationState(Collection<String> expectedContributors) {
         responseStatus = new ContributorResponseStatus(expectedContributors);
     }

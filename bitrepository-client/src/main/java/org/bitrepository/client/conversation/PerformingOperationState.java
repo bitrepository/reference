@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
@@ -40,6 +39,10 @@ import org.bitrepository.common.exceptions.UnableToFinishException;
 public abstract class PerformingOperationState extends GeneralConversationState {
     protected Map<String,String> activeContributors;
 
+    /**
+     * @param expectedContributors The components to perform the actual operation for. The operation is considered
+     *                             complete when all contributors have responded.
+     */
     protected PerformingOperationState(Collection<SelectedComponentInfo> expectedContributors) {
         super(toComponentIDs(expectedContributors));
         this.activeContributors = new HashMap<String,String>();
@@ -100,10 +103,9 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     protected abstract void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException;
 
     private static Collection<String> toComponentIDs(Collection<SelectedComponentInfo> contributors) {
-        Iterator<SelectedComponentInfo> iterator = contributors.iterator();
         Collection componentIDs = new HashSet();
-        while (iterator.hasNext()) {
-            componentIDs.add(iterator.next().getID());
+        for (SelectedComponentInfo componentInfo: contributors) {
+            componentIDs.add(componentInfo.getID());
         }
         return componentIDs;
     }

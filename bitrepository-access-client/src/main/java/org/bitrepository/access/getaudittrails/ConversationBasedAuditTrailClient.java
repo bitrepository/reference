@@ -82,6 +82,9 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
         return componentQueryList.toArray(new AuditTrailQuery[componentQueryList.size()]);
     }
 
+    /**
+     * Extracts the collection of contributorIDs from the query object.
+     */
     private Collection<String> getContributors(AuditTrailQuery[] queries) {
         Collection<String> contributors = new HashSet<String>();
         for (AuditTrailQuery query: queries) {

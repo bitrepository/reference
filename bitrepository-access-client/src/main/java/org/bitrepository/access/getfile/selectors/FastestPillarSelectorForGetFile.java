@@ -28,9 +28,14 @@ import org.bitrepository.client.conversation.selector.ComponentSelector;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 
+/**
+ * GetFile specific selector for situations, when the getFile can chose between multiple pillars. The selector will
+ * chose the pillar able to return a file fastest, eg. the timeToDeliver id is the smallest.
+ */
 public class FastestPillarSelectorForGetFile extends ComponentSelector {
     private TimeMeasureTYPE fastestTimeToDeliver;
 
+   @Override
     public synchronized void selectComponent(MessageResponse message) throws UnexpectedResponseException {
         IdentifyPillarsForGetFileResponse response = (IdentifyPillarsForGetFileResponse)message;
         if (fastestTimeToDeliver == null ) {
@@ -43,7 +48,7 @@ public class FastestPillarSelectorForGetFile extends ComponentSelector {
         }
     }
 
-    protected boolean isFaster(IdentifyPillarsForGetFileResponse response) {
+    private boolean isFaster(IdentifyPillarsForGetFileResponse response) {
         return TimeMeasurementUtils.compare(response.getTimeToDeliver(), fastestTimeToDeliver) <= 0;
     }
 }
