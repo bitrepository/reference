@@ -134,6 +134,7 @@ public class DeleteFile {
      * Initiates the operation and waits for the results.
      * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
      */
+    @SuppressWarnings("deprecation")
     private OperationEvent deleteTheFile() {
         String fileId = cmdHandler.getOptionValue(Constants.FILE_ARG);
         

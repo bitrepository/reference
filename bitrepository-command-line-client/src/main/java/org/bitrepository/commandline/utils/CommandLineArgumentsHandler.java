@@ -70,7 +70,7 @@ public class CommandLineArgumentsHandler {
      * @throws ParseException If the arguments does not parse. E.g. arguments missing or too many arguments.
      */
     public void parseArguments(String ... args) throws ParseException {
-        cmd = parser.parse(options, args, false);
+        cmd = parser.parse(options, args, Constants.NOT_ALLOWING_UNDEFINED_ARGUMENTS);
     }
     
     /**

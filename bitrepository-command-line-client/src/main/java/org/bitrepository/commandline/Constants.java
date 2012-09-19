@@ -36,6 +36,8 @@ public class Constants {
     public static final Boolean ARGUMENT_IS_NOT_REQUIRED = false;
     /** Whether a given option has an argument.*/
     public static final Boolean HAS_ARGUMENT = true;
+    /** For not allowing undefined arguments when parsing of arguments.*/
+    public static final Boolean NOT_ALLOWING_UNDEFINED_ARGUMENTS = false;
     
     /** The path to the settings.*/ 
     public static final String SETTINGS_ARG = "s";
