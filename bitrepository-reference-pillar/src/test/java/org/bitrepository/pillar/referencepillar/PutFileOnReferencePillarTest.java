@@ -328,6 +328,8 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
         badData.setChecksumSpec(csSpec);
         badData.setChecksumValue(Base16Utils.encodeBase16("baabbbaaabba"));
 
+        addStep("Send a PutFileRequest with the bad checksum data", 
+                "Pillar gives negative response and does not insert the file into the archive.");
         messageBus.sendMessage(msgFactory.createPutFileRequest(badData, 
                 csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
         PutFileFinalResponse finalResponse1 = clientTopic.waitForMessage(PutFileFinalResponse.class);
@@ -335,6 +337,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
         Assert.assertFalse(archive.hasFile(DEFAULT_FILE_ID));
         
+        addStep("Retrieve the file from the tmpDir", "Throws exception, since the file has been cleaned up");
         try {
             archive.getFileInTmpDir(DEFAULT_FILE_ID);
             Assert.fail("File should be removed from tmp, when failure");
@@ -342,6 +345,8 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
             // expected
         }
         
+        addStep("Send PutFileRequest for same file, but with the correct checksum data.",
+                "Pillar successfully performs the operation and put the file into the archive.");
         messageBus.sendMessage(msgFactory.createPutFileRequest(putCsData, 
                 csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
         PutFileFinalResponse finalResponse2 = clientTopic.waitForMessage(PutFileFinalResponse.class);
