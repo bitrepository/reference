@@ -27,6 +27,12 @@ package org.bitrepository.protocol.activemq;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
@@ -36,6 +42,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorymessages.Message;
@@ -68,6 +75,13 @@ public class ActiveMQMessageBus implements MessageBus {
 
     /** The variable to separate the parts of the consumer key. */
     private static final String CONSUMER_KEY_SEPARATOR = "#";
+    
+    /** The initial number of threads running in the thread pool.*/
+    private static final int INIT_SIZE_OF_THREAD_POOL = 20;
+    /** The maximum number of threads in the pool.*/
+    private static final int MAX_SIZE_OF_THREAD_POOL = 20;
+    /** The number of seconds to keep the threads alive, when idle.*/
+    private static final long SECONDS_TO_KEEP_THREADS_ALIVE = 60;
 
     /** The session for sending messages. Should not be the same as the consumer session, 
      * as sessions are not thread safe. This also means the session should be used in a synchronized manor.
@@ -94,6 +108,11 @@ public class ActiveMQMessageBus implements MessageBus {
     private final Connection connection;
     private final SecurityManager securityManager;
 
+    /** The queue with the runnable threads for handling the received messages. */
+    private final BlockingQueue<Runnable> threadQueue;
+    /** The executor for threading of the message handling.*/
+    private final ExecutorService executor;
+    
     /**
      * Use the {@link org.bitrepository.protocol.ProtocolComponentFactory} to get a handle on a instance of
      * MessageBusConnections. This constructor is for the
@@ -116,11 +135,14 @@ public class ActiveMQMessageBus implements MessageBus {
             consumerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
 
             startListeningForMessages();
-
         } catch (JMSException e) {
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
         }
         log.debug("ActiveMQConnection initialized for '" + configuration + "'.");
+        
+        threadQueue = new LinkedBlockingQueue<Runnable>();
+        executor = new ThreadPoolExecutor(INIT_SIZE_OF_THREAD_POOL, MAX_SIZE_OF_THREAD_POOL, 
+                SECONDS_TO_KEEP_THREADS_ALIVE, TimeUnit.SECONDS, threadQueue);
     }
 
     /**
@@ -345,7 +367,7 @@ public class ActiveMQMessageBus implements MessageBus {
 
         /** The message listener that receives the messages. */
         private final MessageListener messageListener;
-
+        
         /**
          * Initialise the adapter from ActiveMQ message listener .
          *
@@ -373,7 +395,7 @@ public class ActiveMQMessageBus implements MessageBus {
             try {
                 type = jmsMessage.getStringProperty(MESSAGE_TYPE_KEY);
                 signature = jmsMessage.getStringProperty(MESSAGE_SIGNATURE_KEY);
-                log.debug("Adjoining message signature: " + signature);
+                log.info("Adjoining message signature: " + signature);
                 text = ((TextMessage) jmsMessage).getText();
                 jaxbHelper.validate(new ByteArrayInputStream(text.getBytes()));
                 content = jaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),
@@ -383,12 +405,47 @@ public class ActiveMQMessageBus implements MessageBus {
                 securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature);
                 MessageVersionValidator.validateMessageVersion((Message) content);
                 log.debug("Received message: " + text);
-                messageListener.onMessage((Message) content);
+                threadMessageHandling((Message) content);
             } catch (SAXException e) {
                 log.error("Error validating message " + jmsMessage, e);
             } catch (Exception e) {
                 log.error("Error handling message. Received type was '" + type + "'.\n{}", text, e);
             }
+        }
+        
+        /**
+         * Making the handling of the message be performed in parallel.
+         * @param message The message to be handled by the MessageListener.
+         */
+        private void threadMessageHandling(Message message) {
+            MessageListenerThread mlt = new MessageListenerThread(messageListener, message);
+            executor.execute(mlt);
+            log.debug("Adding a new message handling thread. Currently number of running threads: " + threadQueue.size());
+        }
+    }
+    
+    /**
+     * Simple class to thread the handling of messages by the message listener.
+     */
+    private class MessageListenerThread extends Thread {
+        /** The message listener.*/
+        private final MessageListener listener;
+        /** The message for the listener to handle.*/
+        private Message message;
+        
+        /**
+         * Constructor.
+         * @param listener The MessageListener to handle the message.
+         * @param message The message to be handled by the MessageListener.
+         */
+        MessageListenerThread(MessageListener listener, Message message) {
+            this.listener = listener;
+            this.message = message;
+        }
+        
+        @Override
+        public void run() {
+            listener.onMessage((Message) message);
         }
     }
 }

@@ -203,8 +203,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
         Assert.assertEquals(finalResponse.getResultingFileIDs().getResultAddress(), FILE_IDS_DELIVERY_ADDRESS);
         Assert.assertNull(finalResponse.getResultingFileIDs().getFileIDsData(), "Results should be delivered through URL");        
         Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
-        Assert.assertEquals(audits.getCallsForAuditEvent(), 1, "Should deliver 1 audit. Handling of the GetFileIDs "
-                + "operation");
+        Assert.assertEquals(audits.getCallsForAuditEvent(), 0, "Should not deliver any audit.");
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

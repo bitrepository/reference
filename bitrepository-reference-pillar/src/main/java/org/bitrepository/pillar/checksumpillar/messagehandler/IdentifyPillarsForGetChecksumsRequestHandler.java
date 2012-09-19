@@ -63,7 +63,6 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
     public void processRequest(IdentifyPillarsForGetChecksumsRequest message) throws RequestHandlerException {
         validateMessage(message);
         checkThatAllRequestedFilesAreAvailable(message);
-        validateChecksumSpec(message.getChecksumRequestForExistingFile());
         respondSuccesfullIdentification(message);
     }
 

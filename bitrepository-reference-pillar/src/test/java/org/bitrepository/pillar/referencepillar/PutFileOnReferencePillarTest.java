@@ -298,4 +298,55 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
     }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void referencePillarPutFileTestWithNullSize() throws Exception {
+        addDescription("Tests that it is possible to identify and perform the PutFile operation without the filesize.");
+
+        addStep("Test the Identify", "Should give positive response.");
+        messageBus.sendMessage(msgFactory.createIdentifyPillarsForPutFileRequest(DEFAULT_FILE_ID, null));
+        IdentifyPillarsForPutFileResponse identifyResponse = clientTopic.waitForMessage(IdentifyPillarsForPutFileResponse.class);
+        Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.IDENTIFICATION_POSITIVE);
+        
+        addStep("Test the operation", "Should complete successfully.");
+        messageBus.sendMessage(msgFactory.createPutFileRequest(null, 
+                null, FILE_ADDRESS, DEFAULT_FILE_ID, null));
+        PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.OPERATION_COMPLETED);
+        Assert.assertTrue(archive.hasFile(DEFAULT_FILE_ID));
+
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void referencePillarPutFileTestCleanupAfterBadPut() throws Exception {
+        addDescription("Tests that a there is properly cleaned up after a bad PutFile.");
+
+        ChecksumDataForFileTYPE badData = new ChecksumDataForFileTYPE();
+        badData.setCalculationTimestamp(CalendarUtils.getEpoch());
+        badData.setChecksumSpec(csSpec);
+        badData.setChecksumValue(Base16Utils.encodeBase16("baabbbaaabba"));
+
+        messageBus.sendMessage(msgFactory.createPutFileRequest(badData, 
+                csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+        PutFileFinalResponse finalResponse1 = clientTopic.waitForMessage(PutFileFinalResponse.class);
+        Assert.assertEquals(finalResponse1.getResponseInfo().getResponseCode(), 
+                ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
+        Assert.assertFalse(archive.hasFile(DEFAULT_FILE_ID));
+        
+        try {
+            archive.getFileInTmpDir(DEFAULT_FILE_ID);
+            Assert.fail("File should be removed from tmp, when failure");
+        } catch (IllegalStateException e) {
+            // expected
+        }
+        
+        messageBus.sendMessage(msgFactory.createPutFileRequest(putCsData, 
+                csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+        PutFileFinalResponse finalResponse2 = clientTopic.waitForMessage(PutFileFinalResponse.class);
+        Assert.assertEquals(finalResponse2.getResponseInfo().getResponseCode(), 
+                ResponseCode.OPERATION_COMPLETED);
+        Assert.assertTrue(archive.hasFile(DEFAULT_FILE_ID));
+    }
 }

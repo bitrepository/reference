@@ -60,7 +60,7 @@ public class IdentifyPillarsForGetFileRequestHandler extends ChecksumPillarMessa
                 FileAction.FAILURE);
         
         ResponseInfo ri = new ResponseInfo();
-        ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+        ri.setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);
         ri.setResponseText("The ChecksumPillar '" 
                 + getSettings().getReferenceSettings().getPillarSettings().getPillarID() + "' cannot handle a "
                 + "request for the actual file, since it only contains the checksum of the file.");

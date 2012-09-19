@@ -82,14 +82,18 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
 
     @Override
     public void processRequest(ReplaceFileRequest message) throws RequestHandlerException {
-        validateMessage(message);
-        sendProgressMessageDownloadNewFile(message);
-        downloadTheNewFile(message);
-        sendProgressMessageDeleteOldFile(message);
-        ChecksumDataForFileTYPE requestedOldChecksum = calculateChecksumOnOldFile(message);
-        replaceTheFile(message);
-        ChecksumDataForFileTYPE requestedNewChecksum = calculateChecksumOnNewFile(message);
-        sendFinalResponse(message, requestedOldChecksum, requestedNewChecksum);
+        try {
+            validateMessage(message);
+            sendProgressMessageDownloadNewFile(message);
+            downloadTheNewFile(message);
+            sendProgressMessageDeleteOldFile(message);
+            ChecksumDataForFileTYPE requestedOldChecksum = calculateChecksumOnOldFile(message);
+            replaceTheFile(message);
+            ChecksumDataForFileTYPE requestedNewChecksum = calculateChecksumOnNewFile(message);
+            sendFinalResponse(message, requestedOldChecksum, requestedNewChecksum);
+        } finally {
+            getArchive().ensureFileNotInTmpDir(message.getFileID());
+        }
     }
 
     @Override

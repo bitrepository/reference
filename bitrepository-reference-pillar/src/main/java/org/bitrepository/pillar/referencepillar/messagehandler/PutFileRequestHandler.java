@@ -73,10 +73,14 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
 
     @Override
     public void processRequest(PutFileRequest message) throws RequestHandlerException {
-        validateMessage(message);
-        tellAboutProgress(message);
-        retrieveFile(message);
-        sendFinalResponse(message);
+        try {
+            validateMessage(message);
+            tellAboutProgress(message);
+            retrieveFile(message);
+            sendFinalResponse(message);
+        } finally {
+            getArchive().ensureFileNotInTmpDir(message.getFileID());
+        }
     }
 
     @Override
@@ -125,9 +129,15 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
     /**
      * Validates that enough space exists is left in the archive.
      * Otherwise an {@link InvalidMessageException} with the appropriate errorcode is thrown.
+     * If the no size is defined in the message, then it is not checked.
      * @param message The request with the size of the file.
      */
     private void checkSpaceForStoringNewFile(PutFileRequest message) throws RequestHandlerException {
+        if(message.getFileSize() == null) {
+            log.debug("No size for the file to be put.");
+            return;
+        }
+        
         BigInteger fileSize = message.getFileSize();
         
         long useableSizeLeft = getArchive().sizeLeftInArchive() 
@@ -170,7 +180,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
     private void retrieveFile(PutFileRequest message) throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
-
+        
         try {
             getArchive().downloadFileForValidation(message.getFileID(), 
                     fe.downloadFromServer(new URL(message.getFileAddress())));
@@ -187,7 +197,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
             getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the validation "
                     + "checksum for the file before putting it into archive.", message.getAuditTrailInformation(), 
                     FileAction.CHECKSUM_CALCULATED);
-
+            
             ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
             String calculatedChecksum = getCsManager().getChecksumForTempFile(message.getFileID(), 
                     csType.getChecksumSpec());

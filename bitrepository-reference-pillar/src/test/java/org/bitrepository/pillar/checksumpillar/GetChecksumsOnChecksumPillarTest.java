@@ -34,6 +34,7 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.common.utils.Base16Utils;
+import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.messagefactories.GetChecksumsMessageFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -64,8 +65,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
 
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID;
-        FileIDs fileids = new FileIDs();
-        fileids.setFileID(FILE_ID);
+        FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
 
         addStep("Create and send the identify request message.", 
         "Should be received and handled by the pillar.");
@@ -110,7 +110,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
                 DEFAULT_MD5_CHECKSUM);
 
         Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
-        Assert.assertEquals(audits.getCallsForAuditEvent(), 1, "Should only deliver 1 audit, since we cannot calculate the checksum on the fly.");
+        Assert.assertEquals(audits.getCallsForAuditEvent(), 0, "Should not deliver audits");
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
@@ -118,8 +118,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
         addDescription("Tests the GetChecksums functionality of the reference pillar for the successful scenario, "
                 + "when calculating all files.");
         initializeCacheWithMD5ChecksummedFile();
-        FileIDs fileids = new FileIDs();
-        fileids.setAllFileIDs("true");
+        FileIDs fileids = FileIDsUtils.getAllFileIDs();
 
         IdentifyPillarsForGetChecksumsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetChecksumsRequest(csSpec, fileids);
         messageBus.sendMessage(identifyRequest);
@@ -134,8 +133,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
         addDescription("Tests the GetChecksums functionality of the reference pillar for the successful scenario, "
                 + "when calculating all files.");
         initializeCacheWithMD5ChecksummedFile();
-        FileIDs fileids = new FileIDs();
-        fileids.setAllFileIDs("true");
+        FileIDs fileids = FileIDsUtils.getAllFileIDs();
 
         GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
                 csSpec, fileids, null);
@@ -155,8 +153,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
         addDescription("Tests the GetChecksums functionality of the reference pillar when delivery at an URL.");
         String DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/CS_TEST_" + new Date().getTime() + getPillarID();
         initializeCacheWithMD5ChecksummedFile();
-        FileIDs fileids = new FileIDs();
-        fileids.setAllFileIDs(DEFAULT_FILE_ID);
+        FileIDs fileids = FileIDsUtils.getAllFileIDs();
 
         GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
                 csSpec, fileids, DELIVERY_ADDRESS);
@@ -176,8 +173,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
         addDescription("Tests the reference pillar handling of a bad URL in the GetChecksumRequest.");
         String DELIVERY_ADDRESS = "https:localhost:1/?";
         initializeCacheWithMD5ChecksummedFile();
-        FileIDs fileids = new FileIDs();
-        fileids.setAllFileIDs(DEFAULT_FILE_ID);
+        FileIDs fileids = FileIDsUtils.getAllFileIDs();
 
         GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
                 csSpec, fileids, DELIVERY_ADDRESS);
@@ -193,8 +189,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarGetChecksumsTestFailedNoSuchFile() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetChecksums requests for a file, which it does not have.");
-        FileIDs fileids = new FileIDs();
-        fileids.setFileID("A-NON-EXISTING-FILE");
+        FileIDs fileids = FileIDsUtils.getSpecificFileIDs("A-NON-EXISTING-FILE");
 
         IdentifyPillarsForGetChecksumsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetChecksumsRequest(csSpec, fileids);
         messageBus.sendMessage(identifyRequest);
@@ -211,8 +206,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     public void checksumPillarGetChecksumsTestFailedNoSuchFileInOperation() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetChecksums requests for a file, " +
         "which it does not have. But this time at the GetChecksums message.");
-        FileIDs fileids = new FileIDs();
-        fileids.setFileID("A-NON-EXISTING-FILE");
+        FileIDs fileids = FileIDsUtils.getSpecificFileIDs("A-NON-EXISTING-FILE");
 
         addStep("Create and send the actual GetChecksums message to the pillar.", 
         "Should be received and handled by the pillar.");
@@ -224,5 +218,39 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
         "The GetChecksums response should be sent by the pillar.");
         GetChecksumsFinalResponse finalResponse = clientTopic.waitForMessage(GetChecksumsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void checksumPillarGetChecksumsTestIdentifyWithNoChecksumSpec() throws Exception {
+        addDescription("Tests that the ReferencePillar is accepts a GetChecksums requests when there is no checksum "
+                +"type specified.");
+        FileIDs fileids = FileIDsUtils.getAllFileIDs();
+
+        addStep("Create and send the identify message", "Should be received and handled by the pillar.");
+        messageBus.sendMessage(msgFactory.createIdentifyPillarsForGetChecksumsRequest(null, fileids));
+
+        addStep("Retrieve the IdentifyResponse for the GetChecksums request and validate it.",
+                "The pillar is positively identified.");
+        IdentifyPillarsForGetChecksumsResponse response = clientTopic.waitForMessage(IdentifyPillarsForGetChecksumsResponse.class);
+        Assert.assertEquals(response.getResponseInfo().getResponseCode(), ResponseCode.IDENTIFICATION_POSITIVE);
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void checksumPillarGetChecksumsTestIdentifyWithBadChecksumSpec() throws Exception {
+        addDescription("Tests that the ReferencePillar is rejcts a GetChecksums requests when a bad checksum "
+                +"type specified. But it should just be returned as a negative identification, not a 'REQUEST_NOT_UNDERSTOOD_FAILURE'.");
+        FileIDs fileids = FileIDsUtils.getAllFileIDs();
+        ChecksumSpecTYPE badCsType = new ChecksumSpecTYPE();
+        badCsType.setChecksumSalt(new byte[]{1,0,1,0});
+        badCsType.setChecksumType(ChecksumType.OTHER);
+        badCsType.setOtherChecksumType("AlgorithmDoesNotExist");
+        
+        addStep("Create and send the identify message", "Should be received and handled by the pillar.");
+        messageBus.sendMessage(msgFactory.createIdentifyPillarsForGetChecksumsRequest(badCsType, fileids));
+
+        addStep("Retrieve the IdentifyResponse for the GetChecksums request and validate it.",
+                "The pillar gives a negative identification.");
+        IdentifyPillarsForGetChecksumsResponse response = clientTopic.waitForMessage(IdentifyPillarsForGetChecksumsResponse.class);
+        Assert.assertEquals(response.getResponseInfo().getResponseCode(), ResponseCode.REQUEST_NOT_SUPPORTED);
     }
 }

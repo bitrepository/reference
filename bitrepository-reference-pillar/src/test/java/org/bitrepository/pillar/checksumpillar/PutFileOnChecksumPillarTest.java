@@ -231,7 +231,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
                 csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
         PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
-                ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+                ResponseCode.REQUEST_NOT_SUPPORTED);
         Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
     }
     
@@ -248,7 +248,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
                 badCsType, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
         PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
-                ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+                ResponseCode.REQUEST_NOT_SUPPORTED);
         Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
     }
     

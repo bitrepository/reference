@@ -174,7 +174,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
         messageBus.sendMessage(msgFactory.createDeleteFileRequest(csData, badChecksumSpec,DEFAULT_FILE_ID));
         DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
-                ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+                ResponseCode.REQUEST_NOT_SUPPORTED);
         Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
     }
 

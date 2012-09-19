@@ -39,7 +39,6 @@ import javax.xml.bind.JAXBException;
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetChecksumsResults;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -162,11 +161,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
      */
     private List<ChecksumDataForChecksumSpecTYPE> calculateChecksumResults(GetChecksumsRequest message) {
         log.debug("Starting to calculate the checksum of the requested files.");
-        getAuditManager().addAuditEvent(message.getFileIDs().getFileID(), message.getFrom(), 
-                "Calculating the requested checksums.", message.getAuditTrailInformation(), FileAction.GET_CHECKSUMS);
-
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
-        
         
         if(message.getFileIDs().isSetFileID()) {
             ChecksumEntry entry = getCache().getEntry(message.getFileIDs().getFileID());

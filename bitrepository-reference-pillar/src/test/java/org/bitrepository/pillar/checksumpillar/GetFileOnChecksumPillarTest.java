@@ -80,7 +80,7 @@ public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
                         receivedIdentifyResponse.getTimeToDeliver(),
                         receivedIdentifyResponse.getTo()));
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
-                ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);      
+                ResponseCode.REQUEST_NOT_SUPPORTED);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -111,6 +111,6 @@ public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
                         receivedFinalResponse.getFileAddress(), FILE_ID, filePart, pillarId, pillarDestinationId, 
                         receivedFinalResponse.getResponseInfo(), clientDestinationId));
         Assert.assertEquals(receivedFinalResponse.getResponseInfo().getResponseCode(), 
-                ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);      
+                ResponseCode.REQUEST_NOT_SUPPORTED);      
     }
 }
