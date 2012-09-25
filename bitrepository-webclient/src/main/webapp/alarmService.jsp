@@ -91,7 +91,7 @@
                  reportingComponent: component,
                  alarmCode: alarmCodeStr,
                  maxAlarms: maxAlarmStr,
-                 newestAlarmFirst: false}, function(j){
+                 oldestAlarmFirst: false}, function(j){
                     var htmlTable;
                     htmlTable = "<table id=\"users\" class=\"ui-widget ui-widget-content\">";
                     htmlTable += "<thead> <tr class=\"ui-widget-header\">";

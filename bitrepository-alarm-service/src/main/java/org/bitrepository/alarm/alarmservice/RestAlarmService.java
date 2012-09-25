@@ -87,7 +87,7 @@ public class RestAlarmService {
             @FormParam("reportingComponent") String reportingComponent,
             @FormParam("alarmCode") String alarmCode,
             @DefaultValue("10") @FormParam("maxAlarms") Integer maxAlarms,
-            @DefaultValue("true") @FormParam ("newestAlarmFirst") boolean oldestAlarmFirst) {
+            @DefaultValue("true") @FormParam ("oldestAlarmFirst") boolean oldestAlarmFirst) {
         List<Alarm> alarmList = new ArrayList<Alarm>();
 
         Date from = makeDateObject(fromDate);
