@@ -33,7 +33,7 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.cache.ChecksumStore;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarMessageHandler;
 import org.bitrepository.service.exception.InvalidMessageException;
 
@@ -51,7 +51,7 @@ public abstract class ChecksumPillarMessageHandler<T> extends PillarMessageHandl
      * @param context The context of the message handler.
      * @param refCache The cache for the checksum data.
      */
-    protected ChecksumPillarMessageHandler(PillarContext context, ChecksumStore refCache) {
+    protected ChecksumPillarMessageHandler(MessageHandlerContext context, ChecksumStore refCache) {
         super(context);
         ArgumentValidator.checkNotNull(refCache, "ChecksumCache refCache");
 

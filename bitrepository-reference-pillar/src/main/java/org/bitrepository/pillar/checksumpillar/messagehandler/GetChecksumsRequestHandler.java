@@ -52,7 +52,7 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.service.exception.InvalidMessageException;
@@ -73,7 +73,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
      * @param context The context of the message handler.
      * @param refCache The cache for the checksum data.
      */
-    public GetChecksumsRequestHandler(PillarContext context, ChecksumStore refCache) {
+    public GetChecksumsRequestHandler(MessageHandlerContext context, ChecksumStore refCache) {
         super(context,  refCache);
     }
 
@@ -151,7 +151,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
 
         // Send the ProgressResponse
         log.info("Sending GetFileProgressResponse: " + pResponse);
-        getMessageBus().sendMessage(pResponse);
+        getMessageSender().sendMessage(pResponse);
     }
     
     /**
@@ -305,7 +305,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
         
         // Send the FinalResponse
         log.info("Sending GetFileFinalResponse: " + fResponse);
-        getMessageBus().sendMessage(fResponse);        
+        getMessageSender().sendMessage(fResponse);
     }
     
     /**

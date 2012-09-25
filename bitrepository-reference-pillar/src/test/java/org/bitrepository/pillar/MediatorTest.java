@@ -26,7 +26,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusR
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarMediator;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ContributorContext;
@@ -45,14 +45,14 @@ public class MediatorTest extends DefaultFixturePillarTest {
     ChecksumPillarMediator mediator;
     MockAlarmDispatcher alarmDispatcher;
     MockAuditManager audits;
-    PillarContext context;
+    MessageHandlerContext context;
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseTest() throws Exception {
         audits = new MockAuditManager();
         ContributorContext contributorContext = new ContributorContext(messageBus, componentSettings);
         alarmDispatcher = new MockAlarmDispatcher(contributorContext);
-        context = new PillarContext(componentSettings, messageBus, alarmDispatcher, audits);
+        context = new MessageHandlerContext(componentSettings, messageBus, alarmDispatcher, audits);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -108,8 +108,8 @@ public class MediatorTest extends DefaultFixturePillarTest {
 
     private class TestMediator extends PillarMediator {
 
-        public TestMediator(PillarContext context) {
-            super(context);
+        public TestMediator(MessageHandlerContext context) {
+            super(messageBus, context);
         }
         
         public void testCollectionID(String collectionID) {

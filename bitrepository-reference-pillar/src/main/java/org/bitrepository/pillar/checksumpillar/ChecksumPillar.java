@@ -24,13 +24,13 @@ package org.bitrepository.pillar.checksumpillar;
 import javax.jms.JMSException;
 
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.Pillar;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
-import org.bitrepository.pillar.common.PillarContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.audit.AuditTrailContributerDAO;
 import org.bitrepository.service.audit.AuditTrailManager;
@@ -71,8 +71,8 @@ public class ChecksumPillar implements Pillar {
                 settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase()));
         ContributorContext contributorContext = new ContributorContext(messageBus, settings);
         PillarAlarmDispatcher alarms = new PillarAlarmDispatcher(contributorContext);
-        PillarContext context = new PillarContext(settings, messageBus, alarms, audits);
-        mediator = new ChecksumPillarMediator(context, cache);
+        MessageHandlerContext context = new MessageHandlerContext(settings, messageBus, alarms, audits);
+        mediator = new ChecksumPillarMediator(messageBus, context, cache);
         mediator.start();
         log.info("ReferencePillar started!");
     }

@@ -29,8 +29,9 @@ import java.util.List;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.pillar.cache.ChecksumStore;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarMediator;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.contributor.handler.GetAuditTrailsRequestHandler;
 import org.bitrepository.service.contributor.handler.GetStatusRequestHandler;
 import org.bitrepository.service.contributor.handler.IdentifyContributorsForGetAuditTrailsRequestHandler;
@@ -45,20 +46,18 @@ import org.bitrepository.service.contributor.handler.RequestHandler;
  * Every message (even garbage) is currently put into the audit trails.
  */
 public class ChecksumPillarMediator extends PillarMediator {
-    /** The archive. Package protected on purpose.*/
     private final ChecksumStore cache;
     
     /**
      * Constructor.
      * Sets the parameters of this mediator, and adds itself as a listener to the destinations.
      */
-    public ChecksumPillarMediator(PillarContext context, ChecksumStore refCache) {
-        super(context);
+    public ChecksumPillarMediator(MessageBus messageBus, MessageHandlerContext context, ChecksumStore refCache) {
+        super(messageBus, context);
         ArgumentValidator.checkNotNull(refCache, "ChecksumCache refCache");
         this.cache = refCache;
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     protected RequestHandler[] createListOfHandlers() {
         List<RequestHandler> res = new ArrayList<RequestHandler>();

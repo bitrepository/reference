@@ -49,7 +49,7 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.protocol.FileExchange;
@@ -72,7 +72,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      * @param referenceArchive The archive for the pillar.
      * @param csManager The checksum manager for the pillar.
      */
-    protected GetFileIDsRequestHandler(PillarContext context, ReferenceArchive referenceArchive,
+    protected GetFileIDsRequestHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
             ReferenceChecksumManager csManager) {
         super(context, referenceArchive, csManager);
     }
@@ -142,7 +142,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
         pResponse.setResponseInfo(prInfo);
 
         // Send the ProgressResponse
-        getMessageBus().sendMessage(pResponse);
+        getMessageSender().sendMessage(pResponse);
     }
     
     /**
@@ -310,7 +310,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
         fResponse.setResponseInfo(fri);
         fResponse.setResultingFileIDs(results);
 
-        getMessageBus().sendMessage(fResponse);        
+        getMessageSender().sendMessage(fResponse);
     }
     
     /**

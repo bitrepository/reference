@@ -32,7 +32,7 @@ import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.MockAlarmDispatcher;
 import org.bitrepository.pillar.cache.MemoryCache;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ContributorContext;
 import org.testng.annotations.AfterMethod;
@@ -43,7 +43,7 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
     protected ChecksumPillarMediator mediator;
     protected MockAlarmDispatcher alarmDispatcher;
     protected MockAuditManager audits;
-    protected PillarContext context;
+    protected MessageHandlerContext context;
     protected ChecksumSpecTYPE csSpec;
     protected ChecksumDataForFileTYPE csData;
     protected static String DEFAULT_MD5_CHECKSUM = "1234cccccccc4321";
@@ -54,8 +54,8 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
         audits = new MockAuditManager();
         ContributorContext contributorContext = new ContributorContext(messageBus, componentSettings);
         alarmDispatcher = new MockAlarmDispatcher(contributorContext);
-        context = new PillarContext(componentSettings, messageBus, alarmDispatcher, audits);
-        mediator = new ChecksumPillarMediator(context, cache);
+        context = new MessageHandlerContext(componentSettings, messageBus, alarmDispatcher, audits);
+        mediator = new ChecksumPillarMediator(messageBus, context, cache);
         mediator.start();
 
         csSpec = new ChecksumSpecTYPE();

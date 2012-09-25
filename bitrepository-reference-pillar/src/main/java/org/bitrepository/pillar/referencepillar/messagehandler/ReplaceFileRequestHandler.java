@@ -37,7 +37,7 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.utils.Base16Utils;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.protocol.FileExchange;
@@ -70,7 +70,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
      * @param referenceArchive The archive for the pillar.
      * @param csManager The checksum manager for the pillar.
      */
-    protected ReplaceFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive,
+    protected ReplaceFileRequestHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
             ReferenceChecksumManager csManager) {
         super(context, referenceArchive, csManager);
     }
@@ -196,7 +196,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         responseInfo.setResponseText(responseText);
         
         response.setResponseInfo(responseInfo);
-        getMessageBus().sendMessage(response);
+        getMessageSender().sendMessage(response);
     }
     
     /**
@@ -256,7 +256,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         responseInfo.setResponseText(responseText);
         
         response.setResponseInfo(responseInfo);
-        getMessageBus().sendMessage(response);
+        getMessageSender().sendMessage(response);
     }
     
     /**
@@ -342,7 +342,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         response.setChecksumDataForNewFile(requestedNewChecksum);
         response.setChecksumDataForExistingFile(requestedOldChecksum);
         
-        getMessageBus().sendMessage(response);
+        getMessageSender().sendMessage(response);
     }
     
     /**

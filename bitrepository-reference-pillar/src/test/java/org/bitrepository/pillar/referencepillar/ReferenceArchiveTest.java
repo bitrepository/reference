@@ -30,7 +30,7 @@ import java.util.Arrays;
 
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.MockAlarmDispatcher;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.service.audit.MockAuditManager;
@@ -43,7 +43,7 @@ public class ReferenceArchiveTest extends ReferencePillarTest {
     protected ReferencePillarMediator mediator;
     protected MockAlarmDispatcher alarmDispatcher;
     protected MockAuditManager audits;
-    protected PillarContext context;
+    protected MessageHandlerContext context;
     
     private static String DIR_NAME = "archive-directory";
     private static String FILE_DIR_NAME = DIR_NAME + "/fileDir";

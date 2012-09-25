@@ -37,7 +37,7 @@ import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.utils.Base16Utils;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.protocol.FileExchange;
@@ -61,7 +61,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
      * @param referenceArchive The archive for the pillar.
      * @param csManager The checksum manager for the pillar.
      */
-    protected PutFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive,
+    protected PutFileRequestHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
             ReferenceChecksumManager csManager) {
         super(context, referenceArchive, csManager);
     }
@@ -168,7 +168,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         pResponse.setResponseInfo(prInfo);
         
         log.info("Sending ProgressResponseInfo: " + prInfo);
-        getMessageBus().sendMessage(pResponse);
+        getMessageSender().sendMessage(pResponse);
     }
     
     /**
@@ -246,7 +246,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         
         // Finish by sending final response.
         log.info("Sending PutFileFinalResponse: " + fResponse);
-        getMessageBus().sendMessage(fResponse);
+        getMessageSender().sendMessage(fResponse);
     }
     
     

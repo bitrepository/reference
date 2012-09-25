@@ -31,7 +31,7 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarMessageHandler;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
@@ -52,7 +52,7 @@ public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHand
      * @param referenceArchive The archive for the pillar.
      * @param csManager The checksum manager for the pillar.
      */
-    protected ReferencePillarMessageHandler(PillarContext context, ReferenceArchive referenceArchive,
+    protected ReferencePillarMessageHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
             ReferenceChecksumManager csManager) {
         super(context);
         ArgumentValidator.checkNotNull(referenceArchive, "referenceArchive");

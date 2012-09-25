@@ -121,7 +121,7 @@ public class ActiveMQMessageBus implements MessageBus {
      * @param messageBusConfiguration The properties for the connection.
      */
     public ActiveMQMessageBus(MessageBusConfiguration messageBusConfiguration, SecurityManager securityManager) {
-        log.debug("Initializing ActiveMQConnection to '" + messageBusConfiguration + "'.");
+        log.info("Initializing ActiveMQMessageBus:'" + messageBusConfiguration + "'.");
         this.configuration = messageBusConfiguration;
         this.securityManager = securityManager;
         jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
@@ -209,11 +209,13 @@ public class ActiveMQMessageBus implements MessageBus {
 
     @Override
     public void close() throws JMSException {
+        log.info("Closing message bus: " + configuration);
         connection.close();
     }
 
     @Override
     public void sendMessage(Message content) {
+        log.info("Sending: " + content);
         sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                 content.getCorrelationID(), content);
     }
@@ -391,21 +393,21 @@ public class ActiveMQMessageBus implements MessageBus {
             String text = null;
             String signature = null;
 
-            Object content;
+            Message content;
             try {
                 type = jmsMessage.getStringProperty(MESSAGE_TYPE_KEY);
                 signature = jmsMessage.getStringProperty(MESSAGE_SIGNATURE_KEY);
-                log.info("Adjoining message signature: " + signature);
+                log.debug("Adjoining message signature: " + signature);
                 text = ((TextMessage) jmsMessage).getText();
                 jaxbHelper.validate(new ByteArrayInputStream(text.getBytes()));
-                content = jaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),
+                content = (Message) jaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),
                         new ByteArrayInputStream(text.getBytes()));
                 securityManager.authenticateMessage(text, signature);
-                securityManager.authorizeCertificateUse(((Message) content).getFrom(), text, signature);
+                securityManager.authorizeCertificateUse((content).getFrom(), text, signature);
                 securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature);
-                MessageVersionValidator.validateMessageVersion((Message) content);
-                log.debug("Received message: " + text);
-                threadMessageHandling((Message) content);
+                MessageVersionValidator.validateMessageVersion(content);
+                log.info("Received message: " + text);
+                threadMessageHandling(content);
             } catch (SAXException e) {
                 log.error("Error validating message " + jmsMessage, e);
             } catch (Exception e) {
@@ -434,7 +436,6 @@ public class ActiveMQMessageBus implements MessageBus {
         private Message message;
         
         /**
-         * Constructor.
          * @param listener The MessageListener to handle the message.
          * @param message The message to be handled by the MessageListener.
          */
@@ -445,7 +446,7 @@ public class ActiveMQMessageBus implements MessageBus {
         
         @Override
         public void run() {
-            listener.onMessage((Message) message);
+            listener.onMessage(message);
         }
     }
 }

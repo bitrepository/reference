@@ -35,7 +35,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
      * @param context The context of the message handler.
      * @param refCache The cache for the checksum data.
      */
-    public IdentifyPillarsForPutFileRequestHandler(PillarContext context, ChecksumStore refCache) {
+    public IdentifyPillarsForPutFileRequestHandler(MessageHandlerContext context, ChecksumStore refCache) {
         super(context, refCache);
     }
 
@@ -120,7 +120,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
         reply.setResponseInfo(irInfo);
 
         log.debug("Sending IdentifyPillarsForPutfileResponse: " + reply);
-        getMessageBus().sendMessage(reply);
+        getMessageSender().sendMessage(reply);
     }
     
     /**
@@ -142,7 +142,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
         reply.setResponseInfo(irInfo);
 
         log.debug("Sending IdentifyPillarsForPutfileResponse: " + reply);
-        getMessageBus().sendMessage(reply);
+        getMessageSender().sendMessage(reply);
     }
     
     /**

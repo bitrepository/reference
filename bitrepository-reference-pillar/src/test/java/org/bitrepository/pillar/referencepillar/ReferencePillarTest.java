@@ -30,7 +30,7 @@ import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.MockAlarmDispatcher;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.cache.MemoryCache;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
@@ -48,7 +48,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     protected MockAlarmDispatcher alarmDispatcher;
     protected MockAuditManager audits;
     protected ChecksumStore csCache;
-    protected PillarContext context;
+    protected MessageHandlerContext context;
     
     protected final String EMPTY_FILE_CHECKSUM = "d41d8cd98f00b204e9800998ecf8427e";
 
@@ -66,10 +66,10 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
         audits = new MockAuditManager();
         ContributorContext contributorContext = new ContributorContext(messageBus, componentSettings);
         alarmDispatcher = new MockAlarmDispatcher(contributorContext);
-        context = new PillarContext(componentSettings, messageBus, alarmDispatcher, audits);
+        context = new MessageHandlerContext(componentSettings, messageBus, alarmDispatcher, audits);
         csManager = new ReferenceChecksumManager(archive, csCache, ChecksumUtils.getDefault(context.getSettings()), 
                 3600000L);
-        mediator = new ReferencePillarMediator(context, archive, csManager);
+        mediator = new ReferencePillarMediator(messageBus, context, archive, csManager);
         mediator.start();
     }
 

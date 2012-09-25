@@ -34,7 +34,7 @@ import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.Base16Utils;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.IllegalOperationException;
@@ -55,7 +55,7 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
      * @param referenceArchive The archive for the pillar.
      * @param csManager The checksum manager for the pillar.
      */
-    protected DeleteFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive,
+    protected DeleteFileRequestHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
             ReferenceChecksumManager csManager) {
         super(context, referenceArchive, csManager);
     }
@@ -153,7 +153,7 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
         pResponse.setResponseInfo(prInfo);
 
         // Send the ProgressResponse
-        getMessageBus().sendMessage(pResponse);
+        getMessageSender().sendMessage(pResponse);
     }
     
     /**
@@ -200,7 +200,7 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
         fResponse.setResponseInfo(frInfo);
 
         // send the FinalResponse.
-        getMessageBus().sendMessage(fResponse);
+        getMessageSender().sendMessage(fResponse);
     }
     
     /**

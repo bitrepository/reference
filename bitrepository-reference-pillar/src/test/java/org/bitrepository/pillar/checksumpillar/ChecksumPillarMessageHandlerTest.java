@@ -24,7 +24,7 @@ package org.bitrepository.pillar.checksumpillar;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMessageHandler;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -64,7 +64,7 @@ public class ChecksumPillarMessageHandlerTest extends ChecksumPillarTest {
 
     private class MockChecksumMessageHandler extends ChecksumPillarMessageHandler<MessageResponse> {
 
-        protected MockChecksumMessageHandler(PillarContext context, ChecksumStore refCache) {
+        protected MockChecksumMessageHandler(MessageHandlerContext context, ChecksumStore refCache) {
             super(context, refCache);
         }
 

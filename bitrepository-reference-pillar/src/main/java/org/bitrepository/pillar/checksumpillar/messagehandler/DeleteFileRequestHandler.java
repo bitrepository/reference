@@ -38,7 +38,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ResponseInfoUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -57,7 +57,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
      * @param context The context of the message handler.
      * @param refCache The cache for the checksum data.
      */
-    public DeleteFileRequestHandler(PillarContext context, ChecksumStore refCache) {
+    public DeleteFileRequestHandler(MessageHandlerContext context, ChecksumStore refCache) {
         super(context, refCache);
     }
     
@@ -139,7 +139,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
     protected void sendProgressMessage(DeleteFileRequest message) {
         DeleteFileProgressResponse pResponse = createDeleteFileProgressResponse(message);
         pResponse.setResponseInfo(ResponseInfoUtils.getInitialProgressResponse());
-        getMessageBus().sendMessage(pResponse);
+        getMessageSender().sendMessage(pResponse);
     }
     
     /**
@@ -189,7 +189,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
         fResponse.setResponseInfo(frInfo);
 
         // send the FinalResponse.
-        getMessageBus().sendMessage(fResponse);
+        getMessageSender().sendMessage(fResponse);
     }
     
     /**

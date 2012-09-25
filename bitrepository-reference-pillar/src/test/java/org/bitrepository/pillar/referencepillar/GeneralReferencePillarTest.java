@@ -29,7 +29,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.Base16Utils;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMessageHandler;
@@ -74,7 +74,7 @@ public class GeneralReferencePillarTest extends ReferencePillarTest {
     
     private class MockRequestHandler extends ReferencePillarMessageHandler<MessageRequest> {
 
-        protected MockRequestHandler(PillarContext context, ReferenceArchive referenceArchive, 
+        protected MockRequestHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
                 ReferenceChecksumManager manager) {
             super(context, referenceArchive, manager);
         }

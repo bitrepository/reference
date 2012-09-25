@@ -31,7 +31,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.IdentifyContributorException;
@@ -54,7 +54,7 @@ public class IdentifyPillarsForPutFileRequestHandler
      * @param referenceArchive The archive for the pillar.
      * @param csManager The checksum manager for the pillar.
      */
-    protected IdentifyPillarsForPutFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive,
+    protected IdentifyPillarsForPutFileRequestHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
             ReferenceChecksumManager csManager) {
         super(context, referenceArchive, csManager);
     }
@@ -145,7 +145,7 @@ public class IdentifyPillarsForPutFileRequestHandler
         reply.setResponseInfo(irInfo);
 
         log.debug("Sending IdentifyPillarsForPutfileResponse: " + reply);
-        getMessageBus().sendMessage(reply);
+        getMessageSender().sendMessage(reply);
     }
     
     /**
@@ -168,7 +168,7 @@ public class IdentifyPillarsForPutFileRequestHandler
         reply.setResponseInfo(irInfo);
 
         log.debug("Sending IdentifyPillarsForPutfileResponse: " + reply);
-        getMessageBus().sendMessage(reply);
+        getMessageSender().sendMessage(reply);
     }
     
     /**

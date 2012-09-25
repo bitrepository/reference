@@ -32,7 +32,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRespo
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.cache.ChecksumStore;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
@@ -51,7 +51,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
      * @param context The context of the message handler.
      * @param refCache The cache for the checksum data.
      */
-    public IdentifyPillarsForGetFileIDsRequestHandler(PillarContext context, ChecksumStore refCache) {
+    public IdentifyPillarsForGetFileIDsRequestHandler(MessageHandlerContext context, ChecksumStore refCache) {
         super(context, refCache);
     }
     
@@ -113,7 +113,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
         reply.setResponseInfo(irInfo);
         
         // Send resulting file.
-        getMessageBus().sendMessage(reply);
+        getMessageSender().sendMessage(reply);
     }
     
     /**

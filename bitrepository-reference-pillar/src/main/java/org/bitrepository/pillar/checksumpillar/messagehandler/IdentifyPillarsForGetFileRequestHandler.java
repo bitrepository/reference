@@ -31,7 +31,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.cache.ChecksumStore;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 
@@ -44,7 +44,7 @@ public class IdentifyPillarsForGetFileRequestHandler extends ChecksumPillarMessa
      * @param context The context of the message handler.
      * @param refCache The cache for the checksum data.
      */
-    public IdentifyPillarsForGetFileRequestHandler(PillarContext context, ChecksumStore refCache) {
+    public IdentifyPillarsForGetFileRequestHandler(MessageHandlerContext context, ChecksumStore refCache) {
         super(context, refCache);
     }
     

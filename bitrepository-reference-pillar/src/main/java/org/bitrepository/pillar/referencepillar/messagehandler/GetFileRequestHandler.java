@@ -40,7 +40,7 @@ import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.protocol.FileExchange;
@@ -62,7 +62,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      * @param referenceArchive The archive for the pillar.
      * @param csManager The checksum manager for the pillar.
      */
-    protected GetFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive,
+    protected GetFileRequestHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
             ReferenceChecksumManager csManager) {
         super(context, referenceArchive, csManager);
     }
@@ -126,7 +126,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
 
         // Send the ProgressResponse
         log.info("Sending GetFileProgressResponse: " + pResponse);
-        getMessageBus().sendMessage(pResponse);
+        getMessageSender().sendMessage(pResponse);
     } 
 
     /**
@@ -201,7 +201,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
 
         // send the FinalResponse.
         log.info("Sending GetFileFinalResponse: " + fResponse);
-        getMessageBus().sendMessage(fResponse);
+        getMessageSender().sendMessage(fResponse);
     }
     
     /**

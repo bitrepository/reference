@@ -25,12 +25,11 @@
 package org.bitrepository.pillar.common;
 
 import java.math.BigInteger;
-
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.protocol.ProtocolVersionLoader;
-import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageSender;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.handler.AbstractRequestHandler;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -54,20 +53,16 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
     protected static final String RESPONSE_FOR_POSITIVE_IDENTIFICATION = "Operation acknowledged and accepted.";
     
     /** The context for the message handler.*/
-    private final PillarContext context;
+    private final MessageHandlerContext context;
     /** The file id validator for validating the file id.*/
     private final FileIDValidator fileIdValidator;
     
     /**
-     * Constructor. 
-     * @param settings The settings for handling the message.
-     * @param messageBus The bus for communication.
-     * @param alarmDispatcher The dispatcher of alarms.
-     * @param referenceArchive The archive for the data.
+     * @param context The context to use for message handling.
      */
-    protected PillarMessageHandler(PillarContext context) {
+    protected PillarMessageHandler(MessageHandlerContext context) {
         super(context.getMediatorContext());
-        ArgumentValidator.checkNotNull(context, "PillarContext context");
+        ArgumentValidator.checkNotNull(context, "MessageHandlerContext context");
         this.context = context;
         this.fileIdValidator = new FileIDValidator(context.getSettings());
     }
@@ -75,7 +70,7 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
     /**
      * @return The messagebus for this message handler.
      */
-    protected MessageBus getMessageBus() {
+    protected MessageSender getMessageSender() {
         return context.getMessageBus();
     }
 

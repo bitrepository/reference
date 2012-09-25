@@ -34,7 +34,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReq
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.IdentifyContributorException;
@@ -50,7 +50,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
      * @param referenceArchive The archive for the pillar.
      * @param csManager The checksum manager for the pillar.
      */
-    protected IdentifyPillarsForGetChecksumsRequestHandler(PillarContext context, ReferenceArchive referenceArchive,
+    protected IdentifyPillarsForGetChecksumsRequestHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
             ReferenceChecksumManager csManager) {
         super(context, referenceArchive, csManager);
     }
@@ -118,7 +118,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         reply.setResponseInfo(irInfo);
         
         // Send resulting file.
-        getMessageBus().sendMessage(reply);
+        getMessageSender().sendMessage(reply);
     }
     
     /**

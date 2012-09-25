@@ -23,55 +23,55 @@ package org.bitrepository.pillar.common;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageSender;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorContext;
 
 /**
  * Container for the context of the pillar, e.g. all the components needed for the message handling.
  */
-public class PillarContext {
+public class MessageHandlerContext {
     /** The message bus.*/
-    private final MessageBus messageBus;
+    private final MessageSender messageDispatcher;
     /** The alarm dispatcher.*/
     private final PillarAlarmDispatcher alarmDispatcher;
     /** The audit trail manager.*/
     private final AuditTrailManager auditTrailManager;
     /** The mediator context.*/
     private final ContributorContext mediatorContext;
-    
+
     /**
      * Constructor.
      * @param settings The settings.
-     * @param messageBus The message bus.
+     * @param messageDispatcher The message bus.
      * @param alarmDispatcher The alarm dispatcher.
      * @param auditTrailManager The audit trial manager.
      */
-    public PillarContext(Settings settings, MessageBus messageBus, PillarAlarmDispatcher alarmDispatcher, 
-            AuditTrailManager auditTrailManager) {
+    public MessageHandlerContext(Settings settings, MessageSender messageDispatcher, PillarAlarmDispatcher alarmDispatcher,
+                                 AuditTrailManager auditTrailManager) {
         ArgumentValidator.checkNotNull(settings, "settings");
-        ArgumentValidator.checkNotNull(messageBus, "messageBus");
+        ArgumentValidator.checkNotNull(messageDispatcher, "messageDispatcher");
         ArgumentValidator.checkNotNull(alarmDispatcher, "AlarmDispatcher");
         ArgumentValidator.checkNotNull(auditTrailManager, "AuditTrailManager");
-        
-        mediatorContext = new ContributorContext(messageBus, settings);
-        this.messageBus = messageBus;
+
+        mediatorContext = new ContributorContext(messageDispatcher, settings);
+        this.messageDispatcher = messageDispatcher;
         this.alarmDispatcher = alarmDispatcher;
         this.auditTrailManager = auditTrailManager;
     }
-    
+
     /**
      * @return The mediator context.
      */
     public ContributorContext getMediatorContext() {
         return mediatorContext;
     }
-    
+
     /**
      * @return The message bus for this context.
      */
-    public MessageBus getMessageBus() {
-        return messageBus;
+    public MessageSender getMessageBus() {
+        return messageDispatcher;
     }
     
     /**

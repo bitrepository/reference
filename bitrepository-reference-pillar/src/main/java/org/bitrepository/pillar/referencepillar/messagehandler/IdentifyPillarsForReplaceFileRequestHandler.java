@@ -32,7 +32,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequ
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
-import org.bitrepository.pillar.common.PillarContext;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.IdentifyContributorException;
@@ -53,7 +53,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
      * @param referenceArchive The archive for the pillar.
      * @param csManager The checksum manager for the pillar.
      */
-    protected IdentifyPillarsForReplaceFileRequestHandler(PillarContext context, ReferenceArchive referenceArchive,
+    protected IdentifyPillarsForReplaceFileRequestHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
             ReferenceChecksumManager csManager) {
         super(context, referenceArchive, csManager);
     }
@@ -135,7 +135,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
         irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
         reply.setResponseInfo(irInfo);
         
-        getMessageBus().sendMessage(reply);
+        getMessageSender().sendMessage(reply);
     }
     
     /**

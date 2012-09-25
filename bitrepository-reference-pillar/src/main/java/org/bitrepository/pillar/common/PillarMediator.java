@@ -28,6 +28,7 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.contributor.AbstractContributorMediator;
 import org.bitrepository.service.contributor.ContributorContext;
 import org.bitrepository.service.contributor.handler.RequestHandler;
@@ -46,14 +47,14 @@ public abstract class PillarMediator extends AbstractContributorMediator {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /** The context for the mediator.*/
-    private final PillarContext context;
+    private final MessageHandlerContext context;
 
     /**
      * Constructor.
      * Sets the parameters of this mediator, and adds itself as a listener to the destinations.
      */
-    public PillarMediator(PillarContext context) {
-        super(context.getMessageBus());
+    public PillarMediator(MessageBus messageBus, MessageHandlerContext context) {
+        super(messageBus);
 
         this.context = context;
     }
@@ -98,7 +99,7 @@ public abstract class PillarMediator extends AbstractContributorMediator {
     /**
      * @return The pillar context.
      */
-    protected PillarContext getPillarContext() {
+    protected MessageHandlerContext getPillarContext() {
         return context;
     }
     
