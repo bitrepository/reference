@@ -87,7 +87,7 @@ public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
     public void checksumPillarGetFileOperation() throws Exception {
         addDescription("Tests that the ChecksumPillar rejects a GetFile operation.");
         addStep("Setting up the variables for the test.", "Should be instantiated.");
-        String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
+        String DELIVERY_ADDRESS = httpServer.getURL("test.txt").toExternalForm();
         FilePart filePart = null;
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String auditTrail = "GET-FILE-TEST";
@@ -98,8 +98,8 @@ public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
         
         addStep("Create and send the GetFile request message.", 
                 "Should be received and handled by the pillar.");
-        GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, msgFactory.getNewCorrelationID(), 
-                FILE_ADDRESS, FILE_ID, filePart, getPillarID(), pillarId, clientDestinationId, pillarDestinationId);
+        GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, msgFactory.getNewCorrelationID(),
+                DELIVERY_ADDRESS, FILE_ID, filePart, getPillarID(), pillarId, clientDestinationId, pillarDestinationId);
         messageBus.sendMessage(getRequest);
         
         addStep("Retrieve and validate the final response from the checksum pillar.", 

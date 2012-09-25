@@ -26,14 +26,12 @@ package org.bitrepository.access.getfile.conversation;
 
 import java.util.Collection;
 import java.util.HashSet;
-import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
-import org.bitrepository.client.eventhandler.ContributorEvent;
-import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.client.eventhandler.ContributorCompleteEvent;
 
 /**
  * Models the behavior of a GetFile conversation during the file exchange phase. That is, it begins with the sending of
@@ -73,11 +71,7 @@ class GettingFile extends PerformingOperationState {
 
     @Override
     protected void generateContributorCompleteEvent(MessageResponse msg) {
-        GetFileFinalResponse response = (GetFileFinalResponse) msg;
-        getContext().getMonitor().contributorComplete(
-                new ContributorEvent(OperationEventType.COMPONENT_COMPLETE,
-                        "Finished getting file " + response.getFileID(),response.getFrom(), response.getCorrelationID()));
-
+        getContext().getMonitor().contributorComplete(new ContributorCompleteEvent(msg.getFrom()));
     }
 
     @Override

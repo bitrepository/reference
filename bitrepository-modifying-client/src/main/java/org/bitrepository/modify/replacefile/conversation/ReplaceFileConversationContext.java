@@ -31,6 +31,7 @@ import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.protocolversiondefinition.OperationType;
 
 public class ReplaceFileConversationContext extends ConversationContext {
     private final BigInteger sizeOfNewFile;
@@ -45,7 +46,7 @@ public class ReplaceFileConversationContext extends ConversationContext {
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile, 
             Settings settings, MessageSender messageSender, String clientID, Collection<String> contributors,
             EventHandler eventHandler,String auditTrailInformation) {
-        super(settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
+        super(OperationType.REPLACE_FILE, settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
         this.urlForFile = urlForFile;
         this.sizeOfNewFile = new BigInteger(Long.toString(sizeOfNewFile));
         this.checksumForDeleteAtPillar = checksumForDeleteAtPillar;

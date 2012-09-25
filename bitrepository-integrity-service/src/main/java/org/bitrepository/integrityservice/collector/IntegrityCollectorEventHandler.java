@@ -69,12 +69,12 @@ public class IntegrityCollectorEventHandler implements EventHandler {
     
     @Override
     public void handleEvent(OperationEvent event) {
-        if(event.getType() == OperationEventType.COMPONENT_COMPLETE) {
+        if(event.getEventType() == OperationEventType.COMPONENT_COMPLETE) {
             handleResult(event);
-        } else if(event.getType() == OperationEventType.COMPLETE) {
+        } else if(event.getEventType() == OperationEventType.COMPLETE) {
             log.debug("Complete: " + event.toString());
             finalEventQueue.add(event);
-        } else if(event.getType() == OperationEventType.FAILED) {
+        } else if(event.getEventType() == OperationEventType.FAILED) {
             log.warn("Failure: " + event.toString());
             alerter.operationFailed("Failed integrity operation: " + event.toString());
             finalEventQueue.add(event);

@@ -54,7 +54,7 @@ public class GetStatusEventHandler implements EventHandler {
     public void handleEvent(OperationEvent event) {
         log.debug("Got event: " + event);
         
-        switch(event.getType()) {
+        switch(event.getEventType()) {
             case COMPONENT_COMPLETE:
                 StatusCompleteContributorEvent statusEvent = (StatusCompleteContributorEvent) event; 
                 statusStore.updateStatus(statusEvent.getContributorID(), statusEvent.getStatus());

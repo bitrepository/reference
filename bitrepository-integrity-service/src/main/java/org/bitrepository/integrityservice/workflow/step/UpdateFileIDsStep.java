@@ -56,7 +56,7 @@ public class UpdateFileIDsStep implements WorkflowStep {
      * @param collector The client for collecting the checksums.
      * @param store The storage for the integrity data.
      * @param alerter The alerter for sending failures.
-     * @param pillarIds The ids of the pillars to collect the file ids from.
+     * @param settings The settings to use.
      */
     public UpdateFileIDsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
             Settings settings) {

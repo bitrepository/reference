@@ -64,8 +64,6 @@ public class HTTPFileExchange implements FileExchange {
     
     /**
      * Initialise HTTP file exchange.
-     *
-     * @param configuration The configuration for file exchange.
      */
     public HTTPFileExchange() {
     }

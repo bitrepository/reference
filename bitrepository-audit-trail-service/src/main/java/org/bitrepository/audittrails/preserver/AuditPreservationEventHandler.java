@@ -59,8 +59,8 @@ public class AuditPreservationEventHandler implements EventHandler {
     
     @Override
     public void handleEvent(OperationEvent event) {
-        if(event.getType() == OperationEventType.COMPLETE
-                || event.getType() == OperationEventType.COMPONENT_COMPLETE) {
+        if(event.getEventType() == OperationEventType.COMPLETE
+                || event.getEventType() == OperationEventType.COMPONENT_COMPLETE) {
             updateStoreWithResults();
         } else {
             log.debug("Event for preservation of audit trails: " + event.toString());

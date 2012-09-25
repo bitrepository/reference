@@ -24,10 +24,14 @@ package org.bitrepository.audittrails.collector;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.audittrails.MockAuditClient;
 import org.bitrepository.audittrails.MockAuditStore;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
+import org.bitrepository.client.eventhandler.CompleteEvent;
+import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.DefaultEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.jaccept.structure.ExtendedTestCase;
@@ -93,14 +97,15 @@ public class AuditCollectorTest extends ExtendedTestCase {
                 "In the case of a AuditTrailResult it should make a call for the store.");
         EventHandler eventHandler = client.getLatestEventHandler();
 
-        eventHandler.handleEvent(new DefaultEvent(OperationEventType.COMPONENT_FAILED, info));
-        eventHandler.handleEvent(new DefaultEvent(OperationEventType.FAILED, info));
-        eventHandler.handleEvent(new DefaultEvent(OperationEventType.IDENTIFY_TIMEOUT, info));
-        eventHandler.handleEvent(new DefaultEvent(OperationEventType.NO_COMPONENT_FOUND, info));        
-        eventHandler.handleEvent(new DefaultEvent(OperationEventType.COMPLETE, info));
+        eventHandler.handleEvent(new ContributorFailedEvent("ContributorID", ResponseCode.REQUEST_NOT_SUPPORTED));
+        eventHandler.handleEvent(new OperationFailedEvent(info, null));
+        DefaultEvent identificationTimeoutEvent = new DefaultEvent();
+        identificationTimeoutEvent.setType(OperationEventType.IDENTIFY_TIMEOUT);
+        eventHandler.handleEvent(identificationTimeoutEvent);
+        eventHandler.handleEvent(new CompleteEvent(null));
 
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
-        AuditTrailResult result = new AuditTrailResult(info, pillarID, new ResultingAuditTrails());
+        AuditTrailResult result = new AuditTrailResult(pillarID, new ResultingAuditTrails());
         eventHandler.handleEvent(result);
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 1);
     }    

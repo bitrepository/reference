@@ -29,15 +29,14 @@ import java.util.List;
 /**
  * Event for a specific contributor.
  */
-public class ContributorsIdentifiedEvent extends AbstractOperationEvent {
+public class IdentificationCompleteEvent extends AbstractOperationEvent {
     private final List<String> contributorIDs;
 
     /**
      * @param contributorIDs The lis of IDs of the contributor this event relates to.
-     * @param conversationID The ID of the conversation, which caused this event.
      */
-    public ContributorsIdentifiedEvent(List<String> contributorIDs, String conversationID) {
-        super(OperationEventType.IDENTIFICATION_COMPLETE, "", conversationID);
+    public IdentificationCompleteEvent(List<String> contributorIDs) {
+        setType(OperationEventType.IDENTIFICATION_COMPLETE);
         this.contributorIDs = contributorIDs;
     }
 

@@ -58,11 +58,10 @@ public class ReplacingFile extends PerformingOperationState {
     protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
         ReplaceFileFinalResponse response = (ReplaceFileFinalResponse) msg;
         getContext().getMonitor().contributorComplete(new ReplaceFileCompletePillarEvent(
-                response.getChecksumDataForExistingFile(),
-                response.getChecksumDataForNewFile(),
                 response.getPillarID(),
-                "Received replace file result from " + response.getPillarID(),
-                response.getCorrelationID()));
+                response.getChecksumDataForExistingFile(),
+                response.getChecksumDataForNewFile()
+                ));
     }
 
     @Override

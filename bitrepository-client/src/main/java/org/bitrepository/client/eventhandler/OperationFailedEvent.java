@@ -37,19 +37,11 @@ public class OperationFailedEvent extends AbstractOperationEvent {
      * @param info See {@link #getInfo()}
      * @param componentResults The aggregated list of <code>COMPONENT_COMPLETE</code> events generated during
      *                         the operation.
-     * @param conversationID See {@link #getConversationID()}
      */
-    public OperationFailedEvent(String info, List<ContributorEvent> componentResults, String conversationID) {
-        super(OperationEventType.FAILED, info, conversationID);
+    public OperationFailedEvent(String info, List<ContributorEvent> componentResults) {
+        setType(OperationEventType.FAILED);
+        setInfo(info);
         this.componentResults = componentResults;
-    }
-
-    /**
-     * Constructor when no component result are available.
-     * @param info Message describing the failure.
-     */
-    public OperationFailedEvent(String info, String conversationID) {
-        this(info, null, conversationID);
     }
 
     /**

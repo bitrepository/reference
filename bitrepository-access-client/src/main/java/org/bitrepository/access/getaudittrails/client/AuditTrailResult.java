@@ -22,21 +22,17 @@
 package org.bitrepository.access.getaudittrails.client;
 
 import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
-import org.bitrepository.client.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.ContributorCompleteEvent;
 
 /**
  * Returns the result of a Audit Trail final response.
  */
-public class AuditTrailResult extends ContributorEvent {
+public class AuditTrailResult extends ContributorCompleteEvent {
     private final ResultingAuditTrails auditTrailEvents;
 
-    public AuditTrailResult(String info, String pillarID, ResultingAuditTrails auditTrailEvents, String conversationID) {
-        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID, conversationID);
+    public AuditTrailResult(String pillarID, ResultingAuditTrails auditTrailEvents) {
+        super(pillarID);
         this.auditTrailEvents = auditTrailEvents;
-    }
-
-    public AuditTrailResult(String info, String pillarID, ResultingAuditTrails auditTrailEvents) {
-        this(info, pillarID, auditTrailEvents, null);
     }
 
     /**

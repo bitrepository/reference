@@ -45,7 +45,7 @@ public class GetFileEventHandler implements EventHandler {
     @Override
     public void handleEvent(OperationEvent event) {
         logger.handleEvent(event);
-        switch(event.getType()) {
+        switch(event.getEventType()) {
         case IDENTIFY_REQUEST_SENT:
             break;
         case COMPONENT_IDENTIFIED:
@@ -64,8 +64,6 @@ public class GetFileEventHandler implements EventHandler {
         case COMPONENT_FAILED:
             break;
         case FAILED:
-            break;
-        case NO_COMPONENT_FOUND:
             break;
         case IDENTIFY_TIMEOUT: 
             break;

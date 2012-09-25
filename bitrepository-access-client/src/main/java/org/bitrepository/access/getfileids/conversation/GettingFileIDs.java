@@ -74,8 +74,7 @@ public class GettingFileIDs extends PerformingOperationState {
     protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
         GetFileIDsFinalResponse response = (GetFileIDsFinalResponse)msg;
         getContext().getMonitor().contributorComplete(
-                new FileIDsCompletePillarEvent(response.getResultingFileIDs(), response.getFrom(),
-                        "FileIDs received from " + response.getFrom(), response.getCorrelationID()));
+                new FileIDsCompletePillarEvent(response.getFrom(), response.getResultingFileIDs()));
 
     }
 

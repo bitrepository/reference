@@ -27,6 +27,7 @@ import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.protocolversiondefinition.OperationType;
 
 /**
  * models the conversation context for the {@link org.bitrepository.access.getaudittrails.AuditTrailClient}
@@ -42,7 +43,7 @@ public class AuditTrailConversationContext extends ConversationContext {
             AuditTrailQuery[] componentQueries, String fileID, String urlForResult, Settings settings,
             MessageSender messageSender, String clientID, Collection<String> contributors, EventHandler eventHandler,
             String auditTrailInformation) {
-        super(settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
+        super(OperationType.GET_AUDIT_TRAILS, settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
         this.componentQueries = componentQueries;
         this.urlForResult = urlForResult;
     }

@@ -67,9 +67,9 @@ public class BlockingPutFileClient {
         client.putFile(url, fileId, sizeOfFile, checksumForValidationAtPillar, checksumRequestsForValidation,
                 blocker, auditTrailInformation);
         OperationEvent finishEvent = blocker.awaitFinished();
-        if(finishEvent.getType() == OperationEvent.OperationEventType.COMPLETE) {
+        if(finishEvent.getEventType() == OperationEvent.OperationEventType.COMPLETE) {
             return blocker.getResults();
-        } else if (finishEvent.getType() == OperationEvent.OperationEventType.FAILED) {
+        } else if (finishEvent.getEventType() == OperationEvent.OperationEventType.FAILED) {
             throw new NegativeArraySizeException(finishEvent.getInfo());
         } else throw new RuntimeException("Received unexpected event type" + finishEvent);
     }

@@ -85,7 +85,7 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
     
     protected void initializeCacheWithMD5ChecksummedFile() {
         addFixtureSetup("Initialize the Checksum pillar cache with the default file checksum.");
-        
+
         cache.insertChecksumCalculation(DEFAULT_FILE_ID, DEFAULT_MD5_CHECKSUM, new Date());
     }
 }

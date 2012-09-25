@@ -27,6 +27,7 @@ import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.protocolversiondefinition.OperationType;
 
 public class GetFileIDsConversationContext extends ConversationContext {
     private final URL urlForResult;
@@ -34,7 +35,7 @@ public class GetFileIDsConversationContext extends ConversationContext {
     public GetFileIDsConversationContext(String fileID, URL urlForResult,
             Settings settings, MessageSender messageSender, String clientID, Collection<String> contributors,
             EventHandler eventHandler) {
-        super(settings, messageSender, clientID, fileID, contributors, eventHandler, null);
+        super(OperationType.GET_FILE_I_DS, settings, messageSender, clientID, fileID, contributors, eventHandler, null);
         this.urlForResult = urlForResult;
     }
 

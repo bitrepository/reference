@@ -118,7 +118,7 @@ public class GetFile {
         System.out.println("Results of the GetFile operation for the file '"
                 + cmdHandler.getOptionValue(Constants.FILE_ARG) + "'" 
                 + ": " + finalEvent);
-        if(finalEvent.getType() == OperationEventType.COMPLETE) {
+        if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
             downloadFile();
             System.exit(0);
         } else {

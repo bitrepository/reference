@@ -46,10 +46,7 @@ public class GettingStatus extends PerformingOperationState {
     protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
         GetStatusFinalResponse response = (GetStatusFinalResponse) msg;
         getContext().getMonitor().contributorComplete(
-                new StatusCompleteContributorEvent(
-                        "Received status result from " + response.getContributor(),
-                        response.getContributor(), response.getResultingStatus(),
-                        getContext().getConversationID()));
+                new StatusCompleteContributorEvent(msg.getFrom(), response.getResultingStatus()));
     }
 
     @Override

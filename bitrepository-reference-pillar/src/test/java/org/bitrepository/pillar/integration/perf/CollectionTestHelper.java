@@ -74,14 +74,14 @@ public class CollectionTestHelper {
                 pillarIDs, null, null, new EventHandler() {
             @Override
             public void handleEvent(OperationEvent event) {
-                if (event.getType().equals(OperationEvent.OperationEventType.COMPONENT_COMPLETE)) {
+                if (event.getEventType().equals(OperationEvent.OperationEventType.COMPONENT_COMPLETE)) {
                     FileIDsCompletePillarEvent result = (FileIDsCompletePillarEvent) event;
-                    Assert.assertEquals(event.getType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
+                    Assert.assertEquals(event.getEventType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
                     ResultingFileIDs resFileIDs = result.getFileIDs();
                     deleteAllFilesOnPillar(
                             resFileIDs.getFileIDsData().getFileIDsDataItems().getFileIDsDataItem(),
                             result.getContributorID());
-                } else if (event.getType().equals(OperationEvent.OperationEventType.FAILED)) {
+                } else if (event.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
                     throw new RuntimeException("Unable to clean repository, " + event.getInfo());
                 }
             }

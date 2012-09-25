@@ -123,7 +123,7 @@ public class DeleteFile {
         System.out.println("Results of the DeleteFile operation for the file '"
                 + cmdHandler.getOptionValue(Constants.FILE_ARG) + "'" 
                 + ": " + finalEvent);
-        if(finalEvent.getType() == OperationEventType.COMPLETE) {
+        if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
             System.exit(0);
         } else {
             System.exit(-1);

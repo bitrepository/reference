@@ -31,6 +31,7 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
+import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.messagefactories.GetFileIDsMessageFactory;
 import org.testng.Assert;
@@ -44,27 +45,22 @@ import java.util.Date;
  * Tests the PutFile functionality on the ReferencePillar.
  */
 public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
-    GetFileIDsMessageFactory msgFactory;
-    static final FileIDs allFileIDs = new FileIDs();
-    static {
-        allFileIDs.setAllFileIDs("true");        
-    }
-
+    private GetFileIDsMessageFactory msgFactory;
+    private String DELIVERY_ADDRESS;
 
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetFileIDsOnReferencePillarTest() throws Exception {
         msgFactory = new GetFileIDsMessageFactory(componentSettings);
+
+        DELIVERY_ADDRESS = httpServer.getURL("test.txt").toExternalForm();
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
     public void pillarGetFileIDsTestSuccessCase() throws Exception {
         addDescription("Tests the GetFileIDs functionality of the reference pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_IDS_DELIVERY_ADDRESS = null;
-        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        FileIDs fileids = new FileIDs();
-        fileids.setFileID(FILE_ID);
+        FileIDs fileids = FileIDsUtils.createFileIDs(DEFAULT_FILE_ID);
         String auditTrail = null;
         
         addStep("Move the test file into the file directory.", "Should be all-right");
@@ -74,7 +70,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
         File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
-        FileUtils.copyFile(testfile, new File(dir, FILE_ID));
+        FileUtils.copyFile(testfile, new File(dir, DEFAULT_FILE_ID));
         
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
@@ -89,7 +85,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertEquals(receivedIdentifyResponse, 
                 msgFactory.createIdentifyPillarsForGetFileIDsResponse(
                         identifyRequest.getCorrelationID(),
-                        fileids, 
+                        fileids,
                         pillarId,
                         receivedIdentifyResponse.getReplyTo(),
                         receivedIdentifyResponse.getResponseInfo(),
@@ -102,7 +98,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
                 "Should be received and handled by the pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
                 auditTrail, receivedIdentifyResponse.getCorrelationID(), fileids, getPillarID(), pillarId, 
-                clientDestinationId, FILE_IDS_DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
+                clientDestinationId, null, receivedIdentifyResponse.getReplyTo());
         messageBus.sendMessage(getFileIDsRequest);
         
         addStep("Retrieve the ProgressResponse for the GetFileIDs request", 
@@ -115,7 +111,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
                         pillarId, 
                         progressResponse.getReplyTo(), 
                         progressResponse.getResponseInfo(), 
-                        FILE_IDS_DELIVERY_ADDRESS,
+                        null,
                         progressResponse.getTo()));
         
         addStep("Retrieve the FinalResponse for the GetFileIDs request", 
@@ -132,8 +128,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
                         finalResponse.getResponseInfo(), 
                         finalResponse.getResultingFileIDs(),
                         finalResponse.getTo()));
-        
-        Assert.assertEquals(finalResponse.getResultingFileIDs().getResultAddress(), FILE_IDS_DELIVERY_ADDRESS);
+
         Assert.assertEquals(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size(), 1);        
         Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
         Assert.assertEquals(audits.getCallsForAuditEvent(), 0, "Should not deliver audits.");
@@ -143,10 +138,8 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFileIDsTestSuccessCaseAllFilesAndURL() throws Exception {
         addDescription("Tests the GetFileIDs functionality of the reference pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_IDS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" + getTopicPostfix();
-        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        FileIDs fileids = new FileIDs();
+        FileIDs fileids = FileIDsUtils.getAllFileIDs();
         fileids.setAllFileIDs("true");
         String auditTrail = null;
         
@@ -157,7 +150,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
         File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
-        FileUtils.copyFile(testfile, new File(dir, FILE_ID));
+        FileUtils.copyFile(testfile, new File(dir, DEFAULT_FILE_ID));
         
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
@@ -185,7 +178,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
                 "Should be received and handled by the pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
                 auditTrail, receivedIdentifyResponse.getCorrelationID(), fileids, getPillarID(), pillarId, 
-                clientDestinationId, FILE_IDS_DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
+                clientDestinationId, DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
         messageBus.sendMessage(getFileIDsRequest);
         
         addStep("Retrieve the ProgressResponse for the GetFileIDs request", 
@@ -198,7 +191,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
                         pillarId, 
                         progressResponse.getReplyTo(), 
                         progressResponse.getResponseInfo(), 
-                        FILE_IDS_DELIVERY_ADDRESS,
+                        DELIVERY_ADDRESS,
                         progressResponse.getTo()));
         
         addStep("Retrieve the FinalResponse for the GetFileIDs request", 
@@ -216,7 +209,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
                         finalResponse.getResultingFileIDs(),
                         finalResponse.getTo()));
         
-        Assert.assertEquals(finalResponse.getResultingFileIDs().getResultAddress(), FILE_IDS_DELIVERY_ADDRESS);
+        Assert.assertEquals(finalResponse.getResultingFileIDs().getResultAddress(), DELIVERY_ADDRESS);
         Assert.assertNull(finalResponse.getResultingFileIDs().getFileIDsData(), "Results should be delivered through URL");        
     }
     
@@ -258,7 +251,6 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
         addDescription("Tests that the ReferencePillar is able to reject a GetFileIDs requests for a file, " +
                 "which it does not have. But this time at the GetFileIDs message.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_IDS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" + getTopicPostfix();
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         FileIDs fileids = new FileIDs();
@@ -290,7 +282,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
         addStep("Create and send the GetFileIDs request message.", "Should be caught and handled by the pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
                 auditTrail, msgFactory.getNewCorrelationID(), fileids, getPillarID(), pillarId, 
-                clientDestinationId, FILE_IDS_DELIVERY_ADDRESS, pillarDestinationId);
+                clientDestinationId, DELIVERY_ADDRESS, pillarDestinationId);
         messageBus.sendMessage(getFileIDsRequest);
         
         addStep("Retrieve the FinalResponse for the GetFileIDs request", 
@@ -314,7 +306,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
         addDescription("Test the case when the delivery URL is unaccessible.");
         String badURL = "http://localhost:61616/¾";
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
-                null, msgFactory.getNewCorrelationID(), allFileIDs, getPillarID(), getPillarID(), 
+                null, msgFactory.getNewCorrelationID(), FileIDsUtils.getAllFileIDs(), getPillarID(), getPillarID(),
                 clientDestinationId, badURL, pillarDestinationId);
         messageBus.sendMessage(getFileIDsRequest);
         
@@ -327,7 +319,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFileIDsTestDeliveryThroughMessage() throws Exception {
         addDescription("Test the case when the results should be delivered through the message .");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
-                null, msgFactory.getNewCorrelationID(), allFileIDs, getPillarID(), getPillarID(), 
+                null, msgFactory.getNewCorrelationID(), FileIDsUtils.getAllFileIDs(), getPillarID(), getPillarID(),
                 clientDestinationId, null, pillarDestinationId);
         messageBus.sendMessage(getFileIDsRequest);
         

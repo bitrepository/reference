@@ -93,7 +93,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send a identifyResponse from each pillar",
@@ -104,19 +104,19 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
             testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
                     PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(responsePillar1);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
 
         IdentifyContributorsForGetAuditTrailsResponse responsePillar2 =
             testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
                     PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(responsePillar2);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
         GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertEquals(requestPillar1, testMessageFactory.createGetAuditTrailsRequest(
@@ -133,7 +133,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                     PILLAR1_ID, pillar1DestinationId, result1);
         messageBus.sendMessage(resultPillar1);
         AuditTrailResult result1Event = (AuditTrailResult)testEventHandler.waitForEvent();
-        Assert.assertEquals(result1Event.getType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(result1Event.getEventType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
         Assert.assertEquals(result1Event.getAuditTrailEvents(), result1);
 
         addStep("Send a final response from pillar 2",
@@ -146,9 +146,9 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         messageBus.sendMessage(resultPillar2);
 
         AuditTrailResult result2Event = (AuditTrailResult)testEventHandler.waitForEvent();
-        Assert.assertEquals(result2Event.getType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(result2Event.getEventType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
         Assert.assertEquals(result2Event.getAuditTrailEvents(), result2);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPLETE);
     }
 
@@ -167,7 +167,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         client.getAuditTrails(new AuditTrailQuery[] { query1 }, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send a identifyResponse from pillar1",
@@ -183,12 +183,12 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                     PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(responsePillar2);
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
         GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
         GetAuditTrailsRequest request = testMessageFactory.createGetAuditTrailsRequest(
@@ -209,9 +209,9 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                     PILLAR1_ID, pillar1DestinationId, result);
         messageBus.sendMessage(resultResponse);
         AuditTrailResult resultEvent = (AuditTrailResult)testEventHandler.waitForEvent();
-        Assert.assertEquals(resultEvent.getType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(resultEvent.getEventType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
         Assert.assertEquals(resultEvent.getAuditTrailEvents(), result);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPLETE);
     }
 
@@ -229,7 +229,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send a negative identifyResponse from pillar 1.",
@@ -242,7 +242,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         info.setResponseCode(ResponseCode.IDENTIFICATION_NEGATIVE);
         responsePillar1.setResponseInfo(info);
         messageBus.sendMessage(responsePillar1);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPONENT_FAILED);
 
         addStep("Send a positive identifyResponse from pillar 2.",
@@ -252,11 +252,11 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
             testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
                     PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(responsePillar2);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
         pillar2Destination.waitForMessage(GetAuditTrailsRequest.class);
     }
@@ -276,7 +276,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send a identifyResponse from each of the two pillars",
@@ -292,14 +292,14 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                     PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(responsePillar2);
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
         GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertEquals(requestPillar1, testMessageFactory.createGetAuditTrailsRequest(
@@ -319,7 +319,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         failedInfo.setResponseCode(ResponseCode.FAILURE);
         failedResponsePillar1.setResponseInfo(failedInfo);
         messageBus.sendMessage(failedResponsePillar1);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPONENT_FAILED);
 
         addStep("Send a final response from pillar 2",
@@ -332,9 +332,9 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         messageBus.sendMessage(resultPillar2);
 
         AuditTrailResult result2Event = (AuditTrailResult)testEventHandler.waitForEvent();
-        Assert.assertEquals(result2Event.getType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(result2Event.getEventType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
         Assert.assertEquals(result2Event.getAuditTrailEvents(), result2);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.FAILED);
     }
 
@@ -352,7 +352,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send a identifyResponse from each of the two pillars",
@@ -368,14 +368,14 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                     PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(responsePillar2);
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
         GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertEquals(requestPillar1, testMessageFactory.createGetAuditTrailsRequest(
@@ -394,7 +394,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         progressInfo1.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         progressResponse1.setResponseInfo(progressInfo1);
         messageBus.sendMessage(progressResponse1);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.PROGRESS);
 
         addStep("Send a general progress response from pillar 2",
@@ -407,7 +407,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         progressInfo2.setResponseCode(ResponseCode.OPERATION_PROGRESS);
         progressResponse2.setResponseInfo(progressInfo2);
         messageBus.sendMessage(progressResponse2);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.PROGRESS);
     }
 
@@ -425,7 +425,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send a identifyResponse from pillar 1",
@@ -435,16 +435,16 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                     PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(responsePillar1);
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
 
         addStep("Wait for 5 seconds", "An IDENTIFY_TIMEOUT, a COMPONENT_FAILED and IDENTIFICATION_COMPLETE event should be received" +
         "Right after this a GetAuditTrailRequest should be sent to pillar1");
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFY_TIMEOUT);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
         pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
     }
@@ -463,7 +463,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send a identifyResponse from each of the two pillars",
@@ -479,14 +479,14 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                     PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(responsePillar2);
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
         GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertNotNull(requestPillar1);
@@ -507,13 +507,13 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertNotNull(identifyRequest);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Wait for 5 seconds", "An IDENTIFY_TIMEOUT event should be received follwed by a FAILED event");
-        Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getEventType(),
                 OperationEvent.OperationEventType.IDENTIFY_TIMEOUT);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEvent.OperationEventType.FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEvent.OperationEventType.FAILED);
     }
 
     @Test(groups = {"regressiontest"})
@@ -530,7 +530,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         client.getAuditTrails(null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send a identifyResponse from each of the two pillars",
@@ -545,18 +545,18 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                     PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(responsePillar2);
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
 
         addStep("Wait for 5 seconds", "An failed event should be received");
-        Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getEventType(),
                 OperationEvent.OperationEventType.FAILED);
     }
 
@@ -577,11 +577,11 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertNotNull(identifyRequest);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Wait for 5 seconds", "An failed event should be received");
-        Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getType(),
+        Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getEventType(),
                 OperationEvent.OperationEventType.FAILED);
     }
 

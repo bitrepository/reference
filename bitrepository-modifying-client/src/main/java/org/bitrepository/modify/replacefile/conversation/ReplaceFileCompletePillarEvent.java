@@ -25,12 +25,12 @@
 package org.bitrepository.modify.replacefile.conversation;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.client.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.ContributorCompleteEvent;
 
 /**
 * Contains the result of a ReplaceFile request sent to a single pillar.
 */
-public class ReplaceFileCompletePillarEvent extends ContributorEvent {
+public class ReplaceFileCompletePillarEvent extends ContributorCompleteEvent {
     /** @see #getChecksumForDeletedFile(). */
     private final ChecksumDataForFileTYPE deletedFileChecksum;
     /** @see #getChecksumForNewFile(). */
@@ -40,12 +40,10 @@ public class ReplaceFileCompletePillarEvent extends ContributorEvent {
      * @param deletedFile The results of the checksum request for the deleted file from the pillar.
      * @param newFile The results of the checksum request for the new file from the pillar.
      * @param pillarID The pillar which generated the result
-     * @param info Additional information.
-     * @param conversationID The ID of the conversation, which caused this event.
      */
-    public ReplaceFileCompletePillarEvent(ChecksumDataForFileTYPE deletedFile, ChecksumDataForFileTYPE newFile, 
-            String pillarID, String info, String conversationID) {
-        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID, conversationID);
+    public ReplaceFileCompletePillarEvent(
+            String pillarID, ChecksumDataForFileTYPE deletedFile, ChecksumDataForFileTYPE newFile) {
+        super(pillarID);
         this.newFileChecksum = newFile;
         this.deletedFileChecksum = deletedFile;
     }

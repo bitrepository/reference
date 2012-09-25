@@ -103,7 +103,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getTo(),
                             DEFAULT_FILE_ID, null, TEST_CLIENT_ID));
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Make response for the pillar.", "The client receive the response, identify the pillar and send the request.");
 
@@ -124,10 +124,10 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("Validate the steps of the ReplaceClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
         for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
 
         addStep("The pillar sends a progress response to the ReplaceClient.", "Should be caught by the event handler.");
         if(useMockupPillar()) {
@@ -135,7 +135,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                     receivedReplaceFileRequest, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(putFileProgressResponse);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PROGRESS);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.PROGRESS);
 
         addStep("Send a final response message to the ReplaceClient.",
                 "Should be caught by the event handler. First a PillarComplete, then a Complete.");
@@ -145,12 +145,12 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(replaceFileFinalResponse);
         }
         for(int i = 1; i < 2* componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
-            OperationEventType eventType = testEventHandler.waitForEvent().getType();
+            OperationEventType eventType = testEventHandler.waitForEvent().getEventType();
             Assert.assertTrue( (eventType == OperationEventType.COMPONENT_COMPLETE)
                     || (eventType == OperationEventType.PROGRESS),
                     "Expected either PartiallyComplete or Progress, but was: " + eventType);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
     @Test(groups={"regressiontest"})
@@ -181,12 +181,12 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                         receivedIdentifyRequestMessage.getReplyTo(),
                         receivedIdentifyRequestMessage.getTo(),
                         DEFAULT_FILE_ID, null, TEST_CLIENT_ID));
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Do not respond. Just await the timeout.",
                 "Should make send a Failure event to the eventhandler.");
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_TIMEOUT);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_TIMEOUT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
     @Test(groups={"regressiontest"})
@@ -218,7 +218,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                         receivedIdentifyRequestMessage.getReplyTo(),
                         receivedIdentifyRequestMessage.getTo(),
                         DEFAULT_FILE_ID, null, TEST_CLIENT_ID));
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Make response for the pillar.", "The client receive the response, identify the pillar and send the request.");
 
@@ -230,14 +230,14 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("Validate the steps of the ReplaceClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
         for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
 
         addStep("Do not respond. Just await the timeout.",
                 "Should make send a Failure event to the eventhandler.");
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
     @Test(groups={"regressiontest"})
@@ -268,7 +268,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                         receivedIdentifyRequestMessage.getReplyTo(),
                         receivedIdentifyRequestMessage.getTo(),
                         DEFAULT_FILE_ID, null, TEST_CLIENT_ID));
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Make response for the pillar.", "The client receive the response, identify the pillar and send the request.");
 
@@ -289,10 +289,10 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("Validate the steps of the ReplaceClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
         for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
 
         addStep("Send a failed response message to the ReplaceClient.",
                 "Should be caught by the event handler. First a PillarFailed, then a Complete.");
@@ -305,8 +305,8 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
             replaceFileFinalResponse.setResponseInfo(ri);
             messageBus.sendMessage(replaceFileFinalResponse);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
     @Test(groups={"regressiontest"})
@@ -328,7 +328,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                 IdentifyPillarsForReplaceFileRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send an identification response with a PillarChecksumSpec element set, indicating that this is a " +
                 "checksum pillar.",
@@ -339,9 +339,9 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                 receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         markAsChecksumPillarResponse(identifyResponse);
         messageBus.sendMessage(identifyResponse);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
         ReplaceFileRequest receivedReplaceFileRequest1 = pillar1Destination.waitForMessage(ReplaceFileRequest.class);
         Assert.assertNull(receivedReplaceFileRequest1.getChecksumRequestForNewFile());
     }

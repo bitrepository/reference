@@ -28,6 +28,7 @@ import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.protocolversiondefinition.OperationType;
 
 /** Encapsulates the context for a GetChecksums operation */
 public class GetChecksumsConversationContext extends ConversationContext {
@@ -39,7 +40,7 @@ public class GetChecksumsConversationContext extends ConversationContext {
     public GetChecksumsConversationContext(String fileID, ChecksumSpecTYPE checksumSpec, URL urlForResult,
             Settings settings, MessageSender messageSender, String clientID,  Collection<String> contributors,
             EventHandler eventHandler, String auditTrailInformation) {
-        super(settings, messageSender, fileID, clientID, contributors, eventHandler, auditTrailInformation);
+        super(OperationType.GET_CHECKSUMS, settings, messageSender, fileID, clientID, contributors, eventHandler, auditTrailInformation);
         this.urlForResult = urlForResult;       
         this.checksumSpec = checksumSpec;
     }

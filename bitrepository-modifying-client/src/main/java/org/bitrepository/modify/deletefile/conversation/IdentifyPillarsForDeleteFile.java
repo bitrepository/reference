@@ -63,9 +63,7 @@ public class IdentifyPillarsForDeleteFile extends IdentifyingState {
             //Idempotent
             getContext().getMonitor().contributorIdentified(response);
             getContext().getMonitor().contributorComplete(new DeleteFileCompletePillarEvent(
-                    null, response.getFrom(),
-                    "Delete considered complete as file was already missing from the pillar",
-                    context.getConversationID()));
+                    response.getFrom(), null ));
         } else {
             getContext().getMonitor().contributorFailed(
                     msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());

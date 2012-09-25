@@ -78,10 +78,10 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
 
         @Override
         public void handleEvent(OperationEvent event) {
-            if (event.getType().equals(OperationEvent.OperationEventType.COMPLETE)) {
+            if (event.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
                 // Todo The current complete event should return a event, so we can detect which file has been affected
                 this.metrics.mark("#" + metrics.getCount());
-            } else if (event.getType().equals(OperationEvent.OperationEventType.FAILED)) {
+            } else if (event.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
                 this.metrics.registerError(event.getInfo());
             }
         }
