@@ -94,7 +94,7 @@ public class RestAlarmService {
             @DefaultValue("10") @FormParam("maxAlarms") Integer maxAlarms,
             @DefaultValue("true") @FormParam ("oldestAlarmFirst") boolean oldestAlarmFirst) {
         List<Alarm> alarmList = new ArrayList<Alarm>();
-        
+    	log.info("################### Querying alarms in database...");
         Date from = makeDateObject(fromDate);
         Date to = makeDateObject(toDate);
         
