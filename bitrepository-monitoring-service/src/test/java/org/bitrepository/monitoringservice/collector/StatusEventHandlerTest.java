@@ -22,8 +22,11 @@
 package org.bitrepository.monitoringservice.collector;
 
 import org.bitrepository.access.getstatus.conversation.StatusCompleteContributorEvent;
-import org.bitrepository.client.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.AbstractOperationEvent;
+import org.bitrepository.client.eventhandler.CompleteEvent;
+import org.bitrepository.client.eventhandler.DefaultEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.monitoringservice.MockAlerter;
 import org.bitrepository.monitoringservice.MockStatusStore;
 import org.jaccept.structure.ExtendedTestCase;
@@ -33,7 +36,7 @@ import org.testng.annotations.Test;
 public class StatusEventHandlerTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest"})
     public void testStatusEventHandler() throws Exception {
-        addDescription("Test the GetStatusEventHandler handnling of events");
+        addDescription("Test the GetStatusEventHandler handling of events");
         addStep("Setup", "");
         MockStatusStore store = new MockStatusStore();
         MockAlerter alerter = new MockAlerter();
@@ -46,8 +49,8 @@ public class StatusEventHandlerTest extends ExtendedTestCase {
         Assert.assertEquals(alerter.getCallsForCheckStatuses(), 0);
         
         addStep("Test an unhandled event.", "Should not make any calls.");
-        ContributorEvent event = new ContributorEvent(OperationEventType.WARNING, "info", "contributorID", 
-                "conversationID");
+        AbstractOperationEvent event = new DefaultEvent();
+        event.setType(OperationEventType.WARNING);
         eventHandler.handleEvent(event);
         
         Assert.assertEquals(store.getCallsForGetStatusMap(), 0);
@@ -56,8 +59,7 @@ public class StatusEventHandlerTest extends ExtendedTestCase {
         Assert.assertEquals(alerter.getCallsForCheckStatuses(), 0);
         
         addStep("Test the Complete event", "Should make a call to the alerter");
-        event = new ContributorEvent(OperationEventType.COMPLETE, "info", "contributorID", 
-                "conversationID");
+        event = new CompleteEvent(null);
         eventHandler.handleEvent(event);
         Assert.assertEquals(store.getCallsForGetStatusMap(), 0);
         Assert.assertEquals(store.getCallsForUpdateReplayCounts(), 0);
@@ -65,8 +67,7 @@ public class StatusEventHandlerTest extends ExtendedTestCase {
         Assert.assertEquals(alerter.getCallsForCheckStatuses(), 1);
         
         addStep("Test the Failed event", "Should make another call to the alerter");
-        event = new ContributorEvent(OperationEventType.FAILED, "info", "contributorID", 
-                "conversationID");
+        event = new OperationFailedEvent("info", null);
         eventHandler.handleEvent(event);
         Assert.assertEquals(store.getCallsForGetStatusMap(), 0);
         Assert.assertEquals(store.getCallsForUpdateReplayCounts(), 0);
@@ -74,7 +75,7 @@ public class StatusEventHandlerTest extends ExtendedTestCase {
         Assert.assertEquals(alerter.getCallsForCheckStatuses(), 2);
         
         addStep("Test the component complete status", "Should attempt to update the store");
-        event = new StatusCompleteContributorEvent("info", "contributorID", null, "conversationID");
+        event = new StatusCompleteContributorEvent("ContributorID", null);
         eventHandler.handleEvent(event);
         Assert.assertEquals(store.getCallsForGetStatusMap(), 0);
         Assert.assertEquals(store.getCallsForUpdateReplayCounts(), 0);

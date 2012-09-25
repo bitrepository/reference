@@ -25,7 +25,6 @@
 package org.bitrepository.protocol;
 
 import java.util.Date;
-
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.Message;

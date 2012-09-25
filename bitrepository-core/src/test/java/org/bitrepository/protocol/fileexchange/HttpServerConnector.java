@@ -25,7 +25,6 @@
 package org.bitrepository.protocol.fileexchange;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,7 +33,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import org.apache.commons.io.FileUtils;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.jaccept.TestEventManager;
@@ -74,8 +72,23 @@ public class HttpServerConnector {
      * @param in The input stream for the file which should be uploaded. 
      * @param fileAddress The url where the file should be uploaded.
      */
-    public void uploadFile(FileInputStream in, URL fileAddress) {
+    public void uploadFile(InputStream in, URL fileAddress) {
         performUpload(in, fileAddress);
+    }
+
+    /**
+     * Uploads a file to the Url <code>getURL(filename)</code>.
+     *
+     * @param in Read the file from here
+     * @param filename Name of the file
+     * @return
+     * @throws IOException
+     */
+    public URL uploadFile(InputStream in, String filename)
+            throws IOException {
+        URL url = getURL(filename);
+        performUpload(in, url);
+        return url;
     }
 
     /**
@@ -104,7 +117,6 @@ public class HttpServerConnector {
 
     /**
      * Loads a file from the server. Used in test to verify that a file is located on the server.
-     * @param outputFile The file to write to 
      * @param fileAddress
      */
     public File loadFile(String fileAddress) {
@@ -126,22 +138,7 @@ public class HttpServerConnector {
         }
     }
 
-    /**
-     * Used in test to save files onto the http server. Simulates a client putting a file on the http server prior to a 
-     * put/replace request.
-     * 
-     * ToDo: Used more flexibl;e mapping between urls and file names.
-     * @param in Read the file from here
-     * @param filename Name of the file
-     * @return
-     * @throws IOException
-     */
-    public URL saveFile(FileInputStream in, String filename)
-    throws IOException {
-        URL url = getURL(filename);
-        performUpload(in, url);
-        return url;
-    }
+
 
 
     /**

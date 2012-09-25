@@ -24,24 +24,17 @@
  */
 package org.bitrepository.client.eventhandler;
 
+import org.bitrepository.protocolversiondefinition.OperationType;
+
 /**
  * A general implementation of <code>OperationEvent</code>.
  */
 public abstract class AbstractOperationEvent implements OperationEvent {
-    private final OperationEventType type;
-    private final String info;
+    private OperationEventType type;
+    private OperationType operationType;
+    private String fileID;
+    private String info;
     private String conversationID;
-
-    /**
-     * @param type See {@link #getType()}
-     * @param info See {@link #getInfo()}
-     * @param conversationID See {@link #getConversationID}
-     */
-    public AbstractOperationEvent(OperationEventType type, String info, String conversationID) {
-        this.type = type;
-        this.info = info;
-        this.conversationID = conversationID;
-    }
 
     @Override
     public String getInfo() {
@@ -49,13 +42,38 @@ public abstract class AbstractOperationEvent implements OperationEvent {
     }
 
     @Override
-    public OperationEventType getType() {
+    public OperationEventType getEventType() {
         return type;
+    }
+
+    @Override
+    public OperationType getOperationType() {
+        return operationType;
+    }
+    @Override
+    public String getFileID() {
+        return fileID;
     }
 
     @Override
     public String getConversationID() {
         return conversationID;
+    }
+
+    public void setType(OperationEventType type) {
+        this.type = type;
+    }
+
+    public void setOperationType(OperationType operationType) {
+        this.operationType = operationType;
+    }
+
+    public void setFileID(String fileID) {
+        this.fileID = fileID;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 
     /**
@@ -67,7 +85,14 @@ public abstract class AbstractOperationEvent implements OperationEvent {
 
     @Override
     public final String toString() {
-        return getType() + ": " + "ID: " + getConversationID() + ", " + additionalInfo() + ", " + getInfo();
+        StringBuilder sb = new StringBuilder();
+        sb.append(operationType);
+        if (fileID != null) {
+            sb.append(" for file " + fileID);
+        }
+        sb.append(" " + getEventType() + ": " + "ID: " +
+                getConversationID() + ", " + additionalInfo() + ", " + getInfo());
+        return sb.toString();
     }
     
     /**

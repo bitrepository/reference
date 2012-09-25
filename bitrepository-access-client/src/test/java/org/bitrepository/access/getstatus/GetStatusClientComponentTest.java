@@ -82,7 +82,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
             client.getStatus(testEventHandler);
             IdentifyContributorsForGetStatusRequest identifyRequest =
                     collectionReceiver.waitForMessage(IdentifyContributorsForGetStatusRequest.class);
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                     OperationEventType.IDENTIFY_REQUEST_SENT);
 
             addStep("Send a identifyResponse from pillar 1",
@@ -92,16 +92,16 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
                             PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(responsePillar1);
 
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                     OperationEventType.COMPONENT_IDENTIFIED);
 
             addStep("Wait for timeout event", "An IDENTIFY_TIMEOUT and IDENTIFICATION_COMPLETE event should be received" +
                     "Right after this a GetStatusRequest should be sent to pillar1");
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                     OperationEventType.IDENTIFY_TIMEOUT);
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                     OperationEventType.IDENTIFICATION_COMPLETE);
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                     OperationEventType.REQUEST_SENT);
             pillar1Destination.waitForMessage(GetStatusRequest.class);
         }
@@ -120,7 +120,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
             client.getStatus(testEventHandler);
             IdentifyContributorsForGetStatusRequest identifyRequest =
                     collectionReceiver.waitForMessage(IdentifyContributorsForGetStatusRequest.class);
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                     OperationEventType.IDENTIFY_REQUEST_SENT);
 
             addStep("Send a identifyResponse from each pillar",
@@ -131,19 +131,19 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
                     testMessageFactory.createIdentifyContributorsForGetStatusResponse(identifyRequest,
                             PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(responsePillar1);
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                     OperationEventType.COMPONENT_IDENTIFIED);
 
             IdentifyContributorsForGetStatusResponse responsePillar2 =
                     testMessageFactory.createIdentifyContributorsForGetStatusResponse(identifyRequest,
                             PILLAR2_ID, pillar2DestinationId);
             messageBus.sendMessage(responsePillar2);
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                     OperationEventType.COMPONENT_IDENTIFIED);
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                     OperationEventType.IDENTIFICATION_COMPLETE);
 
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                     OperationEventType.REQUEST_SENT);
             GetStatusRequest requestPillar1 = pillar1Destination.waitForMessage(GetStatusRequest.class);
             Assert.assertEquals(requestPillar1, testMessageFactory.createGetStatusRequest(
@@ -160,7 +160,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
                             PILLAR1_ID, pillar1DestinationId, status1);
             messageBus.sendMessage(resultPillar1);
             StatusCompleteContributorEvent result1Event = (StatusCompleteContributorEvent) testEventHandler.waitForEvent();
-            Assert.assertEquals(result1Event.getType(), OperationEventType.COMPONENT_COMPLETE);
+            Assert.assertEquals(result1Event.getEventType(), OperationEventType.COMPONENT_COMPLETE);
             Assert.assertEquals(result1Event.getStatus(), status1);
 
             addStep("Send a final response from pillar 2",
@@ -173,9 +173,9 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(resultPillar2);
 
             StatusCompleteContributorEvent result2Event = (StatusCompleteContributorEvent) testEventHandler.waitForEvent();
-            Assert.assertEquals(result2Event.getType(), OperationEventType.COMPONENT_COMPLETE);
+            Assert.assertEquals(result2Event.getEventType(), OperationEventType.COMPONENT_COMPLETE);
             Assert.assertEquals(result2Event.getStatus(), status2);
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(),
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                     OperationEventType.COMPLETE);
         }
 

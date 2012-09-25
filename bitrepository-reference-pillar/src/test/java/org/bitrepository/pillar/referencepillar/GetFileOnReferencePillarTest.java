@@ -52,10 +52,13 @@ import org.testng.annotations.Test;
  */
 public class GetFileOnReferencePillarTest extends ReferencePillarTest {
     protected GetFileMessageFactory msgFactory;
+    String FILE_ADDRESS;
 
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetFileTests() throws Exception {
         msgFactory = new GetFileMessageFactory(clientSettings);
+
+        FILE_ADDRESS = httpServer.getURL("test.txt").toExternalForm();
     }
 
     @AfterMethod (alwaysRun=true) 
@@ -74,7 +77,6 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFileTestSuccessCase() throws Exception {
         addDescription("Tests the get functionality of the reference pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         FilePart filePart = null;
@@ -162,7 +164,6 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFilePartTest() throws Exception {
         addDescription("Tests the get functionality of the reference pillar for a file part. Successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test2.txt";
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         FilePart filePart = new FilePart();
@@ -268,7 +269,6 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFileTestFailedNoSuchFileInOperation() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetFile requests for a file, which it does not have.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         FilePart filePart = null;
@@ -328,7 +328,6 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGeneralTestWrongPillarID() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetFile requests with a wrong pillarID.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         FilePart filePart = null;

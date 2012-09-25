@@ -33,11 +33,10 @@ public class ContributorFailedEvent extends ContributorEvent {
      *                     response exists.
      */
     public ContributorFailedEvent(
-            String info,
             String contributorID,
-            ResponseCode responseCode,
-            String conversationID) {
-        super(COMPONENT_FAILED, info, contributorID, conversationID);
+            ResponseCode responseCode) {
+        super(contributorID);
+        setType(COMPONENT_FAILED);
         this.responseCode = responseCode;
     }
 

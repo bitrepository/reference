@@ -41,7 +41,7 @@ public class GetChecksumsEventHandler implements EventHandler {
     @Override
     public void handleEvent(OperationEvent event) {
         logger.handleEvent(event);
-        switch(event.getType()) {
+        switch(event.getEventType()) {
         case IDENTIFY_REQUEST_SENT:
             break;
         case COMPONENT_IDENTIFIED:
@@ -63,8 +63,6 @@ public class GetChecksumsEventHandler implements EventHandler {
             break;
         case FAILED:
             results.failed();
-            break;
-        case NO_COMPONENT_FOUND:
             break;
         case IDENTIFY_TIMEOUT: 
             break;

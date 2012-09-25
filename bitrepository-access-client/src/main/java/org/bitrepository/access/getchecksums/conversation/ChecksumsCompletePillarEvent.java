@@ -26,12 +26,12 @@ package org.bitrepository.access.getchecksums.conversation;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
-import org.bitrepository.client.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.ContributorCompleteEvent;
 
 /**
 * Contains the result of a checksum request sent to a single pillar.
 */
-public class ChecksumsCompletePillarEvent extends ContributorEvent {
+public class ChecksumsCompletePillarEvent extends ContributorCompleteEvent {
     /** @see #getChecksums(). */
     private final ResultingChecksums result;
     /** @see #getChecksumType(). */
@@ -41,12 +41,9 @@ public class ChecksumsCompletePillarEvent extends ContributorEvent {
      * @param result The result returned by the pillar.
      * @param checksumType The checksum specification type.
      * @param pillarID The pillar which generated the result
-     * @param info Additional information.
-     * @param conversationID The id of the conversation.
      */
-    public ChecksumsCompletePillarEvent(ResultingChecksums result, ChecksumSpecTYPE checksumType, String pillarID, 
-            String info, String conversationID) {
-        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID, conversationID);
+    public ChecksumsCompletePillarEvent(String pillarID, ResultingChecksums result, ChecksumSpecTYPE checksumType) {
+        super(pillarID);
         this.result = result;
         this.checksumType = checksumType;
     }

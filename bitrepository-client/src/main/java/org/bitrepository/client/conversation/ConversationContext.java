@@ -29,6 +29,7 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.CorrelationIDGenerator;
 import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.protocolversiondefinition.OperationType;
 
 /**
  * Encapsulates the shared state for a conversation.
@@ -48,6 +49,7 @@ public class ConversationContext {
     /**
      * Encapsulates the common state maintained in a conversation. Will typically be subclasses to provide
      * operation specific attributes.
+     * @param operationType Used for logging purposes.
      * @param settings The settings to use in this conversation context.
      * @param messageSender The messageSender to use in this conversation context.
      * @param clientID The clientID to use in this conversation context.
@@ -57,6 +59,7 @@ public class ConversationContext {
      * @param auditTrailInformation
      */
     public ConversationContext(
+            OperationType operationType,
             Settings settings,
             MessageSender messageSender,
             String clientID,
@@ -70,7 +73,7 @@ public class ConversationContext {
         this.clientID = clientID;
         this.fileID = fileID;
         this.contributors = contributors;
-        this.monitor = new ConversationEventMonitor(conversationID, eventHandler);
+        this.monitor = new ConversationEventMonitor(conversationID, operationType, fileID, eventHandler);
         this.auditTrailInformation = auditTrailInformation;
     }
 

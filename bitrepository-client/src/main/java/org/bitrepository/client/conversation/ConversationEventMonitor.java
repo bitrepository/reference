@@ -34,11 +34,12 @@ import org.bitrepository.client.eventhandler.AbstractOperationEvent;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
-import org.bitrepository.client.eventhandler.ContributorsIdentifiedEvent;
+import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.DefaultEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
+import org.bitrepository.protocolversiondefinition.OperationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,18 +51,25 @@ import static org.bitrepository.client.eventhandler.OperationEvent.OperationEven
 public class ConversationEventMonitor {
     private final ConversationLogger log;
     private final String conversationID;
+    private final OperationType operationType;
+    private final String fileID;
     private final EventHandler eventHandler;
     private final List<ContributorEvent> contributorCompleteEvents = new LinkedList<ContributorEvent>();
     private final List<ContributorFailedEvent> contributorFailedEvents = new LinkedList<ContributorFailedEvent>();
     private boolean failOnComponentFailure = true;
 
     /**
-     * @param conversationID Used for adding conversation context information to the information distributed
+     * @param conversationID Used for adding conversation context information to the information distributed. Will be
+     *                       shorted to increase readability.
+     * @param operationType The operation type to include in the events og logs.
+     * @param fileID Optional file ID to include in the events and logs.
      * @param eventHandler The eventHandler to send updates to.
      */
-    public ConversationEventMonitor(String conversationID, EventHandler eventHandler) {
-        log = new ConversationLogger(conversationID);
-        this.conversationID = conversationID;
+    public ConversationEventMonitor(String conversationID, OperationType operationType, String fileID, EventHandler eventHandler) {
+        log = new ConversationLogger();
+        this.conversationID = getShortConversationID(conversationID);
+        this.operationType = operationType;
+        this.fileID = fileID;
         this.eventHandler = eventHandler;
     }
 
@@ -71,7 +79,7 @@ public class ConversationEventMonitor {
      */
     public void identifyRequestSent(String info) {
         log.debug(info);
-        notifyEventListerners(new DefaultEvent(IDENTIFY_REQUEST_SENT, info, conversationID));
+        notifyEventListerners(createDefaultEvent(IDENTIFY_REQUEST_SENT, info));
     }
 
     /**
@@ -82,7 +90,7 @@ public class ConversationEventMonitor {
         String info = "Received positive identification response from " + response.getFrom() + ": " +
                 response.getResponseInfo().getResponseText();
         log.debug(info);
-        notifyEventListerners(new ContributorEvent(COMPONENT_IDENTIFIED, info, response.getFrom(), conversationID));
+        notifyEventListerners(createContributorEvent(COMPONENT_IDENTIFIED, info, response.getFrom()));
     }
 
     /**
@@ -101,7 +109,7 @@ public class ConversationEventMonitor {
         }
         log.debug(failureMessage.toString());
         if (eventHandler != null) {
-            eventHandler.handleEvent(new DefaultEvent( IDENTIFY_TIMEOUT, failureMessage.toString(), conversationID));
+            eventHandler.handleEvent(createDefaultEvent(IDENTIFY_TIMEOUT, failureMessage.toString()));
         }
     }
 
@@ -111,7 +119,7 @@ public class ConversationEventMonitor {
      */
     public void contributorsSelected(List<String> contributorIDList) {
         log.debug("Contributors selected: " + contributorIDList);
-        notifyEventListerners(new ContributorsIdentifiedEvent(contributorIDList, conversationID));
+        notifyEventListerners(createContributorsIdentifiedEvent(contributorIDList));
     }
 
     /**
@@ -121,7 +129,7 @@ public class ConversationEventMonitor {
      */
     public void requestSent(String info, String contributorID) {
         log.debug(info);
-        notifyEventListerners(new ContributorEvent(REQUEST_SENT, contributorID, contributorID, conversationID));
+        notifyEventListerners(createContributorEvent(REQUEST_SENT, info, contributorID));
     }
 
     /**
@@ -129,8 +137,8 @@ public class ConversationEventMonitor {
      * @param progressEvent Contains information regarding the progress
      */
     public void progress(AbstractOperationEvent progressEvent) {
-        progressEvent.setConversationID(conversationID);
         log.debug(progressEvent.getInfo());
+        addContextInfo(progressEvent);
         notifyEventListerners(progressEvent);
     }
 
@@ -140,7 +148,7 @@ public class ConversationEventMonitor {
      */
     public void progress(String progressInfo, String contributorID) {
         log.debug(progressInfo);
-        notifyEventListerners(new ContributorEvent(PROGRESS, progressInfo, contributorID, conversationID));
+        notifyEventListerners(createContributorEvent(PROGRESS, progressInfo, contributorID));
     }
 
     /**
@@ -151,6 +159,7 @@ public class ConversationEventMonitor {
     public void contributorComplete(ContributorEvent completeEvent) {
         log.info(completeEvent.getInfo());
         contributorCompleteEvents.add(completeEvent);
+        addContextInfo(completeEvent);
         notifyEventListerners(completeEvent);
     }
 
@@ -160,7 +169,7 @@ public class ConversationEventMonitor {
      */
     public void contributorFailed(String info, String contributor, ResponseCode responseCode) {
         log.warn(info);
-        ContributorFailedEvent failedEvent = new ContributorFailedEvent(info, contributor, responseCode, conversationID);
+        ContributorFailedEvent failedEvent = createContributorFailedEvent(info, contributor, responseCode);
         contributorFailedEvents.add(failedEvent);
         notifyEventListerners(failedEvent);
     }
@@ -170,13 +179,12 @@ public class ConversationEventMonitor {
      */
     public void complete() {
         if (contributorFailedEvents.isEmpty()) {
-            String message = "Completed successfully.";
-            log.info(message);
-            notifyEventListerners(new CompleteEvent(message, contributorCompleteEvents, conversationID));
+            log.info("Completed successfully.");
+            notifyEventListerners(createCompleteEvent());
         } else {
-            String message = "Failed operation. Cause(s):\n" + contributorFailedEvents;
-            log.warn(message);
-            notifyEventListerners(new OperationFailedEvent(message, contributorCompleteEvents, conversationID));
+            String info = "Failed operation. Cause(s):\n" + contributorFailedEvents;
+            log.warn(info);
+            notifyEventListerners(createOperationFailedEvent(info));
         }
     }
 
@@ -186,18 +194,7 @@ public class ConversationEventMonitor {
      */
     public void operationFailed(String info) {
         log.warn(info);
-        OperationFailedEvent event = new OperationFailedEvent(info, conversationID);
-        notifyEventListerners(event);
-    }
-
-    /**
-     * General failure to complete the operation.
-     * @param exception Encapsulates the cause.
-     */
-    public void operationFailed(Exception exception) {
-        log.warn(exception.getMessage(), exception);
-        OperationFailedEvent event = new OperationFailedEvent(exception.getMessage(), conversationID);
-        notifyEventListerners(event);
+        notifyEventListerners(createOperationFailedEvent(info));
     }
 
     /**
@@ -206,6 +203,7 @@ public class ConversationEventMonitor {
      */
     public void operationFailed(OperationFailedEvent event) {
         log.warn(event.getInfo());
+        addContextInfo(event);
         notifyEventListerners(event);
     }
 
@@ -217,7 +215,7 @@ public class ConversationEventMonitor {
     public void invalidMessage(Message message, Exception e) {
         log.warn("Received invalid " + message.getClass().getSimpleName() + " from " + message.getFrom() +
                 "\nMessage: " + message, e);
-        notifyEventListerners((new ContributorEvent(WARNING, e.getMessage(), message.getFrom(), conversationID)));
+        notifyEventListerners((createContributorEvent(WARNING, e.getMessage(), message.getFrom())));
     }
 
     /**
@@ -233,7 +231,7 @@ public class ConversationEventMonitor {
      */
     public void warning(String info) {
         log.warn(info);
-        notifyEventListerners(new DefaultEvent(WARNING, info, conversationID));
+        notifyEventListerners(createDefaultEvent(WARNING, info));
     }
 
     /**
@@ -246,7 +244,7 @@ public class ConversationEventMonitor {
             warning(info);
         }
         log.warn(info, e);
-        notifyEventListerners(new DefaultEvent(WARNING, info + ", " + e.getMessage(), conversationID));
+        notifyEventListerners(createDefaultEvent(WARNING, info + ", " + e.getMessage()));
     }
 
     /**
@@ -267,14 +265,6 @@ public class ConversationEventMonitor {
     }
 
     /**
-     * Should this operation be considered failed, eg. something critical has gone wrong.
-     * Note that a operation may be considered a success, even if some contributors are unable to respond successfully.
-     */
-    public boolean hasFailed() {
-        return !contributorFailedEvents.isEmpty() && failOnComponentFailure;
-    }
-
-    /**
      * Indicates whether a operation should be consider failed because one or more of the contributors have failed.
      * This is <code>true</code> by default.
      *
@@ -284,41 +274,103 @@ public class ConversationEventMonitor {
         failOnComponentFailure = enable;
     }
 
+    private String getShortConversationID(String fullConversationID) {
+        return fullConversationID.substring(6);
+    }
+
+
+
+    private DefaultEvent createDefaultEvent(OperationEvent.OperationEventType eventType, String info) {
+        DefaultEvent event = new DefaultEvent();
+        event.setType(eventType);
+        event.setInfo(info);
+        addContextInfo(event);
+        return event;
+    }
+    private ContributorEvent createContributorEvent(
+            OperationEvent.OperationEventType eventType, String info, String contributorID) {
+        ContributorEvent event = new ContributorEvent(contributorID);
+        event.setType(eventType);
+        event.setInfo(info);
+        addContextInfo(event);
+        return event;
+    }
+    private ContributorFailedEvent createContributorFailedEvent(String info, String contributorID, ResponseCode responseCode) {
+        ContributorFailedEvent event = new ContributorFailedEvent(contributorID, responseCode);
+        event.setInfo(info);
+        addContextInfo(event);
+        return event;
+    }
+
+    private IdentificationCompleteEvent createContributorsIdentifiedEvent(List<String> contributorIDList) {
+        IdentificationCompleteEvent event = new IdentificationCompleteEvent((contributorIDList));
+        addContextInfo(event);
+        return event;
+    }
+
+    private OperationFailedEvent createOperationFailedEvent(String info) {
+        OperationFailedEvent event = new OperationFailedEvent(info, contributorCompleteEvents);
+        addContextInfo(event);
+        return event;
+    }
+
+    private CompleteEvent createCompleteEvent() {
+        CompleteEvent event = new CompleteEvent(contributorCompleteEvents);
+        addContextInfo(event);
+        return event;
+    }
+
+    /**
+     * Adds the general operation context information for the conversation to the event
+     * @return
+     */
+    private OperationEvent addContextInfo(AbstractOperationEvent event) {
+        event.setConversationID(conversationID);
+        event.setFileID(fileID);
+        event.setOperationType(operationType);
+        return event;
+    }
+
     /**
      * Custom logger for prefixing the log entries with the conversation ID.
      */
-    private static class ConversationLogger {
-        /** The wrapped logger. */
+    private class ConversationLogger {
         private final Logger logger = LoggerFactory.getLogger(getClass());
-        private final String conversationID;
-        public ConversationLogger(String conversationID) {
-            this.conversationID = conversationID;
-        }
 
         /** Delegates to the normal logger debug */
         public void debug(String info) {
-            logger.debug("Conversation(" + conversationID + " ) event:" +info);
+            logger.debug("Conversation(" + conversationID + " ) event " + contextInfo() + ":" +info);
         }
 
         /** Delegates to the normal logger debug */
         public void debug(String info, Exception e) {
-            logger.debug("Conversation(" + conversationID + " ) event:" + info, e);
+            logger.debug("Conversation(" + conversationID + " ) event" + contextInfo() + ":" + info, e);
         }
 
         /** Delegates to the normal logger info */
         public void info(String info) {
-            logger.info("Conversation(" + conversationID + " ) event:" +info);
+            logger.info("Conversation(" + conversationID + " ) event" + contextInfo() + ":" +info);
         }
 
         /** Delegates to the normal logger warn */
         public void warn(String info, Throwable e) {
-            logger.warn("Conversation(" + conversationID + " ) event:" +info, e);
+            logger.warn("Conversation(" + conversationID + " ) event" + contextInfo() + ":" +info, e);
         }
 
         /** Delegates to the normal logger warn */
         public void warn(String info) {
-            logger.warn("Conversation(" + conversationID + " ) event:" +info);
+            logger.warn("Conversation(" + conversationID + " ) event" + contextInfo() + ":" +info);
         }
+
+        private String contextInfo() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(operationType);
+            if (fileID != null) {
+                sb.append(" for file " + fileID);
+            }
+            return sb.toString();
+        }
+
     }
 
     private void notifyEventListerners(OperationEvent event) {

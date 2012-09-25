@@ -25,23 +25,21 @@
 package org.bitrepository.access.getfileids.conversation;
 
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
-import org.bitrepository.client.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.ContributorCompleteEvent;
 
 /**
 * Contains the result of a GetFileIDs request sent to a single pillar.
 */
-public class FileIDsCompletePillarEvent extends ContributorEvent {
+public class FileIDsCompletePillarEvent extends ContributorCompleteEvent {
     /** The result from the pillar.*/
     private final ResultingFileIDs result;
     
     /**
      * @param result The result returned by the pillar.
      * @param pillarID The pillar which generated the result
-     * @param info Additional information.
-     * @param conversationID The ID of the conversation, which caused this event.
      */
-    public FileIDsCompletePillarEvent(ResultingFileIDs result, String pillarID, String info, String conversationID) {
-        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID, conversationID);
+    public FileIDsCompletePillarEvent(String pillarID, ResultingFileIDs result) {
+        super(pillarID);
         this.result = result;
     }
 

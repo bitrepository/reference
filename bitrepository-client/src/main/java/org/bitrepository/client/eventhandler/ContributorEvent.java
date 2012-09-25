@@ -30,14 +30,7 @@ package org.bitrepository.client.eventhandler;
 public class ContributorEvent extends AbstractOperationEvent {
     private final String contributorID;
 
-    /**
-     * @param type The event type
-     * @param info Free text description of the event
-     * @param contributorID The ID of the contributor this event relates to.
-     * @param conversationID The ID of the conversation, which caused this event.
-     */
-    public ContributorEvent(OperationEventType type, String info, String contributorID, String conversationID) {
-        super(type, info, conversationID);
+    public ContributorEvent(String contributorID) {
         this.contributorID = contributorID;
     }
 
@@ -47,7 +40,7 @@ public class ContributorEvent extends AbstractOperationEvent {
     public String getContributorID() {
         return contributorID;
     }
-    
+
     @Override
     public String additionalInfo() {
         return "ContributorID: " + getContributorID();

@@ -98,7 +98,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             TEST_CLIENT_ID
                     ));
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Make response for the pillar.", "The client should then send the actual PutFileRequest.");
 
@@ -125,10 +125,10 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("Validate the steps of the PutClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
         for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
 
         addStep("The pillar sends a progress response to the PutClient.", "Should be caught by the event handler.");
         if(useMockupPillar()) {
@@ -136,7 +136,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                     receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(putFileProgressResponse);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.PROGRESS);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.PROGRESS);
 
         addStep("Send a final response message to the PutClient.",
                 "Should be caught by the event handler. First a PartiallyComplete, then a Complete.");
@@ -146,12 +146,12 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(putFileFinalResponse);
         }
         for(int i = 1; i < 2* componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
-            OperationEventType eventType = testEventHandler.waitForEvent().getType();
+            OperationEventType eventType = testEventHandler.waitForEvent().getEventType();
             Assert.assertTrue( (eventType == OperationEventType.COMPONENT_COMPLETE)
                     || (eventType == OperationEventType.PROGRESS),
                     "Expected either PartiallyComplete or Progress, but was: " + eventType);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
     @Test(groups={"regressiontest"})
@@ -167,13 +167,13 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                 "A identification request should be dispatched.");
         putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
                 null, testEventHandler, null);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
         collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
 
         addStep("Do not respond. Just await the timeout.",
                 "An IDENTIFY_TIMEOUT event should be generate, followed by a FAILED event.");
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_TIMEOUT);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_TIMEOUT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
     @Test(groups={"regressiontest"})
@@ -193,7 +193,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                 "A identification request should be dispatched.");
         putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
                 null, testEventHandler, null);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
 
@@ -202,16 +202,16 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         IdentifyPillarsForPutFileResponse identifyResponse = messageFactory.createIdentifyPillarsForPutFileResponse(
                 receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
 
         addStep("Await the timeout.", "An IDENTIFY_TIMEOUT events, a COMPONENT_FAILED " +
                 "event for the non-responding pillar and a IDENTIFICATION_COMPLETE event should be generated.");
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_TIMEOUT);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_TIMEOUT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
 
         addStep("The client should proceed to send a putFileOperation request to the responding pillar.",
                 "A REQUEST_SENT event should be generated and a PutFileRequest should be received on the pillar.");
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
         PutFileRequest receivedPutFileRequest = pillar1Destination.waitForMessage(PutFileRequest.class);
 
         addStep("Send a pillar complete event",
@@ -219,8 +219,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         PutFileFinalResponse putFileFinalResponse = messageFactory.createPutFileFinalResponse(
                 receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(putFileFinalResponse);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
     @Test(groups={"regressiontest"})
@@ -238,7 +238,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                 "A identification request should be dispatched.");
         putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
                 null, testEventHandler, null);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
 
@@ -247,13 +247,13 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         IdentifyPillarsForPutFileResponse identifyResponse = messageFactory.createIdentifyPillarsForPutFileResponse(
                 receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
 
         addStep("Await the timeout.", "An IDENTIFY_TIMEOUT event ,COMPONENT_FAILED " +
                 "event for the non-responding pillar, an IDENTIFICATION_COMPLETE and " +
                 "lastly a OperationEventType.FAILED event should be generated.");
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_TIMEOUT);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_TIMEOUT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
 
     }
 
@@ -275,7 +275,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Make response for the pillar.", "The client should then send the actual PutFileRequest.");
         IdentifyPillarsForPutFileResponse identifyResponse = messageFactory
@@ -287,14 +287,14 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("Validate the steps of the PutClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
         for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
 
         addStep("Do not respond. Just await the timeout.",
                 "Should make send a Failure event to the eventhandler.");
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
     @Test(groups={"regressiontest"})
@@ -316,21 +316,21 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send pillar response.", "The client should then send the actual PutFileRequest.");
         IdentifyPillarsForPutFileResponse identifyResponse = messageFactory.createIdentifyPillarsForPutFileResponse(
-                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
         PutFileRequest receivedPutFileRequest = pillar1Destination.waitForMessage(PutFileRequest.class, 10, TimeUnit.SECONDS);
 
         addStep("Validate the steps of the PutClient by going through the events.",
                 "Should be 'PillarIdentified', 'PillarSelected' and 'RequestSent'");
         for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
-            Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
 
         addStep("Send a failed response message to the PutClient.",
                 "Should be caught by the event handler. First a PillarFailed, then a Complete.");
@@ -343,8 +343,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
             putFileFinalResponse.setResponseInfo(ri);
             messageBus.sendMessage(putFileFinalResponse);
         }
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
     @Test(groups={"regressiontest"})
@@ -362,7 +362,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send a DUPLICATE_FILE_FAILURE response without a checksum.",
                 "The client should generate the following events:'"
@@ -376,8 +376,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         identifyResponse.setResponseInfo(ri);
         messageBus.sendMessage(identifyResponse);
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
     @Test(groups={"regressiontest"})
@@ -397,7 +397,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send a DUPLICATE_FILE_FAILURE response with a random checksum.",
                 "The client should generate the following events:'"
@@ -414,8 +414,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         identifyResponse.setChecksumDataForExistingFile(csPillarData);
         messageBus.sendMessage(identifyResponse);
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
     @Test(groups={"regressiontest"})
@@ -434,7 +434,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send a DUPLICATE_FILE_FAILURE response with a checksum equal to the one supplied to the client.",
                 "The client should generate the following events:'"
@@ -449,19 +449,19 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         identifyResponse.setChecksumDataForExistingFile(csPillarData);
         messageBus.sendMessage(identifyResponse);
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_COMPLETE);
 
         addStep("Send an identification response from the second pillar.",
                 "An COMPONENT_IDENTIFIED OperationEventType.IDENTIFICATION_COMPLETE and a event should be generate.");
         IdentifyPillarsForPutFileResponse identifyResponse2 = messageFactory.createIdentifyPillarsForPutFileResponse(
                 receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(identifyResponse2);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
 
         addStep("The client should proceed to send a putFileOperation request to the second pillar.",
                 "A REQUEST_SENT event should be generated and a PutFileRequest should be received on the pillar.");
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
         PutFileRequest receivedPutFileRequest = pillar2Destination.waitForMessage(PutFileRequest.class);
 
         addStep("Send a pillar complete event",
@@ -469,8 +469,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         PutFileFinalResponse putFileFinalResponse = messageFactory.createPutFileFinalResponse(
                 receivedPutFileRequest, PILLAR2_ID, pillar1DestinationId);
         messageBus.sendMessage(putFileFinalResponse);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
     @Test(groups={"regressiontest"})
@@ -488,7 +488,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                 IdentifyPillarsForPutFileRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send a DUPLICATE_FILE_FAILURE response with a random checksum.",
                 "The client should generate the following events:'"
@@ -505,8 +505,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         identifyResponse.setChecksumDataForExistingFile(csData);
         messageBus.sendMessage(identifyResponse);
 
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_FAILED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
     @Test(groups={"regressiontest"})
@@ -531,7 +531,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                 IdentifyPillarsForPutFileRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send an identification response with a PillarChecksumSpec element set, indicating that this is a " +
                 "checksum pillar.",
@@ -542,7 +542,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         checksumSpecTYPEFromPillar.setChecksumType(ChecksumType.MD5);
         identifyResponse.setPillarChecksumSpec(checksumSpecTYPEFromPillar);
         messageBus.sendMessage(identifyResponse);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
 
         addStep("Send an normal identification response from pillar2.",
                 "An COMPONENT_IDENTIFIED event should be generate followed by a IDENTIFICATION_COMPLETE and a " +
@@ -552,9 +552,9 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         IdentifyPillarsForPutFileResponse identifyResponse2 = messageFactory.createIdentifyPillarsForPutFileResponse(
                 receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(identifyResponse2);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
         PutFileRequest receivedPutFileRequest1 = pillar1Destination.waitForMessage(PutFileRequest.class);
         Assert.assertNull(receivedPutFileRequest1.getChecksumRequestForNewFile());
 
@@ -582,7 +582,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                 IdentifyPillarsForPutFileRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send an identification response with a PillarChecksumSpec element set, indicating that this is a " +
                 "checksum pillar.",
@@ -593,7 +593,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         checksumSpecTYPEFromPillar.setChecksumType(ChecksumType.MD5);
         identifyResponse.setPillarChecksumSpec(checksumSpecTYPEFromPillar);
         messageBus.sendMessage(identifyResponse);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
 
         addStep("Send an normal identification response from pillar2.",
                 "An COMPONENT_IDENTIFIED event should be generate followed by a IDENTIFICATION_COMPLETE and a " +
@@ -603,9 +603,9 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         IdentifyPillarsForPutFileResponse identifyResponse2 = messageFactory.createIdentifyPillarsForPutFileResponse(
                 receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(identifyResponse2);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
         PutFileRequest receivedPutFileRequest1 =
                 pillar1Destination.waitForMessage(PutFileRequest.class);
         Assert.assertEquals(receivedPutFileRequest1.getChecksumRequestForNewFile(), checksumSpecTYPE);
@@ -631,7 +631,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                 IdentifyPillarsForPutFileRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send an identification response with a PillarChecksumSpec element set, indicating that this is a " +
                 "checksum pillar.",
@@ -642,7 +642,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         checksumSpecTYPEFromPillar.setChecksumType(ChecksumType.MD5);
         identifyResponse.setPillarChecksumSpec(checksumSpecTYPEFromPillar);
         messageBus.sendMessage(identifyResponse);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
 
         addStep("Send an normal identification response from pillar2.",
                 "An COMPONENT_IDENTIFIED event should be generate followed by a IDENTIFICATION_COMPLETE and a " +
@@ -651,9 +651,9 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         IdentifyPillarsForPutFileResponse identifyResponse2 = messageFactory.createIdentifyPillarsForPutFileResponse(
                 receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(identifyResponse2);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getType(), OperationEventType.REQUEST_SENT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
         PutFileRequest receivedPutFileRequest1 = pillar1Destination.waitForMessage(PutFileRequest.class);
         Assert.assertNull(receivedPutFileRequest1.getChecksumRequestForNewFile());
 

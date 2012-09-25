@@ -123,7 +123,7 @@ public class GetChecksums {
         System.out.println("Performing the GetChecksums operation.");
         OperationEvent finalEvent = performConversation();
         System.out.println("Results of the GetChecksums operation: " + finalEvent);
-        if(finalEvent.getType() == OperationEventType.COMPLETE) {
+        if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
             System.exit(0);
         } else {
             System.exit(-1);

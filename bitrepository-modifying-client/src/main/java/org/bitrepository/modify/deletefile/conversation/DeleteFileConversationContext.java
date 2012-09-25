@@ -28,6 +28,7 @@ import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.protocolversiondefinition.OperationType;
 
 public class DeleteFileConversationContext extends ConversationContext {
     private final ChecksumDataForFileTYPE checksumForValidationAtPillar;
@@ -37,7 +38,7 @@ public class DeleteFileConversationContext extends ConversationContext {
             String fileID, ChecksumDataForFileTYPE checksumForValidationAtPillar,
             ChecksumSpecTYPE checksumRequestsForValidation, Settings settings, MessageSender messageSender,
             String clientID,  Collection<String> contributors, EventHandler eventHandler, String auditTrailInformation) {
-        super(settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
+        super(OperationType.DELETE_FILE, settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
         this.checksumForValidationAtPillar = checksumForValidationAtPillar;
         this.checksumRequestsForValidation = checksumRequestsForValidation;
     }

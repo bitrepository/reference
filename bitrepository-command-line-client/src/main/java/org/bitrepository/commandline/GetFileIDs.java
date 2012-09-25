@@ -109,7 +109,7 @@ public class GetFileIDs {
         System.out.println("Performing the GetFileIDs operation.");
         OperationEvent finalEvent = performConversation();
         System.out.println("Results of the GetFileIDs operation: " + finalEvent);
-        if(finalEvent.getType() == OperationEventType.COMPLETE) {
+        if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
             System.exit(0);
         } else {
             System.exit(-1);

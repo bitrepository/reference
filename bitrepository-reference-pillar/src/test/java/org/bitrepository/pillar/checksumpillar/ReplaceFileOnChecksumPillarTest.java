@@ -24,11 +24,7 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URL;
 import java.util.Date;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -40,8 +36,8 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -52,30 +48,20 @@ import org.testng.annotations.Test;
  */
 public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
     private ReplaceFileMessageFactory msgFactory;
-    String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
-    String REPLACE_CHECKSUM = "940a51b250e7aa82d8e8ea31217ff267";
-    Long FILE_SIZE = 1L;
-    ChecksumDataForFileTYPE replaceCsData;
+    private String FILE_ADDRESS;
+    private static final Long FILE_SIZE = 1L;
 
-    @BeforeMethod (alwaysRun=true)
-    public void initialiseReplaceFileTests() throws Exception {
+    @BeforeMethod(alwaysRun=true)
+    public void initialisePutFileTests() throws Exception {
         msgFactory = new ReplaceFileMessageFactory(clientSettings, getPillarID(), pillarDestinationId);
-        
-        replaceCsData = new ChecksumDataForFileTYPE();
-        replaceCsData.setCalculationTimestamp(CalendarUtils.getEpoch());
-        replaceCsData.setChecksumSpec(csSpec);
-        replaceCsData.setChecksumValue(Base16Utils.encodeBase16(REPLACE_CHECKSUM));
+        FILE_ADDRESS = httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID).toExternalForm();
     }
 
-    @SuppressWarnings("deprecation")
     @BeforeClass (alwaysRun=true)
     public void initialiseReplaceFileClass() throws Exception {
-        File replaceFile = new File("src/test/resources/" + DEFAULT_FILE_ID);
-        Assert.assertTrue(replaceFile.isFile(), "The test file does not exist at '" + replaceFile.getAbsolutePath() + "'.");
-        
-        ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(new FileInputStream(replaceFile), 
-                new URL(FILE_ADDRESS));
+        httpServer.uploadFile(TestFileHelper.getDefaultFile(), TestFileHelper.DEFAULT_FILE_ID);
     }
+
     
     @Test( groups = {"regressiontest", "pillartest"})
     public void pillarReplaceTestSuccessCase() throws Exception {
@@ -101,8 +87,9 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         
         addStep("Create and send the actual Replace message to the pillar.", 
                 "Should be received and handled by the pillar.");
-        ReplaceFileRequest replaceRequest = msgFactory.createReplaceFileRequest(csData, replaceCsData, 
-                csSpec, csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE);
+        ReplaceFileRequest replaceRequest = msgFactory.createReplaceFileRequest(
+                csData, TestFileHelper.getDefaultFileChecksum(), csSpec, csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, 
+                FILE_SIZE);
         replaceRequest.setCorrelationID(identifyRequest.getCorrelationID());
         messageBus.sendMessage(replaceRequest);
         
@@ -127,8 +114,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         Assert.assertEquals(finalResponse.getFrom(), getPillarID());
         Assert.assertEquals(finalResponse.getPillarID(), getPillarID());
         Assert.assertEquals(finalResponse.getReplyTo(), pillarDestinationId);
-        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.OPERATION_COMPLETED);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         
         // validating the checksum
         Assert.assertEquals(finalResponse.getFileID(), DEFAULT_FILE_ID, "The FileID of this test.");
@@ -144,11 +130,11 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         Assert.assertNotNull(receivedChecksumData.getChecksumSpec());
         Assert.assertEquals(receivedChecksumData.getChecksumSpec(), replaceRequest.getChecksumRequestForNewFile(), 
                 "Should return the same type of checksum as requested.");
-        Assert.assertEquals(Base16Utils.decodeBase16(receivedChecksumData.getChecksumValue()), 
-                REPLACE_CHECKSUM);
+        Assert.assertEquals(receivedChecksumData.getChecksumValue(), TestFileHelper.getDefaultFileChecksum().getChecksumValue());
 
         addStep("Check the cached checksum.", "Should have been replaced by the new checksum.");
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), REPLACE_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID),
+                Base16Utils.decodeBase16(TestFileHelper.getDefaultFileChecksum().getChecksumValue()));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -181,7 +167,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
 
         addStep("Send a deleteFileRequest for a none-existing file.",
                 "A FILE_NOT_FOUND_FAILURE response should be return, and the original file should remain in the cache.");
-        messageBus.sendMessage(msgFactory.createReplaceFileRequest(csData, replaceCsData, csSpec, csSpec, FILE_ADDRESS, "NoneExistingFile", FILE_SIZE));
+        messageBus.sendMessage(msgFactory.createReplaceFileRequest(csData, TestFileHelper.getDefaultFileChecksum(), csSpec, csSpec, FILE_ADDRESS, "NoneExistingFile", FILE_SIZE));
 
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
@@ -194,7 +180,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         initializeCacheWithMD5ChecksummedFile();
         Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
-        messageBus.sendMessage(msgFactory.createReplaceFileRequest(null, replaceCsData, csSpec, csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+        messageBus.sendMessage(msgFactory.createReplaceFileRequest(null, TestFileHelper.getDefaultFileChecksum(), csSpec, csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
@@ -213,7 +199,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         badData.setChecksumSpec(csSpec);
         badData.setChecksumValue(Base16Utils.encodeBase16("baabbbaaabba"));
 
-        messageBus.sendMessage(msgFactory.createReplaceFileRequest(badData, replaceCsData, csSpec, csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+        messageBus.sendMessage(msgFactory.createReplaceFileRequest(badData, TestFileHelper.getDefaultFileChecksum(), csSpec, csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
@@ -228,12 +214,12 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         initializeCacheWithMD5ChecksummedFile();
         Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
-        messageBus.sendMessage(msgFactory.createReplaceFileRequest(null, replaceCsData, csSpec, csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+        messageBus.sendMessage(msgFactory.createReplaceFileRequest(null, TestFileHelper.getDefaultFileChecksum(), csSpec, csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
 
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), REPLACE_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), Base16Utils.decodeBase16(TestFileHelper.getDefaultFileChecksum().getChecksumValue()));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -279,7 +265,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), REPLACE_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), Base16Utils.decodeBase16(TestFileHelper.getDefaultFileChecksum().getChecksumValue()));
     }
  
     @Test( groups = {"regressiontest", "pillartest"})
@@ -297,7 +283,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         badData.setChecksumSpec(badCsType);
         badData.setChecksumValue(Base16Utils.encodeBase16(DEFAULT_MD5_CHECKSUM));
 
-        messageBus.sendMessage(msgFactory.createReplaceFileRequest(badData, replaceCsData, csSpec, csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+        messageBus.sendMessage(msgFactory.createReplaceFileRequest(badData, TestFileHelper.getDefaultFileChecksum(), csSpec, csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
 
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
@@ -339,7 +325,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         badCsType.setChecksumType(ChecksumType.OTHER);
         badCsType.setOtherChecksumType("NOT-EXISTING-TYPE");
 
-        messageBus.sendMessage(msgFactory.createReplaceFileRequest(csData, replaceCsData, badCsType, csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+        messageBus.sendMessage(msgFactory.createReplaceFileRequest(csData, TestFileHelper.getDefaultFileChecksum(), badCsType, csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
 
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
@@ -358,7 +344,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         badCsType.setChecksumType(ChecksumType.OTHER);
         badCsType.setOtherChecksumType("NOT-EXISTING-TYPE");
 
-        messageBus.sendMessage(msgFactory.createReplaceFileRequest(csData, replaceCsData, csSpec, badCsType, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+        messageBus.sendMessage(msgFactory.createReplaceFileRequest(csData, TestFileHelper.getDefaultFileChecksum(), csSpec, badCsType, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
 
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
@@ -377,7 +363,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), REPLACE_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), Base16Utils.decodeBase16(TestFileHelper.getDefaultFileChecksum().getChecksumValue()));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -385,7 +371,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         addDescription("Tests the handling of a bad URL in the request.");
         initializeCacheWithMD5ChecksummedFile();
         String fileAddress = "http://127.0.0.1/¾" + new Date().getTime();
-        messageBus.sendMessage(msgFactory.createReplaceFileRequest(csData, replaceCsData, csSpec, csSpec, fileAddress, DEFAULT_FILE_ID, FILE_SIZE));
+        messageBus.sendMessage(msgFactory.createReplaceFileRequest(csData, TestFileHelper.getDefaultFileChecksum(), csSpec, csSpec, fileAddress, DEFAULT_FILE_ID, FILE_SIZE));
 
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 

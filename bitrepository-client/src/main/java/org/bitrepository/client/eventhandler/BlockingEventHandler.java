@@ -51,12 +51,12 @@ public class BlockingEventHandler implements EventHandler {
             eventHandler.handleEvent(event);
         }
 
-        if (event.getType() ==  OperationEvent.OperationEventType.COMPONENT_COMPLETE) {
+        if (event.getEventType() ==  OperationEvent.OperationEventType.COMPONENT_COMPLETE) {
             componentCompleteEvents.add((ContributorEvent)event);
-        } else if (event.getType() == OperationEvent.OperationEventType.COMPONENT_FAILED) {
+        } else if (event.getEventType() == OperationEvent.OperationEventType.COMPONENT_FAILED) {
             componentFailedEvents.add((ContributorFailedEvent)event);
-        } else if(event.getType() == OperationEvent.OperationEventType.COMPLETE ||
-                event.getType() == OperationEvent.OperationEventType.FAILED    ) {
+        } else if(event.getEventType() == OperationEvent.OperationEventType.COMPLETE ||
+                event.getEventType() == OperationEvent.OperationEventType.FAILED    ) {
             finishEvent = event;
             this.notify();
         }

@@ -24,11 +24,7 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URL;
 import java.util.Date;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -40,8 +36,8 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -52,40 +48,31 @@ import org.testng.annotations.Test;
  */
 public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
     private ReplaceFileMessageFactory msgFactory;
-    String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
-    String REPLACE_CHECKSUM = "940a51b250e7aa82d8e8ea31217ff267";
-    Long FILE_SIZE;
+    private String FILE_ADDRESS;
+    private final Long FILE_SIZE = 1L;
     ChecksumDataForFileTYPE replaceCsData;
     ChecksumDataForFileTYPE csData;
     ChecksumSpecTYPE csSpec;
 
-    @BeforeMethod (alwaysRun=true)
+    @BeforeMethod(alwaysRun=true)
     public void initialiseReplaceFileTests() throws Exception {
         msgFactory = new ReplaceFileMessageFactory(clientSettings, getPillarID(), pillarDestinationId);
-        
-        csSpec = new ChecksumSpecTYPE();
-        csSpec.setChecksumType(ChecksumType.MD5);
-        
-        replaceCsData = new ChecksumDataForFileTYPE();
-        replaceCsData.setCalculationTimestamp(CalendarUtils.getEpoch());
-        replaceCsData.setChecksumSpec(csSpec);
-        replaceCsData.setChecksumValue(Base16Utils.encodeBase16(REPLACE_CHECKSUM));
-        
+        FILE_ADDRESS = httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID).toExternalForm();
+
+        csSpec = TestFileHelper.getDefaultFileChecksum().getChecksumSpec();
+        replaceCsData = TestFileHelper.getDefaultFileChecksum();
+
         csData = new ChecksumDataForFileTYPE();
         csData.setCalculationTimestamp(CalendarUtils.getEpoch());
         csData.setChecksumSpec(csSpec);
         csData.setChecksumValue(Base16Utils.encodeBase16(EMPTY_FILE_CHECKSUM));
     }
 
-    @SuppressWarnings("deprecation")
     @BeforeClass (alwaysRun=true)
     public void initialiseReplaceFileClass() throws Exception {
-        File replaceFile = new File("src/test/resources/" + DEFAULT_FILE_ID);
-        Assert.assertTrue(replaceFile.isFile(), "The test file does not exist at '" + replaceFile.getAbsolutePath() + "'.");
-        FILE_SIZE = replaceFile.length();
-        ProtocolComponentFactory.getInstance().getFileExchange().uploadToServer(new FileInputStream(replaceFile), 
-                new URL(FILE_ADDRESS));
+        httpServer.uploadFile(TestFileHelper.getDefaultFile(), TestFileHelper.DEFAULT_FILE_ID);
     }
+
     
     @Test( groups = {"regressiontest", "pillartest"})
     public void referencePillarReplaceTestSuccessCase() throws Exception {
@@ -155,10 +142,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertEquals(receivedChecksumData.getChecksumSpec(), replaceRequest.getChecksumRequestForNewFile(), 
                 "Should return the same type of checksum as requested.");
         Assert.assertEquals(Base16Utils.decodeBase16(receivedChecksumData.getChecksumValue()), 
-                REPLACE_CHECKSUM);
-
-        addStep("Check the cached checksum.", "Should have been replaced by the new checksum.");
-        Assert.assertEquals(archive.getFile(DEFAULT_FILE_ID).length(), FILE_SIZE.longValue());
+                Base16Utils.decodeBase16(replaceCsData.getChecksumValue()));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -206,7 +190,6 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-        Assert.assertEquals(archive.getFile(DEFAULT_FILE_ID).length(), 0);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -239,7 +222,6 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
-        Assert.assertEquals(archive.getFile(DEFAULT_FILE_ID).length(), FILE_SIZE.longValue());
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -252,7 +234,6 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
-        Assert.assertEquals(archive.getFile(DEFAULT_FILE_ID).length(), 0);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
@@ -270,7 +251,6 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
-        Assert.assertEquals(archive.getFile(DEFAULT_FILE_ID).length(), 0);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
@@ -284,7 +264,6 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
-        Assert.assertEquals(archive.getFile(DEFAULT_FILE_ID).length(), FILE_SIZE.longValue());
     }
  
     @Test( groups = {"regressiontest", "pillartest"})
@@ -307,7 +286,6 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
-        Assert.assertEquals(archive.getFile(DEFAULT_FILE_ID).length(), 0);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -330,7 +308,6 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
-        Assert.assertEquals(archive.getFile(DEFAULT_FILE_ID).length(), 0);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -349,7 +326,6 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
-        Assert.assertEquals(archive.getFile(DEFAULT_FILE_ID).length(), 0);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -368,7 +344,6 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
-        Assert.assertEquals(archive.getFile(DEFAULT_FILE_ID).length(), 0);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -382,7 +357,6 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         ReplaceFileFinalResponse finalResponse = clientTopic.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
-        Assert.assertEquals(archive.getFile(DEFAULT_FILE_ID).length(), FILE_SIZE.longValue());
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

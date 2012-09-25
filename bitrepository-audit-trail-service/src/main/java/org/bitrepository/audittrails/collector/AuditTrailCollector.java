@@ -168,10 +168,9 @@ public class AuditTrailCollector {
             if(event instanceof AuditTrailResult) {
                 AuditTrailResult auditEvent = (AuditTrailResult) event;
                 store.addAuditTrails(auditEvent.getAuditTrailEvents().getAuditTrailEvents());
-            } else if(event.getType() == OperationEventType.COMPONENT_FAILED ||
-                    event.getType() == OperationEventType.FAILED ||
-                    event.getType() == OperationEventType.IDENTIFY_TIMEOUT ||
-                    event.getType() == OperationEventType.NO_COMPONENT_FOUND) {
+            } else if(event.getEventType() == OperationEventType.COMPONENT_FAILED ||
+                    event.getEventType() == OperationEventType.FAILED ||
+                    event.getEventType() == OperationEventType.IDENTIFY_TIMEOUT) {
                 log.warn("Event: " + event.toString());
             } else {
                 log.debug("Event:" + event.toString());

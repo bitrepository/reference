@@ -56,10 +56,10 @@ public class CompleteEventAwaiter implements EventHandler {
     
     @Override
     public void handleEvent(OperationEvent event) {
-        if(event.getType() == OperationEventType.COMPLETE) {
+        if(event.getEventType() == OperationEventType.COMPLETE) {
             log.debug("Complete: " + event.toString());
             finalEventQueue.add(event);
-        } else if(event.getType() == OperationEventType.FAILED) {
+        } else if(event.getEventType() == OperationEventType.FAILED) {
             log.warn("Failure: " + event.toString());
             finalEventQueue.add(event);
         } else {

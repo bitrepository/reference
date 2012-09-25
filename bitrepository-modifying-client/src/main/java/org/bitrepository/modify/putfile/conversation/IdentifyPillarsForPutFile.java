@@ -63,11 +63,10 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
                 if(response.isSetChecksumDataForExistingFile()) {
                     if(ChecksumUtils.areEqual(
                             response.getChecksumDataForExistingFile(),context.getChecksumForValidationAtPillar())) {
-                        getContext().getMonitor().contributorComplete(
-                                new PutFileCompletePillarEvent(response.getChecksumDataForExistingFile(),
-                                        response.getPillarID(),
-                                        "File already existed on " + response.getPillarID(),
-                                        response.getCorrelationID()));
+                        PutFileCompletePillarEvent event = new PutFileCompletePillarEvent(
+                                response.getPillarID(), response.getChecksumDataForExistingFile());
+                        event.setInfo("File already existed on " + response.getPillarID());
+                        getContext().getMonitor().contributorComplete(event);
                     } else {
                         getContext().getMonitor().contributorFailed(
                                 "Received negative response from component " + response.getFrom() +

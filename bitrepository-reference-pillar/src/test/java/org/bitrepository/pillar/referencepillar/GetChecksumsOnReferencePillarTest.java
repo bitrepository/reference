@@ -24,8 +24,6 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
-import java.util.Date;
-
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
@@ -153,7 +151,7 @@ public class GetChecksumsOnReferencePillarTest extends ReferencePillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void pillarGetChecksumsTestWithDeliveryAtURL() throws Exception {
         addDescription("Tests the GetChecksums functionality of the reference pillar when delivery at an URL.");
-        String DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/CS_TEST_" + new Date().getTime() + getPillarID();
+        String DELIVERY_ADDRESS =  httpServer.getURL("CS_TEST").toExternalForm();
         initializeArchiveWithEmptyFile();
         FileIDs fileids = new FileIDs();
         fileids.setAllFileIDs(DEFAULT_FILE_ID);

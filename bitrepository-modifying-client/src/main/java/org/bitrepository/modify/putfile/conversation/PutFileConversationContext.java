@@ -30,6 +30,7 @@ import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.protocolversiondefinition.OperationType;
 
 public class PutFileConversationContext extends ConversationContext {
     private final URL urlForFile;
@@ -41,7 +42,7 @@ public class PutFileConversationContext extends ConversationContext {
             ChecksumDataForFileTYPE checksumForValidationAtPillar, ChecksumSpecTYPE checksumRequestsForValidation, 
             Settings settings, MessageSender messageSender, String clientID, Collection<String> contributors,
             EventHandler eventHandler, String auditTrailInformation) {
-        super(settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
+        super(OperationType.PUT_FILE, settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
         this.urlForFile = urlForFile;        
         this.fileSize = new BigInteger(Long.toString(fileSize));
         this.checksumForValidationAtPillar = checksumForValidationAtPillar;

@@ -59,9 +59,8 @@ public class GettingChecksums extends PerformingOperationState {
         if (msg instanceof GetChecksumsFinalResponse) {
             GetChecksumsFinalResponse response = (GetChecksumsFinalResponse) msg;
             getContext().getMonitor().contributorComplete(new ChecksumsCompletePillarEvent(
-                    response.getResultingChecksums(), response.getChecksumRequestForExistingFile(),
-                    response.getFrom(),"Received checksum result from " + response.getPillarID(),
-                    response.getCorrelationID()));
+                    response.getFrom(), response.getResultingChecksums(), response.getChecksumRequestForExistingFile()
+                    ));
         } else {
             throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
                     " while waiting for GetChecksums response.");

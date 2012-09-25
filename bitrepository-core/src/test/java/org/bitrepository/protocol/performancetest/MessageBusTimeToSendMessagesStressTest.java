@@ -171,7 +171,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
 
     /**
      * Sends the wanted amount of messages.
-     * @param confs The configuration for the messagebus, where the messages should be sent.
+     * @param conf The configuration for the messagebus, where the messages should be sent.
      * @throws Exception
      */
     private void sendAllTheMessages(MessageBusConfiguration conf, SecurityManager securityManager) throws Exception {

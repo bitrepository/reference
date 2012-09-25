@@ -102,7 +102,7 @@ public class PutFile {
                         " (with the id '" + cmdHandler.getOptionValue(Constants.FILE_ID_ARG) + "')" 
                         : "") 
                 + ": " + finalEvent);
-        if(finalEvent.getType() == OperationEventType.COMPLETE) {
+        if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
             System.exit(0);
         } else {
             System.exit(-1);

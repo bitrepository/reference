@@ -96,12 +96,12 @@ public class PutFileStressIT extends PillarPerformanceTest {
 
         @Override
         public void handleEvent(OperationEvent event) {
-            if (event.getType().equals(OperationEvent.OperationEventType.COMPLETE)) {
+            if (event.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
                 //CompleteEvent completeEvent = (CompleteEvent)event;
                 // PutFileCompletePillarEvent fileID = (PutFileCompletePillarEvent)completeEvent.getComponentResults()[0];
                 // Todo The current complete event should return a event, so we can detect which file has been affected
                 this.metrics.mark("#" + metrics.getCount());
-            } else if (event.getType().equals(OperationEvent.OperationEventType.FAILED)) {
+            } else if (event.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
                 this.metrics.registerError(event.getInfo());
             }
         }

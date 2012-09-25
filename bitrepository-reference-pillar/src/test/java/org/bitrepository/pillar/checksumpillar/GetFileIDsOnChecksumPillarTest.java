@@ -34,6 +34,8 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
+import org.bitrepository.common.utils.FileIDsUtils;
+import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.messagefactories.GetFileIDsMessageFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -48,27 +50,26 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
     static {
         allFileIDs.setAllFileIDs("true");        
     }
+    private static String DELIVERY_ADDRESS;
 
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetFileIDsOnReferencePillarTest() throws Exception {
         msgFactory = new GetFileIDsMessageFactory(componentSettings);
+        DELIVERY_ADDRESS =  httpServer.getURL("test.txt").toExternalForm();
     }    
 
     @Test( groups = {"regressiontest", "pillartest"})
     public void pillarGetFileIDsTestSuccessCase() throws Exception {
         addDescription("Tests the GetFileIDs functionality of the checksum pillar for the successful scenario.");
         addStep("Setting up the variables for the test.", "Should be instantiated.");
-        String FILE_IDS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/fileids-delivery-test.xml" + getTopicPostfix();        
-        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String auditTrail = "GET-FILE-IDS-TEST";
         String CHECKSUM = "1234cccccccc4321";
+        FileIDs fileids = FileIDsUtils.createFileIDs(TestFileHelper.DEFAULT_FILE_ID);
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
-        FileIDs fileids = new FileIDs();
-        fileids.setFileID(FILE_ID);
         
         addStep("Move the test file into the file directory.", "Should be all-right");
-        cache.insertChecksumCalculation(FILE_ID, CHECKSUM, new Date());
+        cache.insertChecksumCalculation(TestFileHelper.DEFAULT_FILE_ID, CHECKSUM, new Date());
         
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the checksum pillar.");
@@ -83,7 +84,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
         Assert.assertEquals(receivedIdentifyResponse, 
                 msgFactory.createIdentifyPillarsForGetFileIDsResponse(
                         identifyRequest.getCorrelationID(),
-                        fileids, 
+                        fileids,
                         pillarId,
                         receivedIdentifyResponse.getReplyTo(),
                         receivedIdentifyResponse.getResponseInfo(),
@@ -96,7 +97,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
                 "Should be received and handled by the checksum pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
                 auditTrail, receivedIdentifyResponse.getCorrelationID(), fileids, getPillarID(), pillarId, 
-                clientDestinationId, FILE_IDS_DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
+                clientDestinationId, DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
         messageBus.sendMessage(getFileIDsRequest);
         
         addStep("Retrieve the ProgressResponse for the GetFileIDs request", 
@@ -108,8 +109,8 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
                         fileids, 
                         pillarId, 
                         progressResponse.getReplyTo(), 
-                        progressResponse.getResponseInfo(), 
-                        FILE_IDS_DELIVERY_ADDRESS,
+                        progressResponse.getResponseInfo(),
+                        DELIVERY_ADDRESS,
                         progressResponse.getTo()));
         
         addStep("Retrieve the FinalResponse for the GetFileIDs request", 
@@ -132,16 +133,13 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
     public void pillarGetFileIDsTestSuccessCaseAllFilesAndURL() throws Exception {
         addDescription("Tests the GetFileIDs functionality of the checksum pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_IDS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" + getTopicPostfix();
-        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        FileIDs fileids = new FileIDs();
-        fileids.setAllFileIDs("true");
+        FileIDs fileids = FileIDsUtils.getAllFileIDs();
         String auditTrail = null;
         String CHECKSUM = "1234cccccccc4321";
         
         addStep("Move the test file into the file directory.", "Should be all-right");
-        cache.insertChecksumCalculation(FILE_ID, CHECKSUM, new Date());
+        cache.insertChecksumCalculation(DEFAULT_FILE_ID, CHECKSUM, new Date());
         
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");
@@ -169,7 +167,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
                 "Should be received and handled by the pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
                 auditTrail, receivedIdentifyResponse.getCorrelationID(), fileids, getPillarID(), pillarId, 
-                clientDestinationId, FILE_IDS_DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
+                clientDestinationId, DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
         messageBus.sendMessage(getFileIDsRequest);
         
         addStep("Retrieve the ProgressResponse for the GetFileIDs request", 
@@ -182,7 +180,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
                         pillarId, 
                         progressResponse.getReplyTo(), 
                         progressResponse.getResponseInfo(), 
-                        FILE_IDS_DELIVERY_ADDRESS,
+                        DELIVERY_ADDRESS,
                         progressResponse.getTo()));
         
         addStep("Retrieve the FinalResponse for the GetFileIDs request", 
@@ -200,7 +198,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
                         finalResponse.getResultingFileIDs(),
                         finalResponse.getTo()));
         
-        Assert.assertEquals(finalResponse.getResultingFileIDs().getResultAddress(), FILE_IDS_DELIVERY_ADDRESS);
+        Assert.assertEquals(finalResponse.getResultingFileIDs().getResultAddress(), DELIVERY_ADDRESS);
         Assert.assertNull(finalResponse.getResultingFileIDs().getFileIDsData(), "Results should be delivered through URL");        
         Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
         Assert.assertEquals(audits.getCallsForAuditEvent(), 0, "Should not deliver any audit.");
@@ -245,13 +243,9 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
         addDescription("Tests that the ChecksumPillar is able to reject a GetFileIDs requests for a file, " +
                 "which it does not have. But this time at the GetFileIDs message.");
         addStep("Setting up the variables for the test.", "Should be instantiated.");
-        String auditTrail = "GET-FILE-IDS-TEST";
-        String FILE_IDS_DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/checksum-delivery-test.xml" + getTopicPostfix();
-        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String auditTrail = "GET-FILE-IDS-TEST";String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
-        FileIDs fileids = new FileIDs();
-        fileids.setFileID(FILE_ID);
+        FileIDs fileids = FileIDsUtils.createFileIDs(DEFAULT_FILE_ID);
         
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the checksum pillar.");
@@ -279,7 +273,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
                 "Should be caught and handled by the checksum pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
                 auditTrail, msgFactory.getNewCorrelationID(), fileids, getPillarID(), pillarId, 
-                clientDestinationId, FILE_IDS_DELIVERY_ADDRESS, pillarDestinationId);
+                clientDestinationId, DELIVERY_ADDRESS, pillarDestinationId);
         messageBus.sendMessage(getFileIDsRequest);
         
         addStep("Retrieve the FinalResponse for the GetFileIDs request", 

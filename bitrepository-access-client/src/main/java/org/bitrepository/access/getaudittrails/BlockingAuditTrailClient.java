@@ -61,9 +61,9 @@ public class BlockingAuditTrailClient {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
         client.getAuditTrails(componentQueries, fileID, urlForResult, blocker, auditTrailInformation);
         OperationEvent finishEvent = blocker.awaitFinished();
-        if(finishEvent.getType() == OperationEvent.OperationEventType.COMPLETE) {
+        if(finishEvent.getEventType() == OperationEvent.OperationEventType.COMPLETE) {
             return blocker.getResults();
-        } else if (finishEvent.getType() == OperationEvent.OperationEventType.FAILED) {
+        } else if (finishEvent.getEventType() == OperationEvent.OperationEventType.FAILED) {
             throw new NegativeResponseException(finishEvent.getInfo(), null);
         } else throw new RuntimeException("Received unexpected event type" + finishEvent);
     }

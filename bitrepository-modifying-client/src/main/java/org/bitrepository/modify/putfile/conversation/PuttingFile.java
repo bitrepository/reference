@@ -55,10 +55,7 @@ public class PuttingFile extends PerformingOperationState {
         if (msg instanceof PutFileFinalResponse) {
             PutFileFinalResponse response = (PutFileFinalResponse) msg;
             getContext().getMonitor().contributorComplete(
-                    new PutFileCompletePillarEvent(response.getChecksumDataForNewFile(),
-                            response.getPillarID(),
-                            "Received put file result from " + response.getPillarID(),
-                            response.getCorrelationID()));
+                    new PutFileCompletePillarEvent(response.getPillarID(), response.getChecksumDataForNewFile()));
         } else {
             throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
                     " while waiting for Put file response.");

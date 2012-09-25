@@ -25,24 +25,21 @@
 package org.bitrepository.modify.putfile.conversation;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.client.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.ContributorCompleteEvent;
 
 /**
 * Contains the result of a put file request sent to a single pillar.
 */
-public class PutFileCompletePillarEvent extends ContributorEvent {
+public class PutFileCompletePillarEvent extends ContributorCompleteEvent {
     /** @see #getChecksums(). */
     private final ChecksumDataForFileTYPE result;
     
     /**
      * @param result The result returned by the pillar.
      * @param pillarID The pillar which generated the result
-     * @param info Additional information.
-     * @param conversationID The ID of the conversation, which caused this event.
      */
-    public PutFileCompletePillarEvent(ChecksumDataForFileTYPE result, String pillarID, String info,
-            String conversationID) {
-        super(OperationEventType.COMPONENT_COMPLETE, info, pillarID, conversationID);
+    public PutFileCompletePillarEvent(String pillarID, ChecksumDataForFileTYPE result) {
+        super(pillarID);
         this.result = result;
     }
 

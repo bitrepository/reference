@@ -24,6 +24,8 @@
  */
 package org.bitrepository.client.eventhandler;
 
+import org.bitrepository.protocolversiondefinition.OperationType;
+
 /**
  * Container for information regarding events occurring during an operation on the Bit Repository.
  */
@@ -56,7 +58,6 @@ public interface OperationEvent {
         COMPLETE, 
         COMPONENT_FAILED,
         FAILED,
-        NO_COMPONENT_FOUND,
         IDENTIFY_TIMEOUT, 
         WARNING 
     }
@@ -71,10 +72,22 @@ public interface OperationEvent {
      * Used to get the type of event.
      * @return A <code>OperationEventType</code> categorizing this event.
      */
-    OperationEventType getType();
+    OperationEventType getEventType();
+
+    /**
+     * Used to get the type of operation.
+     * @return A <code>OperationEventType</code> categorizing this event.
+     */
+    OperationType getOperationType();
+
+    /**
+     * Used to get the fileID this operation is performed on, if any.
+     * @return A <code>OperationEventType</code> categorizing this event.
+     */
+    String getFileID();
 
     /**
      * Deliver the conversation ID of the event.
      */
-    public abstract String getConversationID();
+    String getConversationID();
 }

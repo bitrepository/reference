@@ -204,28 +204,29 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
 
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarGetChecksumsTestFailedNoSuchFileInOperation() throws Exception {
-        addDescription("Tests that the ChecksumPillar is able to reject a GetChecksums requests for a file, " 
-                + "which it does not have. But this time at the GetChecksums message.");
+        addDescription("Tests that the ReferencePillar is able to reject a GetChecksums requests for a file, " +
+        "which it does not have. But this time at the GetChecksums message.");
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs("A-NON-EXISTING-FILE");
 
-        addStep("Create and send the actual GetChecksums message to the pillar.",
-                "Should be received and handled by the pillar.");
-        GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(csSpec, fileids, null);
+        addStep("Create and send the actual GetChecksums message to the pillar.", 
+        "Should be received and handled by the pillar.");
+        GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
+                csSpec, fileids, null);
         messageBus.sendMessage(getChecksumsRequest);
 
-        addStep("Retrieve the FinalResponse for the GetChecksums request",
-                "The GetChecksums response should be sent by the pillar.");
+        addStep("Retrieve the FinalResponse for the GetChecksums request", 
+        "The GetChecksums response should be sent by the pillar.");
         GetChecksumsFinalResponse finalResponse = clientTopic.waitForMessage(GetChecksumsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarGetChecksumsTestIdentifyWithNoChecksumSpec() throws Exception {
-        addDescription("Tests that the ChecksumPillar accepts the identification for a GetChecksums requests when "
-                + "no checksum type is specified.");
+        addDescription("Tests that the ReferencePillar is accepts a GetChecksums requests when there is no checksum "
+                +"type specified.");
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
 
-        addStep("Create and send the identify message", "The pillar receives and responds to the message.");
+        addStep("Create and send the identify message", "Should be received and handled by the pillar.");
         messageBus.sendMessage(msgFactory.createIdentifyPillarsForGetChecksumsRequest(null, fileids));
 
         addStep("Retrieve the IdentifyResponse for the GetChecksums request and validate it.",
@@ -236,20 +237,19 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarGetChecksumsTestIdentifyWithBadChecksumSpec() throws Exception {
-        addDescription("Tests that the ReferencePillar is rejcts the identification for a GetChecksums operation when "
-                + "a bad checksum type specified.");
+        addDescription("Tests that the ReferencePillar is rejects a GetChecksums requests when a bad checksum "
+                +"type specified. But it should just be returned as a negative identification, not a 'REQUEST_NOT_UNDERSTOOD_FAILURE'.");
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
         ChecksumSpecTYPE badCsType = new ChecksumSpecTYPE();
         badCsType.setChecksumSalt(new byte[]{1,0,1,0});
         badCsType.setChecksumType(ChecksumType.OTHER);
         badCsType.setOtherChecksumType("AlgorithmDoesNotExist");
         
-        addStep("Create and send the identify message with the 'bad checksum spec'", 
-                "The pillar receives and responds to the message.");
+        addStep("Create and send the identify message", "Should be received and handled by the pillar.");
         messageBus.sendMessage(msgFactory.createIdentifyPillarsForGetChecksumsRequest(badCsType, fileids));
 
         addStep("Retrieve the IdentifyResponse for the GetChecksums request and validate it.",
-                "The pillar rejects the operation.");
+                "The pillar gives a negative identification.");
         IdentifyPillarsForGetChecksumsResponse response = clientTopic.waitForMessage(IdentifyPillarsForGetChecksumsResponse.class);
         Assert.assertEquals(response.getResponseInfo().getResponseCode(), ResponseCode.REQUEST_NOT_SUPPORTED);
     }
