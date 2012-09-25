@@ -40,6 +40,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.Date;
+
 /**
  * Tests the PutFile functionality on the ReferencePillar.
  */
@@ -149,7 +151,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarGetChecksumsTestWithDeliveryAtURL() throws Exception {
         addDescription("Tests the GetChecksums functionality of the reference pillar when delivery at an URL.");
-        String DELIVERY_ADDRESS =  httpServer.getURL("CS_TEST").toExternalForm();
+        String DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/CS_TEST_" + new Date().getTime() + getPillarID();
         initializeCacheWithMD5ChecksummedFile();
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
 
