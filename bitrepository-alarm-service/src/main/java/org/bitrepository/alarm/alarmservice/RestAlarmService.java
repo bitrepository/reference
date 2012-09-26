@@ -26,6 +26,7 @@ package org.bitrepository.alarm.alarmservice;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -41,10 +42,14 @@ import org.bitrepository.alarm.AlarmService;
 import org.bitrepository.alarm.AlarmServiceFactory;
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/AlarmService")
 public class RestAlarmService {
-    private AlarmService alarmService;
+    private Logger log = LoggerFactory.getLogger(getClass());
+
+	private AlarmService alarmService;
     
     public RestAlarmService() {
         alarmService = AlarmServiceFactory.getAlarmService();
@@ -89,12 +94,19 @@ public class RestAlarmService {
             @DefaultValue("10") @FormParam("maxAlarms") Integer maxAlarms,
             @DefaultValue("true") @FormParam ("oldestAlarmFirst") boolean oldestAlarmFirst) {
         List<Alarm> alarmList = new ArrayList<Alarm>();
-
+    	log.info("################### Querying alarms in database...");
         Date from = makeDateObject(fromDate);
         Date to = makeDateObject(toDate);
-                
-        alarmList.addAll(alarmService.extractAlarms(contentOrNull(reportingComponent), makeAlarmCode(alarmCode), from, to, 
-                contentOrNull(fileID), maxAlarms, oldestAlarmFirst));
+        
+        Collection<Alarm> alarms = alarmService.extractAlarms(contentOrNull(reportingComponent), makeAlarmCode(alarmCode), from, to, 
+        		contentOrNull(fileID), maxAlarms, oldestAlarmFirst);
+        if(!alarms.isEmpty()) {
+        	log.info("Alarm list contains alarms");
+            alarmList.addAll(alarms);        	
+        } else {
+        	log.info("The list of alarms is empty..");
+        }
+
         return alarmList;
     }
     
