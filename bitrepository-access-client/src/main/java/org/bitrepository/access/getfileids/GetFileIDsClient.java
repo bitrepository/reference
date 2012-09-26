@@ -46,7 +46,8 @@ public interface GetFileIDsClient {
      * <br/>
      * The results are returned through as an special event through the eventHandler, the FileIDsCompletePillarCompete. 
      *  
-     * @param pillarIDs The list of pillars which should be requested for the FileIDs.
+     * @param pillarIDs The list of pillars which should be requested for the FileIDs. If null, fileIDs are requested
+     *                  from all pillars.
      * @param fileIDs The ids for the requested files. 
      * @param addressForResult The address for delivering the results of the operation. If this is null, then it is 
      * returned through the messages.

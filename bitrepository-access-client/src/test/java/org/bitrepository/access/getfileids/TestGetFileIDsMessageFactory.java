@@ -87,15 +87,10 @@ public class TestGetFileIDsMessageFactory extends ClientTestMessageFactory {
             String pillarId, String pillarDestinationId) {
         IdentifyPillarsForGetFileIDsResponse identifyPillarsForGetFileIdsResponse = new IdentifyPillarsForGetFileIDsResponse();
         initializeMessageDetails(identifyPillarsForGetFileIdsResponse);
-        identifyPillarsForGetFileIdsResponse.setTo(receivedIdentifyRequestMessage.getReplyTo());
-        identifyPillarsForGetFileIdsResponse.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
-        identifyPillarsForGetFileIdsResponse.setCollectionID(receivedIdentifyRequestMessage.getCollectionID());
-        identifyPillarsForGetFileIdsResponse.setReplyTo(pillarDestinationId);
+        setResponseDetails(identifyPillarsForGetFileIdsResponse, receivedIdentifyRequestMessage, pillarId, pillarDestinationId);
         identifyPillarsForGetFileIdsResponse.setPillarID(pillarId);
         identifyPillarsForGetFileIdsResponse.setFileIDs(receivedIdentifyRequestMessage.getFileIDs());
         identifyPillarsForGetFileIdsResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
-        identifyPillarsForGetFileIdsResponse.setResponseInfo(createPositiveResponseInfo());
-        identifyPillarsForGetFileIdsResponse.setFrom(pillarId);
         return identifyPillarsForGetFileIdsResponse;
     }
     

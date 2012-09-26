@@ -82,6 +82,7 @@ public abstract class ClientTestMessageFactory extends TestMessageFactory {
         response.setTo(request.getReplyTo());
         response.setReplyTo(replyTo);
         response.setFrom(componentID);
+        response.setResponseInfo(createPositiveResponseInfo());
     }
 
     protected ResponseInfo createPositiveResponseInfo() {
