@@ -23,14 +23,13 @@ package org.bitrepository.pillar.referencepillar;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.MockAlarmDispatcher;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.cache.MemoryCache;
 import org.bitrepository.pillar.common.MessageHandlerContext;
+import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
@@ -45,7 +44,6 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     protected ReferenceArchive archive;
     protected ReferenceChecksumManager csManager;
     protected ReferencePillarMediator mediator;
-    protected MockAlarmDispatcher alarmDispatcher;
     protected MockAuditManager audits;
     protected ChecksumStore csCache;
     protected MessageHandlerContext context;
@@ -65,8 +63,10 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
         archive = new ReferenceArchive(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
         audits = new MockAuditManager();
         ContributorContext contributorContext = new ContributorContext(messageBus, componentSettings);
-        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
-        context = new MessageHandlerContext(componentSettings, messageBus, alarmDispatcher, audits);
+        context = new MessageHandlerContext(
+                componentSettings,
+                messageBus,
+                new PillarAlarmDispatcher(contributorContext), audits);
         csManager = new ReferenceChecksumManager(archive, csCache, ChecksumUtils.getDefault(context.getSettings()), 
                 3600000L);
         mediator = new ReferencePillarMediator(messageBus, context, archive, csManager);

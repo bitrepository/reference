@@ -23,6 +23,7 @@ package org.bitrepository.pillar.checksumpillar;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.StatusCode;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
@@ -89,7 +90,7 @@ public class GetStatusOnChecksumPillarTest extends ChecksumPillarTest {
     public void checksumPillarGetStatusWrongContributor() {
         addDescription("Tests the GetStatus functionality of the checksum pillar for the bad scenario, where a wrong "
                 + "contributor id is given.");
-        addStep("Set up constants and variables.", "Should not fail here!");
+        addFixtureSetup("Set the alarm level to warning to enable the sending of invalid ComponentIDs.");
         String contributorId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         String wrongContributorId = "wrongContributor";
         String auditTrail = null;
@@ -114,14 +115,7 @@ public class GetStatusOnChecksumPillarTest extends ChecksumPillarTest {
                 identifyRequest.getCorrelationID(), getPillarID(), clientDestinationId, pillarDestinationId);
         messageBus.sendMessage(request);
         
-        addStep("The pillar should send an alarm.", "Validate the AlarmDispatcher");
-        synchronized(this) {
-            try {
-                wait(5000);
-            } catch (Exception e) { 
-                // ignore
-            }
-        }
-        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 1);
+        addStep("The pillar should send an alarm.", "");
+        Assert.assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
     }
 }

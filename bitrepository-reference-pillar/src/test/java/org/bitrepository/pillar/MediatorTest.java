@@ -21,12 +21,17 @@
  */
 package org.bitrepository.pillar;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.common.MessageHandlerContext;
+import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.PillarMediator;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ContributorContext;
@@ -36,14 +41,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 public class MediatorTest extends DefaultFixturePillarTest {
-    ChecksumPillarMediator mediator;
-    MockAlarmDispatcher alarmDispatcher;
     MockAuditManager audits;
     MessageHandlerContext context;
     
@@ -51,8 +49,8 @@ public class MediatorTest extends DefaultFixturePillarTest {
     public void initialiseTest() throws Exception {
         audits = new MockAuditManager();
         ContributorContext contributorContext = new ContributorContext(messageBus, componentSettings);
-        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
-        context = new MessageHandlerContext(componentSettings, messageBus, alarmDispatcher, audits);
+        context = new MessageHandlerContext(
+                componentSettings, messageBus, new PillarAlarmDispatcher(contributorContext), audits);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -64,7 +62,7 @@ public class MediatorTest extends DefaultFixturePillarTest {
         try {
             mediator.start();
             
-            Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0);
+            alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
             
             addStep("Send a request to the mediator.", "Should be caught.");
             IdentifyContributorsForGetStatusRequest request = new IdentifyContributorsForGetStatusRequest();
@@ -80,7 +78,7 @@ public class MediatorTest extends DefaultFixturePillarTest {
             
             MessageResponse response = clientTopic.waitForMessage(IdentifyContributorsForGetStatusResponse.class);
             Assert.assertEquals(response.getResponseInfo().getResponseCode(), ResponseCode.FAILURE);
-            Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 1);
+            Assert.assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
         } finally {
             mediator.close();
         }

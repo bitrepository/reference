@@ -22,26 +22,26 @@
 package org.bitrepository.pillar.checksumpillar;
 
 import java.util.Date;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.MockAlarmDispatcher;
 import org.bitrepository.pillar.cache.MemoryCache;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.common.MessageHandlerContext;
+import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
 public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
     protected MemoryCache cache;
     protected ChecksumPillarMediator mediator;
-    protected MockAlarmDispatcher alarmDispatcher;
+    protected PillarAlarmDispatcher alarmDispatcher;
     protected MockAuditManager audits;
     protected MessageHandlerContext context;
     protected ChecksumSpecTYPE csSpec;
@@ -52,8 +52,9 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
     public void initialiseChecksumPillarTest() throws Exception {
         cache = new MemoryCache();
         audits = new MockAuditManager();
+        componentSettings.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         ContributorContext contributorContext = new ContributorContext(messageBus, componentSettings);
-        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
+        alarmDispatcher = new PillarAlarmDispatcher(contributorContext);
         context = new MessageHandlerContext(componentSettings, messageBus, alarmDispatcher, audits);
         mediator = new ChecksumPillarMediator(messageBus, context, cache);
         mediator.start();

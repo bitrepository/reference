@@ -24,6 +24,7 @@ package org.bitrepository.pillar.checksumpillar;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
@@ -156,7 +157,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
         DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 1);
+        Assert.assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
         Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
     }
     

@@ -24,10 +24,12 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
+import java.util.Date;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
@@ -39,8 +41,6 @@ import org.bitrepository.pillar.messagefactories.GetChecksumsMessageFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.util.Date;
 
 /**
  * Tests the PutFile functionality on the ReferencePillar.
@@ -109,7 +109,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
                 finalResponse.getResultingChecksums().getChecksumDataItems().get(0).getChecksumValue()), 
                 DEFAULT_MD5_CHECKSUM);
 
-        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
+        alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         Assert.assertEquals(audits.getCallsForAuditEvent(), 0, "Should not deliver audits");
     }
 

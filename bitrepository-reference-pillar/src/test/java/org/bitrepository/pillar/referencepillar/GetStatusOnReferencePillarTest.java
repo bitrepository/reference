@@ -23,6 +23,7 @@ package org.bitrepository.pillar.referencepillar;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.StatusCode;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
@@ -83,8 +84,8 @@ public class GetStatusOnReferencePillarTest extends ReferencePillarTest {
                 finalResponse.getResultingStatus(), clientDestinationId));
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getResultingStatus().getStatusInfo().getStatusCode(), StatusCode.OK);
-        
-        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
+
+        alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         Assert.assertEquals(audits.getCallsForAuditEvent(), 0, "Should not audit the GetStatus");
     }
 
@@ -117,7 +118,7 @@ public class GetStatusOnReferencePillarTest extends ReferencePillarTest {
                 identifyRequest.getCorrelationID(), getPillarID(), clientDestinationId, pillarDestinationId);
         messageBus.sendMessage(request);
         
-        addStep("The pillar should send an alarm.", "Validate the AlarmDispatcher");
+        addStep("The pillar should send an alarm.", "");
         synchronized(this) {
             try {
                 wait(5000);
@@ -125,6 +126,6 @@ public class GetStatusOnReferencePillarTest extends ReferencePillarTest {
                 // ignore
             }
         }
-        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 1);
+        Assert.assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
     }
 }

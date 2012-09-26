@@ -21,9 +21,10 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
+import java.io.File;
 import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.pillar.MockAlarmDispatcher;
 import org.bitrepository.pillar.common.MessageHandlerContext;
+import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.service.audit.MockAuditManager;
@@ -32,13 +33,10 @@ import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
-import java.io.File;
-
 public class ReferencePillarMediatorTester extends ReferencePillarTest {
     
     ReferenceArchive archive;
     ReferencePillarMediator mediator;
-    MockAlarmDispatcher alarmDispatcher;
     MockAuditManager audits;
     
     @BeforeMethod (alwaysRun=true)
@@ -53,8 +51,8 @@ public class ReferencePillarMediatorTester extends ReferencePillarTest {
         archive = new ReferenceArchive(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
         audits = new MockAuditManager();
         ContributorContext contributorContext = new ContributorContext(messageBus, componentSettings);
-        alarmDispatcher = new MockAlarmDispatcher(contributorContext);
-        MessageHandlerContext context = new MessageHandlerContext(componentSettings, messageBus, alarmDispatcher, audits);
+        MessageHandlerContext context = new MessageHandlerContext(componentSettings, messageBus,
+                new PillarAlarmDispatcher(contributorContext), audits);
         mediator = new ReferencePillarMediator(messageBus, context, archive, csManager);
         mediator.start();
     }

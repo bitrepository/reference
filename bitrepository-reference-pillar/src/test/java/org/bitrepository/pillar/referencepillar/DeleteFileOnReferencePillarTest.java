@@ -31,6 +31,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
@@ -138,7 +139,7 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
         //ToDO Implement the assertion below
         //Assert.assertEquals(finalResponse.getChecksumDataForExistingFile(), ??);
 
-        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 0, "Should not have send any alarms.");
+        alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         Assert.assertEquals(audits.getCallsForAuditEvent(), 3, "Should deliver 3 audits. One for delete and two for "
                 + "calculate checksums (both the validation and the requested).");
     }
@@ -264,11 +265,12 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
         DeleteFileRequest deleteFileRequest = msgFactory.createDeleteFileRequest(csData, csSpecRequest, FILE_ID);
         messageBus.sendMessage(deleteFileRequest);
         
-        addStep("Retrieve the FinalResponse for the DeleteFile request", 
-                "The DeleteFile response should be sent by the pillar.");
+        addStep("Retrieve the FinalResponse for the DeleteFile request",
+                "The DeleteFile faled response should be sent by the pillar and a alarm should be generated.");
         DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-        Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 1, "Should have tried to send an alarm.");
+        //ToDO MSS I don't think this should cause a alarm to be generated!
+        Assert.assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
     }
     
 
