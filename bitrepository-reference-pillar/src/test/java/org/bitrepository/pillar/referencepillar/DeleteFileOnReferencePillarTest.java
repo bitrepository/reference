@@ -269,7 +269,6 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
                 "The DeleteFile faled response should be sent by the pillar and a alarm should be generated.");
         DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-        //ToDO MSS I don't think this should cause a alarm to be generated!
         Assert.assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
     }
     
