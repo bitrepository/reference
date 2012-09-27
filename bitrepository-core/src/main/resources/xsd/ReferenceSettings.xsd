@@ -159,6 +159,15 @@
           <xs:annotation>
             <xs:documentation xml:lang="en">
               The level for raising Alarms.
+              Default value is 'ERROR'-level.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="ChecksumPillarFileDownload" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Whether the ChecksumPillar should download the file regarding PutFile operations.
+              Default value is 'DOWNLOAD_WHEN_MISSING_FROM_MESSAGE'.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
@@ -196,6 +205,45 @@
             <xs:documentation xml:lang="en">
               Sends an Alarm whenever an operation or identification fails (e.g. missing file,
               file already exist, etc.).
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  
+  <xs:element name="ChecksumPillarFileDownload">
+    <xs:simpleType>
+      <xs:annotation>
+        <xs:documentation xml:lang="en">
+          Decision for whether the ChecksumPillar should download the file in the PutFile operation,
+          or whether it should only accept the checksum from the PutFileRequest message.
+          This follows rfc2119 regarding requirement for the download.
+        </xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="ALWAYS_DOWNLOAD">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The ChecksumPillar MUST always download the file at the FileAddress URL in the 
+              PutFileRequest message, no matter whether the checksum is given as part of the message.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="NEVER_DOWNLOAD">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The ChecksumPillar MUST NOT download the file, but only use the embedded checksum in
+              the PutFileRequest. If this checksum is missing, then the ChecksumPillar must fail the
+              handling of the PutFileRequest.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="DOWNLOAD_WHEN_MISSING_FROM_MESSAGE">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The ChecksumPillar SHOULD use the checksum in the PutFileRequest. Though if such a checksum
+              is missing, then the ChecksumPillar MUST download the file for calculating the checksum.
             </xs:documentation>
           </xs:annotation>
         </xs:enumeration>
