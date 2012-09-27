@@ -86,12 +86,18 @@ public abstract class AbstractOperationEvent implements OperationEvent {
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append(getConversationID() + ": ");
         sb.append(operationType);
         if (fileID != null) {
             sb.append(" for file " + fileID);
         }
-        sb.append(" " + getEventType() + ": " + "ID: " +
-                getConversationID() + ", " + additionalInfo() + ", " + getInfo());
+        sb.append(": " + getEventType() + ": ");
+        if (additionalInfo() != null) {
+            sb.append(additionalInfo());
+        }
+        if (getInfo() != null) {
+            sb.append(", " + getInfo());
+        }
         return sb.toString();
     }
     

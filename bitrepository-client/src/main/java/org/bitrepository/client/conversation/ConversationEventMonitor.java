@@ -50,6 +50,7 @@ import static org.bitrepository.client.eventhandler.OperationEvent.OperationEven
  */
 public class ConversationEventMonitor {
     private final ConversationLogger log;
+    private final Logger eventLogger = LoggerFactory.getLogger(getClass());
     private final String conversationID;
     private final OperationType operationType;
     private final String fileID;
@@ -263,8 +264,12 @@ public class ConversationEventMonitor {
         log.debug(info, e);
     }
 
+    /**
+     * Returns a shorted conversationID. Only the first part up til the first '-' is used
+     * (but at least 4 long).
+     */
     private String getShortConversationID(String fullConversationID) {
-        return fullConversationID.substring(6);
+        return fullConversationID.substring(0, fullConversationID.indexOf("-", 4));
     }
 
 
@@ -324,31 +329,30 @@ public class ConversationEventMonitor {
      * Custom logger for prefixing the log entries with the conversation ID.
      */
     private class ConversationLogger {
-        private final Logger logger = LoggerFactory.getLogger(getClass());
 
         /** Delegates to the normal logger debug */
         public void debug(String info) {
-            logger.debug("Conversation(" + conversationID + " ) event " + contextInfo() + ":" +info);
+            eventLogger.debug(conversationID + ": " + contextInfo() + ":" +info);
         }
 
         /** Delegates to the normal logger debug */
         public void debug(String info, Exception e) {
-            logger.debug("Conversation(" + conversationID + " ) event" + contextInfo() + ":" + info, e);
+            eventLogger.debug(conversationID + ": " + contextInfo() + ":" + info, e);
         }
 
         /** Delegates to the normal logger info */
         public void info(String info) {
-            logger.info("Conversation(" + conversationID + " ) event" + contextInfo() + ":" +info);
+            eventLogger.info(conversationID + ": " + contextInfo() + ":" +info);
         }
 
         /** Delegates to the normal logger warn */
         public void warn(String info, Throwable e) {
-            logger.warn("Conversation(" + conversationID + " ) event" + contextInfo() + ":" +info, e);
+            eventLogger.warn(conversationID + ": " + contextInfo() + ":" +info, e);
         }
 
         /** Delegates to the normal logger warn */
         public void warn(String info) {
-            logger.warn("Conversation(" + conversationID + " ) event" + contextInfo() + ":" +info);
+            eventLogger.warn(conversationID + ": " + contextInfo() + ":" +info);
         }
 
         private String contextInfo() {
