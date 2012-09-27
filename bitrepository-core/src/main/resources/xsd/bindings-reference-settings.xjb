@@ -4,5 +4,8 @@
     <jaxb:bindings node="//xs:element[@name='AlarmLevel']/xs:simpleType" >
       <jaxb:typesafeEnumClass name="AlarmLevel"/>
     </jaxb:bindings>
+    <jaxb:bindings node="//xs:element[@name='ChecksumPillarFileDownload']/xs:simpleType" >
+      <jaxb:typesafeEnumClass name="ChecksumPillarFileDownload"/>
+    </jaxb:bindings>
   </jaxb:bindings>
 </jaxb:bindings>
