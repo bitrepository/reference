@@ -206,7 +206,8 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
     
     @Test( groups = {"regressiontest", "pillartest"})
     public void pillarGetFileIDsTestFailedNoSuchFile() throws Exception {
-        addDescription("Tests that the ChecksumPillar is able to reject a GetFileIDs requests for a file, which it does not have.");
+        addDescription("Tests that the ChecksumPillar is able to reject a GetFileIDs requests for a file, which it " +
+                "does not have.");
         addStep("Setting up the variables for the test.", "Should be instantiated.");
         String auditTrail = "GET-FILE-IDS-TEST";
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
@@ -243,7 +244,8 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
         addDescription("Tests that the ChecksumPillar is able to reject a GetFileIDs requests for a file, " +
                 "which it does not have. But this time at the GetFileIDs message.");
         addStep("Setting up the variables for the test.", "Should be instantiated.");
-        String auditTrail = "GET-FILE-IDS-TEST";String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String auditTrail = "GET-FILE-IDS-TEST";
+        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
         componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         FileIDs fileids = FileIDsUtils.createFileIDs(DEFAULT_FILE_ID);
         

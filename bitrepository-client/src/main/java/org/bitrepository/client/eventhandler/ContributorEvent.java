@@ -30,6 +30,9 @@ package org.bitrepository.client.eventhandler;
 public class ContributorEvent extends AbstractOperationEvent {
     private final String contributorID;
 
+    /**
+     * @param contributorID The contributorID for which this event concerns.
+     */
     public ContributorEvent(String contributorID) {
         this.contributorID = contributorID;
     }

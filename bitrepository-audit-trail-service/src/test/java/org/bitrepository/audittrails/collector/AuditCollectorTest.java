@@ -100,7 +100,7 @@ public class AuditCollectorTest extends ExtendedTestCase {
         eventHandler.handleEvent(new ContributorFailedEvent("ContributorID", ResponseCode.REQUEST_NOT_SUPPORTED));
         eventHandler.handleEvent(new OperationFailedEvent(info, null));
         DefaultEvent identificationTimeoutEvent = new DefaultEvent();
-        identificationTimeoutEvent.setType(OperationEventType.IDENTIFY_TIMEOUT);
+        identificationTimeoutEvent.setEventType(OperationEventType.IDENTIFY_TIMEOUT);
         eventHandler.handleEvent(identificationTimeoutEvent);
         eventHandler.handleEvent(new CompleteEvent(null));
 

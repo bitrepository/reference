@@ -1,4 +1,3 @@
-package org.bitrepository.commandline;
 /*
  * #%L
  * Bitrepository Command Line
@@ -20,6 +19,7 @@ package org.bitrepository.commandline;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+package org.bitrepository.commandline;
 
 import org.apache.commons.cli.Option;
 import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;

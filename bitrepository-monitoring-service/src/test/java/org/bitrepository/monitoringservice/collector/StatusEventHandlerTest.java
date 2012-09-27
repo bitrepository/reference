@@ -50,7 +50,7 @@ public class StatusEventHandlerTest extends ExtendedTestCase {
         
         addStep("Test an unhandled event.", "Should not make any calls.");
         AbstractOperationEvent event = new DefaultEvent();
-        event.setType(OperationEventType.WARNING);
+        event.setEventType(OperationEventType.WARNING);
         eventHandler.handleEvent(event);
         
         Assert.assertEquals(store.getCallsForGetStatusMap(), 0);

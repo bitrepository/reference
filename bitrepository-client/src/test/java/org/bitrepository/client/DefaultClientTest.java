@@ -160,15 +160,15 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
 
     @Test(groups = {"regressiontest"})
     public void noContributorsResponding() throws Exception {
-        addDescription("Tests the the client handles lack of a IdentifyResponse gracefully.");
+        addDescription("Tests the the client handles lack of a IdentifyResponse gracefully. " +
+                "More concrete this means that the occurence of a identification timeout should be handled correctly");
         addStep("Set a 3 second timeout for identifying contributors.", "");
 
         componentSettings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
 
-        addStep("Make the GetClient ask for fastest pillar.",
-                "It should send message to identify which pillar can respond fastest.");
+        addStep("Start the operation and wait for 5 seconds.",
+                "A IDENTIFY_REQUEST_SENT event should be generated immediately followed by a FAILED event.");
         startOperation(testEventHandler);
-        waitForIdentifyRequest();
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Wait for 5 seconds", "An IdentifyPillarTimeout event should be received followed by a FAILED event");

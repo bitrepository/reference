@@ -27,6 +27,6 @@ package org.bitrepository.client.eventhandler;
 public class ContributorCompleteEvent extends ContributorEvent {
     public ContributorCompleteEvent(String contributorID) {
         super(contributorID);
-        setType(OperationEventType.COMPONENT_COMPLETE);
+        setEventType(OperationEventType.COMPONENT_COMPLETE);
     }
 }
