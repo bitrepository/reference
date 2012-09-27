@@ -58,6 +58,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRes
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.common.utils.FileIDsUtils;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -77,10 +78,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 
     @BeforeMethod (alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
-        if (useMockupPillar()) {
-            testMessageFactory = new TestGetChecksumsMessageFactory(
-                    componentSettings.getCollectionID());
-        }
+        testMessageFactory = new TestGetChecksumsMessageFactory(componentSettings.getCollectionID());
     }
 
     @Test(groups = {"regressiontest"})
@@ -94,8 +92,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
     @Test(groups = {"regressiontest"})
     public void getChecksumsFromSinglePillar() throws Exception {
         addDescription("Tests that the client can retrieve checksums from a single pillar.");
-        FileIDs fileIDs = new FileIDs();
-        fileIDs.setFileID(DEFAULT_FILE_ID);
+        FileIDs fileIDs = FileIDsUtils.createFileIDs(DEFAULT_FILE_ID);
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         GetChecksumsClient getChecksumsClient = createGetCheckSumsClient();
@@ -105,11 +102,13 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
                         "should be generated.");
         Collection<String> pillar1AsCollection = new LinkedList<String>();
         pillar1AsCollection.add(PILLAR1_ID);
-        getChecksumsClient.getChecksums (pillar1AsCollection, fileIDs,
+        getChecksumsClient.getChecksums(pillar1AsCollection, fileIDs,
                 DEFAULT_CHECKSUM_SPECS, null, testEventHandler, "TEST-AUDIT");
 
         IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                 IdentifyPillarsForGetChecksumsRequest.class);
+        Assert.assertEquals(receivedIdentifyRequestMessage.getFileIDs(), fileIDs);
+        Assert.assertEquals(receivedIdentifyRequestMessage.getChecksumRequestForExistingFile(), DEFAULT_CHECKSUM_SPECS);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Sends a response from pillar2.",

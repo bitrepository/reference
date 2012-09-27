@@ -40,7 +40,7 @@ public class GetChecksumsConversationContext extends ConversationContext {
     public GetChecksumsConversationContext(String fileID, ChecksumSpecTYPE checksumSpec, URL urlForResult,
             Settings settings, MessageSender messageSender, String clientID,  Collection<String> contributors,
             EventHandler eventHandler, String auditTrailInformation) {
-        super(OperationType.GET_CHECKSUMS, settings, messageSender, fileID, clientID, contributors, eventHandler, auditTrailInformation);
+        super(OperationType.GET_CHECKSUMS, settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
         this.urlForResult = urlForResult;       
         this.checksumSpec = checksumSpec;
     }
