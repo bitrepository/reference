@@ -43,8 +43,6 @@ public abstract class ChecksumPillarMessageHandler<T> extends PillarMessageHandl
     private final ChecksumStore cache;
     /** The specifications for the checksum type of this ChecksumPillar. */
     private ChecksumSpecTYPE checksumType;
-    /** Whether the ChecksumPillar should download the files regarding the handling of PutFileRequest.*/
-    private ChecksumPillarFileDownload checksumPillarFileDownload;
     
     /**
      * Constructor. 
@@ -57,12 +55,6 @@ public abstract class ChecksumPillarMessageHandler<T> extends PillarMessageHandl
 
         this.cache = refCache;
         this.checksumType = ChecksumUtils.getDefault(context.getSettings());
-        
-        checksumPillarFileDownload = 
-                context.getSettings().getReferenceSettings().getPillarSettings().getChecksumPillarFileDownload();
-        if(checksumPillarFileDownload == null) {
-            checksumPillarFileDownload = ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE;
-        }
     }
     
     /**
@@ -100,9 +92,17 @@ public abstract class ChecksumPillarMessageHandler<T> extends PillarMessageHandl
     }
     
     /**
+     * Retrieves the ChecksumPillarFileDownload from settings. If not set, then the default value is
+     * 'DOWNLOAD_WHEN_MISSING_FROM_MESSAGE'.
      * @return Whether the ChecksumPillar should download the files regarding PutFileRequests.
      */
     protected ChecksumPillarFileDownload getChecksumPillarFileDownload() {
-        return checksumPillarFileDownload;
+        if(getContext().getSettings().getReferenceSettings().getPillarSettings().getChecksumPillarFileDownload() 
+                == null) {
+            return ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE;
+        } else {
+            return getContext().getSettings().getReferenceSettings().getPillarSettings()
+                    .getChecksumPillarFileDownload();
+        }
     }    
 }

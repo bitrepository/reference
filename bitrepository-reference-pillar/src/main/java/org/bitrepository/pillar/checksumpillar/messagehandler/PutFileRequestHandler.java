@@ -76,7 +76,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
     public void processRequest(PutFileRequest message) throws RequestHandlerException {
         validateMessage(message);
         tellAboutProgress(message);
-        retrieveFile(message);
+        retrieveChecksum(message);
         sendFinalResponse(message);
     }
 
@@ -135,12 +135,58 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
     }
     
     /**
-     * Retrieves the actual data, validates it and stores it.
+     * Retrieves the checksum for the file according to the configuration of the ChecksumPillarFileDownload setting.
+     * @param message The PutFileRequest message.
+     * @throws RequestHandlerException If the checksum cannot be retrieved.
+     */
+    private void retrieveChecksum(PutFileRequest message) throws RequestHandlerException {
+        String calculatedChecksum;
+        switch(getChecksumPillarFileDownload()) {
+            case ALWAYS_DOWNLOAD:
+                calculatedChecksum = retrieveFile(message);
+                break;
+            case NEVER_DOWNLOAD:
+                calculatedChecksum = extractChecksumFromMessage(message);
+                break;
+            default:
+                if(message.getChecksumDataForNewFile() != null) {
+                    calculatedChecksum = extractChecksumFromMessage(message);
+                } else {
+                    calculatedChecksum = retrieveFile(message);
+                }
+                break;
+        }
+        
+        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Putting the checksum of the file "
+                + "into archive.", message.getAuditTrailInformation(), FileAction.PUT_FILE);
+        getCache().insertChecksumCalculation(message.getFileID(), calculatedChecksum, new Date());
+    }
+    
+    /**
+     * Extracts the checksum from PutFileRequest message. 
+     * @param message The message to extract the checksum from.
+     * @return The checksum from the message.
+     * @throws RequestHandlerException If the message does not contain the checksum.
+     */
+    private String extractChecksumFromMessage(PutFileRequest message) throws RequestHandlerException {
+        if(message.getChecksumDataForNewFile() != null) {
+            return Base16Utils.decodeBase16(message.getChecksumDataForNewFile().getChecksumValue());
+        } else {
+            ResponseInfo fi = new ResponseInfo();
+            fi.setResponseText("A PutFileRequest without the checksum cannot be handled.");
+            fi.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
+            throw new InvalidMessageException(fi);
+        }
+    }
+    
+    /**
+     * Retrieves the actual data, validates it (if possible).
      * @param message The request to for the file to put.
+     * @return The checksum of the retrieved file.
      * @throws RequestHandlerException If the operation fails.
      */
     @SuppressWarnings("deprecation")
-    private void retrieveFile(PutFileRequest message) throws RequestHandlerException {
+    private String retrieveFile(PutFileRequest message) throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
         
@@ -173,13 +219,10 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
                 throw new IllegalOperationException(ri);
             }
         } else {
-            // TODO is such a checksum required?
-            log.warn("No checksums for validating the retrieved file.");
+            log.debug("No checksums for validating the retrieved file.");
         }
         
-        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Putting the downloaded file "
-                + "into archive.", message.getAuditTrailInformation(), FileAction.PUT_FILE);
-        getCache().insertChecksumCalculation(message.getFileID(), calculatedChecksum, new Date());
+        return calculatedChecksum;
     }
     
     /**
