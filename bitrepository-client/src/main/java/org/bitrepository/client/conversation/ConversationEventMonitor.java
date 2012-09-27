@@ -56,7 +56,6 @@ public class ConversationEventMonitor {
     private final EventHandler eventHandler;
     private final List<ContributorEvent> contributorCompleteEvents = new LinkedList<ContributorEvent>();
     private final List<ContributorFailedEvent> contributorFailedEvents = new LinkedList<ContributorFailedEvent>();
-    private boolean failOnComponentFailure = true;
 
     /**
      * @param conversationID Used for adding conversation context information to the information distributed. Will be
@@ -262,16 +261,6 @@ public class ConversationEventMonitor {
      */
     public void debug(String info, Exception e) {
         log.debug(info, e);
-    }
-
-    /**
-     * Indicates whether a operation should be consider failed because one or more of the contributors have failed.
-     * This is <code>true</code> by default.
-     *
-     * Note that the operation can be falied explicitly by calling the operationFailed method.
-     */
-    public void markAsFailedOnContributorFailure(boolean enable) {
-        failOnComponentFailure = enable;
     }
 
     private String getShortConversationID(String fullConversationID) {

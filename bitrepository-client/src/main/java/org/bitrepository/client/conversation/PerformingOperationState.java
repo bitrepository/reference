@@ -109,8 +109,4 @@ public abstract class PerformingOperationState extends GeneralConversationState 
         }
         return componentIDs;
     }
-
-    protected boolean isChecksumPillar(String pillarID) {
-        return getContext().getChecksumPillars().contains(pillarID);
-    }
 }
