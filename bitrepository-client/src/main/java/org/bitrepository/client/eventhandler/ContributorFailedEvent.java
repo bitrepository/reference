@@ -36,7 +36,7 @@ public class ContributorFailedEvent extends ContributorEvent {
             String contributorID,
             ResponseCode responseCode) {
         super(contributorID);
-        setType(COMPONENT_FAILED);
+        setEventType(COMPONENT_FAILED);
         this.responseCode = responseCode;
     }
 

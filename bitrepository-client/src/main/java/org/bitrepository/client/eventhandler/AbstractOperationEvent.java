@@ -60,18 +60,22 @@ public abstract class AbstractOperationEvent implements OperationEvent {
         return conversationID;
     }
 
-    public void setType(OperationEventType type) {
+    /** @see #getEventType */
+    public void setEventType(OperationEventType type) {
         this.type = type;
     }
 
+    /** @see #getOperationType */
     public void setOperationType(OperationType operationType) {
         this.operationType = operationType;
     }
 
+    /** @see #getFileID */
     public void setFileID(String fileID) {
         this.fileID = fileID;
     }
 
+    /** @see #getInfo */
     public void setInfo(String info) {
         this.info = info;
     }

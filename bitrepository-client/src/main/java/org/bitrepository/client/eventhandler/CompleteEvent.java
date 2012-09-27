@@ -39,7 +39,7 @@ public class CompleteEvent extends AbstractOperationEvent {
      *                         the operation.
     */
     public CompleteEvent(List<ContributorEvent> componentResults) {
-        setType(OperationEventType.COMPLETE);
+        setEventType(OperationEventType.COMPLETE);
         this.componentResults = componentResults;
     }
 

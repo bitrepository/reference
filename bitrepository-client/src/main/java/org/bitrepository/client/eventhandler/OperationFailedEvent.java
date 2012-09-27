@@ -39,7 +39,7 @@ public class OperationFailedEvent extends AbstractOperationEvent {
      *                         the operation.
      */
     public OperationFailedEvent(String info, List<ContributorEvent> componentResults) {
-        setType(OperationEventType.FAILED);
+        setEventType(OperationEventType.FAILED);
         setInfo(info);
         this.componentResults = componentResults;
     }

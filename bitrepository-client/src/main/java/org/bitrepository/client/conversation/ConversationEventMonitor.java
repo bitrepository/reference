@@ -49,13 +49,17 @@ import static org.bitrepository.client.eventhandler.OperationEvent.OperationEven
  * Encapsulates the concrete handling of conversation events. Should be called every time a conversation event happens.
  */
 public class ConversationEventMonitor {
+    /** The general logger.*/
     private final ConversationLogger log;
+    /** The event logger. Adds context information to the log entry. */
     private final Logger eventLogger = LoggerFactory.getLogger(getClass());
     private final String conversationID;
     private final OperationType operationType;
     private final String fileID;
     private final EventHandler eventHandler;
+    /** Used to aggregate the conversation complete events, so these can be added to the final complete event. */
     private final List<ContributorEvent> contributorCompleteEvents = new LinkedList<ContributorEvent>();
+    /** Used to aggregate the conversation failed events, so these can be added to the final failed event. */
     private final List<ContributorFailedEvent> contributorFailedEvents = new LinkedList<ContributorFailedEvent>();
 
     /**
@@ -272,11 +276,9 @@ public class ConversationEventMonitor {
         return fullConversationID.substring(0, fullConversationID.indexOf("-", 4));
     }
 
-
-
     private DefaultEvent createDefaultEvent(OperationEvent.OperationEventType eventType, String info) {
         DefaultEvent event = new DefaultEvent();
-        event.setType(eventType);
+        event.setEventType(eventType);
         event.setInfo(info);
         addContextInfo(event);
         return event;
@@ -284,7 +286,7 @@ public class ConversationEventMonitor {
     private ContributorEvent createContributorEvent(
             OperationEvent.OperationEventType eventType, String info, String contributorID) {
         ContributorEvent event = new ContributorEvent(contributorID);
-        event.setType(eventType);
+        event.setEventType(eventType);
         event.setInfo(info);
         addContextInfo(event);
         return event;
@@ -315,7 +317,7 @@ public class ConversationEventMonitor {
     }
 
     /**
-     * Adds the general operation context information for the conversation to the event
+     * Adds the general operation context information for the conversation to the event.
      * @return
      */
     private OperationEvent addContextInfo(AbstractOperationEvent event) {

@@ -36,7 +36,7 @@ public class IdentificationCompleteEvent extends AbstractOperationEvent {
      * @param contributorIDs The lis of IDs of the contributor this event relates to.
      */
     public IdentificationCompleteEvent(List<String> contributorIDs) {
-        setType(OperationEventType.IDENTIFICATION_COMPLETE);
+        setEventType(OperationEventType.IDENTIFICATION_COMPLETE);
         this.contributorIDs = contributorIDs;
     }
 
