@@ -22,7 +22,6 @@
 package org.bitrepository.client.conversation;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -116,11 +115,8 @@ public class ConversationContext {
         return contributors;
     }
 
-    /**
-     * @return The list of checksum pillar detected during the IdentifyPillarsForPutFile phase.
-     */
-    public Set<String> getChecksumPillars() {
-        return Collections.unmodifiableSet(checksumPillars);
+    public boolean isChecksumPillar(String pillarID) {
+        return checksumPillars.contains(pillarID);
     }
 
     /**

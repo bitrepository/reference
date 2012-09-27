@@ -67,7 +67,7 @@ public class DeletingFile extends PerformingOperationState {
         for(String pillar : activeContributors.keySet()) {
             DeleteFileRequest msg = createRequest(pillar);
             if (context.getChecksumRequestForValidation() != null) {
-                if (!isChecksumPillar(pillar) ||
+                if (!context.isChecksumPillar(pillar) ||
                         context.getChecksumRequestForValidation().equals(ChecksumUtils.getDefault(context.getSettings()))) {
                     msg.setChecksumRequestForExistingFile(context.getChecksumRequestForValidation());
                 }

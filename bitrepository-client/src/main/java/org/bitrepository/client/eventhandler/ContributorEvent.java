@@ -43,6 +43,6 @@ public class ContributorEvent extends AbstractOperationEvent {
 
     @Override
     public String additionalInfo() {
-        return "ContributorID: " + getContributorID();
+        return "ContributorID " + getContributorID();
     }
 }

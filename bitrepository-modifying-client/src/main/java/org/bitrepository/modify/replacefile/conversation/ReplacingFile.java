@@ -70,14 +70,14 @@ public class ReplacingFile extends PerformingOperationState {
         for(String pillar : activeContributors.keySet()) {
             ReplaceFileRequest msg = createRequest(pillar);
             if (context.getChecksumRequestsForNewFile() != null) {
-                if (!isChecksumPillar(pillar) ||
+                if (!context.isChecksumPillar(pillar) ||
                         context.getChecksumRequestsForNewFile().equals(
                                 ChecksumUtils.getDefault(context.getSettings()))) {
                     msg.setChecksumRequestForNewFile(context.getChecksumRequestsForNewFile());
                 }
             }
             if (context.getChecksumRequestedForDeletedFile() != null) {
-                if (!isChecksumPillar(pillar) ||
+                if (!context.isChecksumPillar(pillar) ||
                         context.getChecksumRequestedForDeletedFile().equals(
                                 ChecksumUtils.getDefault(context.getSettings()))) {
                     msg.setChecksumRequestForExistingFile(context.getChecksumRequestedForDeletedFile());

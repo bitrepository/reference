@@ -64,7 +64,6 @@ public class PuttingFile extends PerformingOperationState {
 
     /**
      * Will only add ChecksumRequestForNewFile parameter if the pillar hasn't been marked as a Checksum pillar.
-     * @see org.bitrepository.modify.putfile.conversation.PutFileConversationContext#getChecksumPillars().
      */
     @Override
     protected void sendRequest() {
@@ -72,7 +71,7 @@ public class PuttingFile extends PerformingOperationState {
         for(String pillar : activeContributors.keySet()) {
             PutFileRequest msg = createRequest(pillar);
             if (context.getChecksumRequestForValidation() != null) {
-                if (!isChecksumPillar(pillar) ||
+                if (!context.isChecksumPillar(pillar) ||
                         context.getChecksumRequestForValidation().equals(ChecksumUtils.getDefault(context.getSettings()))) {
                     msg.setChecksumRequestForNewFile(context.getChecksumRequestForValidation());
                 }
