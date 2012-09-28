@@ -103,11 +103,9 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertEquals(receivedIdentifyResponse.getReplyTo(), pillarDestinationId);
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.IDENTIFICATION_POSITIVE);
-
         
         addStep("Create and send the actual DeleteFile message to the pillar.", 
                 "Should be received and handled by the pillar.");
-
         DeleteFileRequest deleteFileRequest = msgFactory.createDeleteFileRequest(csData, csSpecRequest, DEFAULT_FILE_ID);
         messageBus.sendMessage(deleteFileRequest);
         
@@ -136,9 +134,6 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertEquals(finalResponse.getReplyTo(), pillarDestinationId);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.OPERATION_COMPLETED);
-        //ToDO Implement the assertion below
-        //Assert.assertEquals(finalResponse.getChecksumDataForExistingFile(), ??);
-
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         Assert.assertEquals(audits.getCallsForAuditEvent(), 3, "Should deliver 3 audits. One for delete and two for "
                 + "calculate checksums (both the validation and the requested).");

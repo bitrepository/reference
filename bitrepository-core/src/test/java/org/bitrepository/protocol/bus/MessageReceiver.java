@@ -24,6 +24,7 @@
  */
 package org.bitrepository.protocol.bus;
 
+import java.util.Collection;
 import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.jaccept.TestEventManager;
@@ -41,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * May be added as listener to the message queue where it will store all received messages for later reading. 
- * 
+ *
  * This makes it possible to add the asynchronize reception of messages to the otherwise sequential test cases. Eg.
  * <pre>
  * {@code}
@@ -49,7 +50,7 @@ import java.util.concurrent.TimeUnit;
  *      //Setup
  *      MessageReceiver messageReceiver = new MessageReceiver();
  *      messagebus.addListener("", messageReceiver.getMessageListener());
- *      
+ *
  *      //Test step
  *      sendMessageXXX(messageToSend);
  *      receivedMessage = messageReceiver.waitForMessage(messageToSend.getClass(), 3, TimeUnit.SECONDS);
@@ -65,7 +66,7 @@ public class MessageReceiver {
     private final MessageModel messageModel = new MessageModel();
     private final MessageListener messageListener;
     private final TestEventManager testEventManager;
-    
+
     public MessageReceiver(String name, TestEventManager testEventManager) {
         super();
         this.name = name;
@@ -76,7 +77,7 @@ public class MessageReceiver {
     public MessageListener getMessageListener() {
         return messageListener;
     }
-    
+
     /**
      * Corresponds to the {@link #waitForMessage(Class, long, TimeUnit)} method with a default timeout of 5 second.
      */
@@ -87,7 +88,7 @@ public class MessageReceiver {
     /**
      * Waits for a message of the specified type to be received on the test message queue, when the message is 
      * received (or if one is already present) the message is returned.
-     * 
+     *
      * @param messageType The type of message to wait for.
      * @param timeout The amount of time to wait for a message of this type.
      * @param unit The unit of time for the timeout value
@@ -95,7 +96,7 @@ public class MessageReceiver {
      */
     public <T> T waitForMessage(Class<T> messageType, long timeout, TimeUnit unit) {
         long startWait = System.currentTimeMillis();
-        T message;  
+        T message;
         try {
             message = messageModel.getMessageQueue(messageType).poll(timeout, unit);
         } catch (InterruptedException e) {
@@ -105,20 +106,20 @@ public class MessageReceiver {
         if (message != null) {
             log.debug("Received message in (" + waitTime + " ms): " + message);
         } else {
-            log.info("Wait for " + messageType.getSimpleName() + " message timed out (" + waitTime + " ms).");
-            Assert.fail("Wait for " + messageType.getSimpleName() + " message timed out (" + waitTime + " ms).");
+            log.info("Wait for " + messageType.getSimpleName() + " timed out (" + waitTime + " ms).");
+            Assert.fail("Wait for " + messageType.getSimpleName() + " timed out (" + waitTime + " ms).");
         }
         return message;
     }
 
-   /**
-    * Verifies no message of the given type is received.
-    * @param messageType The type of message to wait for.
-            */
+    /**
+     * Verifies no message of the given type is received.
+     * @param messageType The type of message to wait for.
+     */
     public <T> void checkNoMessageIsReceived(Class<T> messageType) {
         T message;
         try {
-            message = messageModel.getMessageQueue(messageType).poll(1, TimeUnit.SECONDS);
+            message = messageModel.getMessageQueue(messageType).poll(3, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e); // Should never happen
         }
@@ -126,6 +127,25 @@ public class MessageReceiver {
             Assert.fail("Received unexpected message " + message);
         }
     }
+
+    /**
+     * Verifies that no messages remain in any queues.
+     */
+    public <T> void checkNoMessagesRemain() {
+        StringBuilder outstandingMessages = new StringBuilder();
+        for (BlockingQueue messageQueue:messageModel.getMessageQueues()) {
+            if (!messageQueue.isEmpty()) {
+                while (!messageQueue.isEmpty()) {
+                    outstandingMessages.append("\n" + messageQueue.poll());
+                }
+            }
+            if (outstandingMessages.length() > 0 ) {
+
+                Assert.fail("Unhandled messages remain:" + outstandingMessages);
+            }
+        }
+    }
+
 
     private class MessageModel {
         private Map<Class<?>, BlockingQueue<?>> messageMap = new HashMap<Class<?>, BlockingQueue<?>>();
@@ -148,8 +168,12 @@ public class MessageReceiver {
             BlockingQueue<T> queue = (BlockingQueue<T>)messageMap.get(messageType);
             return queue;
         }
+
+        private synchronized Collection<BlockingQueue<?>> getMessageQueues() {
+            return messageMap.values();
+        }
     }
-    
+
     @Override
     public String toString() {
         return "MessageReceiver [name=" + name + "]";

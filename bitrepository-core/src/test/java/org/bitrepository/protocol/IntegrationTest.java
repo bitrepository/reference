@@ -105,6 +105,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      */
     protected void setupSettings() {
         componentSettings = loadSettings();
+        componentSettings.getCollectionSettings().setCollectionID(componentSettings.getCollectionID() + getTopicPostfix());
 
         collectionDestinationID = componentSettings.getCollectionDestination() + getTopicPostfix();
         componentSettings.getCollectionSettings().getProtocolSettings().setCollectionDestination(collectionDestinationID);

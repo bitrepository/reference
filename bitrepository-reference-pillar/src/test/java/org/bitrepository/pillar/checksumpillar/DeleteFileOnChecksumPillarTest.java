@@ -39,8 +39,10 @@ import org.testng.annotations.Test;
 public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
     private DeleteFileMessageFactory msgFactory;
 
-    @BeforeMethod (alwaysRun=true)
-    public void initialiseDeleteFileTests() throws Exception {
+    @Override
+    @BeforeMethod(alwaysRun = true)
+    public void beforeMethod() {
+        super.beforeMethod();
         msgFactory = new DeleteFileMessageFactory(clientSettings, getPillarID(), pillarDestinationId);
     }
 

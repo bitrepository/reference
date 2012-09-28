@@ -53,6 +53,7 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
     protected void setupSettings() {
         super.setupSettings();
         clientSettings = TestSettingsProvider.reloadSettings("TestClientForPillarTest");
+        clientSettings.getCollectionSettings().setCollectionID(componentSettings.getCollectionID());
         clientSettings.getCollectionSettings().getProtocolSettings().setCollectionDestination(collectionDestinationID);
 
         componentSettings.getReferenceSettings().getPillarSettings().setPillarID(getPillarID());

@@ -56,7 +56,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
 
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetFileTests() throws Exception {
-        msgFactory = new GetFileMessageFactory(clientSettings);
+        msgFactory = new GetFileMessageFactory(componentSettings);
 
         FILE_ADDRESS = httpServer.getURL("test.txt").toExternalForm();
     }
@@ -379,7 +379,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
     }
     
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"failing", "pillartest"})
     public void pillarGeneralTestBadDeliveryURL() throws Exception {
         addDescription("Tests that the ReferencePillar can handle a bad delivery URL.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -407,5 +407,6 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         "The GetFile response should be sent by the pillar.");
         GetFileFinalResponse finalResponse = clientTopic.waitForMessage(GetFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_TRANSFER_FAILURE);
+        alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
     }
 }
