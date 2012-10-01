@@ -25,10 +25,12 @@
 package org.bitrepository.protocol;
 
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.http.HTTPFileExchange;
+import org.bitrepository.protocol.http.HttpFileExchange;
+import org.bitrepository.protocol.http.HttpsFileExchange;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.settings.referencesettings.ProtocolType;
 
 /**
  * Provides access to the different component in the org.bitrepository.org.bitrepository.protocol module (Spring/IOC wannabe)
@@ -69,13 +71,18 @@ public final class ProtocolComponentFactory {
     /**
      * Gets you an <code>FileExchange</code> instance for data communication. Is instantiated based on the 
      * configurations.
+     * @param settings The settings for the file exchange.
      * @return The FileExchange according to the configuration.
-     * @deprecated The file exchange class will be replaced by the HttpServerConnector.
      */
-    public FileExchange getFileExchange() {
+    public FileExchange getFileExchange(Settings settings) {
         if (fileExchange == null) {
-            // TODO handle different?
-            fileExchange = new HTTPFileExchange();
+            if((settings.getReferenceSettings().getFileExchangeSettings() != null )
+                    && settings.getReferenceSettings().getFileExchangeSettings().getProtocolType() 
+                    == ProtocolType.HTTPS) {
+                fileExchange = new HttpsFileExchange(settings);
+            } else {
+                fileExchange = new HttpFileExchange(settings);
+            }
         }
         return fileExchange;
     }

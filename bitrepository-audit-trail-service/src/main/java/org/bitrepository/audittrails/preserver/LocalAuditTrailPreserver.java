@@ -65,6 +65,8 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
     private AuditPreservationTimerTask auditTask = null;
     /** The Audit trail packer for packing and compressing the audit trails.*/
     private final AuditPacker auditPacker;
+    /** The settings for the local audit trail preserver.*/
+    private final Settings settings;
     
     /**
      * Constructor.
@@ -77,6 +79,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
         ArgumentValidator.checkNotNull(client, "PutFileClient client");
         
+        this.settings = settings;
         this.store = store;
         this.client = client;
         this.checkInterval = settings.getReferenceSettings().getAuditTrailServiceSettings()
@@ -149,7 +152,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
      */
     @SuppressWarnings("deprecation")
     private URL uploadFile(File file) throws IOException {
-        FileExchange exchange = ProtocolComponentFactory.getInstance().getFileExchange();
+        FileExchange exchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
         return exchange.uploadToServer(new FileInputStream(file), file.getName());
     }
     

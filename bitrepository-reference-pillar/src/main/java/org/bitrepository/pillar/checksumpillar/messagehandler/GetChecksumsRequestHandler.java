@@ -285,7 +285,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
         
         // Upload the file.
         log.debug("Uploading file: " + fileToUpload.getName() + " to " + url);
-        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
+        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
         fe.uploadToServer(new FileInputStream(fileToUpload), uploadUrl);
     }
     

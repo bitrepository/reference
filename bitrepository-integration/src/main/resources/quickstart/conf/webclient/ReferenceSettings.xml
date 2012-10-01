@@ -38,4 +38,11 @@
   <GetStatusSettings></GetStatusSettings>
   <PutFileSettings></PutFileSettings>
   <ReplaceFileSettings></ReplaceFileSettings>
+  
+  <FileExchangeSettings>
+    <ProtocolType>HTTP</ProtocolType>
+    <ServerName>localhost</ServerName>
+    <Port>80</Port>
+    <Path>/dav</Path>
+  </FileExchangeSettings>
 </ReferenceSettings>

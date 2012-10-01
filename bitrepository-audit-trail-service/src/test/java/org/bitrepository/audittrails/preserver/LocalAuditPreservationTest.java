@@ -119,7 +119,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         
         addStep("Check whether a file has been uploaded.", "");
         URL url = client.getUrl();
-        FileExchange fileExchange = ProtocolComponentFactory.getInstance().getFileExchange();
+        FileExchange fileExchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
         InputStream is = fileExchange.downloadFromServer(url);
         
         Assert.assertTrue(is.read() != -1, "Should be able to read content from the URL.");

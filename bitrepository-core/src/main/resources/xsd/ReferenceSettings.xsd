@@ -50,6 +50,7 @@
         <xs:element ref="AuditTrailServiceSettings" minOccurs="0" />
         <xs:element ref="IntegrityServiceSettings" minOccurs="0" />
         <xs:element ref="MonitoringServiceSettings" minOccurs="0" />
+        <xs:element ref="FileExchangeSettings" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -565,4 +566,70 @@
       </xs:element>
     </xs:sequence>
   </xs:complexType>
+  
+  <xs:element name="FileExchangeSettings">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>
+          The settings for the exchange of files. 
+        </xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element ref="ProtocolType">
+          <xs:annotation>
+            <xs:documentation>
+              The protocol for the file exchange, e.g. HTTP.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="ServerName" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>
+              The name for the server to exchange the file through.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="Port" type="xs:positiveInteger">
+          <xs:annotation>
+            <xs:documentation>
+              The port used by the protocol.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="Path" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>
+              The path on the server to the directory, where the data can be exchanged.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="ProtocolType">
+    <xs:simpleType>
+      <xs:annotation>
+        <xs:documentation xml:lang="en">
+          Define the type of protocol
+        </xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="HTTP">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              An default HTTP protocol.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="HTTPS">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The secure HTTPS protocol. 
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
 </xs:schema>

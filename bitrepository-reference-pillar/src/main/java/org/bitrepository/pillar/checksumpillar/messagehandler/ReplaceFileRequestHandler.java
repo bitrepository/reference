@@ -188,7 +188,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     @SuppressWarnings("deprecation")
     private String downloadTheNewFile(ReplaceFileRequest message) throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
-        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
+        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
 
         getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the checksum of the "
                 + "downloaded file for the replace operation.", message.getAuditTrailInformation(), 

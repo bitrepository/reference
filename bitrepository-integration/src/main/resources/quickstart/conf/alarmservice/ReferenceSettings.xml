@@ -38,4 +38,11 @@
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/alarmservice/alarmservicedb</DatabaseURL>
     </AlarmServiceDatabase>
   </AlarmServiceSettings>
+  
+  <FileExchangeSettings>
+    <ProtocolType>HTTP</ProtocolType>
+    <ServerName>localhost</ServerName>
+    <Port>80</Port>
+    <Path>/dav</Path>
+  </FileExchangeSettings>
 </ReferenceSettings>

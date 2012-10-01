@@ -138,9 +138,6 @@ public class HttpServerConnector {
         }
     }
 
-
-
-
     /**
      * Retrieves the data from a given url and puts it onto a given 
      * outputstream. It has to be a 'HTTP' url, since the data is retrieved 
@@ -194,7 +191,12 @@ public class HttpServerConnector {
         }
     }
 
-    /** Calculates the url for the giving file based on the http configuration */
+    /** 
+     * Calculates the url for the giving file based on the http configuration.
+     * @param filename
+     * @return
+     * @throws MalformedURLException
+     */
     public URL getURL(String filename) throws MalformedURLException {
         return new URL(
                 config.getProtocol(), 

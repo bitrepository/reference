@@ -207,7 +207,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
     @SuppressWarnings("deprecation")
     private void downloadTheNewFile(ReplaceFileRequest message) throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
-        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
+        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
 
         try {
             getArchive().downloadFileForValidation(message.getFileID(), 

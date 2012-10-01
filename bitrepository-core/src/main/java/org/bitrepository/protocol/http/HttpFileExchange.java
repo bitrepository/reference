@@ -34,38 +34,33 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.StreamUtils;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.settings.referencesettings.FileExchangeSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Simple interface for data transfer between an application and a HTTP server.
- *
- * TODO read the configurations for the server where the data should be
- * uploaded from settings.
  */
-public class HTTPFileExchange implements FileExchange {
+public class HttpFileExchange implements FileExchange {
     /** The log. */
     private final Logger log = LoggerFactory.getLogger(getClass());
     
-    /** Protocol for URLs. */
-    private static final String PROTOCOL = "http";
-    /** The default port for the HTTP communication.*/
-    private static final int PORT_NUMBER = 80;
-    /** The default name of the HTTP server. TODO retrieve from settings.*/
-    private static final String HTTP_SERVER_NAME = "sandkasse-01.kb.dk";
-    /** The path on the HTTP server to the location, where the data can be 
-     * uploaded.*/
-    private static final String HTTP_SERVER_PATH = "/dav";
     /** The lower boundary for the error codes of the HTTP codes.*/
     private static final int HTTP_ERROR_CODE_BARRIER = 300;
+    /** The settings for the file exchange.*/
+    private final Settings settings;
     
     /**
      * Initialise HTTP file exchange.
+     * @param settings The settings regarding the file exchange through HTTP.
      */
-    public HTTPFileExchange() {
+    public HttpFileExchange(Settings settings) {
+        this.settings = settings;
     }
     
     @Override
@@ -221,13 +216,17 @@ public class HTTPFileExchange implements FileExchange {
     
     @Override
     public URL getURL(String filename) throws MalformedURLException {
+        ArgumentValidator.checkNotNullOrEmpty(filename, "String fileName");
+        ArgumentValidator.checkNotNull(settings.getReferenceSettings().getFileExchangeSettings(), 
+                "The ReferenceSettings are missing the settings for the file exchange.");
+        FileExchangeSettings feSettings = settings.getReferenceSettings().getFileExchangeSettings();
+        
         // create the URL based on hardcoded values (change to using settings!)
-        URL res = new URL(PROTOCOL, HTTP_SERVER_NAME, PORT_NUMBER, 
-                HTTP_SERVER_PATH + "/" + filename);
+        URL res = new URL(feSettings.getProtocolType().value(), feSettings.getServerName(), 
+                feSettings.getPort().intValue(), feSettings.getPath()+ "/" + filename);
         return res;
     }
     
-
     /**
      * Method for opening a HTTP connection to the given URL.
      * 

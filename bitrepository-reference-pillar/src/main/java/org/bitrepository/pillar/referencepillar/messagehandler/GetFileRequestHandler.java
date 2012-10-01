@@ -150,7 +150,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
             log.info("Uploading file: " + requestedFile.getName() + " to " + message.getFileAddress());
             getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed identifying pillar.", 
                     message.getAuditTrailInformation(), FileAction.GET_FILE);
-            FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
+            FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
             fe.uploadToServer(is, new URL(message.getFileAddress()));
         } catch (IOException e) {
             ResponseInfo fri = new ResponseInfo();

@@ -92,4 +92,10 @@
     <CollectionInterval>300000</CollectionInterval>
     <MaxRetries>3</MaxRetries>
   </MonitoringServiceSettings>
+  <FileExchangeSettings>
+    <ProtocolType>HTTP</ProtocolType>
+    <ServerName>sandkasse-01.kb.dk</ServerName>
+    <Port>80</Port>
+    <Path>/dav</Path>
+  </FileExchangeSettings>
 </ReferenceSettings>

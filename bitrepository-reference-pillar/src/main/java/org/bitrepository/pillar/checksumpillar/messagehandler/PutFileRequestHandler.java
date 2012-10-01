@@ -188,7 +188,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
     @SuppressWarnings("deprecation")
     private String retrieveFile(PutFileRequest message) throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
-        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
+        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
         
         getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the validation "
                 + "checksum for the file before putting it into the cache.", message.getAuditTrailInformation(), 

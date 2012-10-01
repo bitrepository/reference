@@ -327,4 +327,16 @@
     -->    
     <MaxRetries>3</MaxRetries>
   </MonitoringServiceSettings>
+  
+  <!-- Settings for the file exchange. -->
+  <FileExchangeSettings>
+    <!-- The type of protocol -->
+    <ProtocolType>HTTP</ProtocolType>
+    <!-- The name of the server -->
+    <ServerName>sandkasse-01.kb.dk</ServerName>
+    <!-- The port number -->
+    <Port>80</Port>
+    <!-- The path on the server. -->
+    <Path>/dav</Path>
+  </FileExchangeSettings>
 </ReferenceSettings>
