@@ -85,7 +85,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         teardownHttpServer();
     }
 
-
     /**
      * Defines the standard BitRepositoryCollection configuration
      */

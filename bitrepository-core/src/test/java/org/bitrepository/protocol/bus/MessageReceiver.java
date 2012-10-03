@@ -33,8 +33,10 @@ import org.testng.Assert;
 
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -65,12 +67,21 @@ public class MessageReceiver {
     private final MessageModel messageModel = new MessageModel();
     private final MessageListener messageListener;
     private final TestEventManager testEventManager;
-    
+
+    /**
+     * @param name The name to use for the receiver. Primarily used for logging purposes.
+     * @param testEventManager The test event manager to use for
+     */
     public MessageReceiver(String name, TestEventManager testEventManager) {
         super();
         this.name = name;
         this.testEventManager = testEventManager;
         messageListener = new TestMessageHandler(name + "Listener", messageModel);
+    }
+
+    /** Can be used to ignore messages from irrelevnt components */
+    public void setFromFilter(Collection<String> filter) {
+        messageModel.pillarFilter = filter;
     }
 
     public MessageListener getMessageListener() {
@@ -129,8 +140,10 @@ public class MessageReceiver {
 
     private class MessageModel {
         private Map<Class<?>, BlockingQueue<?>> messageMap = new HashMap<Class<?>, BlockingQueue<?>>();
+        private Collection<String> pillarFilter;
 
         private <T> void addMessage(T message) {
+            if (pillarFilter != null && !pillarFilter.contains(((Message)message).getFrom())) return;
             if(testEventManager != null) {
                 testEventManager.addResult(name + " received message: " + message);
             }
