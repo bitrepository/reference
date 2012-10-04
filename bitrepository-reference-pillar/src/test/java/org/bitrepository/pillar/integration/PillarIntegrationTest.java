@@ -21,12 +21,20 @@
  */
 package org.bitrepository.pillar.integration;
 
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarSettingsProvider;
+import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.bitrepository.protocol.IntegrationTest;
+import org.bitrepository.protocol.security.DummySecurityManager;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
+
+import java.net.MalformedURLException;
 
 /**
  * Super class for all tests which should test functionality on a single pillar.
@@ -38,7 +46,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     /** The path to the directory containing the integration test configuration files */
     protected static final String PATH_TO_CONFIG_DIR = System.getProperty(
             "pillar.integrationtest.settings.path",
-            "settings/xml/integration-test/");
+            "conf");
     public static final String TEST_CONFIGURATION_FILE_NAME = "pillar-integration-test.properties";
     protected static PillarIntegrationTestConfiguration testConfiguration;
 
@@ -67,7 +75,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     }
 
     private void loadTestSettings() {
-        testConfiguration = new PillarIntegrationTestConfiguration(PATH_TO_CONFIG_DIR + TEST_CONFIGURATION_FILE_NAME);
+        testConfiguration = new PillarIntegrationTestConfiguration(PATH_TO_CONFIG_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
     }
 
     @Override
@@ -93,5 +101,9 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
    protected String getPillarID() {
        return componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().get(0);
+   }
+
+   protected org.bitrepository.protocol.security.SecurityManager createSecurityManager() {
+       return new DummySecurityManager();
    }
 }
