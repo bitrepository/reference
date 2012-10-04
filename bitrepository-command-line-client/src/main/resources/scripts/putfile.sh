@@ -22,8 +22,9 @@
 # #L%
 ###
 
-source .init.sh
-DELETE_FILE="org.bitrepository.commandline.DeleteFile"
+source init.sh
+PUT_FILE="org.bitrepository.commandline.PutFile"
 
-exec $JAVA $JAVA_OPTS $DELETE_FILE -s$CONFDIR -k$KEYFILE $* 
+exec $JAVA $JAVA_OPTS $PUT_FILE -s$CONFDIR -k$KEYFILE $* 
+
 

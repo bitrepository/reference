@@ -22,9 +22,9 @@
 # #L%
 ###
 
-source .init.sh
-PUT_FILE="org.bitrepository.commandline.PutFile"
+source init.sh
+GET_FILE="org.bitrepository.commandline.GetFile"
 
-exec $JAVA $JAVA_OPTS $PUT_FILE -s$CONFDIR -k$KEYFILE $* 
+exec $JAVA $JAVA_OPTS $GET_FILE -s$CONFDIR -k$KEYFILE $* 
 
 
