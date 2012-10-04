@@ -22,9 +22,8 @@
 # #L%
 ###
 
-source .init.sh
-GET_FILE="org.bitrepository.commandline.GetFile"
+source init.sh
+DELETE_FILE="org.bitrepository.commandline.DeleteFile"
 
-exec $JAVA $JAVA_OPTS $GET_FILE -s$CONFDIR -k$KEYFILE $* 
-
+exec $JAVA $JAVA_OPTS $DELETE_FILE -s$CONFDIR -k$KEYFILE $* 
 
