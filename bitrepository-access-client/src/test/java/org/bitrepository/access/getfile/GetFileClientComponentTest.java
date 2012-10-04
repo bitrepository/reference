@@ -385,11 +385,55 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test(groups = {"regressiontest"})
     public void getFileClientWithChecksumPillarInvolved() throws Exception {
         addDescription("Verify that the GetFile works correctly when a checksum pillar respond.");
 
         addStep("Call getFile form fastest pillar.",
+                "A IDENTIFY_REQUEST_SENT should be generate and a identification request should be sent.");
+        GetFileClient client = createGetFileClient();
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        client.getFileFromFastestPillar(DEFAULT_FILE_ID, NO_FILE_PART, httpServer.getURL(DEFAULT_FILE_ID),
+                testEventHandler);
+        IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage =
+                collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+
+        addStep("Send a identification response from pillar1 with a REQUEST_NOT_SUPPORTED response code.",
+                "No events should be generated.");
+
+        IdentifyPillarsForGetFileResponse identificationResponse1 = testMessageFactory.createIdentifyPillarsForGetFileResponse(
+                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+        identificationResponse1.getResponseInfo().setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);
+        messageBus.sendMessage(identificationResponse1);
+        testEventHandler.verifyNoEventsAreReceived();
+
+        addStep("Send a identification response from pillar2 with a IDENTIFICATION_POSITIVE response code .",
+                "A component COMPONENT_IDENTIFIED event shouæd be generated followed by a IDENTIFICATION_COMPLETE.");
+        IdentifyPillarsForGetFileResponse identificationResponse2 = testMessageFactory.createIdentifyPillarsForGetFileResponse(
+                receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
+        messageBus.sendMessage(identificationResponse2);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
+
+        addStep("Verify that the client continues to the performing phase.",
+                "A REQUEST_SENT event should be generated and a GetFileRequest should be sent to pillar2.");
+        GetFileRequest getFileRequest = pillar2Destination.waitForMessage(GetFileRequest.class);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
+
+        addStep("Send a final response upload message",
+                "A COMPONENT_COMPLETE event should be generated followed by at COMPLETE event.");
+        GetFileFinalResponse completeMsg = testMessageFactory.createGetFileFinalResponse(
+                getFileRequest, PILLAR2_ID, pillar1DestinationId);
+        messageBus.sendMessage(completeMsg);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
+    }
+
+    @Test(groups = {"regressiontest"})
+    public void singleComponentFailure() throws Exception {
+        addDescription("Verify that the GetFile reports a complete (not failed), in case of a failing component.");
+
+        addStep("Call getFile from the fastest pillar.",
                 "A IDENTIFY_REQUEST_SENT should be generate and a identification request should be sent.");
         GetFileClient client = createGetFileClient();
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
@@ -404,9 +448,9 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
         IdentifyPillarsForGetFileResponse identificationResponse1 = testMessageFactory.createIdentifyPillarsForGetFileResponse(
                 receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
-        identificationResponse1.getResponseInfo().setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);
+        identificationResponse1.getResponseInfo().setResponseCode(ResponseCode.IDENTIFICATION_NEGATIVE);
         messageBus.sendMessage(identificationResponse1);
-        testEventHandler.verifyNoEventsAreReceived();
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
 
         addStep("Send a identification response from pillar2 with a IDENTIFICATION_POSITIVE response code .",
                 "A component COMPONENT_IDENTIFIED event shouæd be generated followed by a IDENTIFICATION_COMPLETE.");

@@ -223,7 +223,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         
         addStep("Validate the uploaded result-file.", "Should only contain the second letter of the file, which is a "
                 + "'A'. Any following extracted bytes should have the value '-1'.");
-        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange();
+        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(componentSettings);
         InputStream is = fe.downloadFromServer(new URL(FILE_ADDRESS));
         
         int digit1 = is.read();

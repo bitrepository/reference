@@ -40,7 +40,7 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.http.HttpFileExchange;
 import org.bitrepository.protocol.security.SecurityManager;
 
 /**
@@ -139,11 +139,10 @@ public class PutFile {
      * Initiates the operation and waits for the results.
      * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
      */
-    @SuppressWarnings("deprecation")
     private OperationEvent putTheFile() {
         
         File f = findTheFile();
-        FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange();
+        FileExchange fileexchange = new HttpFileExchange(settings);
         URL url = fileexchange.uploadToServer(f);
         String fileId = retrieveTheName(f);
         

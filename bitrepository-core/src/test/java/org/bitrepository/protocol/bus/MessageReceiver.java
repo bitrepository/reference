@@ -25,24 +25,23 @@
 package org.bitrepository.protocol.bus;
 
 import java.util.Collection;
-import org.bitrepository.bitrepositorymessages.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import javax.jms.ExceptionListener;
+import javax.jms.JMSException;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.jaccept.TestEventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
 /**
  * May be added as listener to the message queue where it will store all received messages for later reading. 
- *
+ * 
  * This makes it possible to add the asynchronize reception of messages to the otherwise sequential test cases. Eg.
  * <pre>
  * {@code}
@@ -50,7 +49,7 @@ import java.util.concurrent.TimeUnit;
  *      //Setup
  *      MessageReceiver messageReceiver = new MessageReceiver();
  *      messagebus.addListener("", messageReceiver.getMessageListener());
- *
+ *      
  *      //Test step
  *      sendMessageXXX(messageToSend);
  *      receivedMessage = messageReceiver.waitForMessage(messageToSend.getClass(), 3, TimeUnit.SECONDS);
@@ -67,6 +66,10 @@ public class MessageReceiver {
     private final MessageListener messageListener;
     private final TestEventManager testEventManager;
 
+    /**
+     * @param name The name to use for the receiver. Primarily used for logging purposes.
+     * @param testEventManager The test event manager to use for
+     */
     public MessageReceiver(String name, TestEventManager testEventManager) {
         super();
         this.name = name;
@@ -74,10 +77,15 @@ public class MessageReceiver {
         messageListener = new TestMessageHandler(name + "Listener", messageModel);
     }
 
+    /** Can be used to ignore messages from irrelevnt components */
+    public void setFromFilter(Collection<String> filter) {
+        messageModel.pillarFilter = filter;
+    }
+
     public MessageListener getMessageListener() {
         return messageListener;
     }
-
+    
     /**
      * Corresponds to the {@link #waitForMessage(Class, long, TimeUnit)} method with a default timeout of 5 second.
      */
@@ -88,7 +96,7 @@ public class MessageReceiver {
     /**
      * Waits for a message of the specified type to be received on the test message queue, when the message is 
      * received (or if one is already present) the message is returned.
-     *
+     * 
      * @param messageType The type of message to wait for.
      * @param timeout The amount of time to wait for a message of this type.
      * @param unit The unit of time for the timeout value
@@ -96,7 +104,7 @@ public class MessageReceiver {
      */
     public <T> T waitForMessage(Class<T> messageType, long timeout, TimeUnit unit) {
         long startWait = System.currentTimeMillis();
-        T message;
+        T message;  
         try {
             message = messageModel.getMessageQueue(messageType).poll(timeout, unit);
         } catch (InterruptedException e) {
@@ -106,20 +114,20 @@ public class MessageReceiver {
         if (message != null) {
             log.debug("Received message in (" + waitTime + " ms): " + message);
         } else {
-            log.info("Wait for " + messageType.getSimpleName() + " timed out (" + waitTime + " ms).");
-            Assert.fail("Wait for " + messageType.getSimpleName() + " timed out (" + waitTime + " ms).");
+            log.info("Wait for " + messageType.getSimpleName() + " message timed out (" + waitTime + " ms).");
+            Assert.fail("Wait for " + messageType.getSimpleName() + " message timed out (" + waitTime + " ms).");
         }
         return message;
     }
 
-    /**
-     * Verifies no message of the given type is received.
-     * @param messageType The type of message to wait for.
-     */
+   /**
+    * Verifies no message of the given type is received.
+    * @param messageType The type of message to wait for.
+            */
     public <T> void checkNoMessageIsReceived(Class<T> messageType) {
         T message;
         try {
-            message = messageModel.getMessageQueue(messageType).poll(3, TimeUnit.SECONDS);
+            message = messageModel.getMessageQueue(messageType).poll(1, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e); // Should never happen
         }
@@ -149,8 +157,10 @@ public class MessageReceiver {
 
     private class MessageModel {
         private Map<Class<?>, BlockingQueue<?>> messageMap = new HashMap<Class<?>, BlockingQueue<?>>();
+        private Collection<String> pillarFilter;
 
         private <T> void addMessage(T message) {
+            if (pillarFilter != null && !pillarFilter.contains(((Message)message).getFrom())) return;
             if(testEventManager != null) {
                 testEventManager.addResult(name + " received message: " + message);
             }
@@ -173,7 +183,7 @@ public class MessageReceiver {
             return messageMap.values();
         }
     }
-
+    
     @Override
     public String toString() {
         return "MessageReceiver [name=" + name + "]";

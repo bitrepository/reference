@@ -35,6 +35,7 @@ import org.bitrepository.commandline.utils.CompleteEventAwaiter;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.http.HttpFileExchange;
 import org.bitrepository.protocol.security.SecurityManager;
 
 /**
@@ -162,7 +163,7 @@ public class GetFile {
         } else {
             outputFile = new File(cmdHandler.getOptionValue(Constants.FILE_ARG));
         }
-        FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange();
+        FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
         fileexchange.downloadFromServer(outputFile, fileUrl.toExternalForm());
     }
     
@@ -171,10 +172,9 @@ public class GetFile {
      * @param fileId The id of the file.
      * @return The URL where the file should be located.
      */
-    @SuppressWarnings("deprecation")
     private URL extractUrl(String fileId) {
         try {
-            FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange();
+            FileExchange fileexchange = new HttpFileExchange(settings);
             return fileexchange.getURL(fileId);
         } catch (MalformedURLException e) {
             throw new IllegalStateException("Could not make an URL for the file '" + fileId + "'.", e);

@@ -118,7 +118,6 @@ public class HttpsServerConnector extends HttpServerConnector {
         };
     }
 
-
     /**
      * Method for initializing the keystore.
      * @return The keystore.

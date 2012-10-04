@@ -61,6 +61,11 @@ public class ConversationEventMonitor {
     private final List<ContributorEvent> contributorCompleteEvents = new LinkedList<ContributorEvent>();
     /** Used to aggregate the conversation failed events, so these can be added to the final failed event. */
     private final List<ContributorFailedEvent> contributorFailedEvents = new LinkedList<ContributorFailedEvent>();
+    /**
+     * Indicated whether the final operation event should be a complete event or a failed event in case of individual
+     * component failures.
+      */
+    private boolean failOnComponentFailure = true;
 
     /**
      * @param conversationID Used for adding conversation context information to the information distributed. Will be
@@ -182,7 +187,7 @@ public class ConversationEventMonitor {
      * An operation has completed. Will generate a failed event, if any of the contributers have failed.
      */
     public void complete() {
-        if (contributorFailedEvents.isEmpty()) {
+        if (contributorFailedEvents.isEmpty() || !failOnComponentFailure) {
             log.info("Completed successfully.");
             notifyEventListerners(createCompleteEvent());
         } else {
@@ -325,6 +330,15 @@ public class ConversationEventMonitor {
         event.setFileID(fileID);
         event.setOperationType(operationType);
         return event;
+    }
+    /**
+     * Indicates whether a operation should be consider failed because one or more of the contributors have failed.
+     * This is <code>true</code> by default.
+     *
+     * Note that the operation can be falied explicitly by calling the operationFailed method.
+     */
+    public void markAsFailedOnContributorFailure(boolean failOnComponentFailure) {
+        this.failOnComponentFailure = failOnComponentFailure;
     }
 
     /**

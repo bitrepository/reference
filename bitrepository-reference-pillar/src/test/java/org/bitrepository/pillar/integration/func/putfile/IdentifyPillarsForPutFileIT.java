@@ -19,39 +19,45 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.integration.func;
+package org.bitrepository.pillar.integration.func.putfile;
 
+import junit.framework.Assert;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.common.utils.TestFileHelper;
+import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class PerformingPutFileIT extends PillarFunctionTest {
+public class IdentifyPillarsForPutFileIT extends PillarFunctionTest {
     protected PutFileMessageFactory msgFactory;
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
-        msgFactory = new PutFileMessageFactory(
-                componentSettings, componentSettings.getComponentID(), null);
+        msgFactory = new PutFileMessageFactory(componentSettings, componentSettings.getComponentID(), null);
     }
 
-    @Test
-    protected String identifyPillarDestinationForPut(String pillarID) {
+    @Test( groups = {"pillar-integration-test"})
+    public void normalIdentification() {
+        addDescription("Verifies the normal behaviour for putFile identification");
+        addStep("Sending a putFile identification.",
+            "The pillar under test should make a response with the correct elements.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
                 TestFileHelper.DEFAULT_FILE_ID, 0L);
         messageBus.sendMessage(identifyRequest);
 
-        addStep("Looking up " + pillarID + "s destination for put responses by sending a putFile identification " +
-                "and selecting the response with the test pillarID ",
-                "The pillar under test should make a response.");
-        while (true) {
-            IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
+        IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForPutFileResponse.class);
-            if (receivedIdentifyResponse.getPillarID().equals(pillarID)) {
-                return receivedIdentifyResponse.getReplyTo();
-            }
-        }
+        Assert.assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID());
+        Assert.assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID());
+        Assert.assertEquals(receivedIdentifyResponse.getFrom(), getPillarID());
+        Assert.assertNull(receivedIdentifyResponse.getChecksumDataForExistingFile());
+        Assert.assertNull(receivedIdentifyResponse.getPillarChecksumSpec());
+        Assert.assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
+        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+                ResponseCode.IDENTIFICATION_POSITIVE);
+        Assert.assertEquals(receivedIdentifyResponse.getTo(), identifyRequest.getReplyTo());
     }
 }

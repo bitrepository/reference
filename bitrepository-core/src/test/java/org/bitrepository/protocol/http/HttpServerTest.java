@@ -97,7 +97,6 @@ public class HttpServerTest extends ExtendedTestCase {
      * Contains the configuration agnostic part of the test. The configuration is defined and injected by 
      * the concrete testcases.
      */
-
     private void runHttpServerCoreTest(HttpServerConnector httpServer) throws Exception {
         String httpTestFile = "httpTest";
 

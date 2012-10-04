@@ -56,6 +56,7 @@
         <configuration>
           <descriptors>
             <descriptor>src/main/assembly/assembly.xml</descriptor>
+            <descriptor>src/test/assembly/assembly.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>
@@ -85,5 +86,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>

@@ -58,6 +58,7 @@ public class ChecksumPillarMediator extends PillarMediator {
         this.cache = refCache;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     protected RequestHandler[] createListOfHandlers() {
         List<RequestHandler> res = new ArrayList<RequestHandler>();

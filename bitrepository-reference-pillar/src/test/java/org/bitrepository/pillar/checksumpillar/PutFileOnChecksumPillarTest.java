@@ -38,6 +38,7 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
+import org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -178,24 +179,6 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarPutFileTestBadChecksumArgument() throws Exception {
-        addDescription("Tests the file will not be put if a bad checksum is given.");
-        Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
-        
-        ChecksumDataForFileTYPE badData = new ChecksumDataForFileTYPE();
-        badData.setCalculationTimestamp(CalendarUtils.getEpoch());
-        badData.setChecksumSpec(csSpec);
-        badData.setChecksumValue(Base16Utils.encodeBase16("baabbbaaabba"));
-
-        messageBus.sendMessage(msgFactory.createPutFileRequest(badData, 
-                csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
-        PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
-        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
-                ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
-        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
-    }
-    
-    @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarPutFileTestBadChecksumSpecGiven() throws Exception {
         addDescription("Tests the file will not be put if a bad checksum is given.");
         Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
@@ -270,5 +253,86 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         IdentifyPillarsForPutFileResponse identifyResponse = clientTopic.waitForMessage(IdentifyPillarsForPutFileResponse.class);
         Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void checksumPillarPutFileTestBadChecksumArgumentWhenNotDownload() throws Exception {
+        addDescription("Tests that the file will be put with a checksum different from the checksum of the file at "
+                + "the URL, when the ChecksumPillar is set to only use the checksum from the message.");
+        context.getSettings().getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE);
+        Assert.assertEquals(context.getSettings().getReferenceSettings().getPillarSettings().getChecksumPillarFileDownload(), ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE);
+        Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+        
+        String badChecksum = "baabbbaaabba";
+        ChecksumDataForFileTYPE badData = new ChecksumDataForFileTYPE();
+        badData.setCalculationTimestamp(CalendarUtils.getEpoch());
+        badData.setChecksumSpec(csSpec);
+        badData.setChecksumValue(Base16Utils.encodeBase16(badChecksum));
+
+        addStep("Send the message with a checksum differing from the one for the file at the address.", 
+                "The incorrect checksum is stored.");
+        messageBus.sendMessage(msgFactory.createPutFileRequest(badData, 
+                csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+        PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.OPERATION_COMPLETED);
+        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID));
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), badChecksum);
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void checksumPillarPutFileTestBadChecksumArgumentCaughtWhenForcedDownload() throws Exception {
+        addDescription("Tests that the ChecksumPillar, when forced to download the file, will catch a incorrect "
+                + "checksum given as validation in the PutFileRequest message.");
+        context.getSettings().getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(ChecksumPillarFileDownload.ALWAYS_DOWNLOAD);
+        Assert.assertEquals(context.getSettings().getReferenceSettings().getPillarSettings().getChecksumPillarFileDownload(), ChecksumPillarFileDownload.ALWAYS_DOWNLOAD);
+        Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+        
+        ChecksumDataForFileTYPE badData = new ChecksumDataForFileTYPE();
+        badData.setCalculationTimestamp(CalendarUtils.getEpoch());
+        badData.setChecksumSpec(csSpec);
+        badData.setChecksumValue(Base16Utils.encodeBase16("baabbbaaabba"));
+
+        addStep("Send the message with a checksum differing from the one for the file at the address.", 
+                "Failure reported from the pillar and the incorrect checksum is not stored.");
+        messageBus.sendMessage(msgFactory.createPutFileRequest(badData, 
+                csSpec, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+        PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
+        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void checksumPillarPutFileTestNoDownloadAndNoChecksum() throws Exception {
+        addDescription("Test the scenario when the ChecksumPillar is forced to only use the checksum in the PutFileRequest "
+                + "(It is set to not allowing downloading the file), and no checksum is given in the PutFileRequest.");
+        context.getSettings().getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(ChecksumPillarFileDownload.NEVER_DOWNLOAD);
+        Assert.assertEquals(context.getSettings().getReferenceSettings().getPillarSettings().getChecksumPillarFileDownload(), ChecksumPillarFileDownload.NEVER_DOWNLOAD);
+
+        addStep("Send message without checksum.", 
+                "Failure from the pillar.");
+        messageBus.sendMessage(msgFactory.createPutFileRequest(null, 
+                null, FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+        PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
+        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void checksumPillarPutFileTestBadURLIgnored() throws Exception {
+        addDescription("Tests that the pillar ignores a bad URL when the checksum is given and the ChecksumPillar"
+                + " is not forced to download the file.");
+        context.getSettings().getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE);
+        Assert.assertEquals(context.getSettings().getReferenceSettings().getPillarSettings().getChecksumPillarFileDownload(), ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE);
+
+        String badUrl = FILE_ADDRESS + "-ERROR-" + new Date().getTime();
+        messageBus.sendMessage(msgFactory.createPutFileRequest(TestFileHelper.getDefaultFileChecksum(), 
+                null, badUrl, DEFAULT_FILE_ID, FILE_SIZE));
+        PutFileFinalResponse finalResponse = clientTopic.waitForMessage(PutFileFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
+                ResponseCode.OPERATION_COMPLETED);
+        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID));
     }
 }

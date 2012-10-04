@@ -69,7 +69,12 @@ public class XMLFileSettingsLoader implements SettingsLoader {
      * @return The loaded settings.
      */
     public <T> T loadSettings(Class<T> settingsClass) {
-        String fileLocation = pathToSettingsFiles + DIRECTORY_SEPERATOR + settingsClass.getSimpleName() + XML_FILE_EXTENSION;
+        StringBuilder fileLocationBuilder = new StringBuilder();
+        if (pathToSettingsFiles != null || !pathToSettingsFiles.equals("")) {
+            fileLocationBuilder.append(pathToSettingsFiles + DIRECTORY_SEPERATOR);
+        }
+        fileLocationBuilder.append(settingsClass.getSimpleName() + XML_FILE_EXTENSION);
+        String fileLocation = fileLocationBuilder.toString();
         String schemaLocation = settingsClass.getSimpleName() + XSD_FILE_EXTENSION;
         JaxbHelper jaxbHelper = new JaxbHelper(XSD_SCHEMA_DIR, schemaLocation);
 

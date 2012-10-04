@@ -24,10 +24,7 @@
  */
 package org.bitrepository.pillar.checksumpillar.messagehandler;
 
-import java.security.NoSuchAlgorithmException;
-
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.ArgumentValidator;
@@ -36,6 +33,7 @@ import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarMessageHandler;
 import org.bitrepository.service.exception.InvalidMessageException;
+import org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload;
 
 /**
  * Abstract level for message handling. 
@@ -56,15 +54,9 @@ public abstract class ChecksumPillarMessageHandler<T> extends PillarMessageHandl
         ArgumentValidator.checkNotNull(refCache, "ChecksumCache refCache");
 
         this.cache = refCache;
-        this.checksumType = new ChecksumSpecTYPE();
-        checksumType.setChecksumType(ChecksumType.fromValue(
-                getSettings().getCollectionSettings().getProtocolSettings().getDefaultChecksumType()));
-        try {
-            ChecksumUtils.verifyAlgorithm(checksumType);
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalArgumentException("Invalid checksum for the ChecksumPillar.", e);
-        }
+        this.checksumType = ChecksumUtils.getDefault(context.getSettings());
     }
+    
     /**
      * @return The checksumType for this message handler.
      */
@@ -98,4 +90,19 @@ public abstract class ChecksumPillarMessageHandler<T> extends PillarMessageHandl
             throw new InvalidMessageException(ri);
         }
     }
+    
+    /**
+     * Retrieves the ChecksumPillarFileDownload from settings. If not set, then the default value is
+     * 'DOWNLOAD_WHEN_MISSING_FROM_MESSAGE'.
+     * @return Whether the ChecksumPillar should download the files regarding PutFileRequests.
+     */
+    protected ChecksumPillarFileDownload getChecksumPillarFileDownload() {
+        if(getContext().getSettings().getReferenceSettings().getPillarSettings().getChecksumPillarFileDownload() 
+                == null) {
+            return ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE;
+        } else {
+            return getContext().getSettings().getReferenceSettings().getPillarSettings()
+                    .getChecksumPillarFileDownload();
+        }
+    }    
 }

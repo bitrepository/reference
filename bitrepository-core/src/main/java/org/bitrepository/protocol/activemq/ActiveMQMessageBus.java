@@ -210,6 +210,8 @@ public class ActiveMQMessageBus implements MessageBus {
     @Override
     public void close() throws JMSException {
         log.info("Closing message bus: " + configuration);
+        producerSession.close();
+        consumerSession.close();
         connection.close();
     }
 

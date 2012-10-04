@@ -45,6 +45,7 @@ public class IdentifyingPillarsForGetFile extends IdentifyingState {
     public IdentifyingPillarsForGetFile(GetFileConversationContext context) {
         super(context.getContributors());
         this.context = context;
+        context.getMonitor().markAsFailedOnContributorFailure(false);
         if (context.getContributors().size() > 1) {
             setSelector(new FastestPillarSelectorForGetFile());
         }
