@@ -385,6 +385,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
+    @Test(groups = {"regressiontest"})
     public void getFileClientWithChecksumPillarInvolved() throws Exception {
         addDescription("Verify that the GetFile works correctly when a checksum pillar respond.");
 

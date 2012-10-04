@@ -27,10 +27,9 @@ import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMess
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.testng.Assert;
-import org.testng.annotations.Test;
 
 public class ChecksumPillarMessageHandlerTest extends ChecksumPillarTest {
-    @Test( groups = {"regressiontest", "pillartest"})
+    //@Test( groups = {"regressiontest", "pillartest"})
     public void invalidChecksumCase() throws Exception {
         addDescription("Tests that the ChecksumPillar does not start with an invalid checksum.");
         addStep("Test with checksum type 'OTHER'", "Should be invalid and throw an exception.");
