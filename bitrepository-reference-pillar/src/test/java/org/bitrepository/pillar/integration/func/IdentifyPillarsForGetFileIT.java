@@ -25,7 +25,6 @@ import junit.framework.Assert;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -38,16 +37,13 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
         msgFactory = new GetFileMessageFactory(componentSettings);
     }
 
-    //@Test( groups = {"pillar-integration-test"})
+    @Test( groups = {"pillar-integration-test"})
     public void goodCaseIdentificationIT() {
         addDescription("Tests the general IdentifyPillarsForGetFile functionality of the pillar for the successful scenario.");
-
-        //ToDO needs to have an existing file in the pillar.
-
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
-                "", TestFileHelper.DEFAULT_FILE_ID, getPillarID(), componentSettings.getReceiverDestinationID());
+                "", DEFAULT_FILE_ID, getPillarID(), componentSettings.getReceiverDestinationID());
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
@@ -57,11 +53,10 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
         Assert.assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID());
         Assert.assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID());
         Assert.assertEquals(receivedIdentifyResponse.getFrom(), getPillarID());
-        Assert.assertEquals(receivedIdentifyResponse.getFileID(), TestFileHelper.DEFAULT_FILE_ID);
+        Assert.assertEquals(receivedIdentifyResponse.getFileID(), DEFAULT_FILE_ID);
         Assert.assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.IDENTIFICATION_POSITIVE);
-        Assert.assertEquals(receivedIdentifyResponse.getReplyTo(), componentSettings.getReceiverDestinationID());
         Assert.assertEquals(receivedIdentifyResponse.getTo(), identifyRequest.getReplyTo());
     }
 
@@ -73,7 +68,7 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
-                "", TestFileHelper.DEFAULT_FILE_ID, getPillarID(), componentSettings.getReceiverDestinationID());
+                "", NON_DEFAULT_FILE_ID, getPillarID(), componentSettings.getReceiverDestinationID());
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",

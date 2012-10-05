@@ -21,6 +21,7 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
+import java.lang.reflect.Method;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -41,13 +42,13 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
 
     @Override
     @BeforeMethod(alwaysRun = true)
-    public void beforeMethod() {
-        super.beforeMethod();
+    public void beforeMethod(Method testMethod) {
+        super.beforeMethod(testMethod);
         msgFactory = new DeleteFileMessageFactory(clientSettings, getPillarID(), pillarDestinationId);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void generalDeleteFileTest() throws Exception {
+    public void generalDeleteFileTest() {
         addDescription("Testing the general delete operation functionality for the checksum pillar.");
 
         initializeCacheWithMD5ChecksummedFile();
@@ -110,7 +111,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
     // ToDo add test for AuditTrail information.
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarDeleteFileTestFailedNoSuchFileDuringIdentify() throws Exception {
+    public void checksumPillarDeleteFileTestFailedNoSuchFileDuringIdentify() {
         addDescription("Tests the DeleteFile functionality of the reference pillar for the scenario when the file does not exist.");
 
         addStep("Create and send the identify request message for a non existing file.",
@@ -131,7 +132,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarDeleteFileTestFailedNoSuchFileDuringOperation() throws Exception {
+    public void checksumPillarDeleteFileTestFailedNoSuchFileDuringOperation() {
         addDescription("Tests the DeleteFile functionality of the reference pillar for the scenario when the file " +
                 "does not exist.");
         
@@ -145,7 +146,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarDeleteFileTestFailedWrongChecksum() throws Exception {
+    public void checksumPillarDeleteFileTestFailedWrongChecksum() {
         addDescription("Tests the DeleteFile functionality of the reference pillar for scenario when a wrong "
                 + "checksum is given as argument.");
         initializeCacheWithMD5ChecksummedFile();
@@ -164,7 +165,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarDeleteFileTestBadChecksumSpec() throws Exception {
+    public void checksumPillarDeleteFileTestBadChecksumSpec() {
         addDescription("Test the handling of invalid checksumspecification.");
         initializeCacheWithMD5ChecksummedFile();
 
@@ -182,9 +183,10 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarDeleteFileTestMissingChecksumArgument() throws Exception {
+    public void checksumPillarDeleteFileTestMissingChecksumArgument() {
         addDescription("Tests that a missing 'ChecksumOnExistingFile' will not delete the file.");
-        Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+
+        context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(true);
         initializeCacheWithMD5ChecksummedFile();
         messageBus.sendMessage(msgFactory.createDeleteFileRequest(null, null, DEFAULT_FILE_ID));
         DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);
@@ -194,11 +196,10 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarDeleteFileTestAllowedMissingChecksum() throws Exception {
+    public void checksumPillarDeleteFileTestAllowedMissingChecksum() {
         addDescription("Tests that a missing 'ChecksumOnExistingFile' will delete the file, when it has been allowed "
                 + "to perform destructive operations in the settings.");
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
-        Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         initializeCacheWithMD5ChecksummedFile();
         messageBus.sendMessage(msgFactory.createDeleteFileRequest(null, null, DEFAULT_FILE_ID));
         DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);

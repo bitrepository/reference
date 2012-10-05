@@ -24,6 +24,7 @@
  */
 package org.bitrepository.client;
 
+import java.lang.reflect.Method;
 import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.IntegrationTest;
@@ -54,8 +55,8 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     protected static ConversationMediator conversationMediator;
 
     @BeforeMethod(alwaysRun = true)
-    public void beforeMethod() {
-        super.beforeMethod();
+    public void beforeMethod(Method method) {
+        super.beforeMethod(method);
         renewConversationMediator();
     }
     @AfterMethod(alwaysRun = true)

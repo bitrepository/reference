@@ -32,6 +32,7 @@ import org.bitrepository.client.eventhandler.BlockingEventHandler;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
+import org.bitrepository.common.exceptions.OperationFailedException;
 
 /**
  * Wrappes a <code>PutFileClient</code> to provide a blocking client. The client will block until the PutFileOperation
@@ -62,7 +63,7 @@ public class BlockingPutFileClient {
             ChecksumSpecTYPE checksumRequestsForValidation,
             EventHandler eventHandler,
             String auditTrailInformation)
-            throws Exception {
+            throws OperationFailedException {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
         client.putFile(url, fileId, sizeOfFile, checksumForValidationAtPillar, checksumRequestsForValidation,
                 blocker, auditTrailInformation);
@@ -70,7 +71,7 @@ public class BlockingPutFileClient {
         if(finishEvent.getEventType() == OperationEvent.OperationEventType.COMPLETE) {
             return blocker.getResults();
         } else if (finishEvent.getEventType() == OperationEvent.OperationEventType.FAILED) {
-            throw new NegativeArraySizeException(finishEvent.getInfo());
+            throw new OperationFailedException(finishEvent.getInfo());
         } else throw new RuntimeException("Received unexpected event type" + finishEvent);
     }
 }

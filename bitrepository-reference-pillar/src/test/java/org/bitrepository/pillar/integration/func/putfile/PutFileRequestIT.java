@@ -21,33 +21,30 @@
  */
 package org.bitrepository.pillar.integration.func.putfile;
 
+import java.lang.reflect.Method;
+import java.util.Date;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.testng.Assert;
-import org.testng.annotations.*;
-
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.util.Date;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 public class PutFileRequestIT extends PillarFunctionTest {
     protected PutFileMessageFactory msgFactory;
     private String pillarDestination;
     private String testSpecificFileID;
     private static final Long DEFAULT_FILE_SIZE = 10L;
-    protected static String FILE_ADDRESS;
-
-    @BeforeClass(alwaysRun = true)
-    public void initializePillar() throws Exception {
-        putDefaultFile();
-    }
-
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest(Method method) throws Exception {
+        msgFactory = new PutFileMessageFactory(componentSettings, componentSettings.getComponentID(), null);
         pillarDestination = lookupPutFileDestination();
         testSpecificFileID = method.getName() + "-Test-File-" + new Date();
         msgFactory = new PutFileMessageFactory(componentSettings, componentSettings.getComponentID(), pillarDestination);
@@ -58,7 +55,7 @@ public class PutFileRequestIT extends PillarFunctionTest {
         addDescription("Tests a normal PutFile sequence");
         addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID(), "");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(
-                TestFileHelper.getDefaultFileChecksum(), null, FILE_ADDRESS, testSpecificFileID, DEFAULT_FILE_SIZE);
+                TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_FILE_ADDRESS, testSpecificFileID, DEFAULT_FILE_SIZE);
         messageBus.sendMessage(putRequest);
 
         addStep("Await the ProgressResponse", "Check all the paramteres are correct.");

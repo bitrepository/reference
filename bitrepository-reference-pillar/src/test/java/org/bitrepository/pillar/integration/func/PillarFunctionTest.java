@@ -20,23 +20,15 @@ package org.bitrepository.pillar.integration.func;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import java.util.Arrays;
+import java.util.Collection;
+import org.bitrepository.common.exceptions.OperationFailedException;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.BlockingPutFileClient;
-import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
-import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.bitrepository.protocol.security.DummySecurityManager;
 import org.testng.annotations.BeforeSuite;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * The parent class for pillar acceptance tests. The tests can be run in a multi pillar collection has the tests will
@@ -45,7 +37,14 @@ import java.util.Collection;
 public class PillarFunctionTest extends PillarIntegrationTest {
     /** Used for receiving responses from the pillar */
     protected MessageReceiver clientReceiver;
-    protected static URL FILE_ADDRESS;
+
+    @BeforeSuite(alwaysRun = true)
+    @Override
+    public void initializeSuite() {
+        super.initializeSuite();
+        putDefaultFile();
+    }
+
 
     /**
      * Adds a client topic listener.
@@ -64,14 +63,14 @@ public class PillarFunctionTest extends PillarIntegrationTest {
         alarmReceiver.setFromFilter(pillarFilter);
     }
 
-    public void putDefaultFile() throws Exception {
+    public void putDefaultFile() {
         try {
-            FILE_ADDRESS = httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID);
-        } catch (MalformedURLException e) { // Doesn't happen.
+            BlockingPutFileClient putFileClient = new BlockingPutFileClient(ModifyComponentFactory.getInstance().retrievePutClient(
+                    componentSettings, createSecurityManager(), componentSettings.getComponentID()));
+            putFileClient.putFile(DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
+                    null, null, null);
+        } catch (OperationFailedException e) {
+            throw new RuntimeException(e);
         }
-        BlockingPutFileClient putFileClient = new BlockingPutFileClient(ModifyComponentFactory.getInstance().retrievePutClient(
-                componentSettings, createSecurityManager(), componentSettings.getComponentID()));
-        putFileClient.putFile(FILE_ADDRESS, TestFileHelper.DEFAULT_FILE_ID, 10L, null, null, null, null);
     }
-
 }

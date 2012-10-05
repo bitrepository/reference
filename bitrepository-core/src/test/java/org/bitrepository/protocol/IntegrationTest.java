@@ -26,10 +26,16 @@ package org.bitrepository.protocol;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.DateFormat;
+import java.util.Date;
 import javax.jms.JMSException;
 import javax.swing.JFrame;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.protocol.bus.MessageBusWrapper;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
@@ -71,6 +77,11 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     protected static Settings componentSettings;
 
+    protected String NON_DEFAULT_FILE_ID;
+    protected static String DEFAULT_FILE_ID;
+    protected static URL DEFAULT_FILE_URL;
+    protected static String DEFAULT_FILE_ADDRESS;
+
     @BeforeSuite(alwaysRun = true)
     public void initializeSuite() {
         setupSettings();
@@ -78,6 +89,13 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         setupMessageBus();
         setupHttpServer();
         startReportGenerator();
+        DEFAULT_FILE_ID = "Test-File-" + createDate();
+        try {
+            DEFAULT_FILE_URL = httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID);
+            DEFAULT_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Never happens");
+        }
     }
     @AfterSuite(alwaysRun = true)
     public void shutdownSuite() {
@@ -89,9 +107,10 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * Defines the standard BitRepositoryCollection configuration
      */
     @BeforeMethod(alwaysRun = true)
-    public void beforeMethod() {
+    public void beforeMethod(Method method) {
         setupSettings();
         initializeMessageBusListeners();
+        NON_DEFAULT_FILE_ID = method.getName() + "-Test-File-" + createDate();
     }
 
     @AfterMethod(alwaysRun = true)
@@ -250,5 +269,9 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     protected void addFixtureSetup(String setupDescription) {
         addStep(setupDescription, "");
+    }
+
+    protected String createDate() {
+        return DateFormat.getDateInstance(DateFormat.SHORT).format(new Date());
     }
 }
