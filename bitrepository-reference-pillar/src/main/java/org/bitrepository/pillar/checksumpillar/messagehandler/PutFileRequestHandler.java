@@ -143,7 +143,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         String calculatedChecksum;
         switch(getChecksumPillarFileDownload()) {
             case ALWAYS_DOWNLOAD:
-                calculatedChecksum = retrieveFile(message);
+                calculatedChecksum = downloadeFileAndCalculateChecksum(message);
                 break;
             case NEVER_DOWNLOAD:
                 calculatedChecksum = extractChecksumFromMessage(message);
@@ -152,7 +152,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
                 if(message.getChecksumDataForNewFile() != null) {
                     calculatedChecksum = extractChecksumFromMessage(message);
                 } else {
-                    calculatedChecksum = retrieveFile(message);
+                    calculatedChecksum = downloadeFileAndCalculateChecksum(message);
                 }
                 break;
         }
@@ -185,8 +185,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
      * @return The checksum of the retrieved file.
      * @throws RequestHandlerException If the operation fails.
      */
-    @SuppressWarnings("deprecation")
-    private String retrieveFile(PutFileRequest message) throws RequestHandlerException {
+    private String downloadeFileAndCalculateChecksum(PutFileRequest message) throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
         

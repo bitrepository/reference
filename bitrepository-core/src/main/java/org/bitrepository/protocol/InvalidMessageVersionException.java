@@ -24,7 +24,6 @@ package org.bitrepository.protocol;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 
-@SuppressWarnings("serial")
 public class InvalidMessageVersionException extends RuntimeException {
 
     private ResponseInfo response;

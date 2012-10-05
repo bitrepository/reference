@@ -176,7 +176,6 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
      * @param message The request to for the file to put.
      * @throws RequestHandlerException If the retrival of the file fails.
      */
-    @SuppressWarnings("deprecation")
     private void retrieveFile(PutFileRequest message) throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
