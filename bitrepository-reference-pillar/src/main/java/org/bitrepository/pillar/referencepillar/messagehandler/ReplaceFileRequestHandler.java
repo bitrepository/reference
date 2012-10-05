@@ -204,7 +204,6 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
      * Also validates against the given checksum. Will log a warning, if no checksum for validation is in the request.
      * @param message The request containing the location of the file and the checksum of it.
      */
-    @SuppressWarnings("deprecation")
     private void downloadTheNewFile(ReplaceFileRequest message) throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());

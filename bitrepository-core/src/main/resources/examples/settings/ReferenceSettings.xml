@@ -124,6 +124,20 @@
         file already exist, etc.)
     -->
     <AlarmLevel>ERROR</AlarmLevel>
+    
+    <!--
+      Settings for whether the ChecksumPillar should download the file regarding the PutFile operation,
+      or it should only use the checksum given for validation.
+      It has the following values:
+      - ALWAYS - the ChecksumPillar must always download the file during the PutFile operation, and then
+      calculate the checksum of that file.
+      - NEVER - the ChecksumPillar must never download the file. It must only use the checksum given
+      in the ChecksumForNewFile element.
+      - DOWNLOAD_WHEN_MISSING_FROM_MESSAGE - if the ChecksumForNewFile element is within the PutFileRequest 
+      then the ChecksumPillar must use the checksum. If the element is missing from the message, then 
+      then file must be downloaded for calculating the checksum.
+     -->
+    <ChecksumPillarFileDownload>DOWNLOAD_WHEN_MISSING_FROM_MESSAGE</ChecksumPillarFileDownload>
   </PillarSettings>
 
   <!-- 
