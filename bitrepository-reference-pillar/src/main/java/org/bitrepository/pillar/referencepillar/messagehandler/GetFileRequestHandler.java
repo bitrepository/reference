@@ -134,7 +134,6 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      * @param message The message requesting the GetFile operation.
      * @throws InvalidMessageException If the upload of the file fails.
      */
-    @SuppressWarnings("deprecation")
     protected void uploadToClient(GetFileRequest message) throws InvalidMessageException {
         File requestedFile = getArchive().getFile(message.getFileID());
 

@@ -54,11 +54,6 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
     /** The put file client for sending the resulting files. */
     private final PutFileClient client;
 
-    /** The interval between checking whether it should perform the preservation of audit trails. */
-    private final Long checkInterval;
-    /** The maximum time between committing audit trails.*/
-    private final Long timeLimit;
-    
     /** The timer for scheduling the preservation of audit trails.*/
     private Timer timer;
     /** The timertask for preserving the audit trails.*/
@@ -82,10 +77,6 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         this.settings = settings;
         this.store = store;
         this.client = client;
-        this.checkInterval = settings.getReferenceSettings().getAuditTrailServiceSettings()
-                .getTimerTaskCheckInterval();
-        this.timeLimit = settings.getReferenceSettings().getAuditTrailServiceSettings()
-                .getAuditTrailPreservationInterval();
         this.auditPacker = new AuditPacker(store, settings);
     }
     
@@ -98,8 +89,11 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         
         log.info("Instantiating the preservation of workflows.");
         timer = new Timer();
-        auditTask = new AuditPreservationTimerTask(timeLimit);
-        timer.scheduleAtFixedRate(auditTask, checkInterval, checkInterval);
+        auditTask = new AuditPreservationTimerTask(
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservationInterval());
+        timer.scheduleAtFixedRate(auditTask, 
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getTimerTaskCheckInterval(), 
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getTimerTaskCheckInterval());
     }
 
     @Override
@@ -150,7 +144,6 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
      * @return The URL to the file.
      * @throws IOException If any issues occur with uploading the file.
      */
-    @SuppressWarnings("deprecation")
     private URL uploadFile(File file) throws IOException {
         FileExchange exchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
         return exchange.uploadToServer(new FileInputStream(file), file.getName());

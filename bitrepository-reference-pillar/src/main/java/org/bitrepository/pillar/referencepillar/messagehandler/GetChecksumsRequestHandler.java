@@ -289,7 +289,6 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
      * @param url The location where the file should be uploaded.
      * @throws Exception If something goes wrong.
      */
-    @SuppressWarnings("deprecation")
     private void uploadFile(File fileToUpload, String url) throws IOException {
         URL uploadUrl = new URL(url);
         

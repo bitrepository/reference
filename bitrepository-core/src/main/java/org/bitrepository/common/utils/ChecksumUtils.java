@@ -248,6 +248,7 @@ public final class ChecksumUtils {
     
     /**
      * Creates the ChecksumSpecTYPE for the default value in settings.
+     * It is verified that the checksum spec is supported.
      * @param settings The settings to retrieve the default algorithm from.
      * @return The default checksum spec type from settings.
      */
@@ -255,9 +256,22 @@ public final class ChecksumUtils {
         ChecksumSpecTYPE res = new ChecksumSpecTYPE();
         res.setChecksumType(ChecksumType.valueOf(
                 settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType()));
+        
+        try {
+            verifyAlgorithm(res);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalArgumentException("The settings contains an invalid default checksum specification.", e);
+        }
+        
         return res;
     }
 
+    /**
+     * Checks whether the checksum of two checksum data elements are identical.
+     * @param checksum1 The first checksum data element.
+     * @param checksum2 The second checksum data element.
+     * @return Whether the checksum data elements are identical.
+     */
     public static boolean areEqual(ChecksumDataForFileTYPE checksum1, ChecksumDataForFileTYPE checksum2) {
         return  (checksum1 == null && checksum2 == null) ||
                 ((checksum1 != null && checksum2 != null) &&
