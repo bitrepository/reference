@@ -25,7 +25,7 @@
 package org.bitrepository.common.exceptions;
 
 /**
- * Indicates taht a operation finished with errors.
+ * Indicates that a operation finished with errors.
  */
 public class OperationFailedException extends Exception {
 

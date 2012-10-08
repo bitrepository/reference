@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Pillar Acceptance Test" verbose="1" >
+  <test name="Regression1">
+    <packages>
+      <package name="org.bitrepository.pillar.integration.func.*" />
+    </packages>
+  </test>
+</suite>
