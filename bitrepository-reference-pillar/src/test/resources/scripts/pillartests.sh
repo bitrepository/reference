@@ -12,7 +12,7 @@ TEST_CASE_DIR="$TEST_DIR/tests"
 DOWNLOAD_TEST_DIR=$TEST_DIR/downloadedtest
 # Contains reference configuration, the specific configurations are pulling from.
 # Changes here are pulled from the $DOWNLOAD_TEST_DIR configuration dir.
-STANDARD_CONFIG_DIR=$TEST_DIR/masterconfig
+STANDARD_CONFIG_DIR=$TEST_DIR/mastertest
 #SCRIPTS_DIR=$DOWNLOAD_TEST_DIR/scripts
 SCRIPTS_DIR=scripts
 ARTIFACTID="bitrepository-reference-pillar"
@@ -30,9 +30,12 @@ create_root_dirs() {
 }
 
 create_conf_repos() {
-    ${SCRIPTS_DIR}/gitutils.sh create $DOWNLOAD_TEST_DIR
-    ${SCRIPTS_DIR}/gitutils.sh create $STANDARD_CONFIG_DIR $DOWNLOAD_TEST_DIR
-
+    if [ ! -d "$DOWNLOAD_TEST_DIR" ] ; then
+      ${SCRIPTS_DIR}/gitutils.sh create $DOWNLOAD_TEST_DIR
+    fi
+    if [ ! -d "$STANDARD_CONFIG_DIR" ] ; then
+      ${SCRIPTS_DIR}/gitutils.sh create $STANDARD_CONFIG_DIR $DOWNLOAD_TEST_DIR
+    fi
     # All arguments after the first 3 are considered pillars test names.
     all=( ${@} )
     IFS=','
@@ -48,8 +51,8 @@ create_conf_repos() {
 
 # Download the newest test
 download_test() {
-  echo "Downloading new master test"
-  scripts/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c pillar-test -p tar.gz
+  echo "Downloading newest test suite"
+  #scripts/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c pillar-test -p tar.gz
   tar -xzf $ARTIFACTID.tar.gz
   rm -rf $DOWNLOAD_TEST_DIR/lib
   cp -r ${ARTIFACTID}-${VERSION}/* $DOWNLOAD_TEST_DIR
@@ -98,12 +101,13 @@ case "$1" in
 	esac
 	;;
   run)
-    for i in `ls $TEST_CASE_DIR`
+    for i in ${TEST_CASE_DIR}/*
     do
       if [ -d $i ]
       then
          cd $i
-         scripts/runpillartest.sh
+         echo "Running $PWD tests"
+         bin/runpillartest.sh
          cd ..
       fi
     done

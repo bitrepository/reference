@@ -2,31 +2,27 @@
 
 # Create a new repository and populate it
 initialize_repository() {
-  echo "Initializing repository for $1"
   if [ -z "$2" ] ; then
     echo "Initializing repository for $1"
-  cd $1
+    cd $1
     git init
-    git add $1/testprops/*
-    git add $1/scripts/*
-    git add -f $1/bin/*
+    git add testprops/*
+    git add scripts/*
+    git add -f bin/*
+    git commit -m "Initialized with configurations" --quiet
   else
-    if [ ! -d "conf" ] ; then
+    if [ ! -d "$1/bin" ] ; then
       echo "Cloning $2 into $1"
       git clone --no-hardlinks $2 $1
       cd $1
     fi
-  fi
-
-  if ! git diff-index --quiet HEAD --; then
-    git commit -m "Initialized with configurations" --quiet
   fi
 }
 
 # Commit any changes to the repository
 do_commit() {
   cd $1
-  if ! git diff-index --quiet HEAD --; then
+  if ! git diff --no-ext-diff --quiet; then
     git commit -m "New download $2" --quiet
   fi
 }
