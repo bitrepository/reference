@@ -54,7 +54,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
 
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetFileIDsOnReferencePillarTest() throws Exception {
-        msgFactory = new GetFileIDsMessageFactory(componentSettings);
+        msgFactory = new GetFileIDsMessageFactory(settingsForCUT);
         DELIVERY_ADDRESS =  httpServer.getURL("test.txt").toExternalForm();
     }    
 
@@ -65,8 +65,8 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
         String auditTrail = "GET-FILE-IDS-TEST";
         String CHECKSUM = "1234cccccccc4321";
         FileIDs fileids = FileIDsUtils.createFileIDs(TestFileHelper.DEFAULT_FILE_ID);
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
+        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
+        settingsForCUT.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         
         addStep("Move the test file into the file directory.", "Should be all-right");
         cache.insertChecksumCalculation(TestFileHelper.DEFAULT_FILE_ID, CHECKSUM, new Date());
@@ -133,7 +133,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
     public void pillarGetFileIDsTestSuccessCaseAllFilesAndURL() throws Exception {
         addDescription("Tests the GetFileIDs functionality of the checksum pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
         String auditTrail = null;
         String CHECKSUM = "1234cccccccc4321";
@@ -211,8 +211,8 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
         addStep("Setting up the variables for the test.", "Should be instantiated.");
         String auditTrail = "GET-FILE-IDS-TEST";
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
+        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
+        settingsForCUT.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
         
@@ -245,8 +245,8 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
                 "which it does not have. But this time at the GetFileIDs message.");
         addStep("Setting up the variables for the test.", "Should be instantiated.");
         String auditTrail = "GET-FILE-IDS-TEST";
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
+        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
+        settingsForCUT.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         FileIDs fileids = FileIDsUtils.createFileIDs(DEFAULT_FILE_ID);
         
         addStep("Create and send the identify request message.", 

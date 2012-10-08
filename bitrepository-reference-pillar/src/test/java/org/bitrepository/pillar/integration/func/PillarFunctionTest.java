@@ -56,7 +56,7 @@ public class PillarFunctionTest extends PillarIntegrationTest {
     protected void initializeMessageBusListeners() {
         super.initializeMessageBusListeners();
         clientReceiver = new MessageReceiver("Client topic receiver", testEventManager);
-        messageBus.addListener(componentSettings.getReceiverDestinationID(), clientReceiver.getMessageListener());
+        messageBus.addListener(settingsForTestClient.getReceiverDestinationID(), clientReceiver.getMessageListener());
 
         Collection<String> pillarFilter = Arrays.asList(testConfiguration.getPillarUnderTestID());
         clientReceiver.setFromFilter(pillarFilter);
@@ -66,7 +66,7 @@ public class PillarFunctionTest extends PillarIntegrationTest {
     public void putDefaultFile() {
         try {
             BlockingPutFileClient putFileClient = new BlockingPutFileClient(ModifyComponentFactory.getInstance().retrievePutClient(
-                    componentSettings, createSecurityManager(), componentSettings.getComponentID()));
+                    settingsForTestClient, securityManager, settingsForCUT.getComponentID()));
             putFileClient.putFile(DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
                     null, null, null);
         } catch (OperationFailedException e) {

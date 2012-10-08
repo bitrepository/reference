@@ -44,7 +44,7 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetAuditTrailsOnReferencePillarTest() throws Exception {
-        msgFactory = new GetAuditTrailsMessageFactory(componentSettings);
+        msgFactory = new GetAuditTrailsMessageFactory(settingsForCUT);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
@@ -52,7 +52,7 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
         addDescription("Tests the GetAuditTrails functionality of the reference pillar for the successful scenario, "
                 + "where all audit trails are requested.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String contributorId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String contributorId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = "";
         audits.addAuditEvent("fileid", "actor", "info", "auditTrail", FileAction.OTHER);
 
@@ -99,7 +99,7 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
         addDescription("Tests the GetAuditTrails functionality of the reference pillar for the successful scenario, "
                 + "where a specific audit trail are requested.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String contributorId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String contributorId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = "";
         String FILE_ID = "fileId" + new Date().getTime();
         String ACTOR = "ACTOR";

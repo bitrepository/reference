@@ -21,20 +21,13 @@
  */
 package org.bitrepository.pillar.integration;
 
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
-import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarSettingsProvider;
-import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.bitrepository.protocol.IntegrationTest;
-import org.bitrepository.protocol.security.DummySecurityManager;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
-
-import java.net.MalformedURLException;
 
 /**
  * Super class for all tests which should test functionality on a single pillar.
@@ -46,9 +39,13 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     /** The path to the directory containing the integration test configuration files */
     protected static final String PATH_TO_CONFIG_DIR = System.getProperty(
             "pillar.integrationtest.settings.path",
-            "conf");
+            "conf");   /** The path to the directory containing the integration test configuration files */
+    protected static final String PATH_TO_TESTPROPS_DIR = System.getProperty(
+            "pillar.integrationtest.testprops.path",
+            "testprops");
     public static final String TEST_CONFIGURATION_FILE_NAME = "pillar-integration-test.properties";
     protected static PillarIntegrationTestConfiguration testConfiguration;
+    private EmbeddedReferencePillar embeddedPillar;
 
     @BeforeSuite(alwaysRun = true)
     @Override
@@ -66,18 +63,15 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
     protected void startEmbeddedReferencePillar() {
         if (testConfiguration.useEmbeddedPillar()) {
-            EmbeddedReferencePillar pillar = new EmbeddedReferencePillar(
-                    PATH_TO_CONFIG_DIR, testConfiguration.getPillarUnderTestID());
+            embeddedPillar = new EmbeddedReferencePillar(settingsForCUT);
         }
     }
 
     protected void stopEmbeddedReferencePillar() {
+        if (embeddedPillar != null) {
+            embeddedPillar.shutdown();
+        }
     }
-
-    private void loadTestSettings() {
-        testConfiguration = new PillarIntegrationTestConfiguration(PATH_TO_CONFIG_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
-    }
-
     @Override
     public boolean useEmbeddedMessageBus() {
         return testConfiguration.useEmbeddedMessagebus();
@@ -86,9 +80,22 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     @Override
     protected void setupSettings() {
         loadTestSettings();
+        super.setupSettings();
+    }
+
+
+    private void loadTestSettings() {
+        testConfiguration =
+                new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
+    }
+
+    /** Loads the pillar test specific settings */
+    @Override
+    protected Settings loadSettings(String componentID) {
         SettingsProvider settingsLoader =
-                new PillarSettingsProvider(new XMLFileSettingsLoader(PATH_TO_CONFIG_DIR), "Test client");
-        componentSettings = settingsLoader.getSettings();
+            new PillarSettingsProvider(new XMLFileSettingsLoader(PATH_TO_CONFIG_DIR), componentID);
+        return settingsLoader.getSettings();
+
     }
     /**
      * Disable test collection messagebus listeners.
@@ -96,14 +103,27 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     @Override
     protected void initializeMessageBusListeners() {
         super.initializeMessageBusListeners();
-        messageBus.removeListener(componentSettings.getCollectionDestination(), collectionReceiver.getMessageListener());
+        messageBus.removeListener(settingsForCUT.getCollectionDestination(), collectionReceiver.getMessageListener());
    }
 
    protected String getPillarID() {
-       return componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().get(0);
+       return settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().get(0);
    }
 
-   protected org.bitrepository.protocol.security.SecurityManager createSecurityManager() {
-       return new DummySecurityManager();
-   }
+    /**
+     * Overrides the default settings modification, as this only works if the test can inject the modified settings into
+     * the pillar. This means that if we are not using an embedded pillar we need to use the 'raw' collection settings,
+     * eg. we can not add a special postfix.
+     * @Override
+     */
+    protected String getTopicPostfix() {
+        if (!testConfiguration.useEmbeddedPillar()) {
+            return "-" + System.getProperty("user.name");
+        } else return "";
+    }
+
+    @Override
+    protected String getComponentID() {
+        return "EmbeddedReferencePillar";
+    }
 }

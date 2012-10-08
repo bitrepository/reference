@@ -52,7 +52,7 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
     }
 
     private void initializeCollectionHelper() {
-        collectionHelper = new CollectionTestHelper(componentSettings, httpServer);
+        collectionHelper = new CollectionTestHelper(settingsForCUT, httpServer);
     }
 
     /**

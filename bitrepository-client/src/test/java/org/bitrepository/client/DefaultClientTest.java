@@ -124,7 +124,7 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         addDescription("Verify that the client works correct without receiving identification responses from all " +
                 "contributors.");
         addFixtureSetup("Set the a identification timeout to 3 seconds.");
-        componentSettings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
+        settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
 
         addStep("Start the operation.",
                 "A IDENTIFY_REQUEST_SENT should be generate and a identification request should be sent.");
@@ -164,7 +164,7 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
                 "More concrete this means that the occurence of a identification timeout should be handled correctly");
         addStep("Set a 3 second timeout for identifying contributors.", "");
 
-        componentSettings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
+        settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
 
         addStep("Start the operation and wait for 5 seconds.",
                 "A IDENTIFY_REQUEST_SENT event should be generated immediately followed by a FAILED event.");
@@ -181,7 +181,7 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         addDescription("Tests the the GetFileClient handles lack of IdentifyPillarResponses gracefully  ");
         addStep("Set the number of pillars to 1 and a 3 second timeout for the conversation.", "");
 
-        componentSettings.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(1000));
+        settingsForCUT.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(1000));
 
         addStep("Start the operation and wait for 5 seconds.",
                 "A IDENTIFY_REQUEST_SENT event should be generated immediately followed by a FAILED event.");

@@ -25,12 +25,11 @@
 package org.bitrepository.protocol.http;
 
 import java.io.File;
-
+import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
 import org.bitrepository.protocol.fileexchange.HttpServerConnector;
 import org.bitrepository.protocol.fileexchange.HttpsServerConfiguration;
 import org.bitrepository.protocol.fileexchange.HttpsServerConnector;
-import org.bitrepository.protocol.fileexchange.TestFileStore;
 import org.jaccept.TestEventManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
@@ -39,7 +38,6 @@ import org.testng.annotations.Test;
  * Tests the functionality of the different HttpServers. 
  */
 public class HttpServerTest extends ExtendedTestCase {
-    private TestFileStore fileStore = new TestFileStore("HttpServerTest", TestFileStore.DEFAULT_TEST_FILE);;
 
     /**
      * Tests the functionality of the default http server.
@@ -105,11 +103,6 @@ public class HttpServerTest extends ExtendedTestCase {
 
         addStep("Uploading file", 
         "The file can now de download from the file server."); 
-        httpServer.uploadFile(fileStore.getFileAsInputstream(
-                TestFileStore.DEFAULT_FILE_ID), 
-                httpServer.getURL(httpTestFile));
-        httpServer.assertFileEquals(
-                fileStore.getFile(TestFileStore.DEFAULT_FILE_ID), 
-                httpServer.getURL(httpTestFile).toExternalForm());
+        httpServer.uploadFile(TestFileHelper.getDefaultFile(), httpServer.getURL(httpTestFile));
     }
 }

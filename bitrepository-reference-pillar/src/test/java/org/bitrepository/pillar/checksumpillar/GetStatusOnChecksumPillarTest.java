@@ -39,14 +39,14 @@ public class GetStatusOnChecksumPillarTest extends ChecksumPillarTest {
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseDeleteFileTests() throws Exception {
-        msgFactory = new GetStatusMessageFactory(componentSettings);
+        msgFactory = new GetStatusMessageFactory(settingsForCUT);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarGetStatusSuccessful() {
         addDescription("Tests the GetStatus functionality of the checksum pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String contributorId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String contributorId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
 
         addStep("Send the identification request", "Should be caught and handled by the pillar.");
@@ -91,7 +91,7 @@ public class GetStatusOnChecksumPillarTest extends ChecksumPillarTest {
         addDescription("Tests the GetStatus functionality of the checksum pillar for the bad scenario, where a wrong "
                 + "contributor id is given.");
         addFixtureSetup("Set the alarm level to warning to enable the sending of invalid ComponentIDs.");
-        String contributorId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String contributorId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String wrongContributorId = "wrongContributor";
         String auditTrail = null;
 

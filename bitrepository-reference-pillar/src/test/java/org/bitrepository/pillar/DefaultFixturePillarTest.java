@@ -53,10 +53,10 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
     protected void setupSettings() {
         super.setupSettings();
         clientSettings = TestSettingsProvider.reloadSettings("TestClientForPillarTest");
-        clientSettings.getCollectionSettings().setCollectionID(componentSettings.getCollectionID());
+        clientSettings.getCollectionSettings().setCollectionID(settingsForCUT.getCollectionID());
         clientSettings.getCollectionSettings().getProtocolSettings().setCollectionDestination(collectionDestinationID);
 
-        componentSettings.getReferenceSettings().getPillarSettings().setPillarID(getPillarID());
+        settingsForCUT.getReferenceSettings().getPillarSettings().setPillarID(getPillarID());
     }
 
     @Override
@@ -66,7 +66,7 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
         clientDestinationId = clientSettings.getReceiverDestinationID();
         messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());
 
-        pillarDestinationId = componentSettings.getReceiverDestinationID();
+        pillarDestinationId = settingsForCUT.getReceiverDestinationID();
     }
 
     @Override

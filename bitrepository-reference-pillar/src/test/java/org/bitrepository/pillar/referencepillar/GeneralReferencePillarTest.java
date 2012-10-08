@@ -63,7 +63,7 @@ public class GeneralReferencePillarTest extends ReferencePillarTest {
         }
         
         addStep("Test the pillar ID", "Should be Ok, with the id from settings, but not with another pillar id");
-        mockRequestHandler.validatePillarID(componentSettings.getReferenceSettings().getPillarSettings().getPillarID());
+        mockRequestHandler.validatePillarID(settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID());
         try {
             mockRequestHandler.validatePillarID("asdfghjklæwetyguvpbmopijå.døtphstiøyizhdfvgnayegtxtæhjmdtuilsfm,s");
             Assert.fail("Should throw an IllegalArgumentException here!");

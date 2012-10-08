@@ -7,7 +7,8 @@ initialize_repository() {
     echo "Initializing repository for $1"
   cd $1
     git init
-    git add $1/conf/*
+    git add $1/testprops/*
+    git add $1/scripts/*
     git add -f $1/bin/*
   else
     if [ ! -d "conf" ] ; then

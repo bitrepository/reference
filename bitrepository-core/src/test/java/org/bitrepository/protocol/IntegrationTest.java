@@ -75,7 +75,10 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     protected static SecurityManager securityManager;
 
-    protected static Settings componentSettings;
+    /** Settings for the Component-Under-Test */
+    protected static Settings settingsForCUT;
+    /** Settings for the Test components */
+    protected static Settings settingsForTestClient;
 
     protected String NON_DEFAULT_FILE_ID;
     protected static String DEFAULT_FILE_ID;
@@ -89,7 +92,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         setupMessageBus();
         setupHttpServer();
         startReportGenerator();
-        DEFAULT_FILE_ID = "Test-File-" + createDate();
+        DEFAULT_FILE_ID = "DefaultFile-" + createDate();
         try {
             DEFAULT_FILE_URL = httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID);
             DEFAULT_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm();
@@ -122,19 +125,27 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * Initializes the settings. Will postfix the alarm and collection topics with '-${user.name}
      */
     protected void setupSettings() {
-        componentSettings = loadSettings();
-        componentSettings.getCollectionSettings().setCollectionID(componentSettings.getCollectionID() + getTopicPostfix());
+        settingsForCUT = loadSettings(getComponentID());
+        makeUserSpecificSettings(settingsForCUT);
 
-        collectionDestinationID = componentSettings.getCollectionDestination() + getTopicPostfix();
-        componentSettings.getCollectionSettings().getProtocolSettings().setCollectionDestination(collectionDestinationID);
+        collectionDestinationID = settingsForCUT.getCollectionSettings().getProtocolSettings().getCollectionDestination();
+        alarmDestinationID = settingsForCUT.getCollectionSettings().getProtocolSettings().getAlarmDestination();
 
-        alarmDestinationID = componentSettings.getAlarmDestination() + getTopicPostfix();
-        componentSettings.getCollectionSettings().getProtocolSettings().setAlarmDestination(alarmDestinationID);
+        settingsForTestClient = loadSettings(getClass().getSimpleName());
+        makeUserSpecificSettings(settingsForTestClient);
     }
 
     /** Can be overloaded by tests needing to load custom settings */
-    protected Settings loadSettings() {
-        return TestSettingsProvider.reloadSettings(getComponentID());
+    protected Settings loadSettings(String componentID) {
+        return TestSettingsProvider.reloadSettings(componentID);
+    }
+
+    private void makeUserSpecificSettings(Settings settings) {
+        settings.getCollectionSettings().setCollectionID(settingsForCUT.getCollectionID() + getTopicPostfix());
+        settings.getCollectionSettings().getProtocolSettings().setCollectionDestination(
+                settings.getCollectionDestination() + getTopicPostfix());
+        settings.getCollectionSettings().getProtocolSettings().setAlarmDestination(
+                settings.getAlarmDestination() + getTopicPostfix());
     }
 
     // Experimental, use at own risk.
@@ -178,11 +189,11 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      */
     private void setupMessageBus() {
         if (useEmbeddedMessageBus() && broker == null) {
-            broker = new LocalActiveMQBroker(componentSettings.getMessageBusConfiguration());
+            broker = new LocalActiveMQBroker(settingsForCUT.getMessageBusConfiguration());
             broker.start();
         }
         messageBus = new MessageBusWrapper(
-                ProtocolComponentFactory.getInstance().getMessageBus(componentSettings, securityManager), testEventManager);
+                ProtocolComponentFactory.getInstance().getMessageBus(settingsForCUT, securityManager), testEventManager);
     }
 
     /**
@@ -190,15 +201,15 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      */
     protected void initializeMessageBusListeners() {
         collectionReceiver = new MessageReceiver("Collection topic receiver", testEventManager);
-        messageBus.addListener(componentSettings.getCollectionDestination(), collectionReceiver.getMessageListener());
+        messageBus.addListener(settingsForCUT.getCollectionDestination(), collectionReceiver.getMessageListener());
 
         alarmReceiver = new MessageReceiver("Alarm receiver", testEventManager);
-        messageBus.addListener(componentSettings.getAlarmDestination(), alarmReceiver.getMessageListener());
+        messageBus.addListener(settingsForCUT.getAlarmDestination(), alarmReceiver.getMessageListener());
     }
 
     protected void teardownMessageBusListeners() {
-        messageBus.removeListener(componentSettings.getCollectionDestination(), collectionReceiver.getMessageListener());
-        messageBus.removeListener(componentSettings.getAlarmDestination(), alarmReceiver.getMessageListener());
+        messageBus.removeListener(settingsForCUT.getCollectionDestination(), collectionReceiver.getMessageListener());
+        messageBus.removeListener(settingsForCUT.getAlarmDestination(), alarmReceiver.getMessageListener());
     }
 
     /**
@@ -260,9 +271,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         return "-" + System.getProperty("user.name");
     }
 
-    /**
-     * Should return a component independent settings by the implementing subclass.
-     */
     protected String getComponentID() {
         return getClass().getSimpleName();
     }
@@ -272,6 +280,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     }
 
     protected String createDate() {
-        return DateFormat.getDateInstance(DateFormat.SHORT).format(new Date());
+        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date());
     }
 }

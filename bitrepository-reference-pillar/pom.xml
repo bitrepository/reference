@@ -50,6 +50,9 @@
     </dependency>
   </dependencies>
   <build>
+    <testResources>
+
+    </testResources>
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>

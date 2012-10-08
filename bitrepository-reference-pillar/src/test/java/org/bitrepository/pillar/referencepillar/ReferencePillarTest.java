@@ -52,19 +52,19 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
-        File fileDir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0));
-        componentSettings.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
+        File fileDir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0));
+        settingsForCUT.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         if(fileDir.exists()) {
             FileUtils.delete(fileDir);
         }
 
         addStep("Initialize the pillar.", "Should not be a problem.");
         csCache = new MemoryCache();
-        archive = new ReferenceArchive(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
+        archive = new ReferenceArchive(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir());
         audits = new MockAuditManager();
-        ContributorContext contributorContext = new ContributorContext(messageBus, componentSettings);
+        ContributorContext contributorContext = new ContributorContext(messageBus, settingsForCUT);
         context = new MessageHandlerContext(
-                componentSettings,
+                settingsForCUT,
                 messageBus,
                 new PillarAlarmDispatcher(contributorContext), audits);
         csManager = new ReferenceChecksumManager(archive, csCache, ChecksumUtils.getDefault(context.getSettings()), 
@@ -76,7 +76,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
 
     @AfterMethod(alwaysRun=true)
     public void closeArchive() {
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0));
+        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0));
         if(dir.exists()) {
             FileUtils.delete(dir);
         }

@@ -56,12 +56,12 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
 
     @BeforeMethod(alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
-        testMessageFactory = new GetAuditTrailsMessageFactory(componentSettings.getCollectionID(), TEST_CLIENT_ID);
+        testMessageFactory = new GetAuditTrailsMessageFactory(settingsForCUT.getCollectionID(), TEST_CLIENT_ID);
 
-        if (componentSettings.getCollectionSettings().getGetAuditTrailSettings() == null) {
-            componentSettings.getCollectionSettings().setGetAuditTrailSettings(new GetAuditTrailSettings());
+        if (settingsForCUT.getCollectionSettings().getGetAuditTrailSettings() == null) {
+            settingsForCUT.getCollectionSettings().setGetAuditTrailSettings(new GetAuditTrailSettings());
         }
-        List<String> contributers = componentSettings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs();
+        List<String> contributers = settingsForCUT.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs();
         contributers.clear();
         contributers.add(PILLAR1_ID);
         contributers.add(PILLAR2_ID);
@@ -73,7 +73,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
     @Test(groups = {"regressiontest"})
     public void verifyAuditTrailClientFromFactory() throws Exception {
         Assert.assertTrue(AccessComponentFactory.getInstance().createAuditTrailClient(
-                componentSettings, securityManager, TEST_CLIENT_ID)
+                settingsForCUT, securityManager, TEST_CLIENT_ID)
                 instanceof ConversationBasedAuditTrailClient,
                 "The default AuditTrailClient from the Access factory should be of the type '" +
                 ConversationBasedAuditTrailClient.class.getName() + "'.");
@@ -418,7 +418,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         addStep("Configure 3 second timeout for identifying contributers. " +
                 "The default 2 contributers collection is used", "");
 
-        componentSettings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
+        settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         AuditTrailClient client = createAuditTrailClient();
 
@@ -456,7 +456,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         addStep("Configure 3 second timeout for the operation itself. " +
                 "The default 2 contributers collection is used", "");
 
-        componentSettings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
+        settingsForCUT.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         AuditTrailClient client = createAuditTrailClient();
 
@@ -497,7 +497,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the AuditTrailClient handles lack of IdentifyResponses gracefully  ");
         addStep("Set a 3 second timeout for identifying contributers.", "");
 
-        componentSettings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
+        settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
         AuditTrailClient client = createAuditTrailClient();
 
         addStep("Make the client ask for all audit trails.",
@@ -521,7 +521,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the the AuditTrailClient handles lack of Final Responses gracefully  ");
         addStep("Set a 3 second timeout for the operation.", "");
 
-        componentSettings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
+        settingsForCUT.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
         AuditTrailClient client = createAuditTrailClient();
 
         addStep("Make the client ask for all audit trails.",
@@ -566,8 +566,8 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         addStep("Set a 3 second timeout for conversations.", "");
 
         //We need to use a different collection ID to avoid using a existing conversation mediator.
-        componentSettings.getCollectionSettings().setCollectionID("conversationTimeoutTest");
-        componentSettings.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(3000));
+        settingsForCUT.getCollectionSettings().setCollectionID("conversationTimeoutTest");
+        settingsForCUT.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(3000));
         AuditTrailClient client = createAuditTrailClient();
 
         addStep("Make the client ask for all audit trails.",
@@ -589,8 +589,8 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
     public void badSettingsTest() throws Exception {
         addDescription("Tests that the Audit Trail can handle missing Settings.");
         addStep("Remove the GetAuditTrailSettings.", "Should fail.");
-        GetAuditTrailSettings auditSettings = componentSettings.getCollectionSettings().getGetAuditTrailSettings();
-        componentSettings.getCollectionSettings().setGetAuditTrailSettings(null);
+        GetAuditTrailSettings auditSettings = settingsForCUT.getCollectionSettings().getGetAuditTrailSettings();
+        settingsForCUT.getCollectionSettings().setGetAuditTrailSettings(null);
         AuditTrailClient client1 = createAuditTrailClient();
 
         try {
@@ -601,8 +601,8 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         }
         
         addStep("Tests when the contributor list is emptied", "Should also fail.");
-        componentSettings.getCollectionSettings().setGetAuditTrailSettings(auditSettings);
-        componentSettings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().clear();
+        settingsForCUT.getCollectionSettings().setGetAuditTrailSettings(auditSettings);
+        settingsForCUT.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().clear();
         AuditTrailClient client2 = createAuditTrailClient();
 
         try {
@@ -614,7 +614,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
     }
 
     /**
-     * Creates a new test AuditTrailClient based on the supplied componentSettings.
+     * Creates a new test AuditTrailClient based on the supplied settingsForCUT.
      *
      * Note that the normal way of creating client through the module factory would reuse components with settings from
      * previous tests.
@@ -622,7 +622,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
      */
     private AuditTrailClient createAuditTrailClient() {
         return new AuditTrailClientTestWrapper(new ConversationBasedAuditTrailClient(
-                componentSettings, conversationMediator, messageBus, TEST_CLIENT_ID) , testEventManager);
+                settingsForCUT, conversationMediator, messageBus, TEST_CLIENT_ID) , testEventManager);
     }
 
     private ResultingAuditTrails createTestResultingAuditTrails(String componentID) {

@@ -49,7 +49,7 @@ create_conf_repos() {
 # Download the newest test
 download_test() {
   echo "Downloading new master test"
-  #scripts/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c pillar-test -p tar.gz
+  scripts/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c pillar-test -p tar.gz
   tar -xzf $ARTIFACTID.tar.gz
   rm -rf $DOWNLOAD_TEST_DIR/lib
   cp -r ${ARTIFACTID}-${VERSION}/* $DOWNLOAD_TEST_DIR

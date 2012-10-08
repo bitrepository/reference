@@ -52,10 +52,10 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
     public void initialiseChecksumPillarTest() throws Exception {
         cache = new MemoryCache();
         audits = new MockAuditManager();
-        componentSettings.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
-        ContributorContext contributorContext = new ContributorContext(messageBus, componentSettings);
+        settingsForCUT.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
+        ContributorContext contributorContext = new ContributorContext(messageBus, settingsForCUT);
         alarmDispatcher = new PillarAlarmDispatcher(contributorContext);
-        context = new MessageHandlerContext(componentSettings, messageBus, alarmDispatcher, audits);
+        context = new MessageHandlerContext(settingsForCUT, messageBus, alarmDispatcher, audits);
         mediator = new ChecksumPillarMediator(messageBus, context, cache);
         mediator.start();
 

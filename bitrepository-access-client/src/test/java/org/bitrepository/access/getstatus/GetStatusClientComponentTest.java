@@ -48,12 +48,12 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
 
         @BeforeMethod(alwaysRun=true)
         public void beforeMethodSetup() throws Exception {
-            testMessageFactory = new TestGetStatusMessageFactory(componentSettings.getCollectionID());
+            testMessageFactory = new TestGetStatusMessageFactory(settingsForCUT.getCollectionID());
 
-            if (componentSettings.getCollectionSettings().getGetStatusSettings() == null) {
-                componentSettings.getCollectionSettings().setGetStatusSettings(new GetStatusSettings());
+            if (settingsForCUT.getCollectionSettings().getGetStatusSettings() == null) {
+                settingsForCUT.getCollectionSettings().setGetStatusSettings(new GetStatusSettings());
             }
-            List<String> contributers = componentSettings.getCollectionSettings().getGetStatusSettings().getContributorIDs();
+            List<String> contributers = settingsForCUT.getCollectionSettings().getGetStatusSettings().getContributorIDs();
             contributers.clear();
             contributers.add(PILLAR1_ID);
             contributers.add(PILLAR2_ID);
@@ -62,7 +62,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         @Test(groups = {"regressiontest"})
         public void verifyGetStatusClientFromFactory() throws Exception {
             Assert.assertTrue(AccessComponentFactory.getInstance().createGetStatusClient(
-                    componentSettings, securityManager, TEST_CLIENT_ID)
+                    settingsForCUT, securityManager, TEST_CLIENT_ID)
                     instanceof ConversationBasedGetStatusClient,
                     "The default GetStatusClient from the Access factory should be of the type '" +
                             ConversationBasedGetStatusClient.class.getName() + "'.");
@@ -75,7 +75,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
             addStep("Configure 5 second timeout for identifying contributers. " +
                     "The default 2 contributers collection is used", "");
 
-            componentSettings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(5000));
+            settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(5000));
             TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
             GetStatusClient client = createGetStatusClient();
 
@@ -188,7 +188,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
          */
         private GetStatusClient createGetStatusClient() {
             return new GetStatusClientTestWrapper(new ConversationBasedGetStatusClient(
-                    messageBus, conversationMediator, componentSettings, TEST_CLIENT_ID) , testEventManager);
+                    messageBus, conversationMediator, settingsForCUT, TEST_CLIENT_ID) , testEventManager);
         }
         
         private ResultingStatus createTestResultingStatus(String componentID) {

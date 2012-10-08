@@ -47,8 +47,8 @@ public class MonitorAlerterTest extends IntegrationTest {
         addDescription("Tests the " + BasicMonitoringServiceAlerter.class.getName());
         addStep("Setup", "");
         String componentID = "TestMonitorService";
-        componentSettings.getReferenceSettings().getMonitoringServiceSettings().setMaxRetries(BigInteger.ONE);
-        ContributorContext context = new ContributorContext(messageBus, componentSettings);
+        settingsForCUT.getReferenceSettings().getMonitoringServiceSettings().setMaxRetries(BigInteger.ONE);
+        ContributorContext context = new ContributorContext(messageBus, settingsForCUT);
         
         AlerterStatusStore store = new AlerterStatusStore();
         

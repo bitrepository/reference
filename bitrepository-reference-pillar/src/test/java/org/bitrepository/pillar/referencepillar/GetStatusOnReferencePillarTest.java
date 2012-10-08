@@ -39,14 +39,14 @@ public class GetStatusOnReferencePillarTest extends ReferencePillarTest {
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseDeleteFileTests() throws Exception {
-        msgFactory = new GetStatusMessageFactory(componentSettings);
+        msgFactory = new GetStatusMessageFactory(settingsForCUT);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
     public void pillarSuccessfullGetStatus() {
         addDescription("Tests the GetStatus functionality of the reference pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String contributorId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String contributorId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
 
         addStep("Send the identification request", "Should be caught and handled by the pillar.");
@@ -94,7 +94,7 @@ public class GetStatusOnReferencePillarTest extends ReferencePillarTest {
         addDescription("Tests the GetStatus functionality of the reference pillar for the bad scenario, where a wrong "
                 + "contributor id is given.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String contributorId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String contributorId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String wrongContributorId = "wrongContributor";
         String auditTrail = null;
 

@@ -34,7 +34,7 @@
     <ConversationTimeout>3600000</ConversationTimeout>
   </ClientSettings>
   <PillarSettings>
-    <PillarID>EmbeddedPillar</PillarID>
+    <PillarID>EmbeddedReferencePillar</PillarID>
     <FileDir>test-archive</FileDir>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>

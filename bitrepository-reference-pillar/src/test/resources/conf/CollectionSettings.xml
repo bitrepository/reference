@@ -47,7 +47,7 @@
   <ClientSettings>
     <IdentificationTimeout>1000000</IdentificationTimeout>
     <OperationTimeout>10000000</OperationTimeout>
-    <PillarIDs>EmbeddedPillar</PillarIDs>
+    <PillarIDs>EmbeddedReferencePillar</PillarIDs>
   </ClientSettings>
 
   <GetAuditTrailSettings>

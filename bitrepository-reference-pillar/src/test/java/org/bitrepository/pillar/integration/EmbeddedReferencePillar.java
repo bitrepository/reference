@@ -23,23 +23,29 @@ package org.bitrepository.pillar.integration;
 
 
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.XMLFileSettingsLoader;
-import org.bitrepository.pillar.PillarSettingsProvider;
 import org.bitrepository.pillar.referencepillar.ReferencePillar;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
+import org.bitrepository.service.LifeCycledService;
 
-public class EmbeddedReferencePillar {
+public class EmbeddedReferencePillar implements LifeCycledService {
+    private final ReferencePillar pillar;
 
-    public EmbeddedReferencePillar(String pathToReferencePillarSettings, String pillarID) {
-
-        PillarSettingsProvider settingsLoader =
-                new PillarSettingsProvider(new XMLFileSettingsLoader(pathToReferencePillarSettings), pillarID);
-        Settings settings = settingsLoader.getSettings();
-        ReferencePillarDerbyDBTestUtils.createEmptyDatabases(settings);
+    public EmbeddedReferencePillar(Settings pillarSettings) {
+        ReferencePillarDerbyDBTestUtils.createEmptyDatabases(pillarSettings);
         MessageBus messageBus =
-                ProtocolComponentFactory.getInstance().getMessageBus(settings, new DummySecurityManager());
-        new ReferencePillar(messageBus, settings);
+                ProtocolComponentFactory.getInstance().getMessageBus(pillarSettings, new DummySecurityManager());
+        pillar = new ReferencePillar(messageBus, pillarSettings);
+    }
+
+    @Override
+    public void start() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void shutdown() {
+        pillar.close();
     }
 }

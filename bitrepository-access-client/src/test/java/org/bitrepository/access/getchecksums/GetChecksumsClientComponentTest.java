@@ -78,12 +78,12 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
 
     @BeforeMethod (alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
-        testMessageFactory = new TestGetChecksumsMessageFactory(componentSettings.getCollectionID());
+        testMessageFactory = new TestGetChecksumsMessageFactory(settingsForCUT.getCollectionID());
     }
 
     @Test(groups = {"regressiontest"})
     public void verifyGetChecksumsClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createGetChecksumsClient(componentSettings, securityManager,
+        Assert.assertTrue(AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,
                 TEST_CLIENT_ID) instanceof ConversationBasedGetChecksumsClient,
                 "The default GetFileClient from the Access factory should be of the type '" +
                         ConversationBasedGetChecksumsClient.class.getName() + "'.");
@@ -184,7 +184,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         GetChecksumsRequest receivedGetChecksumsRequest1 = pillar1Destination.waitForMessage(GetChecksumsRequest.class);
         GetChecksumsRequest receivedGetChecksumsRequest2 = pillar2Destination.waitForMessage(GetChecksumsRequest.class);
 
-        for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -213,7 +213,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the GetChecksumsClient handles lack of IdentifyPillarResponses gracefully.");
         addStep("Define a 3 second timeout for identifying pillar.", "");
 
-        componentSettings.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
+        settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         GetChecksumsClient getChecksumsClient = createGetCheckSumsClient();
@@ -241,7 +241,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         FileIDs fileIDs = new FileIDs();
         fileIDs.setFileID(DEFAULT_FILE_ID);
 
-        componentSettings.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
+        settingsForCUT.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         GetChecksumsClient getChecksumsClient = createGetCheckSumsClient();
@@ -286,8 +286,8 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         FileIDs fileIDs = new FileIDs();
         fileIDs.setFileID(DEFAULT_FILE_ID);
 
-        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         GetChecksumsClient getChecksumsClient = createGetCheckSumsClient();
@@ -312,7 +312,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         messageBus.sendMessage(identifyResponse);
         receivedGetChecksumsRequest = pillar1Destination.waitForMessage(GetChecksumsRequest.class);
 
-        for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -344,6 +344,6 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
      * @return A new GetFileClient(Wrapper).
      */
     private GetChecksumsClient createGetCheckSumsClient() {return new GetChecksumsClientTestWrapper(new ConversationBasedGetChecksumsClient(
-            messageBus, conversationMediator, componentSettings, TEST_CLIENT_ID), testEventManager);
+            messageBus, conversationMediator, settingsForCUT, TEST_CLIENT_ID), testEventManager);
     }
 }

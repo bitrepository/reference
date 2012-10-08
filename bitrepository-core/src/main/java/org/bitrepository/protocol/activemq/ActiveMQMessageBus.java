@@ -166,8 +166,8 @@ public class ActiveMQMessageBus implements MessageBus {
 
     @Override
     public synchronized void addListener(String destinationID, final MessageListener listener) {
-        log.debug("Adding listener '{}' to destination: '{}' on message-bus '{}'.",
-                new Object[] {listener, destinationID, configuration.getName()});
+        log.info("Adding listener '{}' to destination: '{}' on message-bus '{}'.",
+                new Object[] {listener, destinationID, configuration.getURL()});
         MessageConsumer consumer = getMessageConsumer(destinationID, listener);
         try {
             consumer.setMessageListener(new ActiveMQMessageListener(listener));
@@ -211,8 +211,11 @@ public class ActiveMQMessageBus implements MessageBus {
     public void close() throws JMSException {
         log.info("Closing message bus: " + configuration);
         producerSession.close();
+        log.debug("Producer session closed.");
         consumerSession.close();
+        log.debug("Consumer session closed.");
         connection.close();
+        log.debug("Connection closed.");
     }
 
     @Override

@@ -41,17 +41,17 @@ public class ReferencePillarMediatorTester extends ReferencePillarTest {
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetChecksumsTests() throws Exception {
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0));
-        componentSettings.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
+        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0));
+        settingsForCUT.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         if(dir.exists()) {
             FileUtils.delete(dir);
         }
         
         addStep("Initialize the pillar.", "Should not be a problem.");
-        archive = new ReferenceArchive(componentSettings.getReferenceSettings().getPillarSettings().getFileDir());
+        archive = new ReferenceArchive(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir());
         audits = new MockAuditManager();
-        ContributorContext contributorContext = new ContributorContext(messageBus, componentSettings);
-        MessageHandlerContext context = new MessageHandlerContext(componentSettings, messageBus,
+        ContributorContext contributorContext = new ContributorContext(messageBus, settingsForCUT);
+        MessageHandlerContext context = new MessageHandlerContext(settingsForCUT, messageBus,
                 new PillarAlarmDispatcher(contributorContext), audits);
         mediator = new ReferencePillarMediator(messageBus, context, archive, csManager);
         mediator.start();
@@ -59,7 +59,7 @@ public class ReferencePillarMediatorTester extends ReferencePillarTest {
     
     @AfterMethod (alwaysRun=true) 
     public void closeArchive() {
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0));
+        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0));
         if(dir.exists()) {
             FileUtils.delete(dir);
         }
@@ -106,7 +106,7 @@ public class ReferencePillarMediatorTester extends ReferencePillarTest {
 //    public void handleMessagesWithNoAlarms() throws Exception {
 //        addDescription("Tests that if the alarm level is too high, then the alarms are not send for the Message.");
 //        addStep("Setup variables, e.g. changing the alarm level.", "Should be ok.");
-//        componentSettings.getCollectionSettings().getPillarSettings().setAlarmLevel(AlarmLevel.EMERGENCY);
+//        settingsForCUT.getCollectionSettings().getPillarSettings().setAlarmLevel(AlarmLevel.EMERGENCY);
 //        
 //        alarmDispatcher.resetCallsForSendAlarm();
 //        audits.resetCallsForAuditEvent();

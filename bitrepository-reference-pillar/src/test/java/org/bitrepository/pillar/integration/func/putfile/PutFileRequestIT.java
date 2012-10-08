@@ -22,7 +22,6 @@
 package org.bitrepository.pillar.integration.func.putfile;
 
 import java.lang.reflect.Method;
-import java.util.Date;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
@@ -44,10 +43,10 @@ public class PutFileRequestIT extends PillarFunctionTest {
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest(Method method) throws Exception {
-        msgFactory = new PutFileMessageFactory(componentSettings, componentSettings.getComponentID(), null);
+        msgFactory = new PutFileMessageFactory(settingsForTestClient, getPillarID(), null);
         pillarDestination = lookupPutFileDestination();
-        testSpecificFileID = method.getName() + "-Test-File-" + new Date();
-        msgFactory = new PutFileMessageFactory(componentSettings, componentSettings.getComponentID(), pillarDestination);
+        testSpecificFileID = method.getName() + "File-" + createDate();
+        msgFactory = new PutFileMessageFactory(settingsForTestClient, getPillarID(), pillarDestination);
     }
 
     @Test( groups = {"pillar-integration-test"})
@@ -58,16 +57,7 @@ public class PutFileRequestIT extends PillarFunctionTest {
                 TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_FILE_ADDRESS, testSpecificFileID, DEFAULT_FILE_SIZE);
         messageBus.sendMessage(putRequest);
 
-        addStep("Await the ProgressResponse", "Check all the paramteres are correct.");
-        PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class);
-        Assert.assertNotNull(progressResponse);
-        Assert.assertEquals(progressResponse.getCorrelationID(), putRequest.getCorrelationID());
-        Assert.assertEquals(progressResponse.getFrom(), getPillarID());
-        Assert.assertEquals(progressResponse.getPillarID(), getPillarID());
-        Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.OPERATION_ACCEPTED_PROGRESS);
-
-        addStep("Await the FinalResponse", "Check all the paramteres are correct.");
+        addStep("Await the FinalResponse", "Check all the parameteres are correct.");
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertNotNull(finalResponse);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
@@ -76,7 +66,31 @@ public class PutFileRequestIT extends PillarFunctionTest {
         Assert.assertEquals(finalResponse.getPillarID(), getPillarID());
     }
 
+    @Test( groups = {"pillar-integration-test"})
+    public void operationAcceptedProgressResponse() {
+        addDescription("Tests that a pillar sends a progress response after receiving a request");
+        addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID(), "");
+        PutFileRequest putRequest = msgFactory.createPutFileRequest(
+                TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_FILE_ADDRESS, testSpecificFileID, DEFAULT_FILE_SIZE);
+        messageBus.sendMessage(putRequest);
+
+        addStep("Await the ProgressResponse", "Check all the parameteres are correct.");
+        PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class);
+        Assert.assertNotNull(progressResponse);
+        Assert.assertEquals(progressResponse.getCorrelationID(), putRequest.getCorrelationID());
+        Assert.assertEquals(progressResponse.getFrom(), getPillarID());
+        Assert.assertEquals(progressResponse.getPillarID(), getPillarID());
+        Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(),
+                ResponseCode.OPERATION_ACCEPTED_PROGRESS);
+
+        addStep("Await the FinalResponse", "");
+        PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
+        Assert.assertNotNull(finalResponse);
+    }
+
+
     public String lookupPutFileDestination() {
+        addFixtureSetup("Looking up the pillars destination for putFile requests.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
                 TestFileHelper.DEFAULT_FILE_ID, 0L);
         messageBus.sendMessage(identifyRequest);

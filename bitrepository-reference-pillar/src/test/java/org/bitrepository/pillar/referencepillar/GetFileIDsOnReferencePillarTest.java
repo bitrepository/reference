@@ -51,7 +51,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
 
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetFileIDsOnReferencePillarTest() throws Exception {
-        msgFactory = new GetFileIDsMessageFactory(componentSettings);
+        msgFactory = new GetFileIDsMessageFactory(settingsForCUT);
 
         DELIVERY_ADDRESS = httpServer.getURL("test.txt").toExternalForm();
     }
@@ -60,7 +60,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFileIDsTestSuccessCase() throws Exception {
         addDescription("Tests the GetFileIDs functionality of the reference pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         FileIDs fileids = FileIDsUtils.createFileIDs(DEFAULT_FILE_ID);
         String auditTrail = null;
         
@@ -68,7 +68,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
         File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
         Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
+        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, DEFAULT_FILE_ID));
@@ -139,7 +139,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFileIDsTestSuccessCaseAllFilesAndURL() throws Exception {
         addDescription("Tests the GetFileIDs functionality of the reference pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
         fileids.setAllFileIDs("true");
         String auditTrail = null;
@@ -148,7 +148,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
         File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
         Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
+        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, DEFAULT_FILE_ID));
@@ -218,7 +218,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFileIDsTestFailedNoSuchFile() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetFileIDs requests for a file, which it does not have.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
@@ -252,7 +252,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
         addDescription("Tests that the ReferencePillar is able to reject a GetFileIDs requests for a file, " +
                 "which it does not have. But this time at the GetFileIDs message.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);

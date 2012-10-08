@@ -56,14 +56,14 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
 
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetFileTests() throws Exception {
-        msgFactory = new GetFileMessageFactory(componentSettings);
+        msgFactory = new GetFileMessageFactory(settingsForCUT);
 
         FILE_ADDRESS = httpServer.getURL("test.txt").toExternalForm();
     }
 
     @AfterMethod (alwaysRun=true) 
     public void closeArchive() {
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0));
+        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0));
         if(dir.exists()) {
             FileUtils.delete(dir);
         }
@@ -77,7 +77,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFileTestSuccessCase() throws Exception {
         addDescription("Tests the get functionality of the reference pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         FilePart filePart = null;
         ChecksumDataForFileTYPE csData = null;
@@ -88,7 +88,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         Long FILE_SIZE = testfile.length();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
+        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));
@@ -164,7 +164,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFilePartTest() throws Exception {
         addDescription("Tests the get functionality of the reference pillar for a file part. Successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         FilePart filePart = new FilePart();
         filePart.setPartLength(BigInteger.ONE);
@@ -177,7 +177,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         Long FILE_SIZE = testfile.length();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
+        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));
@@ -223,7 +223,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         
         addStep("Validate the uploaded result-file.", "Should only contain the second letter of the file, which is a "
                 + "'A'. Any following extracted bytes should have the value '-1'.");
-        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(componentSettings);
+        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(settingsForCUT);
         InputStream is = fe.downloadFromServer(new URL(FILE_ADDRESS));
         
         int digit1 = is.read();
@@ -236,7 +236,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFileTestFailedNoSuchFile() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetFile requests for a file, which it does not have.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         
         addStep("Move the test file into the file directory.", "Should be all-right");
@@ -269,7 +269,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFileTestFailedNoSuchFileInOperation() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetFile requests for a file, which it does not have.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         FilePart filePart = null;
         
@@ -315,7 +315,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
                 "Should be received by the pillar, which should issue an alarm.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
                 auditTrail, FILE_ID, getPillarID(), clientDestinationId);
-        identifyRequest.setCollectionID(componentSettings.getCollectionID() + "ERROR");
+        identifyRequest.setCollectionID(settingsForCUT.getCollectionID() + "ERROR");
         messageBus.sendMessage(identifyRequest);
         
         // TODO fix this!
@@ -328,7 +328,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGeneralTestWrongPillarID() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetFile requests with a wrong pillarID.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
+        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         FilePart filePart = null;
         
@@ -337,7 +337,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
+        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));
@@ -391,7 +391,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String fileAddress = "http://127.0.0.1/¾" + new Date().getTime();
         
-        File dir = new File(componentSettings.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
+        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
         FileUtils.copyFile(testfile, new File(dir, FILE_ID));

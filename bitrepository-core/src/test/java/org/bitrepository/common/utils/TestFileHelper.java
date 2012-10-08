@@ -50,10 +50,6 @@ public class TestFileHelper {
         return checksumData;
     }
 
-    public static String createUniqueFilename(File file) {
-        return DEFAULT_FILE_ID + new Date().getTime();
-    }
-
     public static long getFileSize(File file) {
         return file.length();
     }
@@ -75,5 +71,4 @@ public class TestFileHelper {
         }
         return fileIDs;
     }
-
 }

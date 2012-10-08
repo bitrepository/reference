@@ -48,9 +48,9 @@ public class MediatorTest extends DefaultFixturePillarTest {
     @BeforeMethod (alwaysRun=true)
     public void initialiseTest() throws Exception {
         audits = new MockAuditManager();
-        ContributorContext contributorContext = new ContributorContext(messageBus, componentSettings);
+        ContributorContext contributorContext = new ContributorContext(messageBus, settingsForCUT);
         context = new MessageHandlerContext(
-                componentSettings, messageBus, new PillarAlarmDispatcher(contributorContext), audits);
+                settingsForCUT, messageBus, new PillarAlarmDispatcher(contributorContext), audits);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -67,12 +67,12 @@ public class MediatorTest extends DefaultFixturePillarTest {
             addStep("Send a request to the mediator.", "Should be caught.");
             IdentifyContributorsForGetStatusRequest request = new IdentifyContributorsForGetStatusRequest();
             request.setAuditTrailInformation("audit");
-            request.setCollectionID(componentSettings.getCollectionID());
+            request.setCollectionID(settingsForCUT.getCollectionID());
             request.setCorrelationID(UUID.randomUUID().toString());
             request.setFrom(getPillarID());
             request.setMinVersion(BigInteger.valueOf(1L));
             request.setReplyTo(clientDestinationId);
-            request.setTo(componentSettings.getCollectionDestination());
+            request.setTo(settingsForCUT.getCollectionDestination());
             request.setVersion(BigInteger.valueOf(1L));
             messageBus.sendMessage(request);
             

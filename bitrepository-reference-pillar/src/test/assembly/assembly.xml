@@ -55,14 +55,24 @@
 
   <fileSets>
     <fileSet>
-      <outputDirectory>conf</outputDirectory>
-      <directory>src/test/resources/conf</directory>
+      <outputDirectory>testprops</outputDirectory>
+      <directory>src/test/resources/testprops</directory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <filtered>true</filtered>
     </fileSet>
     <fileSet>
       <outputDirectory>bin</outputDirectory>
       <directoryMode>0755</directoryMode>
       <fileMode>0744</fileMode>
-      <directory>src/test/scripts</directory>
+      <directory>src/test/resources/bin</directory>
+      <filtered>true</filtered>
+    </fileSet>
+    <fileSet>
+      <outputDirectory>scripts</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0744</fileMode>
+      <directory>src/test/resources/scripts</directory>
       <filtered>true</filtered>
     </fileSet>
   </fileSets>

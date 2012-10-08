@@ -63,7 +63,7 @@ public class MessageBusTest extends IntegrationTest {
         addStep("Get a connection to the message bus from the "
                 + "<i>MessageBusConnection</i> connection class",
                 "No exceptions should be thrown");
-        Assert.assertNotNull(ProtocolComponentFactory.getInstance().getMessageBus(componentSettings, securityManager));
+        Assert.assertNotNull(ProtocolComponentFactory.getInstance().getMessageBus(settingsForCUT, securityManager));
     }
 
     @Test(groups = { "regressiontest" })
@@ -71,11 +71,11 @@ public class MessageBusTest extends IntegrationTest {
         addDescription("Verify the message bus manager");
         addStep("Test the extraction of the messagebus from the manager.", 
                 "Null before it has been instantiated, and otherwise the same");
-        componentSettings.getCollectionSettings().setCollectionID("A completely different id");
-        Assert.assertNull(MessageBusManager.getMessageBus(componentSettings.getCollectionID()));
-        MessageBus b1 = MessageBusManager.getMessageBus(componentSettings, securityManager);
+        settingsForCUT.getCollectionSettings().setCollectionID("A completely different id");
+        Assert.assertNull(MessageBusManager.getMessageBus(settingsForCUT.getCollectionID()));
+        MessageBus b1 = MessageBusManager.getMessageBus(settingsForCUT, securityManager);
         Assert.assertNotNull(b1);
-        MessageBus b2 = MessageBusManager.getMessageBus(componentSettings.getCollectionID());
+        MessageBus b2 = MessageBusManager.getMessageBus(settingsForCUT.getCollectionID());
         Assert.assertNotNull(b2);
         Assert.assertEquals(b1, b2);
     }
@@ -122,7 +122,7 @@ public class MessageBusTest extends IntegrationTest {
                 ExampleMessageFactory.createMessage(AlarmMessage.class);
 
         addStep("Make a connection to the message bus and add two listeners", "No exceptions should be thrown");
-        MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(componentSettings, securityManager);
+        MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(settingsForCUT, securityManager);
         Assert.assertNotNull(con);
 
         MessageReceiver receiver1 = new MessageReceiver("receiver1", testEventManager);
@@ -160,7 +160,7 @@ public class MessageBusTest extends IntegrationTest {
 
             addStep("Making the configurations for the first message bus.", "Should be allowed.");
             MessageBusConfiguration config = new MessageBusConfiguration();
-            config.setURL(componentSettings.getMessageBusConfiguration().getURL());
+            config.setURL(settingsForCUT.getMessageBusConfiguration().getURL());
             config.setName("primary-messagebus");
 
             addStep("Initiating the connection to the messagebus based on the first configuration",
@@ -268,7 +268,7 @@ public class MessageBusTest extends IntegrationTest {
                     ExampleMessageFactory.createMessage(IdentifyPillarsForGetFileRequest.class);
 
             String busUrl = "tcp://localhost:61616";
-            componentSettings.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration().setURL(busUrl);
+            settingsForCUT.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration().setURL(busUrl);
             String destination = "EmbeddedMessageBus";
             content.setTo(destination);
 
@@ -276,7 +276,7 @@ public class MessageBusTest extends IntegrationTest {
                     + " be seen here.");
 
             LocalActiveMQBroker broker = new LocalActiveMQBroker(
-                    componentSettings.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration());
+                    settingsForCUT.getCollectionSettings().getProtocolSettings().getMessageBusConfiguration());
             try {
                 broker.start();
 
@@ -292,7 +292,7 @@ public class MessageBusTest extends IntegrationTest {
                 addStep("Connecting to the bus, and then connect to the local bus.",
                         "Info-level logs should be seen here for both connections. "
                                 + "Only the last is used.");
-                MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(componentSettings, securityManager);
+                MessageBus con = ProtocolComponentFactory.getInstance().getMessageBus(settingsForCUT, securityManager);
 
                 addStep("Make a listener for the messagebus and make it listen. "
                         + "Then send a message for the message listener to catch.",

@@ -44,7 +44,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends ChecksumPillarTest {
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetAuditTrailsOnChecksumPillarTest() throws Exception {
-        msgFactory = new GetAuditTrailsMessageFactory(componentSettings);
+        msgFactory = new GetAuditTrailsMessageFactory(settingsForCUT);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})

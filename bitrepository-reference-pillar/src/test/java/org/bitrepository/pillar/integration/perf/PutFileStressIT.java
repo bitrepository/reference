@@ -38,7 +38,7 @@ public class PutFileStressIT extends PillarPerformanceTest {
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
         putClient = ModifyComponentFactory.getInstance().retrievePutClient(
-                componentSettings, new DummySecurityManager(), componentSettings.getComponentID()
+                settingsForCUT, new DummySecurityManager(), settingsForCUT.getComponentID()
         );
     }
 

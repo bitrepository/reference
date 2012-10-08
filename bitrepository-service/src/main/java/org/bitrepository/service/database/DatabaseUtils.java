@@ -120,7 +120,7 @@ public class DatabaseUtils {
                 ps = createPreparedStatement(conn, query, args);
                 res = ps.executeQuery();
                 if (!res.next()) {
-                    log.info("Got an empty result set for statement '" + query + "' with arguments '" 
+                    log.debug("Got an empty result set for statement '" + query + "' with arguments '"
                             + Arrays.asList(args) + "' on database '" + conn + "'. Returning a null.");
                     return null;
                 }
@@ -172,7 +172,7 @@ public class DatabaseUtils {
                 ps = createPreparedStatement(conn, query, args);
                 res = ps.executeQuery();
                 if (!res.next()) {
-                    log.info("Got an empty result set for statement '" + query + "' with arguments '" 
+                    log.debug("Got an empty result set for statement '" + query + "' with arguments '"
                             + Arrays.asList(args) + "' on database '" + conn + "'. Returning a null.");
                     return null;
                 }
@@ -265,7 +265,7 @@ public class DatabaseUtils {
                 
                 res = ps.executeQuery();
                 if (!res.next()) {
-                    log.info("Got an empty result set for statement '" + query + "' on database '"
+                    log.debug("Got an empty result set for statement '" + query + "' on database '"
                             + conn + "'. Returning a null.");
                     return null;
                 }
@@ -317,7 +317,7 @@ public class DatabaseUtils {
                 res = ps.executeQuery();
                 
                 if(!res.next()) {
-                    log.info("No string was found for the query '" + query + "'. A null has been returned.");
+                    log.debug("No string was found for the query '" + query + "'. A null has been returned.");
                     return null;
                 }
                 

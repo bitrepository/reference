@@ -127,7 +127,7 @@ public class IdentifyPillarsForPutFileRequestHandler
      * @param message The message to base the response upon.
      */
     protected void respondDuplicateFile(IdentifyPillarsForPutFileRequest message) {
-        log.info("Creating DuplicateFile reply for '" + message + "'");
+        log.debug("Creating DuplicateFile reply for '" + message.getCorrelationID() + "'");
         IdentifyPillarsForPutFileResponse reply = createFinalResponse(message);
 
         // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
@@ -153,7 +153,7 @@ public class IdentifyPillarsForPutFileRequestHandler
      * @param message The message to respond to.
      */
     protected void respondSuccesfullIdentification(IdentifyPillarsForPutFileRequest message)  {
-        log.info("Creating positive reply for '" + message + "'");
+        log.debug("Creating positive reply for '" + message.getCorrelationID() + "'");
         IdentifyPillarsForPutFileResponse reply = createFinalResponse(message);
 
         // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver

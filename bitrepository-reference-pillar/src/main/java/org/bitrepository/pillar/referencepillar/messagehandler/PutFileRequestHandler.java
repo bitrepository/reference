@@ -167,7 +167,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         prInfo.setResponseText("Started to receive data.");  
         pResponse.setResponseInfo(prInfo);
         
-        log.info("Sending ProgressResponseInfo: " + prInfo);
+        log.debug("Sending ProgressResponseInfo: " + prInfo);
         getMessageSender().sendMessage(pResponse);
     }
     
@@ -244,7 +244,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         }
         
         // Finish by sending final response.
-        log.info("Sending PutFileFinalResponse: " + fResponse);
+        log.debug("Sending PutFileFinalResponse: ");
         getMessageSender().sendMessage(fResponse);
     }
     

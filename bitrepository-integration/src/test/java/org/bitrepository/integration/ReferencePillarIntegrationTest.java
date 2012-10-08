@@ -69,7 +69,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
     public void testPillarVsClients() throws Exception {
         addDescription("Tests the put functionality of the reference pillar.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        //PillarComponentFactory.getInstance().createReferencePillar(messageBus, componentSettings, "ReferencePillarUnderTest");
+        //PillarComponentFactory.getInstance().createReferencePillar(messageBus, settingsForCUT, "ReferencePillarUnderTest");
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         String REPLACE_FILE_ADDRES = "http://sandkasse-01.kb.dk/dav/dia.jpg";
         Long FILE_SIZE = 27L;
@@ -90,7 +90,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         SettingsProvider provider = new SettingsProvider(settingsLoader, "TEST-putClient");
         Settings clientSettings = provider.getSettings();
         clientSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        clientSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(componentSettings.getComponentID());
+        clientSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(settingsForCUT.getComponentID());
         
         addStep("Create a putclient and start a put operation.", 
                 "This should be caught by the pillar.");
@@ -113,7 +113,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         GetFileClient getClient = AccessComponentFactory.getInstance().createGetFileClient(clientSettings,
                 securityManager, TEST_CLIENT_ID);
         getClient.getFileFromSpecificPillar(FILE_ID, null, new URL(FILE_ADDRESS), 
-                componentSettings.getComponentID(), testEventHandler);
+                settingsForCUT.getComponentID(), testEventHandler);
         
         addStep("Validate the sequence of operations event for the GetFileClient", 
                 "Shoud be in correct order.");
@@ -186,7 +186,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         checksumDataNewFile.setChecksumValue(CHECKSUM_NEW_FILE);
         checksumDataNewFile.setCalculationTimestamp(CalendarUtils.getEpoch());
         
-        replaceFile.replaceFile(FILE_ID, componentSettings.getComponentID(), 
+        replaceFile.replaceFile(FILE_ID, settingsForCUT.getComponentID(),
                 checksumDataOldFile, checksumRequested, new URL(REPLACE_FILE_ADDRES), REPLACE_FILE_SIZE, 
                 checksumDataNewFile, checksumRequested, testEventHandler, "AuditTrail: TESTING!!!");
         
@@ -206,7 +206,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         DeleteFileClient deleteFile = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(clientSettings,
                 securityManager, TEST_CLIENT_ID);
 
-        deleteFile.deleteFile(FILE_ID, componentSettings.getComponentID(), 
+        deleteFile.deleteFile(FILE_ID, settingsForCUT.getComponentID(),
                 checksumDataNewFile, checksumRequested, testEventHandler, "AuditTrail: TESTING!!!");
         
         addStep("Validate the sequence of operation events for the DeleteFileClient", 

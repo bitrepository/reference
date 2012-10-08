@@ -46,7 +46,7 @@ public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
     GetFileMessageFactory msgFactory;
     @BeforeMethod (alwaysRun=true)
     public void initialiseDeleteFileTests() throws Exception {
-        msgFactory = new GetFileMessageFactory(componentSettings);
+        msgFactory = new GetFileMessageFactory(settingsForCUT);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -55,8 +55,8 @@ public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
         addStep("Setting up the variables for the test.", "Should be instantiated.");
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String auditTrail = "GET-FILE-TEST";
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
+        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
+        settingsForCUT.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
         
@@ -91,8 +91,8 @@ public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
         FilePart filePart = null;
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String auditTrail = "GET-FILE-TEST";
-        String pillarId = componentSettings.getReferenceSettings().getPillarSettings().getPillarID();
-        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
+        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
+        settingsForCUT.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
         

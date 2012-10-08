@@ -34,7 +34,7 @@ public class ChecksumPillarMessageHandlerTest extends ChecksumPillarTest {
     public void invalidChecksumCase() throws Exception {
         addDescription("Tests that the ChecksumPillar does not start with an invalid checksum.");
         addStep("Test with checksum type 'OTHER'", "Should be invalid and throw an exception.");
-        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType("OTHER");
+        settingsForCUT.getCollectionSettings().getProtocolSettings().setDefaultChecksumType("OTHER");
 
         try {
             new MockChecksumMessageHandler(context, cache);
@@ -45,7 +45,7 @@ public class ChecksumPillarMessageHandlerTest extends ChecksumPillarTest {
         }
         
         addStep("Test with invalid checksum type", "Should be invalid and throw an exception.");
-        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType("ERROR");
+        settingsForCUT.getCollectionSettings().getProtocolSettings().setDefaultChecksumType("ERROR");
 
         try {
             new MockChecksumMessageHandler(context, cache);
@@ -56,7 +56,7 @@ public class ChecksumPillarMessageHandlerTest extends ChecksumPillarTest {
         }
 
         addStep("Check with valid checksum type (MD5)", "Should create message handler.");
-        componentSettings.getCollectionSettings().getProtocolSettings().setDefaultChecksumType("MD5");
+        settingsForCUT.getCollectionSettings().getProtocolSettings().setDefaultChecksumType("MD5");
 
         ChecksumPillarMessageHandler<MessageResponse> handler = new MockChecksumMessageHandler(context, cache);
         Assert.assertNotNull(handler);

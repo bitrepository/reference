@@ -49,7 +49,7 @@ public abstract class ContributerTest extends IntegrationTest {
     @Override
     protected void initializeMessageBusListeners() {
         super.initializeMessageBusListeners();
-        clientDestinationId = componentSettings.getReceiverDestinationID();
+        clientDestinationId = settingsForCUT.getReceiverDestinationID();
         clientTopic = new MessageReceiver("Client topic receiver", testEventManager);
 
         contributorDestinationId =  collectionDestinationID + "-" +  getContributorID() + "-" + getTopicPostfix();

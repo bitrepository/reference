@@ -66,12 +66,12 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
     @BeforeMethod(alwaysRun = true)
     public void setUp() throws JAXBException {
         // TODO getFileIDsFromFastestPillar settings
-        testMessageFactory = new TestGetFileIDsMessageFactory(componentSettings.getCollectionID());
+        testMessageFactory = new TestGetFileIDsMessageFactory(settingsForCUT.getCollectionID());
     }
 
     @Test(groups = {"regressiontest"})
     public void verifyGetFileIDsClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileIDsClient(componentSettings, securityManager,
+        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
                 TEST_CLIENT_ID) instanceof ConversationBasedGetFileIDsClient,
                 "The default GetFileClient from the Access factory should be of the type '" +
                         ConversationBasedGetFileIDsClient.class.getName() + "'.");
@@ -86,15 +86,15 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         String deliveryFilename = "TEST-FILE-IDS-DELIVERY.xml";
         FileIDs fileIDs = new FileIDs();
         fileIDs.setFileID(DEFAULT_FILE_ID);
-        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
 
         GetFileIDsClient getFileIDsClient = createGetFileIDsClient();
         URL deliveryUrl = httpServer.getURL(deliveryFilename);
 
         addStep("Request the delivery of the file ids of a file from the pillar(s). A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");
-        getFileIDsClient.getFileIDs(componentSettings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs,
+        getFileIDsClient.getFileIDs(settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs,
                 deliveryUrl, testEventHandler);
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage  = collectionReceiver.waitForMessage(
@@ -160,8 +160,8 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         FileIDs fileIDs = new FileIDs();
         fileIDs.setFileID(DEFAULT_FILE_ID);
 
-        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
 
         GetFileIDsClient getFileIDsClient = createGetFileIDsClient();
 
@@ -170,7 +170,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
         addStep("Request the delivery of the file ids of a file from the pillar(s). A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");
-        getFileIDsClient.getFileIDs(componentSettings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs,
+        getFileIDsClient.getFileIDs(settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs,
                 null, testEventHandler);
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
@@ -191,7 +191,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         Assert.assertEquals(receivedGetFileIDsRequest,
                 testMessageFactory.createGetFileIDsRequest(receivedGetFileIDsRequest, PILLAR1_ID, pillar1DestinationId));
 
-        for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -227,7 +227,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
         addStep("Receive and validate event results for the pillar.",
                 "Should be a FileIDsCompletePillarEvent with the ResultingFileIDs containing the list of fileids.");
-        for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             FileIDsCompletePillarEvent event = (FileIDsCompletePillarEvent) testEventHandler.waitForEvent();
             Assert.assertEquals(event.getEventType(), OperationEventType.COMPONENT_COMPLETE);
             ResultingFileIDs resFileIDs = event.getFileIDs();
@@ -251,15 +251,15 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         FileIDs fileIDs = new FileIDs();
         fileIDs.setFileID(DEFAULT_FILE_ID);
 
-        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
 
         GetFileIDsClient GetFileIDsClient = createGetFileIDsClient();
         URL deliveryUrl = httpServer.getURL(deliveryFilename);
 
         addStep("Request the delivery of the file id of a file from the pillar(s). A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");
-        GetFileIDsClient.getFileIDs(componentSettings.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs,
+        GetFileIDsClient.getFileIDs(settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs(), fileIDs,
                 deliveryUrl, testEventHandler);
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
@@ -281,7 +281,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         Assert.assertEquals(receivedGetFileIDsRequest,
                 testMessageFactory.createGetFileIDsRequest(receivedGetFileIDsRequest,PILLAR1_ID, pillar1DestinationId));
 
-        for(int i = 0; i < componentSettings.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -304,7 +304,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
     }
 
     /**
-     * Creates a new test GetFileIDsClient based on the supplied componentSettings.
+     * Creates a new test GetFileIDsClient based on the supplied settingsForCUT.
      *
      * Note that the normal way of creating client through the module factory would reuse components with settings from
      * previous tests.
@@ -312,7 +312,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
      */
     private GetFileIDsClient createGetFileIDsClient() {
         return new GetFileIDsClientTestWrapper(new ConversationBasedGetFileIDsClient(
-                messageBus, conversationMediator, componentSettings, TEST_CLIENT_ID), testEventManager);
+                messageBus, conversationMediator, settingsForCUT, TEST_CLIENT_ID), testEventManager);
     }
 
     @Override

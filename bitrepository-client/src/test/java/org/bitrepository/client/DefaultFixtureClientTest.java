@@ -92,7 +92,7 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     @Override
     protected void initializeMessageBusListeners() {
         super.initializeMessageBusListeners();
-        clientDestinationId = IntegrationTest.componentSettings.getReceiverDestinationID();
+        clientDestinationId = IntegrationTest.settingsForCUT.getReceiverDestinationID();
         pillar1DestinationId = "Pillar1_topic" + getTopicPostfix();
         pillar2DestinationId = "Pillar2_topic" + getTopicPostfix();
         
@@ -112,6 +112,6 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
         if (conversationMediator != null) {
             conversationMediator.shutdown();
         }
-        conversationMediator = new CollectionBasedConversationMediator(componentSettings, securityManager);
+        conversationMediator = new CollectionBasedConversationMediator(settingsForCUT, securityManager);
     }
 }
