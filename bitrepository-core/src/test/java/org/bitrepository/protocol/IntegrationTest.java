@@ -29,8 +29,6 @@ import ch.qos.logback.core.util.StatusPrinter;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.DateFormat;
-import java.util.Date;
 import javax.jms.JMSException;
 import javax.swing.JFrame;
 import org.bitrepository.common.settings.Settings;
@@ -280,6 +278,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     }
 
     protected String createDate() {
-        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date());
+        return Long.toString(System.currentTimeMillis());
     }
 }

@@ -66,7 +66,7 @@ public class PillarFunctionTest extends PillarIntegrationTest {
     public void putDefaultFile() {
         try {
             BlockingPutFileClient putFileClient = new BlockingPutFileClient(ModifyComponentFactory.getInstance().retrievePutClient(
-                    settingsForTestClient, securityManager, settingsForCUT.getComponentID()));
+                    settingsForTestClient, securityManager, settingsForTestClient.getComponentID()));
             putFileClient.putFile(DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
                     null, null, null);
         } catch (OperationFailedException e) {
