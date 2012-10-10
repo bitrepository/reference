@@ -28,44 +28,18 @@
 <assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
-  <id>pillar-test</id>
-
+  <id>pillar-test-deploy</id>
+  <baseDirectory>pillar-tests</baseDirectory>
   <formats>
     <format>tar.gz</format>
   </formats>
 
-  <dependencySets>
-    <dependencySet>
-      <scope>test</scope>
-      <outputDirectory>lib</outputDirectory>
-      <directoryMode>0755</directoryMode>
-      <fileMode>0644</fileMode>
-      <useTransitiveFiltering>true</useTransitiveFiltering>
-    </dependencySet>
-  </dependencySets>
-
-  <files>
-    <file>
-      <source>target/bitrepository-reference-pillar-${project.version}-tests.jar</source>
-      <outputDirectory>lib</outputDirectory>
-      <filtered>false</filtered>
-      <fileMode>0644</fileMode>
-    </file>
-  </files>
-
   <fileSets>
     <fileSet>
-      <outputDirectory>testprops</outputDirectory>
-      <directory>src/test/resources/testprops</directory>
-      <directoryMode>0755</directoryMode>
-      <fileMode>0644</fileMode>
-      <filtered>true</filtered>
-    </fileSet>
-    <fileSet>
-      <outputDirectory>bin</outputDirectory>
+      <outputDirectory>deploy</outputDirectory>
       <directoryMode>0755</directoryMode>
       <fileMode>0744</fileMode>
-      <directory>src/test/resources/bin</directory>
+      <directory>src/test/resources/deploy</directory>
       <filtered>true</filtered>
     </fileSet>
   </fileSets>

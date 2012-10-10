@@ -56,7 +56,7 @@ public final class ProtocolComponentFactory {
      */
     protected ProtocolComponentFactory() { }
 
-    /** @see #getFileExchange() */
+    /** @see #getFileExchange(Settings) */
     protected FileExchange fileExchange;
 
     /**

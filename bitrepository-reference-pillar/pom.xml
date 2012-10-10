@@ -60,6 +60,7 @@
           <descriptors>
             <descriptor>src/main/assembly/assembly.xml</descriptor>
             <descriptor>src/test/assembly/assembly.xml</descriptor>
+            <descriptor>src/test/assembly/test-deploy-assembly.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>

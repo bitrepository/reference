@@ -13,8 +13,7 @@ DOWNLOAD_TEST_DIR=$TEST_DIR/downloadedtest
 # Contains reference configuration, the specific configurations are pulling from.
 # Changes here are pulled from the $DOWNLOAD_TEST_DIR configuration dir.
 STANDARD_CONFIG_DIR=$TEST_DIR/mastertest
-#SCRIPTS_DIR=$DOWNLOAD_TEST_DIR/scripts
-SCRIPTS_DIR=scripts
+DEPLOY_SCRIPTS=deploy
 ARTIFACTID="bitrepository-reference-pillar"
 TEST_FILE="conf/pillar-test.xml"
 JAVA_OPTS="-classpath .:lib/* org.testng.TestNG"
@@ -30,11 +29,9 @@ create_root_dirs() {
 }
 
 create_conf_repos() {
-    if [ ! -d "$DOWNLOAD_TEST_DIR" ] ; then
-      ${SCRIPTS_DIR}/gitutils.sh create $DOWNLOAD_TEST_DIR
-    fi
+    ${DEPLOY_SCRIPTS}/gitutils.sh create $DOWNLOAD_TEST_DIR
     if [ ! -d "$STANDARD_CONFIG_DIR" ] ; then
-      ${SCRIPTS_DIR}/gitutils.sh create $STANDARD_CONFIG_DIR $DOWNLOAD_TEST_DIR
+      ${DEPLOY_SCRIPTS}/gitutils.sh create $STANDARD_CONFIG_DIR $DOWNLOAD_TEST_DIR
     fi
     # All arguments after the first 3 are considered pillars test names.
     all=( ${@} )
@@ -44,15 +41,18 @@ create_conf_repos() {
     for var in $pillars
     do
       echo "Creating $var folder"
-      ${SCRIPTS_DIR}/gitutils.sh create $TEST_CASE_DIR/$var $STANDARD_CONFIG_DIR
+      ${DEPLOY_SCRIPTS}/gitutils.sh create $TEST_CASE_DIR/$var $STANDARD_CONFIG_DIR
     done
 
 }
 
 # Download the newest test
 download_test() {
-  echo "Downloading newest test suite"
-  #scripts/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c pillar-test -p tar.gz
+  echo "Downloading new deployment scripts"
+  ${DEPLOY_SCRIPTS}/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c pillar-test-deploy -p tar.gz
+  tar -xzf $ARTIFACTID.tar.gz
+  echo "Downloading new test suite"
+  ${DEPLOY_SCRIPTS}/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c pillar-test -p tar.gz
   tar -xzf $ARTIFACTID.tar.gz
   rm -rf $DOWNLOAD_TEST_DIR/lib
   cp -r ${ARTIFACTID}-${VERSION}/* $DOWNLOAD_TEST_DIR
@@ -61,8 +61,8 @@ download_test() {
 # Updates a test for a single pillar
 update_tests() {
   echo "Updating tests:"
-  ${SCRIPTS_DIR}/gitutils.sh commit $DOWNLOAD_TEST_DIR ${VERSION}
-  ${SCRIPTS_DIR}/gitutils.sh pull $STANDARD_CONFIG_DIR
+  ${DEPLOY_SCRIPTS}/gitutils.sh commit $DOWNLOAD_TEST_DIR ${VERSION}
+  ${DEPLOY_SCRIPTS}/gitutils.sh pull $STANDARD_CONFIG_DIR
   for i in ${TEST_CASE_DIR}/*
    do
      if [ -d $i ]
@@ -75,7 +75,7 @@ update_tests() {
        fi
        ln -s $DOWNLOAD_TEST_DIR/lib lib
        cd ../..
-       ${SCRIPTS_DIR}/gitutils.sh pull $i
+       ${DEPLOY_SCRIPTS}/gitutils.sh pull $i
      fi
    done
 }

@@ -7,7 +7,7 @@ initialize_repository() {
     cd $1
     git init
     git add testprops/*
-    git add scripts/*
+    git add deploy/*
     git add -f bin/*
     git commit -m "Initialized with configurations" --quiet
   else
