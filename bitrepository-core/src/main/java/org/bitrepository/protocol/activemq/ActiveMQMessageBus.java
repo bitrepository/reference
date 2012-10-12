@@ -402,16 +402,18 @@ public class ActiveMQMessageBus implements MessageBus {
             try {
                 type = jmsMessage.getStringProperty(MESSAGE_TYPE_KEY);
                 signature = jmsMessage.getStringProperty(MESSAGE_SIGNATURE_KEY);
-                log.debug("Adjoining message signature: " + signature);
                 text = ((TextMessage) jmsMessage).getText();
+                log.trace("Received xml message: " + text);
                 jaxbHelper.validate(new ByteArrayInputStream(text.getBytes()));
                 content = (Message) jaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),
                         new ByteArrayInputStream(text.getBytes()));
+                log.trace("Checking signature " + signature);
                 securityManager.authenticateMessage(text, signature);
                 securityManager.authorizeCertificateUse((content).getFrom(), text, signature);
                 securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature);
                 MessageVersionValidator.validateMessageVersion(content);
-                log.info("Received message: " + text);
+                // ToDo Refine message logging, see BITMAG-763 - The message logging should scale to large number of files
+                log.info("Handling received message: " + content);
                 threadMessageHandling(content);
             } catch (SAXException e) {
                 log.error("Error validating message " + jmsMessage, e);

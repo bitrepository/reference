@@ -29,7 +29,9 @@ create_root_dirs() {
 }
 
 create_conf_repos() {
-    ${DEPLOY_SCRIPTS}/gitutils.sh create $DOWNLOAD_TEST_DIR
+    if [ ! -d "${DOWNLOAD_TEST_DIR}/.git" ] ; then
+        ${DEPLOY_SCRIPTS}/gitutils.sh create $DOWNLOAD_TEST_DIR
+    fi
     if [ ! -d "$STANDARD_CONFIG_DIR" ] ; then
       ${DEPLOY_SCRIPTS}/gitutils.sh create $STANDARD_CONFIG_DIR $DOWNLOAD_TEST_DIR
     fi

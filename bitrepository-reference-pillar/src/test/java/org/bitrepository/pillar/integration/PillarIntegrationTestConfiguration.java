@@ -58,6 +58,10 @@ public class PillarIntegrationTestConfiguration {
             return properties.getProperty("pillar.integrationtest.pillarid");
     }
 
+    public String getPrivateKeyFileLocation() {
+        return properties.getProperty("pillar.integrationtest.privateKeyFile");
+    }
+
     public boolean useEmbeddedMessagebus() {
         return properties.getProperty("pillar.integrationtest.useembeddedmessagebus", "false").equals("true");
     }

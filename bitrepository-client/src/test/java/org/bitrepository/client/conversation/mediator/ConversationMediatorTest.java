@@ -28,14 +28,9 @@ import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.client.conversation.StateBasedConversation;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.messagebus.MessageListener;
-import org.bitrepository.protocol.messagebus.MessageSender;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.testng.annotations.Test;
-
-import static org.mockito.Mockito.mock;
 
 /**
  * Test the general ConversationMediator functionality.
@@ -51,7 +46,6 @@ public abstract class ConversationMediatorTest {
      */
     @Test (groups = {"testfirst"})
     public void messagedelegationTest() {
-        MessageBus messagebus = new MessageBusMock();
         ConversationMediator mediator = createMediator(settings);
 
         mediator.addConversation(new ConversationStub());
@@ -84,30 +78,5 @@ public abstract class ConversationMediatorTest {
         public void endConversation() {}
         @Override
         public void onMessage(Message message) {}
-    }
-
-    @SuppressWarnings("unused")
-    private class MessageBusMock implements MessageBus {        
-        private MessageSender messageSender = mock(MessageSender.class);
-        private MessageListener listener;
-
-        @Override
-        public void sendMessage(Message content) { 
-            messageSender.sendMessage(content); 
-        }
-        
-        @Override
-        public void addListener(String destinationId, MessageListener listener) {
-            this.listener = listener;
-        }
-        @Override
-        public void removeListener(String destinationId, MessageListener listener) {
-            listener = null;
-        }
-        
-        @Override 
-        public void close() {
-            // Empty
-        }
     }
 }

@@ -86,7 +86,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     @BeforeSuite(alwaysRun = true)
     public void initializeSuite() {
         setupSettings();
-        securityManager = new DummySecurityManager();
+        securityManager = createSecurityManager();
         setupMessageBus();
         setupHttpServer();
         startReportGenerator();
@@ -279,5 +279,9 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     protected String createDate() {
         return Long.toString(System.currentTimeMillis());
+    }
+
+    protected SecurityManager createSecurityManager() {
+        return new DummySecurityManager();
     }
 }

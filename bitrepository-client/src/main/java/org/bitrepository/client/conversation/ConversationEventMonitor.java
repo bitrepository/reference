@@ -32,6 +32,7 @@ import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.eventhandler.AbstractOperationEvent;
 import org.bitrepository.client.eventhandler.CompleteEvent;
+import org.bitrepository.client.eventhandler.ContributorCompleteEvent;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
@@ -165,7 +166,7 @@ public class ConversationEventMonitor {
      * @param completeEvent Event containing any additional information regarding the completion. Might contain the
      * return value from the operation, in which case the event will be a <code>DefafaultEvent</code> subclass.
      */
-    public void contributorComplete(ContributorEvent completeEvent) {
+    public void contributorComplete(ContributorCompleteEvent completeEvent) {
         log.info(completeEvent.getInfo());
         contributorCompleteEvents.add(completeEvent);
         addContextInfo(completeEvent);

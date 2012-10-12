@@ -135,12 +135,16 @@ public class BasicSecurityManager implements SecurityManager {
      */
     public void authenticateMessage(String message, String signature) throws MessageAuthenticationException {
         if(collectionSettings.getProtocolSettings().isRequireMessageAuthentication()) {
+            if (signature != null) {
             try {
                 byte[] decodedSig = Base64.decode(signature.getBytes(SecurityModuleConstants.defaultEncodingType));
                 byte[] decodeMessage = message.getBytes(SecurityModuleConstants.defaultEncodingType);
                 authenticator.authenticateMessage(decodeMessage, decodedSig);
             } catch (UnsupportedEncodingException e) {
                 throw new SecurityException(SecurityModuleConstants.defaultEncodingType + " encoding not supported", e);
+            }
+            } else {
+                throw new MessageAuthenticationException("Received unsigned message, but authentication is required");
             }
         }
     }

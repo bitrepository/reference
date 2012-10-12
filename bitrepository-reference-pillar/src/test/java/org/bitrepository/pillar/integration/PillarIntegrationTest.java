@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -26,6 +26,8 @@ import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.pillar.PillarSettingsProvider;
 import org.bitrepository.protocol.IntegrationTest;
+import org.bitrepository.protocol.security.*;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 
@@ -93,7 +95,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     @Override
     protected Settings loadSettings(String componentID) {
         SettingsProvider settingsLoader =
-            new PillarSettingsProvider(new XMLFileSettingsLoader(PATH_TO_CONFIG_DIR), componentID);
+                new PillarSettingsProvider(new XMLFileSettingsLoader(PATH_TO_CONFIG_DIR), componentID);
         return settingsLoader.getSettings();
 
     }
@@ -104,11 +106,11 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected void initializeMessageBusListeners() {
         super.initializeMessageBusListeners();
         messageBus.removeListener(settingsForCUT.getCollectionDestination(), collectionReceiver.getMessageListener());
-   }
+    }
 
-   protected String getPillarID() {
-       return settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().get(0);
-   }
+    protected String getPillarID() {
+        return testConfiguration.getPillarUnderTestID();
+    }
 
     /**
      * Overrides the default settings modification, as this only works if the test can inject the modified settings into
@@ -117,13 +119,31 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
      * @Override
      */
     protected String getTopicPostfix() {
-        if (!testConfiguration.useEmbeddedPillar()) {
+        if (testConfiguration.useEmbeddedPillar()) {
             return "-" + System.getProperty("user.name");
         } else return "";
     }
 
     @Override
+    protected SecurityManager createSecurityManager() {
+        if (testConfiguration.useEmbeddedPillar()) {
+            return super.createSecurityManager();
+        } else {
+            PermissionStore permissionStore = new PermissionStore();
+            MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
+            MessageSigner signer = new BasicMessageSigner();
+            OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
+            org.bitrepository.protocol.security.SecurityManager securityManager =
+                    new BasicSecurityManager(settingsForTestClient.getCollectionSettings(),
+                            testConfiguration.getPrivateKeyFileLocation(),
+                            authenticator, signer, authorizer, permissionStore, settingsForTestClient.getComponentID());
+            return securityManager;
+        }
+    }
+
+
+    @Override
     protected String getComponentID() {
-        return "EmbeddedReferencePillar";
+        return getPillarID();
     }
 }

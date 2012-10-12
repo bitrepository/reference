@@ -46,6 +46,6 @@ public class ContributorFailedEvent extends ContributorEvent {
 
     @Override
     public String additionalInfo() {
-        return super.additionalInfo() + " ResponseCode: " + getContributorID();
+        return super.additionalInfo() + " ResponseCode: " + getResponseCode();
     }
 }

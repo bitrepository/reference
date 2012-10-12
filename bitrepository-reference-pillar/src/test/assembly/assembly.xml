@@ -41,6 +41,9 @@
       <directoryMode>0755</directoryMode>
       <fileMode>0644</fileMode>
       <useTransitiveFiltering>true</useTransitiveFiltering>
+      <excludes>
+        <exclude>org.bitrepository.reference:bitrepository-service</exclude>
+      </excludes>
     </dependencySet>
   </dependencySets>
 
