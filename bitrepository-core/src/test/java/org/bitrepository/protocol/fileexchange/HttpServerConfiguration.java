@@ -24,55 +24,36 @@
  */
 package org.bitrepository.protocol.fileexchange;
 
+import org.bitrepository.settings.referencesettings.FileExchangeSettings;
+
 /**
- * Configuration for {@link HttpServerConnector} objects.
+ * Configuration for {@link HttpServerConnector} objects. Pretty obsoleted as it only delegates to the
+ * Reference settings Fileexchange configuration.
  */
 public class HttpServerConfiguration {
-    /** Protocol for URLs. */
-    private String protocol = "http";
-    /** The default port for the HTTP communication.*/
-    private int portNumber = 80;
-    /** The default name of the HTTP server. TODO retrieve from settings.*/
-    private String httpServerName = "sandkasse-01.kb.dk";
-    /** The path on the HTTP server to the location, where the data can be uploaded.*/
-    private String httpServerPath = "/dav/";
+    private final FileExchangeSettings fileExchangeSettings;
+
+    public HttpServerConfiguration(FileExchangeSettings fileExchangeSettings) {
+        this.fileExchangeSettings = fileExchangeSettings;
+    }
+
     /**
      * Prefix to use when working with files on the http server. The prefix is used to distinguish between different 
      * users/processes working with the server in parallel
      */
-    
     public String getProtocol() {
-        return protocol;
+        return fileExchangeSettings.getProtocolType().value();
     }
-    /** @see #getProtocol() */
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
-    
     /** The http server port */
     public int getPortNumber() {
-        return portNumber;
+        return fileExchangeSettings.getPort().intValue();
     }
-    /** @see #getPortNumber() */
-    public void setPortNumber(int portNumber) {
-        this.portNumber = portNumber;
-    }
-    
     /** The name identifying the http server */
     public String getHttpServerName() {
-        return httpServerName;
+        return fileExchangeSettings.getServerName();
     }
-    /** @see #getHttpServerName() */
-    public void setHttpServerName(String httpServerName) {
-        this.httpServerName = httpServerName;
-    }
-    
     /** The path to the location we are going to connect to as in the format ${URL}:${PORT}/${PATH} */
     public String getHttpServerPath() {
-        return httpServerPath;
-    }
-    /** @see #getHttpServerPath() */
-    public void setHttpServerPath(String httpServerPath) {
-        this.httpServerPath = httpServerPath;
+        return fileExchangeSettings.getPath();
     }
 }

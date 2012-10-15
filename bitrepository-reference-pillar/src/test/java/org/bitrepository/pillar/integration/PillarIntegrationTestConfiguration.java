@@ -32,16 +32,6 @@ public class PillarIntegrationTestConfiguration {
         loadProperties(propertiesFilePath);
     }
 
-    public HttpServerConfiguration getHttpServerConfig() {
-        HttpServerConfiguration config = new HttpServerConfiguration();
-        int portNumber =
-                Integer.parseInt(properties.getProperty("pillar.integrationtest.httpserver.port", "80"));
-        config.setPortNumber(portNumber);
-        config.setHttpServerName(properties.getProperty("pillar.integrationtest.httpserver.name"));
-        config.setHttpServerPath(properties.getProperty("pillar.integrationtest.httpserver.path"));
-        return config;
-    }
-
     private void loadProperties(String propertiesFilePath) {
         try {
             properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(propertiesFilePath));

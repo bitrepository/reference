@@ -8,6 +8,7 @@ initialize_repository() {
     git init
     git add testprops/*
     git add -f bin/*
+    echo lib >> .gitignore
     git commit -m "Initialized with configurations" --quiet
   else
     if [ ! -d "$1/bin" ] ; then
@@ -21,7 +22,7 @@ initialize_repository() {
 # Commit any changes to the repository
 do_commit() {
   cd $1
-  if ! git diff --no-ext-diff --quiet; then
+  if [-z "$(git status --porcelain)"] ; then
     git commit -m "New download $2" --quiet
   fi
 }

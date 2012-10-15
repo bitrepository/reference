@@ -390,7 +390,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         String fileAddress = "http://127.0.0.1/¾" + new Date().getTime();
-        
+
         File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
         Assert.assertTrue(dir.isDirectory(), "The file directory for the reference pillar should be instantiated at '"
                 + dir.getAbsolutePath() + "'");
@@ -399,7 +399,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         addStep("Create and send the actual GetFile message to the pillar.", 
         "Should be received and handled by the pillar.");
         GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, 
-                msgFactory.getNewCorrelationID(), fileAddress, FILE_ID, null, getPillarID(), getPillarID(), 
+                msgFactory.getNewCorrelationID(), fileAddress, FILE_ID, null, getPillarID(), getPillarID(),
                 clientDestinationId, pillarDestinationId);
         messageBus.sendMessage(getRequest);
 

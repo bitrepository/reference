@@ -119,7 +119,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         teardownMessageBusListeners();
     }
 
-    /**
+    /**                                                                          ŒŒ
      * Initializes the settings. Will postfix the alarm and collection topics with '-${user.name}
      */
     protected void setupSettings() {
@@ -139,9 +139,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     }
 
     private void makeUserSpecificSettings(Settings settings) {
-        settings.getCollectionSettings().setCollectionID(settingsForCUT.getCollectionID() + getTopicPostfix());
         settings.getCollectionSettings().getProtocolSettings().setCollectionDestination(
-                settings.getCollectionDestination() + getTopicPostfix());
+        settings.getCollectionDestination() + getTopicPostfix());
         settings.getCollectionSettings().getProtocolSettings().setAlarmDestination(
                 settings.getAlarmDestination() + getTopicPostfix());
     }
@@ -156,7 +155,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         }
     }
     // Experimental, use at own risk.
-    @BeforeTest (alwaysRun = true)
+    @BeforeSuite (alwaysRun = true)
     public void startReportGenerator() {
         if (System.getProperty("enableTestReport", "false").equals("true") ) {
             reportGenerator = new ReportGenerator();
@@ -236,7 +235,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      */
     protected void setupHttpServer() {
 
-        httpServerConfiguration = new HttpServerConfiguration();
+        httpServerConfiguration =
+                new HttpServerConfiguration(settingsForTestClient.getReferenceSettings().getFileExchangeSettings());
         if (useEmbeddedHttpServer() && server == null) { // Note that the embedded server isn't fully functional yet
             server = new EmbeddedHttpServer();
             server.start();

@@ -52,7 +52,7 @@ create_conf_repos() {
 download_test() {
   echo "Downloading new deployment scripts"
   ${DEPLOY_SCRIPTS}/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c pillar-test-deploy -p tar.gz
-  tar -xzf $ARTIFACTID.tar.gz
+  tar -xzf $ARTIFACTID.tar.gz -C ../
   echo "Downloading new test suite"
   ${DEPLOY_SCRIPTS}/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c pillar-test -p tar.gz
   tar -xzf $ARTIFACTID.tar.gz
@@ -71,7 +71,6 @@ update_tests() {
      then
        echo "Updating test " $i
        cd $i
-       echo "Updating $PWD"
        if [ -d lib ]; then
          rm lib
        fi

@@ -6,4 +6,7 @@
       <package name="org.bitrepository.pillar.integration.func.*" />
     </packages>
   </test>
+  <listeners>
+    <listener class-name="org.jaccept.TestNGListerner" />
+  </listeners>
 </suite>

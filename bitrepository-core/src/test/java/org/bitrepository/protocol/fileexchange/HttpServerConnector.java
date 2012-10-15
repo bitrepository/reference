@@ -202,7 +202,7 @@ public class HttpServerConnector {
                 config.getProtocol(), 
                 config.getHttpServerName(), 
                 config.getPortNumber(), 
-                config.getHttpServerPath() + filename);
+                config.getHttpServerPath() + "/" + filename);
     }
 
     /**

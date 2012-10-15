@@ -50,7 +50,6 @@ public final class ModifyComponentFactory {
      * @return The singleton instance of this factory class.
      */
     public static synchronized ModifyComponentFactory getInstance() {
-        // ensure singleton.
         if(instance == null) {
             instance = new ModifyComponentFactory();
         }

@@ -47,5 +47,12 @@
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:target/reference1pillar/checksumdb</DatabaseURL>
     </ChecksumDatabase>
-    <AlarmLevel>ERROR</AlarmLevel></PillarSettings>
+    <AlarmLevel>ERROR</AlarmLevel>
+  </PillarSettings>
+  <FileExchangeSettings>
+    <ProtocolType>HTTP</ProtocolType>
+    <ServerName>sandkasse-01.kb.dk</ServerName>
+    <Port>80</Port>
+    <Path>/dav</Path>
+  </FileExchangeSettings>
 </ReferenceSettings>
