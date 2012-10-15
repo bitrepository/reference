@@ -35,7 +35,6 @@ import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ContributorContext;
-import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -53,11 +52,18 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
         File fileDir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0));
-        settingsForCUT.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         if(fileDir.exists()) {
             FileUtils.delete(fileDir);
         }
 
+        createReferencePillar();
+    }
+
+    protected void createReferencePillar() {
+        // Shutdown any existing mediator.
+        if(mediator != null) {
+            mediator.close();
+        }
         addStep("Initialize the pillar.", "Should not be a problem.");
         csCache = new MemoryCache();
         archive = new ReferenceArchive(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir());
@@ -67,7 +73,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
                 settingsForCUT,
                 messageBus,
                 new PillarAlarmDispatcher(contributorContext), audits);
-        csManager = new ReferenceChecksumManager(archive, csCache, ChecksumUtils.getDefault(context.getSettings()), 
+        csManager = new ReferenceChecksumManager(archive, csCache, ChecksumUtils.getDefault(context.getSettings()),
                 3600000L);
         mediator = new ReferencePillarMediator(messageBus, context, archive, csManager);
         mediator.start();

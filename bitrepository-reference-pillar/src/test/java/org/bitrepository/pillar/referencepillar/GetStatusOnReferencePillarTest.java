@@ -30,6 +30,7 @@ import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
+import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -94,7 +95,8 @@ public class GetStatusOnReferencePillarTest extends ReferencePillarTest {
         addDescription("Tests the GetStatus functionality of the reference pillar for the bad scenario, where a wrong "
                 + "contributor id is given.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String contributorId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
+        settingsForCUT.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
+        createReferencePillar();
         String wrongContributorId = "wrongContributor";
         String auditTrail = null;
 
@@ -106,7 +108,7 @@ public class GetStatusOnReferencePillarTest extends ReferencePillarTest {
         addStep("Retrieve and validate the response.", "Should be a positive response.");
         IdentifyContributorsForGetStatusResponse identifyResponse = clientTopic.waitForMessage(
                 IdentifyContributorsForGetStatusResponse.class);
-        Assert.assertEquals(identifyResponse, msgFactory.createIdentifyContributorsForGetStatusResponse(contributorId, 
+        Assert.assertEquals(identifyResponse, msgFactory.createIdentifyContributorsForGetStatusResponse(getPillarID(),
                 identifyRequest.getCorrelationID(), pillarDestinationId, identifyResponse.getResponseInfo(), 
                 identifyResponse.getTimeToDeliver(), clientDestinationId));
         Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), 
@@ -119,13 +121,6 @@ public class GetStatusOnReferencePillarTest extends ReferencePillarTest {
         messageBus.sendMessage(request);
         
         addStep("The pillar should send an alarm.", "");
-        synchronized(this) {
-            try {
-                wait(5000);
-            } catch (Exception e) { 
-                // ignore
-            }
-        }
         Assert.assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
     }
 }
