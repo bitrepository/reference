@@ -28,7 +28,6 @@ import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
-import org.bitrepository.protocol.security.DummySecurityManager;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -38,13 +37,13 @@ public class PutFileStressIT extends PillarPerformanceTest {
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
         putClient = ModifyComponentFactory.getInstance().retrievePutClient(
-                settingsForCUT, new DummySecurityManager(), settingsForCUT.getComponentID()
+                settingsForCUT, createSecurityManager(), settingsForCUT.getComponentID()
         );
     }
 
     @Test( groups = {"pillar-stress-test", "stress-test-pillar-population"})
     public void singleTreadedPut() throws Exception {
-        final int NUMBER_OF_FILES = 100;
+        final int NUMBER_OF_FILES = 1000;
         final int PART_STATISTIC_INTERVAL = 10;
         addDescription("Attempt to put " + NUMBER_OF_FILES + " files into the pillar, one at a time.");
         BlockingPutFileClient blockingPutFileClient = new BlockingPutFileClient(putClient);

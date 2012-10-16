@@ -22,8 +22,10 @@ initialize_repository() {
 # Commit any changes to the repository
 do_commit() {
   cd $1
-  if [ $(git status --porcelain| wc -l) > 0] ; then
-    echo "Committing changed files: $(git status --porcelain)"
+  git add testprops/*
+  git add -f bin/*
+  if [ $(git status --porcelain| wc -l) -gt 0 ] ; then
+    echo "Committing changed files at $PWD: $(git status --porcelain)"
     git commit -m "New download $2" --quiet
   fi
 }
@@ -32,8 +34,8 @@ do_commit() {
 do_commit_all() {
   cd $1
   git add -f *
-  if [ $(git status --porcelain| wc -l) >0 ] ; then
-    echo "Committing all files: $(git status --porcelain)"
+  if [ $(git status --porcelain| wc -l) -gt 0 ] ; then
+    echo "Committing all files at $PWD: $(git status --porcelain)"
     git commit -m "$2" --quiet
     else  echo "No changes to $1 ($(git status --porcelain| wc -l)))"
   fi
