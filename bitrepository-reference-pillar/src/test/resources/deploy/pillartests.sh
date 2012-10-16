@@ -62,9 +62,15 @@ download_test() {
 
 # Updates a test for a single pillar
 update_tests() {
-  echo "Updating tests:"
+  echo "Committing downloaded changes"
   ${DEPLOY_SCRIPTS}/gitutils.sh commit $DOWNLOAD_TEST_DIR ${VERSION}
+  echo "Pulling to master"
   ${DEPLOY_SCRIPTS}/gitutils.sh pull $STANDARD_CONFIG_DIR
+  if [ -e "${DEPLOY_SCRIPTS}/fetchconf.sh" ] ; then
+    echo "Updating master conf"
+    ${DEPLOY_SCRIPTS}/fetchconf.sh ${STANDARD_CONFIG_DIR}/conf
+    ${DEPLOY_SCRIPTS}/gitutils.sh commit_all ${STANDARD_CONFIG_DIR} "Fetched new conf files"
+  fi
   for i in ${TEST_CASE_DIR}/*
    do
      if [ -d $i ]
@@ -94,7 +100,7 @@ case "$1" in
 	esac
 	;;
   update)
-    download_test
+    #download_test
 	update_tests
 	case "$?" in
 		0) echo "$NAME has been updated" ;;
