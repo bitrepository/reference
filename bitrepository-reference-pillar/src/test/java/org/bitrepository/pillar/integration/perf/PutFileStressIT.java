@@ -64,21 +64,21 @@ public class PutFileStressIT extends PillarPerformanceTest {
 
     @Test( groups = {"pillar-stress-test"})
     public void parallelPut() throws Exception {
-        final int  NUMBER_OF_FILES = 100;
-        final int  PART_STATISTIC_INTERVAL = 10;
-        addDescription("Attempt to put " + NUMBER_OF_FILES + " files into the pillar at the 'same' time.");
-        String[] fileIDs = TestFileHelper.createFileIDs(NUMBER_OF_FILES, "parallelPutTest");
-        final Metrics metrics = new Metrics("put", NUMBER_OF_FILES, PART_STATISTIC_INTERVAL);
+        final int numberOfFiles = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfFiles");
+        final int  partStatisticsInterval = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.partStatisticsInterval");
+        addDescription("Attempt to put " + numberOfFiles + " files into the pillar at the 'same' time.");
+        String[] fileIDs = TestFileHelper.createFileIDs(numberOfFiles, "parallelPutTest");
+        final Metrics metrics = new Metrics("put", numberOfFiles, partStatisticsInterval);
         metrics.addAppenders(metricAppenders);
         metrics.start();
-        addStep("Add " + NUMBER_OF_FILES + " files", "Not errors should occur");
+        addStep("Add " + numberOfFiles + " files", "Not errors should occur");
         EventHandler eventHandler = new PutEventHandlerForMetrics(metrics);
         for (String fileID:fileIDs) {
             putClient.putFile(httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID), fileID, 10L,
-                    TestFileHelper.getDefaultFileChecksum(), null, eventHandler, "singleTreadedPut stress test file");
+                    TestFileHelper.getDefaultFileChecksum(), null, eventHandler, "parallelPut stress test file");
         }
 
-        awaitAsynchronousCompletion(metrics, NUMBER_OF_FILES);
+        awaitAsynchronousCompletion(metrics, numberOfFiles);
 
         addStep("Check that the files are now present on the pillar(s)", "No missing files should be found.");
 

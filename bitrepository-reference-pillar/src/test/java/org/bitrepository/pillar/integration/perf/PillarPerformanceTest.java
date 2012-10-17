@@ -65,7 +65,8 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println("...waiting for the last " + (numberOfOperations - metrics.getCount()) + " files " +
+            System.out.println("...waiting for the last " + (numberOfOperations - metrics.getCount()) +
+                    " operations to finish " +
                     "(" + asPrettyTime(metrics.getStartTime()) + ")");
         }
     }
@@ -83,6 +84,7 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
                 this.metrics.mark("#" + metrics.getCount());
             } else if (event.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
                 this.metrics.registerError(event.getInfo());
+                this.metrics.mark("#" + metrics.getCount());
             }
         }
     }

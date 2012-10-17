@@ -55,6 +55,9 @@ download_test() {
   tar -xzf $ARTIFACTID.tar.gz -C ../
   echo "Downloading new test suite"
   ${DEPLOY_SCRIPTS}/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c pillar-test -p tar.gz
+  if [ -d ${ARTIFACTID}-${VERSION} ] ; then
+    rm -r ${ARTIFACTID}-${VERSION}
+  fi
   tar -xzf $ARTIFACTID.tar.gz
   rm -rf $DOWNLOAD_TEST_DIR/lib
   cp -r ${ARTIFACTID}-${VERSION}/* $DOWNLOAD_TEST_DIR
@@ -100,7 +103,7 @@ case "$1" in
 	esac
 	;;
   update)
-    #download_test
+    download_test
 	update_tests
 	case "$?" in
 		0) echo "$NAME has been updated" ;;

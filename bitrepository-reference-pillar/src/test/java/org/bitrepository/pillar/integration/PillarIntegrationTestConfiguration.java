@@ -23,7 +23,6 @@ package org.bitrepository.pillar.integration;
 
 import java.io.IOException;
 import java.util.Properties;
-import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
 
 public class PillarIntegrationTestConfiguration {
     private final Properties properties = new Properties();
@@ -54,5 +53,13 @@ public class PillarIntegrationTestConfiguration {
 
     public boolean useEmbeddedMessagebus() {
         return properties.getProperty("pillar.integrationtest.useembeddedmessagebus", "false").equals("true");
+    }
+
+    public String getString(String key) {
+        return properties.getProperty(key);
+    }
+
+    public int getInt(String key) {
+        return Integer.parseInt(properties.getProperty(key));
     }
 }
