@@ -34,6 +34,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.StreamUtils;
@@ -183,33 +189,25 @@ public class HttpFileExchange implements FileExchange {
      * that the transaction has not been successful.
      */
     private void performUpload(InputStream in, URL url) throws IOException {
-        HttpURLConnection conn = null;
-        OutputStream out = null;
+        HttpClient httpClient = null;
         try {
-            conn = getConnection(url);
-            conn.setDoOutput(true);
-            conn.setRequestMethod("PUT");
-            out = conn.getOutputStream();
-            StreamUtils.copyInputStreamToOutputStream(in, out);
-            out.flush();
+            httpClient = getHttpClient();
+            HttpPut httpPut = new HttpPut(url.toExternalForm());
+            InputStreamEntity reqEntity = new InputStreamEntity(in, -1);
+            reqEntity.setChunked(true);
+            httpPut.setEntity(reqEntity);
+            HttpResponse response = httpClient.execute(httpPut);
             
             // HTTP code >= 300 means error!
-            if(conn.getResponseCode() >= HTTP_ERROR_CODE_BARRIER) {
-                throw new IOException("Could not upload file, got "
-                        + "responsecode '" + conn.getResponseCode() 
-                        + "' with message: '" + conn.getResponseMessage() 
-                        + "'");
+            if(response.getStatusLine().getStatusCode() >= HTTP_ERROR_CODE_BARRIER) {
+                throw new IOException("Could not upload file, got status code '" 
+                        + response.getStatusLine() + "'");
             }
             log.debug("Uploaded datastream to url '" + url.toString() + "' and "
-                    + "received the response code '" + conn.getResponseCode() 
-                    + "' with the response message '" 
-                    + conn.getResponseMessage() + "'.");
+                    + "received the response line '" + response.getStatusLine() + "'.");
         } finally {
-            if(conn != null) {
-                conn.disconnect();
-            }
-            if(out != null) {
-                out.close();
+            if(httpClient != null) {
+                httpClient.getConnectionManager().shutdown();
             }
         }
     }
@@ -239,5 +237,14 @@ public class HttpFileExchange implements FileExchange {
         } catch (IOException e) {
             throw new CoordinationLayerException("Could not open the connection to the url '" + url + "'", e);
         }
+    }
+    
+    /**
+     * Retrieves the HttpClient with the correct setup.
+     * For HTTPS this should be overridden with SSL context.
+     * @return The HttpClient for this FileExchange.
+     */
+    protected HttpClient getHttpClient() {
+        return new DefaultHttpClient();
     }
 }

@@ -30,7 +30,13 @@ import java.net.URL;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.CoordinationLayerException;
@@ -78,5 +84,18 @@ public class HttpsFileExchange extends HttpFileExchange {
             return true;
         }
     };
+
+    @Override
+    protected HttpClient getHttpClient() {
+        HttpClient client = new DefaultHttpClient();
+        try {
+            SSLSocketFactory socketFactory = new SSLSocketFactory(SSLContext.getDefault());
+            Scheme sch = new Scheme("https", 443, socketFactory);
+            client.getConnectionManager().getSchemeRegistry().register(sch);
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not make Http Client.", e);
+        }
     
+        return client;
+    }
 }

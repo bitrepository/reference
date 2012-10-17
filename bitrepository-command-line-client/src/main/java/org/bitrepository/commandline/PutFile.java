@@ -40,13 +40,19 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.http.HttpFileExchange;
+import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.security.SecurityManager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Putting a file to the collection.
  */
 public class PutFile {
+    /** The log. */
+    private final Logger log = LoggerFactory.getLogger(getClass());
+    
     /**
      * @param args The arguments for performing the PutFile operation.
      */
@@ -86,7 +92,7 @@ public class PutFile {
         settings = cmdHandler.loadSettings(COMPONENT_ID);
         securityManager = cmdHandler.loadSecurityManager(settings);
         
-        System.out.println("Instantiating the PutFileClient");
+        log.info("Instantiating the PutFileClient");
         client = ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager, COMPONENT_ID);
     }
     
@@ -140,9 +146,8 @@ public class PutFile {
      * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
      */
     private OperationEvent putTheFile() {
-        
         File f = findTheFile();
-        FileExchange fileexchange = new HttpFileExchange(settings);
+        FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
         URL url = fileexchange.uploadToServer(f);
         String fileId = retrieveTheName(f);
         

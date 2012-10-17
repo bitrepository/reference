@@ -150,7 +150,6 @@ public class GetFile {
     /**
      * Downloads the file from the URL defined in the conversation.
      */
-    @SuppressWarnings("deprecation")
     private void downloadFile() {
         File outputFile;
         if(cmdHandler.hasOption(Constants.LOCATION)) {
