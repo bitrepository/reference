@@ -124,7 +124,7 @@ public class BasicClient {
 
     public String getFile(String fileID, URL url) {
         GetFileEventHandler handler = new GetFileEventHandler(url, completedFiles, eventHandler);
-        getClient.getFileFromFastestPillar(fileID, null, url, handler);
+        getClient.getFileFromFastestPillar(fileID, null, url, handler, null);
         return "Fetching '" + fileID + "' from Bitrepository :)";
     }
 

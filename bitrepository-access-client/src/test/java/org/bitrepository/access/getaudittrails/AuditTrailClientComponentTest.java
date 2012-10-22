@@ -56,7 +56,8 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
 
     @BeforeMethod(alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
-        testMessageFactory = new GetAuditTrailsMessageFactory(settingsForCUT.getCollectionID(), TEST_CLIENT_ID);
+        testMessageFactory = new GetAuditTrailsMessageFactory(settingsForCUT.getCollectionID(),
+                settingsForTestClient.getComponentID());
 
         if (settingsForCUT.getCollectionSettings().getGetAuditTrailSettings() == null) {
             settingsForCUT.getCollectionSettings().setGetAuditTrailSettings(new GetAuditTrailSettings());
@@ -73,7 +74,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
     @Test(groups = {"regressiontest"})
     public void verifyAuditTrailClientFromFactory() throws Exception {
         Assert.assertTrue(AccessComponentFactory.getInstance().createAuditTrailClient(
-                settingsForCUT, securityManager, TEST_CLIENT_ID)
+                settingsForCUT, securityManager, settingsForTestClient.getComponentID())
                 instanceof ConversationBasedAuditTrailClient,
                 "The default AuditTrailClient from the Access factory should be of the type '" +
                 ConversationBasedAuditTrailClient.class.getName() + "'.");
@@ -622,7 +623,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
      */
     private AuditTrailClient createAuditTrailClient() {
         return new AuditTrailClientTestWrapper(new ConversationBasedAuditTrailClient(
-                settingsForCUT, conversationMediator, messageBus, TEST_CLIENT_ID) , testEventManager);
+                settingsForCUT, conversationMediator, messageBus, settingsForTestClient.getComponentID()) , testEventManager);
     }
 
     private ResultingAuditTrails createTestResultingAuditTrails(String componentID) {

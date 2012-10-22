@@ -113,7 +113,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
         GetFileClient getClient = AccessComponentFactory.getInstance().createGetFileClient(clientSettings,
                 securityManager, TEST_CLIENT_ID);
         getClient.getFileFromSpecificPillar(FILE_ID, null, new URL(FILE_ADDRESS), 
-                settingsForCUT.getComponentID(), testEventHandler);
+                settingsForCUT.getComponentID(), testEventHandler, null);
         
         addStep("Validate the sequence of operations event for the GetFileClient", 
                 "Shoud be in correct order.");

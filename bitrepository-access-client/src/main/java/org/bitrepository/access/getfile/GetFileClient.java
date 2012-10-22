@@ -44,9 +44,11 @@ public interface GetFileClient extends BitrepositoryClient {
      * @param fileId The id of the file to retrieve.
      * @param filePart The part of the file, which is wanted. If null, then the whole file is retrieved.
      * @param uploadUrl The url the pillar should upload the file to.
-     * @param eventHandler The handler which should receive notifications of the progress events. 
+     * @param eventHandler The handler which should receive notifications of the progress events.
+     * @param auditTrailInformation Additional information to add to the audit trail created because of this operation.
      */
-    void getFileFromFastestPillar(String fileId, FilePart filePart, URL uploadUrl, EventHandler eventHandler);
+    void getFileFromFastestPillar(String fileId, FilePart filePart, URL uploadUrl, EventHandler eventHandler,
+                                  String auditTrailInformation);
 
     /**
      * Method for retrieving a file from a specific pillar. 
@@ -58,8 +60,9 @@ public interface GetFileClient extends BitrepositoryClient {
      * @param uploadUrl The url the pillar should upload the file to.
      * @param pillarId The id of pillar, where the file should be retrieved from.
      * @param eventHandler The handler which should receive notifications of the events occurring in connection with 
-     * the pillar communication. 
+     * the pillar communication.
+     * @param auditTrailInformation Additional information to add to the audit trail created because of this operation.
      */
     void getFileFromSpecificPillar(String fileId, FilePart filePart, URL uploadUrl, String pillarId, 
-            EventHandler eventHandler);
+            EventHandler eventHandler, String auditTrailInformation);
 }

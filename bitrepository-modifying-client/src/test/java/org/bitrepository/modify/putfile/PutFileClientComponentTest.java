@@ -60,7 +60,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Testing the initialization through the ModifyComponentFactory.");
         addStep("Use the ModifyComponentFactory to instantiate a PutFileClient.",
                 "It should be an instance of SimplePutFileClient");
-        PutFileClient pfc = ModifyComponentFactory.getInstance().retrievePutClient(settingsForCUT, securityManager, TEST_CLIENT_ID);
+        PutFileClient pfc = ModifyComponentFactory.getInstance().retrievePutClient(
+                settingsForCUT, securityManager, settingsForTestClient.getComponentID());
         Assert.assertTrue(pfc instanceof ConversationBasedPutFileClient, "The PutFileClient '" + pfc + "' should be instance of '"
                 + ConversationBasedPutFileClient.class.getName() + "'");
     }
@@ -95,7 +96,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             DEFAULT_FILE_ID,
                             0,
                             receivedIdentifyRequestMessage.getAuditTrailInformation(),
-                            TEST_CLIENT_ID
+                            settingsForTestClient.getComponentID()
                     ));
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -118,7 +119,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedPutFileRequest.getFileSize(),
                             DEFAULT_FILE_ID,
                             receivedPutFileRequest.getAuditTrailInformation(),
-                            TEST_CLIENT_ID
+                            settingsForTestClient.getComponentID()
                     ));
         }
 
@@ -671,7 +672,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         */
     private PutFileClient createPutFileClient() {
         return new PutClientTestWrapper(new ConversationBasedPutFileClient(
-                messageBus, conversationMediator, settingsForCUT, TEST_CLIENT_ID)
+                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID())
                 , testEventManager);
     }
 }

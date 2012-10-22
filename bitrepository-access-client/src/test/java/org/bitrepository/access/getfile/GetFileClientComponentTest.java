@@ -38,6 +38,7 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.client.TestEventHandler;
+import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.testng.Assert;
@@ -52,10 +53,81 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     @Test(groups = {"regressiontest"})
     public void verifyGetFileClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(settingsForCUT, securityManager, TEST_CLIENT_ID)
+        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(
+                settingsForCUT, securityManager, settingsForTestClient.getComponentID())
                 instanceof ConversationBasedGetFileClient,
                 "The default GetFileClient from the Access factory should be of the type '" +
                         ConversationBasedGetFileClient.class.getName() + "'.");
+    }
+
+    @Test(groups = {"regressiontest"})
+    public void getFileFromSpecificPillar() throws Exception {
+        addDescription("Tests that the GetClient client works correctly when requesting a file from a specific pillar");
+
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        GetFileClient client = createGetFileClient();
+
+        addStep("Request the delivery of a file from pillar2.",
+                "A IdentifyPillarsForGetFileRequest will be sent to the pillar with all the correct parameters.");
+        String auditTrailInformation = "AuditTrailInfo for getFileFromSpecificPillarTest";
+        client.getFileFromSpecificPillar(DEFAULT_FILE_ID, null, httpServer.getURL(DEFAULT_FILE_ID),
+                PILLAR2_ID, testEventHandler, auditTrailInformation);
+        IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+        Assert.assertEquals(receivedIdentifyRequestMessage.getCollectionID(), settingsForCUT.getCollectionID());
+        Assert.assertNotNull(receivedIdentifyRequestMessage.getCorrelationID());
+        Assert.assertEquals(receivedIdentifyRequestMessage.getReplyTo(), settingsForCUT.getReceiverDestinationID());
+        Assert.assertEquals(receivedIdentifyRequestMessage.getFileID(), DEFAULT_FILE_ID);
+        Assert.assertEquals(receivedIdentifyRequestMessage.getFrom(), settingsForTestClient.getComponentID());
+        Assert.assertEquals(receivedIdentifyRequestMessage.getTo(), settingsForTestClient.getCollectionDestination());
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+
+        addStep("Send a response from pillar1", "Should be ignored, eg. nothing should happen" );
+        IdentifyPillarsForGetFileResponse identifyResponse1 = testMessageFactory.createIdentifyPillarsForGetFileResponse(
+                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+        messageBus.sendMessage(identifyResponse1);
+
+        addStep("Send a response from pillar2", "A COMPONENT_IDENTIFIED event should be generated for pillar2 " +
+                "followed by a IDENTIFICATION_COMPLETE event. " +
+                "The client should then proceed to requesting the file from pillar2 by sending a GetFileRequest with " +
+                "the correct and parameters" +
+                "generating a REQUEST_SENT event.");
+        IdentifyPillarsForGetFileResponse identifyResponse2 = testMessageFactory.createIdentifyPillarsForGetFileResponse(
+                receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
+        messageBus.sendMessage(identifyResponse2);
+        ContributorEvent componentIdentifiedEvent2 = (ContributorEvent)testEventHandler.waitForEvent();
+        Assert.assertEquals(componentIdentifiedEvent2.getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(componentIdentifiedEvent2.getContributorID(), PILLAR2_ID);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
+
+        GetFileRequest receivedGetFileRequest = pillar2Destination.waitForMessage(GetFileRequest.class);
+        Assert.assertEquals(receivedGetFileRequest.getCollectionID(), settingsForCUT.getCollectionID());
+        Assert.assertEquals(receivedGetFileRequest.getCorrelationID(), identifyResponse2.getCorrelationID());
+        Assert.assertEquals(receivedGetFileRequest.getReplyTo(), settingsForCUT.getReceiverDestinationID());
+        Assert.assertEquals(receivedGetFileRequest.getFileID(), DEFAULT_FILE_ID);
+        Assert.assertEquals(receivedGetFileRequest.getAuditTrailInformation(), auditTrailInformation);
+        Assert.assertEquals(receivedGetFileRequest.getFrom(), settingsForTestClient.getComponentID());
+        Assert.assertEquals(receivedGetFileRequest.getTo(), pillar2DestinationId);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
+
+        addStep("Send a GetFileProgressResponse.",
+                "The client should generating a PROGRESS event.");
+        GetFileProgressResponse getFileProgressResponse = testMessageFactory.createGetFileProgressResponse(
+                receivedGetFileRequest, PILLAR2_ID, pillar2DestinationId);
+        messageBus.sendMessage(getFileProgressResponse);
+        ContributorEvent componentProgressEvent2 = (ContributorEvent)testEventHandler.waitForEvent();
+        Assert.assertEquals(componentProgressEvent2.getEventType(), OperationEventType.PROGRESS);
+        Assert.assertEquals(componentProgressEvent2.getContributorID(), PILLAR2_ID);
+
+        addStep("Send a GetFileFinalResponse.",
+                "The GetFileClient generates a COMPONENT_COMPLETE event followed by a COMPLETE event.");
+
+        GetFileFinalResponse completeMsg = testMessageFactory.createGetFileFinalResponse(
+                receivedGetFileRequest, PILLAR2_ID, pillar2DestinationId);
+        messageBus.sendMessage(completeMsg);
+        ContributorEvent componentCompleteEvent2 = (ContributorEvent)testEventHandler.waitForEvent();
+        Assert.assertEquals(componentCompleteEvent2.getEventType(), OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(componentCompleteEvent2.getContributorID(), PILLAR2_ID);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
     @Test(groups = {"regressiontest"})
@@ -79,12 +151,12 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
         client.getFileFromSpecificPillar(DEFAULT_FILE_ID, filePart, httpServer.getURL(DEFAULT_FILE_ID),
-                chosenPillar, testEventHandler);
+                chosenPillar, testEventHandler, null);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         Assert.assertEquals(receivedIdentifyRequestMessage,
                 testMessageFactory.createIdentifyPillarsForGetFileRequest(receivedIdentifyRequestMessage,
-                        collectionDestinationID, TEST_CLIENT_ID));
+                        collectionDestinationID, settingsForTestClient.getComponentID()));
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("The pillar sends a response to the identify message.",
@@ -97,7 +169,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         GetFileRequest receivedGetFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class);
         Assert.assertEquals(receivedGetFileRequest,
                 testMessageFactory.createGetFileRequest(receivedGetFileRequest, filePart, chosenPillar,
-                        pillar1DestinationId, TEST_CLIENT_ID));
+                        pillar1DestinationId, settingsForTestClient.getComponentID()));
 
         for(int i = 0; i < settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
@@ -149,7 +221,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addStep("Make the GetClient ask for fastest pillar.",
                 "It should send message to identify which pillars and a IdentifyPillarsRequestSent notification should be generated.");
         client.getFileFromFastestPillar(DEFAULT_FILE_ID, NO_FILE_PART, httpServer.getURL(DEFAULT_FILE_ID),
-                testEventHandler);
+                testEventHandler, null);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
             receivedIdentifyRequestMessage =
@@ -189,7 +261,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         GetFileRequest receivedGetFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class);
         Assert.assertEquals(receivedGetFileRequest,
                 testMessageFactory.createGetFileRequest(receivedGetFileRequest, NO_FILE_PART, fastPillarID,
-                        pillar1DestinationId, TEST_CLIENT_ID));
+                        pillar1DestinationId, settingsForTestClient.getComponentID()));
 
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
@@ -212,7 +284,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         GetFileClient client = createGetFileClient();
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         client.getFileFromFastestPillar(DEFAULT_FILE_ID, NO_FILE_PART, httpServer.getURL(DEFAULT_FILE_ID),
-                testEventHandler);
+                testEventHandler, null);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -258,7 +330,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 "It should send message to identify which pillar can respond fastest.");
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         client.getFileFromFastestPillar(DEFAULT_FILE_ID, NO_FILE_PART, httpServer.getURL(DEFAULT_FILE_ID),
-                testEventHandler);
+                testEventHandler, null);
         if (useMockupPillar()) {
             collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         }
@@ -283,14 +355,14 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         client.getFileFromSpecificPillar( DEFAULT_FILE_ID, NO_FILE_PART, httpServer.getURL(DEFAULT_FILE_ID),
-                PILLAR1_ID, testEventHandler);
+                PILLAR1_ID, testEventHandler, null);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         if (useMockupPillar()) {
             receivedIdentifyRequestMessage =
                     collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
             IdentifyPillarsForGetFileRequest expectedMessage =
                     testMessageFactory.createIdentifyPillarsForGetFileRequest(receivedIdentifyRequestMessage,
-                            collectionDestinationID, TEST_CLIENT_ID);
+                            collectionDestinationID, settingsForTestClient.getComponentID());
             Assert.assertEquals(receivedIdentifyRequestMessage, expectedMessage);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -327,7 +399,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 "An identify request should be sent and an IdentifyPillarsRequestSent event should be generate");
         GetFileClient client = createGetFileClient();
 
-        client.getFileFromSpecificPillar(fileName, NO_FILE_PART, url, PILLAR1_ID, testEventHandler);
+        client.getFileFromSpecificPillar(fileName, NO_FILE_PART, url, PILLAR1_ID, testEventHandler, null);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -358,7 +430,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
         addStep("Call getFileFromFastestPillar.",
                 "An identify request should be sent and a IdentifyPillarsRequestSent event should be generate");
-        client.getFileFromFastestPillar(fileName, NO_FILE_PART, url, testEventHandler);
+        client.getFileFromFastestPillar(fileName, NO_FILE_PART, url, testEventHandler, null);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -394,7 +466,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         GetFileClient client = createGetFileClient();
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         client.getFileFromFastestPillar(DEFAULT_FILE_ID, NO_FILE_PART, httpServer.getURL(DEFAULT_FILE_ID),
-                testEventHandler);
+                testEventHandler, null);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -439,7 +511,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         GetFileClient client = createGetFileClient();
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         client.getFileFromFastestPillar(DEFAULT_FILE_ID, NO_FILE_PART, httpServer.getURL(DEFAULT_FILE_ID),
-                testEventHandler);
+                testEventHandler, null);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -484,6 +556,6 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
      */
     private GetFileClient createGetFileClient() {
         return new GetFileClientTestWrapper(new ConversationBasedGetFileClient(
-                messageBus, conversationMediator, settingsForCUT, TEST_CLIENT_ID), testEventManager);
+                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()), testEventManager);
     }
 }

@@ -50,8 +50,6 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     protected MessageReceiver pillar2Destination; 
     protected static final String PILLAR2_ID = "Pillar2";
 
-    protected final String TEST_CLIENT_ID = "test-client" + getTopicPostfix();
-
     protected static ConversationMediator conversationMediator;
 
     @BeforeMethod(alwaysRun = true)

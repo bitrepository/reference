@@ -72,7 +72,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
     @Test(groups = {"regressiontest"})
     public void verifyGetFileIDsClientFromFactory() throws Exception {
         Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
-                TEST_CLIENT_ID) instanceof ConversationBasedGetFileIDsClient,
+                settingsForTestClient.getComponentID()) instanceof ConversationBasedGetFileIDsClient,
                 "The default GetFileClient from the Access factory should be of the type '" +
                         ConversationBasedGetFileIDsClient.class.getName() + "'.");
     }
@@ -312,7 +312,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
      */
     private GetFileIDsClient createGetFileIDsClient() {
         return new GetFileIDsClientTestWrapper(new ConversationBasedGetFileIDsClient(
-                messageBus, conversationMediator, settingsForCUT, TEST_CLIENT_ID), testEventManager);
+                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()), testEventManager);
     }
 
     @Override

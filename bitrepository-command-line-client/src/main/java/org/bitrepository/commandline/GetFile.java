@@ -139,9 +139,9 @@ public class GetFile {
         
         if(cmdHandler.hasOption(Constants.PILLAR_ARG)) {
             String pillarId = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
-            client.getFileFromSpecificPillar(fileId, null, fileUrl, pillarId, eventHandler);
+            client.getFileFromSpecificPillar(fileId, null, fileUrl, pillarId, eventHandler, null);
         } else {
-            client.getFileFromFastestPillar(fileId, null, fileUrl, eventHandler);
+            client.getFileFromFastestPillar(fileId, null, fileUrl, eventHandler, null);
         }
         
         return eventHandler.getFinish();
