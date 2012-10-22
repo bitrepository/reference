@@ -42,6 +42,7 @@ import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.security.SecurityManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +52,7 @@ import org.slf4j.LoggerFactory;
 public class PutFile {
     /** The log. */
     private final Logger log = LoggerFactory.getLogger(getClass());
-
+    
     /**
      * @param args The arguments for performing the PutFile operation.
      */
@@ -77,7 +78,7 @@ public class PutFile {
      * @param args
      */
     private PutFile(String ... args) {
-        log.info("Initialising arguments");
+        System.out.println("Initialising arguments");
         cmdHandler = new CommandLineArgumentsHandler();
         try {
             createOptionsForCmdArgumentHandler();
@@ -99,9 +100,9 @@ public class PutFile {
      * Perform the PutFile operation.
      */
     public void performOperation() {
-        log.info("Performing the PutFile operation.");
+        System.out.println("Performing the PutFile operation.");
         OperationEvent finalEvent = putTheFile();
-        log.info("Results of the PutFile operation for the file '"
+        System.out.println("Results of the PutFile operation for the file '"
                 + cmdHandler.getOptionValue(Constants.FILE_ARG) + "'" 
                 + (cmdHandler.hasOption(Constants.FILE_ID_ARG) ? 
                         " (with the id '" + cmdHandler.getOptionValue(Constants.FILE_ID_ARG) + "')" 

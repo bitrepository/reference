@@ -33,4 +33,4 @@ fi
 CONFDIR="conf"
 KEYFILE="conf/client-01.pem"
 JAVA="/usr/bin/java"
-JAVA_OPTS="-classpath conf:lib/*"
+JAVA_OPTS="-classpath conf:lib/* -Dlogback.configurationFile=logback.xml"

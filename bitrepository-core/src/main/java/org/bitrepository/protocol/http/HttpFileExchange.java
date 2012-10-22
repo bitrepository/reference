@@ -39,6 +39,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.StreamUtils;
@@ -58,7 +59,7 @@ public class HttpFileExchange implements FileExchange {
     /** The lower boundary for the error codes of the HTTP codes.*/
     private static final int HTTP_ERROR_CODE_BARRIER = 300;
     /** The settings for the file exchange.*/
-    protected final Settings settings;
+    private final Settings settings;
     
     /**
      * Initialise HTTP file exchange.
@@ -204,9 +205,6 @@ public class HttpFileExchange implements FileExchange {
             }
             log.debug("Uploaded datastream to url '" + url.toString() + "' and "
                     + "received the response line '" + response.getStatusLine() + "'.");
-        } catch (IOException e) {
-            log.warn("Could not perform the upload. ", e);
-            throw e;
         } finally {
             if(httpClient != null) {
                 httpClient.getConnectionManager().shutdown();

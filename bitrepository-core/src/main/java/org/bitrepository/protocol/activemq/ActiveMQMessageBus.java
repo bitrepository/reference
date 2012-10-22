@@ -46,6 +46,7 @@ import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.MessageVersionValidator;
@@ -410,7 +411,9 @@ public class ActiveMQMessageBus implements MessageBus {
                 log.trace("Checking signature " + signature);
                 securityManager.authenticateMessage(text, signature);
                 securityManager.authorizeCertificateUse((content).getFrom(), text, signature);
-                securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature);
+                if (content instanceof MessageRequest) {
+                    securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature);
+                }
                 MessageVersionValidator.validateMessageVersion(content);
                 // ToDo Refine message logging, see BITMAG-763 - The message logging should scale to large number of files
                 log.info("Handling received message: " + content);

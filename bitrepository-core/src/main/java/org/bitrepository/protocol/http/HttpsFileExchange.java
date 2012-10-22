@@ -37,6 +37,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
+
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.CoordinationLayerException;
 
@@ -83,7 +84,7 @@ public class HttpsFileExchange extends HttpFileExchange {
             return true;
         }
     };
-    
+
     @Override
     protected HttpClient getHttpClient() {
         HttpClient client = new DefaultHttpClient();
@@ -94,7 +95,7 @@ public class HttpsFileExchange extends HttpFileExchange {
         } catch (Exception e) {
             throw new IllegalStateException("Could not make Http Client.", e);
         }
-
+    
         return client;
     }
 }
