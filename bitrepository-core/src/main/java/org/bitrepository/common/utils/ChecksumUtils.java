@@ -47,10 +47,6 @@ import org.bitrepository.protocol.CoordinationLayerException;
  */
 public final class ChecksumUtils {
     
-    /** The number of bytes per hexadecimal digit.*/
-    private static final int BYTES_PER_HEX = 4;
-    /** The maximal value of a single hexadecimal digit: '0x0F'.*/
-    private static final int SINGLE_HEX_MAX = 0x0F;
     /** The maximal size of the byte array for digest.*/
     private static final int BYTE_ARRAY_SIZE_FOR_DIGEST = 4096;
     
