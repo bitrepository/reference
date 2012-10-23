@@ -61,7 +61,7 @@
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-core</artifactId>
-      <version>5.6.0</version>
+      <version>5.7.0</version>
       <scope>compile</scope>
       <!-- Exclude the non-client JAR files from main code, see
       http://activemq.2283324.n4.nabble.com/AMQ-1703-Create-lightweight-ActiveMQ-client-jar-td4653093.html -->
