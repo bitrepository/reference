@@ -126,7 +126,7 @@ public final class ChecksumUtils {
                     + "' is not supported.");
         }
         
-        return toHex(digest);
+        return Base16Utils.decodeBase16(digest);
     }
     
     /**
@@ -193,24 +193,6 @@ public final class ChecksumUtils {
             throw new CoordinationLayerException("Cannot calculate the checksum with algorithm '" + algorithmName 
                     + "' and salt '" + salt + "'", e);
         }
-    }
-    
-    /**
-     * Method for extracting a array of bytes as hex.
-     * 
-     * @param byteArray The byte array to make into hex.
-     * @return The hexadecimal representation of the byte array.
-     */
-    private static String toHex(byte[] byteArray) {
-        // The list of value representations for hexadecimals.
-        char[] hexdigit = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-        
-        StringBuffer sb = new StringBuffer("");
-        for (byte b : byteArray) {
-            sb.append(hexdigit[(b >> BYTES_PER_HEX) & SINGLE_HEX_MAX]);
-            sb.append(hexdigit[b & SINGLE_HEX_MAX]);
-        }
-        return sb.toString();
     }
     
     /**
