@@ -74,7 +74,7 @@ public class FileExistenceValidator {
             List<String> pillarIds = cache.getPillarsMissingFile(fileId);
 
             if(pillarIds.isEmpty()) {
-                log.debug("No one is missing the file '{}'", fileId);
+                log.trace("No one is missing the file '{}'", fileId);
                 continue;
             }
             

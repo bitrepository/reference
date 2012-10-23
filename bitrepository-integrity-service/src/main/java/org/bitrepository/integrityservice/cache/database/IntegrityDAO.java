@@ -320,7 +320,7 @@ public class IntegrityDAO {
      * Finds the id of the files which at any pillar exists but is missing its checksum state.
      */
     public List<String> findMissingChecksums() {
-        log.debug("Locating files which are missing the checksum at any pillar.");
+        log.trace("Locating files which are missing the checksum at any pillar.");
         String requestSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
                 + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "." 
                 + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? AND " + FILE_INFO_TABLE 
@@ -336,7 +336,7 @@ public class IntegrityDAO {
      * @return The list of ids for the files which have a checksum older than the given date.
      */
     public List<String> findFilesWithOldChecksum(Date date) {
-        log.debug("Locating files which are missing at any pillar.");
+        log.trace("Locating files which are missing at any pillar.");
         String requestSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
                 + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "."
                 + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_LAST_CHECKSUM_UPDATE + " < ? ";
@@ -348,7 +348,7 @@ public class IntegrityDAO {
      * @return The list of ids for the files which are missing at some pillar.
      */
     public List<String> findMissingFiles() {
-        log.debug("Locating files which are missing at any pillar.");
+        log.trace("Locating files which are missing at any pillar.");
         String requestSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
                 + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "."
                 + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " != ? ";
@@ -361,7 +361,7 @@ public class IntegrityDAO {
      * @return The list of ids for the pillars where the file is missing (empty list of the file is not missing).
      */
     public List<String> getMissingAtPillars(String fileId) {
-        log.debug("Locating the pillars where a given file is missing.");
+        log.trace("Locating the pillars where a given file is missing.");
         String requestSql = "SELECT " + PILLAR_TABLE + "." + PILLAR_ID + " FROM " + PILLAR_TABLE + " JOIN "
                 + FILE_INFO_TABLE + " ON " + PILLAR_TABLE + "." + PILLAR_GUID + "=" + FILE_INFO_TABLE + "."
                 + FI_PILLAR_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " != ? AND " + FILE_INFO_TABLE 
@@ -386,7 +386,7 @@ public class IntegrityDAO {
      * @return The list of file ids for the files with inconsistent checksums.
      */
     public List<String> findFilesWithInconsistentChecksums(Date maxCreationDate) {
-        log.debug("Localizing the file ids where the checksums are not consistent.");
+        log.trace("Localizing the file ids where the checksums are not consistent.");
         String findUniqueSql = "SELECT " + FI_CHECKSUM + " , " + FI_FILE_GUID + " FROM " + FILE_INFO_TABLE
                 + " WHERE " + FI_FILE_STATE + " != ? AND " + FI_CHECKSUM + " IS NOT NULL GROUP BY " + FI_CHECKSUM 
                 + " , " + FI_FILE_GUID;
@@ -413,7 +413,7 @@ public class IntegrityDAO {
      * This is all combined into one single SQL statement for optimisation.
      */
     public void setFilesWithConsistentChecksumsToValid() {
-        log.debug("Localizing the file ids where the checksums are consistent and setting them to the checksum state '"
+        log.trace("Localizing the file ids where the checksums are consistent and setting them to the checksum state '"
                 + ChecksumState.VALID + "'.");
         String findUniqueSql = "SELECT " + FI_CHECKSUM + " , " + FI_FILE_GUID + " FROM " + FILE_INFO_TABLE
                 + " WHERE " + FI_FILE_STATE + " != ? AND " + FI_CHECKSUM + " IS NOT NULL GROUP BY " + FI_CHECKSUM 
@@ -436,7 +436,7 @@ public class IntegrityDAO {
      * @param filelistTimestamp The timestamp for when the file was latest modified.
      */
     private void updateFileInfoLastFileUpdateTimestamp(String pillarId, String fileId, Date filelistTimestamp) {
-        log.debug("Set Last_File_Update timestamp to '" + filelistTimestamp + "' for file '" + fileId
+        log.trace("Set Last_File_Update timestamp to '" + filelistTimestamp + "' for file '" + fileId
                 + "' at pillar '" + pillarId + "'.");
         setFileExisting(fileId, pillarId);
         
@@ -457,7 +457,7 @@ public class IntegrityDAO {
      * @param pillarId The guid of the pillar.
      */
     private void updateFileInfoWithChecksum(ChecksumDataForChecksumSpecTYPE data, String pillarId) {
-        log.debug("Updating pillar '" + pillarId + "' with checksum data '" + data + "'");
+        log.trace("Updating pillar '" + pillarId + "' with checksum data '" + data + "'");
         setFileExisting(data.getFileID(), pillarId);
         
         Date csTimestamp = CalendarUtils.convertFromXMLGregorianCalendar(data.getCalculationTimestamp());
@@ -516,7 +516,7 @@ public class IntegrityDAO {
      * @param fileId The id of the file to insert.
      */
     private void insertNewFileID(String fileId) {
-        log.debug("Inserting the file '" + fileId + "' into the files table.");
+        log.trace("Inserting the file '" + fileId + "' into the files table.");
         String fileSql = "INSERT INTO " + FILES_TABLE + " ( " + FILES_ID + ", " + FILES_CREATION_DATE 
                 + " ) VALUES ( ?, ? )";
         DatabaseUtils.executeStatement(dbConnector, fileSql, fileId, new Date());
