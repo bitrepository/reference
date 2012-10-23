@@ -22,16 +22,11 @@
 package org.bitrepository.common.utils;
 
 import org.bitrepository.common.ArgumentValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for handling encoding and decoding of base64 bytes.
  */
 public class Base16Utils {
-    /** The log.*/
-    private static final Logger log = LoggerFactory.getLogger(Base16Utils.class);
-    
     /**
      * Private constructor to prevent instantiation of this utility class.
      */
@@ -55,7 +50,6 @@ public class Base16Utils {
           }
           sb.append(Integer.toHexString(v));
         }
-        log.debug("Base64 decoded byte array to string, string: " + sb.toString());
         return sb.toString();
     }
     
@@ -76,8 +70,6 @@ public class Base16Utils {
             data[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)
                                  + Character.digit(hexString.charAt(i+1), 16));
         }
-        
-        log.debug("Base64 encoded string to byte array, string: " + hexString);
         return data;
     }
 }
