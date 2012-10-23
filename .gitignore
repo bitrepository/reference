@@ -8,3 +8,4 @@ auditcontributerdb
 */.settings/*
 */target/*
 */derby.log
+*/bitrepository.log
