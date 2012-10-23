@@ -76,11 +76,11 @@ public class IntegrityDAO {
     private void initialisePillars() {
         for(String pillarId : pillarIds) {
             if(retrievePillarGuid(pillarId) == null) {
-                log.debug("Inserting the pillar '" + pillarId + "' into the pillar table.");
+                log.trace("Inserting the pillar '" + pillarId + "' into the pillar table.");
                 String sql = "INSERT INTO " + PILLAR_TABLE +" ( " + PILLAR_ID + " ) VALUES ( ? )";
                 DatabaseUtils.executeStatement(dbConnector, sql, pillarId);
             } else {
-                log.debug("Already know the pillar '" + pillarId + "'. Will not recreate the entry in the database.");
+                log.trace("Already know the pillar '" + pillarId + "'. Will not recreate the entry in the database.");
             }
         }
     }
@@ -94,7 +94,7 @@ public class IntegrityDAO {
         ArgumentValidator.checkNotNull(data, "FileIDsData data");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         
-        log.info("Updating the file ids '" + data + "' for pillar '" + pillarId + "'");
+        log.trace("Updating the file ids '" + data + "' for pillar '" + pillarId + "'");
         
         for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
             ensureFileIdExists(dataItem.getFileID());
@@ -113,7 +113,7 @@ public class IntegrityDAO {
         ArgumentValidator.checkNotNull(data, "List<ChecksumDataForChecksumSpecTYPE> data");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         
-        log.info("Updating the checksum data '" + data + "' for pillar '" + pillarId + "'");
+        log.trace("Updating the checksum data '" + data + "' for pillar '" + pillarId + "'");
         for(ChecksumDataForChecksumSpecTYPE csData : data) {
             ensureFileIdExists(csData.getFileID());
             updateFileInfoWithChecksum(csData, pillarId);
@@ -139,7 +139,7 @@ public class IntegrityDAO {
         Long fileGuid = retrieveFileGuid(fileId);
         
         if(fileGuid == null) {
-            log.info("Trying to retrieve file infos for non-existing file id: '" + fileId + "'.");
+            log.debug("Trying to retrieve file infos for non-existing file id: '" + fileId + "'.");
             return new ArrayList<FileInfo>();
         }
         
