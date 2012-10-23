@@ -84,7 +84,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     @Override
     public void addAuditEvent(String fileId, String actor, String info, String auditTrail, FileAction operation) {
         ArgumentValidator.checkNotNull(operation, "FileAction operation");
-        log.info("Inserting an audit event  for file '" + fileId + "', from actor '" + actor
+        log.trace("Inserting an audit event for file '" + fileId + "', from actor '" + actor
                 + "' performing operation '" + operation + "', with the audit trail information '" + auditTrail + "'");
 
         long fileGuid;
