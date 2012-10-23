@@ -110,7 +110,7 @@ public class TestPutFileMessageFactory extends ClientTestMessageFactory {
         ipfpfResponse.setPillarID(pillarId);
         ipfpfResponse.setReplyTo(pillarDestinationId);
         ipfpfResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
-        ipfpfResponse.setResponseInfo(createPositiveResponseInfo());
+        ipfpfResponse.setResponseInfo(createPositiveIdentificationResponseInfo());
         ipfpfResponse.setFrom(pillarId);
 
         ipfpfResponse.setPillarChecksumSpec(null);
@@ -202,7 +202,7 @@ public class TestPutFileMessageFactory extends ClientTestMessageFactory {
         finalResponse.setFileAddress(request.getFileAddress());
         finalResponse.setFileID(request.getFileID());
         finalResponse.setPillarChecksumSpec(null);
-        finalResponse.setResponseInfo(FINAL_INFO_DEFAULT);
+        finalResponse.setResponseInfo(createCompleteResponseInfo());
         finalResponse.setFrom(pillarId);
         
         return finalResponse;

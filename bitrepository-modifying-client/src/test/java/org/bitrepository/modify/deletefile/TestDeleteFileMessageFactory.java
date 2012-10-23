@@ -115,7 +115,7 @@ public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
         identifyResponse.setFrom(pillarId);
         identifyResponse.setPillarChecksumSpec(null);
         identifyResponse.setFileID(fileId);
-        identifyResponse.setResponseInfo(createPositiveResponseInfo());
+        identifyResponse.setResponseInfo(createPositiveIdentificationResponseInfo());
 
         return identifyResponse;
     }
@@ -178,7 +178,7 @@ public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
         finalResponse.setReplyTo(pillarDestinationId);
         finalResponse.setPillarID(pillarId);
         finalResponse.setFileID(fileId);
-        finalResponse.setResponseInfo(FINAL_INFO_DEFAULT);
+        finalResponse.setResponseInfo(createCompleteResponseInfo());
         finalResponse.setFrom(pillarId);
         
         return finalResponse;

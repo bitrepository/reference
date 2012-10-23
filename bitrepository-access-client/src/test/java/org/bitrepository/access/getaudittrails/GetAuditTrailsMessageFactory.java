@@ -60,7 +60,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
             IdentifyContributorsForGetAuditTrailsRequest request, String componentID, String replyTo) {
         IdentifyContributorsForGetAuditTrailsResponse response = new IdentifyContributorsForGetAuditTrailsResponse();
         setResponseDetails(response, request, componentID,  replyTo);
-        response.setResponseInfo(createPositiveResponseInfo());
+        response.setResponseInfo(createPositiveIdentificationResponseInfo());
         return response;
     }
 
@@ -77,7 +77,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
         GetAuditTrailsFinalResponse response = new GetAuditTrailsFinalResponse();
         setResponseDetails(response, request, componentID,  replyTo);
         response.setContributor(componentID);
-        response.setResponseInfo(FINAL_INFO_DEFAULT);
+        response.setResponseInfo(createCompleteResponseInfo());
         response.setResultingAuditTrails(result);
         return response;
     }

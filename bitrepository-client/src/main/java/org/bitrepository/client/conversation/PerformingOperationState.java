@@ -56,7 +56,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     }
 
     @Override
-    protected void processMessage(MessageResponse msg) {
+    protected void processMessage(MessageResponse msg) throws UnableToFinishException {
         if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS) ||
                 msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_PROGRESS)) {
             getContext().getMonitor().progress(msg.getResponseInfo().getResponseText(), msg.getFrom());
@@ -67,6 +67,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
                 } else {
                     getContext().getMonitor().contributorFailed(
                             msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+                    handleFailureResponse(msg);
                 }
             } catch(UnexpectedResponseException ure ) {
                 getContext().getMonitor().warning(ure.getMessage());
@@ -100,7 +101,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
      * @param msg The final response to process into result event.
      * @throws UnexpectedResponseException Unable to generate a result event based on the supplied message.
      */
-    protected abstract void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException;
+    protected abstract void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException, UnableToFinishException;
 
     private static Collection<String> toComponentIDs(Collection<SelectedComponentInfo> contributors) {
         Collection componentIDs = new HashSet();
@@ -109,4 +110,9 @@ public abstract class PerformingOperationState extends GeneralConversationState 
         }
         return componentIDs;
     }
+    /**
+     * Implements the default handling of failure responses which is is to do nothing
+     * (besides being registered in the event monitor, which is handled by the parent class).
+     */
+    protected void handleFailureResponse(MessageResponse msg) throws UnableToFinishException {}
 }

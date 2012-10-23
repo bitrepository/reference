@@ -222,11 +222,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 "It should send message to identify which pillars and a IdentifyPillarsRequestSent notification should be generated.");
         client.getFileFromFastestPillar(DEFAULT_FILE_ID, NO_FILE_PART, httpServer.getURL(DEFAULT_FILE_ID),
                 testEventHandler, null);
-        IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
-        if (useMockupPillar()) {
-            receivedIdentifyRequestMessage =
+        IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage =
                     collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
-        }
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Three pillars send responses. First an average timeToDeliver, then a fast timeToDeliver and last a" +
@@ -498,13 +495,14 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         GetFileFinalResponse completeMsg = testMessageFactory.createGetFileFinalResponse(
                 getFileRequest, PILLAR2_ID, pillar1DestinationId);
         messageBus.sendMessage(completeMsg);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_COMPLETE);
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
     @Test(groups = {"regressiontest"})
-    public void singleComponentFailure() throws Exception {
-        addDescription("Verify that the GetFile reports a complete (not failed), in case of a failing component.");
+    public void singleComponentFailureDuringIdentify() throws Exception {
+        addDescription("Verify that the GetFile reports a complete (not failed), in case of a component failing " +
+                "during the identify phase.");
 
         addStep("Call getFile from the fastest pillar.",
                 "A IDENTIFY_REQUEST_SENT should be generate and a identification request should be sent.");
@@ -545,6 +543,45 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         messageBus.sendMessage(completeMsg);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
+    }
+
+    @Test(groups = {"regressiontest"})
+    public void failureDuringPerform() throws Exception {
+        addDescription("Verify that the GetFile reports a failed operation, in case of a component failing " +
+                "during the performing phase.");
+
+        addStep("Request a getFile from the fastest pillar.",
+                "A IDENTIFY_REQUEST_SENT should be generate and a identification request should be sent.");
+        GetFileClient client = createGetFileClient();
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        client.getFileFromFastestPillar(DEFAULT_FILE_ID, NO_FILE_PART, httpServer.getURL(DEFAULT_FILE_ID),
+                testEventHandler, null);
+        IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage =
+                collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+
+        addStep("Send a identification response from pillar1 and pillar2 with pillar1 the fastest.",
+                "Pillar1 should be selected and a GetFileRequest should be sent.");
+        IdentifyPillarsForGetFileResponse identificationResponse1 = testMessageFactory.createIdentifyPillarsForGetFileResponse(
+                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+        messageBus.sendMessage(identificationResponse1);
+        IdentifyPillarsForGetFileResponse identificationResponse2 = testMessageFactory.createIdentifyPillarsForGetFileResponse(
+                receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
+        TimeMeasureTYPE averageTime = new TimeMeasureTYPE();
+        averageTime.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
+        averageTime.setTimeMeasureValue(BigInteger.valueOf(10L));
+        identificationResponse2.setTimeToDeliver(averageTime);
+        messageBus.sendMessage(identificationResponse2);
+        GetFileRequest getFileRequest = pillar1Destination.waitForMessage(GetFileRequest.class);
+
+        addStep("Send a failure response from pillar1",
+                "A COMPONENT_FAILED event should be generated followed by at FAILURE event.");
+        testEventHandler.clearEvents();
+        GetFileFinalResponse completeMsg = testMessageFactory.createGetFileFinalResponse(
+                getFileRequest, PILLAR1_ID, pillar1DestinationId);
+        completeMsg.getResponseInfo().setResponseCode(ResponseCode.FAILURE);
+        messageBus.sendMessage(completeMsg);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
     /**
