@@ -60,9 +60,11 @@ public class BasicMonitoringServiceAlerter extends AlarmDispatcher implements Mo
         List<String> nonRespondingComponents = new ArrayList<String>();
         for(String ID : statusMap.keySet()) {
             ComponentStatus componentStatus = statusMap.get(ID);
-            if(componentStatus.getNumberOfMissingReplies() == maxRetries.intValue()) {
-                nonRespondingComponents.add(ID);
+            if(componentStatus.getNumberOfMissingReplies() >= maxRetries.intValue()) {
                 componentStatus.markAsUnresponsive();
+                if(componentStatus.getNumberOfMissingReplies() == maxRetries.intValue()) {
+                	nonRespondingComponents.add(ID);
+                }
             }
         }
         
