@@ -155,7 +155,7 @@ public class TestGetFileMessageFactory extends ClientTestMessageFactory {
         getFileFinalResponse.setReplyTo(pillarDestinationId);
         getFileFinalResponse.setPillarID(pillarId);
         getFileFinalResponse.setFileID(receivedGetFileRequest.getFileID());
-        getFileFinalResponse.setResponseInfo(FINAL_INFO_DEFAULT);
+        getFileFinalResponse.setResponseInfo(createCompleteResponseInfo());
         getFileFinalResponse.setFrom(pillarId);
         getFileFinalResponse.setFileAddress(receivedGetFileRequest.getFileAddress());
         return getFileFinalResponse;

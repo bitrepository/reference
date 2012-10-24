@@ -70,6 +70,9 @@ public class TestEventHandler implements EventHandler {
         return eventQueue.poll(timeout, unit);
     }
 
+    public void clearEvents() {
+        eventQueue.clear();
+    }
 
     public void verifyNoEventsAreReceived() throws InterruptedException {
         Assert.assertNull(waitForEvent(1,TimeUnit.SECONDS));

@@ -102,7 +102,7 @@ public class TestGetChecksumsMessageFactory extends ClientTestMessageFactory {
         identifyPillarsForGetChecksumsResponse.setPillarID(pillarId);
         identifyPillarsForGetChecksumsResponse.setFileIDs(receivedIdentifyRequestMessage.getFileIDs());
         identifyPillarsForGetChecksumsResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
-        identifyPillarsForGetChecksumsResponse.setResponseInfo(createPositiveResponseInfo());
+        identifyPillarsForGetChecksumsResponse.setResponseInfo(createPositiveIdentificationResponseInfo());
         identifyPillarsForGetChecksumsResponse.setFrom(pillarId);
         return identifyPillarsForGetChecksumsResponse;
     }
@@ -168,7 +168,7 @@ public class TestGetChecksumsMessageFactory extends ClientTestMessageFactory {
         getChecksumsFinalResponse.setPillarID(pillarId);
         //getChecksumsFinalResponse.setFileIDs(receivedGetChecksumsRequest.getFileIDs());
         getChecksumsFinalResponse.setFrom(pillarId);
-        getChecksumsFinalResponse.setResponseInfo(FINAL_INFO_DEFAULT);
+        getChecksumsFinalResponse.setResponseInfo(createCompleteResponseInfo());
         
         return getChecksumsFinalResponse;
     }

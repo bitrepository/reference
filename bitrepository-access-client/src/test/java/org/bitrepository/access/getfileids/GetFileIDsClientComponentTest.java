@@ -319,7 +319,9 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
     protected MessageResponse createIdentifyResponse(MessageRequest identifyRequest, String from, String to, ResponseCode responseCode) {
         MessageResponse response = testMessageFactory.createIdentifyPillarsForGetFileIDsResponse(
                 (IdentifyPillarsForGetFileIDsRequest)identifyRequest, from, to);
+        response.setResponseInfo(new ResponseInfo());
         response.getResponseInfo().setResponseCode(responseCode);
+        response.getResponseInfo().setResponseText("NA");
         return response;
     }
 

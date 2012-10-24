@@ -58,12 +58,6 @@ public abstract class ClientTestMessageFactory extends TestMessageFactory {
         PROGRESS_INFO_DEFAULT.setResponseText("First test progress response message");
     }
 
-    protected static final ResponseInfo FINAL_INFO_DEFAULT = new ResponseInfo();
-    static {
-        FINAL_INFO_DEFAULT.setResponseCode(ResponseCode.OPERATION_COMPLETED);
-        FINAL_INFO_DEFAULT.setResponseText("We have liftoff");
-    }
-
     protected final String clientID;
 
     public ClientTestMessageFactory(String collectionID, String clientID) {
@@ -82,13 +76,27 @@ public abstract class ClientTestMessageFactory extends TestMessageFactory {
         response.setTo(request.getReplyTo());
         response.setReplyTo(replyTo);
         response.setFrom(componentID);
-        response.setResponseInfo(createPositiveResponseInfo());
+        response.setResponseInfo(createPositiveIdentificationResponseInfo());
     }
 
-    protected ResponseInfo createPositiveResponseInfo() {
+    protected static ResponseInfo createPositiveIdentificationResponseInfo() {
         ResponseInfo responseInfo = new ResponseInfo();
         responseInfo.setResponseCode(IDENTIFY_RESPONSE_CODE_DEFAULT);
         responseInfo.setResponseText("Positive identification");
+        return responseInfo;
+    }
+
+    protected static ResponseInfo createCompleteResponseInfo() {
+        ResponseInfo responseInfo = new ResponseInfo();
+        responseInfo.setResponseCode(ResponseCode.OPERATION_COMPLETED);
+        responseInfo.setResponseText("Positive identification");
+        return responseInfo;
+    }
+
+    protected static ResponseInfo createFailureResponseInfo() {
+        ResponseInfo responseInfo = new ResponseInfo();
+        responseInfo.setResponseCode(ResponseCode.FAILURE);
+        responseInfo.setResponseText("Failed");
         return responseInfo;
     }
 }

@@ -97,7 +97,7 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
         ipfrfResponse.setPillarID(pillarId);
         ipfrfResponse.setReplyTo(pillarDestinationId);
         ipfrfResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
-        ipfrfResponse.setResponseInfo(createPositiveResponseInfo());
+        ipfrfResponse.setResponseInfo(createPositiveIdentificationResponseInfo());
         ipfrfResponse.setFileID(receivedIdentifyRequestMessage.getFileID());
         ipfrfResponse.setFrom(pillarId);
 
@@ -192,7 +192,7 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
         finalResponse.setPillarChecksumSpec(null);
         finalResponse.setPillarID(pillarId);
         finalResponse.setReplyTo(pillarDestinationId);
-        finalResponse.setResponseInfo(FINAL_INFO_DEFAULT);
+        finalResponse.setResponseInfo(createCompleteResponseInfo());
         finalResponse.setTo(request.getReplyTo());
         finalResponse.setFrom(pillarId);
 

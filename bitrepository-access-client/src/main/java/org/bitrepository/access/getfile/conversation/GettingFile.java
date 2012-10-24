@@ -32,6 +32,7 @@ import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.eventhandler.ContributorCompleteEvent;
+import org.bitrepository.common.exceptions.UnableToFinishException;
 
 /**
  * Models the behavior of a GetFile conversation during the file exchange phase. That is, it begins with the sending of
@@ -67,6 +68,11 @@ class GettingFile extends PerformingOperationState {
         msg.setTo(selectedPillar.getDestination());
         context.getMonitor().requestSent("Sending GetFileRequest to ", selectedPillar.toString());
         context.getMessageSender().sendMessage(msg);
+    }
+
+    protected void handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
+        throw new UnableToFinishException("Failed to get file from " + msg.getFrom() +
+                ", " + msg.getResponseInfo().getResponseText());
     }
 
     @Override
