@@ -63,7 +63,7 @@ public interface IntegrityService extends LifeCycledService {
      * @param workflow The workflow to schedule.
      * @param intervalBetweenRuns The time between running the workflow.
      */
-    void scheduleWorkflow(Workflow workflow, long timeBetweenRuns);
+    void scheduleWorkflow(Workflow workflow, long intervalBetweenRuns);
     
     /**
      * Shut down the integrity service.

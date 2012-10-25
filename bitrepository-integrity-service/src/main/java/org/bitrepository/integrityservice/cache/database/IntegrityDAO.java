@@ -386,7 +386,8 @@ public class IntegrityDAO {
      * @return The list of file ids for the files with inconsistent checksums.
      */
     public List<String> findFilesWithInconsistentChecksums(Date maxCreationDate) {
-        log.trace("Localizing the file ids where the checksums are not consistent.");
+        long startTime = System.currentTimeMillis();
+        log.debug("Localizing the file ids where the checksums are not consistent.");
         String findUniqueSql = "SELECT " + FI_CHECKSUM + " , " + FI_FILE_GUID + " FROM " + FILE_INFO_TABLE
                 + " WHERE " + FI_FILE_STATE + " != ? AND " + FI_CHECKSUM + " IS NOT NULL GROUP BY " + FI_CHECKSUM 
                 + " , " + FI_FILE_GUID;
@@ -398,6 +399,7 @@ public class IntegrityDAO {
                 + FI_FILE_GUID + " WHERE " + FILES_CREATION_DATE + " < ?";
         List<String> res = DatabaseUtils.selectStringList(dbConnector, selectSql, FileState.MISSING.ordinal(),
                 maxCreationDate);
+        log.debug("Found " + res.size() + " inconsistencies in " + (startTime - System.currentTimeMillis()) + "ms");
         return res;
     }
     
