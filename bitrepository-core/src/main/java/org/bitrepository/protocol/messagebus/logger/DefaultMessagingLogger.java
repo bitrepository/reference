@@ -18,7 +18,10 @@ public class DefaultMessagingLogger implements MessageLogger {
         if (shouldLogFullMessage(message)) {
             logFullMessage(appendFullRepresentation(messageSB, message).toString());
         } else {
-            logShortMessage(appendShortRepresentation(messageSB, message, "to").toString());
+            appendMessageIDString(messageSB, message);
+            messageSB.append(" to " + message.getTo() + ": ");
+            appendShortRepresentation(messageSB, message);
+            logShortMessage(messageSB.toString());
         }
     }
 
@@ -28,7 +31,10 @@ public class DefaultMessagingLogger implements MessageLogger {
         if (shouldLogFullMessage(message)) {
             logFullMessage(appendFullRepresentation(messageSB, message).toString());
         } else {
-            logShortMessage(appendShortRepresentation(messageSB, message, "from").toString());
+            appendMessageIDString(messageSB, message);
+            messageSB.append(" from " + message.getFrom() + ": ");
+            appendShortRepresentation(messageSB, message);
+            logShortMessage(messageSB.toString());
         }
     }
 
@@ -61,9 +67,7 @@ public class DefaultMessagingLogger implements MessageLogger {
     protected void logShortMessage(String message) {
         log.info(message);
     }
-    private StringBuilder appendShortRepresentation(StringBuilder messageSB, Message message, String toFromString) {
-        appendMessageIDString(messageSB, message);
-        messageSB.append(" " + toFromString + " " + message.getFrom() + ": ");
+    private StringBuilder appendShortRepresentation(StringBuilder messageSB, Message message) {
         appendCustomInfo(messageSB, message);
         if (message instanceof MessageResponse) {
             appendResponseInfo(messageSB, (MessageResponse) message);

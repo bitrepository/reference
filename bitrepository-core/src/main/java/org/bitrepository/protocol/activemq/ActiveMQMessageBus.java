@@ -53,6 +53,7 @@ import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.messagebus.logger.GetFileMessageLogger;
 import org.bitrepository.protocol.messagebus.logger.GetStatusMessageLogger;
 import org.bitrepository.protocol.messagebus.logger.MessageLoggerProvider;
+import org.bitrepository.protocol.messagebus.logger.PutFileMessageLogger;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.protocolversiondefinition.OperationType;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
@@ -465,6 +466,7 @@ public class ActiveMQMessageBus implements MessageBus {
     private void registerCustomMessageLoggers() {
         MessageLoggerProvider loggerProvider = MessageLoggerProvider.getInstance();
         loggerProvider.registerLogger(OperationType.GET_FILE, new GetFileMessageLogger());
+        loggerProvider.registerLogger(OperationType.PUT_FILE, new PutFileMessageLogger());
         loggerProvider.registerLogger(OperationType.GET_STATUS, new GetStatusMessageLogger());
     }
 }
