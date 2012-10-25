@@ -433,7 +433,7 @@ public class ActiveMQMessageBus implements MessageBus {
         private void threadMessageHandling(Message message) {
             MessageListenerThread mlt = new MessageListenerThread(messageListener, message);
             executor.execute(mlt);
-            log.debug("Adding a new message handling thread. Currently number of running threads: " + threadQueue.size());
+            log.trace("Adding a new message handling thread. Currently number of running threads: " + threadQueue.size());
         }
     }
     
