@@ -62,8 +62,9 @@ public class BasicMonitoringServiceAlerter extends AlarmDispatcher implements Mo
             ComponentStatus componentStatus = statusMap.get(ID);
             if(componentStatus.getNumberOfMissingReplies() >= maxRetries.intValue()) {
                 componentStatus.markAsUnresponsive();
-                if(componentStatus.getNumberOfMissingReplies() == maxRetries.intValue()) {
+                if(!componentStatus.hasAlarmed()) {
                 	nonRespondingComponents.add(ID);
+                	componentStatus.alarmed();
                 }
             }
         }

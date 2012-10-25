@@ -38,6 +38,9 @@ public class ComponentStatus {
     private XMLGregorianCalendar lastReply;
     /** The status information of the latest reply.*/
     private String info;
+    /** Indication whether an alarm has been sent due to the components status */
+    private Boolean alarmed;
+    
     
     /**
      * Constructor 
@@ -47,6 +50,7 @@ public class ComponentStatus {
         status = ComponentStatusCode.UNKNOWN;
         lastReply = CalendarUtils.getEpoch();
         info = "No status requested yet.";
+        alarmed = false;
     }
     
     /**
@@ -57,6 +61,7 @@ public class ComponentStatus {
         status = ComponentStatusCode.valueOf(resultingStatus.getStatusInfo().getStatusCode().toString());
         lastReply = resultingStatus.getStatusTimestamp();
         info = resultingStatus.getStatusInfo().getStatusText();
+        alarmed = false;
     }
 
     /**
@@ -100,4 +105,12 @@ public class ComponentStatus {
     public String getInfo() {
         return info;
     }    
+    
+    public Boolean hasAlarmed() {
+    	return alarmed;
+    }
+    
+    public void alarmed() {
+    	alarmed = true;
+    }
 }
