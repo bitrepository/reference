@@ -27,8 +27,8 @@ import java.util.Set;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.CorrelationIDGenerator;
+import org.bitrepository.protocol.OperationType;
 import org.bitrepository.protocol.messagebus.MessageSender;
-import org.bitrepository.protocolversiondefinition.OperationType;
 
 /**
  * Encapsulates the shared state for a conversation.

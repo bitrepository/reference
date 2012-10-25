@@ -24,7 +24,7 @@
  */
 package org.bitrepository.client.eventhandler;
 
-import org.bitrepository.protocolversiondefinition.OperationType;
+import org.bitrepository.protocol.OperationType;
 
 /**
  * A general implementation of <code>OperationEvent</code>.

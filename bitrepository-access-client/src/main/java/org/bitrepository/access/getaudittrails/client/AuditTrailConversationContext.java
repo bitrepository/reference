@@ -26,8 +26,8 @@ import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.OperationType;
 import org.bitrepository.protocol.messagebus.MessageSender;
-import org.bitrepository.protocolversiondefinition.OperationType;
 
 /**
  * models the conversation context for the {@link org.bitrepository.access.getaudittrails.AuditTrailClient}

@@ -29,8 +29,8 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.OperationType;
 import org.bitrepository.protocol.messagebus.MessageSender;
-import org.bitrepository.protocolversiondefinition.OperationType;
 
 public class PutFileConversationContext extends ConversationContext {
     private final URL urlForFile;

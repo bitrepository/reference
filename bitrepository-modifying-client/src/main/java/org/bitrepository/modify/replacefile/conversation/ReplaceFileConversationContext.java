@@ -23,15 +23,14 @@ package org.bitrepository.modify.replacefile.conversation;
 
 import java.math.BigInteger;
 import java.net.URL;
-
 import java.util.Collection;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.OperationType;
 import org.bitrepository.protocol.messagebus.MessageSender;
-import org.bitrepository.protocolversiondefinition.OperationType;
 
 public class ReplaceFileConversationContext extends ConversationContext {
     private final BigInteger sizeOfNewFile;

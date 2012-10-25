@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.bitrepository.bitrepositorymessages.Message;
-import org.bitrepository.protocolversiondefinition.OperationType;
+import org.bitrepository.protocol.OperationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
