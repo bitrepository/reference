@@ -58,7 +58,7 @@ public class MonitoringServiceFactory {
     private static MonitoringService monitoringService;
 
     /**
-     * Private constructor, use static getInstance method to get instance.
+     * Private constructor, use static getINSTANCE method to get instance.
      */
     private MonitoringServiceFactory() { }
     

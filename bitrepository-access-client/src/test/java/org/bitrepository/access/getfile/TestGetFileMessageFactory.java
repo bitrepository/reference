@@ -40,8 +40,6 @@
 package org.bitrepository.access.getfile;
 
 import org.bitrepository.bitrepositoryelements.FilePart;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
@@ -101,11 +99,7 @@ public class TestGetFileMessageFactory extends ClientTestMessageFactory {
         identifyPillarsForGetFileResponse.setFileID(receivedIdentifyRequestMessage.getFileID());
         identifyPillarsForGetFileResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
         identifyPillarsForGetFileResponse.setFrom(pillarId);
-        ResponseInfo identifyResponseInfo = new ResponseInfo();
-        identifyResponseInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE); 
-        identifyResponseInfo.setResponseText("Pillar " + pillarId + " will be able to begin devlivery of file " 
-        + receivedIdentifyRequestMessage.getFileID() + " in " + TIME_TO_DELIVER_DEFAULT);
-        identifyPillarsForGetFileResponse.setResponseInfo(identifyResponseInfo);
+        identifyPillarsForGetFileResponse.setResponseInfo(createPositiveIdentificationResponseInfo());
         return identifyPillarsForGetFileResponse;
     }
   

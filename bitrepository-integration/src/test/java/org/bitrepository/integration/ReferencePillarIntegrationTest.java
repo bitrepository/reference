@@ -69,7 +69,7 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
     public void testPillarVsClients() throws Exception {
         addDescription("Tests the put functionality of the reference pillar.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        //PillarComponentFactory.getInstance().createReferencePillar(messageBus, settingsForCUT, "ReferencePillarUnderTest");
+        //PillarComponentFactory.getINSTANCE().createReferencePillar(messageBus, settingsForCUT, "ReferencePillarUnderTest");
         String FILE_ADDRESS = "http://sandkasse-01.kb.dk/dav/test.txt";
         String REPLACE_FILE_ADDRES = "http://sandkasse-01.kb.dk/dav/dia.jpg";
         Long FILE_SIZE = 27L;

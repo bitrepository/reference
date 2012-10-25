@@ -32,7 +32,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
@@ -42,7 +41,6 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorymessages.Message;
@@ -52,7 +50,11 @@ import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.MessageVersionValidator;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
+import org.bitrepository.protocol.messagebus.logger.GetFileMessageLogger;
+import org.bitrepository.protocol.messagebus.logger.GetStatusMessageLogger;
+import org.bitrepository.protocol.messagebus.logger.MessageLoggerProvider;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.protocolversiondefinition.OperationType;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,7 +129,7 @@ public class ActiveMQMessageBus implements MessageBus {
         this.securityManager = securityManager;
         jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getURL());
-
+        registerCustomMessageLoggers();
         try {
             connection = connectionFactory.createConnection();
             connection.setExceptionListener(new MessageBusExceptionListener());
@@ -221,9 +223,9 @@ public class ActiveMQMessageBus implements MessageBus {
 
     @Override
     public void sendMessage(Message content) {
-        log.info("Sending: " + content);
         sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
                 content.getCorrelationID(), content);
+        MessageLoggerProvider.getInstance().logMessageSent(content);
     }
 
     /**
@@ -238,12 +240,12 @@ public class ActiveMQMessageBus implements MessageBus {
      * @param content       JAXB-serializable object to send.
      */
     private synchronized void sendMessage(String destinationID, String replyTo, String collectionID, String correlationID,
-                                          Object content) {
+                                          Message content) {
         String xmlContent = null;
         try {
             xmlContent = jaxbHelper.serializeToXml(content);
             jaxbHelper.validate(new ByteArrayInputStream(xmlContent.getBytes()));
-            log.debug("The following message is sent to the destination '" + destinationID + "'" + " on message-bus '"
+            log.trace("The following message is sent to the destination '" + destinationID + "'" + " on message-bus '"
                     + configuration.getName() + "': \n{}", xmlContent);
             MessageProducer producer = addDestinationMessageProducer(destinationID);
             producer.setDeliveryMode(DeliveryMode.PERSISTENT);
@@ -415,8 +417,7 @@ public class ActiveMQMessageBus implements MessageBus {
                     securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature);
                 }
                 MessageVersionValidator.validateMessageVersion(content);
-                // ToDo Refine message logging, see BITMAG-763 - The message logging should scale to large number of files
-                log.info("Handling received message: " + content);
+                MessageLoggerProvider.getInstance().logMessageReceived(content);
                 threadMessageHandling(content);
             } catch (SAXException e) {
                 log.error("Error validating message " + jmsMessage, e);
@@ -458,5 +459,12 @@ public class ActiveMQMessageBus implements MessageBus {
         public void run() {
             listener.onMessage(message);
         }
+    }
+
+    // This should be done on a per module basis, but how?
+    private void registerCustomMessageLoggers() {
+        MessageLoggerProvider loggerProvider = MessageLoggerProvider.getInstance();
+        loggerProvider.registerLogger(OperationType.GET_FILE, new GetFileMessageLogger());
+        loggerProvider.registerLogger(OperationType.GET_STATUS, new GetStatusMessageLogger());
     }
 }
