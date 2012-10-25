@@ -24,6 +24,7 @@
  */
 package org.bitrepository.protocol.activemq;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +52,11 @@ import org.bitrepository.protocol.MessageVersionValidator;
 import org.bitrepository.protocol.OperationType;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
+import org.bitrepository.protocol.messagebus.logger.AlarmMessageLogger;
+import org.bitrepository.protocol.messagebus.logger.DeleteFileMessageLogger;
+import org.bitrepository.protocol.messagebus.logger.GetAuditTrailsMessageLogger;
+import org.bitrepository.protocol.messagebus.logger.GetChecksumsMessageLogger;
+import org.bitrepository.protocol.messagebus.logger.GetFileIDsMessageLogger;
 import org.bitrepository.protocol.messagebus.logger.GetFileMessageLogger;
 import org.bitrepository.protocol.messagebus.logger.GetStatusMessageLogger;
 import org.bitrepository.protocol.messagebus.logger.MessageLoggerProvider;
@@ -467,6 +473,12 @@ public class ActiveMQMessageBus implements MessageBus {
         MessageLoggerProvider loggerProvider = MessageLoggerProvider.getInstance();
         loggerProvider.registerLogger(OperationType.GET_FILE, new GetFileMessageLogger());
         loggerProvider.registerLogger(OperationType.PUT_FILE, new PutFileMessageLogger());
+        loggerProvider.registerLogger(OperationType.DELETE_FILE, new DeleteFileMessageLogger());
+        loggerProvider.registerLogger(OperationType.REPLACE_FILE, new GetStatusMessageLogger());
+        loggerProvider.registerLogger(OperationType.GET_FILE_IDS, new GetFileIDsMessageLogger());
+        loggerProvider.registerLogger(OperationType.GET_CHECKSUMS, new GetChecksumsMessageLogger());
+        loggerProvider.registerLogger(OperationType.GET_AUDIT_TRAILS, new GetAuditTrailsMessageLogger());
         loggerProvider.registerLogger(OperationType.GET_STATUS, new GetStatusMessageLogger());
+        loggerProvider.registerLogger(Arrays.asList("AlarmMessage"), new AlarmMessageLogger());
     }
 }

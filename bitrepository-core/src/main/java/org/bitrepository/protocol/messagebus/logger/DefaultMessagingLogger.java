@@ -68,10 +68,10 @@ public class DefaultMessagingLogger implements MessageLogger {
         log.info(message);
     }
     private StringBuilder appendShortRepresentation(StringBuilder messageSB, Message message) {
-        appendCustomInfo(messageSB, message);
         if (message instanceof MessageResponse) {
             appendResponseInfo(messageSB, (MessageResponse) message);
         }
+        appendCustomInfo(messageSB, message);
         return messageSB;
     }
 

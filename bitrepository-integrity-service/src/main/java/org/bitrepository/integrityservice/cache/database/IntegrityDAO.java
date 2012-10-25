@@ -47,8 +47,6 @@ import static org.bitrepository.integrityservice.cache.database.DatabaseConstant
 
 /**
  * Handles the communication with the integrity database.
- * 
- * TODO handle the case, when a new pillar is added to the existing system. 
  */
 public class IntegrityDAO {
     /** The log.*/

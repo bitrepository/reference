@@ -17,20 +17,20 @@ public class PutFileMessageLogger extends DefaultMessagingLogger {
         }
 
         else if (message instanceof PutFileRequest) {
-            PutFileRequest putFileRequest = (PutFileRequest)message;
-            messageSB.append(" FileID=" + putFileRequest.getFileID());
-            messageSB.append(", FileAddress=" + putFileRequest.getFileAddress());
-            if (putFileRequest.getChecksumDataForNewFile() != null) {
-                messageSB.append(", ChecksumDataForNewFile=" + putFileRequest.getChecksumDataForNewFile());
+            PutFileRequest request = (PutFileRequest)message;
+            messageSB.append(" FileID=" + request.getFileID());
+            messageSB.append(", FileAddress=" + request.getFileAddress());
+            if (request.getChecksumDataForNewFile() != null) {
+                messageSB.append(", ChecksumDataForNewFile=" + request.getChecksumDataForNewFile());
             }
-            if (putFileRequest.getChecksumRequestForNewFile() != null) {
-                messageSB.append(", ChecksumRequestForNewFile=" + putFileRequest.getChecksumRequestForNewFile());
+            if (request.getChecksumRequestForNewFile() != null) {
+                messageSB.append(", ChecksumRequestForNewFile=" + request.getChecksumRequestForNewFile());
             }
-            if (putFileRequest.getFileSize() != null) {
-                messageSB.append(", FileSize=" + putFileRequest.getFileSize());
+            if (request.getFileSize() != null) {
+                messageSB.append(", FileSize=" + request.getFileSize());
             }
-            if (putFileRequest.getAuditTrailInformation() != null) {
-                messageSB.append(", AuditTrailInformation=" + putFileRequest.getAuditTrailInformation());
+            if (request.getAuditTrailInformation() != null) {
+                messageSB.append(", AuditTrailInformation=" + request.getAuditTrailInformation());
             }
         }
 
