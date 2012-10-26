@@ -164,7 +164,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request audit trails from pillar 1 with both min and max sequence number set.",
         "A identify request is sent.");
-        AuditTrailQuery query1 = new AuditTrailQuery(PILLAR1_ID, 1, 3);
+        AuditTrailQuery query1 = new AuditTrailQuery(PILLAR1_ID, 10000, 1, 3);
         client.getAuditTrails(new AuditTrailQuery[] { query1 }, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
@@ -194,9 +194,9 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
         GetAuditTrailsRequest request = testMessageFactory.createGetAuditTrailsRequest(
                 identifyRequest, PILLAR1_ID, pillar1DestinationId);
-        request.setMinSequenceNumber(BigInteger.valueOf(1));
-        request.setMaxSequenceNumber(BigInteger.valueOf(3));
-        Assert.assertEquals(requestPillar1, request);
+        Assert.assertEquals(requestPillar1.getMaxNumberOfResults().intValue(), 10000);
+        Assert.assertEquals(requestPillar1.getMinSequenceNumber().intValue(), 1);
+        Assert.assertEquals(requestPillar1.getMaxSequenceNumber().intValue(), 3);
 
         addStep("Verify no request is sent to pillar2", "");
         pillar2Destination.checkNoMessageIsReceived(GetAuditTrailsRequest.class);

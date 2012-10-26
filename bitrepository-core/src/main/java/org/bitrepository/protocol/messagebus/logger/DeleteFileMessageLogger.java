@@ -12,12 +12,12 @@ public class DeleteFileMessageLogger extends DefaultMessagingLogger {
     @Override
     protected StringBuilder appendCustomInfo(StringBuilder messageSB, Message message) {
         if (message instanceof IdentifyPillarsForDeleteFileRequest) {
-            IdentifyPillarsForDeleteFileRequest request = (IdentifyPillarsForDeleteFileRequest)message;
+            IdentifyPillarsForDeleteFileRequest request = (IdentifyPillarsForDeleteFileRequest) message;
             messageSB.append(" FileID=" + request.getFileID());
         }
 
         else if (message instanceof DeleteFileRequest) {
-            DeleteFileRequest request = (DeleteFileRequest)message;
+            DeleteFileRequest request = (DeleteFileRequest) message;
             messageSB.append(" FileID=" + request.getFileID());
             if (request.getChecksumDataForExistingFile() != null) {
                 messageSB.append(", ChecksumDataForExistingFile=" + request.getChecksumDataForExistingFile());
@@ -31,7 +31,7 @@ public class DeleteFileMessageLogger extends DefaultMessagingLogger {
         }
 
         else if (message instanceof DeleteFileFinalResponse) {
-            DeleteFileFinalResponse response = (DeleteFileFinalResponse)message;
+            DeleteFileFinalResponse response = (DeleteFileFinalResponse) message;
             if (response.getChecksumDataForExistingFile() != null) {
                 messageSB.append(", ChecksumDataForExistingFile=" + response.getChecksumDataForExistingFile());
             }

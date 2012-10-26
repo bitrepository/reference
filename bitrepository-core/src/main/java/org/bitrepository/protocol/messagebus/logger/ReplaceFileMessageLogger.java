@@ -12,12 +12,12 @@ public class ReplaceFileMessageLogger extends DefaultMessagingLogger {
     @Override
     protected StringBuilder appendCustomInfo(StringBuilder messageSB, Message message) {
         if (message instanceof IdentifyPillarsForReplaceFileRequest) {
-            IdentifyPillarsForReplaceFileRequest request = (IdentifyPillarsForReplaceFileRequest)message;
+            IdentifyPillarsForReplaceFileRequest request = (IdentifyPillarsForReplaceFileRequest) message;
             messageSB.append(" FileID=" + request.getFileID());
         }
 
         else if (message instanceof ReplaceFileRequest) {
-            ReplaceFileRequest request = (ReplaceFileRequest)message;
+            ReplaceFileRequest request = (ReplaceFileRequest) message;
             messageSB.append(" FileID=" + request.getFileID());
             messageSB.append(", FileAddress=" + request.getFileAddress());
             if (request.getChecksumDataForNewFile() != null) {
@@ -41,7 +41,7 @@ public class ReplaceFileMessageLogger extends DefaultMessagingLogger {
         }
 
         else if (message instanceof ReplaceFileFinalResponse) {
-            ReplaceFileFinalResponse response = (ReplaceFileFinalResponse)message;
+            ReplaceFileFinalResponse response = (ReplaceFileFinalResponse) message;
             if (response.getChecksumDataForExistingFile() != null) {
                 messageSB.append(", ChecksumDataForExistingFile=" + response.getChecksumDataForExistingFile());
             }

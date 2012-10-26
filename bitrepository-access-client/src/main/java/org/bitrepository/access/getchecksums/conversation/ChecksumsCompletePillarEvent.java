@@ -36,16 +36,19 @@ public class ChecksumsCompletePillarEvent extends ContributorCompleteEvent {
     private final ResultingChecksums result;
     /** @see #getChecksumType(). */
     private final ChecksumSpecTYPE checksumType;
+    private final boolean isPartialResult;
     
     /**
      * @param result The result returned by the pillar.
      * @param checksumType The checksum specification type.
      * @param pillarID The pillar which generated the result
      */
-    public ChecksumsCompletePillarEvent(String pillarID, ResultingChecksums result, ChecksumSpecTYPE checksumType) {
+    public ChecksumsCompletePillarEvent(
+            String pillarID, ResultingChecksums result, ChecksumSpecTYPE checksumType, boolean isPartialResult) {
         super(pillarID);
         this.result = result;
         this.checksumType = checksumType;
+        this.isPartialResult = isPartialResult;
     }
 
     /** 
@@ -61,9 +64,21 @@ public class ChecksumsCompletePillarEvent extends ContributorCompleteEvent {
     public ChecksumSpecTYPE getChecksumType() {
         return checksumType;
     }
-    
+
+    public boolean isPartialResult() {
+        return isPartialResult;
+    }
+
+
     @Override
     public String additionalInfo() {
-        return super.additionalInfo() + ", checksumType=" + checksumType + ", result=" + result;
+        StringBuilder infoSB = new StringBuilder();
+        if (result != null && result.getChecksumDataItems() != null) {
+            infoSB.append(", NumberOfChecksums=" +
+                    result.getChecksumDataItems().size());
+        }
+
+        infoSB.append(", PartialResult=" + isPartialResult);
+        return infoSB.toString();
     }
 }

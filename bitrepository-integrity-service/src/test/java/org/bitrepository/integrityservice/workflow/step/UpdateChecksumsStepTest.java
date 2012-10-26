@@ -116,7 +116,8 @@ public class UpdateChecksumsStepTest extends ExtendedTestCase {
                 super.getChecksums(pillarIDs, fileIDs, checksumType, auditTrailInformation, eventHandler);
                 eventHandler.handleEvent(new IdentificationCompleteEvent(Arrays.asList(TEST_PILLAR_1)));
                 ChecksumsCompletePillarEvent event = new ChecksumsCompletePillarEvent(
-                        TEST_PILLAR_1, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1), createChecksumSpecTYPE());
+                        TEST_PILLAR_1, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
+                        createChecksumSpecTYPE(), false);
                 eventHandler.handleEvent(event);
                 
                 eventHandler.handleEvent(new CompleteEvent(null));
@@ -164,7 +165,8 @@ public class UpdateChecksumsStepTest extends ExtendedTestCase {
                 eventHandler.handleEvent(new IdentificationCompleteEvent(Arrays.asList(TEST_PILLAR_1)));
                 
                 ChecksumsCompletePillarEvent event = new ChecksumsCompletePillarEvent(
-                        TEST_PILLAR_1, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1), createChecksumSpecTYPE());
+                        TEST_PILLAR_1, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
+                        createChecksumSpecTYPE(), false);
                 eventHandler.handleEvent(event);
                 
                 eventHandler.handleEvent(new ContributorEvent(TEST_PILLAR_1));

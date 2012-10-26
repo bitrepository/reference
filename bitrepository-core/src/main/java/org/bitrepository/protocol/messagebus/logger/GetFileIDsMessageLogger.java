@@ -13,14 +13,14 @@ public class GetFileIDsMessageLogger extends DefaultMessagingLogger {
     @Override
     protected StringBuilder appendCustomInfo(StringBuilder messageSB, Message message) {
         if (message instanceof IdentifyPillarsForGetFileIDsRequest) {
-            IdentifyPillarsForGetFileIDsRequest request = (IdentifyPillarsForGetFileIDsRequest)message;
+            IdentifyPillarsForGetFileIDsRequest request = (IdentifyPillarsForGetFileIDsRequest) message;
             if (request.getFileIDs() != null) {
                 messageSB.append(" FileIDs=" + FileIDsUtils.asString(request.getFileIDs()));
             }
         }
 
         else if (message instanceof GetFileIDsRequest) {
-                GetFileIDsRequest request = (GetFileIDsRequest)message;
+            GetFileIDsRequest request = (GetFileIDsRequest) message;
             if (request.getFileIDs() != null) {
                 messageSB.append(" FileIDs=" + FileIDsUtils.asString(request.getFileIDs()));
             }
@@ -42,13 +42,17 @@ public class GetFileIDsMessageLogger extends DefaultMessagingLogger {
         }
 
         else if (message instanceof GetFileIDsFinalResponse) {
-            GetFileIDsFinalResponse response = (GetFileIDsFinalResponse)message;
+            GetFileIDsFinalResponse response = (GetFileIDsFinalResponse) message;
 
             if (response.getResultingFileIDs() != null && response.getResultingFileIDs().getFileIDsData() != null) {
                 messageSB.append(", NumberOfFileIDs=" +
-                    response.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
-                }
+                        response.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
             }
+
+            if (response.isPartialResult() != null) {
+                messageSB.append(", PartialResult=" + response.isPartialResult());
+            }
+        }
         return messageSB;
     }
 }

@@ -13,12 +13,12 @@ public class GetChecksumsMessageLogger extends DefaultMessagingLogger {
     @Override
     protected StringBuilder appendCustomInfo(StringBuilder messageSB, Message message) {
         if (message instanceof IdentifyPillarsForGetChecksumsRequest) {
-            IdentifyPillarsForGetChecksumsRequest request = (IdentifyPillarsForGetChecksumsRequest)message;
+            IdentifyPillarsForGetChecksumsRequest request = (IdentifyPillarsForGetChecksumsRequest) message;
             messageSB.append(" FileIDs=" + FileIDsUtils.asString(request.getFileIDs()));
         }
 
         else if (message instanceof GetChecksumsRequest) {
-            GetChecksumsRequest request = (GetChecksumsRequest)message;
+            GetChecksumsRequest request = (GetChecksumsRequest) message;
             messageSB.append(" FileIDs=" + FileIDsUtils.asString(request.getFileIDs()));
             if (request.getResultAddress() != null) {
                 messageSB.append(", FileAddress=" + request.getResultAddress());
@@ -38,13 +38,17 @@ public class GetChecksumsMessageLogger extends DefaultMessagingLogger {
         }
 
         else if (message instanceof GetChecksumsFinalResponse) {
-            GetChecksumsFinalResponse response = (GetChecksumsFinalResponse)message;
+            GetChecksumsFinalResponse response = (GetChecksumsFinalResponse) message;
 
             if (response.getResultingChecksums() != null && response.getResultingChecksums().getChecksumDataItems() != null) {
                 messageSB.append(", NumberOfChecksums=" +
                         response.getResultingChecksums().getChecksumDataItems().size());
-                }
             }
+
+            if (response.isPartialResult() != null) {
+                messageSB.append(", PartialResult=" + response.isPartialResult());
+            }
+        }
         return messageSB;
     }
 }

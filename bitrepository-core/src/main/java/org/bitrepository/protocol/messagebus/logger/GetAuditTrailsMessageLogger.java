@@ -11,7 +11,7 @@ public class GetAuditTrailsMessageLogger extends DefaultMessagingLogger {
     @Override
     protected StringBuilder appendCustomInfo(StringBuilder messageSB, Message message) {
         if (message instanceof GetAuditTrailsRequest) {
-            GetAuditTrailsRequest request = (GetAuditTrailsRequest)message;
+            GetAuditTrailsRequest request = (GetAuditTrailsRequest) message;
             if (request.getResultAddress() != null) {
                 messageSB.append(", FileAddress=" + request.getResultAddress());
             }
@@ -39,13 +39,16 @@ public class GetAuditTrailsMessageLogger extends DefaultMessagingLogger {
         }
 
         else if (message instanceof GetAuditTrailsFinalResponse) {
-            GetAuditTrailsFinalResponse response = (GetAuditTrailsFinalResponse)message;
+            GetAuditTrailsFinalResponse response = (GetAuditTrailsFinalResponse) message;
 
             if (response.getResultingAuditTrails() != null) {
                 messageSB.append(", NumberOfAuditTrailEvents=" +
-                    response.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().size());
-                }
+                        response.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().size());
             }
+            if (response.isPartialResult() != null) {
+                messageSB.append(", PartialResult=" + response.isPartialResult());
+            }
+        }
         return messageSB;
     }
 }

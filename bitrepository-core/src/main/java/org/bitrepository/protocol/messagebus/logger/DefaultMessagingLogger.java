@@ -82,9 +82,8 @@ public class DefaultMessagingLogger implements MessageLogger {
     }
 
     private StringBuilder appendResponseInfo(StringBuilder messageSB, MessageResponse response) {
-        messageSB.append(
-                response.getResponseInfo().getResponseCode() + "(" +
-                        response.getResponseInfo().getResponseText() + ")");
+        messageSB.append(response.getResponseInfo().getResponseCode() + "(" +
+            response.getResponseInfo().getResponseText() + ")");
         return messageSB;
     }
 

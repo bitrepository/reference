@@ -10,7 +10,7 @@ public class AlarmMessageLogger extends DefaultMessagingLogger {
     @Override
     protected StringBuilder appendCustomInfo(StringBuilder messageSB, Message message) {
         if (message instanceof AlarmMessage) {
-            AlarmMessage alarmMessage = (AlarmMessage)message;
+            AlarmMessage alarmMessage = (AlarmMessage) message;
             messageSB.append(" Alarm=" + alarmMessage.getAlarm());
         }
         return messageSB;

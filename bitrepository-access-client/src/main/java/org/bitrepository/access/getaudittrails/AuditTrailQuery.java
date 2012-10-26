@@ -31,13 +31,14 @@ public class AuditTrailQuery {
     private final String componentID;
     private final Integer minSequenceNumber;
     private final Integer maxSequenceNumber;
+    private final Integer maxNumberOfResults;
 
     /**
      *
      * @param componentID
      */
-    public AuditTrailQuery(String componentID) {
-        this(componentID, null, null);
+    public AuditTrailQuery(String componentID, Integer maxNumberOfResults) {
+        this(componentID, maxNumberOfResults, null, null);
     }
 
     /**
@@ -46,18 +47,21 @@ public class AuditTrailQuery {
      * @param minSequenceNumber
      * @param componentID
      */
-    public AuditTrailQuery(String componentID, Integer minSequenceNumber) {
-        this(componentID, minSequenceNumber, null);
+    public AuditTrailQuery(String componentID, Integer maxNumberOfResults, Integer minSequenceNumber) {
+        this(componentID, maxNumberOfResults, minSequenceNumber, null);
     }
     /**
      * Queries for all Audit Trails with sequence number between minSequenceNumber and maxSequenceNumber.
-     * @param minSequenceNumber
-     * @param maxSequenceNumber
-     * @param componentID
+     * @param minSequenceNumber Only return audit trail event with sequence number higher than <code>minSequenceNumber</code>.
+     * @param maxSequenceNumber Only return audit trail event with sequence number lower than <code>maxSequenceNumber</code>.
+     * param maxNumberOfResults If set will limit the number of results returned. If the result set is limited, only
+     * the lowest sequence numbers are returned
+     * @param componentID The ID of the component to query.
      */
-    public AuditTrailQuery(String componentID, Integer minSequenceNumber, Integer maxSequenceNumber) {
+    public AuditTrailQuery(String componentID, Integer maxNumberOfResults, Integer minSequenceNumber, Integer maxSequenceNumber) {
         super();
         this.componentID = componentID;
+        this.maxNumberOfResults = maxNumberOfResults;
         if (minSequenceNumber != null && maxSequenceNumber != null && minSequenceNumber > maxSequenceNumber)
             throw new IllegalArgumentException(
                 "minSequenceNumber=" + minSequenceNumber + " can not be greater than " +
@@ -79,5 +83,19 @@ public class AuditTrailQuery {
 
     public Integer getMaxSequenceNumber() {
         return maxSequenceNumber;
+    }
+
+    public Integer getMaxNumberOfResults() {
+        return maxNumberOfResults;
+    }
+
+    @Override
+    public String toString() {
+        return "AuditTrailQuery{" +
+                "componentID='" + componentID + '\'' +
+                ", minSequenceNumber=" + minSequenceNumber +
+                ", maxSequenceNumber=" + maxSequenceNumber +
+                ", maxNumberOfResults=" + maxNumberOfResults +
+                '}';
     }
 }

@@ -33,14 +33,17 @@ import org.bitrepository.client.eventhandler.ContributorCompleteEvent;
 public class FileIDsCompletePillarEvent extends ContributorCompleteEvent {
     /** The result from the pillar.*/
     private final ResultingFileIDs result;
-    
+    private final boolean isPartialResult;
+
+
     /**
      * @param result The result returned by the pillar.
      * @param pillarID The pillar which generated the result
      */
-    public FileIDsCompletePillarEvent(String pillarID, ResultingFileIDs result) {
+    public FileIDsCompletePillarEvent(String pillarID, ResultingFileIDs result, boolean isPartialResult) {
         super(pillarID);
         this.result = result;
+        this.isPartialResult = isPartialResult;
     }
 
     /**
@@ -49,9 +52,21 @@ public class FileIDsCompletePillarEvent extends ContributorCompleteEvent {
     public ResultingFileIDs getFileIDs() {
         return result;
     }
-    
+
+    public boolean isPartialResult() {
+        return isPartialResult;
+    }
+
     @Override
     public String additionalInfo() {
-        return super.additionalInfo() + ", FileIDsResult=" + result;
+        StringBuilder infoSB = new StringBuilder();
+
+        if (result != null && result.getFileIDsData() != null) {
+            infoSB.append(", NumberOfFileIDs=" +
+                    result.getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
+        }
+
+        infoSB.append(", PartialResult=" + isPartialResult);
+        return infoSB.toString();
     }
 }

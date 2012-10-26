@@ -105,7 +105,7 @@ public class AuditCollectorTest extends ExtendedTestCase {
         eventHandler.handleEvent(new CompleteEvent(null));
 
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
-        AuditTrailResult result = new AuditTrailResult(pillarID, new ResultingAuditTrails());
+        AuditTrailResult result = new AuditTrailResult(pillarID, new ResultingAuditTrails(), false);
         eventHandler.handleEvent(result);
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 1);
     }    

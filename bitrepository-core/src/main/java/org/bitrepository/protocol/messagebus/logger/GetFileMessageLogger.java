@@ -11,12 +11,12 @@ public class GetFileMessageLogger extends DefaultMessagingLogger {
     @Override
     protected StringBuilder appendCustomInfo(StringBuilder messageSB, Message message) {
         if (message instanceof IdentifyPillarsForGetFileRequest) {
-            IdentifyPillarsForGetFileRequest request = (IdentifyPillarsForGetFileRequest)message;
+            IdentifyPillarsForGetFileRequest request = (IdentifyPillarsForGetFileRequest) message;
             messageSB.append(" FileID=" + request.getFileID());
         }
 
         else if (message instanceof GetFileRequest) {
-            GetFileRequest getFileRequest = (GetFileRequest)message;
+            GetFileRequest getFileRequest = (GetFileRequest) message;
             messageSB.append(" FileID=" + getFileRequest.getFileID());
             if (getFileRequest.getFilePart() != null) {
                 messageSB.append(", FilePart=" + getFileRequest.getFilePart());

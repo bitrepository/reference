@@ -77,7 +77,7 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
         List<String> contributers = settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs();
         List<AuditTrailQuery> componentQueryList = new ArrayList<AuditTrailQuery>(contributers.size());
         for (String contributer : contributers) {
-            componentQueryList.add(new AuditTrailQuery(contributer));
+            componentQueryList.add(new AuditTrailQuery(contributer, null));
         }
         return componentQueryList.toArray(new AuditTrailQuery[componentQueryList.size()]);
     }

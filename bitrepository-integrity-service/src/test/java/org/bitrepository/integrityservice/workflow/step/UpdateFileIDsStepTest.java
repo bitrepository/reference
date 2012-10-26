@@ -113,7 +113,8 @@ public class UpdateFileIDsStepTest extends ExtendedTestCase {
                     EventHandler eventHandler) {
                 super.getFileIDs(pillarIDs, fileIDs, auditTrailInformation, eventHandler);
                 eventHandler.handleEvent(new IdentificationCompleteEvent(Arrays.asList(TEST_PILLAR_1)));
-                FileIDsCompletePillarEvent event = new FileIDsCompletePillarEvent(TEST_PILLAR_1, createResultingFileIDs(TEST_FILE_1));
+                FileIDsCompletePillarEvent event = new FileIDsCompletePillarEvent(
+                        TEST_PILLAR_1, createResultingFileIDs(TEST_FILE_1), false);
                 eventHandler.handleEvent(event);
                 
                 eventHandler.handleEvent(new CompleteEvent(null));
