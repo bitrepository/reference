@@ -439,6 +439,21 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element name="GracePeriod" type="xs:long" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Initial graze period in milliseconds after startup to allow the system to finish startup. The default is
+              0 ms.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="MaxNumberOfEventsInRequest" type="xs:positiveInteger" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The max number of elements to reuest in a single GetAuditTrailsRequest. Default is 10000
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
         <xs:element name="AuditTrailPreservationInterval" type="xs:long">
           <xs:annotation>
             <xs:documentation xml:lang="en">

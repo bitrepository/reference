@@ -24,32 +24,15 @@
  */
 package org.bitrepository.access.getaudittrails;
 
+import org.bitrepository.access.ContributorQuery;
+
 /**
  * Encapsulates the information need to communicate with a Bit Repository component over the message bus.
  */
-public class AuditTrailQuery {
-    private final String componentID;
+public class AuditTrailQuery extends ContributorQuery {
     private final Integer minSequenceNumber;
     private final Integer maxSequenceNumber;
-    private final Integer maxNumberOfResults;
 
-    /**
-     *
-     * @param componentID
-     */
-    public AuditTrailQuery(String componentID, Integer maxNumberOfResults) {
-        this(componentID, maxNumberOfResults, null, null);
-    }
-
-    /**
-     *
-     * Queries for all Audit Trails with sequence number larger than minSequenceNumber.
-     * @param minSequenceNumber
-     * @param componentID
-     */
-    public AuditTrailQuery(String componentID, Integer maxNumberOfResults, Integer minSequenceNumber) {
-        this(componentID, maxNumberOfResults, minSequenceNumber, null);
-    }
     /**
      * Queries for all Audit Trails with sequence number between minSequenceNumber and maxSequenceNumber.
      * @param minSequenceNumber Only return audit trail event with sequence number higher than <code>minSequenceNumber</code>.
@@ -58,23 +41,15 @@ public class AuditTrailQuery {
      * the lowest sequence numbers are returned
      * @param componentID The ID of the component to query.
      */
-    public AuditTrailQuery(String componentID, Integer maxNumberOfResults, Integer minSequenceNumber, Integer maxSequenceNumber) {
-        super();
-        this.componentID = componentID;
-        this.maxNumberOfResults = maxNumberOfResults;
+    public AuditTrailQuery(String componentID, Integer minSequenceNumber, Integer maxSequenceNumber,
+                           Integer maxNumberOfResults) {
+        super(componentID, null, null, maxNumberOfResults );
         if (minSequenceNumber != null && maxSequenceNumber != null && minSequenceNumber > maxSequenceNumber)
             throw new IllegalArgumentException(
                 "minSequenceNumber=" + minSequenceNumber + " can not be greater than " +
                 "maxSequenceNumber=" + maxSequenceNumber);
         this.minSequenceNumber = minSequenceNumber;
         this.maxSequenceNumber = maxSequenceNumber;
-    }
-    
-    /**
-     * @return The componentID for the component.
-     */
-    public String getComponentID() {
-        return componentID;
     }
 
     public Integer getMinSequenceNumber() {
@@ -85,17 +60,11 @@ public class AuditTrailQuery {
         return maxSequenceNumber;
     }
 
-    public Integer getMaxNumberOfResults() {
-        return maxNumberOfResults;
-    }
-
     @Override
     public String toString() {
-        return "AuditTrailQuery{" +
-                "componentID='" + componentID + '\'' +
-                ", minSequenceNumber=" + minSequenceNumber +
-                ", maxSequenceNumber=" + maxSequenceNumber +
-                ", maxNumberOfResults=" + maxNumberOfResults +
-                '}';
+        return super.toString() +
+            "minSequenceNumber=" + minSequenceNumber +
+            ", maxSequenceNumber=" + maxSequenceNumber +
+            '}';
     }
 }

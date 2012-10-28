@@ -21,8 +21,12 @@
  */
 package org.bitrepository.audittrails;
 
+import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
 import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
+import org.bitrepository.client.eventhandler.CompleteEvent;
+import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.service.contributor.ContributorMediator;
@@ -44,6 +48,8 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
     public void auditTrailServiceTest() throws Exception {
         addDescription("Test the Audit Trail Service");
         addStep("Setup variables.", "");
+        settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().clear();
+        settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().add("Contributor1");
         
         MockAuditStore store = new MockAuditStore();
         MockAuditClient client = new MockAuditClient();
@@ -57,11 +63,17 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         
         addStep("Try to collect audit trails.", "Should make a call to the client.");
         Assert.assertEquals(client.getCallsToGetAuditTrails(), 0);
-        service.collectAuditTrails();
+        CollectionRunner collectionRunner = new CollectionRunner(service);
+        Thread t = new Thread(collectionRunner);
+        t.start();
+        Thread.sleep(100);
+        EventHandler eventHandler = client.getLatestEventHandler();
+        eventHandler.handleEvent(new AuditTrailResult("Contributor1", new ResultingAuditTrails(), true));
+        eventHandler.handleEvent(new CompleteEvent(null));
         Assert.assertEquals(client.getCallsToGetAuditTrails(), 1);
         
         addStep("Retrieve audit trails with and without an action", "Should work.");
-        Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
+        Assert.assertEquals(store.getCallsToAddAuditTrails(), 1);
         Assert.assertEquals(store.getCallsToGetAuditTrails(), 0);        
         service.queryAuditTrailEvents(null, null, null, null, null, null);
         Assert.assertEquals(store.getCallsToGetAuditTrails(), 1);        
@@ -77,5 +89,19 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         public void start() { }
         @Override
         public void close() { }
+    }
+
+    public class CollectionRunner implements Runnable {
+        private final AuditTrailService service;
+        boolean finished = false;
+
+        public CollectionRunner(AuditTrailService service) {
+            this.service = service;
+        }
+
+        public void run() {
+            service.collectAuditTrails();
+            finished = true;
+        }
     }
 }

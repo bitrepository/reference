@@ -164,7 +164,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request audit trails from pillar 1 with both min and max sequence number set.",
         "A identify request is sent.");
-        AuditTrailQuery query1 = new AuditTrailQuery(PILLAR1_ID, 10000, 1, 3);
+        AuditTrailQuery query1 = new AuditTrailQuery(PILLAR1_ID, 1, 3, 10000);
         client.getAuditTrails(new AuditTrailQuery[] { query1 }, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);

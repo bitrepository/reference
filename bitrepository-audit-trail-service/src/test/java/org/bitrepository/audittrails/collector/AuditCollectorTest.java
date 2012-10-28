@@ -24,14 +24,9 @@ package org.bitrepository.audittrails.collector;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.audittrails.MockAuditClient;
 import org.bitrepository.audittrails.MockAuditStore;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
 import org.bitrepository.client.eventhandler.CompleteEvent;
-import org.bitrepository.client.eventhandler.ContributorFailedEvent;
-import org.bitrepository.client.eventhandler.DefaultEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.jaccept.structure.ExtendedTestCase;
@@ -51,62 +46,25 @@ public class AuditCollectorTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest"})
     public void AuditCollectorIntervalTest() throws Exception {
         addDescription("Test that the collector calls the AuditClient at the correct intervals.");
-        addStep("Setup varables", "Should be OK.");
-        settings.getReferenceSettings().getAuditTrailServiceSettings().setCollectAuditInterval(950);
-        settings.getReferenceSettings().getAuditTrailServiceSettings().setTimerTaskCheckInterval(500L);
+        settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().clear();
+        settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().add("Contributor1");
+        settings.getReferenceSettings().getAuditTrailServiceSettings().setCollectAuditInterval(500);
+        settings.getReferenceSettings().getAuditTrailServiceSettings().setTimerTaskCheckInterval(100L);
         
         MockAuditClient client = new MockAuditClient();
         MockAuditStore store = new MockAuditStore();
         AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
-        
-        synchronized(this) {
-            this.wait(2100);
-        }
-        collector.close();
-        
-        Assert.assertEquals(client.getCallsToGetAuditTrails(), 2);
-        Assert.assertEquals(store.getCallsToLargestSequenceNumber(), client.getCallsToGetAuditTrails() 
-                * settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().size(),
-                "There should be one call for largest sequence number for each contributor for each call to the client.");
-        Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
-        Assert.assertEquals(store.getCallsToGetAuditTrails(), 0);
-    }
-    
-    @Test(groups = {"regressiontest"})
-    public void AuditCollectorEventHandlerTest() throws Exception {
-        addDescription("Test the eventHandler for the AuditTrailCollector.");
-        addStep("Setup varables", "Should be OK.");
-        String info = "INFO";
-        String pillarID = "test-pillar";
-        
-        MockAuditClient client = new MockAuditClient();
-        MockAuditStore store = new MockAuditStore();
-        AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
-        
-        addStep("Run the 'collector'.", "Validator that the collector calls the client.");
-        collector.collectNewestAudits();
-        
-        Assert.assertEquals(client.getCallsToGetAuditTrails(), 1);
-        Assert.assertEquals(store.getCallsToLargestSequenceNumber(), client.getCallsToGetAuditTrails() 
-                * settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().size(),
-                "There should be one call for largest sequence number for each contributor for each call to the client.");
-        Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
-        Assert.assertEquals(store.getCallsToGetAuditTrails(), 0);
-        
-        addStep("Extract the eventhandler and give it different kinds of events to handle.", 
-                "In the case of a AuditTrailResult it should make a call for the store.");
+        Assert.assertEquals(client.getCallsToGetAuditTrails(), 0);
+        Thread.sleep(1000);
         EventHandler eventHandler = client.getLatestEventHandler();
-
-        eventHandler.handleEvent(new ContributorFailedEvent("ContributorID", ResponseCode.REQUEST_NOT_SUPPORTED));
-        eventHandler.handleEvent(new OperationFailedEvent(info, null));
-        DefaultEvent identificationTimeoutEvent = new DefaultEvent();
-        identificationTimeoutEvent.setEventType(OperationEventType.IDENTIFY_TIMEOUT);
-        eventHandler.handleEvent(identificationTimeoutEvent);
+        eventHandler.handleEvent(new AuditTrailResult("Contributor1", new ResultingAuditTrails(), false));
         eventHandler.handleEvent(new CompleteEvent(null));
-
-        Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
-        AuditTrailResult result = new AuditTrailResult(pillarID, new ResultingAuditTrails(), false);
-        eventHandler.handleEvent(result);
-        Assert.assertEquals(store.getCallsToAddAuditTrails(), 1);
-    }    
+        Assert.assertEquals(client.getCallsToGetAuditTrails(), 1);
+        Thread.sleep(1000);
+        eventHandler = client.getLatestEventHandler();
+        eventHandler.handleEvent(new AuditTrailResult("Contributor1", new ResultingAuditTrails(), false));
+        eventHandler.handleEvent(new CompleteEvent(null));
+        Assert.assertEquals(client.getCallsToGetAuditTrails(), 2);
+        collector.close();
+    }
 }
