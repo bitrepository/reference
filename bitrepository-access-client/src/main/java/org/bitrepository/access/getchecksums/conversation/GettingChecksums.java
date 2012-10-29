@@ -58,8 +58,10 @@ public class GettingChecksums extends PerformingOperationState {
     protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
         if (msg instanceof GetChecksumsFinalResponse) {
             GetChecksumsFinalResponse response = (GetChecksumsFinalResponse) msg;
+            boolean isPartialResult = response.isPartialResult() == null ? false : response.isPartialResult();
             getContext().getMonitor().contributorComplete(new ChecksumsCompletePillarEvent(
-                    response.getFrom(), response.getResultingChecksums(), response.getChecksumRequestForExistingFile()
+                    response.getFrom(), response.getResultingChecksums(),
+                    response.getChecksumRequestForExistingFile(), isPartialResult
                     ));
         } else {
             throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +

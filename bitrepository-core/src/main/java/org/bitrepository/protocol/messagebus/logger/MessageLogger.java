@@ -1,6 +1,8 @@
+package org.bitrepository.protocol.messagebus.logger;
+
 /*
  * #%L
- * Bitrepository Access
+ * Bitrepository Core
  * %%
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -19,19 +21,14 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access.getstatus.conversation;
 
-import java.util.Collection;
-import org.bitrepository.client.conversation.ConversationContext;
-import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.OperationType;
-import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.bitrepositorymessages.Message;
 
-public class GetStatusConversationContext extends ConversationContext {
+public interface MessageLogger {
 
-    public GetStatusConversationContext(Settings settings, MessageSender messageSender, EventHandler eventHandler,
-                                        String clientID, Collection<String> contributors) {
-        super(OperationType.GET_STATUS, settings, messageSender, clientID, null, contributors, eventHandler, "");
-    }
+    /** Creates a message received log for the specific message */
+    void logMessageSent(Message message);
+
+    /** Creates a message received log for the specific message */
+    void logMessageReceived(Message message);
 }

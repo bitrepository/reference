@@ -24,19 +24,11 @@
  */
 package org.bitrepository.audittrails.collector;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getaudittrails.AuditTrailClient;
-import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.audittrails.store.AuditTrailStore;
-import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.eventhandler.OperationEvent;
-import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.slf4j.Logger;
@@ -49,26 +41,15 @@ public class AuditTrailCollector {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The task for collecting the audits.*/
-    private final AuditTrailCollectionTimerTask auditCollector;
+    private final AuditTrailCollectionTimerTask collectorTask;
     /** The timer for keeping track of the collecting task.*/
     private Timer timer;
-    
-    /** The audit trail client for collecting the audit trails.*/
-    private final AuditTrailClient client;
-    /** The audit trail store for inserting the collected audit trails and retrieving the largest sequence number 
-     * for each contributor.*/
-    private final AuditTrailStore store;
-
     /** The settings for this collector.*/
     private final Settings settings;
-    
-    /** When no file id is wanted for the collecting of audit trails.*/
-    private static final String NO_FILE_ID = null;
-    /** When no delivery address is wanted for the collecting of audit trails.*/
-    private static final String NO_DELIVERY_URL = null;
-    /** The time between checking whether the audits should be collected*/
-    private final Long timebetweenCollectChecksum;
-    
+
+    /** Initial graze period in milliseconds after startup to allow the system to finish startup. */
+    private static final int DEFAULT_GRACE_PERIOD = 0;
+
     /**
      * Constructor.
      * @param settings The settings for this collector.
@@ -79,31 +60,38 @@ public class AuditTrailCollector {
         ArgumentValidator.checkNotNull(settings, "settings");
         ArgumentValidator.checkNotNull(client, "AuditTrailClient client");
         ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
-        
-        this.client = client;
+
+        IncrementalCollector collector = new IncrementalCollector(
+            settings.getReferenceSettings().getAuditTrailServiceSettings().getID(),
+            client, store,
+            settings.getReferenceSettings().getAuditTrailServiceSettings().getMaxNumberOfEventsInRequest());
         this.settings = settings;
-        this.store = store;
         this.timer = new Timer();
-        this.timebetweenCollectChecksum 
-                = settings.getReferenceSettings().getAuditTrailServiceSettings().getTimerTaskCheckInterval();
-        
-        auditCollector = new AuditTrailCollectionTimerTask(
+        collectorTask = new AuditTrailCollectionTimerTask(
+                collector,
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectAuditInterval());
-        timer.scheduleAtFixedRate(auditCollector, 0, timebetweenCollectChecksum);
+        timer.scheduleAtFixedRate(collectorTask, getGracePeriod(),
+            settings.getReferenceSettings().getAuditTrailServiceSettings().getTimerTaskCheckInterval());
     }
     
     /**
      * Instantiates a collection of all the newest audit trails.
      */
     public void collectNewestAudits() {
-        auditCollector.performCollection();
+        collectorTask.runCollection();
+    }
+
+    private int getGracePeriod() {
+        int gracePeriod = (settings.getReferenceSettings().getAuditTrailServiceSettings().isSetGracePeriod()) ?
+            settings.getReferenceSettings().getAuditTrailServiceSettings().getGracePeriod().intValue() : DEFAULT_GRACE_PERIOD;
+        return gracePeriod;
     }
     
     /**
      * Closes the AuditTrailCollector.
      */
     public void close() {
-        auditCollector.cancel();
+        collectorTask.cancel();
         timer.cancel();
     }
 
@@ -115,65 +103,30 @@ public class AuditTrailCollector {
         private final long interval;
         /** The date for the next run.*/
         private Date nextRun;
+        private final IncrementalCollector collector;
         
         /**
          * Constructor.
          * @param interval The interval between running this timer task.
          */
-        private AuditTrailCollectionTimerTask(long interval) {
+        private AuditTrailCollectionTimerTask(IncrementalCollector collector, long interval) {
+            this.collector = collector;
             this.interval = interval;
             nextRun = new Date(System.currentTimeMillis() + interval);
         }
         
         /**
-         * Reset the date for next run and then run the operation.
+         * Run the operation and the reset the date for next run and then r.
          */
-        public void performCollection() {
+        public synchronized void runCollection() {
+            collector.performCollection(settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs());
             nextRun = new Date(System.currentTimeMillis() + interval);
-            performCollectionOfAudits();
         }
-        
-        /**
-         * Setup and initiates the collection of audit trails through the client.
-         * Adds one to the sequence number to request only newer audit trails.
-         */
-        private void performCollectionOfAudits() {
-            List<AuditTrailQuery> queries = new ArrayList<AuditTrailQuery>();
-            
-            for(String contributorId : settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs()) {
-                int seq = store.largestSequenceNumber(contributorId);
-                queries.add(new AuditTrailQuery(contributorId, seq + 1));
-            }
-            
-            EventHandler handler = new AuditCollectorEventHandler();
-            client.getAuditTrails(queries.toArray(new AuditTrailQuery[queries.size()]), NO_FILE_ID, NO_DELIVERY_URL, 
-                    handler, settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
-        }
-        
+
         @Override
         public void run() {
             if(nextRun.getTime() < System.currentTimeMillis()) {
-                performCollection();
-            }
-        }
-    }
-    
-    /**
-     * Event handler for the audit trail collector. The results of an audit trail operation will be ingested into the
-     * audit trail store.
-     */
-    private class AuditCollectorEventHandler implements EventHandler {
-        @Override
-        public void handleEvent(OperationEvent event) {
-            if(event instanceof AuditTrailResult) {
-                AuditTrailResult auditEvent = (AuditTrailResult) event;
-                store.addAuditTrails(auditEvent.getAuditTrailEvents().getAuditTrailEvents());
-            } else if(event.getEventType() == OperationEventType.COMPONENT_FAILED ||
-                    event.getEventType() == OperationEventType.FAILED ||
-                    event.getEventType() == OperationEventType.IDENTIFY_TIMEOUT) {
-                log.warn("Event: " + event.toString());
-            } else {
-                log.debug("Event:" + event.toString());
+                runCollection();
             }
         }
     }

@@ -61,6 +61,8 @@ public class GettingAuditTrails extends PerformingOperationState {
                 }
                 if (query.getMaxSequenceNumber() != null) {
                     msg.setMaxSequenceNumber(BigInteger.valueOf(query.getMaxSequenceNumber().intValue()));
+                } if (query.getMaxNumberOfResults() != null) {
+                    msg.setMaxNumberOfResults(BigInteger.valueOf(query.getMaxNumberOfResults().intValue()));
                 }
                 context.getMessageSender().sendMessage(msg);
             }
@@ -70,8 +72,9 @@ public class GettingAuditTrails extends PerformingOperationState {
     @Override
     protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
         GetAuditTrailsFinalResponse response = (GetAuditTrailsFinalResponse)msg;
+        boolean isPartialResult = response.isPartialResult() == null ? false : response.isPartialResult();
         getContext().getMonitor().contributorComplete(
-                new AuditTrailResult(response.getFrom(), response.getResultingAuditTrails()));
+                new AuditTrailResult(response.getFrom(), response.getResultingAuditTrails(), isPartialResult));
     }
 
     @Override

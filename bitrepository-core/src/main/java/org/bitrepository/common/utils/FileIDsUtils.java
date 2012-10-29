@@ -60,4 +60,10 @@ public class FileIDsUtils {
         if (fileId == null) return getAllFileIDs();
         else return getSpecificFileIDs(fileId);
     }
+
+    public static String asString(FileIDs fileIDs) {
+        if (fileIDs.isSetAllFileIDs()) {
+            return "AllFiles";
+        } else return fileIDs.getFileID();
+    }
 }

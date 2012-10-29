@@ -27,8 +27,8 @@ import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.OperationType;
 import org.bitrepository.protocol.messagebus.MessageSender;
-import org.bitrepository.protocolversiondefinition.OperationType;
 
 /**
  * The context for the conversation for the GetFile operation.

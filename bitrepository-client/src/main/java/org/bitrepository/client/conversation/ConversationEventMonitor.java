@@ -35,12 +35,12 @@ import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.ContributorCompleteEvent;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
-import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.DefaultEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
-import org.bitrepository.protocolversiondefinition.OperationType;
+import org.bitrepository.protocol.OperationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

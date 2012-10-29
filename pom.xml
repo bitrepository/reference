@@ -450,7 +450,7 @@ in preparation for the xsd -> java class file generation -->
   </profiles>
 
   <properties>
-    <message.xml.version>22 </message.xml.version>
+    <message.xml.version>23-SNAPSHOT </message.xml.version>
     <collection.settings.version>0.9</collection.settings.version>
     <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
     <slf4j.version>1.6.5</slf4j.version>

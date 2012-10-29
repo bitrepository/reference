@@ -183,7 +183,8 @@ public class BasicIntegrityWorkflowTest extends ExtendedTestCase {
                     String auditTrailInformation, EventHandler eventHandler) {
                 super.getChecksums(pillarIDs, fileIDs, checksumType, auditTrailInformation, eventHandler);
                 ChecksumsCompletePillarEvent event = new ChecksumsCompletePillarEvent(
-                        TEST_PILLAR_1, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1), createChecksumSpecTYPE());
+                        TEST_PILLAR_1, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
+                        createChecksumSpecTYPE(), false);
                 eventHandler.handleEvent(event);
                 eventHandler.handleEvent(new CompleteEvent(null));
             }
@@ -192,7 +193,7 @@ public class BasicIntegrityWorkflowTest extends ExtendedTestCase {
                     EventHandler eventHandler) {
                 super.getFileIDs(pillarIDs, fileIDs, auditTrailInformation, eventHandler);
                 FileIDsCompletePillarEvent event = new FileIDsCompletePillarEvent(
-                        TEST_PILLAR_1, createResultingFileIDs(TEST_FILE_1));
+                        TEST_PILLAR_1, createResultingFileIDs(TEST_FILE_1), false);
                 eventHandler.handleEvent(event);
 
                 eventHandler.handleEvent(new CompleteEvent(null));

@@ -27,13 +27,14 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
 
 public class AuditTrailQueryTest extends ExtendedTestCase {
+    private static final int DEFAULT_MAX_NUMBER_OF_RESULTS = 10000;
 
     String componentId = "componentId";
     
     @Test(groups = {"regressiontest"})
     public void testNoSequenceNumbers() throws Exception {
         addDescription("Test that a AuditTrailQuery can be created without any sequence numbers.");
-        AuditTrailQuery query = new AuditTrailQuery(componentId);
+        AuditTrailQuery query = new AuditTrailQuery(componentId, null, null, DEFAULT_MAX_NUMBER_OF_RESULTS);
         Assert.assertEquals(query.getComponentID(), componentId);
         Assert.assertNull(query.getMaxSequenceNumber());
         Assert.assertNull(query.getMinSequenceNumber());
@@ -43,7 +44,7 @@ public class AuditTrailQueryTest extends ExtendedTestCase {
     public void testOnlyMinSequenceNumber() throws Exception {
         addDescription("Test the creation of a AuditTrailQuery with only the minSequenceNumber");
         Integer minSeq = 1;
-        AuditTrailQuery query = new AuditTrailQuery(componentId, minSeq);
+        AuditTrailQuery query = new AuditTrailQuery(componentId, minSeq, null, DEFAULT_MAX_NUMBER_OF_RESULTS);
         Assert.assertEquals(query.getComponentID(), componentId);
         Assert.assertEquals(query.getMinSequenceNumber(), minSeq);
         Assert.assertNull(query.getMaxSequenceNumber());
@@ -54,7 +55,7 @@ public class AuditTrailQueryTest extends ExtendedTestCase {
         addDescription("Test the creation of a AuditTrailQuery with both SequenceNumber, where max is larger than min.");
         Integer minSeq = 1;
         Integer maxSeq = 2;
-        AuditTrailQuery query = new AuditTrailQuery(componentId, minSeq, maxSeq);
+        AuditTrailQuery query = new AuditTrailQuery(componentId, minSeq, maxSeq, DEFAULT_MAX_NUMBER_OF_RESULTS);
         Assert.assertEquals(query.getComponentID(), componentId);
         Assert.assertEquals(query.getMinSequenceNumber(), minSeq);
         Assert.assertEquals(query.getMaxSequenceNumber(), maxSeq);
@@ -66,7 +67,7 @@ public class AuditTrailQueryTest extends ExtendedTestCase {
         Integer minSeq = 2;
         Integer maxSeq = 1;
         try {
-            new AuditTrailQuery(componentId, minSeq, maxSeq);
+            new AuditTrailQuery(componentId, minSeq, maxSeq, DEFAULT_MAX_NUMBER_OF_RESULTS);
             Assert.fail("Should throw an exception here.");
         } catch(IllegalArgumentException e) {
             // expected.

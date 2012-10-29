@@ -24,7 +24,7 @@
  */
 package org.bitrepository.client.eventhandler;
 
-import org.bitrepository.protocolversiondefinition.OperationType;
+import org.bitrepository.protocol.OperationType;
 
 /**
  * Container for information regarding events occurring during an operation on the Bit Repository.

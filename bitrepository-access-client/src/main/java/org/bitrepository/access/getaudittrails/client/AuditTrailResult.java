@@ -29,10 +29,12 @@ import org.bitrepository.client.eventhandler.ContributorCompleteEvent;
  */
 public class AuditTrailResult extends ContributorCompleteEvent {
     private final ResultingAuditTrails auditTrailEvents;
+    private final boolean isPartialResult;
 
-    public AuditTrailResult(String pillarID, ResultingAuditTrails auditTrailEvents) {
+    public AuditTrailResult(String pillarID, ResultingAuditTrails auditTrailEvents, boolean isPartialResult) {
         super(pillarID);
         this.auditTrailEvents = auditTrailEvents;
+        this.isPartialResult = isPartialResult;
     }
 
     /**
@@ -42,8 +44,18 @@ public class AuditTrailResult extends ContributorCompleteEvent {
         return auditTrailEvents;
     }
 
+    public boolean isPartialResult() {
+        return isPartialResult;
+    }
+
     @Override
     public String additionalInfo() {
-        return super.additionalInfo() + ", auditTrailEvents=" + auditTrailEvents;
+        StringBuilder infoSB = new StringBuilder();
+        if (auditTrailEvents != null && auditTrailEvents.getAuditTrailEvents().getAuditTrailEvent() != null) {
+            infoSB.append(", NumberOfAuditTrailEvents=" +
+                    auditTrailEvents.getAuditTrailEvents().getAuditTrailEvent().size());
+        }
+        infoSB.append(", PartialResult=" + isPartialResult);
+        return infoSB.toString();
     }
 }

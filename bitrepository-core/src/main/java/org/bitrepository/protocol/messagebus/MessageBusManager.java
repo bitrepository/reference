@@ -23,12 +23,13 @@
  * #L%
  */
 package org.bitrepository.protocol.messagebus;
+
 import java.util.HashMap;
 import java.util.Map;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
 
 /**
  * The place to get message buses. Only one message bus is created for each collection ID.
@@ -49,7 +50,7 @@ public final class MessageBusManager {
     public synchronized static MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
         String collectionID = settings.getCollectionID();
         if (!messageBusMap.containsKey(collectionID)) {
-            MessageBus messageBus = new ActiveMQMessageBus(settings.getMessageBusConfiguration(), securityManager);
+            MessageBus messageBus = createMessageBus(settings.getMessageBusConfiguration(), securityManager);
             messageBusMap.put(collectionID, messageBus);
         }
         return messageBusMap.get(collectionID);
@@ -62,5 +63,10 @@ public final class MessageBusManager {
      */
     public synchronized static MessageBus getMessageBus(String collectionID) {
         return messageBusMap.get(collectionID);
+    }
+
+    private static MessageBus createMessageBus(MessageBusConfiguration settings, SecurityManager securityManager) {
+        ActiveMQMessageBus messageBus = new ActiveMQMessageBus(settings, securityManager);
+        return messageBus;
     }
 }
