@@ -95,6 +95,7 @@ public class IncrementalCollector {
          */
         private class AuditCollectorEventHandler implements EventHandler {
             List<String> contributorsWithPartialResults = new LinkedList<String>();
+            private final long startTime = System.currentTimeMillis();
 
             @Override
             public void handleEvent(OperationEvent event) {
@@ -104,6 +105,10 @@ public class IncrementalCollector {
                         contributorsWithPartialResults.add(auditEvent.getContributorID());
                     }
                     store.addAuditTrails(auditEvent.getAuditTrailEvents().getAuditTrailEvents());
+                    log.debug("Collected and stored " +
+                        auditEvent.getAuditTrailEvents().getAuditTrailEvents().getAuditTrailEvent().size() +
+                    " audit trail event from " + auditEvent.getContributorID() + " in " +
+                    (System.currentTimeMillis() - startTime)/1000 + " s.");
                 } else if (event.getEventType() == OperationEvent.OperationEventType.COMPONENT_FAILED ||
                     event.getEventType() == OperationEvent.OperationEventType.FAILED ||
                     event.getEventType() == OperationEvent.OperationEventType.IDENTIFY_TIMEOUT) {
