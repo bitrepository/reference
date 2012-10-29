@@ -33,6 +33,8 @@ import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.commandline.output.DefaultOutputHandler;
+import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
 import org.bitrepository.commandline.utils.CompleteEventAwaiter;
 import org.bitrepository.common.settings.Settings;
@@ -53,6 +55,9 @@ public class GetChecksums {
         getFileIDs.performOperation();
     }
     
+    /** For handling the output.*/
+    private final OutputHandler output = new DefaultOutputHandler(getClass());
+    
     /** The component id. */
     private final static String COMPONENT_ID = "GetChecksumsClient";
     
@@ -70,22 +75,22 @@ public class GetChecksums {
      * @param args The command line arguments for defining the operation.
      */
     private GetChecksums(String ... args) {
-        System.out.println("Initialising arguments");
+        output.startupInfo("Initialising arguments for the GetChecksums operation");
         cmdHandler = new CommandLineArgumentsHandler();
         try {
             createOptionsForCmdArgumentHandler();
             cmdHandler.parseArguments(args);
-            
-            settings = cmdHandler.loadSettings(COMPONENT_ID);
-            securityManager = cmdHandler.loadSecurityManager(settings);
-            
-            System.out.println("Instantiating the GetChecksumsClient");
-            client = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
-                    COMPONENT_ID);
         } catch (Exception e) {
-            System.err.println(cmdHandler.listArguments());
-            throw new IllegalArgumentException(e);
+            output.error(cmdHandler.listArguments(), e);
+            System.exit(Constants.EXIT_ARGUMENT_FAILURE);
         }
+            
+        settings = cmdHandler.loadSettings(COMPONENT_ID);
+        securityManager = cmdHandler.loadSecurityManager(settings);
+        
+        output.debug("Instantiating the GetChecksumsClient");
+        client = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
+                COMPONENT_ID);
     }
     
     /**
@@ -120,13 +125,13 @@ public class GetChecksums {
      * Perform the GetChecksums operation.
      */
     public void performOperation() {
-        System.out.println("Performing the GetChecksums operation.");
+        output.debug("Performing the GetChecksums operation.");
         OperationEvent finalEvent = performConversation();
-        System.out.println("Results of the GetChecksums operation: " + finalEvent);
+        output.debug("Results of the GetChecksums operation: " + finalEvent);
         if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
-            System.exit(0);
+            System.exit(Constants.EXIT_SUCCESS);
         } else {
-            System.exit(-1);
+            System.exit(Constants.EXIT_OPERATION_FAILURE);
         }
     }
     
@@ -137,7 +142,9 @@ public class GetChecksums {
     private OperationEvent performConversation() {
         FileIDs fileids = getFileIDs();
         List<String> pillarids = getPillarIds();
-        CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings);
+        CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings, output);
+        
+        output.debug("Initiating the GetChecksums conversation");
         ChecksumSpecTYPE checksumtype = getRequestChecksumSpec();
         
         client.getChecksums(pillarids, fileids, checksumtype, null, eventHandler, "Retrieving the checksum for '"

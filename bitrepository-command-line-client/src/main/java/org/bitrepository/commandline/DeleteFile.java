@@ -27,6 +27,8 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.commandline.output.DefaultOutputHandler;
+import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
 import org.bitrepository.commandline.utils.CompleteEventAwaiter;
 import org.bitrepository.common.settings.Settings;
@@ -49,6 +51,8 @@ public class DeleteFile {
         deletefile.performOperation();
     }
     
+    /** For handling the output.*/
+    private final OutputHandler output = new DefaultOutputHandler(getClass());
     /** The component id. */
     private final static String COMPONENT_ID = "DeleteFileClient";
     
@@ -66,22 +70,23 @@ public class DeleteFile {
      * @param args The command line arguments for defining the operation.
      */
     private DeleteFile(String ... args) {
-        System.out.println("Initialising arguments");
+        output.startupInfo("Initialising arguments for the DeleteFile operation");
         cmdHandler = new CommandLineArgumentsHandler();
+        
         try {
             createOptionsForCmdArgumentHandler();
             cmdHandler.parseArguments(args);
-            
-            settings = cmdHandler.loadSettings(COMPONENT_ID);
-            securityManager = cmdHandler.loadSecurityManager(settings);
-            
-            System.out.println("Instantiating the DeleteFileClient");
-            client = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, securityManager, 
-                    COMPONENT_ID);
         } catch (Exception e) {
-            System.err.println(cmdHandler.listArguments());
-            throw new IllegalArgumentException(e);
+            output.error(cmdHandler.listArguments(), e);
+            System.exit(Constants.EXIT_ARGUMENT_FAILURE);
         }
+            
+        settings = cmdHandler.loadSettings(COMPONENT_ID);
+        securityManager = cmdHandler.loadSecurityManager(settings);
+        
+        output.debug("Instantiating the DeleteFileClient");
+        client = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, securityManager, 
+                COMPONENT_ID);
     }
     
     /**
@@ -118,15 +123,15 @@ public class DeleteFile {
      * Perform the DeleteFile operation.
      */
     public void performOperation() {
-        System.out.println("Performing the DeleteFile operation.");
+        output.debug("Performing the DeleteFile operation.");
         OperationEvent finalEvent = deleteTheFile();
-        System.out.println("Results of the DeleteFile operation for the file '"
+        output.completeEvent("Results of the DeleteFile operation for the file '"
                 + cmdHandler.getOptionValue(Constants.FILE_ARG) + "'" 
-                + ": " + finalEvent);
+                + ": ", finalEvent);
         if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
-            System.exit(0);
+            System.exit(Constants.EXIT_SUCCESS);
         } else {
-            System.exit(-1);
+            System.exit(Constants.EXIT_OPERATION_FAILURE);
         }
     }
     
@@ -141,8 +146,8 @@ public class DeleteFile {
         ChecksumDataForFileTYPE validationChecksum = getValidationChecksum();
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpec();
         
-        CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings);
-        
+        output.debug("Initiating the DeleteFile conversation.");
+        CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings, output);
         if(cmdHandler.hasOption(Constants.PILLAR_ARG)) {
             String pillarId = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
             client.deleteFile(fileId, pillarId, validationChecksum, requestChecksum, eventHandler, 

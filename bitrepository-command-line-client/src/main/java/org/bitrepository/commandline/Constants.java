@@ -59,4 +59,10 @@ public class Constants {
     
     /** The argument for the location of the results.*/
     public static final String LOCATION = "l";
+    
+    
+    public static final int EXIT_SUCCESS = 0;
+    public static final int EXIT_ARGUMENT_FAILURE = 1;
+    public static final int EXIT_OPERATION_FAILURE = -1;
+    
 }

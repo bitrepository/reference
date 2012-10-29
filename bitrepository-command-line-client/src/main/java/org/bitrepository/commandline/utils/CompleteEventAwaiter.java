@@ -28,19 +28,18 @@ import java.util.concurrent.TimeUnit;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.common.settings.Settings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * EventHandler for awaiting an operation to be complete.
  * Just use the 'getFinish()' for awaiting the final event (either FAILURE or COMPLETE).
  */
 public class CompleteEventAwaiter implements EventHandler {
-    /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
     /** The amount of milliseconds before the results are required.*/
     private final Long timeout;
+    /** The handler of the output for this event handler.*/
+    private final OutputHandler output;
     
     /** The queue used to store the received operation events. */
     private final BlockingQueue<OperationEvent> finalEventQueue = new LinkedBlockingQueue<OperationEvent>(1);
@@ -49,21 +48,22 @@ public class CompleteEventAwaiter implements EventHandler {
      * Constructor.
      * @param settings The settings.
      */
-    public CompleteEventAwaiter(Settings settings) {
+    public CompleteEventAwaiter(Settings settings, OutputHandler outputHandler) {
         this.timeout = settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue() 
                 + settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue();
+        this.output = outputHandler;
     }
     
     @Override
     public void handleEvent(OperationEvent event) {
         if(event.getEventType() == OperationEventType.COMPLETE) {
-            log.debug("Complete: " + event.toString());
+            output.debug("Complete: " + event.toString());
             finalEventQueue.add(event);
         } else if(event.getEventType() == OperationEventType.FAILED) {
-            log.warn("Failure: " + event.toString());
+            output.warn("Failure: " + event.toString());
             finalEventQueue.add(event);
         } else {
-            log.debug("Received event: " + event.toString());
+            output.debug("Received event: " + event.toString());
         }
     }
     
