@@ -31,6 +31,8 @@ import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.commandline.output.DefaultOutputHandler;
+import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
 import org.bitrepository.commandline.utils.CompleteEventAwaiter;
 import org.bitrepository.common.settings.Settings;
@@ -49,6 +51,9 @@ public class GetFileIDs {
         getFileIDs.performOperation();
     }
     
+    /** For handling the output.*/
+    private final OutputHandler output = new DefaultOutputHandler(getClass());
+    
     /** The component id. */
     private final static String COMPONENT_ID = "GetFileIDsClient";
     
@@ -66,22 +71,22 @@ public class GetFileIDs {
      * @param args The command line arguments for defining the operation.
      */
     private GetFileIDs(String ... args) {
-        System.out.println("Initialising arguments");
+        output.startupInfo("Initialising arguments for the GetFileIDs operation.");
         cmdHandler = new CommandLineArgumentsHandler();
         try {
             createOptionsForCmdArgumentHandler();
             cmdHandler.parseArguments(args);
-            
-            settings = cmdHandler.loadSettings(COMPONENT_ID);
-            securityManager = cmdHandler.loadSecurityManager(settings);
-            
-            System.out.println("Instantiating the GetFileIDsClient");
-            client = AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
-                    COMPONENT_ID);
         } catch (Exception e) {
-            System.err.println(cmdHandler.listArguments());
-            throw new IllegalArgumentException(e);
+            output.error(cmdHandler.listArguments(), e);
+            System.exit(Constants.EXIT_ARGUMENT_FAILURE);
         }
+        
+        settings = cmdHandler.loadSettings(COMPONENT_ID);
+        securityManager = cmdHandler.loadSecurityManager(settings);
+        
+        output.debug("Instantiating the GetFileIDsClient");
+        client = AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
+                COMPONENT_ID);
     }
     
     /**
@@ -106,13 +111,13 @@ public class GetFileIDs {
      * Perform the GetFileIDs operation.
      */
     public void performOperation() {
-        System.out.println("Performing the GetFileIDs operation.");
+        output.debug("Performing the GetFileIDs operation.");
         OperationEvent finalEvent = performConversation();
-        System.out.println("Results of the GetFileIDs operation: " + finalEvent);
+        output.debug("Results of the GetFileIDs operation: " + finalEvent);
         if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
-            System.exit(0);
+            System.exit(Constants.EXIT_SUCCESS);
         } else {
-            System.exit(-1);
+            System.exit(Constants.EXIT_OPERATION_FAILURE);
         }
     }
     
@@ -122,10 +127,10 @@ public class GetFileIDs {
      */
     private OperationEvent performConversation() {
         FileIDs fileids = getFileIDs();
-        
         List<String> pillarids = getPillarIds();
         
-        CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings);
+        CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings, output);
+        output.debug("Instantiating the GetFileIDs conversation.");
         
         client.getFileIDs(pillarids, fileids, null, eventHandler);
         

@@ -31,6 +31,8 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.commandline.output.DefaultOutputHandler;
+import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
 import org.bitrepository.commandline.utils.CompleteEventAwaiter;
 import org.bitrepository.common.settings.Settings;
@@ -43,16 +45,10 @@ import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.security.SecurityManager;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Putting a file to the collection.
  */
 public class PutFile {
-    /** The log. */
-    private final Logger log = LoggerFactory.getLogger(getClass());
-    
     /**
      * @param args The arguments for performing the PutFile operation.
      */
@@ -60,6 +56,9 @@ public class PutFile {
         PutFile putfile = new PutFile(args);
         putfile.performOperation();
     }
+    
+    /** For handling the output.*/
+    private final OutputHandler output = new DefaultOutputHandler(getClass());
     
     /** The component id. */
     private final static String COMPONENT_ID = "PutFileClient";
@@ -78,21 +77,20 @@ public class PutFile {
      * @param args
      */
     private PutFile(String ... args) {
-        System.out.println("Initialising arguments");
+        output.startupInfo("Initialising arguments for the PutFile operation");
         cmdHandler = new CommandLineArgumentsHandler();
         try {
             createOptionsForCmdArgumentHandler();
             cmdHandler.parseArguments(args);
         } catch (ParseException e) {
-            System.err.println(cmdHandler.listArguments());
-            e.printStackTrace();
-            System.exit(1);
+            output.error(cmdHandler.listArguments(), e);
+            System.exit(Constants.EXIT_ARGUMENT_FAILURE);
         }
         
         settings = cmdHandler.loadSettings(COMPONENT_ID);
         securityManager = cmdHandler.loadSecurityManager(settings);
         
-        log.info("Instantiating the PutFileClient");
+        output.debug("Instantiating the PutFileClient");
         client = ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager, COMPONENT_ID);
     }
     
@@ -100,18 +98,13 @@ public class PutFile {
      * Perform the PutFile operation.
      */
     public void performOperation() {
-        System.out.println("Performing the PutFile operation.");
+        output.debug("Performing the PutFile operation.");
         OperationEvent finalEvent = putTheFile();
-        System.out.println("Results of the PutFile operation for the file '"
-                + cmdHandler.getOptionValue(Constants.FILE_ARG) + "'" 
-                + (cmdHandler.hasOption(Constants.FILE_ID_ARG) ? 
-                        " (with the id '" + cmdHandler.getOptionValue(Constants.FILE_ID_ARG) + "')" 
-                        : "") 
-                + ": " + finalEvent);
+        output.completeEvent("Results of the PutFile operation for the file '" + getFileIDForMessage(), finalEvent);
         if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
-            System.exit(0);
+            System.exit(Constants.EXIT_SUCCESS);
         } else {
-            System.exit(-1);
+            System.exit(Constants.EXIT_OPERATION_FAILURE);
         }
     }
     
@@ -146,15 +139,17 @@ public class PutFile {
      * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
      */
     private OperationEvent putTheFile() {
+        output.debug("Uploading the file to the FileExchange.");
         File f = findTheFile();
         FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
         URL url = fileexchange.uploadToServer(f);
         String fileId = retrieveTheName(f);
         
+        output.debug("Initiating the PutFile conversation.");
         ChecksumDataForFileTYPE validationChecksum = getValidationChecksum(f);
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpec();
         
-        CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings);
+        CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings, output);
         client.putFile(url, fileId, f.length(), validationChecksum, requestChecksum, eventHandler, 
                 "Putting the file '" + f + "' with the file id '" + fileId + "' from commandLine.");
         
@@ -221,5 +216,13 @@ public class PutFile {
             res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
         }
         return res;
+    }
+    
+    /**
+     * @return The filename for the file to upload. 
+     */
+    private String getFileIDForMessage() {
+        return cmdHandler.getOptionValue(Constants.FILE_ARG) + (cmdHandler.hasOption(Constants.FILE_ID_ARG) ? 
+                        " (with the id '" + cmdHandler.getOptionValue(Constants.FILE_ID_ARG) + "')" : "");
     }
 }

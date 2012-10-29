@@ -59,7 +59,7 @@ public class HttpFileExchange implements FileExchange {
     /** The lower boundary for the error codes of the HTTP codes.*/
     private static final int HTTP_ERROR_CODE_BARRIER = 300;
     /** The settings for the file exchange.*/
-    private final Settings settings;
+    protected final Settings settings;
     
     /**
      * Initialise HTTP file exchange.

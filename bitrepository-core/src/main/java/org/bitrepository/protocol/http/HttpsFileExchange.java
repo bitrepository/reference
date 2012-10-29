@@ -90,10 +90,11 @@ public class HttpsFileExchange extends HttpFileExchange {
         HttpClient client = new DefaultHttpClient();
         try {
             SSLSocketFactory socketFactory = new SSLSocketFactory(SSLContext.getDefault());
-            Scheme sch = new Scheme("https", 443, socketFactory);
+            Scheme sch = new Scheme("https", 
+                    settings.getReferenceSettings().getFileExchangeSettings().getPort().intValue(), socketFactory);
             client.getConnectionManager().getSchemeRegistry().register(sch);
         } catch (Exception e) {
-            throw new IllegalStateException("Could not make Http Client.", e);
+            throw new IllegalStateException("Could not make Https Client.", e);
         }
     
         return client;

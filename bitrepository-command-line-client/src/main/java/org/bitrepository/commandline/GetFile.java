@@ -30,6 +30,8 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.commandline.output.DefaultOutputHandler;
+import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
 import org.bitrepository.commandline.utils.CompleteEventAwaiter;
 import org.bitrepository.common.settings.Settings;
@@ -50,6 +52,9 @@ public class GetFile {
         getfile.performOperation();
     }
     
+    /** For handling the output.*/
+    private final OutputHandler output = new DefaultOutputHandler(getClass());
+    
     /** The component id. */
     private final static String COMPONENT_ID = "GetFileClient";
     
@@ -69,22 +74,23 @@ public class GetFile {
      * @param args The command line arguments for defining the operation.
      */
     private GetFile(String ... args) {
-        System.out.println("Initialising arguments");
+        output.startupInfo("Initialising arguments for the GetFile operation.");
         cmdHandler = new CommandLineArgumentsHandler();
         try {
             createOptionsForCmdArgumentHandler();
             cmdHandler.parseArguments(args);
-            
-            settings = cmdHandler.loadSettings(COMPONENT_ID);
-            securityManager = cmdHandler.loadSecurityManager(settings);
-            
-            System.out.println("Instantiating the GetFileClient");
-            client = AccessComponentFactory.getInstance().createGetFileClient(settings, securityManager, 
-                    COMPONENT_ID);
         } catch (Exception e) {
-            System.err.println(cmdHandler.listArguments());
-            throw new IllegalArgumentException(e);
+            output.error(cmdHandler.listArguments(), e);
+            System.exit(Constants.EXIT_ARGUMENT_FAILURE);
         }
+        
+        settings = cmdHandler.loadSettings(COMPONENT_ID);
+        securityManager = cmdHandler.loadSecurityManager(settings);
+        
+        output.debug("Instantiating the GetFileClient");
+        client = AccessComponentFactory.getInstance().createGetFileClient(settings, securityManager, 
+                COMPONENT_ID);
+
     }
     
     /**
@@ -114,16 +120,16 @@ public class GetFile {
      * Perform the GetFile operation.
      */
     public void performOperation() {
-        System.out.println("Performing the GetFile operation.");
+        output.debug("Performing the GetFile operation.");
         OperationEvent finalEvent = performConversation();
-        System.out.println("Results of the GetFile operation for the file '"
+        output.debug("Results of the GetFile operation for the file '"
                 + cmdHandler.getOptionValue(Constants.FILE_ARG) + "'" 
                 + ": " + finalEvent);
         if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
             downloadFile();
-            System.exit(0);
+            System.exit(Constants.EXIT_SUCCESS);
         } else {
-            System.exit(-1);
+            System.exit(Constants.EXIT_OPERATION_FAILURE);
         }
     }
     
@@ -135,7 +141,8 @@ public class GetFile {
         String fileId = cmdHandler.getOptionValue(Constants.FILE_ARG);
         fileUrl = extractUrl(fileId);
         
-        CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings);
+        CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings, output);
+        output.debug("Initiating the GetFile conversation.");
         
         if(cmdHandler.hasOption(Constants.PILLAR_ARG)) {
             String pillarId = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
@@ -151,6 +158,7 @@ public class GetFile {
      * Downloads the file from the URL defined in the conversation.
      */
     private void downloadFile() {
+        output.debug("Downloading the file.");
         File outputFile;
         if(cmdHandler.hasOption(Constants.LOCATION)) {
             File location = new File(cmdHandler.getOptionValue(Constants.LOCATION));
