@@ -65,58 +65,61 @@ public class IncrementalCollector {
     }
 
     /**
-         * Setup and initiates the collection of audit trails through the client.
-         * Adds one to the sequence number to request only newer audit trails.
-         */
-        public void performCollection(Collection<String> contributors) {
-            List<AuditTrailQuery> queries = new ArrayList<AuditTrailQuery>();
+     * Setup and initiates the collection of audit trails through the client.
+     * Adds one to the sequence number to request only newer audit trails.
+     */
+    public void performCollection(Collection<String> contributors) {
+        List<AuditTrailQuery> queries = new ArrayList<AuditTrailQuery>();
 
-            for(String contributorId : contributors) {
-                int seq = store.largestSequenceNumber(contributorId);
-                queries.add(new AuditTrailQuery(contributorId, seq + 1, null, maxNumberOfResults));
-            }
-
-            AuditCollectorEventHandler handler = new AuditCollectorEventHandler();
-            try {
-                client.getAuditTrails(queries.toArray(new AuditTrailQuery[queries.size()]), NO_FILE_ID, NO_DELIVERY_URL,
-                    handler, clientID);
-
-            } catch (NegativeResponseException e) {
-                log.error("Problem in collecting audit trails, collection will not be complete", e);
-            }
-            if (!handler.contributorsWithPartialResults.isEmpty()) {
-                performCollection(handler.contributorsWithPartialResults);
-            }
+        for(String contributorId : contributors) {
+            int seq = store.largestSequenceNumber(contributorId);
+            queries.add(new AuditTrailQuery(contributorId, seq + 1, null, maxNumberOfResults));
         }
 
-        /**
-         * Event handler for the audit trail collector. The results of an audit trail operation will be ingested into the
-         * audit trail store.
-         */
-        private class AuditCollectorEventHandler implements EventHandler {
-            List<String> contributorsWithPartialResults = new LinkedList<String>();
-            private final long startTime = System.currentTimeMillis();
+        AuditCollectorEventHandler handler = new AuditCollectorEventHandler();
+        try {
+            client.getAuditTrails(queries.toArray(new AuditTrailQuery[queries.size()]), NO_FILE_ID, NO_DELIVERY_URL,
+                handler, clientID);
 
-            @Override
-            public void handleEvent(OperationEvent event) {
-                if(event instanceof AuditTrailResult) {
-                    AuditTrailResult auditEvent = (AuditTrailResult) event;
-                    if (auditEvent.isPartialResult()) {
-                        contributorsWithPartialResults.add(auditEvent.getContributorID());
-                    }
-                    store.addAuditTrails(auditEvent.getAuditTrailEvents().getAuditTrailEvents());
+        } catch (NegativeResponseException e) {
+            log.error("Problem in collecting audit trails, collection will not be complete", e);
+        }
+        if (!handler.contributorsWithPartialResults.isEmpty()) {
+            performCollection(handler.contributorsWithPartialResults);
+        }
+    }
+
+    /**
+     * Event handler for the audit trail collector. The results of an audit trail operation will be ingested into the
+     * audit trail store.
+     */
+    private class AuditCollectorEventHandler implements EventHandler {
+        List<String> contributorsWithPartialResults = new LinkedList<String>();
+        private final long startTime = System.currentTimeMillis();
+
+        @Override
+        public void handleEvent(OperationEvent event) {
+            if(event instanceof AuditTrailResult) {
+                AuditTrailResult auditEvent = (AuditTrailResult) event;
+                if (auditEvent.isPartialResult()) {
+                    contributorsWithPartialResults.add(auditEvent.getContributorID());
+                }
+                store.addAuditTrails(auditEvent.getAuditTrailEvents().getAuditTrailEvents());
+                if (auditEvent.getAuditTrailEvents().getAuditTrailEvents() != null &&
+                    auditEvent.getAuditTrailEvents().getAuditTrailEvents().getAuditTrailEvent() != null) {
                     log.debug("Collected and stored " +
                         auditEvent.getAuditTrailEvents().getAuditTrailEvents().getAuditTrailEvent().size() +
-                    " audit trail event from " + auditEvent.getContributorID() + " in " +
-                    (System.currentTimeMillis() - startTime)/1000 + " s.");
-                } else if (event.getEventType() == OperationEvent.OperationEventType.COMPONENT_FAILED ||
-                    event.getEventType() == OperationEvent.OperationEventType.FAILED ||
-                    event.getEventType() == OperationEvent.OperationEventType.IDENTIFY_TIMEOUT) {
-                    log.warn("Event: " + event.toString());
+                        " audit trail event from " + auditEvent.getContributorID() + " in " +
+                        (System.currentTimeMillis() - startTime)/1000 + " s.");
                 }
-                else {
-                    log.debug("Event:" + event.toString());
-                }
+            } else if (event.getEventType() == OperationEvent.OperationEventType.COMPONENT_FAILED ||
+                event.getEventType() == OperationEvent.OperationEventType.FAILED ||
+                event.getEventType() == OperationEvent.OperationEventType.IDENTIFY_TIMEOUT) {
+                log.warn("Event: " + event.toString());
+            }
+            else {
+                log.debug("Event:" + event.toString());
             }
         }
+    }
 }
