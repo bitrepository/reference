@@ -429,7 +429,7 @@ public class IntegrityDAO {
                 + FI_CHECKSUM_STATE + " <> ? AND EXISTS (SELECT 1 FROM " + FILE_INFO_TABLE + " AS inner_fi WHERE "
                 + "inner_fi." + FI_FILE_STATE + " <> ? AND inner_fi." + FI_CHECKSUM + " IS NOT NULL AND inner_fi."
                 + FI_FILE_GUID + " = " + FILE_INFO_TABLE + "." + FI_FILE_GUID + " GROUP BY inner_fi." + FI_FILE_GUID
-                + " HAVING COUNT(*) = 1)";
+                + " HAVING COUNT(DISTINCT checksum) = 1)";
         DatabaseUtils.executeStatement(dbConnector, updateSql, ChecksumState.VALID.ordinal(), 
                 ChecksumState.VALID.ordinal(), FileState.MISSING.ordinal());
         log.debug("Marked consistent files in " + (System.currentTimeMillis() - startTime) + "ms");
