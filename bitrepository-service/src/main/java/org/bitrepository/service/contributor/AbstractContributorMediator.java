@@ -21,16 +21,16 @@
  */
 package org.bitrepository.service.contributor;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
+import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.contributor.handler.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Defines the general functionality for handling a set of requests. Does this by delegating the
@@ -97,7 +97,10 @@ public abstract class AbstractContributorMediator implements ContributorMediator
                 if (handler != null) {
                     handleRequest((MessageRequest) message, handler);
                 } else {
-                    log.debug("Received unhandled message request: \n{}", message);
+                    if (MessageUtils.isIdentifyRequest(message)) {
+                        log.trace("Received unhandled identity request: \n{}", message);
+                    } else
+                    log.warn("Received unhandled message: \n{}", message);
                 }
             } else {
                 log.trace("Can only handle message requests, but received: \n{}", message);
