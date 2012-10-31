@@ -52,6 +52,11 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
 
     protected static ConversationMediator conversationMediator;
 
+    /**
+     *
+     * @param method Injected by TestNG. Used for logging purposes, eg. to make it visible which method has been
+     *               at work.
+     */
     @BeforeMethod(alwaysRun = true)
     public void beforeMethod(Method method) {
         super.beforeMethod(method);

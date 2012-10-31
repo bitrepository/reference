@@ -1,4 +1,3 @@
-package org.bitrepository.pillar.integration.func;
 /*
  * #%L
  * Bitrepository Reference Pillar
@@ -20,6 +19,8 @@ package org.bitrepository.pillar.integration.func;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+package org.bitrepository.pillar.integration.func;
+
 import java.util.Arrays;
 import java.util.Collection;
 import org.bitrepository.common.exceptions.OperationFailedException;
