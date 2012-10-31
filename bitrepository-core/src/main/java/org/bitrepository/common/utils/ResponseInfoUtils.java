@@ -38,7 +38,6 @@ public class ResponseInfoUtils {
     public static ResponseInfo getPositiveIdentification() {
         ResponseInfo ri = new ResponseInfo();
         ri.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
-        ri.setResponseText("Contributor identified for operation.");
         return ri;
     }
     
@@ -49,7 +48,6 @@ public class ResponseInfoUtils {
     public static ResponseInfo getInitialProgressResponse() {
         ResponseInfo ri = new ResponseInfo();
         ri.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
-        ri.setResponseText("Operation acknowledged and accepted.");
         return ri;
     }
 }

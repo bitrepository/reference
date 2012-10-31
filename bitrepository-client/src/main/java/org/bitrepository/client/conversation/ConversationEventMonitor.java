@@ -88,7 +88,6 @@ public class ConversationEventMonitor {
      * @param info Description
      */
     public void identifyRequestSent(String info) {
-        log.debug(info);
         notifyEventListerners(createDefaultEvent(IDENTIFY_REQUEST_SENT, info));
     }
 
@@ -97,10 +96,7 @@ public class ConversationEventMonitor {
      * @param response The identify response.
      */
     public void contributorIdentified(MessageResponse response) {
-        String info = "Received positive identification response from " + response.getFrom() + ": " +
-                response.getResponseInfo().getResponseText();
-        log.debug(info);
-        notifyEventListerners(createContributorEvent(COMPONENT_IDENTIFIED, info, response.getFrom()));
+        notifyEventListerners(createContributorEvent(COMPONENT_IDENTIFIED, null, response.getFrom()));
     }
 
     /**
@@ -117,10 +113,7 @@ public class ConversationEventMonitor {
                 failureMessage.append(failedEvent.getContributorID() + "(" + failedEvent.getInfo() + "),");
             }
         }
-        log.debug(failureMessage.toString());
-        if (eventHandler != null) {
-            eventHandler.handleEvent(createDefaultEvent(IDENTIFY_TIMEOUT, failureMessage.toString()));
-        }
+        notifyEventListerners(createDefaultEvent(IDENTIFY_TIMEOUT, failureMessage.toString()));
     }
 
     /**
@@ -128,7 +121,6 @@ public class ConversationEventMonitor {
      * @param contributorIDList The contributors identified
      */
     public void contributorsSelected(List<String> contributorIDList) {
-        log.debug("Contributors selected: " + contributorIDList);
         notifyEventListerners(createContributorsIdentifiedEvent(contributorIDList));
     }
 
@@ -138,7 +130,6 @@ public class ConversationEventMonitor {
      * @param contributorID The receiving pillar.
      */
     public void requestSent(String info, String contributorID) {
-        log.debug(info);
         notifyEventListerners(createContributorEvent(REQUEST_SENT, info, contributorID));
     }
 
@@ -147,7 +138,6 @@ public class ConversationEventMonitor {
      * @param progressEvent Contains information regarding the progress
      */
     public void progress(AbstractOperationEvent progressEvent) {
-        log.debug(progressEvent.getInfo());
         addContextInfo(progressEvent);
         notifyEventListerners(progressEvent);
     }
@@ -157,7 +147,6 @@ public class ConversationEventMonitor {
      * @param progressInfo Contains information regarding the progress
      */
     public void progress(String progressInfo, String contributorID) {
-        log.debug(progressInfo);
         notifyEventListerners(createContributorEvent(PROGRESS, progressInfo, contributorID));
     }
 
@@ -167,7 +156,6 @@ public class ConversationEventMonitor {
      * return value from the operation, in which case the event will be a <code>DefafaultEvent</code> subclass.
      */
     public void contributorComplete(ContributorCompleteEvent completeEvent) {
-        log.info(completeEvent.getInfo());
         contributorCompleteEvents.add(completeEvent);
         addContextInfo(completeEvent);
         notifyEventListerners(completeEvent);
@@ -178,7 +166,6 @@ public class ConversationEventMonitor {
      * @param info Cause information
      */
     public void contributorFailed(String info, String contributor, ResponseCode responseCode) {
-        log.warn(info);
         ContributorFailedEvent failedEvent = createContributorFailedEvent(info, contributor, responseCode);
         contributorFailedEvents.add(failedEvent);
         notifyEventListerners(failedEvent);
@@ -189,11 +176,9 @@ public class ConversationEventMonitor {
      */
     public void complete() {
         if (contributorFailedEvents.isEmpty() || !failOnComponentFailure) {
-            log.info("Completed successfully.");
             notifyEventListerners(createCompleteEvent());
         } else {
             String info = "Failed operation. Cause(s):\n" + contributorFailedEvents;
-            log.warn(info);
             notifyEventListerners(createOperationFailedEvent(info));
         }
     }
@@ -203,7 +188,6 @@ public class ConversationEventMonitor {
      * @param info Encapsulates the cause.
      */
     public void operationFailed(String info) {
-        log.warn(info);
         notifyEventListerners(createOperationFailedEvent(info));
     }
 
@@ -212,7 +196,6 @@ public class ConversationEventMonitor {
      * @param event Encapsulates the cause.
      */
     public void operationFailed(OperationFailedEvent event) {
-        log.warn(event.getInfo());
         addContextInfo(event);
         notifyEventListerners(event);
     }
@@ -240,7 +223,6 @@ public class ConversationEventMonitor {
      * @param info Problem description
      */
     public void warning(String info) {
-        log.warn(info);
         notifyEventListerners(createDefaultEvent(WARNING, info));
     }
 
@@ -253,7 +235,6 @@ public class ConversationEventMonitor {
         if (e == null) {
             warning(info);
         }
-        log.warn(info, e);
         notifyEventListerners(createDefaultEvent(WARNING, info + ", " + e.getMessage()));
     }
 
@@ -384,6 +365,7 @@ public class ConversationEventMonitor {
     }
 
     private void notifyEventListerners(OperationEvent event) {
+        eventLogger.trace(event.toString());
         if (eventHandler != null) {
             eventHandler.handleEvent(event);
         }

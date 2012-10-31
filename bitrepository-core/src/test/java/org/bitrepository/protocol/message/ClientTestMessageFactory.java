@@ -82,21 +82,18 @@ public abstract class ClientTestMessageFactory extends TestMessageFactory {
     protected static ResponseInfo createPositiveIdentificationResponseInfo() {
         ResponseInfo responseInfo = new ResponseInfo();
         responseInfo.setResponseCode(IDENTIFY_RESPONSE_CODE_DEFAULT);
-        responseInfo.setResponseText("Positive identification");
         return responseInfo;
     }
 
     protected static ResponseInfo createCompleteResponseInfo() {
         ResponseInfo responseInfo = new ResponseInfo();
         responseInfo.setResponseCode(ResponseCode.OPERATION_COMPLETED);
-        responseInfo.setResponseText("Positive identification");
         return responseInfo;
     }
 
     protected static ResponseInfo createFailureResponseInfo() {
         ResponseInfo responseInfo = new ResponseInfo();
         responseInfo.setResponseCode(ResponseCode.FAILURE);
-        responseInfo.setResponseText("Failed");
         return responseInfo;
     }
 }
