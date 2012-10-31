@@ -1,5 +1,3 @@
-package org.bitrepository.audittrails.collector;
-
 /*
  * #%L
  * Bitrepository Audit Trail Service
@@ -21,6 +19,7 @@ package org.bitrepository.audittrails.collector;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+package org.bitrepository.audittrails.collector;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -39,7 +38,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Will perform a single collection of audit trails, potential through multiple
+ * Will perform a single collection of audit trails, potential through multiple sequential getAuditTrail calls if the
+ * set of new audit trails is large.
  */
 public class IncrementalCollector {
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -52,9 +52,16 @@ public class IncrementalCollector {
     private static final String NO_FILE_ID = null;
     /** When no delivery address is wanted for the collecting of audit trails.*/
     private static final String NO_DELIVERY_URL = null;
-    /** */
-    private static final int DEFAULT_MAX_NUMBER_OF_RESULTS = 10000;
+    /** Will be used in case of no MaxNumberOfResult are provided */
+    public static final int DEFAULT_MAX_NUMBER_OF_RESULTS = 10000;
 
+    /**
+     * @param clientID The clientID to use for the requests.
+     * @param client The client to use for the operations.
+     * @param store Where to persist the received results.
+     * @param maxNumberOfResults A optional limit on the number of audit trail events to request. If not set,
+     * {}
+     */
     public IncrementalCollector(String clientID, AuditTrailClient client, AuditTrailStore store,
                                 BigInteger maxNumberOfResults) {
         this.clientID = clientID;

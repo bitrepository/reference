@@ -22,6 +22,7 @@
 package org.bitrepository.protocol.utils;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 
 /**
@@ -62,6 +63,16 @@ public class MessageUtils {
         ResponseCode responseCode = response.getResponseInfo().getResponseCode();
         return responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE) ||
                responseCode.equals(ResponseCode.IDENTIFICATION_NEGATIVE);
+    }
+
+    /**
+     * Chechs whether the supplied message is a identify request
+     * @param message The request message to check.
+     * @return Whether it is a identification request.
+     */
+    public static boolean isIdentifyRequest (Message message) {
+        String simpleName = message.getClass().getSimpleName();
+        return simpleName.contains("Identify") && simpleName.contains("Request");
     }
 
     /**

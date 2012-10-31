@@ -62,8 +62,7 @@ public class ChecksumIntegrityValidator {
     /**
      * Performs the validation of the checksums for the given file ids.
      * This includes voting if some of the checksums differs between the pillars.
-     * 
-     * @param requestedFileIDs The list of ids for the files to validate.
+     *
      * @return The report for the results of the validation.
      */
     public ChecksumReportModel generateReport() {

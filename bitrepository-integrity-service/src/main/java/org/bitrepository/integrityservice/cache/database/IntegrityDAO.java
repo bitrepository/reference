@@ -326,7 +326,7 @@ public class IntegrityDAO {
                 + "." + FI_CHECKSUM_STATE + " = ?";
         List<String> result = DatabaseUtils.selectStringList(dbConnector, requestSql, FileState.EXISTING.ordinal(),
                 ChecksumState.UNKNOWN.ordinal());
-        log.debug("Located " + result.size() + " checksums in " + (startTime - System.currentTimeMillis()) + "ms");
+        log.debug("Located " + result.size() + " missing checksums in " + (System.currentTimeMillis() - startTime) + "ms");
         return result;
     }
 
@@ -342,7 +342,7 @@ public class IntegrityDAO {
                 + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "."
                 + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_LAST_CHECKSUM_UPDATE + " < ? ";
         List<String> result = DatabaseUtils.selectStringList(dbConnector, requestSql, date);
-        log.debug("Located " + result.size() + " obsolete checksums in " + (startTime - System.currentTimeMillis()) +
+        log.debug("Located " + result.size() + " obsolete checksums in " + (System.currentTimeMillis() - startTime) +
                 "ms");
         return result;
     }
@@ -374,7 +374,7 @@ public class IntegrityDAO {
                 + " = ? )";
         List<String> result = DatabaseUtils.selectStringList(dbConnector, requestSql, FileState.EXISTING.ordinal(),
                 fileId);
-        log.debug("Located " + result.size() + " checksums in " + (startTime - System.currentTimeMillis()) + "ms");
+        log.debug("Located " + result.size() + " checksums in " + (System.currentTimeMillis() -startTime) + "ms");
         return result;
     }
     
@@ -406,7 +406,7 @@ public class IntegrityDAO {
                 + FI_FILE_GUID + " WHERE " + FILES_CREATION_DATE + " < ?";
         List<String> res = DatabaseUtils.selectStringList(dbConnector, selectSql, FileState.MISSING.ordinal(),
                 maxCreationDate);
-        log.debug("Found " + res.size() + " inconsistencies in " + (startTime - System.currentTimeMillis()) + "ms");
+        log.debug("Found " + res.size() + " inconsistencies in " + (System.currentTimeMillis() - startTime) + "ms");
         return res;
     }
     
@@ -435,7 +435,7 @@ public class IntegrityDAO {
                 + FI_CHECKSUM_STATE + " != ? AND " + FI_FILE_GUID + " IN ( " + eliminateSql + " )";
         DatabaseUtils.executeStatement(dbConnector, updateSql, ChecksumState.VALID.ordinal(), 
                 ChecksumState.VALID.ordinal(), FileState.MISSING.ordinal());
-        log.debug("Marked consistent files in " + (startTime - System.currentTimeMillis()) + "ms");
+        log.debug("Marked consistent files in " + (System.currentTimeMillis() - startTime) + "ms");
     }
     
     /**
@@ -459,7 +459,7 @@ public class IntegrityDAO {
                 + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ? ) and " + FI_LAST_FILE_UPDATE + " < ?";
         DatabaseUtils.executeStatement(dbConnector, updateTimestampSql, filelistTimestamp, 
                 ChecksumState.UNKNOWN.ordinal(), fileId, pillarId, filelistTimestamp);
-        log.debug("Updated fileInfo timestamps in " + (startTime - System.currentTimeMillis()) + "ms");
+        log.debug("Updated fileInfo timestamps in " + (System.currentTimeMillis() - startTime) + "ms");
     }
     
     /**
@@ -484,7 +484,7 @@ public class IntegrityDAO {
         DatabaseUtils.executeStatement(dbConnector, updateSql, csTimestamp, 
                 ChecksumState.UNKNOWN.ordinal(), checksum, data.getFileID(), pillarId, 
                 csTimestamp);
-        log.debug("Updated fileInfo checksums in " + (startTime - System.currentTimeMillis()) + "ms");
+        log.debug("Updated fileInfo checksums in " + (System.currentTimeMillis() - startTime) + "ms");
     }
     
     /**

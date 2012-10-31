@@ -21,35 +21,17 @@
  */
 package org.bitrepository.audittrails.store;
 
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_NAME;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_TABLE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_ACTOR_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_AUDIT;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_CONTRIBUTOR_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_FILE_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_INFORMATION;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_OPERATION;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_OPERATION_DATE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_SEQUENCE_NUMBER;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_TABLE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_ID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_TABLE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_FILEID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_GUID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_TABLE;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.*;
 
 /**
  * Handles the ingestion of the Audit Events into the database.
@@ -243,6 +225,7 @@ public class AuditDatabaseIngestor {
      * @return The guid of the file with the given id.
      */
     private long retrieveFileGuid(String fileId) {
+        ArgumentValidator.checkNotNull(fileId, "fileId");
         String sqlRetrieve = "SELECT " + FILE_GUID + " FROM " + FILE_TABLE + " WHERE " + FILE_FILEID + " = ?";
         Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId);
         
@@ -260,7 +243,7 @@ public class AuditDatabaseIngestor {
     /**
      * Retrieve the guid for a given actor. If the actor does not exist within the actor, then it is created.
      * 
-     * @param actor The name of the actor.
+     * @param actorName The name of the actor.
      * @return The guid of the actor with the given name.
      */
     private long retrieveActorGuid(String actorName) {
