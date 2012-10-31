@@ -97,6 +97,7 @@ public class AuditDatabaseExtractor {
             PreparedStatement ps = null;
             ResultSet result = null;
             List<AuditTrailEvent> res = new ArrayList<AuditTrailEvent>();
+            long starttime = System.currentTimeMillis();
             try {
                 conn = dbConnector.getConnection();
                 log.debug("Extracting sql '" + sql + "' with arguments '" + Arrays.asList(extractArgumentsFromModel()));
@@ -117,7 +118,7 @@ public class AuditDatabaseExtractor {
                     conn.close();
                 }
             }
-            log.debug("Extracted the audit trails: {}", res);
+            log.debug("Extracted " + res.size() + " audit trails in " + (System.currentTimeMillis() - starttime));
             
             return res;
         } catch (Exception e) {
