@@ -111,11 +111,11 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     }
     
     /**
-     * Handles
-     * @param correlationID
+     * @param message The message with the unknown conversation ID.
      */
-    private void handleUnknownConversation(String correlationID) {
-        log.debug("Message with correlationID '" + correlationID + "' could not be delegated to any " +
+    private void handleUnknownConversation(Message message) {
+        log.debug(message.getClass().getSimpleName() + " from " + message.getFrom() +
+            " with correlationID '" + message.getCorrelationID() + "' could not be delegated to any " +
                 "conversation.");
     }
 
@@ -126,7 +126,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         if (conversation != null) {
             conversation.onMessage(message);
         } else {
-            handleUnknownConversation(messageCorrelationID);
+            handleUnknownConversation(message);
         }
     }
     
