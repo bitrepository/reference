@@ -59,7 +59,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarGetChecksumsTestSuccessCase() throws Exception {
+    public void goodCase() throws Exception {
         addDescription("Tests the GetChecksums functionality of the reference pillar for the successful scenario.");
         initializeCacheWithMD5ChecksummedFile();
 
@@ -114,7 +114,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarGetChecksumsTestWithAllFilesInIdentification() throws Exception {
+    public void allFilesInIdentification() throws Exception {
         addDescription("Tests the GetChecksums functionality of the reference pillar for the successful scenario, "
                 + "when calculating all files.");
         initializeCacheWithMD5ChecksummedFile();
@@ -129,7 +129,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarGetChecksumsTestWithAllFilesInOperation() throws Exception {
+    public void allFilesInOperation() throws Exception {
         addDescription("Tests the GetChecksums functionality of the reference pillar for the successful scenario, "
                 + "when calculating all files.");
         initializeCacheWithMD5ChecksummedFile();
@@ -149,7 +149,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarGetChecksumsTestWithDeliveryAtURL() throws Exception {
+    public void deliveryAtURL() throws Exception {
         addDescription("Tests the GetChecksums functionality of the reference pillar when delivery at an URL.");
         String DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/CS_TEST_" + new Date().getTime() + getPillarID();
         initializeCacheWithMD5ChecksummedFile();
@@ -169,7 +169,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarGetChecksumsTestWithDeliveryAtBadURL() throws Exception {
+    public void badDeliviryURL() throws Exception {
         addDescription("Tests the reference pillar handling of a bad URL in the GetChecksumRequest.");
         String DELIVERY_ADDRESS = "https:localhost:1/?";
         initializeCacheWithMD5ChecksummedFile();
@@ -187,7 +187,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarGetChecksumsTestFailedNoSuchFile() throws Exception {
+    public void noSuchFileInIdentification() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetChecksums requests for a file, which it does not have.");
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs("A-NON-EXISTING-FILE");
 
@@ -203,7 +203,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarGetChecksumsTestFailedNoSuchFileInOperation() throws Exception {
+    public void noSuchFileInOperation() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetChecksums requests for a file, " +
         "which it does not have. But this time at the GetChecksums message.");
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs("A-NON-EXISTING-FILE");
@@ -221,7 +221,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarGetChecksumsTestIdentifyWithNoChecksumSpec() throws Exception {
+    public void identifyWithNoChecksumSpec() throws Exception {
         addDescription("Tests that the ReferencePillar is accepts a GetChecksums requests when there is no checksum "
                 +"type specified.");
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
@@ -236,7 +236,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarGetChecksumsTestIdentifyWithBadChecksumSpec() throws Exception {
+    public void identifyWithBadChecksumSpec() throws Exception {
         addDescription("Tests that the ReferencePillar is rejects a GetChecksums requests when a bad checksum "
                 +"type specified. But it should just be returned as a negative identification, not a 'REQUEST_NOT_UNDERSTOOD_FAILURE'.");
         FileIDs fileids = FileIDsUtils.getAllFileIDs();

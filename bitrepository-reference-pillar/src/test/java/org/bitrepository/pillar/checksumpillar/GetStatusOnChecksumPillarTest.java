@@ -30,6 +30,7 @@ import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
+import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -43,7 +44,7 @@ public class GetStatusOnChecksumPillarTest extends ChecksumPillarTest {
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarGetStatusSuccessful() {
+    public void goodCae() {
         addDescription("Tests the GetStatus functionality of the checksum pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String contributorId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
@@ -87,10 +88,12 @@ public class GetStatusOnChecksumPillarTest extends ChecksumPillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarGetStatusWrongContributor() {
+    public void getStatusWrongContributor() {
         addDescription("Tests the GetStatus functionality of the checksum pillar for the bad scenario, where a wrong "
                 + "contributor id is given.");
         addFixtureSetup("Set the alarm level to warning to enable the sending of invalid ComponentIDs.");
+        settingsForCUT.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
+        createChecksumPillar();
         String contributorId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String wrongContributorId = "wrongContributor";
         String auditTrail = null;

@@ -34,7 +34,6 @@ import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ContributorContext;
-import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
@@ -52,7 +51,18 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
     public void initialiseChecksumPillarTest() throws Exception {
         cache = new MemoryCache();
         audits = new MockAuditManager();
-        settingsForCUT.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
+        createChecksumPillar();
+    }
+
+    /**
+     * Used for creating a 'fresh' checksum pillar based on the current configuration.
+     */
+    protected void createChecksumPillar() {
+        // Shutdown any existing mediator.
+        if(mediator != null) {
+            mediator.close();
+        }
+        addFixtureSetup("Initialize a new checksumPillar.");
         ContributorContext contributorContext = new ContributorContext(messageBus, settingsForCUT);
         alarmDispatcher = new PillarAlarmDispatcher(contributorContext);
         context = new MessageHandlerContext(settingsForCUT, messageBus, alarmDispatcher, audits);
@@ -67,6 +77,7 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
         csData.setCalculationTimestamp(CalendarUtils.getEpoch());
         csData.setChecksumSpec(csSpec);
         csData.setChecksumValue(Base16Utils.encodeBase16(DEFAULT_MD5_CHECKSUM));
+
     }
 
     @AfterMethod(alwaysRun=true)
