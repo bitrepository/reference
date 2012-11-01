@@ -38,20 +38,17 @@ import org.slf4j.LoggerFactory;
  * Manages the retrieval of of AuditTrails from contributors.
  */
 public class AuditTrailCollector {
-    /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The task for collecting the audits.*/
     private final AuditTrailCollectionTimerTask collectorTask;
     /** The timer for keeping track of the collecting task.*/
     private Timer timer;
-    /** The settings for this collector.*/
     private final Settings settings;
 
-    /** Initial graze period in milliseconds after startup to allow the system to finish startup. */
+    /** Initial grace period in milliseconds after startup to allow the system to finish startup. */
     private static final int DEFAULT_GRACE_PERIOD = 0;
 
     /**
-     * Constructor.
      * @param settings The settings for this collector.
      * @param client The client for handling the conversation for collecting the audit trails.
      * @param store The storage of the audit trails data.
@@ -70,6 +67,7 @@ public class AuditTrailCollector {
         collectorTask = new AuditTrailCollectionTimerTask(
                 collector,
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectAuditInterval());
+        log.debug("Will start collection of audit trail after grace period " + getGracePeriod());
         timer.scheduleAtFixedRate(collectorTask, getGracePeriod(),
             settings.getReferenceSettings().getAuditTrailServiceSettings().getTimerTaskCheckInterval());
     }
@@ -81,10 +79,16 @@ public class AuditTrailCollector {
         collectorTask.runCollection();
     }
 
+    /**
+     * @return The time to wait before starting collection of audit trails. This enables the system to have time to
+     * finish startup before they have to start delivering/process audit trails.
+     */
     private int getGracePeriod() {
-        int gracePeriod = (settings.getReferenceSettings().getAuditTrailServiceSettings().isSetGracePeriod()) ?
-            settings.getReferenceSettings().getAuditTrailServiceSettings().getGracePeriod().intValue() : DEFAULT_GRACE_PERIOD;
-        return gracePeriod;
+        if (settings.getReferenceSettings().getAuditTrailServiceSettings().isSetGracePeriod()) {
+            return settings.getReferenceSettings().getAuditTrailServiceSettings().getGracePeriod().intValue();
+        } else {
+            return DEFAULT_GRACE_PERIOD;
+        }
     }
     
     /**
@@ -106,17 +110,17 @@ public class AuditTrailCollector {
         private final IncrementalCollector collector;
         
         /**
-         * Constructor.
          * @param interval The interval between running this timer task.
          */
         private AuditTrailCollectionTimerTask(IncrementalCollector collector, long interval) {
             this.collector = collector;
             this.interval = interval;
             nextRun = new Date(System.currentTimeMillis() + interval);
+            log.debug("Sceduled next collection of audit trails for " + nextRun);
         }
         
         /**
-         * Run the operation and the reset the date for next run and then r.
+         * Run the operation and when finished set the date for the next collection.
          */
         public synchronized void runCollection() {
             collector.performCollection(settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs());

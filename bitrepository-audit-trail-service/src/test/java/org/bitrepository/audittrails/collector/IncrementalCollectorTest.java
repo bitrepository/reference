@@ -40,8 +40,12 @@ import org.testng.annotations.Test;
 public class IncrementalCollectorTest extends ExtendedTestCase{
     @Test(groups = {"regressiontest"})
     public void singleIncrementTest() throws InterruptedException {
+        addDescription("Verifies the behaviour in the simplest case with just one result set ");
         MockAuditClient client = new MockAuditClient();
         MockAuditStore store = new MockAuditStore();
+
+        addStep("Start a collection with two contributors", "A call should be made to the store to find out which " +
+            "sequence number to continue from");
         IncrementalCollector collector = new IncrementalCollector("Client1", client, store, BigInteger.ONE);
         Collection<String> contributors = Arrays.asList("Contributor1", "Contributors2");
         CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
@@ -55,12 +59,14 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
                 "There should be one call for largest sequence number for each contributor for each call to the client.");
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
 
+        addStep("Send a audit trail result from contributor 1", "A AddAuditTrails call should be made to the store");
         EventHandler eventHandler = client.getLatestEventHandler();
-
         eventHandler.handleEvent(new AuditTrailResult("Contributor1", new ResultingAuditTrails(), false));
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 1,
             "Should have been just one call to store after the first result.");
         eventHandler.handleEvent(new AuditTrailResult("Contributor2", new ResultingAuditTrails(), false));
+        addStep("Send a audit trail result from contributor 2", "A AddAuditTrails call should be made to the " +
+            "store, and the collector should finish");
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 2,
             "Should have been ecactly two calls to store after the second result.");
         eventHandler.handleEvent(new CompleteEvent(null));
@@ -71,8 +77,13 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
 
     @Test(groups = {"regressiontest"})
     public void multipleIncrementTest() throws Exception {
+        addDescription("Verifies the behaviour in the case where the adit trails needs to be reteived in multiple " +
+            "requests because of MaxNumberOfResults limits.");
         MockAuditClient client = new MockAuditClient();
         MockAuditStore store = new MockAuditStore();
+
+        addStep("Start a collection with two contributors", "A call should be made to the store to find out which " +
+            "sequence number to continue from");
         IncrementalCollector collector = new IncrementalCollector("Client1", client, store, BigInteger.ONE);
         Collection<String> contributors = Arrays.asList("Contributor1", "Contributors2");
         CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
@@ -86,7 +97,8 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
 
         EventHandler eventHandler = client.getLatestEventHandler();
-
+        addStep("Send a audit trail result from contributor 1 and 2 with the PartialResults boolean set to true",
+            "Two AddAuditTrails calls should be made, but the collector should not have finished");
         eventHandler.handleEvent(new AuditTrailResult("Contributor1", new ResultingAuditTrails(), true));
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 1);
         eventHandler.handleEvent(new AuditTrailResult("Contributor2", new ResultingAuditTrails(), true));
@@ -96,6 +108,8 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         Assert.assertTrue(!collectionRunner.finished, "The collector should not have finished after the complete " +
             "event, as partialResults where received");
 
+        addStep("Send another audit trail result from the contributors, now with PartialResults set to false",
+            "Two more AddAuditTrails calls should be made and the collector should finished");
         eventHandler = client.getLatestEventHandler();
         Assert.assertEquals(store.getCallsToLargestSequenceNumber(), 4);
         eventHandler.handleEvent(new AuditTrailResult("Contributor1", new ResultingAuditTrails(), false));
@@ -114,8 +128,13 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
     public void ContributorFailureTest() throws Exception {
         addDescription("Tests that the collector is able to collect from the remaining contributors if a " +
             "contributor fails.");
+
+        addStep("", "");
         MockAuditClient client = new MockAuditClient();
         MockAuditStore store = new MockAuditStore();
+
+        addStep("Start a collection with two contributors", "A call should be made to the store to find out which " +
+            "sequence number to continue from");
         IncrementalCollector collector = new IncrementalCollector("Client1", client, store, BigInteger.ONE);
         Collection<String> contributors = Arrays.asList("Contributor1", "Contributors2");
         CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
@@ -128,6 +147,9 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
             "There should be one call for largest sequence number for each contributor for each call to the client.");
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
 
+        addStep("Send a audit trail result from contributor 1 with the PartialResults boolean set to true " +
+            "and a failed event from contributor 2",
+            "Only one AddAuditTrails calls should be made, and the collector should not have finished");
         EventHandler eventHandler = client.getLatestEventHandler();
         eventHandler.handleEvent(new ContributorFailedEvent("Contributor1", ResponseCode.REQUEST_NOT_SUPPORTED));
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
@@ -137,6 +159,17 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         Thread.sleep(100);
         Assert.assertTrue(!collectionRunner.finished, "The collector should not have finished after the complete " +
             "event, as partialResults where received");
+
+        addStep("Send another audit trail result from contributor 1 with PartialResults set to false",
+            "One more AddAuditTrails calls should be made and the collector should finished");
+        eventHandler = client.getLatestEventHandler();
+        Assert.assertEquals(store.getCallsToLargestSequenceNumber(), 3);
+        eventHandler.handleEvent(new AuditTrailResult("Contributor1", new ResultingAuditTrails(), false));
+        Assert.assertEquals(store.getCallsToAddAuditTrails(), 2,
+            "Should have been three calls to store after the second increments.");
+        eventHandler.handleEvent(new CompleteEvent(null));
+        Thread.sleep(100);
+        Assert.assertTrue(collectionRunner.finished);
     }
 
     public class CollectionRunner implements Runnable {

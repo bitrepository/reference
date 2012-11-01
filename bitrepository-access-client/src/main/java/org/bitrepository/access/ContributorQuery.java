@@ -25,7 +25,6 @@
 package org.bitrepository.access;
 
 import java.util.Date;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 
 /**
  * Used to limit a request for information elements from components in a collection.
@@ -38,7 +37,6 @@ public class ContributorQuery {
 
     /**
      * @param componentID If set, only results from the indicated component is requested.
-     * @param fileIDs If set defines the fileID to retrieve results for.
      * @param minTimestamp If set, only elements with timestamp later than or equal to <code>minTimestamp</code> are
      *                     requested.
      * @param maxTimestamp If set, only elements with timestamp earlier than or equal to <code>maxTimestamp</code> are
@@ -75,8 +73,8 @@ public class ContributorQuery {
 
     @Override
     public String toString() {
-        return getClass() + "{" +
-            "componentID='" + componentID + '\'' +
+        return getClass().getSimpleName() + "{" +
+            "componentID='" + componentID  +
             ", minTimestamp=" + minTimestamp +
             ", maxTimestamp=" + maxTimestamp +
             ", maxNumberOfResults=" + maxNumberOfResults +
