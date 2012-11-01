@@ -70,6 +70,7 @@ class GettingFile extends PerformingOperationState {
         context.getMessageSender().sendMessage(msg);
     }
 
+    @Override
     protected void handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
         throw new UnableToFinishException("Failed to get file from " + msg.getFrom() +
                 ", " + msg.getResponseInfo());

@@ -321,7 +321,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
                 (IdentifyPillarsForGetFileIDsRequest)identifyRequest, from, to);
         response.setResponseInfo(new ResponseInfo());
         response.getResponseInfo().setResponseCode(responseCode);
-        response.getResponseInfo().setResponseText("NA");
+        response.getResponseInfo().setResponseText("N/A");
         return response;
     }
 
