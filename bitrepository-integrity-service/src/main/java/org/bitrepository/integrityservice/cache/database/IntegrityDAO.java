@@ -425,14 +425,11 @@ public class IntegrityDAO {
         long startTime = System.currentTimeMillis();
         log.trace("Localizing the file ids where the checksums are consistent and setting them to the checksum state '"
                 + ChecksumState.VALID + "'.");
-        String findUniqueSql = "SELECT " + FI_CHECKSUM + " , " + FI_FILE_GUID + " FROM " + FILE_INFO_TABLE
-                + " WHERE " + FI_FILE_STATE + " != ? AND " + FI_CHECKSUM + " IS NOT NULL GROUP BY " + FI_CHECKSUM 
-                + " , " + FI_FILE_GUID;
-        String countSql = "SELECT " + FI_FILE_GUID + " , COUNT(*) as num FROM ( " + findUniqueSql + " ) as unique1 "
-                + " GROUP BY " + FI_FILE_GUID;
-        String eliminateSql = "SELECT " + FI_FILE_GUID + " FROM ( " + countSql + " ) as count1 WHERE count1.num = 1";
-        String updateSql = "UPDATE " + FILE_INFO_TABLE  + " SET " + FI_CHECKSUM_STATE + " = ? WHERE " 
-                + FI_CHECKSUM_STATE + " != ? AND " + FI_FILE_GUID + " IN ( " + eliminateSql + " )";
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_CHECKSUM_STATE + " = ? WHERE "
+                + FI_CHECKSUM_STATE + " <> ? AND EXISTS (SELECT 1 FROM " + FILE_INFO_TABLE + " AS inner_fi WHERE "
+                + "inner_fi." + FI_FILE_STATE + " <> ? AND inner_fi." + FI_CHECKSUM + " IS NOT NULL AND inner_fi."
+                + FI_FILE_GUID + " = " + FILE_INFO_TABLE + "." + FI_FILE_GUID + " GROUP BY inner_fi." + FI_FILE_GUID
+                + " HAVING COUNT(DISTINCT checksum) = 1)";
         DatabaseUtils.executeStatement(dbConnector, updateSql, ChecksumState.VALID.ordinal(), 
                 ChecksumState.VALID.ordinal(), FileState.MISSING.ordinal());
         log.debug("Marked consistent files in " + (System.currentTimeMillis() - startTime) + "ms");
