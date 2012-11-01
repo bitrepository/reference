@@ -117,7 +117,8 @@ public class IncrementalCollector {
                     log.debug("Collected and stored " +
                         auditEvent.getAuditTrailEvents().getAuditTrailEvents().getAuditTrailEvent().size() +
                         " audit trail event from " + auditEvent.getContributorID() + " in " +
-                        (System.currentTimeMillis() - startTime)/1000 + " s.");
+                        (System.currentTimeMillis() - startTime)/1000 + " s (PartialResult=" +
+                        auditEvent.isPartialResult() + ".");
                 }
             } else if (event.getEventType() == OperationEvent.OperationEventType.COMPONENT_FAILED ||
                 event.getEventType() == OperationEvent.OperationEventType.FAILED ||

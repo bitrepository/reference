@@ -118,7 +118,7 @@ public class AuditDatabaseExtractor {
                     conn.close();
                 }
             }
-            log.debug("Extracted " + res.size() + " audit trails in " + (System.currentTimeMillis() - starttime));
+            log.debug("Read " + res.size() + " audit trails in " + (System.currentTimeMillis() - starttime) + " ms");
             
             return res;
         } catch (Exception e) {

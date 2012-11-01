@@ -29,21 +29,21 @@ import org.bitrepository.bitrepositoryelements.FileAction;
  * Container for the extraction of data from the audit trail database.
  */
 class ExtractModel {
-    /** @see getFileId(). */
+    /** @see #getFileId(). */
     private String fileId;
-    /** @see getContributorId(). */
+    /** @see #getContributorId(). */
     private String contributorId;
-    /** @see getMinSeqNumber(). */
+    /** @see #getMinSeqNumber(). */
     private Long minSeqNumber;
-    /** @see getMaxSeqNumber(). */
+    /** @see #getMaxSeqNumber(). */
     private Long maxSeqNumber;
-    /** @see getActorName(). */
+    /** @see #getActorName(). */
     private String actorName;
-    /** @see getOperation(). */
+    /** @see #getOperation(). */
     private FileAction operation;
-    /** @see getStartDate(). */
+    /** @see #getStartDate(). */
     private Date startDate;
-    /** @see getEndDate(). */
+    /** @see #getEndDate(). */
     private Date endDate;
     
     /**
