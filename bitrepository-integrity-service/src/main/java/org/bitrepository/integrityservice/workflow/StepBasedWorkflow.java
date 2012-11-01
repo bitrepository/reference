@@ -49,8 +49,9 @@ public abstract class StepBasedWorkflow implements Workflow {
     protected void performStep(WorkflowStep step) {
         this.currentStep = step;
         log.info("Starting step: '" + step.getName() + "'");
+        long starttime = System.currentTimeMillis();
         step.performStep();
-        log.info("Finished step: '" + step.getName() + "'");
+        log.info("Finished step: '" + step.getName() + "' in " + (System.currentTimeMillis() - starttime) + " ms");
     }
     
     /**

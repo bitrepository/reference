@@ -38,12 +38,7 @@ public class FindMissingChecksumsStep implements WorkflowStep {
     private final IntegrityChecker checker;
     /** The dispatcher of alarms.*/
     private final IntegrityAlerter dispatcher;
-    
-    /**
-     * Constructor.
-     * @param store The storage for the integrity data.
-     * @param obsoleteTimeout The interval for a checksum timestamp to timeout and become obsolete.
-     */
+
     public FindMissingChecksumsStep(IntegrityChecker checker, IntegrityAlerter alarmDispatcher) {
         this.checker = checker;
         this.dispatcher = alarmDispatcher;

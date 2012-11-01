@@ -116,7 +116,7 @@ public class AuditTrailCollector {
             this.collector = collector;
             this.interval = interval;
             nextRun = new Date(System.currentTimeMillis() + interval);
-            log.debug("Sceduled next collection of audit trails for " + nextRun);
+            log.debug("Scheduled next collection of audit trails for " + nextRun);
         }
         
         /**
