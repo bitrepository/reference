@@ -86,23 +86,20 @@ public class IdentifyPillarsForDeleteFileRequestHandler
 
     /**
      * Method for making a successful response to the identification.
-     * @param message The request message to respond to.
+     * @param request The request request to respond to.
      */
-    private void respondSuccessfulIdentification(IdentifyPillarsForDeleteFileRequest message) {
-        // Create the response.
-        IdentifyPillarsForDeleteFileResponse reply = createFinalResponse(message);
-        
-        // set the missing variables in the reply:
-        // TimeToDeliver, IdentifyResponseInfo (ignore PillarChecksumSpec)
-        reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
-                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+    private void respondSuccessfulIdentification(IdentifyPillarsForDeleteFileRequest request) {
+        IdentifyPillarsForDeleteFileResponse response = createFinalResponse(request);
+
+        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+            getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
         irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
-        reply.setResponseInfo(irInfo);
-        
-        getMessageSender().sendMessage(reply);
+        response.setResponseInfo(irInfo);
+
+        dispatchResponse(response, request);
     }
     
     /**
@@ -117,7 +114,6 @@ public class IdentifyPillarsForDeleteFileRequestHandler
      */
     private IdentifyPillarsForDeleteFileResponse createFinalResponse(IdentifyPillarsForDeleteFileRequest msg) {
         IdentifyPillarsForDeleteFileResponse res = new IdentifyPillarsForDeleteFileResponse();
-        populateResponse(msg, res);
         res.setFileID(msg.getFileID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         

@@ -22,19 +22,17 @@
 package org.bitrepository.pillar.checksumpillar;
 
 import javax.jms.JMSException;
-
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.Pillar;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.audit.AuditTrailContributerDAO;
-import org.bitrepository.service.audit.AuditTrailManager;
-import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.service.contributor.ResponseDispatcher;
+import org.bitrepository.service.database.DBConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +44,6 @@ public class ChecksumPillar implements Pillar {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The messagebus for the pillar.*/
     private final MessageBus messageBus;
-    
     /** The cache for persisting the checksum data.*/
     private final ChecksumStore cache;
     /** The mediator for delegating the communication to the message handler.*/
@@ -67,11 +64,11 @@ public class ChecksumPillar implements Pillar {
         this.cache = refCache;
         
         log.info("Starting the checksum pillar!");
-        AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector( 
-                settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase()));
-        ContributorContext contributorContext = new ContributorContext(messageBus, settings);
-        PillarAlarmDispatcher alarms = new PillarAlarmDispatcher(contributorContext);
-        MessageHandlerContext context = new MessageHandlerContext(settings, messageBus, alarms, audits);
+        MessageHandlerContext context = new MessageHandlerContext(settings,
+            new ResponseDispatcher(settings, messageBus),
+            new PillarAlarmDispatcher(settings, messageBus),
+            new AuditTrailContributerDAO(settings, new DBConnector(
+                settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase())));
         mediator = new ChecksumPillarMediator(messageBus, context, cache);
         mediator.start();
         log.info("ReferencePillar started!");
@@ -85,7 +82,7 @@ public class ChecksumPillar implements Pillar {
             mediator.close();
             messageBus.close();
         } catch (JMSException e) {
-            log.warn("Could not close the messagebus.", e);
+            log.warn("Could not close the message bus properly.", e);
         }
     }
 }

@@ -100,7 +100,6 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         if(!missingFiles.isEmpty()) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            irInfo.setResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
             
             throw new IdentifyContributorException(irInfo);
         }
@@ -108,24 +107,19 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
     
     /**
      * Method for making a successful response to the identification.
-     * @param message The request message to respond to.
+     * @param request The request request to respond to.
      */
-    private void respondSuccesfullIdentification(IdentifyPillarsForGetChecksumsRequest message) {
-        // Create the response.
-        IdentifyPillarsForGetChecksumsResponse reply = createFinalResponse(message);
-        
-        // set the missing variables in the reply:
-        // TimeToDeliver, AuditTrailInformation, IdentifyResponseInfo
-        reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
-                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+    private void respondSuccesfullIdentification(IdentifyPillarsForGetChecksumsRequest request) {
+        IdentifyPillarsForGetChecksumsResponse response = createFinalResponse(request);
+
+        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+            getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
-        irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
-        reply.setResponseInfo(irInfo);
-        
-        // Send resulting file.
-        getMessageSender().sendMessage(reply);
+        response.setResponseInfo(irInfo);
+
+        dispatchResponse(response, request);
     }
     
     /**
@@ -143,16 +137,9 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
             IdentifyPillarsForGetChecksumsRequest msg) {
         IdentifyPillarsForGetChecksumsResponse res 
                 = new IdentifyPillarsForGetChecksumsResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(msg.getCorrelationID());
         res.setFileIDs(msg.getFileIDs());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setTo(msg.getReplyTo());
         res.setChecksumRequestForExistingFile(msg.getChecksumRequestForExistingFile());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setCollectionID(getSettings().getCollectionID());
-        res.setReplyTo(getSettings().getReceiverDestinationID());
         res.setPillarChecksumSpec(getChecksumType());
         
         return res;

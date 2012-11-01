@@ -25,15 +25,13 @@
 package org.bitrepository.pillar.referencepillar;
 
 import javax.jms.JMSException;
-
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.Pillar;
 import org.bitrepository.pillar.cache.ChecksumDAO;
 import org.bitrepository.pillar.cache.ChecksumStore;
+import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
@@ -41,7 +39,8 @@ import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMe
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.audit.AuditTrailContributerDAO;
 import org.bitrepository.service.audit.AuditTrailManager;
-import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.service.contributor.ResponseDispatcher;
+import org.bitrepository.service.database.DBConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,9 +79,11 @@ public class ReferencePillar implements Pillar {
                 settings.getReferenceSettings().getPillarSettings().getMaxAgeForChecksums().longValue());
         AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector( 
                 settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase()));
-        ContributorContext contributorContext = new ContributorContext(messageBus, settings);
-        PillarAlarmDispatcher alarms = new PillarAlarmDispatcher(contributorContext);
-        MessageHandlerContext context = new MessageHandlerContext(settings, messageBus, alarms, audits);
+        MessageHandlerContext context = new MessageHandlerContext(
+            settings,
+            new ResponseDispatcher(settings, messageBus),
+            new PillarAlarmDispatcher(settings, messageBus),
+            audits);
         mediator = new ReferencePillarMediator(messageBus, context, archive, manager);
         mediator.start();
         log.info("ReferencePillar started!");

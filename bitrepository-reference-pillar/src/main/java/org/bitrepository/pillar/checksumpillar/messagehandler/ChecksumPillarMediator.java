@@ -62,24 +62,24 @@ public class ChecksumPillarMediator extends PillarMediator {
     @Override
     protected RequestHandler[] createListOfHandlers() {
         List<RequestHandler> res = new ArrayList<RequestHandler>();
-        res.add(new IdentifyPillarsForGetFileRequestHandler(getPillarContext(), cache));
-        res.add(new GetFileRequestHandler(getPillarContext(), cache));
-        res.add(new IdentifyPillarsForGetFileIDsRequestHandler(getPillarContext(), cache));
-        res.add(new GetFileIDsRequestHandler(getPillarContext(), cache));
-        res.add(new IdentifyPillarsForGetChecksumsRequestHandler(getPillarContext(), cache));
-        res.add(new GetChecksumsRequestHandler(getPillarContext(), cache));
+        res.add(new IdentifyPillarsForGetFileRequestHandler(context, cache));
+        res.add(new GetFileRequestHandler(context, cache));
+        res.add(new IdentifyPillarsForGetFileIDsRequestHandler(context, cache));
+        res.add(new GetFileIDsRequestHandler(context, cache));
+        res.add(new IdentifyPillarsForGetChecksumsRequestHandler(context, cache));
+        res.add(new GetChecksumsRequestHandler(context, cache));
         
         res.add(new IdentifyContributorsForGetStatusRequestHandler(getContext()));
         res.add(new GetStatusRequestHandler(getContext()));
         res.add(new IdentifyContributorsForGetAuditTrailsRequestHandler(getContext()));
-        res.add(new GetAuditTrailsRequestHandler(getContext(), getPillarContext().getAuditTrailManager()));
+        res.add(new GetAuditTrailsRequestHandler(getContext(), context.getAuditTrailManager()));
         
-        res.add(new IdentifyPillarsForPutFileRequestHandler(getPillarContext(), cache));
-        res.add(new PutFileRequestHandler(getPillarContext(), cache));
-        res.add(new IdentifyPillarsForDeleteFileRequestHandler(getPillarContext(), cache));
-        res.add(new DeleteFileRequestHandler(getPillarContext(), cache));
-        res.add(new IdentifyPillarsForReplaceFileRequestHandler(getPillarContext(), cache));
-        res.add(new ReplaceFileRequestHandler(getPillarContext(), cache));
+        res.add(new IdentifyPillarsForPutFileRequestHandler(context, cache));
+        res.add(new PutFileRequestHandler(context, cache));
+        res.add(new IdentifyPillarsForDeleteFileRequestHandler(context, cache));
+        res.add(new DeleteFileRequestHandler(context, cache));
+        res.add(new IdentifyPillarsForReplaceFileRequestHandler(context, cache));
+        res.add(new ReplaceFileRequestHandler(context, cache));
         
         return res.toArray(new RequestHandler[res.size()]);
     }

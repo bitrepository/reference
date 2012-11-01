@@ -43,11 +43,8 @@ import org.slf4j.LoggerFactory;
  * All other messages than requests are considered garbage.
  */
 public abstract class PillarMediator extends AbstractContributorMediator {
-    /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-
-    /** The context for the mediator.*/
-    private final MessageHandlerContext context;
+    protected final MessageHandlerContext context;
 
     /**
      * Constructor.
@@ -55,7 +52,6 @@ public abstract class PillarMediator extends AbstractContributorMediator {
      */
     public PillarMediator(MessageBus messageBus, MessageHandlerContext context) {
         super(messageBus);
-
         this.context = context;
     }
 
@@ -67,16 +63,16 @@ public abstract class PillarMediator extends AbstractContributorMediator {
             validateBitrepositoryCollectionId(request.getCollectionID());
             handler.processRequest(request);
         } catch (IllegalArgumentException e) {
-            context.getAlarmDispatcher().handleIllegalArgumentException(e);
+            getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RequestHandlerException e) {
             log.warn("Cannot perform operation. Sending failed response. Cause: \n"
                     + e.getResponseInfo().getResponseText());
             MessageResponse response = handler.generateFailedResponse(request);
             response.setResponseInfo(e.getResponseInfo());
-            context.getMediatorContext().getDispatcher().sendMessage(response);
+            context.getResponseDispatcher().dispatchResponse(response, request);
             
-            log.trace("Stack trace for request handler exception.", e);                
-            context.getAlarmDispatcher().handleRequestException(e);
+            log.trace("Stack trace for request handler exception.", e);
+            getAlarmDispatcher().handleRequestException(e);
         } catch (RuntimeException e) {
             log.warn("Unexpected exception caught.", e);
             ResponseInfo responseInfo = new ResponseInfo();
@@ -85,22 +81,19 @@ public abstract class PillarMediator extends AbstractContributorMediator {
             
             MessageResponse response = handler.generateFailedResponse(request);
             response.setResponseInfo(responseInfo);
-            context.getMediatorContext().getDispatcher().sendMessage(response);
-            
-            context.getAlarmDispatcher().handleRuntimeExceptions(e);
+            context.getResponseDispatcher().dispatchResponse(response, request);
+
+            getAlarmDispatcher().handleRuntimeExceptions(e);
         }
     }
-    
+
     @Override
     protected ContributorContext getContext() {
-        return context.getMediatorContext();
-    }
-    
-    /**
-     * @return The pillar context.
-     */
-    protected MessageHandlerContext getPillarContext() {
         return context;
+    }
+
+    protected PillarAlarmDispatcher getAlarmDispatcher() {
+        return (PillarAlarmDispatcher)context.getAlarmDispatcher();
     }
     
     /**

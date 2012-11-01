@@ -71,24 +71,24 @@ public class ReferencePillarMediator extends PillarMediator {
     protected RequestHandler[] createListOfHandlers() {
         List<RequestHandler> handlers = new ArrayList<RequestHandler>();
         
-        handlers.add(new IdentifyPillarsForGetFileRequestHandler(getPillarContext(), archive, csManager));
-        handlers.add(new GetFileRequestHandler(getPillarContext(), archive, csManager));
-        handlers.add(new IdentifyPillarsForGetFileIDsRequestHandler(getPillarContext(), archive, csManager));
-        handlers.add(new GetFileIDsRequestHandler(getPillarContext(), archive, csManager));
-        handlers.add(new IdentifyPillarsForGetChecksumsRequestHandler(getPillarContext(), archive, csManager));
-        handlers.add(new GetChecksumsRequestHandler(getPillarContext(), archive, csManager));
+        handlers.add(new IdentifyPillarsForGetFileRequestHandler(context, archive, csManager));
+        handlers.add(new GetFileRequestHandler(context, archive, csManager));
+        handlers.add(new IdentifyPillarsForGetFileIDsRequestHandler(context, archive, csManager));
+        handlers.add(new GetFileIDsRequestHandler(context, archive, csManager));
+        handlers.add(new IdentifyPillarsForGetChecksumsRequestHandler(context, archive, csManager));
+        handlers.add(new GetChecksumsRequestHandler(context, archive, csManager));
         
         handlers.add(new IdentifyContributorsForGetStatusRequestHandler(getContext()));
         handlers.add(new GetStatusRequestHandler(getContext()));
         handlers.add(new IdentifyContributorsForGetAuditTrailsRequestHandler(getContext()));
-        handlers.add(new GetAuditTrailsRequestHandler(getContext(), getPillarContext().getAuditTrailManager()));
+        handlers.add(new GetAuditTrailsRequestHandler(getContext(), context.getAuditTrailManager()));
         
-        handlers.add(new IdentifyPillarsForPutFileRequestHandler(getPillarContext(), archive, csManager));
-        handlers.add(new PutFileRequestHandler(getPillarContext(), archive, csManager));
-        handlers.add(new IdentifyPillarsForDeleteFileRequestHandler(getPillarContext(), archive, csManager));
-        handlers.add(new DeleteFileRequestHandler(getPillarContext(), archive, csManager));
-        handlers.add(new IdentifyPillarsForReplaceFileRequestHandler(getPillarContext(), archive, csManager));
-        handlers.add(new ReplaceFileRequestHandler(getPillarContext(), archive, csManager));
+        handlers.add(new IdentifyPillarsForPutFileRequestHandler(context, archive, csManager));
+        handlers.add(new PutFileRequestHandler(context, archive, csManager));
+        handlers.add(new IdentifyPillarsForDeleteFileRequestHandler(context, archive, csManager));
+        handlers.add(new DeleteFileRequestHandler(context, archive, csManager));
+        handlers.add(new IdentifyPillarsForReplaceFileRequestHandler(context, archive, csManager));
+        handlers.add(new ReplaceFileRequestHandler(context, archive, csManager));
         
         return handlers.toArray(new RequestHandler[handlers.size()]);
     }    

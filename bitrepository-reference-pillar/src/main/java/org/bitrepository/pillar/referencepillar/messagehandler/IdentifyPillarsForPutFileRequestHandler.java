@@ -124,51 +124,44 @@ public class IdentifyPillarsForPutFileRequestHandler
     
     /**
      * Method for sending a response for 'DUPLICATE_FILE_FAILURE'.
-     * @param message The message to base the response upon.
+     * @param request The request to base the response upon.
      */
-    protected void respondDuplicateFile(IdentifyPillarsForPutFileRequest message) {
-        log.debug("Creating DuplicateFile reply for '" + message.getCorrelationID() + "'");
-        IdentifyPillarsForPutFileResponse reply = createFinalResponse(message);
+    protected void respondDuplicateFile(IdentifyPillarsForPutFileRequest request) {
+        IdentifyPillarsForPutFileResponse response = createFinalResponse(request);
 
-        // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
-        reply.setReplyTo(getSettings().getReceiverDestinationID());
-        reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
-                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
-        reply.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
-        reply.setChecksumDataForExistingFile(getCsManager().getChecksumDataForFile(message.getFileID(), 
-                ChecksumUtils.getDefault(getSettings())));
+        response.setReplyTo(getSettings().getReceiverDestinationID());
+        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+            getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+        response.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
+        response.setChecksumDataForExistingFile(getCsManager().getChecksumDataForFile(request.getFileID(),
+            ChecksumUtils.getDefault(getSettings())));
         
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
-        irInfo.setResponseText("The file '" + message.getFileID() 
-                + "' already exists within the archive.");
-        reply.setResponseInfo(irInfo);
+        response.setResponseInfo(irInfo);
 
-        log.debug("Sending IdentifyPillarsForPutfileResponse: " + reply);
-        getMessageSender().sendMessage(reply);
+        dispatchResponse(response, request);
     }
     
     /**
      * Method for sending a positive response for putting this file.
-     * @param message The message to respond to.
+     * @param request The request to respond to.
      */
-    protected void respondSuccesfullIdentification(IdentifyPillarsForPutFileRequest message)  {
-        log.debug("Creating positive reply for '" + message.getCorrelationID() + "'");
-        IdentifyPillarsForPutFileResponse reply = createFinalResponse(message);
+    protected void respondSuccesfullIdentification(IdentifyPillarsForPutFileRequest request)  {
+        IdentifyPillarsForPutFileResponse response = createFinalResponse(request);
 
         // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
-        reply.setReplyTo(getSettings().getReceiverDestinationID());
-        reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
-                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
-        reply.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
+        response.setReplyTo(getSettings().getContributorDestinationID());
+        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+            getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+        response.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
         
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
         irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
-        reply.setResponseInfo(irInfo);
+        response.setResponseInfo(irInfo);
 
-        log.debug("Sending IdentifyPillarsForPutfileResponse: " + reply);
-        getMessageSender().sendMessage(reply);
+        dispatchResponse(response, request);
     }
     
     /**
@@ -184,7 +177,6 @@ public class IdentifyPillarsForPutFileRequestHandler
      */
     private IdentifyPillarsForPutFileResponse createFinalResponse(IdentifyPillarsForPutFileRequest msg) {
         IdentifyPillarsForPutFileResponse res = new IdentifyPillarsForPutFileResponse();
-        populateResponse(msg, res);
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         
         return res;

@@ -24,6 +24,7 @@ package org.bitrepository.protocol.messagebus.logger;
 
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.protocol.utils.MessageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,7 +100,7 @@ public class DefaultMessagingLogger implements MessageLogger {
 
     private StringBuilder appendMessageIDString(StringBuilder messageSB, Message message) {
         messageSB.append(message.getClass().getSimpleName());
-        messageSB.append("(" + getShortConversationID(message.getCorrelationID()) + ")");
+        messageSB.append("(" + MessageUtils.getShortConversationID(message.getCorrelationID()) + ")");
         return messageSB;
     }
 
@@ -107,22 +108,6 @@ public class DefaultMessagingLogger implements MessageLogger {
         messageSB.append(response.getResponseInfo().getResponseCode() + "(" +
             response.getResponseInfo().getResponseText() + ")");
         return messageSB;
-    }
-
-    /**
-     * Returns a shorted conversationID. Only the first part up til the first '-' is used
-     * (but at least 4 long).
-     */
-    private String getShortConversationID(String fullConversationID) {
-        if (fullConversationID.length() > 4) {
-            if (fullConversationID.contains("-")) {
-                return fullConversationID.substring(0, fullConversationID.indexOf("-", 4));
-            } else {
-                return fullConversationID.substring(0, 5);
-            }
-        } else {
-            return fullConversationID;
-        }
     }
 
     protected StringBuilder appendCustomInfo(StringBuilder messageSB, Message message) {

@@ -34,7 +34,7 @@ import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.PillarMediator;
 import org.bitrepository.service.audit.MockAuditManager;
-import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.contributor.handler.RequestHandler;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.testng.Assert;
@@ -48,9 +48,11 @@ public class MediatorTest extends DefaultFixturePillarTest {
     @BeforeMethod (alwaysRun=true)
     public void initialiseTest() throws Exception {
         audits = new MockAuditManager();
-        ContributorContext contributorContext = new ContributorContext(messageBus, settingsForCUT);
         context = new MessageHandlerContext(
-                settingsForCUT, messageBus, new PillarAlarmDispatcher(contributorContext), audits);
+                settingsForCUT,
+            new ResponseDispatcher(settingsForCUT, messageBus),
+            new PillarAlarmDispatcher(settingsForCUT, messageBus),
+            audits);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

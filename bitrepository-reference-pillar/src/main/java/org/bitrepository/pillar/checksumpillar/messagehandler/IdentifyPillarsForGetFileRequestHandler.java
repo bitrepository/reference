@@ -80,13 +80,12 @@ public class IdentifyPillarsForGetFileRequestHandler extends ChecksumPillarMessa
      * <br/> - AuditTrailInformation
      * <br/> - IdentifyResponseInfo
      * 
-     * @param msg The IdentifyPillarsForGetFileRequest to base the response on.
+     * @param request The IdentifyPillarsForGetFileRequest to base the response on.
      * @return The response to the request.
      */
-    private IdentifyPillarsForGetFileResponse createFinalResponse(IdentifyPillarsForGetFileRequest msg) {
+    private IdentifyPillarsForGetFileResponse createFinalResponse(IdentifyPillarsForGetFileRequest request) {
         IdentifyPillarsForGetFileResponse res = new IdentifyPillarsForGetFileResponse();
-        populateResponse(msg, res);
-        res.setFileID(msg.getFileID());
+        res.setFileID(request.getFileID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         
         return res;

@@ -28,9 +28,9 @@ import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.messagebus.MessageSender;
 import org.bitrepository.service.AlarmDispatcher;
-import org.bitrepository.service.contributor.ContributorContext;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.RequestHandlerException;
 
@@ -38,16 +38,13 @@ import org.bitrepository.service.exception.RequestHandlerException;
  * The class for dispatching alarms.
  */
 public class PillarAlarmDispatcher extends AlarmDispatcher {
-    /** The settings for this AlarmDispatcher.*/
-    private final ContributorContext context;
     
     /**
-     * Constructor.
-     * @param context The context for the contributor for this alarm dispatcher.
+     * @param settings The settings for this alarm dispatcher.
+     * @param sender The sender for this alarm dispatcher.
      */
-    public PillarAlarmDispatcher(ContributorContext context) {
-        super(context, context.getSettings().getReferenceSettings().getPillarSettings().getAlarmLevel());
-        this.context = context;
+    public PillarAlarmDispatcher(Settings settings, MessageSender sender) {
+        super(settings, sender, settings.getReferenceSettings().getPillarSettings().getAlarmLevel());
     }
     
     /**
@@ -57,17 +54,14 @@ public class PillarAlarmDispatcher extends AlarmDispatcher {
      */
     public void handleIllegalArgumentException(IllegalArgumentException exception) {
         ArgumentValidator.checkNotNull(exception, "IllegalArgumentException exception");
-        
-        // create a descriptor.
+
         Alarm ad = new Alarm();
         ad.setAlarmCode(AlarmCode.INCONSISTENT_REQUEST);
         ad.setAlarmText(exception.getMessage());
-        ad.setAlarmRaiser(context.getSettings().getComponentID());
-        ad.setOrigDateTime(CalendarUtils.getNow());
         
         warning(ad);
     }
-    
+
     /**
      * Sends an alarm for a RuntimeException. Such exceptions are sent unless the AlarmLevel is 'EMERGENCY',
      * otherwise the exception is just logged.
@@ -75,17 +69,14 @@ public class PillarAlarmDispatcher extends AlarmDispatcher {
      */
     public void handleRuntimeExceptions(RuntimeException exception) {
         ArgumentValidator.checkNotNull(exception, "RuntimeException exception");
-        
-        // create a descriptor.
+
         Alarm alarm = new Alarm();
         alarm.setAlarmCode(AlarmCode.COMPONENT_FAILURE);
         alarm.setAlarmText(exception.toString());
-        alarm.setAlarmRaiser(context.getSettings().getComponentID());
-        alarm.setOrigDateTime(CalendarUtils.getNow());
-        
+
         error(alarm);
     }
-    
+
     /**
      * Handles the case when the request causes a RequestHandlerException.
      * @param e The exception causing this alarm case.
@@ -101,10 +92,8 @@ public class PillarAlarmDispatcher extends AlarmDispatcher {
         } else {
             alarm.setAlarmCode(AlarmCode.FAILED_OPERATION);
         }
-        
-        alarm.setAlarmRaiser(context.getSettings().getComponentID());
+
         alarm.setAlarmText(e.getResponseInfo().getResponseText());
-        alarm.setOrigDateTime(CalendarUtils.getNow());
         
         if(e instanceof IllegalOperationException) {
             error(alarm);

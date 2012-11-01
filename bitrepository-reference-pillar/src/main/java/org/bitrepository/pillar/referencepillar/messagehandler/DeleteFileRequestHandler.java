@@ -140,20 +140,16 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
 
     /**
      * The method for sending a progress response telling, that the operation is about to be performed.
-     * @param message The request for the DeleteFile operation.
+     * @param request The request for the DeleteFile operation.
      */
-    protected void sendProgressMessage(DeleteFileRequest message) {
-        // make ProgressResponse to tell that we are handling the requested operation.
-        DeleteFileProgressResponse pResponse = createDeleteFileProgressResponse(message);
-        
-        // set missing variables in the message: ResponseInfo
+    protected void sendProgressMessage(DeleteFileRequest request) {
+        DeleteFileProgressResponse response = createDeleteFileProgressResponse(request);
+
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
-        prInfo.setResponseText("Starting to delete the file.");
-        pResponse.setResponseInfo(prInfo);
+        response.setResponseInfo(prInfo);
 
-        // Send the ProgressResponse
-        getMessageSender().sendMessage(pResponse);
+        dispatchResponse(response, request);
     }
     
     /**
@@ -187,20 +183,17 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
 
     /**
      * Method for sending the final response.
-     * @param message The message to respond to.
+     * @param request The request to respond to.
      * @param requestedChecksum The results of the requested checksums
      */
-    protected void sendFinalResponse(DeleteFileRequest message, ChecksumDataForFileTYPE requestedChecksum) {
-        // make ProgressResponse to tell that we are handling this.
-        DeleteFileFinalResponse fResponse = createFinalResponse(message);
-        fResponse.setChecksumDataForExistingFile(requestedChecksum);
+    protected void sendFinalResponse(DeleteFileRequest request, ChecksumDataForFileTYPE requestedChecksum) {
+        DeleteFileFinalResponse response = createFinalResponse(request);
+        response.setChecksumDataForExistingFile(requestedChecksum);
         ResponseInfo frInfo = new ResponseInfo();
         frInfo.setResponseCode(ResponseCode.OPERATION_COMPLETED);
-        frInfo.setResponseText("Operation successful performed.");
-        fResponse.setResponseInfo(frInfo);
+        response.setResponseInfo(frInfo);
 
-        // send the FinalResponse.
-        getMessageSender().sendMessage(fResponse);
+        dispatchResponse(response, request);
     }
     
     /**
@@ -208,13 +201,12 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
      * following fields:
      * <br/> - ResponseInfo
      * 
-     * @param msg The DeleteFileRequest to base the progress response on.
+     * @param request The DeleteFileRequest to base the progress response on.
      * @return The DeleteFileProgressResponse based on the request.
      */
-    private DeleteFileProgressResponse createDeleteFileProgressResponse(DeleteFileRequest message) {
+    private DeleteFileProgressResponse createDeleteFileProgressResponse(DeleteFileRequest request) {
         DeleteFileProgressResponse res = new DeleteFileProgressResponse();
-        populateResponse(message, res);
-        res.setFileID(message.getFileID());
+        res.setFileID(request.getFileID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         
         return res;
@@ -231,7 +223,6 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
      */
     private DeleteFileFinalResponse createFinalResponse(DeleteFileRequest msg) {
         DeleteFileFinalResponse res = new DeleteFileFinalResponse();
-        populateResponse(msg, res);
         res.setFileID(msg.getFileID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
 

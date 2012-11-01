@@ -34,7 +34,7 @@ import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.service.audit.MockAuditManager;
-import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -68,11 +68,11 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
         csCache = new MemoryCache();
         archive = new ReferenceArchive(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir());
         audits = new MockAuditManager();
-        ContributorContext contributorContext = new ContributorContext(messageBus, settingsForCUT);
         context = new MessageHandlerContext(
                 settingsForCUT,
-                messageBus,
-                new PillarAlarmDispatcher(contributorContext), audits);
+                new ResponseDispatcher(settingsForCUT, messageBus),
+                new PillarAlarmDispatcher(settingsForCUT, messageBus),
+                audits);
         csManager = new ReferenceChecksumManager(archive, csCache, ChecksumUtils.getDefault(context.getSettings()),
                 3600000L);
         mediator = new ReferencePillarMediator(messageBus, context, archive, csManager);

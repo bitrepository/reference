@@ -25,14 +25,14 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
-import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.monitoringservice.status.ComponentStatus;
 import org.bitrepository.monitoringservice.status.StatusStore;
+import org.bitrepository.protocol.messagebus.MessageSender;
 import org.bitrepository.service.AlarmDispatcher;
-import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.settings.referencesettings.AlarmLevel;
 
 /**
  * Class for the monitoring service keep a watch on non responding components, and send alarms if needed.
@@ -44,14 +44,13 @@ public class BasicMonitoringServiceAlerter extends AlarmDispatcher implements Mo
     private final BigInteger maxRetries;
     
     /**
-     * Constructor.
-     * @param context The context for the dispatcher.
      * @param statusStore The store for the status results from the components.
      */
-    public BasicMonitoringServiceAlerter(ContributorContext context, StatusStore statusStore) {
-        super(context);
+    public BasicMonitoringServiceAlerter(
+        Settings settings, MessageSender sender, AlarmLevel alarmLevel, StatusStore statusStore) {
+        super(settings, sender, alarmLevel);
         this.statusStore = statusStore;
-        maxRetries = context.getSettings().getReferenceSettings().getMonitoringServiceSettings().getMaxRetries();
+        maxRetries = settings.getReferenceSettings().getMonitoringServiceSettings().getMaxRetries();
     }
     
     @Override
@@ -71,8 +70,6 @@ public class BasicMonitoringServiceAlerter extends AlarmDispatcher implements Mo
         
         if(!nonRespondingComponents.isEmpty()) {
             Alarm alarm = new Alarm();
-            alarm.setOrigDateTime(CalendarUtils.getNow());
-            alarm.setAlarmRaiser(context.getSettings().getReferenceSettings().getMonitoringServiceSettings().getID());
             alarm.setAlarmCode(AlarmCode.COMPONENT_FAILURE);
             alarm.setAlarmText("The following components has become unresponsive: " 
                     + nonRespondingComponents.toString());

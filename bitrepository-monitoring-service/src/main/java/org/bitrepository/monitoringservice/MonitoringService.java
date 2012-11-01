@@ -36,7 +36,7 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.LifeCycledService;
-import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,11 +63,9 @@ public class MonitoringService implements LifeCycledService {
      */
     public MonitoringService(Settings settings, SecurityManager securityManager) {
         this.settings = settings;
-        ContributorContext context = new ContributorContext(
-                MessageBusManager.getMessageBus(settings, securityManager),
-                settings);
+        MessageBus messageBus = MessageBusManager.getMessageBus(settings, securityManager);
         statusStore = new ComponentStatusStore(settings.getCollectionSettings().getGetStatusSettings().getContributorIDs());
-        alerter = new BasicMonitoringServiceAlerter(context, statusStore);
+        alerter = new BasicMonitoringServiceAlerter(settings, messageBus, AlarmLevel.ERROR, statusStore);
         getStatusClient = AccessComponentFactory.getInstance().createGetStatusClient(settings, securityManager,
                 settings.getReferenceSettings().getMonitoringServiceSettings().getID());
         collector = new StatusCollector(getStatusClient, settings, statusStore, alerter);

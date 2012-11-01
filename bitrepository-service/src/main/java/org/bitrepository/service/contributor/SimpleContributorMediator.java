@@ -27,6 +27,7 @@ import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.handler.GetAuditTrailsRequestHandler;
 import org.bitrepository.service.contributor.handler.GetStatusRequestHandler;
@@ -42,7 +43,7 @@ import java.util.List;
 
 /**
  * Simple implementation of a contributor mediator.
- * It supports the handling of the 'GetStatus' identification and operation.
+ * It supports the handling of the GetStatus and GetAuditTrail operations.
  * 
  * If the optional AuditTrailManager is given as argument, then this mediator will also be able to handle the 
  * GetAuditTrails identification and operation. 
@@ -63,7 +64,10 @@ public class SimpleContributorMediator extends AbstractContributorMediator {
      */
     public SimpleContributorMediator(MessageBus messageBus, Settings settings, AuditTrailManager auditManager) {
         super(messageBus);
-        context = new ContributorContext(messageBus, settings);
+        context = new ContributorContext(
+            new ResponseDispatcher(settings, messageBus),
+            new AlarmDispatcher(settings, messageBus),
+            settings);
         this.auditManager = auditManager;
     }
 
@@ -97,7 +101,7 @@ public class SimpleContributorMediator extends AbstractContributorMediator {
             log.info("Invalid Message exception caught. Sending failed response.", e);
             MessageResponse response = handler.generateFailedResponse(request);
             response.setResponseInfo(e.getResponseInfo());
-            context.getDispatcher().sendMessage(response);            
+            context.getResponseDispatcher().dispatchResponse(response, request);
         } catch (Exception e) {
             log.warn("Unexpected exception caught.", e);
             ResponseInfo responseInfo = new ResponseInfo();
@@ -106,7 +110,7 @@ public class SimpleContributorMediator extends AbstractContributorMediator {
             
             MessageResponse response = handler.generateFailedResponse(request);
             response.setResponseInfo(responseInfo);
-            context.getDispatcher().sendMessage(response);
+            context.getResponseDispatcher().dispatchResponse(response, request);
         }
     }
 }

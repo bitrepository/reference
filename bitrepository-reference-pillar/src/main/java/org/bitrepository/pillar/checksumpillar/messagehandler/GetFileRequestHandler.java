@@ -76,15 +76,14 @@ public class GetFileRequestHandler extends ChecksumPillarMessageHandler<GetFileR
      * following fields:
      * <br/> - FinalResponseInfo
      * 
-     * @param msg The GetFileRequest to base the final response on.
+     * @param request The GetFileRequest to base the final response on.
      * @return The GetFileFinalResponse based on the request.
      */
-    private GetFileFinalResponse createFinalResponse(GetFileRequest msg) {
+    private GetFileFinalResponse createFinalResponse(GetFileRequest request) {
         GetFileFinalResponse res = new GetFileFinalResponse();
-        populateResponse(msg, res);
-        res.setFileAddress(msg.getFileAddress());
-        res.setFileID(msg.getFileID());
-        res.setFilePart(msg.getFilePart());
+        res.setFileAddress(request.getFileAddress());
+        res.setFileID(request.getFileID());
+        res.setFilePart(request.getFilePart());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
 
         return res;

@@ -81,10 +81,9 @@ public class GetStatusRequestHandler extends AbstractRequestHandler<GetStatusReq
      */
     private void responseProgress(GetStatusRequest request) {
         GetStatusProgressResponse response = new GetStatusProgressResponse();
-        populateResponse(request, response);
         response.setResponseInfo(ResponseInfoUtils.getInitialProgressResponse());
         response.setContributor(getContext().getSettings().getComponentID());
-        getContext().getDispatcher().sendMessage(response);
+        getContext().getResponseDispatcher().dispatchResponse(response, request);
     }
     
     /**
@@ -100,7 +99,7 @@ public class GetStatusRequestHandler extends AbstractRequestHandler<GetStatusReq
         info.setResponseText("Returning status");
         response.setResponseInfo(info);
 
-        getContext().getDispatcher().sendMessage(response);
+        getContext().getResponseDispatcher().dispatchResponse(response, request);
     }
     
     /**
@@ -114,9 +113,7 @@ public class GetStatusRequestHandler extends AbstractRequestHandler<GetStatusReq
      */
     private GetStatusFinalResponse createFinalResponse(GetStatusRequest request) {
         GetStatusFinalResponse response = new GetStatusFinalResponse();
-        populateResponse(request, response);
         response.setContributor(getContext().getSettings().getComponentID());
-
         return response;
     }
 

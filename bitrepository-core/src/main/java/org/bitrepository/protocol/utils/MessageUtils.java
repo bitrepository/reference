@@ -86,4 +86,26 @@ public class MessageUtils {
                 responseCode.equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS)
         );
     }
+
+    public static String createMessageIdentifier(Message message) {
+        return message.getClass().getSimpleName() + "(" +
+            getShortConversationID(message.getCorrelationID())+ ")";
+    }
+
+
+    /**
+     * Returns a shorted conversationID. Only the first part up til the first '-' is used
+     * (but at least 4 long).
+     */
+    public static String getShortConversationID(String fullConversationID) {
+        if (fullConversationID.length() > 4) {
+            if (fullConversationID.contains("-")) {
+                return fullConversationID.substring(0, fullConversationID.indexOf("-", 4));
+            } else {
+                return fullConversationID.substring(0, 5);
+            }
+        } else {
+            return fullConversationID;
+        }
+    }
 }

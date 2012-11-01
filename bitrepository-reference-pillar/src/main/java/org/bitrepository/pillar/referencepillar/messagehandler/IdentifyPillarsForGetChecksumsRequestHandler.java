@@ -101,32 +101,27 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
     
     /**
      * Method for making a successful response to the identification.
-     * @param message The request message to respond to.
+     * @param request The request to respond to.
      */
-    private void respondSuccesfullIdentification(IdentifyPillarsForGetChecksumsRequest message) {
-        // Create the response.
-        IdentifyPillarsForGetChecksumsResponse reply = createFinalResponse(message);
-        
-        // set the missing variables in the reply:
-        // TimeToDeliver, AuditTrailInformation, IdentifyResponseInfo
-        reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
-                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
-        
+    private void respondSuccesfullIdentification(IdentifyPillarsForGetChecksumsRequest request) {
+        IdentifyPillarsForGetChecksumsResponse response = createFinalResponse(request);
+
+        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+            getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
         irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
-        reply.setResponseInfo(irInfo);
+        response.setResponseInfo(irInfo);
         
-        // Send resulting file.
-        getMessageSender().sendMessage(reply);
+        getContext().getResponseDispatcher().dispatchResponse(response, request);
     }
     
     /**
      * Creates a IdentifyPillarsForGetChecksumsResponse based on a 
      * IdentifyPillarsForGetFileRequest. The following fields are not inserted:
-     * <br/> - TimeToDeliver
      * <br/> - AuditTrailInformation
-     * <br/> - IdentifyResponseInfo
+     * <br/> - ResponseInfo
      * <br/> - PillarChecksumSpec
      * 
      * @param msg The IdentifyPillarsForGetFileRequest to base the response on.
@@ -134,7 +129,6 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
      */
     private IdentifyPillarsForGetChecksumsResponse createFinalResponse(IdentifyPillarsForGetChecksumsRequest msg) {
         IdentifyPillarsForGetChecksumsResponse res = new IdentifyPillarsForGetChecksumsResponse();
-        populateResponse(msg, res);
         res.setFileIDs(msg.getFileIDs());
         res.setChecksumRequestForExistingFile(msg.getChecksumRequestForExistingFile());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());

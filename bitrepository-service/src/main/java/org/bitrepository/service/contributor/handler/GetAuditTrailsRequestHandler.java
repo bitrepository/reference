@@ -92,19 +92,18 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
     
     /**
      * The method for sending a progress response telling, that the operation is about to be performed.
-     * @param message The request for the GetStatus operation.
+     * @param request The request for the GetStatus operation.
      */
-    protected void sendProgressMessage(GetAuditTrailsRequest message) {
-        GetAuditTrailsProgressResponse response = createProgressResponse(message);
+    protected void sendProgressMessage(GetAuditTrailsRequest request) {
+        GetAuditTrailsProgressResponse response = createProgressResponse(request);
         
-        // set missing variables in the message: ResponseInfo
+        // set missing variables in the request: ResponseInfo
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Starting to extract the requested audit trails.");
         response.setResponseInfo(prInfo);
-        
-        // Send the ProgressResponse
-        getContext().getDispatcher().sendMessage(response);
+
+        getContext().getResponseDispatcher().dispatchResponse(response, request);
     }
     
     /**
@@ -151,19 +150,18 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
 
     /**
      * Method for sending a positive final response.
-     * @param message The message to respond to.
+     * @param request The request to respond to.
      * @param resultingAudits The retrieved audit trails.
      */
-    protected void sendFinalResponse(GetAuditTrailsRequest message, ResultingAuditTrails resultingAudits) {
-        GetAuditTrailsFinalResponse response = createFinalResponse(message);
+    protected void sendFinalResponse(GetAuditTrailsRequest request, ResultingAuditTrails resultingAudits) {
+        GetAuditTrailsFinalResponse response = createFinalResponse(request);
         response.setResultingAuditTrails(resultingAudits);
         
         ResponseInfo responseInfo = new ResponseInfo();
         responseInfo.setResponseCode(ResponseCode.OPERATION_COMPLETED);
-        responseInfo.setResponseText("OperationSucessful performed.");
         response.setResponseInfo(responseInfo);
 
-        getContext().getDispatcher().sendMessage(response);
+        getContext().getResponseDispatcher().dispatchResponse(response, request);
     }
     
     /**
@@ -176,7 +174,6 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
      */
     private GetAuditTrailsProgressResponse createProgressResponse(GetAuditTrailsRequest message) {
         GetAuditTrailsProgressResponse res = new GetAuditTrailsProgressResponse();
-        populateResponse(message, res);
         res.setContributor(getContext().getSettings().getComponentID());
         res.setResultAddress(message.getResultAddress());
         
@@ -193,7 +190,6 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
      */
     protected GetAuditTrailsFinalResponse createFinalResponse(GetAuditTrailsRequest request) {
         GetAuditTrailsFinalResponse res = new GetAuditTrailsFinalResponse();
-        populateResponse(request, res);
         res.setContributor(getContext().getSettings().getComponentID());
         
         return res;

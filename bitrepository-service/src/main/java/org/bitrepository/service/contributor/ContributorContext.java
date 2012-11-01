@@ -22,36 +22,30 @@
 package org.bitrepository.service.contributor;
 
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.service.AlarmDispatcher;
 
 /**
  * The context for the contributor mediator.
  */
 public class ContributorContext {
-    /** @see #getDispatcher().*/
-    private final MessageSender dispatcher;
-    /** @see #getSettings().*/
+    private final ResponseDispatcher responseDispatcher;
+    private final AlarmDispatcher alarmDispatcher;
     private final Settings settings;
-    /**
-     * Constructor.
-     * @param dispatcher The dispatcher of messages.
-     * @param settings The settings.
-     */
-    public ContributorContext(MessageSender dispatcher, Settings settings) {
-        this.dispatcher = dispatcher;
+
+    public ContributorContext(ResponseDispatcher responseDispatcher, AlarmDispatcher alarmDispatcher, Settings settings) {
+        this.responseDispatcher = responseDispatcher; this.alarmDispatcher = alarmDispatcher;
+
         this.settings = settings;
     }
 
-    /**
-     * @return Message sender for this context.
-     */
-    public MessageSender getDispatcher() {
-        return dispatcher;
+    public ResponseDispatcher getResponseDispatcher() {
+        return responseDispatcher;
     }
 
-    /**
-     * @return The settings for this context.
-     */
+    public AlarmDispatcher getAlarmDispatcher() {
+        return alarmDispatcher;
+    }
+
     public Settings getSettings() {
         return settings;
     }

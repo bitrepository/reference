@@ -23,7 +23,6 @@ package org.bitrepository.service.contributor.handler;
 
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.protocol.ProtocolVersionLoader;
 import org.bitrepository.service.contributor.ContributorContext;
 
 /**
@@ -41,36 +40,18 @@ public abstract class AbstractRequestHandler<T> implements RequestHandler<T> {
     protected AbstractRequestHandler(ContributorContext context) {
         this.context = context;
     }
-    
-    /**
-     * Completes and sends a given response.
-     * All the values of the specific response elements has to be set, including the ResponseInfo.
-     * <br/> Sets the fields:
-     * <br/> CollectionID
-     * <br/> CorrelationID
-     * <br/> From
-     * <br/> MinVersion
-     * <br/> ReplyTo
-     * <br/> To
-     * <br/> Version
-     * 
-     * @param originalRequest The original request to respond to.
-     * @param response The response which only needs the basic information to be send.
-     */
-    protected void populateResponse(MessageRequest originalRequest, MessageResponse response){
-        response.setCollectionID(getContext().getSettings().getCollectionID());
-        response.setCorrelationID(originalRequest.getCorrelationID());
-        response.setFrom(getContext().getSettings().getComponentID());
-        response.setMinVersion(ProtocolVersionLoader.loadProtocolVersion().getMinVersion());
-        response.setReplyTo(getContext().getSettings().getReceiverDestinationID());
-        response.setTo(originalRequest.getReplyTo());
-        response.setVersion(ProtocolVersionLoader.loadProtocolVersion().getVersion());
-    }
 
     /**
      * @return The handler context as defined in the concrete classes.
      */
     protected ContributorContext getContext() {
         return context;
+    }
+
+    /**
+     * Delegates to the response dispatchers dispatchResponse method.
+     */
+    protected void dispatchResponse(MessageResponse response, MessageRequest request) {
+        context.getResponseDispatcher().dispatchResponse(response, request);
     }
 }

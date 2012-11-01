@@ -29,7 +29,6 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.protocol.ProtocolVersionLoader;
-import org.bitrepository.protocol.messagebus.MessageSender;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.handler.AbstractRequestHandler;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -61,24 +60,17 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
      * @param context The context to use for message handling.
      */
     protected PillarMessageHandler(MessageHandlerContext context) {
-        super(context.getMediatorContext());
+        super(context);
         ArgumentValidator.checkNotNull(context, "MessageHandlerContext context");
         this.context = context;
         this.fileIdValidator = new FileIDValidator(context.getSettings());
     }
 
     /**
-     * @return The messagebus for this message handler.
-     */
-    protected MessageSender getMessageSender() {
-        return context.getMessageBus();
-    }
-
-    /**
      * @return The settings for this message handler.
      */
     protected Settings getSettings() {
-        return context.getMediatorContext().getSettings();
+        return context.getSettings();
     }
     
     /**

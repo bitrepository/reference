@@ -27,7 +27,6 @@ package org.bitrepository.integrityservice;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
-import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.alerter.IntegrityAlarmDispatcher;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
@@ -42,9 +41,10 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.audit.AuditTrailContributerDAO;
 import org.bitrepository.service.audit.AuditTrailManager;
-import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.scheduler.ServiceScheduler;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
+import org.bitrepository.settings.referencesettings.AlarmLevel;
 
 /**
  * Provides access to the different component in the integrity module (Spring/IOC wannabe)
@@ -144,14 +144,13 @@ public final class IntegrityServiceComponentFactory {
      */
     public IntegrityService createIntegrityService(Settings settings, SecurityManager securityManager) {
         MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
-        ContributorContext context = new ContributorContext(messageBus, settings);
         AuditTrailManager auditManager = new AuditTrailContributerDAO(settings, new DBConnector( 
                 settings.getReferenceSettings().getIntegrityServiceSettings().getAuditTrailContributerDatabase()));
         
         IntegrityModel model = getCachedIntegrityInformationStorage(settings);
         ServiceScheduler scheduler = getIntegrityInformationScheduler(settings);
         IntegrityChecker checker = getIntegrityChecker(settings, model, auditManager);
-        IntegrityAlerter alarmDispatcher = new IntegrityAlarmDispatcher(context);
+        IntegrityAlerter alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus, AlarmLevel.ERROR);
         
         IntegrityInformationCollector collector = getIntegrityInformationCollector( 
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 

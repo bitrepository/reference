@@ -123,25 +123,22 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
         if(!getCache().hasFile(fileids.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            irInfo.setResponseText("Missing the file: '" + fileids.getFileID() + "'");
             throw new InvalidMessageException(irInfo);
         }
     }
     
     /**
-     * Method for creating and sending the initial progress message for accepting the operation.
-     * @param message The message to base the response upon.
+     * Method for creating and sending the initial progress request for accepting the operation.
+     * @param request The request to base the response upon.
      */
-    private void sendInitialProgressMessage(GetFileIDsRequest message) {
-        GetFileIDsProgressResponse pResponse = createProgressResponse(message);
+    private void sendInitialProgressMessage(GetFileIDsRequest request) {
+        GetFileIDsProgressResponse response = createProgressResponse(request);
         
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
-        prInfo.setResponseText("Operation accepted. Starting to locate files.");
-        pResponse.setResponseInfo(prInfo);
+        response.setResponseInfo(prInfo);
 
-        // Send the ProgressResponse
-        getMessageSender().sendMessage(pResponse);
+        dispatchResponse(response, request);
     }
     
     /**
@@ -208,7 +205,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
      * Method for creating a file containing the list of calculated checksums.
      * 
      * @param message The GetChecksumMessage requesting the checksum calculations.
-     * @param checksumList The list of checksums to put into the list.
+     * @param fileIDs The list of checksums to put into the list.
      * @return A file containing all the checksums in the list.
      * @throws IOException If a problem occurs during accessing or handling the data.
      * @throws JAXBException If the resulting structure cannot be serialized or if it is invalid.
@@ -269,53 +266,50 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
     
     /**
      * Send a positive final response telling that the operation has successfully finished.
-     * @param message The message to base the final response upon.
+     * @param request The request to base the final response upon.
      * @param results The results to be put into the final response.
      */
-    private void sendFinalResponse(GetFileIDsRequest message, ResultingFileIDs results) {
-        GetFileIDsFinalResponse fResponse = createFinalResponse(message);
+    private void sendFinalResponse(GetFileIDsRequest request, ResultingFileIDs results) {
+        GetFileIDsFinalResponse response = createFinalResponse(request);
         
         ResponseInfo fri = new ResponseInfo();
         fri.setResponseCode(ResponseCode.OPERATION_COMPLETED);
-        fri.setResponseText("Finished locating the requested files.");
-        fResponse.setResponseInfo(fri);
-        fResponse.setResultingFileIDs(results);
-        
-        getMessageSender().sendMessage(fResponse);
+        response.setResponseInfo(fri);
+        response.setResultingFileIDs(results);
+
+        dispatchResponse(response, request);
     }
     
     /**
-     * Create a generic final response message for the GetFileIDs conversation.
+     * Create a generic final response request for the GetFileIDs conversation.
      * Missing:
      * <br/> - ProgressResponseInfo
      * 
-     * @param message The GetFileIDsRequest to base the response upon.
+     * @param request The GetFileIDsRequest to base the response upon.
      * @return The GetFileIDsFinalResponse.
      */
-    private GetFileIDsProgressResponse createProgressResponse(GetFileIDsRequest message) {
+    private GetFileIDsProgressResponse createProgressResponse(GetFileIDsRequest request) {
         GetFileIDsProgressResponse res = new GetFileIDsProgressResponse();
-        populateResponse(message, res);
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setFileIDs(message.getFileIDs());
-        res.setResultAddress(message.getResultAddress());
+        res.setFileIDs(request.getFileIDs());
+        res.setResultAddress(request.getResultAddress());
 
         return res;
     }
     
     /**
-     * Create a generic final response message for the GetFileIDs conversation.
+     * Create a generic final response request for the GetFileIDs conversation.
      * Missing:
      * <br/> - FinalResponseInfo
      * <br/> - ResultingFileIDs
      * 
-     * @param message The GetFileIDsRequest to base the response upon.
+     * @param request The GetFileIDsRequest to base the response upon.
      * @return The GetFileIDsFinalResponse.
      */
-    private GetFileIDsFinalResponse createFinalResponse(GetFileIDsRequest message) {
+    private GetFileIDsFinalResponse createFinalResponse(GetFileIDsRequest request) {
         GetFileIDsFinalResponse res = new GetFileIDsFinalResponse();
-        populateResponse(message, res);
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setFileIDs(message.getFileIDs());
+        res.setFileIDs(request.getFileIDs());
 
         return res;
     }

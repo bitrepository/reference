@@ -31,7 +31,6 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.service.contributor.ContributorContext;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -53,12 +52,11 @@ public class IntegrityAlerterTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest", "integritytest"})
     public void testIntegrityFailed() {
         addDescription("Test the IntegrityFailed method for the IntegrityAlerter");
-        ContributorContext context = new ContributorContext(messageBus, settings);
         callsForError = 0;
         
         addStep("Create the alerter, but remove the actual sending of the alarm", 
                 "Should increase the counter 'callsForError'");
-        IntegrityAlerter alerter = new IntegrityAlarmDispatcher(context) {
+        IntegrityAlerter alerter = new IntegrityAlarmDispatcher(settings, messageBus, null) {
             @Override
             public void error(Alarm alarm) {
                 callsForError++;
@@ -73,12 +71,11 @@ public class IntegrityAlerterTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest", "integritytest"})
     public void testOperationFailed() {
         addDescription("Test the OperationFailed method for the IntegrityAlerter");
-        ContributorContext context = new ContributorContext(messageBus, settings);
         callsForError = 0;
         
         addStep("Create the alerter, but remove the actual sending of the alarm", 
                 "Should increase the counter 'callsForError'");
-        IntegrityAlerter alerter = new IntegrityAlarmDispatcher(context) {
+        IntegrityAlerter alerter = new IntegrityAlarmDispatcher(settings, messageBus, null) {
             @Override
             public void error(Alarm alarm) {
                 callsForError++;

@@ -83,7 +83,7 @@ public class Settings {
     }
     
     /**
-     * Wraps the {@link org.bitrepository.settings.collectionsettings.ProtocolSettings#getPermissions()} method.
+     * Wraps the {@link org.bitrepository.settings.collectionsettings.PermissionSet#getPermission()}} method.
      */
     public List<Permission> getPermissions() {
         return getCollectionSettings().getPermissionSet().getPermission();
@@ -116,5 +116,9 @@ public class Settings {
 
     public String getReceiverDestinationID() {
         return receiverDestinationID;
+    }
+
+    public String getContributorDestinationID() {
+        return receiverDestinationID + "-contributor";
     }
 }

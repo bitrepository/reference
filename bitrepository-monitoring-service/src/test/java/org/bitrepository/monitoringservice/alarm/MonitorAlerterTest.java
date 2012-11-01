@@ -21,6 +21,9 @@
  */
 package org.bitrepository.monitoringservice.alarm;
 
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.bitrepositoryelements.StatusCode;
@@ -30,13 +33,9 @@ import org.bitrepository.monitoringservice.MockStatusStore;
 import org.bitrepository.monitoringservice.status.ComponentStatus;
 import org.bitrepository.monitoringservice.status.ComponentStatusCode;
 import org.bitrepository.protocol.IntegrationTest;
-import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MonitorAlerterTest extends IntegrationTest {
     
@@ -48,13 +47,12 @@ public class MonitorAlerterTest extends IntegrationTest {
         addStep("Setup", "");
         String componentID = "TestMonitorService";
         settingsForCUT.getReferenceSettings().getMonitoringServiceSettings().setMaxRetries(BigInteger.ONE);
-        ContributorContext context = new ContributorContext(messageBus, settingsForCUT);
-        
         AlerterStatusStore store = new AlerterStatusStore();
         
         addStep("Create the alerter, but ignore the part of actually sending the alarms. Just log it.", "");
         callsForError = 0;
-        BasicMonitoringServiceAlerter alerter = new BasicMonitoringServiceAlerter(context, store) {
+        BasicMonitoringServiceAlerter alerter = new BasicMonitoringServiceAlerter(
+            settingsForCUT, messageBus, AlarmLevel.ERROR, store) {
             // Workaround to avoid testing that it actually sends the alarm through the messagebus.
             @Override
             public void error(Alarm alarm) {

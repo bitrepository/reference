@@ -28,7 +28,7 @@ import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.service.audit.MockAuditManager;
-import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -50,9 +50,11 @@ public class ReferencePillarMediatorTester extends ReferencePillarTest {
         addStep("Initialize the pillar.", "Should not be a problem.");
         archive = new ReferenceArchive(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir());
         audits = new MockAuditManager();
-        ContributorContext contributorContext = new ContributorContext(messageBus, settingsForCUT);
-        MessageHandlerContext context = new MessageHandlerContext(settingsForCUT, messageBus,
-                new PillarAlarmDispatcher(contributorContext), audits);
+        MessageHandlerContext context = new MessageHandlerContext(
+            settingsForCUT,
+            new ResponseDispatcher(settingsForCUT, messageBus),
+            new PillarAlarmDispatcher(settingsForCUT, messageBus),
+            audits);
         mediator = new ReferencePillarMediator(messageBus, context, archive, csManager);
         mediator.start();
     }

@@ -33,7 +33,7 @@ import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMedi
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.service.audit.MockAuditManager;
-import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
@@ -55,7 +55,7 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
     }
 
     /**
-     * Used for creating a 'fresh' checksum pillar based on the current configuration.
+     * Used for creating a 'clean' checksum pillar based on the current configuration.
      */
     protected void createChecksumPillar() {
         // Shutdown any existing mediator.
@@ -63,9 +63,10 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
             mediator.close();
         }
         addFixtureSetup("Initialize a new checksumPillar.");
-        ContributorContext contributorContext = new ContributorContext(messageBus, settingsForCUT);
-        alarmDispatcher = new PillarAlarmDispatcher(contributorContext);
-        context = new MessageHandlerContext(settingsForCUT, messageBus, alarmDispatcher, audits);
+        context = new MessageHandlerContext(settingsForCUT,
+            new ResponseDispatcher(settingsForCUT, messageBus),
+            new PillarAlarmDispatcher(settingsForCUT, messageBus),
+            audits);
         mediator = new ChecksumPillarMediator(messageBus, context, cache);
         mediator.start();
 

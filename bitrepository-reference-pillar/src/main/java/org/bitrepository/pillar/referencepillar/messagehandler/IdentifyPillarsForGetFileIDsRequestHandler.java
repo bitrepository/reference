@@ -100,22 +100,20 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
     
     /**
      * Makes a response to the successful identification.
-     * @param message The request message to respond to.
+     * @param request The request request to respond to.
      */
-    private void respondSuccesfullIdentification(IdentifyPillarsForGetFileIDsRequest message) {
-        // Create the response.
-        IdentifyPillarsForGetFileIDsResponse reply = createFinalResponse(message);
+    private void respondSuccesfullIdentification(IdentifyPillarsForGetFileIDsRequest request) {
+        IdentifyPillarsForGetFileIDsResponse response = createFinalResponse(request);
         
-        reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
-                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+            getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
         irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
-        reply.setResponseInfo(irInfo);
-        
-        // Send resulting file.
-        getMessageSender().sendMessage(reply);
+        response.setResponseInfo(irInfo);
+
+        dispatchResponse(response, request);
     }
     
     /**
@@ -129,7 +127,6 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
      */
     private IdentifyPillarsForGetFileIDsResponse createFinalResponse(IdentifyPillarsForGetFileIDsRequest msg) {
         IdentifyPillarsForGetFileIDsResponse res = new IdentifyPillarsForGetFileIDsResponse();
-        populateResponse(msg, res);
         res.setFileIDs(msg.getFileIDs());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         

@@ -134,12 +134,12 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
 
     /**
      * The method for sending a progress response telling, that the operation is about to be performed.
-     * @param message The request for the GetFile operation.
+     * @param request The request for the GetFile operation.
      */
-    protected void sendProgressMessage(DeleteFileRequest message) {
-        DeleteFileProgressResponse pResponse = createDeleteFileProgressResponse(message);
-        pResponse.setResponseInfo(ResponseInfoUtils.getInitialProgressResponse());
-        getMessageSender().sendMessage(pResponse);
+    protected void sendProgressMessage(DeleteFileRequest request) {
+        DeleteFileProgressResponse response = createDeleteFileProgressResponse(request);
+        response.setResponseInfo(ResponseInfoUtils.getInitialProgressResponse());
+        dispatchResponse(response, request);
     }
     
     /**
@@ -176,20 +176,17 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
 
     /**
      * Method for sending the final response.
-     * @param message The message to respond to.
+     * @param request The request to respond to.
      * @param requestedChecksum The results of the requested checksums
      */
-    protected void sendFinalResponse(DeleteFileRequest message, ChecksumDataForFileTYPE requestedChecksum) {
-        // make ProgressResponse to tell that we are handling this.
-        DeleteFileFinalResponse fResponse = createDeleteFileFinalResponse(message);
-        fResponse.setChecksumDataForExistingFile(requestedChecksum);
+    protected void sendFinalResponse(DeleteFileRequest request, ChecksumDataForFileTYPE requestedChecksum) {
+        DeleteFileFinalResponse response = createDeleteFileFinalResponse(request);
+        response.setChecksumDataForExistingFile(requestedChecksum);
         ResponseInfo frInfo = new ResponseInfo();
         frInfo.setResponseCode(ResponseCode.OPERATION_COMPLETED);
-        frInfo.setResponseText("Data delivered.");
-        fResponse.setResponseInfo(frInfo);
+        response.setResponseInfo(frInfo);
 
-        // send the FinalResponse.
-        getMessageSender().sendMessage(fResponse);
+        dispatchResponse(response, request);
     }
     
     /**
@@ -197,13 +194,12 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
      * following fields:
      * <br/> - ResponseInfo
      * 
-     * @param msg The DeleteFileRequest to base the progress response on.
+     * @param request The DeleteFileRequest to base the progress response on.
      * @return The DeleteFileProgressResponse based on the request.
      */
-    private DeleteFileProgressResponse createDeleteFileProgressResponse(DeleteFileRequest message) {
+    private DeleteFileProgressResponse createDeleteFileProgressResponse(DeleteFileRequest request) {
         DeleteFileProgressResponse res = new DeleteFileProgressResponse();
-        populateResponse(message, res);
-        res.setFileID(message.getFileID());
+        res.setFileID(request.getFileID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         
         return res;
@@ -215,13 +211,12 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
      * <br/> - ResponseInfo
      * <br/> - ChecksumDataForFile
      * 
-     * @param msg The DeleteFileRequest to base the final response on.
+     * @param request The DeleteFileRequest to base the final response on.
      * @return The DeleteFileFinalResponse based on the request.
      */
-    private DeleteFileFinalResponse createDeleteFileFinalResponse(DeleteFileRequest msg) {
+    private DeleteFileFinalResponse createDeleteFileFinalResponse(DeleteFileRequest request) {
         DeleteFileFinalResponse res = new DeleteFileFinalResponse();
-        populateResponse(msg, res);
-        res.setFileID(msg.getFileID());
+        res.setFileID(request.getFileID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
 
         return res;

@@ -64,7 +64,7 @@ public abstract class AbstractContributorMediator implements ContributorMediator
         for (RequestHandler handler : createListOfHandlers()) {
             handlerMap.put(handler.getRequestClass().getSimpleName(), handler);
         }
-        messageBus.addListener(getContext().getSettings().getReceiverDestinationID(), messageHandler);
+        messageBus.addListener(getContext().getSettings().getContributorDestinationID(), messageHandler);
         messageBus.addListener(getContext().getSettings().getCollectionDestination(), messageHandler);
     }
 

@@ -36,6 +36,7 @@ import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.MessageHandlerContext;
+import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,6 @@ import org.slf4j.LoggerFactory;
  */
 public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessageHandler<IdentifyPillarsForPutFileRequest> {
 
-    /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /**
@@ -86,7 +86,6 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
     private boolean checkThatTheFileDoesNotAlreadyExist(IdentifyPillarsForPutFileRequest message) 
             throws RequestHandlerException {
         if(message.getFileID() == null) {
-            log.debug("No fileid given in the identification request.");
             return false;
         }
         
@@ -95,54 +94,41 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
     
     /**
      * Method for sending a response for 'DUPLICATE_FILE_FAILURE'.
-     * @param message The message to base the response upon.
+     * @param request The request to base the response upon.
      */
-    protected void respondDuplicateFile(IdentifyPillarsForPutFileRequest message) {
-        log.debug("Creating DuplicateFile reply for '" + message.getCorrelationID() + "'");
-        IdentifyPillarsForPutFileResponse reply = createFinalResponse(message);
+    protected void respondDuplicateFile(IdentifyPillarsForPutFileRequest request) {
+        log.debug("Creating DuplicateFile response for " + MessageUtils.createMessageIdentifier(request));
+        IdentifyPillarsForPutFileResponse response = createFinalResponse(request);
 
-        // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
-        reply.setReplyTo(getSettings().getReceiverDestinationID());
-        reply.setTimeToDeliver(TimeMeasurementUtils.getMaximumTime());
-        reply.setPillarChecksumSpec(getChecksumType()); 
-        
-        ChecksumEntry entry = getCache().getEntry(message.getFileID());
+        ChecksumEntry entry = getCache().getEntry(request.getFileID());
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
         checksumData.setChecksumSpec(getChecksumType());
         checksumData.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
-        reply.setChecksumDataForExistingFile(checksumData);
+        response.setChecksumDataForExistingFile(checksumData);
         
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
-        irInfo.setResponseText("The file '" + message.getFileID() 
-                + "' already exists within the archive.");
-        reply.setResponseInfo(irInfo);
+        response.setResponseInfo(irInfo);
 
-        log.debug("Sending IdentifyPillarsForPutfileResponse: " + reply);
-        getMessageSender().sendMessage(reply);
+        getContext().getResponseDispatcher().dispatchResponse(response, request);
     }
     
     /**
      * Method for sending a positive response for putting this file.
-     * @param message The message to respond to.
+     * @param request The request to respond to.
      */
-    protected void respondSuccesfullIdentification(IdentifyPillarsForPutFileRequest message)  {
-        log.debug("Creating positive reply for '" + message.getCorrelationID() + "'");
-        IdentifyPillarsForPutFileResponse reply = createFinalResponse(message);
-
-        // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
-        reply.setReplyTo(getSettings().getReceiverDestinationID());
-        reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+    protected void respondSuccesfullIdentification(IdentifyPillarsForPutFileRequest request)  {
+        IdentifyPillarsForPutFileResponse response = createFinalResponse(request);
+        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
                 getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
         irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
-        reply.setResponseInfo(irInfo);
+        response.setResponseInfo(irInfo);
 
-        log.debug("Sending IdentifyPillarsForPutfileResponse: " + reply);
-        getMessageSender().sendMessage(reply);
+        getContext().getResponseDispatcher().dispatchResponse(response, request);
     }
     
     /**
@@ -159,16 +145,8 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
     private IdentifyPillarsForPutFileResponse createFinalResponse(IdentifyPillarsForPutFileRequest msg) {
         IdentifyPillarsForPutFileResponse res
                 = new IdentifyPillarsForPutFileResponse();
-        res.setMinVersion(MIN_VERSION);
-        res.setVersion(VERSION);
-        res.setCorrelationID(msg.getCorrelationID());
-        res.setTo(msg.getReplyTo());
-        res.setCollectionID(getSettings().getCollectionID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        res.setReplyTo(getSettings().getReceiverDestinationID());
         res.setPillarChecksumSpec(getChecksumType());
-        res.setFrom(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        
         return res;
     }
 }

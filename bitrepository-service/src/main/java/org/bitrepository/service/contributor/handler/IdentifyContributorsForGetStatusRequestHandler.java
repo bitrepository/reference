@@ -52,17 +52,14 @@ public class IdentifyContributorsForGetStatusRequestHandler
     @Override
     public void processRequest(IdentifyContributorsForGetStatusRequest request) {
         IdentifyContributorsForGetStatusResponse response = new IdentifyContributorsForGetStatusResponse();
-        populateResponse(request, response);
         response.setContributor(getContext().getSettings().getComponentID());
         response.setResponseInfo(ResponseInfoUtils.getPositiveIdentification());
-
-        getContext().getDispatcher().sendMessage(response);
+        getContext().getResponseDispatcher().dispatchResponse(response, request);
     }
 
     @Override
     public MessageResponse generateFailedResponse(IdentifyContributorsForGetStatusRequest request) {
         GetStatusFinalResponse response = new GetStatusFinalResponse();
-        populateResponse(request, response);
         return response;
     }
 

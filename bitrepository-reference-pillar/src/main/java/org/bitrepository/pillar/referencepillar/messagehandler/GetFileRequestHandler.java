@@ -93,8 +93,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
     protected void validateMessage(GetFileRequest message) throws RequestHandlerException {
         validatePillarId(message.getPillarID());
         validateFileID(message.getFileID());
-        
-        // Validate, that we have the requested file.
+
         if(!getArchive().hasFile(message.getFileID())) {
             log.warn("The file '" + message.getFileID() + "' has been requested, but we do not have that file!");
             // Then tell the mediator, that we failed.
@@ -108,25 +107,18 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
     
     /**
      * The method for sending a progress response telling, that the operation is about to be performed.
-     * @param message The request for the GetFile operation.
+     * @param request The request for the GetFile operation.
      */
-    protected void sendProgressMessage(GetFileRequest message) {
-        File requestedFile = getArchive().getFile(message.getFileID());
-        
-        // make ProgressResponse to tell that we are handling this.
-        GetFileProgressResponse pResponse = createGetFileProgressResponse(message);
-        
-        // set missing variables in the message:
-        // AuditTrailInformation, ChecksumsDataForBitRepositoryFile, FileSize, ProgressResponseInfo
-        pResponse.setFileSize(BigInteger.valueOf(requestedFile.length()));
+    protected void sendProgressMessage(GetFileRequest request) {
+        File requestedFile = getArchive().getFile(request.getFileID());
+        GetFileProgressResponse response = createGetFileProgressResponse(request);
+
+        response.setFileSize(BigInteger.valueOf(requestedFile.length()));
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Started to retrieve data.");
-        pResponse.setResponseInfo(prInfo);
-
-        // Send the ProgressResponse
-        log.info("Sending GetFileProgressResponse: " + pResponse);
-        getMessageSender().sendMessage(pResponse);
+        response.setResponseInfo(prInfo);
+        getContext().getResponseDispatcher().dispatchResponse(response, request);
     } 
 
     /**
@@ -144,8 +136,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
             } else {
                 is = extractFilePart(requestedFile, message.getFilePart());
             }
-            
-            // Upload the file.
+
             log.info("Uploading file: " + requestedFile.getName() + " to " + message.getFileAddress());
             getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed identifying pillar.", 
                     message.getAuditTrailInformation(), FileAction.GET_FILE);
@@ -173,7 +164,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
         byte[] partOfFile = new byte[size];
         FileInputStream fis  = null;
         try {
-            log.info("Extracting " + size + " bytes with offset " + offset + " from " + requestedFile.getName());
+            log.debug("Extracting " + size + " bytes with offset " + offset + " from " + requestedFile.getName());
             fis= new FileInputStream(requestedFile);
             
             fis.read(new byte[offset]);
@@ -188,19 +179,15 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
     
     /**
      * Method for sending the final response.
-     * @param message The message to respond to.
+     * @param request The request to respond to.
      */
-    protected void sendFinalResponse(GetFileRequest message) {
-        // make ProgressResponse to tell that we are handling this.
-        GetFileFinalResponse fResponse = createFinalResponse(message);
+    protected void sendFinalResponse(GetFileRequest request) {
+        GetFileFinalResponse response = createFinalResponse(request);
         ResponseInfo frInfo = new ResponseInfo();
         frInfo.setResponseCode(ResponseCode.OPERATION_COMPLETED);
-        frInfo.setResponseText("Data delivered.");
-        fResponse.setResponseInfo(frInfo);
+        response.setResponseInfo(frInfo);
 
-        // send the FinalResponse.
-        log.info("Sending GetFileFinalResponse: " + fResponse);
-        getMessageSender().sendMessage(fResponse);
+        dispatchResponse(response, request);
     }
     
     /**
@@ -216,7 +203,6 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      */
     private GetFileProgressResponse createGetFileProgressResponse(GetFileRequest msg) {
         GetFileProgressResponse res = new GetFileProgressResponse();
-        populateResponse(msg, res);
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
         res.setFilePart(msg.getFilePart());
@@ -236,7 +222,6 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      */
     private GetFileFinalResponse createFinalResponse(GetFileRequest msg) {
         GetFileFinalResponse res = new GetFileFinalResponse();
-        populateResponse(msg, res);
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
         res.setFilePart(msg.getFilePart());

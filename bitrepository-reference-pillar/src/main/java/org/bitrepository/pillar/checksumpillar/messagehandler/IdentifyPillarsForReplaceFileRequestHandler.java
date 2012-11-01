@@ -76,30 +76,25 @@ public class IdentifyPillarsForReplaceFileRequestHandler
         if(!getCache().hasFile(message.getFileID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            irInfo.setResponseText("Could not find the requested file to delete.");
             throw new IdentifyContributorException(irInfo);
         }
     }
 
     /**
      * Method for making a successful response to the identification.
-     * @param message The request message to respond to.
+     * @param request The request request to respond to.
      */
-    private void respondSuccessfulIdentification(IdentifyPillarsForReplaceFileRequest message) {
-        // Create the response.
-        IdentifyPillarsForReplaceFileResponse reply = createFinalResponse(message);
-        
-        // set the missing variables in the reply:
-        // TimeToDeliver, IdentifyResponseInfo (ignore PillarChecksumSpec)
-        reply.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
-                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+    private void respondSuccessfulIdentification(IdentifyPillarsForReplaceFileRequest request) {
+        IdentifyPillarsForReplaceFileResponse response = createFinalResponse(request);
+
+        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+            getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
-        irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
-        reply.setResponseInfo(irInfo);
-        
-        getMessageSender().sendMessage(reply);
+        response.setResponseInfo(irInfo);
+
+        dispatchResponse(response, request);
     }
     
     /**
@@ -109,13 +104,12 @@ public class IdentifyPillarsForReplaceFileRequestHandler
      * <br/> - ResponseInfo
      * <br/> - PillarChecksumSpec
      * 
-     * @param msg The IdentifyPillarsForReplaceFileRequest to base the response on.
+     * @param request The IdentifyPillarsForReplaceFileRequest to base the response on.
      * @return The response to the request.
      */
-    private IdentifyPillarsForReplaceFileResponse createFinalResponse(IdentifyPillarsForReplaceFileRequest msg) {
+    private IdentifyPillarsForReplaceFileResponse createFinalResponse(IdentifyPillarsForReplaceFileRequest request) {
         IdentifyPillarsForReplaceFileResponse res = new IdentifyPillarsForReplaceFileResponse();
-        populateResponse(msg, res);
-        res.setFileID(msg.getFileID());
+        res.setFileID(request.getFileID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setPillarChecksumSpec(getChecksumType());
         

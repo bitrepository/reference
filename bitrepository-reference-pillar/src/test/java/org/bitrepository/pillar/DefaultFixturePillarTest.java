@@ -66,7 +66,7 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
         clientDestinationId = clientSettings.getReceiverDestinationID();
         messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());
 
-        pillarDestinationId = settingsForCUT.getReceiverDestinationID();
+        pillarDestinationId = settingsForCUT.getContributorDestinationID();
     }
 
     @Override

@@ -54,6 +54,7 @@ import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
@@ -107,7 +108,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
         validateChecksumSpecification(message.getChecksumRequestForExistingFile());
         validateFileIDs(message);
         
-        log.debug("Message '" + message.getCorrelationID() + "' validated and accepted.");
+        log.debug(MessageUtils.createMessageIdentifier(message) + "' validated and accepted.");
     }
     
     /**
@@ -142,20 +143,18 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
     }
     
     /**
-     * Method for creating and sending the initial progress message for accepting the operation.
-     * @param message The message to base the response upon.
+     * Method for creating and sending the initial progress request for accepting the operation.
+     * @param request The request to base the response upon.
      */
-    private void sendInitialProgressMessage(GetChecksumsRequest message) {
-        GetChecksumsProgressResponse pResponse = createProgressResponse(message);
+    private void sendInitialProgressMessage(GetChecksumsRequest request) {
+        GetChecksumsProgressResponse response = createProgressResponse(request);
         
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
-        prInfo.setResponseText("Operation accepted. Starting to calculate checksums.");
-        pResponse.setResponseInfo(prInfo);
+        prInfo.setResponseText("Starting to calculate checksums.");
+        response.setResponseInfo(prInfo);
 
-        // Send the ProgressResponse
-        log.info("Sending GetFileProgressResponse: " + pResponse);
-        getMessageSender().sendMessage(pResponse);
+        dispatchResponse(response, request);
     }
     
     /**
@@ -300,21 +299,18 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
     
     /**
      * Method for sending a final response reporting the success.
-     * @param message The GetChecksumRequest to base the response upon.
+     * @param request The GetChecksumRequest to base the response upon.
      * @param results The results of the checksum calculations.
      */
-    private void sendFinalResponse(GetChecksumsRequest message, ResultingChecksums results) {
-        GetChecksumsFinalResponse fResponse = createFinalResponse(message);
+    private void sendFinalResponse(GetChecksumsRequest request, ResultingChecksums results) {
+        GetChecksumsFinalResponse response = createFinalResponse(request);
         
         ResponseInfo fri = new ResponseInfo();
         fri.setResponseCode(ResponseCode.OPERATION_COMPLETED);
-        fri.setResponseText("Successfully calculated the requested checksums.");
-        fResponse.setResponseInfo(fri);
-        fResponse.setResultingChecksums(results);
-        
-        // Send the FinalResponse
-        log.info("Sending successful GetFileFinalResponse: " + fResponse);
-        getMessageSender().sendMessage(fResponse);
+        response.setResponseInfo(fri);
+        response.setResultingChecksums(results);
+
+        dispatchResponse(response, request);
     }
     
     /**
@@ -327,7 +323,6 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
      */
     private GetChecksumsProgressResponse createProgressResponse(GetChecksumsRequest message) {
         GetChecksumsProgressResponse res = new GetChecksumsProgressResponse();
-        populateResponse(message, res);
         res.setChecksumRequestForExistingFile(message.getChecksumRequestForExistingFile());
         res.setFileIDs(message.getFileIDs());
         res.setResultAddress(message.getResultAddress());
@@ -348,7 +343,6 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
      */
     private GetChecksumsFinalResponse createFinalResponse(GetChecksumsRequest message) {
         GetChecksumsFinalResponse res = new GetChecksumsFinalResponse();
-        populateResponse(message, res);
         res.setChecksumRequestForExistingFile(message.getChecksumRequestForExistingFile());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         

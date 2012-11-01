@@ -25,13 +25,13 @@
 package org.bitrepository.service;
 
 import java.util.UUID;
-
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.protocol.ProtocolVersionLoader;
-import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.protocol.messagebus.MessageSender;
+import org.bitrepository.service.contributor.MessageDispatcher;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,36 +39,28 @@ import org.slf4j.LoggerFactory;
 /**
  * The class for dispatching alarms.
  */
-public class AlarmDispatcher {
-    /** The log.*/
+public class AlarmDispatcher extends MessageDispatcher {
     private Logger log = LoggerFactory.getLogger(getClass());
-
-    /** The context for this AlarmDispatcher.*/
-    protected final ContributorContext context;
-    /** The alarm level. */
     private final AlarmLevel alarmLevel;
     
     /**
-     * Constructor.
-     * @param context The context for the alarm dispatcher.
-     * @param alarmLevel The level of sending alarms.
+     * @param sender Used for sending the alarms.
+     * @param settings The configuration.
      */
-    public AlarmDispatcher(ContributorContext context, AlarmLevel alarmLevel) {
-        ArgumentValidator.checkNotNull(context, "MediatorContext Context");
-        this.context = context;
+    public AlarmDispatcher(Settings settings, MessageSender sender, AlarmLevel alarmLevel) {
+        super(settings, sender);
         if (alarmLevel == null) {
             this.alarmLevel = AlarmLevel.ERROR;
         }  else {
             this.alarmLevel = alarmLevel;
         }
     }
-    
+
     /**
-     * Constructor with default alarm level set to 'ERROR'.
-     * @param context The context for the alarm dispatcher.
+     * Delegates to #AlarmDispatcher(MessageSender, AlarmLevel) with a ERROR alarm level.
      */
-    public AlarmDispatcher(ContributorContext context) {
-        this(context, AlarmLevel.ERROR);
+    public AlarmDispatcher(Settings settings, MessageSender sender) {
+        this(settings, sender, AlarmLevel.ERROR);
     }
     
     /**
@@ -79,7 +71,7 @@ public class AlarmDispatcher {
     public void warning(Alarm alarm) {
         ArgumentValidator.checkNotNull(alarm, "alarm");
         if(alarmLevel != AlarmLevel.WARNING) {
-            log.debug("Cannot send a '" + AlarmLevel.WARNING + "' alarm, when the alarm level is '"
+            log.debug("Will send a '" + AlarmLevel.WARNING + "' alarm, when the alarm level is '"
                     + alarmLevel + "'{}", alarm);
         } else {
             sendAlarm(alarm);
@@ -116,19 +108,15 @@ public class AlarmDispatcher {
      */
     private void sendAlarm(Alarm alarm) {
         AlarmMessage message = new AlarmMessage();
-        alarm.setAlarmRaiser(context.getSettings().getComponentID());
+        alarm.setAlarmRaiser(settings.getComponentID());
         alarm.setOrigDateTime(CalendarUtils.getNow());
 
         message.setAlarm(alarm);
-        message.setCollectionID(context.getSettings().getCollectionID());
         message.setCorrelationID(UUID.randomUUID().toString());
-        message.setMinVersion(ProtocolVersionLoader.loadProtocolVersion().getMinVersion());
-        message.setReplyTo(context.getSettings().getReceiverDestinationID());
-        message.setTo(context.getSettings().getAlarmDestination());
-        message.setFrom(context.getSettings().getComponentID());
-        message.setVersion(ProtocolVersionLoader.loadProtocolVersion().getVersion());
+        message.setReplyTo(settings.getContributorDestinationID());
+        message.setTo(settings.getAlarmDestination());
         
-        log.info("Sending alarm: \n{}", message);
-        context.getDispatcher().sendMessage(message);
+        log.warn("Sending alarm: " + alarm);
+        dispatchMessage(message);
     }
 }

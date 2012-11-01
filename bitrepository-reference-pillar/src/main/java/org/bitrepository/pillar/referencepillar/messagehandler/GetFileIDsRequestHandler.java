@@ -130,19 +130,18 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
     }
     
     /**
-     * Method for creating and sending the initial progress message for accepting the operation.
-     * @param message The message to base the response upon.
+     * Method for creating and sending the initial progress request for accepting the operation.
+     * @param request The request to base the response upon.
      */
-    private void sendInitialProgressMessage(GetFileIDsRequest message) {
-        GetFileIDsProgressResponse pResponse = createProgressResponse(message);
+    private void sendInitialProgressMessage(GetFileIDsRequest request) {
+        GetFileIDsProgressResponse response = createProgressResponse(request);
         
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
-        prInfo.setResponseText("Operation accepted. Starting to locate files.");
-        pResponse.setResponseInfo(prInfo);
+        prInfo.setResponseText("Starting to locate files.");
+        response.setResponseInfo(prInfo);
 
-        // Send the ProgressResponse
-        getMessageSender().sendMessage(pResponse);
+        dispatchResponse(response, request);
     }
     
     /**
@@ -184,12 +183,10 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      */
     private FileIDsData retrieveFileIDsData(FileIDs fileIDs) throws RequestHandlerException {
         if(fileIDs.isSetAllFileIDs()) {
-            log.debug("Retrieving the id for all the files.");
             return retrieveAllFileIDs();
+        } else {
+            return retrieveSpecifiedFileIDs(fileIDs.getFileID());
         }
-        
-        log.debug("Retrieve the specified fileIDs: " + fileIDs.getFileID());
-        return retrieveSpecifiedFileIDs(fileIDs.getFileID());
     }
     
     /**
@@ -288,8 +285,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      */
     private void uploadFile(File fileToUpload, String url) throws IOException {
         URL uploadUrl = new URL(url);
-        
-        // Upload the file.
+
         log.debug("Uploading file: " + fileToUpload.getName() + " to " + url);
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
         fe.uploadToServer(new FileInputStream(fileToUpload), uploadUrl);
@@ -297,19 +293,18 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
     
     /**
      * Send a positive final response telling that the operation has successfully finished.
-     * @param message The message to base the final response upon.
+     * @param request The request to base the final response upon.
      * @param results The results to be put into the final response.
      */
-    private void sendFinalResponse(GetFileIDsRequest message, ResultingFileIDs results) {
-        GetFileIDsFinalResponse fResponse = createFinalResponse(message);
+    private void sendFinalResponse(GetFileIDsRequest request, ResultingFileIDs results) {
+        GetFileIDsFinalResponse response = createFinalResponse(request);
         
         ResponseInfo fri = new ResponseInfo();
         fri.setResponseCode(ResponseCode.OPERATION_COMPLETED);
-        fri.setResponseText("Finished locating the requested files.");
-        fResponse.setResponseInfo(fri);
-        fResponse.setResultingFileIDs(results);
+        response.setResponseInfo(fri);
+        response.setResultingFileIDs(results);
 
-        getMessageSender().sendMessage(fResponse);
+        getContext().getResponseDispatcher().dispatchResponse(response, request);
     }
     
     /**
@@ -322,7 +317,6 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      */
     private GetFileIDsProgressResponse createProgressResponse(GetFileIDsRequest message) {
         GetFileIDsProgressResponse res = new GetFileIDsProgressResponse();
-        populateResponse(message, res);
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setFileIDs(message.getFileIDs());
         res.setResultAddress(message.getResultAddress());
@@ -341,7 +335,6 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      */
     private GetFileIDsFinalResponse createFinalResponse(GetFileIDsRequest message) {
         GetFileIDsFinalResponse res = new GetFileIDsFinalResponse();
-        populateResponse(message, res);
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setFileIDs(message.getFileIDs());
 

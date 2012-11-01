@@ -117,21 +117,18 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
     
     /**
      * Method for sending a progress response.
-     * @param message The message to base the response upon.
+     * @param request The request to base the response upon.
      */
-    private void tellAboutProgress(PutFileRequest message) {
-        log.info("Respond that we are starting to retrieve the file.");
-        PutFileProgressResponse pResponse = createPutFileProgressResponse(message);
-        
-        // Needs to fill in: AuditTrailInformation, PillarChecksumSpec, ProgressResponseInfo
-        pResponse.setPillarChecksumSpec(null);
+    private void tellAboutProgress(PutFileRequest request) {
+        PutFileProgressResponse response = createPutFileProgressResponse(request);
+
+        response.setPillarChecksumSpec(null);
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Started to receive data.");  
-        pResponse.setResponseInfo(prInfo);
-        
-        log.debug("Sending ProgressResponseInfo: " + prInfo);
-        getMessageSender().sendMessage(pResponse);
+        response.setResponseInfo(prInfo);
+
+        dispatchResponse(response, request);
     }
     
     /**
@@ -226,36 +223,33 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
     
     /**
      * Method for sending the final response for the requested put operation.
-     * @param message The message requesting the put operation.
+     * @param request The request requesting the put operation.
      */
-    private void sendFinalResponse(PutFileRequest message) {
-        PutFileFinalResponse fResponse = createFinalResponse(message);
-        
-        // insert: AuditTrailInformation, ChecksumsDataForNewFile, FinalResponseInfo, PillarChecksumSpec
+    private void sendFinalResponse(PutFileRequest request) {
+        PutFileFinalResponse response = createFinalResponse(request);
+
         ResponseInfo frInfo = new ResponseInfo();
         frInfo.setResponseCode(ResponseCode.OPERATION_COMPLETED);
-        frInfo.setResponseText("The put has be finished.");
-        fResponse.setResponseInfo(frInfo);
-        fResponse.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
+        response.setResponseInfo(frInfo);
+        response.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
         
-        if(message.getChecksumRequestForNewFile() != null) {
+        if(request.getChecksumRequestForNewFile() != null) {
             ChecksumDataForFileTYPE checksumForValidation = new ChecksumDataForFileTYPE();
             
-            ChecksumEntry entry = getCache().getEntry(message.getFileID());
+            ChecksumEntry entry = getCache().getEntry(request.getFileID());
             checksumForValidation.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
             checksumForValidation.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(
                     entry.getCalculationDate()));
-            checksumForValidation.setChecksumSpec(message.getChecksumRequestForNewFile());
+            checksumForValidation.setChecksumSpec(request.getChecksumRequestForNewFile());
             log.debug("Requested checksum calculated: " + checksumForValidation);
             
-            fResponse.setChecksumDataForNewFile(checksumForValidation);
+            response.setChecksumDataForNewFile(checksumForValidation);
         } else {
             // TODO is such a request required?
             log.info("No checksum validation requested.");
         }
-        
-        log.debug("Sending PutFileFinalResponse: " + fResponse);
-        getContext().getDispatcher().sendMessage(fResponse);
+
+        dispatchResponse(response, request);
     }
     
     /**
@@ -265,14 +259,13 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
      * <br/> - PillarChecksumSpec
      * <br/> - ProgressResponseInfo
      * 
-     * @param msg The PutFileRequest to base the progress response on.
+     * @param request The PutFileRequest to base the progress response on.
      * @return The PutFileProgressResponse based on the request.
      */
-    private PutFileProgressResponse createPutFileProgressResponse(PutFileRequest msg) {
+    private PutFileProgressResponse createPutFileProgressResponse(PutFileRequest request) {
         PutFileProgressResponse res = new PutFileProgressResponse();
-        populateResponse(msg, res);
-        res.setFileAddress(msg.getFileAddress());
-        res.setFileID(msg.getFileID());
+        res.setFileAddress(request.getFileAddress());
+        res.setFileID(request.getFileID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setPillarChecksumSpec(getChecksumType());
         
@@ -287,14 +280,13 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
      * <br/> - FinalResponseInfo
      * <br/> - PillarChecksumSpec
      * 
-     * @param msg The PutFileRequest to base the final response message on.
+     * @param request The PutFileRequest to base the final response message on.
      * @return The PutFileFinalResponse message based on the request.
      */
-    private PutFileFinalResponse createFinalResponse(PutFileRequest msg) {
+    private PutFileFinalResponse createFinalResponse(PutFileRequest request) {
         PutFileFinalResponse res = new PutFileFinalResponse();
-        populateResponse(msg, res);
-        res.setFileAddress(msg.getFileAddress());
-        res.setFileID(msg.getFileID());
+        res.setFileAddress(request.getFileAddress());
+        res.setFileID(request.getFileID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setPillarChecksumSpec(getChecksumType());
         

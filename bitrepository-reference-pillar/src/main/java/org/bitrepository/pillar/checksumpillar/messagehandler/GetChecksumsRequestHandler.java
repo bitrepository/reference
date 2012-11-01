@@ -139,19 +139,16 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
     
     /**
      * Method for creating and sending the initial progress message for accepting the operation.
-     * @param message The message to base the response upon.
+     * @param request The message to base the response upon.
      */
-    private void sendInitialProgressMessage(GetChecksumsRequest message) {
-        GetChecksumsProgressResponse pResponse = createProgressResponse(message);
+    private void sendInitialProgressMessage(GetChecksumsRequest request) {
+        GetChecksumsProgressResponse response = createProgressResponse(request);
         
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
-        prInfo.setResponseText("Operation accepted. Starting to calculate checksums.");
-        pResponse.setResponseInfo(prInfo);
+        response.setResponseInfo(prInfo);
 
-        // Send the ProgressResponse
-        log.info("Sending GetFileProgressResponse: " + pResponse);
-        getMessageSender().sendMessage(pResponse);
+        dispatchResponse(response, request);
     }
     
     /**
@@ -290,35 +287,31 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
     
     /**
      * Method for sending a final response reporting the success.
-     * @param message The GetChecksumRequest to base the response upon.
+     * @param request The GetChecksumRequest to base the response upon.
      * @param results The results of the checksum calculations.
      */
-    private void sendFinalResponse(GetChecksumsRequest message, ResultingChecksums results) {
-        GetChecksumsFinalResponse fResponse = createFinalResponse(message);
+    private void sendFinalResponse(GetChecksumsRequest request, ResultingChecksums results) {
+        GetChecksumsFinalResponse response = createFinalResponse(request);
         
         ResponseInfo fri = new ResponseInfo();
         fri.setResponseCode(ResponseCode.OPERATION_COMPLETED);
-        fri.setResponseText("Successfully calculated the requested checksums.");
-        fResponse.setResponseInfo(fri);
-        fResponse.setResultingChecksums(results);
-        
-        // Send the FinalResponse
-        log.info("Sending GetFileFinalResponse: " + fResponse);
-        getMessageSender().sendMessage(fResponse);
+        response.setResponseInfo(fri);
+        response.setResultingChecksums(results);
+
+        dispatchResponse(response, request);
     }
     
     /**
      * Method for creating a GetChecksumProgressResponse based on a request.
      * 
-     * @param message The GetChecksumsRequest to base the results upon.
+     * @param request The GetChecksumsRequest to base the results upon.
      * @return The GetChecksumsProgressResponse based on the GetChecksumsRequest.
      */
-    private GetChecksumsProgressResponse createProgressResponse(GetChecksumsRequest message) {
+    private GetChecksumsProgressResponse createProgressResponse(GetChecksumsRequest request) {
         GetChecksumsProgressResponse res = new GetChecksumsProgressResponse();
-        populateResponse(message, res);
-        res.setChecksumRequestForExistingFile(message.getChecksumRequestForExistingFile());
-        res.setFileIDs(message.getFileIDs());
-        res.setResultAddress(message.getResultAddress());
+        res.setChecksumRequestForExistingFile(request.getChecksumRequestForExistingFile());
+        res.setFileIDs(request.getFileIDs());
+        res.setResultAddress(request.getResultAddress());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
 
         return res;
@@ -330,13 +323,12 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
      * <br/> - FinalResponseInfo
      * <br/> - ResultingChecksums
      * 
-     * @param message The message to base the response upon and respond to.
+     * @param request The request to base the response upon and respond to.
      * @return The response for the generic GetChecksumRequest.
      */
-    private GetChecksumsFinalResponse createFinalResponse(GetChecksumsRequest message) {
+    private GetChecksumsFinalResponse createFinalResponse(GetChecksumsRequest request) {
         GetChecksumsFinalResponse res = new GetChecksumsFinalResponse();
-        populateResponse(message, res);
-        res.setChecksumRequestForExistingFile(message.getChecksumRequestForExistingFile());
+        res.setChecksumRequestForExistingFile(request.getChecksumRequestForExistingFile());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         
         return res;

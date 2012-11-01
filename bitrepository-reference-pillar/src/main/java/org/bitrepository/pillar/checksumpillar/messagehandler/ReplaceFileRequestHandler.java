@@ -164,20 +164,20 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     }
     
     /**
-     * Sends a progress message to tell that the replacement is happening.
-     * @param message The request to base the progress response upon.
+     * Sends a progress request to tell that the replacement is happening.
+     * @param request The request to base the progress response upon.
      */
-    private void sendProgressMessageDownloadNewFile(ReplaceFileRequest message) {       
-        ReplaceFileProgressResponse response = createProgressResponse(message);
-        String responseText = "Progress: downloading the new file from: '" + message.getFileAddress() + "'";
+    private void sendProgressMessageDownloadNewFile(ReplaceFileRequest request) {
+        ReplaceFileProgressResponse response = createProgressResponse(request);
+        String responseText = "Progress: downloading the new file from: '" + request.getFileAddress() + "'";
         log.debug(responseText);
         
         ResponseInfo responseInfo = new ResponseInfo();
         responseInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         responseInfo.setResponseText(responseText);
-        
         response.setResponseInfo(responseInfo);
-        getMessageSender().sendMessage(response);
+
+        dispatchResponse(response, request);
     }
     
     /**
@@ -234,21 +234,21 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     }
 
     /**
-     * Sends a progress message to tell that the replacement is happening.
-     * @param message The request to base the progerss response upon.
+     * Sends a progress request to tell that the replacement is happening.
+     * @param request The request to base the progerss response upon.
      */
-    private void sendProgressMessageDeleteOldFile(ReplaceFileRequest message) {       
-        ReplaceFileProgressResponse response = createProgressResponse(message);
-        String responseText = "Progress: deleting the old file '" + message.getFileID() + "' and replacing it with '"
-                + message.getFileAddress() + "'";
+    private void sendProgressMessageDeleteOldFile(ReplaceFileRequest request) {
+        ReplaceFileProgressResponse response = createProgressResponse(request);
+        String responseText = "Progress: deleting the old file '" + request.getFileID() + "' and replacing it with '"
+                + request.getFileAddress() + "'";
         log.debug(responseText);
         
         ResponseInfo responseInfo = new ResponseInfo();
         responseInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         responseInfo.setResponseText(responseText);
-        
         response.setResponseInfo(responseInfo);
-        getMessageSender().sendMessage(response);
+
+        dispatchResponse(response, request);
     }
     
     /**
@@ -305,38 +305,36 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     
     /**
      * Sends the final response for a successful finish of the operation.
-     * @param message The message to base the response upon.
+     * @param request The request to base the response upon.
      * @param requestedOldChecksum [OPTIONAL] The requested checksum for the old file.
      * @param requestedNewChecksum [OPTIONAL] The requested checksum for the new file.
      */
-    private void sendFinalResponse(ReplaceFileRequest message, ChecksumDataForFileTYPE requestedOldChecksum, 
+    private void sendFinalResponse(ReplaceFileRequest request, ChecksumDataForFileTYPE requestedOldChecksum,
             ChecksumDataForFileTYPE requestedNewChecksum) {
-        ReplaceFileFinalResponse response = createFinalResponse(message);
+        ReplaceFileFinalResponse response = createFinalResponse(request);
         
         ResponseInfo ri = new ResponseInfo();
         ri.setResponseCode(ResponseCode.OPERATION_COMPLETED);
-        ri.setResponseText("Successfully replaced the file '" + message.getFileID() + "' as requested!");
         response.setResponseInfo(ri);
         
         response.setChecksumDataForNewFile(requestedNewChecksum);
         response.setChecksumDataForExistingFile(requestedOldChecksum);
-        
-        getMessageSender().sendMessage(response);
+
+        dispatchResponse(response, request);
     }
     
     /**
-     * Creates the generic ReplaceFileFinalResponse based on the request message.
+     * Creates the generic ReplaceFileFinalResponse based on the request request.
      * Missing fields:
      * <br/> ResponseInfo
      * <br/> PillarChecksumSpec
-     * @param message The ReplaceFileRequest to base the response upon.
+     * @param request The ReplaceFileRequest to base the response upon.
      * @return The ReplaceFileFinalResponse based on the request.
      */
-    private ReplaceFileProgressResponse createProgressResponse(ReplaceFileRequest message) {
+    private ReplaceFileProgressResponse createProgressResponse(ReplaceFileRequest request) {
         ReplaceFileProgressResponse res = new ReplaceFileProgressResponse();
-        populateResponse(message, res);
-        res.setFileAddress(message.getFileAddress());
-        res.setFileID(message.getFileID());
+        res.setFileAddress(request.getFileAddress());
+        res.setFileID(request.getFileID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setPillarChecksumSpec(getChecksumType());
 
@@ -344,19 +342,18 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     }
     
     /**
-     * Creates the generic ReplaceFileFinalResponse based on the request message.
+     * Creates the generic ReplaceFileFinalResponse based on the request request.
      * Missing fields:
      * <br/> ResponseInfo
      * <br/> ChecksumDataForFile
      * <br/> PillarChecksumSpec
-     * @param message The ReplaceFileRequest to base the response upon.
+     * @param request The ReplaceFileRequest to base the response upon.
      * @return The ReplaceFileFinalResponse based on the request.
      */
-    private ReplaceFileFinalResponse createFinalResponse(ReplaceFileRequest message) {
+    private ReplaceFileFinalResponse createFinalResponse(ReplaceFileRequest request) {
         ReplaceFileFinalResponse res = new ReplaceFileFinalResponse();
-        populateResponse(message, res);
-        res.setFileAddress(message.getFileAddress());
-        res.setFileID(message.getFileID());
+        res.setFileAddress(request.getFileAddress());
+        res.setFileID(request.getFileID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         res.setPillarChecksumSpec(getChecksumType());
 

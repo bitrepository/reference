@@ -26,19 +26,22 @@ package org.bitrepository.integrityservice.alerter;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
+import org.bitrepository.protocol.messagebus.MessageSender;
 import org.bitrepository.service.AlarmDispatcher;
-import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.settings.referencesettings.AlarmLevel;
 
 /**
- * The class for dispatching alarms.
+ * The class for dispatching alarms in the integrity service.
  */
 public class IntegrityAlarmDispatcher extends AlarmDispatcher implements IntegrityAlerter {
+
     /**
-     * @param context The settings for the dispatcher.
+     * Delegates to the AlarmDispatcher dispatcher.
      */
-    public IntegrityAlarmDispatcher(ContributorContext context) {
-        super(context);
+    public IntegrityAlarmDispatcher(Settings settings, MessageSender sender, AlarmLevel alarmLevel) {
+        super(settings, sender, alarmLevel);
     }
     
     @Override

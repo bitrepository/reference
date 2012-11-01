@@ -56,47 +56,41 @@ public class IdentifyContributorsForGetAuditTrailsRequestHandler
 
     @Override
     public MessageResponse generateFailedResponse(IdentifyContributorsForGetAuditTrailsRequest request) {
-        return createResponse(request);
+        return createResponse();
     }
     
     /**
      * Makes a success response for the identification.
-     * @param message The request to base the response upon.
+     * @param request The request to base the response upon.
      */
-    protected void respondSuccessfulIdentification(IdentifyContributorsForGetAuditTrailsRequest message) {
-        IdentifyContributorsForGetAuditTrailsResponse response = createResponse(message);
+    protected void respondSuccessfulIdentification(IdentifyContributorsForGetAuditTrailsRequest request) {
+        IdentifyContributorsForGetAuditTrailsResponse response = createResponse();
         response.setResponseInfo(ResponseInfoUtils.getPositiveIdentification());
-        
-        getContext().getDispatcher().sendMessage(response);                
+        getContext().getResponseDispatcher().dispatchResponse(response, request);
     }
     
     /**
      * Sends a bad response with the given cause.
-     * @param message The identification request to respond to.
+     * @param request The identification request to respond to.
      * @param responseInfo The cause of the bad identification (e.g. which file is missing).
      */
-    protected void respondFailedIdentification(IdentifyContributorsForGetAuditTrailsRequest message, 
+    protected void respondFailedIdentification(IdentifyContributorsForGetAuditTrailsRequest request,
             ResponseInfo responseInfo) {
-        IdentifyContributorsForGetAuditTrailsResponse response = createResponse(message);
+        IdentifyContributorsForGetAuditTrailsResponse response = createResponse();
         
         response.setResponseInfo(responseInfo);
-        
-        getContext().getDispatcher().sendMessage(response);                
+        getContext().getResponseDispatcher().dispatchResponse(response, request);
     }
     
     /**
      * Creates a IdentifyContributorsForGetAuditTrailsResponse based on a
      * IdentifyContributorsForGetAuditTrailsResponse. The following fields are not inserted:
      * <br/> - ResponseInfo
-     * 
-     * @param message The IdentifyContributorsForGetAuditTrailsResponse to base the response on.
+     *
      * @return The response to the request.
      */
-    protected IdentifyContributorsForGetAuditTrailsResponse createResponse(
-            IdentifyContributorsForGetAuditTrailsRequest message) {
+    protected IdentifyContributorsForGetAuditTrailsResponse createResponse() {
         IdentifyContributorsForGetAuditTrailsResponse res = new IdentifyContributorsForGetAuditTrailsResponse();
-        populateResponse(message, res);
-        
         return res;
     }
 }
