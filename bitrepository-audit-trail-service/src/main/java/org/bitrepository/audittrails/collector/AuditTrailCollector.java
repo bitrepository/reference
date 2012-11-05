@@ -63,13 +63,14 @@ public class AuditTrailCollector {
             client, store,
             settings.getReferenceSettings().getAuditTrailServiceSettings().getMaxNumberOfEventsInRequest());
         this.settings = settings;
-        this.timer = new Timer();
+        this.timer = new Timer(true);
         collectorTask = new AuditTrailCollectionTimerTask(
                 collector,
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectAuditInterval());
-        log.debug("Will start collection of audit trail after grace period " + getGracePeriod());
-        timer.scheduleAtFixedRate(collectorTask, getGracePeriod(),
-            settings.getReferenceSettings().getAuditTrailServiceSettings().getTimerTaskCheckInterval());
+        long collectionInterval = settings.getReferenceSettings().getAuditTrailServiceSettings().getTimerTaskCheckInterval();
+        log.debug("Will start collection of audit trail every  " + collectionInterval + " ms, " +
+            "after a grace period of " + getGracePeriod() + " ms");
+        timer.scheduleAtFixedRate(collectorTask, getGracePeriod(), collectionInterval);
     }
     
     /**
@@ -115,7 +116,7 @@ public class AuditTrailCollector {
         private AuditTrailCollectionTimerTask(IncrementalCollector collector, long interval) {
             this.collector = collector;
             this.interval = interval;
-            nextRun = new Date(System.currentTimeMillis() + interval);
+            nextRun = new Date(System.currentTimeMillis());
             log.debug("Scheduled next collection of audit trails for " + nextRun);
         }
         
