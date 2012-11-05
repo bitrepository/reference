@@ -21,9 +21,9 @@
  */
 package org.bitrepository.integrityservice.checking;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
@@ -36,38 +36,48 @@ import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumRepor
 public class ObsoleteChecksumFinder {
     /** The cache for the integrity data.*/
     private final IntegrityModel cache;
-    
+
     /**
-     * Constructor.
      * @param cache The cache with the integrity model.
      */
     public ObsoleteChecksumFinder(IntegrityModel cache) {
         this.cache = cache;
     }
-    
+
     /**
      * Performs the obsolete checksum report check and delivers the report.
-     * @param timeout The amount of milliseconds for a checksum to become obsolete.
+     * @param maxChecksumAgeProvider Defines when to mark checksums as obsolete.
+     * @param pillarIDs The list of pillars to check.
      * @return The report for the obsolete checksums check.
      */
-    public ObsoleteChecksumReportModel generateReport(long timeout) {
+    public ObsoleteChecksumReportModel generateReport(
+        MaxChecksumAgeProvider maxChecksumAgeProvider, Collection<String> pillarIDs) {
         ObsoleteChecksumReportModel report = new ObsoleteChecksumReportModel();
-        Long outDated = System.currentTimeMillis() - timeout;
-        HashSet<String> filesWithOldChecksum = new HashSet<String>(cache.findChecksumsOlderThan(new Date(outDated)));
-        for(String fileId : filesWithOldChecksum) {
-            for(FileInfo fileinfo : cache.getFileInfos(fileId)) {
-                if(fileinfo.getFileState() != FileState.EXISTING) {
-                    continue;
-                }
-                
-                if(CalendarUtils.convertFromXMLGregorianCalendar(fileinfo.getDateForLastChecksumCheck()).getTime()
-                        < outDated) {
-                    report.reportObsoleteChecksum(fileId, fileinfo.getPillarId(), 
+        for (String pillarID: pillarIDs) {
+            Date outDated = new Date(System.currentTimeMillis() - maxChecksumAgeProvider.getMaxChecksumAge(pillarID));
+
+            // TODO The filesWithOldChecksum should query for a specific pillar and return fileInfo objects.
+            // See BITMAG 776:
+
+            HashSet<String> filesWithOldChecksum =
+                new HashSet<String>(cache.findChecksumsOlderThan(outDated, pillarID));
+            for(String fileId : filesWithOldChecksum) {
+                for(FileInfo fileinfo : cache.getFileInfos(fileId)) {
+                    if(!fileinfo.getPillarId().equals(pillarID)) {
+                        continue;
+                    }
+                    if(fileinfo.getFileState() != FileState.EXISTING) {
+                        continue;
+                    }
+                    if(CalendarUtils.convertFromXMLGregorianCalendar(
+                        fileinfo.getDateForLastChecksumCheck()).before(outDated)) {
+                        report.reportObsoleteChecksum(fileId, fileinfo.getPillarId(),
                             fileinfo.getDateForLastChecksumCheck());
+                    }
                 }
             }
         }
-        
+
         return report;
     }
 }

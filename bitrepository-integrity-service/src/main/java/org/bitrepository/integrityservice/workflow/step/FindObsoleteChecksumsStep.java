@@ -21,8 +21,10 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
+import org.bitrepository.integrityservice.checking.MaxChecksumAgeProvider;
 import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,17 +40,15 @@ public class FindObsoleteChecksumsStep implements WorkflowStep {
     private final IntegrityChecker checker;
     /** The dispatcher of alarms.*/
     private final IntegrityAlerter dispatcher;
-    /** The timeout for the obsolete */
-    private final Long obsoleteTimeout;
+    private final Settings settings;
+    public static final long DEFAULT_MAX_CHECKSUM_AGE = 31536000000L;
     
     /**
-     * Constructor.
-     * @param store The storage for the integrity data.
-     * @param obsoleteTimeout The interval for a checksum timestamp to timeout and become obsolete.
+     * @param settings Defines the intervals for a checksum timestamp to timeout and become obsolete pr. pillar.
      */
-    public FindObsoleteChecksumsStep(IntegrityChecker checker, IntegrityAlerter alarmDispatcher, long obsoleteTimeout) {
+    public FindObsoleteChecksumsStep(Settings settings, IntegrityChecker checker, IntegrityAlerter alarmDispatcher) {
         this.checker = checker;
-        this.obsoleteTimeout = obsoleteTimeout;
+        this.settings = settings;
         this.dispatcher = alarmDispatcher;
     }
     
@@ -63,10 +63,15 @@ public class FindObsoleteChecksumsStep implements WorkflowStep {
      */
     @Override
     public synchronized void performStep() {
-        IntegrityReportModel report = checker.checkObsoleteChecksums(obsoleteTimeout);
+        MaxChecksumAgeProvider maxChecksumAgeProvider = new MaxChecksumAgeProvider(
+            DEFAULT_MAX_CHECKSUM_AGE,
+            settings.getReferenceSettings().getIntegrityServiceSettings().getObsoleteChecksumSettings());
+        IntegrityReportModel report = checker.checkObsoleteChecksums(
+            maxChecksumAgeProvider,
+            settings.getCollectionSettings().getClientSettings().getPillarIDs());
         
         if(!report.hasIntegrityIssues()) {
-            log.debug("No checksum are obsolete at any pillar.");
+            log.debug("No checksums are obsolete at any pillar.");
         } else {
             dispatcher.integrityFailed(report);
         }

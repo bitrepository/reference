@@ -21,8 +21,10 @@
  */
 package org.bitrepository.integrityservice.mocks;
 
+import java.util.Collection;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
+import org.bitrepository.integrityservice.checking.MaxChecksumAgeProvider;
 import org.bitrepository.integrityservice.checking.reports.ChecksumReportModel;
 import org.bitrepository.integrityservice.checking.reports.MissingChecksumReportModel;
 import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
@@ -72,7 +74,8 @@ public class MockChecker implements IntegrityChecker {
     }
 
     @Override
-    public ObsoleteChecksumReportModel checkObsoleteChecksums(long outdatedInterval) {
+    public ObsoleteChecksumReportModel checkObsoleteChecksums(
+        MaxChecksumAgeProvider maxChecksumAgeProvider, Collection<String> pillarIDs) {
         callsForCheckObsoleteChecksums++;
         return new ObsoleteChecksumReportModel();
     }

@@ -212,7 +212,7 @@
       </xs:restriction>
     </xs:simpleType>
   </xs:element>
-  
+
   <xs:element name="ChecksumPillarFileDownload">
     <xs:simpleType>
       <xs:annotation>
@@ -226,7 +226,7 @@
         <xs:enumeration value="ALWAYS_DOWNLOAD">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The ChecksumPillar MUST always download the file at the FileAddress URL in the 
+              The ChecksumPillar MUST always download the file at the FileAddress URL in the
               PutFileRequest message, no matter whether the checksum is given as part of the message.
             </xs:documentation>
           </xs:annotation>
@@ -509,9 +509,61 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element name="ObsoleteChecksumSettings" type="ObsoleteChecksumSettings" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            The default MaxChecksumAge to use for pillars. Can be overridden by pillar specific settings. If undefined
+            1 year is used.
+          </xs:documentation>
+        </xs:annotation>
+        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+
+  <xs:complexType name="ObsoleteChecksumSettings">
+    <xs:annotation>
+      <xs:documentation>
+        The settings for the Alarm service.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="DefaultMaxChecksumAge" type="xs:positiveInteger" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            The default MaxChecksumAge to use for pillars. Can be overridden by pillar specific settings. If undefined
+            1 year is used.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="MaxChecksumAgeForPillar" type="MaxChecksumAgeForPillar" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>
+            Specific pillar overrides for MaxChecksumAge.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MaxChecksumAgeForPillar">
+    <xs:sequence>
+      <xs:element name="PillarID" type="xs:string">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            The ID of the pillar.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="MaxChecksumAge" type="xs:positiveInteger">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            The max checksum age for the pillar.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
 
   <xs:element name="MailingConfiguration">
     <xs:complexType>
@@ -581,12 +633,12 @@
       </xs:element>
     </xs:sequence>
   </xs:complexType>
-  
+
   <xs:element name="FileExchangeSettings">
     <xs:complexType>
       <xs:annotation>
         <xs:documentation>
-          The settings for the exchange of files. 
+          The settings for the exchange of files.
         </xs:documentation>
       </xs:annotation>
       <xs:sequence>
@@ -621,7 +673,7 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="ProtocolType">
     <xs:simpleType>
       <xs:annotation>
@@ -640,7 +692,7 @@
         <xs:enumeration value="HTTPS">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The secure HTTPS protocol. 
+              The secure HTTPS protocol.
             </xs:documentation>
           </xs:annotation>
         </xs:enumeration>

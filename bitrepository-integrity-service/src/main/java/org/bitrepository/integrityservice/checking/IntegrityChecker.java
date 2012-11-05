@@ -24,6 +24,7 @@
  */
 package org.bitrepository.integrityservice.checking;
 
+import java.util.Collection;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
 
@@ -59,8 +60,9 @@ public interface IntegrityChecker {
     /**
      * Validates whether any files are older than a given interval.
      * 
-     * @param outdatedInterval The amount of milliseconds for a checksum to become outdated.
+     * @param maxChecksumAgeProvider Defines when to mark checksums as obsolete.
      * @return The report for the check.
      */
-    IntegrityReportModel checkObsoleteChecksums(long outdatedInterval);
+    IntegrityReportModel checkObsoleteChecksums(MaxChecksumAgeProvider maxChecksumAgeProvider,
+        Collection<String> pillarIDs);
 }

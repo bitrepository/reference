@@ -90,8 +90,7 @@ public class BasicIntegrityWorkflow extends StepBasedWorkflow {
             FindMissingChecksumsStep findMissingChecksums = new FindMissingChecksumsStep(checker, alerter);
             performStep(findMissingChecksums);
             
-            FindObsoleteChecksumsStep findObsoleteChecksums = new FindObsoleteChecksumsStep(checker, alerter,
-                    settings.getReferenceSettings().getIntegrityServiceSettings().getTimeBeforeMissingFileCheck());
+            FindObsoleteChecksumsStep findObsoleteChecksums = new FindObsoleteChecksumsStep(settings, checker, alerter);
             performStep(findObsoleteChecksums);
         } finally {
             finish();

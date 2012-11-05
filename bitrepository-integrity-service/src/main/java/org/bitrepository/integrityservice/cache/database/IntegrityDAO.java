@@ -335,15 +335,18 @@ public class IntegrityDAO {
      * @param date The date for the checksum to be older than.
      * @return The list of ids for the files which have a checksum older than the given date.
      */
-    public List<String> findFilesWithOldChecksum(Date date) {
+    public List<String> findFilesWithOldChecksum(Date date, String pillarID) {
         long startTime = System.currentTimeMillis();
-        log.trace("Locating files which are missing at any pillar.");
+        log.trace("Locating files with obsolete checksums from a specific pillar.");
+        Long pillarGuid = retrievePillarGuid(pillarID);
+
         String requestSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
                 + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "."
-                + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_LAST_CHECKSUM_UPDATE + " < ? ";
-        List<String> result = DatabaseUtils.selectStringList(dbConnector, requestSql, date);
-        log.debug("Located " + result.size() + " obsolete checksums in " + (System.currentTimeMillis() - startTime) +
-                "ms");
+                + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_LAST_CHECKSUM_UPDATE + " < ? AND "
+            + FI_PILLAR_GUID + " = ?";
+        List<String> result = DatabaseUtils.selectStringList(dbConnector, requestSql, date, pillarGuid);
+        log.debug("Located " + result.size() + " obsolete checksums on pillar " + pillarID + " in " +
+            (System.currentTimeMillis() - startTime) + "ms");
         return result;
     }
     

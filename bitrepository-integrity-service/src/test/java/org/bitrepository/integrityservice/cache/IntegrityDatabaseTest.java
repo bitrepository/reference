@@ -78,7 +78,8 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         IntegrityModel model = new IntegrityDatabase(settings);
         
         addStep("Test the 'findChecksumsOlderThan'", "Should deliver an empty collection");
-        Collection<String> oldChecksums = model.findChecksumsOlderThan(new Date(0));
+        Collection<String> oldChecksums = model.findChecksumsOlderThan(
+            new Date(0), TEST_PILLAR_1);
         Assert.assertNotNull(oldChecksums);
         Assert.assertEquals(oldChecksums.size(), 0);
         

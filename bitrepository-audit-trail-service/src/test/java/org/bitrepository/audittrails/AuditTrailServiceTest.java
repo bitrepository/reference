@@ -47,7 +47,6 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest"})
     public void auditTrailServiceTest() throws Exception {
         addDescription("Test the Audit Trail Service");
-        addStep("Setup variables.", "");
         settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().clear();
         settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().add("Contributor1");
         
@@ -68,7 +67,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         t.start();
         Thread.sleep(100);
         EventHandler eventHandler = client.getLatestEventHandler();
-        eventHandler.handleEvent(new AuditTrailResult("Contributor1", new ResultingAuditTrails(), true));
+        eventHandler.handleEvent(new AuditTrailResult("Contributor1", new ResultingAuditTrails(), false));
         eventHandler.handleEvent(new CompleteEvent(null));
         Assert.assertEquals(client.getCallsToGetAuditTrails(), 1);
         

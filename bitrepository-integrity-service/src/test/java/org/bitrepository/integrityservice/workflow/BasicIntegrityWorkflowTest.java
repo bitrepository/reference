@@ -45,6 +45,7 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.TestIntegrityModel;
+import org.bitrepository.integrityservice.checking.MaxChecksumAgeProvider;
 import org.bitrepository.integrityservice.checking.reports.ChecksumReportModel;
 import org.bitrepository.integrityservice.checking.reports.MissingChecksumReportModel;
 import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
@@ -133,8 +134,10 @@ public class BasicIntegrityWorkflowTest extends ExtendedTestCase {
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(settings.getCollectionSettings().getClientSettings().getPillarIDs()));
         MockChecker checker = new MockChecker() {
             @Override
-            public ObsoleteChecksumReportModel checkObsoleteChecksums(long outdatedInterval) {
-                ObsoleteChecksumReportModel res = super.checkObsoleteChecksums(outdatedInterval);
+            public ObsoleteChecksumReportModel checkObsoleteChecksums(
+                MaxChecksumAgeProvider maxChecksumAgeProvider, Collection<String> pillarIDs) {
+                ObsoleteChecksumReportModel res = super.checkObsoleteChecksums(
+                    maxChecksumAgeProvider, pillarIDs);
                 res.reportObsoleteChecksum(TEST_FILE_1, TEST_PILLAR_1, CalendarUtils.getEpoch());
                 return res;
             }

@@ -26,19 +26,23 @@ package org.bitrepository.common.utils;
  */
 public final class TimeUtils {
     /** Milliseconds per second.*/
-    private static final int MS_PER_S = 1000;
+    public static final int MS_PER_S = 1000;
     /** Seconds per minute.*/
-    private static final int S_PER_M = 60;
+    public static final int S_PER_M = 60;
     /** Minutes per hour.*/
-    private static final int M_PER_H = 60;
+    public static final int M_PER_H = 60;
     /** Hours per day.*/
-    private static final int H_PER_D = 24;
+    public static final int H_PER_D = 24;
+    /** Days per year. */
+    public static final int DAYS_PER_YEAR = 365;
     /** Milliseconds per minute.*/
-    private static final int MS_PER_MINUTE = MS_PER_S * S_PER_M;
+    public static final int MS_PER_MINUTE = MS_PER_S * S_PER_M;
     /** Milliseconds per hour.*/
-    private static final int MS_PER_HOUR = MS_PER_MINUTE * M_PER_H;
+    public static final int MS_PER_HOUR = MS_PER_MINUTE * M_PER_H;
     /** Milliseconds per day.*/
-    private static final long MS_PER_DAY = MS_PER_HOUR * H_PER_D;
+    public static final long MS_PER_DAY = MS_PER_HOUR * H_PER_D;
+    /** Milliseconds per normal year.*/
+    public static final long MS_PER_YEAR = DAYS_PER_YEAR * MS_PER_DAY;
     
     /** Private constructor, util class.*/
     private TimeUtils() {}

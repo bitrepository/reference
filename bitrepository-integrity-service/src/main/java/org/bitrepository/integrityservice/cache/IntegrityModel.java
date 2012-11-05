@@ -120,7 +120,7 @@ public interface IntegrityModel {
      * @param date The date for the checksum to be old than.
      * @return The list of ids for the files which have an old checksum.
      */
-    Collection<String> findChecksumsOlderThan(Date date);
+    Collection<String> findChecksumsOlderThan(Date date, String pillarID);
     
     /**
      * Locates the files which are missing at any pillar.

@@ -46,31 +46,31 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Simple integrity model which stores its data in the memory.
- * 
+ *
  * NOT INTENDED FOR PRODUCTION!!!
- * 
+ *
  * This does not handle anything about CollectionID.
  */
 public class TestIntegrityModel implements IntegrityModel {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    
+
     private final List<String> pillarIds;
-    
+
     /**
      * The memory cache for containing the information about the files in the system.
      * Synchronized for avoiding threading problems.
      */
-    private Map<String, CollectionFileIDInfo> cache = Collections.synchronizedMap(new HashMap<String, 
-            CollectionFileIDInfo>());
-    
+    private Map<String, CollectionFileIDInfo> cache = Collections.synchronizedMap(new HashMap<String,
+        CollectionFileIDInfo>());
+
     /**
      * Constructor.
      */
     public TestIntegrityModel(List<String> pillarIds) {
         this.pillarIds = pillarIds;
     }
-    
+
     @Override
     public void addFileIDs(FileIDsData data, FileIDs expectedFileIDs, String pillarId) {
         for(FileIDsDataItem fileId : data.getFileIDsDataItems().getFileIDsDataItem()) {
@@ -81,7 +81,7 @@ public class TestIntegrityModel implements IntegrityModel {
             updateFileId(fileId, pillarId);
         }
     }
-    
+
     /**
      * Updates the file info for a given file id.
      * @param fileIdData The file id data to update with.
@@ -92,24 +92,24 @@ public class TestIntegrityModel implements IntegrityModel {
         if(fileInfos == null) {
             fileInfos = new CollectionFileIDInfo(fileIdData.getFileID());
         }
-        
+
         fileInfos.updateFileIDs(fileIdData, pillarId);
         cache.put(fileIdData.getFileID(), fileInfos);
     }
-    
+
     @Override
     public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarId) {
         for(ChecksumDataForChecksumSpecTYPE checksumResult : data) {
-            log.debug("Adding/updating checksums for file '" + checksumResult.getFileID() + "' for pillar '" 
-                    + pillarId + "'");
-            
+            log.debug("Adding/updating checksums for file '" + checksumResult.getFileID() + "' for pillar '"
+                + pillarId + "'");
+
             if(!cache.containsKey(checksumResult.getFileID())) {
                 instantiateFileInfoListForFileId(checksumResult.getFileID());
             }
             updateChecksum(checksumResult, pillarId);
         }
     }
-    
+
     /**
      * Updates a file info with checksum results.
      * @param checksumData The results of a checksum calculation.
@@ -117,11 +117,11 @@ public class TestIntegrityModel implements IntegrityModel {
      */
     private void updateChecksum(ChecksumDataForChecksumSpecTYPE checksumData, String pillarId) {
         CollectionFileIDInfo fileInfos = cache.get(checksumData.getFileID());
-        
+
         fileInfos.updateChecksums(checksumData, pillarId);
         cache.put(checksumData.getFileID(), fileInfos);
     }
-    
+
     /**
      * Instantiates a new List for the file id infos for a given file id.
      * @param fileId The id of the file to be inserted into the cache. 
@@ -134,7 +134,7 @@ public class TestIntegrityModel implements IntegrityModel {
         CollectionFileIDInfo fileIdInfo = new CollectionFileIDInfo(fileId);
         cache.put(fileId, fileIdInfo);
     }
-    
+
     @Override
     public List<FileInfo> getFileInfos(String fileId) {
         if(cache.containsKey(fileId)) {
@@ -148,7 +148,7 @@ public class TestIntegrityModel implements IntegrityModel {
     public Collection<String> getAllFileIDs() {
         return cache.keySet();
     }
-    
+
     /**
      * Clean the cache for test purposes only!
      */
@@ -158,13 +158,13 @@ public class TestIntegrityModel implements IntegrityModel {
 
     /**
      * Container for the collection of FileIDInfos for a single file.
-     * 
+     *
      * All functions are package-protected.
      */
     private class CollectionFileIDInfo {
         /** The collection of FileIDInfos.*/
         private List<FileInfo> fileIDInfos = new ArrayList<FileInfo>();
-        
+
         /**
          * Constructor. Initializes and empty list of FileIDInfos.
          */
@@ -173,7 +173,7 @@ public class TestIntegrityModel implements IntegrityModel {
                 fileIDInfos.add(new FileInfo(fileId, pillarId));
             }
         }
-        
+
         /**
          * Updates the FileIDInfo for a given pillar based on the results of a GetFileIDs operation.
          * @param fileIdData The resulting date from the GetFileIDs operation.
@@ -193,24 +193,24 @@ public class TestIntegrityModel implements IntegrityModel {
             if(currentInfo == null) {
                 currentInfo = new FileInfo(fileIdData.getFileID(), pillarId);
             }
-            
+
             currentInfo.setDateForLastFileIDCheck(fileIdData.getLastModificationTime());
             currentInfo.setFileState(FileState.EXISTING);
             currentInfo.setChecksumState(ChecksumState.UNKNOWN);
-            
+
             // put it back into the list and that back into the cache.
             fileIDInfos.add(currentInfo);
         }
-        
+
         /**
          * Updates the FileIDInfo for a given pillar based on the results of a GetChecksums operation.
          * Also updates the 'latestChecksumUpdate'.
-         * 
+         *
          * @param checksumData The results of the GetChecksumOperation for this given file.
          * @param pillarId The id of the pillar.
          */
         void updateChecksums(ChecksumDataForChecksumSpecTYPE checksumData, String pillarId) {
-            
+
             // Extract current file info and update it or create a new one.
             FileInfo currentInfo = null;
             Iterator<FileInfo> it = fileIDInfos.iterator();
@@ -223,9 +223,9 @@ public class TestIntegrityModel implements IntegrityModel {
             }
             if(currentInfo == null) {
                 // create a new file info
-                currentInfo = new FileInfo(checksumData.getFileID(), CalendarUtils.getEpoch(), 
-                        Base16Utils.decodeBase16(checksumData.getChecksumValue()), 
-                        checksumData.getCalculationTimestamp(), pillarId, FileState.EXISTING, ChecksumState.UNKNOWN);
+                currentInfo = new FileInfo(checksumData.getFileID(), CalendarUtils.getEpoch(),
+                    Base16Utils.decodeBase16(checksumData.getChecksumValue()),
+                    checksumData.getCalculationTimestamp(), pillarId, FileState.EXISTING, ChecksumState.UNKNOWN);
             } else {
                 // Update the existing file info
                 currentInfo.setDateForLastChecksumCheck(checksumData.getCalculationTimestamp());
@@ -235,7 +235,7 @@ public class TestIntegrityModel implements IntegrityModel {
             // put it back into the list and that back into the cache.
             fileIDInfos.add(currentInfo);
         }
-        
+
         /**
          * @return All the FileIDInfos for this given file.
          */
@@ -342,14 +342,16 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public Collection<String> findChecksumsOlderThan(Date date) {
+    public Collection<String> findChecksumsOlderThan(Date date, String pillarID) {
         List<String> res = new ArrayList<String>();
         for(CollectionFileIDInfo fileinfos : cache.values()) {
             for(FileInfo fi : fileinfos.fileIDInfos) {
-                if(CalendarUtils.convertFromXMLGregorianCalendar(fi.getDateForLastChecksumCheck()).getTime() 
+                if (pillarID.equals(fi.getPillarId())) {
+                    if(CalendarUtils.convertFromXMLGregorianCalendar(fi.getDateForLastChecksumCheck()).getTime()
                         < date.getTime()) {
-                    res.add(fi.getFileId());
-                    break;
+                        res.add(fi.getFileId());
+                        break;
+                    }
                 }
             }
         }
@@ -361,7 +363,7 @@ public class TestIntegrityModel implements IntegrityModel {
         if(!cache.containsKey(fileId))  {
             return new ArrayList<String>();
         }
-        
+
         List<String> res = new ArrayList<String>(pillarIds);
         CollectionFileIDInfo fileinfos = cache.get(fileId);
         for(FileInfo fi : fileinfos.fileIDInfos)  {

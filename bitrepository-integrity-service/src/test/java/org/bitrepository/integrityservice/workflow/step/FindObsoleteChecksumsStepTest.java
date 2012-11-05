@@ -21,15 +21,17 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import java.util.Collection;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.integrityservice.checking.MaxChecksumAgeProvider;
 import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReportModel;
 import org.bitrepository.integrityservice.mocks.MockChecker;
 import org.bitrepository.integrityservice.mocks.MockIntegrityAlerter;
-import org.jaccept.structure.ExtendedTestCase;
+import org.bitrepository.protocol.IntegrationTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class FindObsoleteChecksumsStepTest extends ExtendedTestCase {
+public class FindObsoleteChecksumsStepTest extends IntegrationTest {
     public static final String TEST_PILLAR_1 = "test-pillar-1";
     public static final String TEST_FILE_1 = "test-file-1";
     
@@ -38,7 +40,7 @@ public class FindObsoleteChecksumsStepTest extends ExtendedTestCase {
         addDescription("Test the step for finding obsolete checksum when the report is positive.");
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
         MockChecker checker = new MockChecker();
-        FindObsoleteChecksumsStep step = new FindObsoleteChecksumsStep(checker, alerter, Long.MAX_VALUE);
+        FindObsoleteChecksumsStep step = new FindObsoleteChecksumsStep(settingsForCUT, checker, alerter);
         
         step.performStep();
         Assert.assertEquals(alerter.getCallsForIntegrityFailed(), 0);
@@ -54,13 +56,14 @@ public class FindObsoleteChecksumsStepTest extends ExtendedTestCase {
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
         MockChecker checker = new MockChecker() {
             @Override
-            public ObsoleteChecksumReportModel checkObsoleteChecksums(long outdatedInterval) {
-                ObsoleteChecksumReportModel res = super.checkObsoleteChecksums(outdatedInterval);
+            public ObsoleteChecksumReportModel checkObsoleteChecksums(
+                MaxChecksumAgeProvider maxChecksumAgeProvider, Collection<String> pillarIDs) {
+                ObsoleteChecksumReportModel res = super.checkObsoleteChecksums(maxChecksumAgeProvider, pillarIDs);
                 res.reportObsoleteChecksum(TEST_FILE_1, TEST_PILLAR_1, CalendarUtils.getEpoch());
                 return res;
             }
         };
-        FindObsoleteChecksumsStep step = new FindObsoleteChecksumsStep(checker, alerter, Long.MAX_VALUE);
+        FindObsoleteChecksumsStep step = new FindObsoleteChecksumsStep(settingsForCUT, checker, alerter);
         
         step.performStep();
         Assert.assertEquals(alerter.getCallsForIntegrityFailed(), 1);

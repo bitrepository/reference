@@ -101,7 +101,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         IntegrityDAO cache = createDAO();
         
         addStep("Test the 'findFilesWithOldChecksum'", "Should deliver an empty collection");
-        Collection<String> oldChecksums = cache.findFilesWithOldChecksum(new Date(0));
+        Collection<String> oldChecksums = cache.findFilesWithOldChecksum(new Date(0), TEST_PILLAR_1);
         Assert.assertNotNull(oldChecksums);
         Assert.assertEquals(oldChecksums.size(), 0);
         

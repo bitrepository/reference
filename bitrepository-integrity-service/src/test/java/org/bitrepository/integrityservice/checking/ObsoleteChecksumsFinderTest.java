@@ -24,16 +24,18 @@ package org.bitrepository.integrityservice.checking;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import javax.xml.datatype.XMLGregorianCalendar;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.TestIntegrityModel;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReportModel;
 import org.bitrepository.integrityservice.mocks.MockAuditManager;
+import org.bitrepository.settings.referencesettings.ObsoleteChecksumSettings;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -68,7 +70,8 @@ public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
         ObsoleteChecksumFinder finder = new ObsoleteChecksumFinder(cache);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        ObsoleteChecksumReportModel report = finder.generateReport(DEFAULT_TIMEOUT);
+        ObsoleteChecksumReportModel report = finder.generateReport(
+            new MaxChecksumAgeProvider(DEFAULT_TIMEOUT, null), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2));
         Assert.assertFalse(report.hasIntegrityIssues());
     }
     
@@ -83,7 +86,8 @@ public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
         cache.addChecksums(csData, TEST_PILLAR_1);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        ObsoleteChecksumReportModel report = finder.generateReport(DEFAULT_TIMEOUT);
+        ObsoleteChecksumReportModel report = finder.generateReport(
+            new MaxChecksumAgeProvider(DEFAULT_TIMEOUT, null), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2));
         Assert.assertFalse(report.hasIntegrityIssues());
     }
 
@@ -98,7 +102,8 @@ public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
         cache.addChecksums(csData, TEST_PILLAR_1);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        ObsoleteChecksumReportModel report = finder.generateReport(DEFAULT_TIMEOUT);
+        ObsoleteChecksumReportModel report = finder.generateReport(
+            new MaxChecksumAgeProvider(DEFAULT_TIMEOUT, null), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2));
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getObsoleteChecksum().size(), 1);
         Assert.assertNotNull(report.getObsoleteChecksum().get(FILE_1));
@@ -120,12 +125,40 @@ public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
         cache.addChecksums(csNewData, TEST_PILLAR_2);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        ObsoleteChecksumReportModel report = finder.generateReport(DEFAULT_TIMEOUT);
+        ObsoleteChecksumReportModel report = finder.generateReport(
+            new MaxChecksumAgeProvider(DEFAULT_TIMEOUT, null), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2));
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getObsoleteChecksum().size(), 1);
         Assert.assertNotNull(report.getObsoleteChecksum().get(FILE_1));
         Assert.assertEquals(report.getObsoleteChecksum().get(FILE_1).getPillarDates().size(), 1);
         Assert.assertTrue(report.getObsoleteChecksum().get(FILE_1).getPillarDates().containsKey(TEST_PILLAR_1));
+    }
+
+    @Test(groups = {"regressiontest", "integritytest"})
+    public void testDifferentPillarMaxAges() {
+        addDescription("Verifies that the the obsolete checksum can handle different max ages for different pillars.");
+        addReference("<a href=https://sbforge.org/jira/browse/BITMAG-628>" +
+            "BITMAG-628 Introduce pr. pillar maxChecksumAge in the integrity service</a>");
+
+        IntegrityModel cache = getIntegrityModel();
+        ObsoleteChecksumFinder finder = new ObsoleteChecksumFinder(cache);
+
+        addStep("Add data to the cache", "");
+        List<ChecksumDataForChecksumSpecTYPE> csYearData = createWeekOldChecksumData("1234cccc4321", FILE_1);
+        cache.addChecksums(csYearData, TEST_PILLAR_1);
+        cache.addChecksums(csYearData, TEST_PILLAR_2);
+        ObsoleteChecksumSettings obsoleteChecksumSettings = new ObsoleteChecksumSettings();
+        obsoleteChecksumSettings.getMaxChecksumAgeForPillar().add(MaxChecksumAgeProvider.createMaxChecksumAgeForPillar(
+            TEST_PILLAR_1, TimeUtils.MS_PER_YEAR*2));
+
+        addStep("Validate the file ids", "Should not have integrity issues.");
+        ObsoleteChecksumReportModel report = finder.generateReport( new MaxChecksumAgeProvider(
+                DEFAULT_TIMEOUT, obsoleteChecksumSettings), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2));
+        Assert.assertTrue(report.hasIntegrityIssues());
+        Assert.assertEquals(report.getObsoleteChecksum().size(), 1);
+        Assert.assertNotNull(report.getObsoleteChecksum().get(FILE_1));
+        Assert.assertEquals(report.getObsoleteChecksum().get(FILE_1).getPillarDates().size(), 1);
+        Assert.assertTrue(report.getObsoleteChecksum().get(FILE_1).getPillarDates().containsKey(TEST_PILLAR_2));
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
@@ -140,7 +173,8 @@ public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
         cache.setFileMissing(FILE_1, Arrays.asList(TEST_PILLAR_1));
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        ObsoleteChecksumReportModel report = finder.generateReport(DEFAULT_TIMEOUT);
+        ObsoleteChecksumReportModel report = finder.generateReport(
+            new MaxChecksumAgeProvider(DEFAULT_TIMEOUT, null), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2));
         Assert.assertFalse(report.hasIntegrityIssues());
     }
     
@@ -161,6 +195,20 @@ public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
         for(String fileId : fileids) {
             ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
             csData.setCalculationTimestamp(CalendarUtils.getNow());
+            csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
+            csData.setFileID(fileId);
+            res.add(csData);
+        }
+        return res;
+    }
+
+    private List<ChecksumDataForChecksumSpecTYPE> createWeekOldChecksumData(String checksum, String ... fileids) {
+        List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
+        for(String fileId : fileids) {
+            ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
+            XMLGregorianCalendar lastYear = CalendarUtils.getNow();
+            lastYear.setYear(CalendarUtils.getNow().getYear() - 1);
+            csData.setCalculationTimestamp(lastYear);
             csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
             csData.setFileID(fileId);
             res.add(csData);

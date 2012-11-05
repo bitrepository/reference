@@ -123,8 +123,9 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
     }
 
     @Override
-    public ObsoleteChecksumReportModel checkObsoleteChecksums(long outdatedInterval) {
-        return obsoleteChecksumFinder.generateReport(outdatedInterval);
+    public ObsoleteChecksumReportModel checkObsoleteChecksums(
+        MaxChecksumAgeProvider maxChecksumAgeProvider, Collection<String> pillarIDs) {
+        return obsoleteChecksumFinder.generateReport(maxChecksumAgeProvider, pillarIDs);
     }
     
     /**

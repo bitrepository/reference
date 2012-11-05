@@ -250,7 +250,8 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addChecksums(checksumData1, TEST_PILLAR_2);
         
         addStep("Check the checksum status.", "Should be checksum missing at pillar 2.");
-        ObsoleteChecksumReportModel report = checker.checkObsoleteChecksums(DEFAULT_TIMEOUT);
+        ObsoleteChecksumReportModel report = checker.checkObsoleteChecksums(
+            new MaxChecksumAgeProvider(DEFAULT_TIMEOUT, null), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2) );
         Assert.assertFalse(report.hasIntegrityIssues());
     }
     
@@ -267,7 +268,8 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addChecksums(checksumData, TEST_PILLAR_2);
         
         addStep("Check the checksum status.", "Should be checksum missing at pillar 2.");
-        ObsoleteChecksumReportModel report = checker.checkObsoleteChecksums(DEFAULT_TIMEOUT);
+        ObsoleteChecksumReportModel report = checker.checkObsoleteChecksums(
+            new MaxChecksumAgeProvider(DEFAULT_TIMEOUT, null), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2));
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getObsoleteChecksum().size(), 1);
         Assert.assertNotNull(report.getObsoleteChecksum().get(TEST_FILE_1));

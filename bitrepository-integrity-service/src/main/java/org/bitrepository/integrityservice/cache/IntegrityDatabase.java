@@ -55,7 +55,7 @@ public class IntegrityDatabase implements IntegrityModel {
     /**
      * Initialize storage.
      *
-     * @param storageConfiguration Contains configuration for storage. Currently URL, user and pass for database.
+     * @param settings Contains configuration for storage. Currently URL, user and pass for database.
      */
     public IntegrityDatabase(Settings settings) {
         this.settings = settings;
@@ -158,8 +158,8 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public Collection<String> findChecksumsOlderThan(Date date) {
-        return store.findFilesWithOldChecksum(date);
+    public Collection<String> findChecksumsOlderThan(Date date, String pillarID) {
+        return store.findFilesWithOldChecksum(date, pillarID);
     }
     
     /**

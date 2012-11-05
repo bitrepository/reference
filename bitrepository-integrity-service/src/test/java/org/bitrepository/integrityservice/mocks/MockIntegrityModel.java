@@ -177,9 +177,9 @@ public class MockIntegrityModel implements IntegrityModel {
     
     private int callsForFindChecksumsOlderThan = 0;
     @Override
-    public Collection<String> findChecksumsOlderThan(Date date) {
+    public Collection<String> findChecksumsOlderThan(Date date, String pillarID) {
         callsForFindChecksumsOlderThan++;
-        return integrityModel.findChecksumsOlderThan(date);
+        return integrityModel.findChecksumsOlderThan(date, pillarID);
     }
     public int getCallsForFindChecksumsOlderThan() {
         return callsForFindChecksumsOlderThan;
