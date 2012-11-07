@@ -33,7 +33,7 @@ public final class TimeUtils {
     public static final int M_PER_H = 60;
     /** Hours per day.*/
     public static final int H_PER_D = 24;
-    /** Days per year. */
+    /** Days per year in a 'normal' 365 day year. */
     public static final int DAYS_PER_YEAR = 365;
     /** Milliseconds per minute.*/
     public static final int MS_PER_MINUTE = MS_PER_S * S_PER_M;

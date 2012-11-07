@@ -183,6 +183,7 @@
           <failIfWarning>true</failIfWarning>
           <licenseName>lgpl_v2_1</licenseName>
           <useMissingFile>true</useMissingFile>
+          <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
           <extraExtensions>
             <xsd>xml</xsd>
           </extraExtensions>

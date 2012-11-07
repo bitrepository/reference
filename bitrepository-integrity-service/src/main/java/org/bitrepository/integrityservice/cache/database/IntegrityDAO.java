@@ -333,11 +333,12 @@ public class IntegrityDAO {
     /**
      * Finds the id of the files which have a checksum older than a given date.
      * @param date The date for the checksum to be older than.
+     * @param pillarID The ID of the pillar to find obsolete checksum for.
      * @return The list of ids for the files which have a checksum older than the given date.
      */
     public List<String> findFilesWithOldChecksum(Date date, String pillarID) {
         long startTime = System.currentTimeMillis();
-        log.trace("Locating files with obsolete checksums from a specific pillar.");
+        log.trace("Locating files with obsolete checksums from pillar " + pillarID);
         Long pillarGuid = retrievePillarGuid(pillarID);
 
         String requestSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 

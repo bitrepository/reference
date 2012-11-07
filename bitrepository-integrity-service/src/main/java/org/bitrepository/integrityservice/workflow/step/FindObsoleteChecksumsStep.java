@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.workflow.step;
 
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.checking.MaxChecksumAgeProvider;
@@ -41,10 +42,13 @@ public class FindObsoleteChecksumsStep implements WorkflowStep {
     /** The dispatcher of alarms.*/
     private final IntegrityAlerter dispatcher;
     private final Settings settings;
-    public static final long DEFAULT_MAX_CHECKSUM_AGE = 31536000000L;
+    /** A year */
+    public static final long DEFAULT_MAX_CHECKSUM_AGE = TimeUtils.MS_PER_YEAR;
     
     /**
      * @param settings Defines the intervals for a checksum timestamp to timeout and become obsolete pr. pillar.
+     * @param checker The concrete checker to use for finding the obsolete checksums.
+     * @param alarmDispatcher Used for alarm dispatching.
      */
     public FindObsoleteChecksumsStep(Settings settings, IntegrityChecker checker, IntegrityAlerter alarmDispatcher) {
         this.checker = checker;
