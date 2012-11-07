@@ -159,7 +159,6 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
                 + "operation");
     }
     
-    @SuppressWarnings("deprecation")
     @Test( groups = {"regressiontest", "pillartest"})
     public void pillarGetFilePartTest() throws Exception {
         addDescription("Tests the get functionality of the reference pillar for a file part. Successful scenario.");

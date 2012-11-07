@@ -125,6 +125,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
         res.setResponseInfo(responseInfo);
         res.setResultingAuditTrails(auditTrails);
         res.setTo(toTopic);
+        res.setPartialResult(false);
         
         return res;
     }

@@ -23,9 +23,9 @@ package org.bitrepository.service.audit;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -58,10 +58,10 @@ public class MockAuditManager implements AuditTrailManager {
 
     private int callsForGetAudits = 0;
     @Override
-    public Collection<AuditTrailEvent> getAudits(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate, 
-            Date maxDate) {
+    public AuditTrailDatabaseResults getAudits(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate, 
+            Date maxDate, Long maxNumberOfResults) {
         callsForGetAudits++;
-        List<AuditTrailEvent> res = new ArrayList<AuditTrailEvent>();
+        AuditTrailDatabaseResults res = new AuditTrailDatabaseResults();
         for(AuditTrailEvent event : events) {
             if(fileId != null && !event.getFileID().equals(fileId)) {
                 continue;
@@ -80,7 +80,11 @@ public class MockAuditManager implements AuditTrailManager {
                     event.getActionDateTime()).getTime() > maxDate.getTime()) {
                 continue;
             }
-            res.add(event);
+            if(maxNumberOfResults != null && res.getAuditTrailEvents().getAuditTrailEvent().size() >= maxNumberOfResults) {
+                res.reportMoreResultsFound();
+                continue;
+            }
+            res.addAuditTrailEvent(event);
         }
         return res;
     }
