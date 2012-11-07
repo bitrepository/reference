@@ -1,5 +1,3 @@
-package org.bitrepository.service.contributor;
-
 /*
  * #%L
  * Bitrepository Service
@@ -21,6 +19,7 @@ package org.bitrepository.service.contributor;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+package org.bitrepository.service.contributor;
 
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;

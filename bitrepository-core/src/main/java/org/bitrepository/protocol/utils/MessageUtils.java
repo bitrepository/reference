@@ -87,6 +87,11 @@ public class MessageUtils {
         );
     }
 
+    /**
+     * @param message The message to create an identifier for.
+     * @return The identifier based on the message type and a short representation of the correlation ID.
+     * @see #getShortConversationID(String)
+     */
     public static String createMessageIdentifier(Message message) {
         return message.getClass().getSimpleName() + "(" +
             getShortConversationID(message.getCorrelationID())+ ")";
@@ -94,7 +99,8 @@ public class MessageUtils {
 
 
     /**
-     * Returns a shorted conversationID. Only the first part up til the first '-' is used
+     * @param fullConversationID The full conversation ID to create a shortend version for.
+     * @return A shorted conversationID. Only the first part up til the first '-' is used
      * (but at least 4 long).
      */
     public static String getShortConversationID(String fullConversationID) {

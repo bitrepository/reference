@@ -164,7 +164,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     }
     
     /**
-     * Sends a progress request to tell that the replacement is happening.
+     * Sends a progress response to tell that the replacement is happening.
      * @param request The request to base the progress response upon.
      */
     private void sendProgressMessageDownloadNewFile(ReplaceFileRequest request) {
@@ -234,7 +234,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     }
 
     /**
-     * Sends a progress request to tell that the replacement is happening.
+     * Sends a progress response to tell that the replacement is happening.
      * @param request The request to base the progerss response upon.
      */
     private void sendProgressMessageDeleteOldFile(ReplaceFileRequest request) {
@@ -324,7 +324,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     }
     
     /**
-     * Creates the generic ReplaceFileFinalResponse based on the request request.
+     * Creates the generic ReplaceFileFinalResponse based on the request.
      * Missing fields:
      * <br/> ResponseInfo
      * <br/> PillarChecksumSpec
@@ -342,7 +342,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     }
     
     /**
-     * Creates the generic ReplaceFileFinalResponse based on the request request.
+     * Creates the generic ReplaceFileFinalResponse based on the request.
      * Missing fields:
      * <br/> ResponseInfo
      * <br/> ChecksumDataForFile

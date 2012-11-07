@@ -86,7 +86,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
 
     /**
      * Method for making a successful response to the identification.
-     * @param request The request request to respond to.
+     * @param request The request to respond to.
      */
     private void respondSuccessfulIdentification(IdentifyPillarsForDeleteFileRequest request) {
         IdentifyPillarsForDeleteFileResponse response = createFinalResponse(request);

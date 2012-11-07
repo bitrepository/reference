@@ -128,7 +128,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
     }
     
     /**
-     * Method for creating and sending the initial progress request for accepting the operation.
+     * Method for creating and sending the initial progress response for accepting the operation.
      * @param request The request to base the response upon.
      */
     private void sendInitialProgressMessage(GetFileIDsRequest request) {
@@ -281,7 +281,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
     }
     
     /**
-     * Create a generic final response request for the GetFileIDs conversation.
+     * Create a generic final response for the GetFileIDs conversation.
      * Missing:
      * <br/> - ProgressResponseInfo
      * 
@@ -298,7 +298,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
     }
     
     /**
-     * Create a generic final response request for the GetFileIDs conversation.
+     * Create a generic final response for the GetFileIDs conversation.
      * Missing:
      * <br/> - FinalResponseInfo
      * <br/> - ResultingFileIDs

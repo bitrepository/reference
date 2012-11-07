@@ -1,5 +1,3 @@
-package org.bitrepository.service.contributor;
-
 /*
  * #%L
  * Bitrepository Service
@@ -21,6 +19,7 @@ package org.bitrepository.service.contributor;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+package org.bitrepository.service.contributor;
 
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.common.ArgumentValidator;
@@ -29,7 +28,7 @@ import org.bitrepository.protocol.ProtocolVersionLoader;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
 /**
- * Provides the general functionality for sending reposnes from a pillar.
+ * Provides the general functionality for sending reponses from a pillar.
  */
 public class MessageDispatcher {
     protected final Settings settings;

@@ -82,7 +82,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
 
     /**
      * Method for making a successful response to the identification.
-     * @param request The request request to respond to.
+     * @param request The request to respond to.
      */
     private void respondSuccessfulIdentification(IdentifyPillarsForReplaceFileRequest request) {
         IdentifyPillarsForReplaceFileResponse response = createFinalResponse(request);

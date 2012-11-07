@@ -39,6 +39,9 @@ public class IntegrityAlarmDispatcher extends AlarmDispatcher implements Integri
 
     /**
      * Delegates to the AlarmDispatcher dispatcher.
+     * @param settings The settings to use.
+     * @param sender Used for sending the alarms.
+     * @param alarmLevel Only send alarms at this alarms level or higher.
      */
     public IntegrityAlarmDispatcher(Settings settings, MessageSender sender, AlarmLevel alarmLevel) {
         super(settings, sender, alarmLevel);

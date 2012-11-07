@@ -100,7 +100,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
     
     /**
      * Makes a response to the successful identification.
-     * @param request The request request to respond to.
+     * @param request The request to respond to.
      */
     private void respondSuccesfullIdentification(IdentifyPillarsForGetFileIDsRequest request) {
         IdentifyPillarsForGetFileIDsResponse response = createFinalResponse(request);

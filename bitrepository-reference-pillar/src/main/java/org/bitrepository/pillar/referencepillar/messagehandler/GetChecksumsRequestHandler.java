@@ -143,7 +143,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
     }
     
     /**
-     * Method for creating and sending the initial progress request for accepting the operation.
+     * Method for creating and sending the initial progress response for accepting the operation.
      * @param request The request to base the response upon.
      */
     private void sendInitialProgressMessage(GetChecksumsRequest request) {
