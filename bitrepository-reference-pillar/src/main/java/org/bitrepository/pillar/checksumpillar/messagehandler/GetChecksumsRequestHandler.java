@@ -52,6 +52,7 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
+import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -86,9 +87,9 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
     public void processRequest(GetChecksumsRequest message) throws RequestHandlerException {
         validateMessage(message);
         sendInitialProgressMessage(message);
-        List<ChecksumDataForChecksumSpecTYPE> checksumList = calculateChecksumResults(message);
-        ResultingChecksums compiledResults = performPostProcessing(message, checksumList);
-        sendFinalResponse(message, compiledResults);
+        ExtractedChecksumResultSet extractedChecksums = extractChecksumResults(message);
+        ResultingChecksums compiledResults = performPostProcessing(message, extractedChecksums);
+        sendFinalResponse(message, compiledResults, extractedChecksums);
     }
 
     @Override
@@ -156,21 +157,20 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
      * @param message The message with the checksum request.
      * @return The list of results for the requested checksum.
      */
-    private List<ChecksumDataForChecksumSpecTYPE> calculateChecksumResults(GetChecksumsRequest message) {
+    private ExtractedChecksumResultSet extractChecksumResults(GetChecksumsRequest message) {
         log.debug("Starting to calculate the checksum of the requested files.");
-        List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         
         if(message.getFileIDs().isSetFileID()) {
+            ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
             ChecksumEntry entry = getCache().getEntry(message.getFileIDs().getFileID());
-            res.add(createChecksumDataForChecksumSpecTYPE(entry));            
+            res.insertChecksumEntry(entry);
+            return res;
         } else {
-            // Go through every file in the archive, calculate the checksum and put it into the results.
-            for(ChecksumEntry entry : getCache().getAllEntries()) {
-                res.add(createChecksumDataForChecksumSpecTYPE(entry));
-            }
+            return getCache().getEntries(
+                    CalendarUtils.convertFromXMLGregorianCalendar(message.getMinTimestamp()), 
+                    CalendarUtils.convertFromXMLGregorianCalendar(message.getMaxTimestamp()), 
+                    message.getMaxNumberOfResults().longValue());
         }
-
-        return res;
     }
     
     /**
@@ -195,12 +195,18 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
      * otherwise the results a put into the result structure.
      * 
      * @param message The message requesting the calculation of the checksums.
-     * @param checksumList The list of requested checksums.
-     * @return The result structure.
+     * @param extractedChecksums The list of requested checksums.
+     * @return The result structure, containing either the actual checksum results or the URL to where the results 
+     * have been uploaded.
      */
     private ResultingChecksums performPostProcessing(GetChecksumsRequest message, 
-            List<ChecksumDataForChecksumSpecTYPE> checksumList) throws RequestHandlerException {
+            ExtractedChecksumResultSet extractedChecksums) throws RequestHandlerException {
         ResultingChecksums res = new ResultingChecksums();
+        
+        List<ChecksumDataForChecksumSpecTYPE> checksumList = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
+        for(ChecksumEntry e : extractedChecksums.getEntries()) {
+            checksumList.add(createChecksumDataForChecksumSpecTYPE(e));
+        }
         
         String url = message.getResultAddress();
         if(url != null) {
@@ -289,10 +295,16 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
      * Method for sending a final response reporting the success.
      * @param request The GetChecksumRequest to base the response upon.
      * @param results The results of the checksum calculations.
+     * @param extractedChecksums The extracted checksum entries. Contains whether more results can be found.
      */
-    private void sendFinalResponse(GetChecksumsRequest request, ResultingChecksums results) {
+    private void sendFinalResponse(GetChecksumsRequest request, ResultingChecksums results, 
+            ExtractedChecksumResultSet extractedChecksums) {
         GetChecksumsFinalResponse response = createFinalResponse(request);
         
+        if(extractedChecksums.hasMoreEntries()) {
+            response.setPartialResult(true);
+        }
+
         ResponseInfo fri = new ResponseInfo();
         fri.setResponseCode(ResponseCode.OPERATION_COMPLETED);
         response.setResponseInfo(fri);

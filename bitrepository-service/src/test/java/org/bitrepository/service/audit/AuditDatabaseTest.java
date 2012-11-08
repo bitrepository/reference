@@ -23,16 +23,14 @@ package org.bitrepository.service.audit;
 
 import java.io.File;
 import java.sql.Connection;
-import java.util.Collection;
 import java.util.Date;
 
-import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.DatabaseTestUtils;
 import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.service.database.DBConnector;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -93,23 +91,39 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         daba.addAuditEvent(fileId2, actor, info, auditTrail, FileAction.FAILURE);
         daba.addAuditEvent(fileId2, actor, info, auditTrail, FileAction.INCONSISTENCY);
         
-        addStep("Test output", "Should be valid.");
-        Collection<AuditTrailEvent> events = daba.getAudits(null, null, null, null, null);
-        Assert.assertEquals(events.size(), 5);
+        addStep("Test extracting all the events", "Should be all 5 events.");
+        AuditTrailDatabaseResults events = daba.getAudits(null, null, null, null, null, null);
+        Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().size(), 5);
         
-        events = daba.getAudits(fileId1, null, null, null, null);
-        Assert.assertEquals(events.size(), 2);        
+        addStep("Test extracting the events for fileID1", "Should be 2 events.");
+        events = daba.getAudits(fileId1, null, null, null, null, null);
+        Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().size(), 2);
 
-        events = daba.getAudits(fileId2, null, null, null, null);
-        Assert.assertEquals(events.size(), 3);
+        addStep("Test extracting the events for fileID2", "Should be 3 events.");
+        events = daba.getAudits(fileId2, null, null, null, null, null);
+        Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().size(), 3);
         
+        addStep("Test extracting the events with the sequence number at least equal to the largest sequence number.", 
+                "Should be 1 event.");
         Long seq = daba.extractLargestSequenceNumber();
+        events = daba.getAudits(null, seq, null, null, null, null);
+        Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().size(), 1);
         
-        events = daba.getAudits(null, seq, null, null, null);
-        Assert.assertEquals(events.size(), 1);
-        
-        events = daba.getAudits(fileId1, seq-3, null, null, null);
-        Assert.assertEquals(events.size(), 1);
+        addStep("Test extracting the events for fileID1 with sequence number 2 or more", "Should be 1 event.");
+        events = daba.getAudits(fileId1, seq-3, null, null, null, null);
+        Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().size(), 1);
+
+        addStep("Test extracting the events for fileID1 with at most sequence number 2", "Should be 2 events.");
+        events = daba.getAudits(fileId1, null, seq-3, null, null, null);
+        Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().size(), 2);
+
+        addStep("Test extracting at most 3 events", "Should extract 3 events.");
+        events = daba.getAudits(null, null, null, null, null, 3L);
+        Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().size(), 3);
+
+        addStep("Test extracting at most 1000 events", "Should extract all 5 events.");
+        events = daba.getAudits(null, null, null, null, null, 1000L);
+        Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().size(), 5);
         
         dbConnector.destroy();
     }

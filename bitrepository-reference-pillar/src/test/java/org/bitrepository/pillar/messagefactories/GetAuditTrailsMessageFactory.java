@@ -76,8 +76,9 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
     }
     
     public GetAuditTrailsRequest createGetAuditTrailsRequest(String auditTrail, String contributorId, 
-            String correlationId, String fileId, String from, BigInteger maxSequence, XMLGregorianCalendar maxTime, 
-            BigInteger minSequence, XMLGregorianCalendar minTime, String replyTo, String url, String toTopic) {
+            String correlationId, String fileId, String from, BigInteger maxNumberOfResults, BigInteger maxSequence, 
+            XMLGregorianCalendar maxTime, BigInteger minSequence, XMLGregorianCalendar minTime, String replyTo, 
+            String url, String toTopic) {
         GetAuditTrailsRequest res = new GetAuditTrailsRequest();
         initializeMessageDetails(res);
         res.setAuditTrailInformation(auditTrail);
@@ -86,6 +87,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
         res.setCorrelationID(correlationId);
         res.setFileID(fileId);
         res.setFrom(from);
+        res.setMaxNumberOfResults(maxNumberOfResults);
         res.setMaxSequenceNumber(maxSequence);
         res.setMaxTimestamp(maxTime);
         res.setMinSequenceNumber(minSequence);
@@ -125,6 +127,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
         res.setResponseInfo(responseInfo);
         res.setResultingAuditTrails(auditTrails);
         res.setTo(toTopic);
+        res.setPartialResult(false);
         
         return res;
     }

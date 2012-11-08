@@ -38,8 +38,6 @@ import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetFileIDsResults;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
-import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
-import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
@@ -51,6 +49,7 @@ import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
+import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -85,8 +84,9 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
     public void processRequest(GetFileIDsRequest message) throws RequestHandlerException {
         validateMessage(message);
         sendInitialProgressMessage(message);
-        ResultingFileIDs results = performGetFileIDsOperation(message);
-        sendFinalResponse(message, results);
+        ExtractedFileIDsResultSet extractedFileIDs = retrieveFileIDsData(message);
+        ResultingFileIDs results = performGetFileIDsOperation(message, extractedFileIDs);
+        sendFinalResponse(message, results, extractedFileIDs);
     }
 
     @Override
@@ -145,19 +145,20 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
      * Finds the requested FileIDs and either uploads them or puts them into the final response depending on 
      * the request. 
      * @param message The message requesting which fileids to be found.
+     * @param extractedFileIDs The extracted file ids.
      * @return The ResultingFileIDs with either the list of fileids or the final address for where the 
      * list of fileids is uploaded.
      */
-    private ResultingFileIDs performGetFileIDsOperation(GetFileIDsRequest message) throws RequestHandlerException {
+    private ResultingFileIDs performGetFileIDsOperation(GetFileIDsRequest message, 
+            ExtractedFileIDsResultSet extractedFileIDs) throws RequestHandlerException {
         ResultingFileIDs res = new ResultingFileIDs();
-        FileIDsData data = retrieveFileIDsData(message.getFileIDs());
         
         String resultingAddress = message.getResultAddress();
         if(resultingAddress == null) {
-            res.setFileIDsData(data);
+            res.setFileIDsData(extractedFileIDs.getEntries());
         } else {
             try {
-                File outputFile = makeTemporaryChecksumFile(message, data);
+                File outputFile = makeTemporaryChecksumFile(message, extractedFileIDs.getEntries());
                 uploadFile(outputFile, resultingAddress);
                 res.setResultAddress(resultingAddress);
             } catch (Exception e) {
@@ -174,31 +175,21 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
     /**
      * Retrieves the requested FileIDs. Depending on which operation is requested, it will call the appropriate method.
      * 
-     * @param fileIDs The requested FileIDs.
+     * @param request The requested for extracting the file ids.
      * @return The resulting collection of FileIDs found.
      * file. 
      */
-    private FileIDsData retrieveFileIDsData(FileIDs fileIDs) {
-        
-        FileIDsData res = new FileIDsData();
-        FileIDsDataItems fileIDList = new FileIDsDataItems();
-        if(fileIDs.isSetFileID()) {
-            ChecksumEntry entry = getCache().getEntry(fileIDs.getFileID());
-            FileIDsDataItem fileIDData = new FileIDsDataItem();
-            fileIDData.setFileID(entry.getFileId());
-            fileIDData.setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
-            fileIDList.getFileIDsDataItem().add(fileIDData);
+    private ExtractedFileIDsResultSet retrieveFileIDsData(GetFileIDsRequest request) {
+        if(request.getFileIDs().isSetFileID()) {
+            ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
+            ChecksumEntry entry = getCache().getEntry(request.getFileIDs().getFileID());
+            res.insertFileID(entry.getFileId(), entry.getCalculationDate());
+            return res;
         } else {
-            for(ChecksumEntry entry : getCache().getAllEntries()) {
-                FileIDsDataItem fileIDData = new FileIDsDataItem();
-                fileIDData.setFileID(entry.getFileId());
-                fileIDData.setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
-                fileIDList.getFileIDsDataItem().add(fileIDData);
-            }
+            return getCache().getFileIDs(CalendarUtils.convertFromXMLGregorianCalendar(request.getMinTimestamp()), 
+                    CalendarUtils.convertFromXMLGregorianCalendar(request.getMaxTimestamp()), 
+                    request.getMaxNumberOfResults().longValue());
         }
-        
-        res.setFileIDsDataItems(fileIDList);
-        return res;
     }
     
     /**
@@ -268,9 +259,15 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
      * Send a positive final response telling that the operation has successfully finished.
      * @param request The request to base the final response upon.
      * @param results The results to be put into the final response.
+     * @param extractedFileIDs The extracted file ids. Contains whether more results can be found.
      */
-    private void sendFinalResponse(GetFileIDsRequest request, ResultingFileIDs results) {
+    private void sendFinalResponse(GetFileIDsRequest request, ResultingFileIDs results, 
+            ExtractedFileIDsResultSet extractedFileIDs) {
         GetFileIDsFinalResponse response = createFinalResponse(request);
+        
+        if(extractedFileIDs.hasMoreEntries()) {
+            response.setPartialResult(true);
+        }
         
         ResponseInfo fri = new ResponseInfo();
         fri.setResponseCode(ResponseCode.OPERATION_COMPLETED);

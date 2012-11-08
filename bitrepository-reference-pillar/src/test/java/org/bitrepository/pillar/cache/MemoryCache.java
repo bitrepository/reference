@@ -21,13 +21,12 @@
  */
 package org.bitrepository.pillar.cache;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bitrepository.pillar.cache.ChecksumEntry;
-import org.bitrepository.pillar.cache.ChecksumStore;
+import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
+import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
 
 /**
  * Very simple memory based implementation of the ChecksumCache.
@@ -51,8 +50,12 @@ public class MemoryCache implements ChecksumStore {
     }
     
     @Override
-    public Collection<String> getFileIDs() {
-        return checksumMap.keySet();
+    public ExtractedFileIDsResultSet getFileIDs(Date minTimeStamp, Date maxTimeStamp, Long maxNumberOfResults) {
+        ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
+        for(String s : checksumMap.keySet()) {
+            res.insertFileID(s, new Date(0));
+        }
+        return res;
     }
     
     @Override
@@ -84,8 +87,12 @@ public class MemoryCache implements ChecksumStore {
     }
 
     @Override
-    public Collection<ChecksumEntry> getAllEntries() {
-        return checksumMap.values();
+    public ExtractedChecksumResultSet getEntries(Date minTimeStamp, Date maxTimeStamp, Long maxNumberOfResults) {
+        ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
+        for(ChecksumEntry cs : checksumMap.values()) {
+            res.insertChecksumEntry(cs);
+        }
+        return res;
     }
 
     @Override

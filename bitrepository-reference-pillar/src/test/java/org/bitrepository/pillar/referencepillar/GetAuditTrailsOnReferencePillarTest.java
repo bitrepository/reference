@@ -73,8 +73,8 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
         addStep("Make and send the request for the actual GetAuditTrails operation", 
                 "Should be caught and handled by the pillar.");
         GetAuditTrailsRequest request = msgFactory.createGetAuditTrailsRequest(auditTrail, contributorId, 
-                identifyRequest.getCorrelationID(), null, getPillarID(), null, null, null, null, clientDestinationId, null, 
-                pillarDestinationId);
+                identifyRequest.getCorrelationID(), null, getPillarID(), null, null, null, null, null, 
+                clientDestinationId, null, pillarDestinationId);
         messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
@@ -127,8 +127,8 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
         addStep("Make and send the request for the actual GetAuditTrails operation", 
                 "Should be caught and handled by the pillar.");
         GetAuditTrailsRequest request = msgFactory.createGetAuditTrailsRequest(auditTrail, contributorId, 
-                identifyRequest.getCorrelationID(), FILE_ID, getPillarID(), BigInteger.ONE, maxDate, BigInteger.ONE, 
-                minDate, clientDestinationId, null, pillarDestinationId);
+                identifyRequest.getCorrelationID(), FILE_ID, getPillarID(), null, BigInteger.ONE, maxDate, 
+                BigInteger.ONE, minDate, clientDestinationId, null, pillarDestinationId);
         messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
@@ -156,7 +156,8 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
         addStep("Make another request, where both ingested audit trails is requested", 
                 "Should be handled by the pillar.");
         request = msgFactory.createGetAuditTrailsRequest(auditTrail, contributorId, 
-                identifyRequest.getCorrelationID(), null, getPillarID(), null, null, null, null, clientDestinationId, null, pillarDestinationId);
+                identifyRequest.getCorrelationID(), null, getPillarID(), null, null, null, null, null, 
+                clientDestinationId, null, pillarDestinationId);
         messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
@@ -174,5 +175,46 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
                 finalResponse.getResultingAuditTrails(), clientDestinationId));
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().size(), 2);    
+        Assert.assertFalse(finalResponse.isPartialResult());
+    }
+    
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void referencePillarGetAuditTrailsMaximumNumberOfResults() {
+        addDescription("Tests the GetAuditTrails functionality of the reference pillar for the successful scenario, "
+                + "where a limited number of audit trails are requested.");
+        addStep("Set up constants and variables.", "Should not fail here!");
+        String auditTrail = "";
+        String FILE_ID = "fileId" + new Date().getTime();
+        String ACTOR = "ACTOR";
+        String INFO = "InFo";
+        String AUDITTRAIL = "auditTrails";
+        long maxNumberOfResults = 5L;
+        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.CHECKSUM_CALCULATED);
+        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.DELETE_FILE);
+        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.FAILURE);
+        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.FILE_MOVED);
+        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.GET_CHECKSUMS);
+        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.GET_FILE);
+        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.GET_FILEID);
+        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.INCONSISTENCY);
+        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.INTEGRITY_CHECK);
+        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.OTHER);
+        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.PUT_FILE);
+        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.REPLACE_FILE);
+
+        addStep("Send the request for the limited amount of audit trails to the pillar.", 
+                "The pillar handles the request and responds.");
+        GetAuditTrailsRequest request = msgFactory.createGetAuditTrailsRequest(auditTrail, getComponentID(), 
+                msgFactory.getNewCorrelationID(), FILE_ID, getPillarID(), BigInteger.valueOf(maxNumberOfResults), 
+                null, null, null, null, clientDestinationId, null, pillarDestinationId);
+        messageBus.sendMessage(request);
+        GetAuditTrailsFinalResponse finalResponse = clientTopic.waitForMessage(GetAuditTrailsFinalResponse.class);
+        
+        addStep("Validate the final response", "Contains OPERATION_COMPLETE, with only the requested amount of audits, "
+                + "and acknowledges that it is only a partial result set.");
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        Assert.assertEquals(finalResponse.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().size(), maxNumberOfResults);
+        Assert.assertTrue(finalResponse.isSetPartialResult());
     }
 }

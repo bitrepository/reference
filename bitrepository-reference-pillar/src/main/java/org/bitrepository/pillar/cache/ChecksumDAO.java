@@ -21,15 +21,15 @@
  */
 package org.bitrepository.pillar.cache;
 
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.cache.database.ChecksumExtractor;
 import org.bitrepository.pillar.cache.database.ChecksumIngestor;
+import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
+import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
+import org.bitrepository.service.database.DBConnector;
 
 /**
  * The checksum store backed by a database.
@@ -83,8 +83,8 @@ public class ChecksumDAO implements ChecksumStore {
     }
     
     @Override
-    public List<ChecksumEntry> getAllEntries() {
-        return extractor.extractAllEntries();
+    public ExtractedChecksumResultSet getEntries(Date minTimeStamp, Date maxTimeStamp, Long maxNumberOfResults) {
+        return extractor.extractEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults);
     }
     
     @Override
@@ -100,8 +100,8 @@ public class ChecksumDAO implements ChecksumStore {
     }
     
     @Override
-    public Collection<String> getFileIDs() {
-        return extractor.getAllFileIDs();
+    public ExtractedFileIDsResultSet getFileIDs(Date minTimeStamp, Date maxTimeStamp, Long maxNumberOfResults) {
+        return extractor.getFileIDs(minTimeStamp, maxTimeStamp, maxNumberOfResults);
     }
 
     @Override

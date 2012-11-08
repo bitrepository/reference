@@ -21,8 +21,18 @@
  */
 package org.bitrepository.service.contributor.handler;
 
-import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
-import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.Date;
+
+import javax.xml.bind.JAXBException;
+
+import org.apache.activemq.util.ByteArrayInputStream;
+import org.bitrepository.bitrepositorydata.GetAuditTrailsResults;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
@@ -30,15 +40,19 @@ import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.ProtocolVersionLoader;
+import org.bitrepository.service.audit.AuditTrailDatabaseResults;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorContext;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Date;
+import org.xml.sax.SAXException;
 
 /**
  * Class for handling the GetAuditTrails operation.
@@ -67,7 +81,8 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
     public void processRequest(GetAuditTrailsRequest message) throws RequestHandlerException {
         validateMessage(message);
         sendProgressMessage(message);
-        ResultingAuditTrails resAudits = collectAudits(message);
+        AuditTrailDatabaseResults resAudits = collectAudits(message);
+        handleUpload(message, resAudits);
         sendFinalResponse(message, resAudits);
     }
 
@@ -111,9 +126,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
      * @param message The message requesting the collecting of audit trails.
      * @return The requested audit trails.
      */
-    protected ResultingAuditTrails collectAudits(GetAuditTrailsRequest message) {
-        ResultingAuditTrails res = new ResultingAuditTrails();
-        
+    protected AuditTrailDatabaseResults collectAudits(GetAuditTrailsRequest message) {
         Long minSeq = null;
         if(message.getMinSequenceNumber() != null) {
             log.trace("Minimum sequence value: {}", message.getMinSequenceNumber().longValue());
@@ -134,28 +147,96 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
             log.trace("Maximum date value: {}", message.getMaxTimestamp());
             maxDate = CalendarUtils.convertFromXMLGregorianCalendar(message.getMaxTimestamp());
         }
-        
-        AuditTrailEvents events = new AuditTrailEvents();
-        for(AuditTrailEvent event :  auditManager.getAudits(message.getFileID(), 
-                minSeq, maxSeq, minDate, maxDate)) {
-            log.trace("Adding audit trail event to results: {}", event);
-            events.getAuditTrailEvent().add(event);
+        Long maxNumberOfResults = null;
+        if(message.getMaxNumberOfResults() != null) {
+            log.trace("Maximum number of results: {}", message.getMaxNumberOfResults());
+            maxNumberOfResults = message.getMaxNumberOfResults().longValue();
         }
         
-        res.setAuditTrailEvents(events);
-        res.setResultAddress(message.getResultAddress());
+        return auditManager.getAudits(message.getFileID(), minSeq, maxSeq, minDate, maxDate, maxNumberOfResults);
+    }
+    
+    /**
+     * Handles the potential upload of the audit trails to a given URL.
+     * @param request The request for the audit trails, which includes the URL for where the audit trails should be 
+     * uploaded
+     * @param extractedAuditTrails The extracted audit trails.
+     * @throws InvalidMessageException If the creation, serialization, validation or upload of the file fails.
+     */
+    protected void handleUpload(GetAuditTrailsRequest request, AuditTrailDatabaseResults extractedAuditTrails) throws InvalidMessageException {
+        if(request.getResultAddress() == null || request.getResultAddress().isEmpty()) {
+            log.trace("The audit trails are not uploaded.");
+            return;
+        }
         
-        return res;
+        log.debug("Creating audit trail file and uploading it.");
+        try {
+            File fileToUpload = createAuditTrailFile(request, extractedAuditTrails);
+            URL uploadUrl = new URL(request.getResultAddress());
+            
+            log.debug("Uploading file: " + fileToUpload.getName() + " to " + uploadUrl.toExternalForm());
+            FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getContext().getSettings());
+            fe.uploadToServer(new FileInputStream(fileToUpload), uploadUrl);
+        } catch (Exception e) {
+            ResponseInfo ir = new ResponseInfo();
+            ir.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
+            ir.setResponseText("Could not handle the creation and upload of the results due to: " + e.getMessage());
+            throw new InvalidMessageException(ir, e);
+        }
+    }
+    
+    /**
+     * Creates a file containing all the audit trails.
+     * @param request The request for the data.
+     * @param extractedAuditTrails The extracted audit trails.
+     * @return The file containing the extracted audit trails.
+     * @throws IOException If something goes wrong when creating the file or finding the XSD.
+     * @throws JAXBException If the resulting structure cannot be serialized.
+     * @throws SAXException If the results does not validate against the XSD.
+     */
+    protected File createAuditTrailFile(GetAuditTrailsRequest request, AuditTrailDatabaseResults extractedAuditTrails) 
+            throws IOException, JAXBException, SAXException {
+        File checksumResultFile = File.createTempFile(request.getCorrelationID(), new Date().getTime() + ".at");
+        
+        GetAuditTrailsResults results = new GetAuditTrailsResults();
+        results.setVersion(ProtocolVersionLoader.loadProtocolVersion().getVersion());
+        results.setMinVersion(ProtocolVersionLoader.loadProtocolVersion().getMinVersion());
+        results.setCollectionID(getContext().getSettings().getCollectionID());
+        results.getAuditTrailEvents().add(extractedAuditTrails.getAuditTrailEvents());
+
+        OutputStream is = null;
+        try {
+            is = new FileOutputStream(checksumResultFile);
+            JaxbHelper jaxb = new JaxbHelper(XSD_CLASSPATH, XSD_BR_DATA);
+            String xmlMessage = jaxb.serializeToXml(results);
+            jaxb.validate(new ByteArrayInputStream(xmlMessage.getBytes()));
+            is.write(xmlMessage.getBytes());
+            is.flush();
+        } finally {
+            if(is != null) {
+                is.close();
+            }
+        }
+        
+        return checksumResultFile;
     }
 
     /**
      * Method for sending a positive final response.
      * @param request The request to respond to.
-     * @param resultingAudits The retrieved audit trails.
+     * @param auditExtract The retrieved audit trails.
      */
-    protected void sendFinalResponse(GetAuditTrailsRequest request, ResultingAuditTrails resultingAudits) {
+    protected void sendFinalResponse(GetAuditTrailsRequest request, AuditTrailDatabaseResults auditExtract) {
         GetAuditTrailsFinalResponse response = createFinalResponse(request);
-        response.setResultingAuditTrails(resultingAudits);
+        ResultingAuditTrails resAuditTrails = new ResultingAuditTrails();
+        if(request.getResultAddress() == null) {
+            resAuditTrails.setAuditTrailEvents(auditExtract.getAuditTrailEvents());
+        } else {
+            resAuditTrails.setResultAddress(request.getResultAddress());
+        }
+        
+        response.setResultingAuditTrails(resAuditTrails);
+        response.setPartialResult(auditExtract.moreResults());
         
         ResponseInfo responseInfo = new ResponseInfo();
         responseInfo.setResponseCode(ResponseCode.OPERATION_COMPLETED);

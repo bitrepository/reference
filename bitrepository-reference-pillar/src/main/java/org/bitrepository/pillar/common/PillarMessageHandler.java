@@ -24,11 +24,9 @@
  */
 package org.bitrepository.pillar.common;
 
-import java.math.BigInteger;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileIDValidator;
-import org.bitrepository.protocol.ProtocolVersionLoader;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.handler.AbstractRequestHandler;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -37,17 +35,6 @@ import org.bitrepository.service.exception.RequestHandlerException;
  * Abstract level for message handling for both types of pillar.
  */
 public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> {
-
-    /** The constant for the VERSION of the messages.*/
-    protected static final BigInteger VERSION = ProtocolVersionLoader.loadProtocolVersion().getVersion();
-    /** The constant for the MIN_VERSION of the messages.*/
-    protected static final BigInteger MIN_VERSION = ProtocolVersionLoader.loadProtocolVersion().getMinVersion();
-    
-    /** The classpath to the 'xsd'.*/
-    protected static final String XSD_CLASSPATH = "xsd/";
-    /** The name of the XSD containing the BitRepositoryData elements. */
-    protected static final String XSD_BR_DATA = "BitRepositoryData.xsd";
-    
     /** The response value for a positive identification.*/
     protected static final String RESPONSE_FOR_POSITIVE_IDENTIFICATION = "Operation acknowledged and accepted.";
     

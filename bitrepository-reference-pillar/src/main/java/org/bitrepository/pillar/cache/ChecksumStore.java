@@ -21,8 +21,10 @@
  */
 package org.bitrepository.pillar.cache;
 
-import java.util.Collection;
 import java.util.Date;
+
+import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
+import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
 
 /**
  * Interface for the storage of checksums.
@@ -49,10 +51,13 @@ public interface ChecksumStore {
     ChecksumEntry getEntry(String fileId);
     
     /**
-     * Retrieves all the entries from the store.
-     * @return All the checksum entries from the store.
+     * Retrieves the entries from the store.
+     * @param minTimeStamp The minimum date for the timestamp of the extracted checksum entries.
+     * @param maxTimeStamp The maximum date for the timestamp of the extracted checksum entries.
+     * @param maxNumberOfResults The maximum number of results.
+     * @return The checksum entries from the store.
      */
-    Collection<ChecksumEntry> getAllEntries();
+    ExtractedChecksumResultSet getEntries(Date minTimeStamp, Date maxTimeStamp, Long maxNumberOfResults);
     
     /**
      * Inserts a checksum calculation for a given file.
@@ -63,10 +68,13 @@ public interface ChecksumStore {
     void insertChecksumCalculation(String fileId, String checksum, Date calculationDate);
     
     /**
-     * Retrieval of all file ids.
-     * @return All the file ids in the store.
+     * Retrieval of file ids.
+     * @param minTimeStamp The minimum date for the timestamp of the extracted file ids.
+     * @param maxTimeStamp The maximum date for the timestamp of the extracted file ids.
+     * @param maxNumberOfResults The maximum number of results.
+     * @return The file ids in the store within the restrictions.
      */
-    Collection<String> getFileIDs();
+    ExtractedFileIDsResultSet getFileIDs(Date minTimeStamp, Date maxTimeStamp, Long maxNumberOfResults);
     
     /**
      * Deletes a given entry from the cache.
