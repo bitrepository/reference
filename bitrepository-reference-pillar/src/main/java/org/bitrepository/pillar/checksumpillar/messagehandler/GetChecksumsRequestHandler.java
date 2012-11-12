@@ -159,17 +159,23 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
      */
     private ExtractedChecksumResultSet extractChecksumResults(GetChecksumsRequest message) {
         log.debug("Starting to calculate the checksum of the requested files.");
-        
+
         if(message.getFileIDs().isSetFileID()) {
             ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
             ChecksumEntry entry = getCache().getEntry(message.getFileIDs().getFileID());
             res.insertChecksumEntry(entry);
             return res;
         } else {
-            return getCache().getEntries(
-                    CalendarUtils.convertFromXMLGregorianCalendar(message.getMinTimestamp()), 
-                    CalendarUtils.convertFromXMLGregorianCalendar(message.getMaxTimestamp()), 
-                    message.getMaxNumberOfResults().longValue());
+            Long maxResults = null;
+            if(message.getMaxNumberOfResults() != null) {
+                maxResults = message.getMaxNumberOfResults().longValue();
+            }
+            try {
+                return getCache().getEntries(message.getMinTimestamp(), message.getMaxTimestamp(), maxResults);
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+                throw e;
+            }
         }
     }
     

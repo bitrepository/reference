@@ -23,6 +23,8 @@ package org.bitrepository.pillar.cache;
 
 import java.util.Date;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.cache.database.ChecksumExtractor;
@@ -83,7 +85,8 @@ public class ChecksumDAO implements ChecksumStore {
     }
     
     @Override
-    public ExtractedChecksumResultSet getEntries(Date minTimeStamp, Date maxTimeStamp, Long maxNumberOfResults) {
+    public ExtractedChecksumResultSet getEntries(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
+            Long maxNumberOfResults) {
         return extractor.extractEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults);
     }
     
@@ -100,7 +103,8 @@ public class ChecksumDAO implements ChecksumStore {
     }
     
     @Override
-    public ExtractedFileIDsResultSet getFileIDs(Date minTimeStamp, Date maxTimeStamp, Long maxNumberOfResults) {
+    public ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
+            Long maxNumberOfResults) {
         return extractor.getFileIDs(minTimeStamp, maxTimeStamp, maxNumberOfResults);
     }
 

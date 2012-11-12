@@ -46,7 +46,6 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
@@ -186,9 +185,11 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
             res.insertFileID(entry.getFileId(), entry.getCalculationDate());
             return res;
         } else {
-            return getCache().getFileIDs(CalendarUtils.convertFromXMLGregorianCalendar(request.getMinTimestamp()), 
-                    CalendarUtils.convertFromXMLGregorianCalendar(request.getMaxTimestamp()), 
-                    request.getMaxNumberOfResults().longValue());
+            Long maxResults = null;
+            if(request.getMaxNumberOfResults() != null) {
+                maxResults = request.getMaxNumberOfResults().longValue();
+            }
+            return getCache().getFileIDs(request.getMinTimestamp(), request.getMaxTimestamp(), maxResults);
         }
     }
     

@@ -23,6 +23,8 @@ package org.bitrepository.pillar.cache;
 
 import java.util.Date;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
 
@@ -57,7 +59,8 @@ public interface ChecksumStore {
      * @param maxNumberOfResults The maximum number of results.
      * @return The checksum entries from the store.
      */
-    ExtractedChecksumResultSet getEntries(Date minTimeStamp, Date maxTimeStamp, Long maxNumberOfResults);
+    ExtractedChecksumResultSet getEntries(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
+            Long maxNumberOfResults);
     
     /**
      * Inserts a checksum calculation for a given file.
@@ -74,7 +77,8 @@ public interface ChecksumStore {
      * @param maxNumberOfResults The maximum number of results.
      * @return The file ids in the store within the restrictions.
      */
-    ExtractedFileIDsResultSet getFileIDs(Date minTimeStamp, Date maxTimeStamp, Long maxNumberOfResults);
+    ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
+            Long maxNumberOfResults);
     
     /**
      * Deletes a given entry from the cache.

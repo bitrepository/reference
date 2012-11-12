@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
 
@@ -50,7 +52,8 @@ public class MemoryCache implements ChecksumStore {
     }
     
     @Override
-    public ExtractedFileIDsResultSet getFileIDs(Date minTimeStamp, Date maxTimeStamp, Long maxNumberOfResults) {
+    public ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
+            Long maxNumberOfResults) {
         ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
         for(String s : checksumMap.keySet()) {
             res.insertFileID(s, new Date(0));
@@ -87,11 +90,13 @@ public class MemoryCache implements ChecksumStore {
     }
 
     @Override
-    public ExtractedChecksumResultSet getEntries(Date minTimeStamp, Date maxTimeStamp, Long maxNumberOfResults) {
+    public ExtractedChecksumResultSet getEntries(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
+            Long maxNumberOfResults) {
         ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
         for(ChecksumEntry cs : checksumMap.values()) {
             res.insertChecksumEntry(cs);
         }
+
         return res;
     }
 
