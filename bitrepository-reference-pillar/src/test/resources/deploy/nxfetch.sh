@@ -89,17 +89,20 @@ do
      esac
 done
 
-if [[ -z $GROUP_ID ]] || [[ -z $ARTIFACT_ID ]] || [[ -z $VERSION ]]
+if [[ -z $GROUP_ID ]] || [[ -z $ARTIFACT_ID ]]
 then
-     echo "BAD ARGUMENTS: Either groupId, artifactId, or version was not supplied" >&2
+     echo "BAD ARGUMENTS: Either groupId or artifactId was not supplied" >&2
      usage
      exit 1
 fi
 
+if [[ -z $VERSION ]] then
+    : VERSION = LATEST
+fi
 # Define default values for optional components
 
 # If the version requested is a SNAPSHOT use snapshots, otherwise use releases
-if [[ "$VERSION" =~ .*SNAPSHOT ]]
+if [[ "$VERSION" == *SNAPSHOT ]] || [[ "$VERSION" == LATEST ]]
 then
     : ${REPO:="snapshots"}
 else

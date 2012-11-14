@@ -31,6 +31,7 @@ initialize_repository() {
     git add testprops/*
     git add -f bin/*
     echo lib >> .gitignore
+    git add .gitignore
     git commit -m "Initialized with configurations" --quiet
   else
     if [ ! -d "$1/bin" ] ; then

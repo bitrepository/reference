@@ -82,7 +82,7 @@ download_test() {
   fi
   tar -xzf $ARTIFACTID.tar.gz
   rm -rf $DOWNLOAD_TEST_DIR/lib
-  cp -r ${ARTIFACTID}-${VERSION}/* $DOWNLOAD_TEST_DIR
+  cp -R ${ARTIFACTID}-${VERSION}/* $DOWNLOAD_TEST_DIR
 }
 
 # Updates a test for a single pillar
