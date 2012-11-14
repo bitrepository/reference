@@ -28,9 +28,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
 
 import static org.bitrepository.pillar.cache.database.DatabaseConstants.CHECKSUM_TABLE;
@@ -91,15 +95,6 @@ public class ChecksumExtractor {
     }
     
     /**
-     * Extracts all the file ids in the table.
-     * @return The list of file ids.
-     */
-    public List<String> getAllFileIDs() {
-        String sql = "SELECT " + CS_FILE_ID + " FROM " + CHECKSUM_TABLE;
-        return DatabaseUtils.selectStringList(connector, sql, new Object[0]);
-    }
-    
-    /**
      * Extracts the checksum entry for a single file.
      * @param fileId The id of the file whose checksum entry should be extracted.
      * @return The checksum entry for the file.
@@ -138,27 +133,58 @@ public class ChecksumExtractor {
     }
 
     /**
-     * Extracts all the checksum entries in the database.
-     * @return The checksum entry for the file.
+     * Extracts the file ids within the given optional limitations.
+     * 
+     * @param minTimeStamp The minimum date for the timestamp of the extracted file ids.
+     * @param maxTimeStamp The maximum date for the timestamp of the extracted file ids.
+     * @param maxNumberOfResults The maximum number of results.
+     * @return The requested collection of file ids.
      */
-    public List<ChecksumEntry> extractAllEntries() {
-        String sql = "SELECT " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE;
+    public ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
+            Long maxNumberOfResults) {
+        List<Object> args = new ArrayList<Object>(); 
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT " + CS_FILE_ID + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE);
+        
+        boolean hasRestrictions = false;
+        if(minTimeStamp != null) {
+            if(!hasRestrictions) {
+                sql.append(" WHERE ");
+                hasRestrictions = true;
+            }
+            args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp));
+            sql.append("" + CS_DATE + " > ? ");
+        }
+        if(maxTimeStamp != null) {
+            if(!hasRestrictions) {
+                sql.append(" WHERE ");
+                hasRestrictions = true;
+            }
+            args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp));
+            sql.append("" + CS_DATE + " < ? ");
+        }
+        
+        ExtractedFileIDsResultSet results = new ExtractedFileIDsResultSet();
         try {
             PreparedStatement ps = null;
-            ResultSet resultSet = null;
+            ResultSet res = null;
             Connection conn = null;
-            List<ChecksumEntry> res = new ArrayList<ChecksumEntry>();
             try {
                 conn = connector.getConnection();
-                ps = DatabaseUtils.createPreparedStatement(conn, sql, new Object[0]);
-                resultSet = ps.executeQuery();
-                while(resultSet.next()) {
-                    res.add(extractChecksumEntry(resultSet));
+                ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray());
+                res = ps.executeQuery();
+                
+                int i = 0;
+                while(res.next() && (maxNumberOfResults == null || i < maxNumberOfResults)) {
+                    results.insertFileID(res.getString(1), res.getTimestamp(2));
                 }
-                return res;
+                
+                if(maxNumberOfResults != null && i >= maxNumberOfResults) {
+                    results.reportMoreEntriesFound();
+                }
             } finally {
-                if(resultSet != null) {
-                    resultSet.close();
+                if(res != null) {
+                    res.close();
                 }
                 if(ps != null) {
                     ps.close();
@@ -168,8 +194,82 @@ public class ChecksumExtractor {
                 }
             }
         } catch (SQLException e) {
-            throw new IllegalStateException("Cannot extract all the ChecksumEntries", e);
+            throw new IllegalStateException("Cannot extract the file ids with the arguments, minTimestamp = '" 
+                    + minTimeStamp + "', maxTimestamp = '"+ maxTimeStamp + "', maxNumberOfResults = '" 
+                    + maxNumberOfResults + "'", e);
         }
+        
+        return results;
+    }
+    
+    /**
+     * Extracts the checksum entries within the given optional limitations.
+     * 
+     * @param minTimeStamp The minimum date for the timestamp of the extracted checksum entries.
+     * @param maxTimeStamp The maximum date for the timestamp of the extracted checksum entries.
+     * @param maxNumberOfResults The maximum number of results.
+     * @return The requested collection of file ids.
+     */
+    public ExtractedChecksumResultSet extractEntries(XMLGregorianCalendar minTimeStamp, 
+            XMLGregorianCalendar maxTimeStamp, Long maxNumberOfResults) {
+        List<Object> args = new ArrayList<Object>(); 
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE);
+        
+        boolean hasRestrictions = false;
+        if(minTimeStamp != null) {
+            if(!hasRestrictions) {
+                sql.append(" WHERE ");
+                hasRestrictions = true;
+            }
+            args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp));
+            sql.append("" + CS_DATE + " > ? ");
+        }
+        if(maxTimeStamp != null) {
+            if(!hasRestrictions) {
+                sql.append(" WHERE ");
+                hasRestrictions = true;
+            }
+            args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp));
+            sql.append("" + CS_DATE + " < ? ");
+        }
+        
+        ExtractedChecksumResultSet results = new ExtractedChecksumResultSet();
+        try {
+            PreparedStatement ps = null;
+            ResultSet res = null;
+            Connection conn = null;
+            try {
+                conn = connector.getConnection();
+                ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray());
+                res = ps.executeQuery();
+                
+                int i = 0;
+                while(res.next() && (maxNumberOfResults == null || i < maxNumberOfResults)) {
+                    results.insertChecksumEntry(extractChecksumEntry(res));
+                }
+                
+                if(maxNumberOfResults != null && i >= maxNumberOfResults) {
+                    results.reportMoreEntriesFound();
+                }
+            } finally {
+                if(res != null) {
+                    res.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
+                if(conn != null) {
+                    conn.close();
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot extract the checksum entries with the arguments, minTimestamp = '" 
+                    + minTimeStamp + "', maxTimestamp = '"+ maxTimeStamp + "', maxNumberOfResults = '" 
+                    + maxNumberOfResults + "'", e);
+        }
+        
+        return results;
     }
     
     /**

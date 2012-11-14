@@ -21,25 +21,38 @@
  */
 package org.bitrepository.service.audit;
 
+import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_GUID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_NAME;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_TABLE;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_ACTOR_GUID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_AUDIT;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_FILE_GUID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_INFORMATION;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_OPERATION;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_OPERATION_DATE;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_SEQUENCE_NUMBER;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_TABLE;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_FILEID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_GUID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
+
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.service.database.DBConnector;
-import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.bitrepository.service.audit.AuditDatabaseConstants.*;
 
 /**
  * Access interface for communication with the audit trail database.
@@ -124,9 +137,10 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     }
 
     @Override
-    public Collection<AuditTrailEvent> getAudits(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate,
-                                                 Date maxDate) {
-        return extractEvents(new AuditTrailExtractor(fileId, minSeqNumber, maxSeqNumber, minDate, maxDate));
+    public AuditTrailDatabaseResults getAudits(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate,
+            Date maxDate, Long maxNumberOfResults) {
+        return extractEvents(new AuditTrailExtractor(fileId, minSeqNumber, maxSeqNumber, minDate, maxDate), 
+                maxNumberOfResults);
     }
 
     /**
@@ -169,9 +183,11 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
 
     /**
      * Extracts the the audit trail information based on the given sql query and arguments.
-     * @return The extracted 
+     * @param extractor The entity for extracting the audit trails.
+     * @param maxNumberOfResults The maximum number of results.
+     * @return The extracted audit trails.
      */
-    private Collection<AuditTrailEvent> extractEvents(AuditTrailExtractor extractor) {
+    private AuditTrailDatabaseResults extractEvents(AuditTrailExtractor extractor, Long maxNumberOfResults) {
 
         final int sequencePosition = 1;
         final int fileGuidPosition = 2;
@@ -180,13 +196,13 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         final int operationPosition = 5;
         final int auditTrailInformationPosition = 6;
         final int infoPosition = 7;
-
+        
         String sql = "SELECT " + AUDITTRAIL_SEQUENCE_NUMBER + ", " + AUDITTRAIL_FILE_GUID + " , "
                 + AUDITTRAIL_ACTOR_GUID + " , " + AUDITTRAIL_OPERATION_DATE + " , " + AUDITTRAIL_OPERATION + " , "
                 + AUDITTRAIL_AUDIT + " , " + AUDITTRAIL_INFORMATION + " FROM " + AUDITTRAIL_TABLE + " "
                 + extractor.createRestriction();
 
-        List<AuditTrailEvent> res = new ArrayList<AuditTrailEvent>();
+        AuditTrailDatabaseResults res = new AuditTrailDatabaseResults();
         try {
             PreparedStatement ps = null;
             ResultSet results = null;
@@ -195,8 +211,10 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                 conn = getConnection();
                 ps = DatabaseUtils.createPreparedStatement(conn, sql, extractor.getArguments());
                 results = ps.executeQuery();
-
-                while(results.next()) {
+                
+                int count = 0;
+                while(results.next() && (maxNumberOfResults == null || count < maxNumberOfResults)) {
+                    count++;
                     AuditTrailEvent event = new AuditTrailEvent();
 
                     event.setSequenceNumber(BigInteger.valueOf(results.getLong(sequencePosition)));
@@ -207,7 +225,12 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                     event.setAuditTrailInformation(results.getString(auditTrailInformationPosition));
                     event.setInfo(results.getString(infoPosition));
                     event.setReportingComponent(componentID);
-                    res.add(event);
+                    res.addAuditTrailEvent(event);
+                }
+                
+                if(maxNumberOfResults != null && count >= maxNumberOfResults) {
+                    log.debug("More than the maximum {} results found.", maxNumberOfResults);
+                    res.reportMoreResultsFound();
                 }
             } finally {
                 if(res != null) {
@@ -221,7 +244,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                 }
             }
         } catch (Exception e) {
-            throw new IllegalStateException("Issue regarding", e);
+            throw new IllegalStateException("Could not extract the audit trails events.", e);
         }
 
         log.debug("Extracted audit trail events: {}", res);

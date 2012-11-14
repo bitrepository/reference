@@ -57,7 +57,8 @@
                             <option>FAILED_OPERATION</option>
                             <option>INVALID_MESSAGE</option>
                             <option>INVALID_MESSAGE_VERSION</option>
-                            <option>TIMEOUT</option>                              
+                            <option>TIMEOUT</option>    
+                            <option>INTEGRITY_ISSUE</option>
                         </select>
                     </td>
                     <td>Max alarms: <br>

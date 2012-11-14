@@ -25,16 +25,16 @@ import static org.bitrepository.pillar.cache.database.DatabaseConstants.CHECKSUM
 
 import java.io.File;
 import java.sql.Connection;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.bitrepository.service.database.DBConnector;
-import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.DatabaseTestUtils;
 import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
+import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -109,7 +109,7 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         Assert.assertEquals(entry.getCalculationDate(), DEFAULT_DATE);
         
         addStep("Extract all entries", "Should only be the one default.");
-        List<ChecksumEntry> entries = cache.getAllEntries();
+        List<ChecksumEntry> entries = cache.getEntries(null, null, null).getEntries();
         Assert.assertEquals(entries.size(), 1);
         Assert.assertEquals(entries.get(0).getFileId(), DEFAULT_FILE_ID);
         Assert.assertEquals(entries.get(0).getChecksum(), DEFAULT_CHECKSUM);
@@ -123,12 +123,16 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         
         addStep("Check whether the default entry exists.", "It does!");
         Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID));
-        Assert.assertEquals(cache.getFileIDs(), Arrays.asList(DEFAULT_FILE_ID));
+        ExtractedFileIDsResultSet res = cache.getFileIDs(null, null, null);
+        Assert.assertEquals(res.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 1);
+        Assert.assertEquals(res.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID(), 
+                DEFAULT_FILE_ID);
         
         addStep("Remove the default entry", "Should no longer exist");
         cache.deleteEntry(DEFAULT_FILE_ID);
         Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
-        Assert.assertEquals(cache.getFileIDs(), Arrays.asList());
+        res = cache.getFileIDs(null, null, null);
+        Assert.assertEquals(res.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 0);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

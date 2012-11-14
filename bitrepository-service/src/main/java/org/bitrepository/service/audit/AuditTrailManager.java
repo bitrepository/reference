@@ -51,8 +51,9 @@ public interface AuditTrailManager {
      * @param maxSeqNumber [OPTIONAL] The upper sequence number requested.
      * @param minDate [OPTIONAL] The earliest date requested.
      * @param maxDate [OPTIONAL] The newest date requested.
+     * @param maxNumberOfResults [OPTIONAL] The maximum number of results.
      * @return The audit trails corresponding to the requested arguments.
      */
-    Collection<AuditTrailEvent> getAudits(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate, 
-            Date maxDate);
+    AuditTrailDatabaseResults getAudits(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate, 
+            Date maxDate, Long maxNumberOfResults);
 }

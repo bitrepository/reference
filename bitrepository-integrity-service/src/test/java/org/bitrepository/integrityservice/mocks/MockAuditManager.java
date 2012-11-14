@@ -21,12 +21,10 @@
  */
 package org.bitrepository.integrityservice.mocks;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 
-import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.service.audit.AuditTrailDatabaseResults;
 import org.bitrepository.service.audit.AuditTrailManager;
 
 public class MockAuditManager implements AuditTrailManager {
@@ -42,10 +40,10 @@ public class MockAuditManager implements AuditTrailManager {
 
     private int callsToGetAudits = 0;
     @Override
-    public Collection<AuditTrailEvent> getAudits(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate,
-            Date maxDate) {
+    public AuditTrailDatabaseResults getAudits(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate,
+            Date maxDate, Long maxNumberOfAudits) {
         callsToGetAudits++;
-        return new ArrayList<AuditTrailEvent>();
+        return new AuditTrailDatabaseResults();
     }
     public int getCallsToGetAudits() {
         return callsToGetAudits;

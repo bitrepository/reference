@@ -21,8 +21,11 @@
  */
 package org.bitrepository.service.contributor.handler;
 
+import java.math.BigInteger;
+
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.protocol.ProtocolVersionLoader;
 import org.bitrepository.service.contributor.ContributorContext;
 
 /**
@@ -30,6 +33,16 @@ import org.bitrepository.service.contributor.ContributorContext;
  * @param <T> The request class for the specific type of requests to be handled by this request handler.
  */
 public abstract class AbstractRequestHandler<T> implements RequestHandler<T> {
+    /** The constant for the VERSION of the messages.*/
+    protected static final BigInteger VERSION = ProtocolVersionLoader.loadProtocolVersion().getVersion();
+    /** The constant for the MIN_VERSION of the messages.*/
+    protected static final BigInteger MIN_VERSION = ProtocolVersionLoader.loadProtocolVersion().getMinVersion();
+    
+    /** The classpath to the 'xsd'.*/
+    protected static final String XSD_CLASSPATH = "xsd/";
+    /** The name of the XSD containing the BitRepositoryData elements. */
+    protected static final String XSD_BR_DATA = "BitRepositoryData.xsd";
+    
     /** The context for the contributor.*/
     private final ContributorContext context;
     
