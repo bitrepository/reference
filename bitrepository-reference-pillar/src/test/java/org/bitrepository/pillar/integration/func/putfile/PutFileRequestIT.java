@@ -90,7 +90,6 @@ public class PutFileRequestIT extends PillarFunctionTest {
 
 
     public String lookupPutFileDestination() {
-        addFixtureSetup("Looking up the pillars destination for putFile requests.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
                 TestFileHelper.DEFAULT_FILE_ID, 0L);
         messageBus.sendMessage(identifyRequest);
