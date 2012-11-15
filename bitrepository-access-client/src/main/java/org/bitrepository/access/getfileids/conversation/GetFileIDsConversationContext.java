@@ -23,6 +23,7 @@ package org.bitrepository.access.getfileids.conversation;
 
 import java.net.URL;
 import java.util.Collection;
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
@@ -30,13 +31,19 @@ import org.bitrepository.protocol.OperationType;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
 public class GetFileIDsConversationContext extends ConversationContext {
+    private final ContributorQuery[] contributorQueries;
     private final URL urlForResult;
 
-    public GetFileIDsConversationContext(String fileID, URL urlForResult,
+    public GetFileIDsConversationContext(ContributorQuery[] contributorQueries, String fileID, URL urlForResult,
             Settings settings, MessageSender messageSender, String clientID, Collection<String> contributors,
             EventHandler eventHandler) {
         super(OperationType.GET_FILE_IDS, settings, messageSender, clientID, fileID, contributors, eventHandler, null);
+        this.contributorQueries = contributorQueries;
         this.urlForResult = urlForResult;
+    }
+
+    public ContributorQuery[] getContributorQueries() {
+        return contributorQueries;
     }
 
     public URL getUrlForResult() {

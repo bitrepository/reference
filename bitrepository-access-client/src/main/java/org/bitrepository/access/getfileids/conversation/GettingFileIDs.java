@@ -24,7 +24,9 @@
  */
 package org.bitrepository.access.getfileids.conversation;
 
+import java.math.BigInteger;
 import java.util.Collection;
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
@@ -32,6 +34,7 @@ import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.FileIDsUtils;
 
 /**
@@ -57,16 +60,27 @@ public class GettingFileIDs extends PerformingOperationState {
     @Override
     protected void sendRequest() {
         context.getMonitor().requestSent("Sending request for get fileIDs", activeContributors.keySet().toString());
-        for(String pillar : activeContributors.keySet()) {
+        for(ContributorQuery query : context.getContributorQueries()) {
+            if (activeContributors.containsKey(query.getComponentID())) {
             GetFileIDsRequest msg = new GetFileIDsRequest();
             initializeMessage(msg);
             msg.setFileIDs(FileIDsUtils.createFileIDs(context.getFileID()));
             if(context.getUrlForResult() != null) {
-                msg.setResultAddress(context.getUrlForResult().toExternalForm() + "-" + pillar);
+                msg.setResultAddress(context.getUrlForResult().toExternalForm() + "-" + query.getComponentID());
             }
-            msg.setPillarID(pillar);
-            msg.setTo(activeContributors.get(pillar));
+            msg.setPillarID(query.getComponentID());
+            msg.setTo(activeContributors.get(query.getComponentID()));
+
+                if (query.getMinTimestamp() != null) {
+                    msg.setMinTimestamp(CalendarUtils.getXmlGregorianCalendar(query.getMinTimestamp()));
+                }
+                if (query.getMaxTimestamp() != null) {
+                    msg.setMaxTimestamp(CalendarUtils.getXmlGregorianCalendar(query.getMaxTimestamp()));
+                } if (query.getMaxNumberOfResults() != null) {
+                    msg.setMaxNumberOfResults(BigInteger.valueOf(query.getMaxNumberOfResults().intValue()));
+                }
             context.getMessageSender().sendMessage(msg);
+        }
         }
     }
 

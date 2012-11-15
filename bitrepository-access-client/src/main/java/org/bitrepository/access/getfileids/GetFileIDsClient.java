@@ -26,7 +26,7 @@ package org.bitrepository.access.getfileids;
 
 import java.net.URL;
 import java.util.Collection;
-
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.EventHandler;
 
@@ -36,8 +36,11 @@ import org.bitrepository.client.eventhandler.EventHandler;
 public interface GetFileIDsClient {
     
     /**
-     * Method for requesting a given list of FileIDs from pillars. Thus requesting validation of the existence of 
+     * Method for requesting a given list of FileIDs from the pillars. Thus requesting validation of the existence of
      * the files at the given pillars.
+     * <br/>
+     * If the number of fileIDs in a collection is large (10.000's) the fileIDs should  be retrieved in chunks by
+     * using the <code>ContributorQuery</code> functionality.
      * <br/>
      * The FileIDs can be requested either through a URL or through the message (give URL = null as argument).
      * <br/>
@@ -45,14 +48,42 @@ public interface GetFileIDsClient {
      * pillar, e.g.: 'http://upload.url/mypath' + '-pillarId'.
      * <br/>
      * The results are returned through as an special event through the eventHandler, the FileIDsCompletePillarCompete. 
-     *  
-     * @param pillarIDs The list of pillars which should be requested for the FileIDs. If null, fileIDs are requested
-     *                  from all pillars.
-     * @param fileIDs The ids for the requested files. 
+     *
+     * @param contributorQueries Defines which fileIDs to retrieve. If null all fileIDs from all contributers are
+     *                           returned. Note that
+     * @param fileID The optional fileID to retrieve file information for. If <code>null</code> file information are
+     *               retrieved for all files.
      * @param addressForResult The address for delivering the results of the operation. If this is null, then it is 
      * returned through the messages.
      * @param eventHandler The eventHandler to keep track of the operation.
      */
     public void getFileIDs(
-            Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult, EventHandler eventHandler);
+            ContributorQuery[] contributorQueries,
+            String fileID,
+            URL addressForResult,
+            EventHandler eventHandler);
+
+    /**
+     * Method for requesting a given list of FileIDs from pillars. Thus requesting validation of the existence of
+     * the files at the given pillars.
+     * <br/>
+     * The FileIDs can be requested either through a URL or through the message (give URL = null as argument).
+     * <br/>
+     * Since every pillar cannot upload their fileids to the same URL, it is extended with the pillarId for the given
+     * pillar, e.g.: 'http://upload.url/mypath' + '-pillarId'.
+     * <br/>
+     * The results are returned through as an special event through the eventHandler, the FileIDsCompletePillarCompete.
+     *
+     * @param pillarIDs The list of pillars which should be requested for the FileIDs. If null, fileIDs are requested
+     *                  from all pillars.
+     * @param fileIDs The ids for the requested files.
+     * @param addressForResult The address for delivering the results of the operation. If this is null, then it is
+     * returned through the messages.
+     * @param eventHandler The eventHandler to keep track of the operation.
+     * @deprecated Use the #getFileIDs(ContributorQuery[], String, URL, EventHandler) method instead.
+     */
+    @Deprecated
+    public void getFileIDs(
+        Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult, EventHandler eventHandler);
+
 }

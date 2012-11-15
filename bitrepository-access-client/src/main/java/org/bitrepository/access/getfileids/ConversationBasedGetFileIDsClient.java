@@ -25,14 +25,18 @@
 package org.bitrepository.access.getfileids;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.access.ContributorQueryUtils;
+import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getfileids.conversation.GetFileIDsConversationContext;
 import org.bitrepository.access.getfileids.conversation.IdentifyPillarsForGetFileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
@@ -57,20 +61,48 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
     }
 
     @Override
+    public void getFileIDs(ContributorQuery[] contributorQueries,
+                           String fileID,
+                           URL addressForResult,
+                           EventHandler eventHandler) {
+        validateFileID(fileID);
+        if (contributorQueries == null) {
+            contributorQueries = ContributorQueryUtils.createFullContributorQuery(
+                settings.getCollectionSettings().getClientSettings().getPillarIDs());
+        }
+
+        log.info("Requesting the checksums for file '" + fileID + "' with query "+ contributorQueries + "." +
+        (addressForResult != null ?  "The result should be uploaded to '" + addressForResult + "'." : ""));
+
+        GetFileIDsConversationContext context = new GetFileIDsConversationContext(
+            contributorQueries, fileID, addressForResult, settings, messageBus, clientID,
+            ContributorQueryUtils.getContributors(contributorQueries), eventHandler);
+
+        startConversation(context, new IdentifyPillarsForGetFileIDs(context));
+    }
+
+    /**
+     * Used to create a <code>AuditTrailQuery[]</code> array in case no array is defined.
+     * @return A <code>AuditTrailQuery[]</code> array requesting all audit trails from all the defined contributers.
+     */
+    private ContributorQuery[] createFullContributorQuery() {
+        List<String> contributers = settings.getCollectionSettings().getClientSettings().getPillarIDs();
+        List<AuditTrailQuery> componentQueryList = new ArrayList<AuditTrailQuery>(contributers.size());
+        for (String contributer : contributers) {
+            componentQueryList.add(new AuditTrailQuery(contributer, null, null, null));
+        }
+        return componentQueryList.toArray(new AuditTrailQuery[componentQueryList.size()]);
+    }
+
+    @Override
     public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
             EventHandler eventHandler) {
-        ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
-        validateFileID(fileIDs.getFileID());
+        ContributorQuery[] contributorQueries = null;
 
-        if (pillarIDs == null) {
-            pillarIDs = settings.getCollectionSettings().getClientSettings().getPillarIDs();
+        if (pillarIDs != null) {
+            contributorQueries = ContributorQueryUtils.createFullContributorQuery(pillarIDs);
         }
-        
-        log.info("Requesting the checksum of the file '" + fileIDs.getFileID() + "' from the pillars '"
-                + pillarIDs + "'. The result should be uploaded to '" + addressForResult + "'.");
-        
-        GetFileIDsConversationContext context = new GetFileIDsConversationContext(
-                fileIDs.getFileID(), addressForResult, settings, messageBus, clientID, pillarIDs, eventHandler);
-        startConversation(context, new IdentifyPillarsForGetFileIDs(context));
+
+        getFileIDs(contributorQueries, fileIDs.getFileID(), addressForResult, eventHandler);
     }
 }

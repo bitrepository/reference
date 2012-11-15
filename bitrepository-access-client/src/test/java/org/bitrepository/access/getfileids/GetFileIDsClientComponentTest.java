@@ -24,9 +24,12 @@
  */
 package org.bitrepository.access.getfileids;
 
+import java.math.BigInteger;
 import java.net.URL;
+import java.util.Date;
 import javax.xml.bind.JAXBException;
 import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
@@ -301,6 +304,55 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
+    }
+
+    @Test(groups = {"regressiontest"})
+    public void testPaging() throws Exception {
+        addDescription("Tests the GetFileIDs client correctly handles functionality for limiting results, either by " +
+            "timestamp or result count.");
+
+        GetFileIDsClient getFileIDsClient = createGetFileIDsClient();
+        addStep("Request fileIDs from with MinTimestamp, MaxTimestamp, MaxNumberOfResults set for both pillars .",
+            "A IdentifyPillarsForGetFileIDsRequest should be sent.");
+        Date timestamp3 = new Date();
+        Date timestamp2 =  new Date(timestamp3.getTime() - 1000);
+        Date timestamp1 =  new Date(timestamp3.getTime() - 1000);
+        ContributorQuery query1 = new ContributorQuery(PILLAR1_ID, timestamp1, timestamp2, new Integer(1));
+        ContributorQuery query2 = new ContributorQuery(PILLAR2_ID, timestamp2, timestamp3, new Integer(2));
+        getFileIDsClient.getFileIDs(new ContributorQuery[]{query1, query2}, null, null, testEventHandler);
+
+        IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
+            IdentifyPillarsForGetFileIDsRequest.class);
+
+        addStep("Send a IdentifyPillarsForGetFileIDsResponse from both pillars.",
+            "A GetFileIDsRequest should be sent to both pillars with the appropriate MinTimestamp, MaxTimestamp, " +
+                "MaxNumberOfResults values.");
+        messageBus.sendMessage(testMessageFactory.createIdentifyPillarsForGetFileIDsResponse(
+            receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId));
+        messageBus.sendMessage(testMessageFactory.createIdentifyPillarsForGetFileIDsResponse(
+            receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId));
+
+        GetFileIDsRequest receivedGetFileIDsRequest1 = pillar1Destination.waitForMessage(GetFileIDsRequest.class);
+        Assert.assertEquals(receivedGetFileIDsRequest1.getMinTimestamp(),
+            CalendarUtils.getXmlGregorianCalendar(query1.getMinTimestamp()),
+            "Unexpected MinTimestamp in GetFileIDsRequest to pillar1.");
+        Assert.assertEquals(receivedGetFileIDsRequest1.getMaxTimestamp(),
+            CalendarUtils.getXmlGregorianCalendar(query1.getMaxTimestamp()),
+            "Unexpected MaxTimestamp in GetFileIDsRequest to pillar1.");
+        Assert.assertEquals(receivedGetFileIDsRequest1.getMaxNumberOfResults(),
+            BigInteger.valueOf(query1.getMaxNumberOfResults()),
+            "Unexpected MaxNumberOfResults in GetFileIDsRequest to pillar1.");
+
+        GetFileIDsRequest receivedGetFileIDsRequest2 = pillar2Destination.waitForMessage(GetFileIDsRequest.class);
+        Assert.assertEquals(receivedGetFileIDsRequest2.getMinTimestamp(),
+            CalendarUtils.getXmlGregorianCalendar((query1.getMinTimestamp())),
+            "Unexpected MinTimestamp in GetFileIDsRequest to pillar2.");
+        Assert.assertEquals(receivedGetFileIDsRequest2.getMaxTimestamp(),
+            CalendarUtils.getXmlGregorianCalendar(query2.getMaxTimestamp()),
+            "Unexpected MaxTimestamp in GetFileIDsRequest to pillar2.");
+        Assert.assertEquals(receivedGetFileIDsRequest2.getMaxNumberOfResults(),
+            BigInteger.valueOf(query2.getMaxNumberOfResults()),
+            "Unexpected MaxNumberOfResults in GetFileIDsRequest to pillar2.");
     }
 
     /**

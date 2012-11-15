@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -105,6 +106,12 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         public int getCallsForGetFileIDs() {
             return callsForGetFileIDs;
         }
+
+        @Override
+        public void getFileIDs(ContributorQuery[] contributorQueries, String fileID, URL addressForResult, EventHandler eventHandler) {
+            callsForGetFileIDs++;
+        }
+
         @Override
         public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
                 EventHandler eventHandle) {
@@ -171,6 +178,12 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
     }
 
     private class DyingGetFileIDsClient implements GetFileIDsClient {
+        @Override
+        public void getFileIDs(ContributorQuery[] contributorQueries, String fileID, URL addressForResult,
+                               EventHandler eventHandler) {
+            throw new RuntimeException("My purpose is to die!");
+        }
+
         @Override
         public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
                 EventHandler eventHandler) {

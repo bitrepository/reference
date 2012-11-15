@@ -20,5 +20,33 @@ package org.bitrepository.access;/*
  * #L%
  */
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+
 public class ContributorQueryUtils {
+
+    /**
+     * Used to create a <code>AuditTrailQuery[]</code> array in case no array is defined.
+     * @return A <code>AuditTrailQuery[]</code> array requesting all audit trails from all the defined contributers.
+     */
+    public static ContributorQuery[] createFullContributorQuery(Collection<String> contributorIDs) {
+        List<ContributorQuery> componentQueryList = new ArrayList<ContributorQuery>(contributorIDs.size());
+        for (String contributer : contributorIDs) {
+            componentQueryList.add(new ContributorQuery(contributer, null, null, null));
+        }
+        return componentQueryList.toArray(new ContributorQuery[componentQueryList.size()]);
+    }
+
+    /**
+     * Extracts the collection of contributorIDs from the query object.
+     */
+    public static Collection<String> getContributors(ContributorQuery[] queries) {
+        Collection<String> contributors = new HashSet<String>();
+        for (ContributorQuery query: queries) {
+            contributors.add(query.getComponentID());
+        }
+        return contributors;
+    }
 }

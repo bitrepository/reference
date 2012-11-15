@@ -25,9 +25,8 @@
 package org.bitrepository.access.getaudittrails;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
+import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getaudittrails.client.AuditTrailConversationContext;
 import org.bitrepository.access.getaudittrails.client.IdentifyingAuditTrailContributors;
 import org.bitrepository.client.AbstractClient;
@@ -58,7 +57,8 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
         }
         AuditTrailConversationContext context = new AuditTrailConversationContext(
                 componentQueries, fileID, urlForResult,
-                settings, messageBus, clientID, getContributors(componentQueries), eventHandler, auditTrailInformation);
+                settings, messageBus, clientID, ContributorQueryUtils.getContributors(componentQueries), eventHandler,
+            auditTrailInformation);
         startConversation(context, new IdentifyingAuditTrailContributors(context));
     }
 
@@ -80,16 +80,5 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
             componentQueryList.add(new AuditTrailQuery(contributer, null, null, null));
         }
         return componentQueryList.toArray(new AuditTrailQuery[componentQueryList.size()]);
-    }
-
-    /**
-     * Extracts the collection of contributorIDs from the query object.
-     */
-    private Collection<String> getContributors(AuditTrailQuery[] queries) {
-        Collection<String> contributors = new HashSet<String>();
-        for (AuditTrailQuery query: queries) {
-            contributors.add(query.getComponentID());
-        }
-        return contributors;
     }
 }
