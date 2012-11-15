@@ -40,7 +40,6 @@
 package org.bitrepository.access.getchecksums;
 
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
@@ -55,38 +54,6 @@ public class TestGetChecksumsMessageFactory extends ClientTestMessageFactory {
 
     public TestGetChecksumsMessageFactory(String collectionID) {
         super(collectionID);
-    }
-
-    public IdentifyPillarsForGetChecksumsRequest createIdentifyPillarsForGetChecksumsRequest() {
-        IdentifyPillarsForGetChecksumsRequest identifyPillarsForGetChecksumsRequest = new IdentifyPillarsForGetChecksumsRequest();
-        identifyPillarsForGetChecksumsRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
-        initializeMessageDetails(identifyPillarsForGetChecksumsRequest);
-        
-        return identifyPillarsForGetChecksumsRequest;
-    }
-    
-    /**
-     * Creates a reference <code>IdentifyPillarsForGetFileRequest</code> message for comparing against a received 
-     * request.  
-     * @param receivedIdentifyRequestMessage The request to compare against. Any attributes which can't be determined 
-     * prior to receiving the request are copied from the supplied request to the returned message. Attributes copied 
-     * include <code>correlationId</code>.
-     * @return A reference <code>IdentifyPillarsForGetFileRequest</code> message.
-     */
-    public IdentifyPillarsForGetChecksumsRequest createIdentifyPillarsForGetChecksumsRequest(
-            IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage, String toTopic, String from) {
-        IdentifyPillarsForGetChecksumsRequest identifyPillarsForGetChecksumsRequest = createIdentifyPillarsForGetChecksumsRequest();
-        identifyPillarsForGetChecksumsRequest.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
-        identifyPillarsForGetChecksumsRequest.setReplyTo(receivedIdentifyRequestMessage.getReplyTo());
-        identifyPillarsForGetChecksumsRequest.setTo(toTopic);
-        identifyPillarsForGetChecksumsRequest.setFrom(from);
-        
-        identifyPillarsForGetChecksumsRequest.setAuditTrailInformation(receivedIdentifyRequestMessage.getAuditTrailInformation());
-        identifyPillarsForGetChecksumsRequest.setChecksumRequestForExistingFile(
-        		receivedIdentifyRequestMessage.getChecksumRequestForExistingFile());
-        identifyPillarsForGetChecksumsRequest.setFileIDs(receivedIdentifyRequestMessage.getFileIDs());
-        
-        return identifyPillarsForGetChecksumsRequest;
     }
 
     public IdentifyPillarsForGetChecksumsResponse createIdentifyPillarsForGetChecksumsResponse(
@@ -106,52 +73,8 @@ public class TestGetChecksumsMessageFactory extends ClientTestMessageFactory {
         identifyPillarsForGetChecksumsResponse.setFrom(pillarId);
         return identifyPillarsForGetChecksumsResponse;
     }
-  
-    public GetChecksumsRequest createGetChecksumsRequest(String pillarId, String toTopic, String from) {
-        GetChecksumsRequest getChecksumsRequest = new GetChecksumsRequest();
-        initializeMessageDetails(getChecksumsRequest);
-        getChecksumsRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
-        getChecksumsRequest.setPillarID(pillarId);
-        getChecksumsRequest.setTo(toTopic);
-        getChecksumsRequest.setFrom(from);
-        return getChecksumsRequest;
-    }
-    public GetChecksumsRequest createGetChecksumsRequest(GetChecksumsRequest receivedGetChecksumsRequest,
-            String pillarId, String toTopic, String from) {
-        GetChecksumsRequest getChecksumsRequest = createGetChecksumsRequest(pillarId, toTopic, from);
-        getChecksumsRequest.setCorrelationID(receivedGetChecksumsRequest.getCorrelationID());
-        getChecksumsRequest.setReplyTo(receivedGetChecksumsRequest.getReplyTo());
-        getChecksumsRequest.setChecksumRequestForExistingFile(receivedGetChecksumsRequest.getChecksumRequestForExistingFile());
-        getChecksumsRequest.setFileIDs(receivedGetChecksumsRequest.getFileIDs());
-        getChecksumsRequest.setResultAddress(receivedGetChecksumsRequest.getResultAddress());
-        getChecksumsRequest.setAuditTrailInformation(receivedGetChecksumsRequest.getAuditTrailInformation());
-        return getChecksumsRequest;
-    }
-
-    public GetChecksumsProgressResponse createGetChecksumsProgressResponse(
-            GetChecksumsRequest receivedGetChecksumsRequest, String pillarId, String pillarDestinationId) {
-        GetChecksumsProgressResponse getChecksumsProgressResponse = new GetChecksumsProgressResponse();
-        initializeMessageDetails(getChecksumsProgressResponse);
-        getChecksumsProgressResponse.setTo(receivedGetChecksumsRequest.getReplyTo());
-        getChecksumsProgressResponse.setCorrelationID(receivedGetChecksumsRequest.getCorrelationID());
-        getChecksumsProgressResponse.setCollectionID(receivedGetChecksumsRequest.getCollectionID());
-        getChecksumsProgressResponse.setReplyTo(pillarDestinationId);
-        getChecksumsProgressResponse.setPillarID(pillarId);
-        getChecksumsProgressResponse.setFileIDs(receivedGetChecksumsRequest.getFileIDs());
-        getChecksumsProgressResponse.setResponseInfo(PROGRESS_INFO_DEFAULT);
-        getChecksumsProgressResponse.setFrom(pillarId);
-        getChecksumsProgressResponse.setResultAddress(receivedGetChecksumsRequest.getResultAddress());
-        
-        return getChecksumsProgressResponse;
-    }
 
     /**
-     * MISSING:
-     * 
-     * - getChecksumsFinalResponse.setAuditTrailInformation(null);
-     * - getChecksumsFinalResponse.setFileChecksumSpec(null);
-     * - getChecksumsFinalResponse.setResultingChecksums(null);
-     *  
      * @param receivedGetChecksumsRequest
      * @param pillarId
      * @param pillarDestinationId
@@ -166,7 +89,6 @@ public class TestGetChecksumsMessageFactory extends ClientTestMessageFactory {
         getChecksumsFinalResponse.setCollectionID(receivedGetChecksumsRequest.getCollectionID());
         getChecksumsFinalResponse.setReplyTo(pillarDestinationId);
         getChecksumsFinalResponse.setPillarID(pillarId);
-        //getChecksumsFinalResponse.setFileIDs(receivedGetChecksumsRequest.getFileIDs());
         getChecksumsFinalResponse.setFrom(pillarId);
         getChecksumsFinalResponse.setResponseInfo(createCompleteResponseInfo());
         

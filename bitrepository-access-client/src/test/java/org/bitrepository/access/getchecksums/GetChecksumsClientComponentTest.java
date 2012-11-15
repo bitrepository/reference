@@ -42,9 +42,10 @@ package org.bitrepository.access.getchecksums;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
-import java.util.concurrent.TimeUnit;
 import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
@@ -55,10 +56,14 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
-import org.bitrepository.client.DefaultFixtureClientTest;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.client.DefaultClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.FileIDsUtils;
+import org.bitrepository.protocol.bus.MessageReceiver;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -66,7 +71,7 @@ import org.testng.annotations.Test;
 /**
  * Test class for the 'GetFileClient'.
  */
-public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
+public class GetChecksumsClientComponentTest extends DefaultClientTest {
     private TestGetChecksumsMessageFactory testMessageFactory;
 
     private static final ChecksumSpecTYPE DEFAULT_CHECKSUM_SPECS;
@@ -95,7 +100,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         FileIDs fileIDs = FileIDsUtils.createFileIDs(DEFAULT_FILE_ID);
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        GetChecksumsClient getChecksumsClient = createGetCheckSumsClient();
+        GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
 
         addStep("Request the delivery of the checksum of a file from pillar1.",
                 "A IdentifyPillarsForGetChecksumsRequest will be sent to the pillars and a IDENTIFY_REQUEST_SENT event" +
@@ -156,7 +161,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         fileIDs.setFileID(DEFAULT_FILE_ID);
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        GetChecksumsClient getChecksumsClient = createGetCheckSumsClient();
+        GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
 
         addStep("Ensure the delivery file isn't already present on the http server",
                 "Should be remove if it already exists.");
@@ -209,76 +214,6 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
     }
 
     @Test(groups = {"regressiontest"})
-    public void noIdentifyResponses() throws Exception {
-        addDescription("Tests the GetChecksumsClient handles lack of IdentifyPillarResponses gracefully.");
-        addStep("Define a 3 second timeout for identifying pillar.", "");
-
-        settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
-
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        GetChecksumsClient getChecksumsClient = createGetCheckSumsClient();
-
-        FileIDs fileIDs = new FileIDs();
-        fileIDs.setFileID(DEFAULT_FILE_ID);
-
-        addStep("Call the getChecksums method.",
-                "A IdentifyPillarsForGetChecksumsRequest will be sent and a IDENTIFY_REQUEST_SENT should be received");
-        getChecksumsClient.getChecksums(null, fileIDs,
-                DEFAULT_CHECKSUM_SPECS, null, testEventHandler, "TEST-AUDIT");
-        collectionReceiver.waitForMessage(IdentifyPillarsForGetChecksumsRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
-
-        addStep("Wait for at least 3 seconds", "An IdentifyPillarTimeout event should be received");
-        Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getEventType(),
-                OperationEventType.IDENTIFY_TIMEOUT);
-    }
-
-    @Test(groups = {"regressiontest"})
-    public void conversationTimeout() throws Exception {
-        addDescription("Tests the GetChecksumClient handles lack of GetChecksumsResponses gracefully");
-        addStep("Set a 3 second timeout for the conversation.", "");
-
-        FileIDs fileIDs = new FileIDs();
-        fileIDs.setFileID(DEFAULT_FILE_ID);
-
-        settingsForCUT.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
-
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        GetChecksumsClient getChecksumsClient = createGetCheckSumsClient();
-
-        addStep("Ensure the delivery file isn't already present on the http server",
-                "Should be remove if it already exists.");
-
-        addStep("Request the delivery of the checksum of a file from the pillar(s). A callback listener should be supplied.",
-                "A IdentifyPillarsForGetChecksumsRequest will be sent to the pillar(s).");
-        getChecksumsClient.getChecksums(null, fileIDs, null, null, testEventHandler, "TEST-AUDIT");
-
-        IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
-                IdentifyPillarsForGetChecksumsRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
-
-        addStep("The pillar sends a response to the identify message.",
-                "The callback listener should notify of the response and the client should send a GetChecksumsRequest "
-                        + "message to the pillars");
-
-        IdentifyPillarsForGetChecksumsResponse identifyResponse = testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
-                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
-        messageBus.sendMessage(identifyResponse);
-        IdentifyPillarsForGetChecksumsResponse identifyResponse2 = testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
-                receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
-        messageBus.sendMessage(identifyResponse2);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertNotNull(pillar1Destination.waitForMessage(GetChecksumsRequest.class));
-        Assert.assertNotNull(pillar2Destination.waitForMessage(GetChecksumsRequest.class));
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
-
-        addStep("Wait for at least 3 seconds", "An FAILED event should be generated");
-        Assert.assertEquals(testEventHandler.waitForEvent( 4, TimeUnit.SECONDS).getEventType(), OperationEventType.FAILED);
-    }
-
-    @Test(groups = {"regressiontest"})
     public void testNoSuchFile() throws Exception {
         addDescription("Testing how a request for a non-existing file is handled.");
         addStep("Setting up variables and such.", "Should be OK.");
@@ -290,7 +225,7 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
 
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        GetChecksumsClient getChecksumsClient = createGetCheckSumsClient();
+        GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
 
         addStep("Request the delivery of the checksum of a file from the pillar(s). A callback listener should be supplied.",
                 "A IdentifyPillarsForGetChecksumsRequest will be sent to the pillar(s).");
@@ -336,6 +271,57 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
+
+    @Test(groups = {"regressiontest"})
+    public void testPaging() throws Exception {
+        addDescription("Tests the GetChecksums client correctly handles functionality for limiting results, either by " +
+            "timestamp or result count.");
+
+        GetChecksumsClient getFileIDsClient = createGetChecksumsClient();
+        addStep("Request fileIDs from with MinTimestamp, MaxTimestamp, MaxNumberOfResults set for both pillars .",
+            "A IdentifyPillarsForGetChecksumsRequest should be sent.");
+        Date timestamp3 = new Date();
+        Date timestamp2 =  new Date(timestamp3.getTime() - 1000);
+        Date timestamp1 =  new Date(timestamp3.getTime() - 1000);
+        ContributorQuery query1 = new ContributorQuery(PILLAR1_ID, timestamp1, timestamp2, new Integer(1));
+        ContributorQuery query2 = new ContributorQuery(PILLAR2_ID, timestamp2, timestamp3, new Integer(2));
+        getFileIDsClient.getChecksums(new ContributorQuery[]{query1, query2}, null, null, null, testEventHandler, null);
+
+        IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
+            IdentifyPillarsForGetChecksumsRequest.class);
+
+        addStep("Send a IdentifyPillarsForGetChecksumsResponse from both pillars.",
+            "A GetChecksumsRequest should be sent to both pillars with the appropriate MinTimestamp, MaxTimestamp, " +
+                "MaxNumberOfResults values.");
+        messageBus.sendMessage(testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
+            receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId));
+        messageBus.sendMessage(testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
+            receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId));
+
+        GetChecksumsRequest receivedGetChecksumsRequest1 = pillar1Destination.waitForMessage(GetChecksumsRequest.class);
+        Assert.assertEquals(receivedGetChecksumsRequest1.getMinTimestamp(),
+            CalendarUtils.getXmlGregorianCalendar(query1.getMinTimestamp()),
+            "Unexpected MinTimestamp in GetChecksumsRequest to pillar1.");
+        Assert.assertEquals(receivedGetChecksumsRequest1.getMaxTimestamp(),
+            CalendarUtils.getXmlGregorianCalendar(query1.getMaxTimestamp()),
+            "Unexpected MaxTimestamp in GetChecksumsRequest to pillar1.");
+        Assert.assertEquals(receivedGetChecksumsRequest1.getMaxNumberOfResults(),
+            BigInteger.valueOf(query1.getMaxNumberOfResults()),
+            "Unexpected MaxNumberOfResults in GetChecksumsRequest to pillar1.");
+
+        GetChecksumsRequest receivedGetChecksumsRequest2 = pillar2Destination.waitForMessage(GetChecksumsRequest.class);
+        Assert.assertEquals(receivedGetChecksumsRequest2.getMinTimestamp(),
+            CalendarUtils.getXmlGregorianCalendar((query1.getMinTimestamp())),
+            "Unexpected MinTimestamp in GetChecksumsRequest to pillar2.");
+        Assert.assertEquals(receivedGetChecksumsRequest2.getMaxTimestamp(),
+            CalendarUtils.getXmlGregorianCalendar(query2.getMaxTimestamp()),
+            "Unexpected MaxTimestamp in GetChecksumsRequest to pillar2.");
+        Assert.assertEquals(receivedGetChecksumsRequest2.getMaxNumberOfResults(),
+            BigInteger.valueOf(query2.getMaxNumberOfResults()),
+            "Unexpected MaxNumberOfResults in GetChecksumsRequest to pillar2.");
+    }
+
+
     /**
      * Creates a new test GetCheckSumsClient based on the supplied settings. 
      *
@@ -343,8 +329,47 @@ public class GetChecksumsClientComponentTest extends DefaultFixtureClientTest {
      * previous tests.
      * @return A new GetFileClient(Wrapper).
      */
-    private GetChecksumsClient createGetCheckSumsClient() {
+    private GetChecksumsClient createGetChecksumsClient() {
         return new GetChecksumsClientTestWrapper(new ConversationBasedGetChecksumsClient(
             messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()), testEventManager);
+    }
+
+
+    @Override
+    protected MessageResponse createIdentifyResponse(MessageRequest identifyRequest, String from, String to, ResponseCode responseCode) {
+        MessageResponse response = testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
+            (IdentifyPillarsForGetChecksumsRequest)identifyRequest, from, to);
+        response.setResponseInfo(new ResponseInfo());
+        response.getResponseInfo().setResponseCode(responseCode);
+        return response;
+    }
+
+    @Override
+    protected MessageResponse createFinalResponse(MessageRequest request, String from, String to, ResponseCode responseCode) {
+        MessageResponse response =  testMessageFactory.createGetChecksumsFinalResponse(
+            (GetChecksumsRequest)request, from, to);
+        response.getResponseInfo().setResponseCode(responseCode);
+        return response;
+    }
+
+    @Override
+    protected MessageRequest waitForIdentifyRequest() {
+        return collectionReceiver.waitForMessage(IdentifyPillarsForGetChecksumsRequest.class);
+    }
+
+    @Override
+    protected MessageRequest waitForRequest(MessageReceiver receiver) {
+        return receiver.waitForMessage(GetChecksumsRequest.class);
+    }
+
+    @Override
+    protected void checkNoRequestIsReceived(MessageReceiver receiver) {
+        receiver.checkNoMessageIsReceived(GetChecksumsRequest.class);
+    }
+
+    @Override
+    protected void startOperation(TestEventHandler testEventHandler) {
+        GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
+        getChecksumsClient.getChecksums((ContributorQuery[])null, null, null, null, testEventHandler, null);
     }
 }

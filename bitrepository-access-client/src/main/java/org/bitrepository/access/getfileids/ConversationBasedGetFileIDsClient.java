@@ -71,7 +71,7 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
                 settings.getCollectionSettings().getClientSettings().getPillarIDs());
         }
 
-        log.info("Requesting the checksums for file '" + fileID + "' with query "+ contributorQueries + "." +
+        log.info("Requesting the fileIDs for file '" + fileID + "' with query "+ contributorQueries + "." +
         (addressForResult != null ?  "The result should be uploaded to '" + addressForResult + "'." : ""));
 
         GetFileIDsConversationContext context = new GetFileIDsConversationContext(

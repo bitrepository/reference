@@ -26,6 +26,8 @@ package org.bitrepository.access.getchecksums;
 
 import java.net.URL;
 import java.util.Collection;
+import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getchecksums.conversation.GetChecksumsConversationContext;
 import org.bitrepository.access.getchecksums.conversation.IdentifyPillarsForGetChecksums;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -33,7 +35,6 @@ import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
@@ -56,22 +57,41 @@ public class ConversationBasedGetChecksumsClient extends AbstractClient implemen
         super(settings, conversationMediator, messageBus, clientID);
     }
 
+
+    @Override
+    public void getChecksums(ContributorQuery[] contributorQueries,
+                           String fileID,
+                           ChecksumSpecTYPE checksumSpec,
+                           URL addressForResult,
+                           EventHandler eventHandler,
+                           String auditTrailInformation) {
+        validateFileID(fileID);
+        if (contributorQueries == null) {
+            contributorQueries = ContributorQueryUtils.createFullContributorQuery(
+                settings.getCollectionSettings().getClientSettings().getPillarIDs());
+        }
+
+        log.info("Requesting the checksums for file '" + "' with the specifications '" + checksumSpec + fileID +
+            "' with query "+ contributorQueries + "." +
+            (addressForResult != null ?  "The result should be uploaded to '" + addressForResult + "'." : ""));
+
+        GetChecksumsConversationContext context = new GetChecksumsConversationContext(
+            contributorQueries, fileID, checksumSpec, addressForResult, settings, messageBus, clientID,
+            ContributorQueryUtils.getContributors(contributorQueries), eventHandler, auditTrailInformation);
+        startConversation(context, new IdentifyPillarsForGetChecksums(context));
+    }
+
+
     @Override
     public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, 
             URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
-        ArgumentValidator.checkNotNull(fileIDs, "FileIDs fileIDs");
-        validateFileID(fileIDs.getFileID());
+        ContributorQuery[] contributorQueries = null;
 
-        if (pillarIDs == null) {
-            pillarIDs = settings.getCollectionSettings().getClientSettings().getPillarIDs();
+        if (pillarIDs != null) {
+            contributorQueries = ContributorQueryUtils.createFullContributorQuery(pillarIDs);
         }
-        
-        log.info("Requesting the checksum of the file '" + fileIDs.getFileID() + "' from the pillars '"
-                + pillarIDs + "' with the specifications '" + checksumSpec + "'. "
-                + "The result should be uploaded to '" + addressForResult + "'.");
-        GetChecksumsConversationContext context = new GetChecksumsConversationContext(
-                fileIDs.getFileID(), checksumSpec, addressForResult, settings, messageBus, clientID, pillarIDs,
+
+        getChecksums(contributorQueries, fileIDs.getFileID(), checksumSpec, addressForResult,
                 eventHandler, auditTrailInformation);
-        startConversation(context, new IdentifyPillarsForGetChecksums(context));
     }
 }

@@ -23,6 +23,7 @@ package org.bitrepository.access.getchecksums.conversation;
 
 import java.net.URL;
 import java.util.Collection;
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -34,15 +35,29 @@ import org.bitrepository.protocol.messagebus.MessageSender;
 public class GetChecksumsConversationContext extends ConversationContext {
     private final URL urlForResult;
     private final ChecksumSpecTYPE checksumSpec;
+    private final ContributorQuery[] contributorQueries;
     /**
      * Extends the {@link ConversationContext} constructor with {@link org.bitrepository.access.getchecksums.GetChecksumsClient} specific parameters
      */
-    public GetChecksumsConversationContext(String fileID, ChecksumSpecTYPE checksumSpec, URL urlForResult,
-            Settings settings, MessageSender messageSender, String clientID,  Collection<String> contributors,
-            EventHandler eventHandler, String auditTrailInformation) {
+    public GetChecksumsConversationContext(
+        ContributorQuery[] contributorQueries,
+        String fileID,
+        ChecksumSpecTYPE checksumSpec,
+        URL urlForResult,
+        Settings settings,
+        MessageSender messageSender,
+        String clientID,
+        Collection<String> contributors,
+        EventHandler eventHandler,
+        String auditTrailInformation) {
         super(OperationType.GET_CHECKSUMS, settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
-        this.urlForResult = urlForResult;       
+        this.contributorQueries = contributorQueries;
+        this.urlForResult = urlForResult;
         this.checksumSpec = checksumSpec;
+    }
+
+    public ContributorQuery[] getContributorQueries() {
+        return contributorQueries;
     }
 
     public URL getUrlForResult() {

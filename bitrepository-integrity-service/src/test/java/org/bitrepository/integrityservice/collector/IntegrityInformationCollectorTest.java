@@ -124,6 +124,13 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         public int getCallsForGetChecksums() {
             return callsForGetChecksums;
         }
+
+        @Override
+        public void getChecksums(ContributorQuery[] contributorQueries, String fileID, ChecksumSpecTYPE checksumSpec,
+                               URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
+            callsForGetChecksums++;
+        }
+
         @Override
         public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec,
                 URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
@@ -152,6 +159,11 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
     }
 
     private class DyingGetChecksumClient implements GetChecksumsClient {
+        @Override
+        public void getChecksums(ContributorQuery[] contributorQueries, String fileID, ChecksumSpecTYPE checksumSpec, URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
+            throw new RuntimeException("My purpose is to die!");
+        }
+
         @Override
         public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec,
                 URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {

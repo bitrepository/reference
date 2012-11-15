@@ -24,7 +24,9 @@
  */
 package org.bitrepository.access.getchecksums.conversation;
 
+import java.math.BigInteger;
 import java.util.Collection;
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
@@ -32,6 +34,7 @@ import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.FileIDsUtils;
 
 /**
@@ -71,18 +74,29 @@ public class GettingChecksums extends PerformingOperationState {
 
     @Override
     protected void sendRequest() {
-        GetChecksumsRequest msg = new GetChecksumsRequest();
-        initializeMessage(msg);
-        msg.setChecksumRequestForExistingFile(context.getChecksumSpec());
-        msg.setFileIDs(FileIDsUtils.createFileIDs(context.getFileID()));
-        context.getMonitor().requestSent("Sending request for getting checksums", activeContributors.keySet().toString());
-        for(String pillar : activeContributors.keySet()) {
-            msg.setPillarID(pillar);
-            msg.setTo(activeContributors.get(pillar));
-            if(context.getUrlForResult() != null) {
-                msg.setResultAddress(context.getUrlForResult().toExternalForm() + "-" + pillar);
+        context.getMonitor().requestSent("Sending GetFileIDsRequest's", activeContributors.keySet().toString());
+        for(ContributorQuery query : context.getContributorQueries()) {
+            if (activeContributors.containsKey(query.getComponentID())) {
+                GetChecksumsRequest msg = new GetChecksumsRequest();
+                initializeMessage(msg);
+                msg.setChecksumRequestForExistingFile(context.getChecksumSpec());
+                msg.setFileIDs(FileIDsUtils.createFileIDs(context.getFileID()));
+                if(context.getUrlForResult() != null) {
+                    msg.setResultAddress(context.getUrlForResult().toExternalForm() + "-" + query.getComponentID());
+                }
+                msg.setPillarID(query.getComponentID());
+                msg.setTo(activeContributors.get(query.getComponentID()));
+
+                if (query.getMinTimestamp() != null) {
+                    msg.setMinTimestamp(CalendarUtils.getXmlGregorianCalendar(query.getMinTimestamp()));
+                }
+                if (query.getMaxTimestamp() != null) {
+                    msg.setMaxTimestamp(CalendarUtils.getXmlGregorianCalendar(query.getMaxTimestamp()));
+                } if (query.getMaxNumberOfResults() != null) {
+                    msg.setMaxNumberOfResults(BigInteger.valueOf(query.getMaxNumberOfResults().intValue()));
+                }
+                context.getMessageSender().sendMessage(msg);
             }
-            context.getMessageSender().sendMessage(msg);
         }
     }
 
