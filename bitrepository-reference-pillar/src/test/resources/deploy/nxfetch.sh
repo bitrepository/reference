@@ -96,9 +96,9 @@ then
      exit 1
 fi
 
-if [[ -z $VERSION ]] then
-    : VERSION = LATEST
-fi
+# Set VERSION to latest if undefined
+: ${VERSION:="LATEST"}
+
 # Define default values for optional components
 
 # If the version requested is a SNAPSHOT use snapshots, otherwise use releases
@@ -124,7 +124,7 @@ do
   fi
 done
 
-OUTPUT_FILE="$ARTIFACT_ID.$PACKAGING"
+OUTPUT_FILE="$ARTIFACT_ID-$CLASSIFIER.$PACKAGING"
 REDIRECT_URL="${REDIRECT_URL}?${PARAMS}"
 echo "Fetching Artifact from $REDIRECT_URL..." >&2
 curl -sS -L ${REDIRECT_URL} -o $OUTPUT_FILE

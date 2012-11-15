@@ -72,17 +72,15 @@ create_conf_repos() {
 
 # Download the newest test
 download_test() {
+  rm -r ${ARTIFACTID}-*
   echo "Downloading new deployment scripts"
-  ${DEPLOY_SCRIPTS}/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c pillar-test-deploy -p tar.gz
-  tar -xzf $ARTIFACTID.tar.gz -C ../
+  ${DEPLOY_SCRIPTS}/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c acceptance-test-deploy -p tar.gz
+  tar -xzf $ARTIFACTID-acceptance-test-deploy.tar.gz -C ../
   echo "Downloading new test suite"
-  ${DEPLOY_SCRIPTS}/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c pillar-test -p tar.gz
-  if [ -d ${ARTIFACTID}-${VERSION} ] ; then
-    rm -r ${ARTIFACTID}-${VERSION}
-  fi
-  tar -xzf $ARTIFACTID.tar.gz
+  ${DEPLOY_SCRIPTS}/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c acceptance-test -p tar.gz
+  tar -xzf $ARTIFACTID-acceptance-test.tar.gz
   rm -rf $DOWNLOAD_TEST_DIR/lib
-  cp -R ${ARTIFACTID}-${VERSION}/* $DOWNLOAD_TEST_DIR
+  cp -R ${ARTIFACTID}*/* $DOWNLOAD_TEST_DIR
 }
 
 # Updates a test for a single pillar
@@ -91,6 +89,9 @@ update_tests() {
   ${DEPLOY_SCRIPTS}/gitutils.sh commit $DOWNLOAD_TEST_DIR ${VERSION}
   echo "Pulling to master"
   ${DEPLOY_SCRIPTS}/gitutils.sh pull $STANDARD_CONFIG_DIR
+  if [ ! -d "$STANDARD_CONFIG_DIR/conf" ] ; then
+     mkdir "$STANDARD_CONFIG_DIR/conf"
+  fi
   if [ -e "${DEPLOY_SCRIPTS}/fetchconf.sh" ] ; then
     echo "Updating master conf"
     ${DEPLOY_SCRIPTS}/fetchconf.sh ${STANDARD_CONFIG_DIR}/conf
