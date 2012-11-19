@@ -25,13 +25,11 @@
 package org.bitrepository.access.getchecksums;
 
 import java.net.URL;
-import java.util.Collection;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getchecksums.conversation.GetChecksumsConversationContext;
 import org.bitrepository.access.getchecksums.conversation.IdentifyPillarsForGetChecksums;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -79,19 +77,5 @@ public class ConversationBasedGetChecksumsClient extends AbstractClient implemen
             contributorQueries, fileID, checksumSpec, addressForResult, settings, messageBus, clientID,
             ContributorQueryUtils.getContributors(contributorQueries), eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForGetChecksums(context));
-    }
-
-
-    @Override
-    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, 
-            URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
-        ContributorQuery[] contributorQueries = null;
-
-        if (pillarIDs != null) {
-            contributorQueries = ContributorQueryUtils.createFullContributorQuery(pillarIDs);
-        }
-
-        getChecksums(contributorQueries, fileIDs.getFileID(), checksumSpec, addressForResult,
-                eventHandler, auditTrailInformation);
     }
 }

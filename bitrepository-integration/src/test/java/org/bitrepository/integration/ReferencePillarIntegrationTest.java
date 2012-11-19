@@ -128,13 +128,10 @@ public class ReferencePillarIntegrationTest extends DefaultFixturePillarTest {
                 "This should be caught by the pillar");
         GetChecksumsClient getChecksums = AccessComponentFactory.getInstance().createGetChecksumsClient(clientSettings,
                 securityManager, TEST_CLIENT_ID);
-        FileIDs fileIDsForGetChecksums = new FileIDs();
-        fileIDsForGetChecksums.setFileID(FILE_ID);
         
         URL csurl = new URL(FILE_ADDRESS + "-cs");
         
-        getChecksums.getChecksums(clientSettings.getCollectionSettings().getClientSettings().getPillarIDs(),
-                fileIDsForGetChecksums, DEFAULT_CHECKSUM_TYPE, csurl, testEventHandler, "AuditTrail: TESTING!!!");
+        getChecksums.getChecksums(null,FILE_ID, DEFAULT_CHECKSUM_TYPE, csurl, testEventHandler, "AuditTrail: TESTING!!!");
         
         addStep("Validate the sequence of operation events for the getChecksumClient", 
                 "Should be in correct order.");

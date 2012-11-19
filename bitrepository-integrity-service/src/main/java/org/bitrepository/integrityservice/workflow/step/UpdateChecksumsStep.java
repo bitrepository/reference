@@ -21,12 +21,9 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityCollectorEventHandler;
@@ -45,8 +42,6 @@ public class UpdateChecksumsStep implements WorkflowStep{
     private final IntegrityInformationCollector collector;
     /** The model where the integrity data is stored.*/
     private final IntegrityModel store;
-    /** The pillar ids.*/
-    private final List<String> pillarIds;
     /** The checksum spec type.*/
     private final ChecksumSpecTYPE checksumType;
     /** The integrity alerter.*/
@@ -59,7 +54,6 @@ public class UpdateChecksumsStep implements WorkflowStep{
      * @param collector The client for collecting the checksums.
      * @param store The storage for the integrity data.
      * @param alerter The alerter for sending failures.
-     * @param pillarIds The ids of the pillars to collect the checksum from.
      * @param checksumType The type of checksum to collect.
      */
     public UpdateChecksumsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
@@ -68,7 +62,6 @@ public class UpdateChecksumsStep implements WorkflowStep{
         this.store = store;
         this.checksumType = checksumType;
         this.alerter = alerter;
-        this.pillarIds = settings.getCollectionSettings().getClientSettings().getPillarIDs();
         this.timeout = settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue()
                 + settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue();
     }
@@ -81,7 +74,7 @@ public class UpdateChecksumsStep implements WorkflowStep{
     @Override
     public synchronized void performStep() {
         IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
-        collector.getChecksums(pillarIds, FileIDsUtils.getAllFileIDs(), checksumType, "IntegrityService: " + getName(),
+        collector.getChecksums(checksumType, "IntegrityService: " + getName(),
                 eventHandler);
         try {
             OperationEvent event = eventHandler.getFinish();

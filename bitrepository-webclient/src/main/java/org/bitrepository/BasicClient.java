@@ -199,14 +199,12 @@ public class BasicClient {
 
     public Map<String, Map<String, String>> getChecksums(String fileIDsText, String checksumType, String salt) {
         ChecksumSpecTYPE checksumSpecItem = makeChecksumSpec(checksumType, salt);
-        FileIDs fileIDs = new FileIDs();
-        fileIDs.setFileID(fileIDsText);
 
         GetChecksumsResults results = new GetChecksumsResults();
         GetChecksumsEventHandler handler = new GetChecksumsEventHandler(results, eventHandler);
 
-        getChecksumClient.getChecksums(settings.getCollectionSettings().getClientSettings().getPillarIDs(),
-                fileIDs, checksumSpecItem, null, handler, generateAuditTrailMessage("GetChecksum"));
+        getChecksumClient.getChecksums(null, fileIDsText, checksumSpecItem, null, handler,
+            generateAuditTrailMessage("GetChecksum"));
 
         try {
             while(!results.isDone() && !results.hasFailed()) {
@@ -360,6 +358,6 @@ public class BasicClient {
     }
     
     private String generateAuditTrailMessage(String operationType) {
-        return "Webservice initiation of " + operationType + " operation";
+        return "Webservice initiation";
     }
 }

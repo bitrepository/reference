@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -79,8 +80,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         addDescription("Tests that the collector calls the GetChecksumsClient");
         addStep("Define variables", "No errors");
         String pillarId = "TEST-PILLAR";
-        FileIDs fileIDs = new FileIDs();
-        fileIDs.setAllFileIDs("true");
+        ContributorQuery[] contributorQueries = ContributorQueryUtils.createFullContributorQuery(Arrays.asList(pillarId));
         ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
         csType.setChecksumType(ChecksumType.MD5);
         String auditTrailInformation = "audit trail for this test";
@@ -90,14 +90,14 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(null, getChecksumsClient, auditManager);
         
         addStep("Call the getChecksumsClient on the collector.", "Should go directly to the GetChecksumsClient");
-        collector.getChecksums(Arrays.asList(pillarId), fileIDs, csType, auditTrailInformation, null);
+        collector.getChecksums(csType, auditTrailInformation, null);
         Assert.assertEquals(getChecksumsClient.getCallsForGetChecksums(), 1);
         
         addStep("Call the getChecksumsClient on the collector four times more.", "The GetChecksumsClient should have been called 5 times.");
-        collector.getChecksums(Arrays.asList(pillarId), fileIDs, csType, auditTrailInformation, null);
-        collector.getChecksums(Arrays.asList(pillarId), fileIDs, csType, auditTrailInformation, null);
-        collector.getChecksums(Arrays.asList(pillarId), fileIDs, csType, auditTrailInformation, null);
-        collector.getChecksums(Arrays.asList(pillarId), fileIDs, csType, auditTrailInformation, null);
+        collector.getChecksums(csType, auditTrailInformation, null);
+        collector.getChecksums(csType, auditTrailInformation, null);
+        collector.getChecksums(csType, auditTrailInformation, null);
+        collector.getChecksums(csType, auditTrailInformation, null);
         Assert.assertEquals(getChecksumsClient.getCallsForGetChecksums(), 5);
     }
     
@@ -130,12 +130,6 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
                                URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
             callsForGetChecksums++;
         }
-
-        @Override
-        public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec,
-                URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
-            callsForGetChecksums++;
-        }
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
@@ -155,18 +149,12 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         
         addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
                 "Should not throw an unexpected exception");
-        collector.getChecksums(Arrays.asList(pillarId), fileIDs, csType, auditTrailInformation, null);
+        collector.getChecksums(csType, auditTrailInformation, null);
     }
 
     private class DyingGetChecksumClient implements GetChecksumsClient {
         @Override
         public void getChecksums(ContributorQuery[] contributorQueries, String fileID, ChecksumSpecTYPE checksumSpec, URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
-            throw new RuntimeException("My purpose is to die!");
-        }
-
-        @Override
-        public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec,
-                URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
             throw new RuntimeException("My purpose is to die!");
         }
     }

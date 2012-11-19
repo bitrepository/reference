@@ -25,7 +25,6 @@
 package org.bitrepository.integrityservice.collector;
 
 import java.util.Collection;
-
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -54,14 +53,11 @@ public interface IntegrityInformationCollector {
 
     /**
      * Request the specified checksums for from all the pillars.
-     *
-     * @param pillarIDs The collection of ids of the pillars to request for the file ids.
-     * @param fileIDs The files to request.
      * @param checksumType The checksum algorithm (and salt) used for the calculation. 
      * May be null, in which case the collection default is used.
      * @param auditTrailInformation The audit trail information for the conversation.
      * @param eventHandler The eventhandler for the results of the checksum collection. 
      */
-    void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumType, 
+    void getChecksums(ChecksumSpecTYPE checksumType,
             String auditTrailInformation, EventHandler eventHandler);
 }

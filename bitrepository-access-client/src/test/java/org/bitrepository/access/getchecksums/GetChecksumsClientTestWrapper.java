@@ -25,11 +25,8 @@
 package org.bitrepository.access.getchecksums;
 
 import java.net.URL;
-import java.util.Collection;
-
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.jaccept.TestEventManager;
 
@@ -54,15 +51,5 @@ public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
             + auditTrailInformation + ")");
         getChecksumsClientInstance.getChecksums(contributorQueries, fileID, checksumSpec, addressForResult,
             eventHandler, auditTrailInformation);
-    }
-
-    @Override
-    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumSpec, 
-            URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
-        testEventManager.addStimuli("Calling getChecksums(" + pillarIDs + ", " + fileIDs.getFileID() 
-                + ", " + checksumSpec + ", " + addressForResult + ", " + eventHandler + ", " 
-                + auditTrailInformation + ")");
-        getChecksumsClientInstance.getChecksums(pillarIDs, fileIDs, checksumSpec, addressForResult, eventHandler, 
-                auditTrailInformation);        
     }
 }

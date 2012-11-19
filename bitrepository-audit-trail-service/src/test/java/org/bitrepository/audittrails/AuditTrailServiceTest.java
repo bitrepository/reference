@@ -44,7 +44,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         settings = TestSettingsProvider.reloadSettings("AuditTrailServiceUnderTest");
     }
     
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"unstable"})
     public void auditTrailServiceTest() throws Exception {
         addDescription("Test the Audit Trail Service");
         settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().clear();

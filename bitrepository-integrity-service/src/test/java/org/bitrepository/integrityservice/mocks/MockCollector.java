@@ -22,11 +22,10 @@
 package org.bitrepository.integrityservice.mocks;
 
 import java.util.Collection;
-
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 
 public class MockCollector implements IntegrityInformationCollector {
 
@@ -42,8 +41,7 @@ public class MockCollector implements IntegrityInformationCollector {
     }
 
     @Override
-    public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumType,
-            String auditTrailInformation, EventHandler eventHandler) {
+    public void getChecksums(ChecksumSpecTYPE checksumType, String auditTrailInformation, EventHandler eventHandler) {
         callsForGetChecksums++;
     }
     

@@ -82,9 +82,9 @@ public class BasicIntegrityWorkflowTest extends ExtendedTestCase {
         addDescription("Test the good case, when every step goes well.");
         MockCollector collector = new MockCollector() {
             @Override
-            public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumType,
+            public void getChecksums(ChecksumSpecTYPE checksumType,
                     String auditTrailInformation, EventHandler eventHandler) {
-                super.getChecksums(pillarIDs, fileIDs, checksumType, auditTrailInformation, eventHandler);
+                super.getChecksums(checksumType, auditTrailInformation, eventHandler);
                 eventHandler.handleEvent(new CompleteEvent(null));
             }
             @Override
@@ -118,9 +118,9 @@ public class BasicIntegrityWorkflowTest extends ExtendedTestCase {
         addDescription("Test the bad case, when every step goes wrong.");
         MockCollector collector = new MockCollector() {
             @Override
-            public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumType,
+            public void getChecksums(ChecksumSpecTYPE checksumType,
                     String auditTrailInformation, EventHandler eventHandler) {
-                super.getChecksums(pillarIDs, fileIDs, checksumType, auditTrailInformation, eventHandler);
+                super.getChecksums(checksumType, auditTrailInformation, eventHandler);
                 eventHandler.handleEvent(new OperationFailedEvent("Failed", null));
             }
             @Override
@@ -182,9 +182,9 @@ public class BasicIntegrityWorkflowTest extends ExtendedTestCase {
         addDescription("Test the good case, when every step goes well.");
         MockCollector collector = new MockCollector() {
             @Override
-            public void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumType,
+            public void getChecksums(ChecksumSpecTYPE checksumType,
                     String auditTrailInformation, EventHandler eventHandler) {
-                super.getChecksums(pillarIDs, fileIDs, checksumType, auditTrailInformation, eventHandler);
+                super.getChecksums(checksumType, auditTrailInformation, eventHandler);
                 ChecksumsCompletePillarEvent event = new ChecksumsCompletePillarEvent(
                         TEST_PILLAR_1, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
                         createChecksumSpecTYPE(), false);

@@ -26,6 +26,7 @@ package org.bitrepository.integrityservice.collector;
 
 import java.util.Collection;
 
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -77,12 +78,12 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     }
 
     @Override
-    public synchronized void getChecksums(Collection<String> pillarIDs, FileIDs fileIDs, ChecksumSpecTYPE checksumType, 
+    public synchronized void getChecksums(ChecksumSpecTYPE checksumType,
             String auditTrailInformation, EventHandler eventHandler) {
         try {
-            auditManager.addAuditEvent("" + fileIDs.getFileID(), "IntegrityService", 
-                    "Collecting checksums from '" + pillarIDs + "'", auditTrailInformation, FileAction.INTEGRITY_CHECK);
-            getChecksumsClient.getChecksums(pillarIDs, fileIDs, checksumType, null, eventHandler, 
+            auditManager.addAuditEvent(null, "IntegrityService",
+                    "Collecting checksums", auditTrailInformation, FileAction.INTEGRITY_CHECK);
+            getChecksumsClient.getChecksums(null, null, checksumType, null, eventHandler,
                     auditTrailInformation);
         } catch (Exception e) {
             // Barrier

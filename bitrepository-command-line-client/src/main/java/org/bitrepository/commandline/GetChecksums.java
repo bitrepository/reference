@@ -21,16 +21,14 @@
  */
 package org.bitrepository.commandline;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.cli.Option;
 import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.output.DefaultOutputHandler;
@@ -40,7 +38,6 @@ import org.bitrepository.commandline.utils.CompleteEventAwaiter;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.protocol.security.SecurityManager;
 
 /**
@@ -140,15 +137,15 @@ public class GetChecksums {
      * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
      */
     private OperationEvent performConversation() {
-        FileIDs fileids = getFileIDs();
-        List<String> pillarids = getPillarIds();
+        String fileid = getFileIDs();
+        ContributorQuery[] contributorQuerys = getContributorQuerys();
         CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings, output);
         
         output.debug("Initiating the GetChecksums conversation");
         ChecksumSpecTYPE checksumtype = getRequestChecksumSpec();
         
-        client.getChecksums(pillarids, fileids, checksumtype, null, eventHandler, "Retrieving the checksum for '"
-                + fileids + "' from pillars '" + pillarids + "'.");
+        client.getChecksums(contributorQuerys, fileid, checksumtype, null, eventHandler, "Retrieving the checksum for '"
+                + fileid + "' from pillars '" + contributorQuerys + "'.");
         
         return eventHandler.getFinish();
     }
@@ -157,11 +154,11 @@ public class GetChecksums {
      * @return The file ids to request. If a specific file has been given as argument, then it will be returned, 
      * otherwise all file ids will be requested.
      */
-    public FileIDs getFileIDs() {
+    public String getFileIDs() {
         if(cmdHandler.hasOption(Constants.FILE_ARG)) {
-            return FileIDsUtils.getSpecificFileIDs(cmdHandler.getOptionValue(Constants.FILE_ARG));            
+            return cmdHandler.getOptionValue(Constants.FILE_ARG);
         } else {
-            return FileIDsUtils.getAllFileIDs();
+            return null;
         }
     }
     
@@ -170,13 +167,11 @@ public class GetChecksums {
      * argument has been given, then the list of all pillar ids are given.
      * @return The list of pillars to request for the file ids.
      */
-    private List<String> getPillarIds() {
+    private ContributorQuery[] getContributorQuerys() {
         if(cmdHandler.hasOption(Constants.PILLAR_ARG)) {
             String pillarId = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
-            return Arrays.asList(pillarId);
-        }
-        
-        return new ArrayList<String>(settings.getCollectionSettings().getClientSettings().getPillarIDs());
+            return ContributorQueryUtils.createFullContributorQuery(Arrays.asList(pillarId));
+        } else return null;
     }
     
     /**
