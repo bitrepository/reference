@@ -25,8 +25,9 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
@@ -67,9 +68,9 @@ public class UpdateFileIDsStepTest extends ExtendedTestCase {
         addDescription("Test the step for updating the file ids can handle COMPLETE operation event.");
         MockCollector collector = new MockCollector() {
             @Override
-            public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, String auditTrailInformation,
+            public void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
                     EventHandler eventHandler) {
-                super.getFileIDs(pillarIDs, fileIDs, auditTrailInformation, eventHandler);
+                super.getFileIDs(pillarIDs, auditTrailInformation, queries, eventHandler);
                 eventHandler.handleEvent(new CompleteEvent(null));
             }
         };
@@ -88,9 +89,9 @@ public class UpdateFileIDsStepTest extends ExtendedTestCase {
         addDescription("Test the step for updating the file ids can handle FAILED operation event.");
         MockCollector collector = new MockCollector() {
             @Override
-            public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, String auditTrailInformation,
+            public void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
                     EventHandler eventHandler) {
-                super.getFileIDs(pillarIDs, fileIDs, auditTrailInformation, eventHandler);
+                super.getFileIDs(pillarIDs, auditTrailInformation, queries, eventHandler);
                 eventHandler.handleEvent(new OperationFailedEvent("Operation failed", null));
             }
         };
@@ -109,9 +110,9 @@ public class UpdateFileIDsStepTest extends ExtendedTestCase {
         addDescription("Test the step for updating the file ids can ingest the data correctly into the store.");
         MockCollector collector = new MockCollector() {
             @Override
-            public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, String auditTrailInformation,
+            public void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
                     EventHandler eventHandler) {
-                super.getFileIDs(pillarIDs, fileIDs, auditTrailInformation, eventHandler);
+                super.getFileIDs(pillarIDs, auditTrailInformation, queries, eventHandler);
                 eventHandler.handleEvent(new IdentificationCompleteEvent(Arrays.asList(TEST_PILLAR_1)));
                 FileIDsCompletePillarEvent event = new FileIDsCompletePillarEvent(
                         TEST_PILLAR_1, createResultingFileIDs(TEST_FILE_1), false);

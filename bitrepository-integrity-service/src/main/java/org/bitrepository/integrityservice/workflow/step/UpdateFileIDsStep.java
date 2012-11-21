@@ -21,11 +21,13 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityCollectorEventHandler;
@@ -50,6 +52,11 @@ public class UpdateFileIDsStep implements WorkflowStep {
     private final List<String> pillarIds;
     /** The timeout for waiting for the results of the GetFileIDs operation.*/
     private final Long timeout;
+    /** The maximum number of results for each conversation.*/
+    private final Integer maxNumberOfResultsPerConversation;
+    
+    /** The default value for the maximum number of resutls for each conversation. Is case the setting is missing.*/
+    private final Integer DEFAULT_MAX_RESULTS = 10000;
     
     /**
      * Constructor.
@@ -66,6 +73,8 @@ public class UpdateFileIDsStep implements WorkflowStep {
         this.pillarIds = settings.getCollectionSettings().getClientSettings().getPillarIDs();
         this.timeout = settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue()
                 + settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue();
+        // TODO make setting!
+        this.maxNumberOfResultsPerConversation = DEFAULT_MAX_RESULTS;
     }
     
     @Override
@@ -76,13 +85,33 @@ public class UpdateFileIDsStep implements WorkflowStep {
     @Override
     public synchronized void performStep() {
         IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
-        collector.getFileIDs(pillarIds, FileIDsUtils.getAllFileIDs(), "IntegrityService: " + getName(),
-                eventHandler);
         try {
-            OperationEvent event = eventHandler.getFinish();
-            log.debug("Collection of file ids had the final event: " + event);
+            List<String> pillarsToCollectFrom = new ArrayList<String>(pillarIds);
+            while (!pillarsToCollectFrom.isEmpty()) {
+                ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
+                collector.getFileIDs(pillarsToCollectFrom, "IntegrityService: " + getName(), queries, eventHandler);
+                
+                OperationEvent event = eventHandler.getFinish();
+                log.debug("Collection of file ids had the final event: " + event);
+                pillarsToCollectFrom = eventHandler.getPillarsWithPartialResult();
+            }
         } catch (InterruptedException e) {
             log.warn("Interrupted while collecting file ids.", e);
         }
+    }
+    
+    /**
+     * Define the queries for the collection of FileIDs for the given pillars.
+     * @param pillars The pillars to collect from.
+     * @return The queries for the pillars for collecting the file ids.
+     */
+    private ContributorQuery[] getQueries(List<String> pillars) {
+        List<ContributorQuery> res = new ArrayList<ContributorQuery>();
+        for(String pillar : pillars) {
+            Date latestFileIDEntry = store.getDateForNewestFileEntryForPillar(pillar);
+            res.add(new ContributorQuery(pillar, latestFileIDEntry, null, maxNumberOfResultsPerConversation));
+        }
+        
+        return res.toArray(new ContributorQuery[pillars.size()]);
     }
 }

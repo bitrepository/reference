@@ -197,4 +197,14 @@ public class IntegrityDatabase implements IntegrityModel {
     public void setFilesWithConsistentChecksumToValid() {
         store.setFilesWithConsistentChecksumsToValid();
     }
+
+    @Override
+    public Date getDateForNewestFileEntryForPillar(String pillarId) {
+        return store.getDateForNewestFileEntryForPillar(pillarId);
+    }
+
+    @Override
+    public Date getDateForNewestChecksumEntryForPillar(String pillarId) {
+        return store.getDateForNewestChecksumEntryForPillar(pillarId);
+    }
 }

@@ -251,6 +251,32 @@ public class DatabaseUtils {
      * @return The date from the given statement.
      */
     public static Date selectDateValue(DBConnector dbConnector, String query, Object... args) {
+        return retrieveDateValue(dbConnector, false, query, args);
+    }
+    
+    /**
+     * Retrieves the first date value from the database through the use of a SQL query, which requests 
+     * the wanted date value, and the arguments for the query to become a proper SQL statement.
+     * If the results set contains more than one value, the others are ignored. 
+     * 
+     * @param dbConnector For connecting to the database.
+     * @param query The query for retrieving the date.
+     * @param args The arguments for the database statement.
+     * @return The date from the given statement.
+     */
+    public static Date selectFirstDateValue(DBConnector dbConnector, String query, Object... args) {
+        return retrieveDateValue(dbConnector, true, query, args);
+    }
+    
+    /**
+     * The actual extraction from the database.
+     * @param dbConnector For connecting to the database.
+     * @param mustHaveOnlyOneResult Whether it should fail, if more than one result is found.
+     * @param query The query for retrieving the date.
+     * @param args The arguments for the database statement.
+     * @return The date from the given statement.
+     */
+    private static Date retrieveDateValue(DBConnector dbConnector, boolean mustHaveOnlyOneResult, String query, Object... args) {
         ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
         ArgumentValidator.checkNotNullOrEmpty(query, "String query");
         ArgumentValidator.checkNotNull(args, "Object... args");
@@ -273,7 +299,7 @@ public class DatabaseUtils {
                 if (res.wasNull()) {
                     resultDate = null;
                 }
-                if (res.next()) {
+                if (mustHaveOnlyOneResult && res.next()) {
                     throw new IllegalStateException("Too many results from " + ps);
                 }
                 return resultDate;

@@ -145,4 +145,20 @@ public interface IntegrityModel {
      * Set the checksum state of a file to 'valid' its entries if the different checksums are unanimous.
      */
     void setFilesWithConsistentChecksumToValid();
+    
+    /**
+     * Retrieves the date for the latest file entry for a given pillar.
+     * E.g. the date for the latest file which has been positively identified as existing on the given pillar.  
+     * @param pillarId The pillar whose latest file entry is requested.
+     * @return The requested date.
+     */
+    Date getDateForNewestFileEntryForPillar(String pillarId);
+    
+    /**
+     * Retrieves the date for the latest checksum entry for a given pillar.
+     * E.g. the date for the latest checksum which has been positively identified as valid on the given pillar.  
+     * @param pillarId The pillar whose latest checksum entry is requested.
+     * @return The requested date.
+     */
+    Date getDateForNewestChecksumEntryForPillar(String pillarId);
 }

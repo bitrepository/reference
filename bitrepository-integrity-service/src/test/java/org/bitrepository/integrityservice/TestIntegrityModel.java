@@ -31,6 +31,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
@@ -410,5 +413,35 @@ public class TestIntegrityModel implements IntegrityModel {
                 }
             }
         }
+    }
+
+    @Override
+    public Date getDateForNewestFileEntryForPillar(String pillarId) {
+        XMLGregorianCalendar res = CalendarUtils.getEpoch();
+        for(CollectionFileIDInfo collectionInfo : cache.values()) {
+            for(FileInfo fileInfo : collectionInfo.getFileIDInfos()) {
+                if(fileInfo.getPillarId().equals(pillarId)) {
+                    if(fileInfo.getDateForLastFileIDCheck().compare(res) == DatatypeConstants.GREATER) {
+                        res = fileInfo.getDateForLastFileIDCheck();
+                    }
+                }
+            }
+        }
+        return CalendarUtils.convertFromXMLGregorianCalendar(res);
+    }
+
+    @Override
+    public Date getDateForNewestChecksumEntryForPillar(String pillarId) {
+        XMLGregorianCalendar res = CalendarUtils.getEpoch();
+        for(CollectionFileIDInfo collectionInfo : cache.values()) {
+            for(FileInfo fileInfo : collectionInfo.getFileIDInfos()) {
+                if(fileInfo.getPillarId().equals(pillarId)) {
+                    if(fileInfo.getDateForLastChecksumCheck().compare(res) == DatatypeConstants.GREATER) {
+                        res = fileInfo.getDateForLastChecksumCheck();
+                    }
+                }
+            }
+        }
+        return CalendarUtils.convertFromXMLGregorianCalendar(res);
     }
 }

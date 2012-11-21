@@ -214,4 +214,24 @@ public class MockIntegrityModel implements IntegrityModel {
     public int getCallsForSetFilesWithUnanimousChecksumToValid() {
         return callsForSetFilesWithUnanimousChecksumToValid;
     }
+    
+    private int callsForGetDateForNewestFileEntryForPillar = 0;
+    @Override
+    public Date getDateForNewestFileEntryForPillar(String pillarId) {
+        callsForGetDateForNewestFileEntryForPillar++;
+        return integrityModel.getDateForNewestFileEntryForPillar(pillarId);
+    }
+    public int getCallsForGetDateForNewestFileEntryForPillar() {
+        return callsForGetDateForNewestFileEntryForPillar;
+    }
+    
+    private int callsForGetDateForNewestChecksumEntryForPillar = 0;
+    @Override
+    public Date getDateForNewestChecksumEntryForPillar(String pillarId) {
+        callsForGetDateForNewestChecksumEntryForPillar++;
+        return integrityModel.getDateForNewestChecksumEntryForPillar(pillarId);
+    }
+    public int getCallsForGetDateForNewestChecksumEntryForPillar() {
+        return callsForGetDateForNewestChecksumEntryForPillar;
+    }
 }

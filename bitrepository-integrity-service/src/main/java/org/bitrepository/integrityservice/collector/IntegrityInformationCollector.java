@@ -25,8 +25,9 @@
 package org.bitrepository.integrityservice.collector;
 
 import java.util.Collection;
+
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.EventHandler;
 
 /**
@@ -44,20 +45,22 @@ public interface IntegrityInformationCollector {
      * Starts collection the given file ids from the given pillar ids.
      * 
      * @param pillarIDs The collection of ids of the pillars to request for the file ids.
-     * @param fileIDs The file ids requested.
      * @param auditTrailInformation The audit trail information for the conversation.
+     * @param queries The limiting contributor queries for the collection of file ids. 
      * @param eventHandler The eventhandler for the results of the checksum collection. 
      */
-    void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, String auditTrailInformation, 
+    void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries, 
             EventHandler eventHandler);
 
     /**
-     * Request the specified checksums for from all the pillars.
+     * Request the specified checksums for from the given the pillars.
+     * @param pillarIDs The collection of ids of the pillars to request for the checksums.
      * @param checksumType The checksum algorithm (and salt) used for the calculation. 
      * May be null, in which case the collection default is used.
      * @param auditTrailInformation The audit trail information for the conversation.
+     * @param queries The limiting contributor queries for the collection of file ids. 
      * @param eventHandler The eventhandler for the results of the checksum collection. 
      */
-    void getChecksums(ChecksumSpecTYPE checksumType,
-            String auditTrailInformation, EventHandler eventHandler);
+    void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation, 
+            ContributorQuery[] queries, EventHandler eventHandler);
 }
