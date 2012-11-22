@@ -286,12 +286,6 @@
       Timeunit in milliseconds
      -->
     <SchedulerInterval>2000</SchedulerInterval>
-    
-    <!-- 
-      The maximum number of results per conversation for updating either the fileids 
-      or the checksums. 
-     -->
-    <MaximumNumberOfResultsPerConversation>10000</MaximumNumberOfResultsPerConversation>
 
     <!-- 
       Database specification object for the cache of integrity service database.
@@ -314,6 +308,12 @@
       Timeunit in milliseconds.    
     -->
     <TimeBeforeMissingFileCheck>3600000</TimeBeforeMissingFileCheck> 
+    
+    <!-- 
+      The maximum number of results per conversation for updating either the fileids 
+      or the checksums. 
+     -->
+    <MaximumNumberOfResultsPerConversation>10000</MaximumNumberOfResultsPerConversation>
     
     <!-- 
       Database specification object for the Integrity service's audit trail information.
