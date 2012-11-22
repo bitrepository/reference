@@ -21,6 +21,11 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.settings.Settings;
@@ -46,8 +51,16 @@ public class UpdateChecksumsStep implements WorkflowStep{
     private final ChecksumSpecTYPE checksumType;
     /** The integrity alerter.*/
     private final IntegrityAlerter alerter;
+    /** The pillar ids.*/
+    private final List<String> pillarIds;
     /** The timeout for waiting for the results of the GetChecksums operation.*/
     private final Long timeout;
+    /** The maximum number of results for each conversation.*/
+    private final Integer maxNumberOfResultsPerConversation;
+    
+    /** The default value for the maximum number of results for each conversation. Is case the setting is missing.*/
+    private final Integer DEFAULT_MAX_RESULTS = 10000;
+
 
     /**
      * Constructor.
@@ -62,8 +75,16 @@ public class UpdateChecksumsStep implements WorkflowStep{
         this.store = store;
         this.checksumType = checksumType;
         this.alerter = alerter;
+        this.pillarIds = settings.getCollectionSettings().getClientSettings().getPillarIDs();
         this.timeout = settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue()
                 + settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue();
+        if(settings.getReferenceSettings().getIntegrityServiceSettings().getMaximumNumberOfResultsPerConversation() 
+                != null) {
+            this.maxNumberOfResultsPerConversation = settings.getReferenceSettings().getIntegrityServiceSettings()
+                    .getMaximumNumberOfResultsPerConversation().intValue();
+        } else {
+            this.maxNumberOfResultsPerConversation = DEFAULT_MAX_RESULTS;
+        }
     }
     
     @Override
@@ -74,13 +95,34 @@ public class UpdateChecksumsStep implements WorkflowStep{
     @Override
     public synchronized void performStep() {
         IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
-        collector.getChecksums(checksumType, "IntegrityService: " + getName(),
-                eventHandler);
         try {
-            OperationEvent event = eventHandler.getFinish();
-            log.debug("Collection of file ids had the final event: " + event);
+            List<String> pillarsToCollectFrom = new ArrayList<String>(pillarIds);
+            while (!pillarsToCollectFrom.isEmpty()) {
+                ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
+                collector.getChecksums(pillarsToCollectFrom, checksumType, "IntegrityService: " + getName(), queries, 
+                        eventHandler);
+                OperationEvent event = eventHandler.getFinish();
+                log.debug("Collection of file ids had the final event: " + event);
+                pillarsToCollectFrom = new ArrayList<String>(eventHandler.getPillarsWithPartialResult());
+                eventHandler.clean();
+            }
         } catch (InterruptedException e) {
             log.warn("Interrupted while collecting file ids.", e);
         }
+    }
+    
+    /**
+     * Define the queries for the collection of FileIDs for the given pillars.
+     * @param pillars The pillars to collect from.
+     * @return The queries for the pillars for collecting the file ids.
+     */
+    private ContributorQuery[] getQueries(List<String> pillars) {
+        List<ContributorQuery> res = new ArrayList<ContributorQuery>();
+        for(String pillar : pillars) {
+            Date latestChecksumEntry = store.getDateForNewestChecksumEntryForPillar(pillar);
+            res.add(new ContributorQuery(pillar, latestChecksumEntry, null, maxNumberOfResultsPerConversation));
+        }
+        
+        return res.toArray(new ContributorQuery[pillars.size()]);
     }
 }

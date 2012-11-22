@@ -31,7 +31,6 @@ import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.slf4j.Logger;
@@ -65,12 +64,12 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     }
 
     @Override
-    public synchronized void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, String auditTrailInformation, 
-            EventHandler eventHandler) {
+    public synchronized void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, 
+            ContributorQuery[] queries, EventHandler eventHandler) {
         try {
-            auditManager.addAuditEvent("" + fileIDs.getFileID(), "IntegrityService", 
+            auditManager.addAuditEvent(null, "IntegrityService", 
                     "Collecting file ids from '" + pillarIDs + "'", auditTrailInformation, FileAction.INTEGRITY_CHECK);
-            getFileIDsClient.getFileIDs(pillarIDs, fileIDs, null, eventHandler);
+            getFileIDsClient.getFileIDs(queries, null, null, eventHandler);
         } catch (Exception e) {
             // Barrier
             log.error("Unexpected failure!", e);
@@ -78,12 +77,12 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     }
 
     @Override
-    public synchronized void getChecksums(ChecksumSpecTYPE checksumType,
-            String auditTrailInformation, EventHandler eventHandler) {
+    public synchronized void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, 
+            String auditTrailInformation, ContributorQuery[] queries, EventHandler eventHandler) {
         try {
             auditManager.addAuditEvent(null, "IntegrityService",
                     "Collecting checksums", auditTrailInformation, FileAction.INTEGRITY_CHECK);
-            getChecksumsClient.getChecksums(null, null, checksumType, null, eventHandler,
+            getChecksumsClient.getChecksums(queries, null, checksumType, null, eventHandler,
                     auditTrailInformation);
         } catch (Exception e) {
             // Barrier

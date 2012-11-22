@@ -36,12 +36,14 @@ public class ChecksumsCompletePillarEvent extends ContributorCompleteEvent {
     private final ResultingChecksums result;
     /** @see #getChecksumType(). */
     private final ChecksumSpecTYPE checksumType;
+    /** Whether this complete event only contains a partail result set.*/
     private final boolean isPartialResult;
     
     /**
      * @param result The result returned by the pillar.
      * @param checksumType The checksum specification type.
      * @param pillarID The pillar which generated the result
+     * @param isPartialResult Whether the complete event contains only a partial results set.
      */
     public ChecksumsCompletePillarEvent(
             String pillarID, ResultingChecksums result, ChecksumSpecTYPE checksumType, boolean isPartialResult) {
@@ -65,10 +67,12 @@ public class ChecksumsCompletePillarEvent extends ContributorCompleteEvent {
         return checksumType;
     }
 
+    /**
+     * @return Whether it is a partial result set.
+     */
     public boolean isPartialResult() {
         return isPartialResult;
     }
-
 
     @Override
     public String additionalInfo() {

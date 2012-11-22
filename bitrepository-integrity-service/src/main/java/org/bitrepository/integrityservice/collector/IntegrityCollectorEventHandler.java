@@ -21,6 +21,8 @@
  */
 package org.bitrepository.integrityservice.collector;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +55,8 @@ public class IntegrityCollectorEventHandler implements EventHandler {
     
     /** The queue used to store the received operation events. */
     private final BlockingQueue<OperationEvent> finalEventQueue = new LinkedBlockingQueue<OperationEvent>();
-
+    /** The list of contributors which has only delivered a partial result set.*/
+    private final List<String> contributorsWithPartialResults = new ArrayList<String>();
     
     /**
      * Constructor.
@@ -65,6 +68,13 @@ public class IntegrityCollectorEventHandler implements EventHandler {
         this.store = model;
         this.alerter = alerter;
         this.timeout = timeout;
+    }
+    
+    /**
+     * Cleanup between usage of this event handler.
+     */
+    public void clean() {
+        contributorsWithPartialResults.clear();
     }
     
     @Override
@@ -94,6 +104,13 @@ public class IntegrityCollectorEventHandler implements EventHandler {
     }
     
     /**
+     * @return The list of pillars with only a partial result set.
+     */
+    public List<String> getPillarsWithPartialResult() {
+        return contributorsWithPartialResults;
+    }
+    
+    /**
      * Handle the results of the GetChecksums operation at a single pillar.
      * @param event The event for the completion of a GetChecksums for a single pillar.
      */
@@ -101,10 +118,16 @@ public class IntegrityCollectorEventHandler implements EventHandler {
         if(event instanceof ChecksumsCompletePillarEvent) {
             ChecksumsCompletePillarEvent checksumEvent = (ChecksumsCompletePillarEvent) event;
             store.addChecksums(checksumEvent.getChecksums().getChecksumDataItems(), checksumEvent.getContributorID());
+            if(checksumEvent.isPartialResult()) {
+                contributorsWithPartialResults.add(checksumEvent.getContributorID());
+            }
         } else if(event instanceof FileIDsCompletePillarEvent) {
             FileIDsCompletePillarEvent fileidEvent = (FileIDsCompletePillarEvent) event;
             store.addFileIDs(fileidEvent.getFileIDs().getFileIDsData(), FileIDsUtils.getAllFileIDs(), 
                     fileidEvent.getContributorID());
+            if(fileidEvent.isPartialResult()) {
+                contributorsWithPartialResults.add(fileidEvent.getContributorID());
+            }
         } else {
             log.warn("Unexpected component complete event: " + event.toString());
         }

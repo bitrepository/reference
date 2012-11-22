@@ -24,10 +24,8 @@
  */
 package org.bitrepository.service.audit;
 
-import java.util.Collection;
 import java.util.Date;
 
-import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 
 /**
@@ -37,6 +35,7 @@ public interface AuditTrailManager {
     /**
      * Adds an audit trail event to the manager.
      * @param fileId The id of the file, where the operation has been performed.
+     * Use the argument null for indicating all file ids. 
      * @param actor The name of the actor.
      * @param info Information about the reason for the audit trail to be logged.
      * @param auditTrail The string for the audit trail information from the message performing the operation.

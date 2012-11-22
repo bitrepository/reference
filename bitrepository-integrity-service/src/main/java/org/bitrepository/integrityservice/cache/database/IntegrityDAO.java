@@ -440,6 +440,32 @@ public class IntegrityDAO {
     }
     
     /**
+     * Retrieves the date for the latest file entry for a given pillar.
+     * E.g. the date for the latest file which has been positively identified as existing on the given pillar.  
+     * @param pillarId The pillar whose latest file entry is requested.
+     * @return The requested date.
+     */
+    public Date getDateForNewestFileEntryForPillar(String pillarId) {
+        String retrieveSql = "SELECT " + FI_LAST_FILE_UPDATE + " FROM " + FILE_INFO_TABLE + " WHERE " + FI_FILE_STATE 
+                + " = ? AND " + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " 
+                + PILLAR_ID + " = ? ) ORDER BY " + FI_LAST_FILE_UPDATE + " DESC ";
+        return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, FileState.EXISTING.ordinal(), pillarId);
+    }
+    
+    /**
+     * Retrieves the date for the latest checksum entry for a given pillar.
+     * E.g. the date for the latest checksum which has been positively identified as valid on the given pillar.  
+     * @param pillarId The pillar whose latest checksum entry is requested.
+     * @return The requested date.
+     */
+    public Date getDateForNewestChecksumEntryForPillar(String pillarId){
+        String retrieveSql = "SELECT " + FI_LAST_CHECKSUM_UPDATE + " FROM " + FILE_INFO_TABLE + " WHERE " 
+                + FI_FILE_STATE + " = ? AND " + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID + " FROM " 
+                + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ? ) ORDER BY " + FI_LAST_CHECKSUM_UPDATE + " DESC ";
+        return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, FileState.EXISTING.ordinal(), pillarId);
+    }
+    
+    /**
      * Updates the file info for the given file at the given pillar.
      * It is always set to 'EXISTING' and if the timestamp is new, then it is also updated along with setting the 
      * checksum state to 'UNKNOWN'.

@@ -502,6 +502,15 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element name="MaximumNumberOfResultsPerConversation" type="xs:integer" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The maximum number of results for each conversation when updating the database with checksums or 
+              file ids from the pillars using the GetChecksumsClient or GetFileIDsClient respectively.
+              Optional. If not set, then the default value is 10000.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
         <xs:element name="AuditTrailContributerDatabase" type="DatabaseSpecifics">
           <xs:annotation>
             <xs:documentation xml:lang="en">
@@ -510,12 +519,12 @@
           </xs:annotation>
         </xs:element>
         <xs:element name="ObsoleteChecksumSettings" type="ObsoleteChecksumSettings" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation xml:lang="en">
-            The default MaxChecksumAge to use for pillars. Can be overridden by pillar specific settings. If undefined
-            1 year is used.
-          </xs:documentation>
-        </xs:annotation>
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The default MaxChecksumAge to use for pillars. Can be overridden by pillar specific settings. If undefined
+              1 year is used.
+            </xs:documentation>
+          </xs:annotation>
         </xs:element>
       </xs:sequence>
     </xs:complexType>
