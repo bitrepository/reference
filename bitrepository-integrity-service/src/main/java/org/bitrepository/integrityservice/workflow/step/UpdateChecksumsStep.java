@@ -61,7 +61,6 @@ public class UpdateChecksumsStep implements WorkflowStep{
     /** The default value for the maximum number of results for each conversation. Is case the setting is missing.*/
     private final Integer DEFAULT_MAX_RESULTS = 10000;
 
-
     /**
      * Constructor.
      * @param collector The client for collecting the checksums.
