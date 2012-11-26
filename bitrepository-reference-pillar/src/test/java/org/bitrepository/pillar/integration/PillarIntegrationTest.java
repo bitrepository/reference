@@ -53,11 +53,12 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
     protected CollectionTestHelper collectionHelper;
     protected PillarFileManager pillarFileManager;
-    protected ClientProvider clientProvider;
+    protected static ClientProvider clientProvider;
 
     @BeforeMethod(alwaysRun = true)
-    public void initializePillarTest() {pillarFileManager = new PillarFileManager(
-            getPillarID(), settingsForTestClient, clientProvider,testEventManager, httpServer);
+    public void initializePillarTest() {
+        pillarFileManager = new PillarFileManager(
+            getPillarID(), settingsForTestClient, clientProvider, testEventManager, httpServer);
     }
 
     @BeforeSuite(alwaysRun = true)

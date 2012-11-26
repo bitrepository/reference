@@ -86,18 +86,20 @@ public class PillarFileManager {
      * @param desiredNumberOfFiles
      */
     public void ensureNumberOfFilesOnPillar(int desiredNumberOfFiles, String newFileIDPrefix) {
-        addFixtureSetup("Ensuring at least " + desiredNumberOfFiles + " files are present on the pillar " + pillarID);
         if (desiredNumberOfFiles >= knownNumberOfFilesOnPillar) {
             knownNumberOfFilesOnPillar = getFileIDs().size();
         }
 
         if (desiredNumberOfFiles >= knownNumberOfFilesOnPillar) {
-            addFilesToPillar(desiredNumberOfFiles - knownNumberOfFilesOnPillar, newFileIDPrefix);
+            int numberOfFilesToAdd = desiredNumberOfFiles - knownNumberOfFilesOnPillar;
+            addFixtureSetup("Putting " + numberOfFilesToAdd + " files to the pillar to ensuring at least " +
+                "" + desiredNumberOfFiles + " files are present on the pillar " + pillarID);
+
+            addFilesToPillar(numberOfFilesToAdd, newFileIDPrefix);
         }
     }
 
     public void addFilesToPillar(int numberOfFilesToAdd, String testName) {
-        addFixtureSetup("Putting " + numberOfFilesToAdd + " to the pillar");
         String[] newFileIDs = TestFileHelper.createFileIDs(numberOfFilesToAdd, testName);
         for (String newFileID:newFileIDs) {
             try {
