@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
+import org.bitrepository.pillar.integration.CollectionTestHelper;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.pillar.integration.perf.metrics.ConsoleMetricAppender;
 import org.bitrepository.pillar.integration.perf.metrics.MetricAppender;
@@ -34,7 +35,6 @@ import org.testng.annotations.BeforeSuite;
 
 public class PillarPerformanceTest extends PillarIntegrationTest {
     protected List<MetricAppender> metricAppenders = new LinkedList<MetricAppender>();
-    protected CollectionTestHelper collectionHelper;
     protected String[] existingFiles;
 
     @BeforeSuite

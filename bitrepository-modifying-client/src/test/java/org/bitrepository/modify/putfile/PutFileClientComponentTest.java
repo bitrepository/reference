@@ -671,7 +671,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         * @return A new PutFileClient(Wrapper).
         */
     private PutFileClient createPutFileClient() {
-        return new PutClientTestWrapper(new ConversationBasedPutFileClient(
+        return new PutFileClientTestWrapper(new ConversationBasedPutFileClient(
                 messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID())
                 , testEventManager);
     }

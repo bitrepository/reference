@@ -61,10 +61,12 @@ public class TestFileHelper {
         return fileStream;
     }
 
+    public static String createUniquePrefix(String testName) {
+        return testName + "-" + System.getProperty("user.name") + "-" + "-Test-File-" + System.currentTimeMillis();
+    }
 
-    public static String[] createFileIDs(int numberToCreate, String prefix) {
-        String uniquePrefix = prefix + "-" + System.getProperty("user.name") + "-" +
-                System.currentTimeMillis();
+    public static String[] createFileIDs(int numberToCreate, String testName) {
+        String uniquePrefix = createUniquePrefix(testName);
         String[] fileIDs = new String[numberToCreate];
         for (int i = 0 ; i<numberToCreate ; i++) {
             fileIDs[i] = uniquePrefix + "-" + (i+1) +".txt";

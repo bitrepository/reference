@@ -32,12 +32,10 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.jaccept.TestEventManager;
 
 /**
- * Wrapper class for a PutFileClient.
+ * Wrapper class for a PutFileClient adding test event logging.
  */
-public class PutClientTestWrapper implements PutFileClient {
-    /** The PutClient to wrap. */
+public class PutFileClientTestWrapper implements PutFileClient {
     private PutFileClient wrappedPutClient;
-    /** The manager to monitor the operations.*/
     private TestEventManager testEventManager;
 
     /**
@@ -45,7 +43,7 @@ public class PutClientTestWrapper implements PutFileClient {
      * @param putClientInstance The instance to wrap and monitor.
      * @param eventManager The manager to monitor the operations.
      */
-    public PutClientTestWrapper(PutFileClient putClientInstance, TestEventManager eventManager) {
+    public PutFileClientTestWrapper(PutFileClient putClientInstance, TestEventManager eventManager) {
         this.wrappedPutClient = putClientInstance;
         this.testEventManager = eventManager;
     }

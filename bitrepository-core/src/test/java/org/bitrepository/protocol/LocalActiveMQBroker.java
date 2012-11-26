@@ -36,6 +36,7 @@ public class LocalActiveMQBroker {
     
     public LocalActiveMQBroker(MessageBusConfiguration configuration) {
         broker = new BrokerService();
+        broker.setPersistent(false);
         try {
             broker.addConnector(configuration.getURL());
         } catch (Exception ex) {

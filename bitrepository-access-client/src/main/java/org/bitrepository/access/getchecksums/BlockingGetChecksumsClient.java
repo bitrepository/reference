@@ -22,56 +22,48 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.modify.putfile;
+package org.bitrepository.access.getchecksums;
 
 import java.net.URL;
 import java.util.List;
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.BlockingEventHandler;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
-import org.bitrepository.common.exceptions.OperationFailedException;
+import org.bitrepository.client.exceptions.NegativeResponseException;
 
 /**
  * Wrappes a <code>PutFileClient</code> to provide a blocking client. The client will block until the PutFileOperation
  * has finished.
  */
-public class BlockingPutFileClient {
-    private final PutFileClient client;
+public class BlockingGetChecksumsClient {
+    private final GetChecksumsClient client;
 
-    public BlockingPutFileClient(PutFileClient client) {
+    public BlockingGetChecksumsClient(GetChecksumsClient client) {
         this.client = client;
     }
+
     /**
-     * Method for performing a blocking put file operation.
-     *
-     * @param url The URL where the file to be put is located.
-     * @param fileId The id of the file.
-     * @param sizeOfFile The number of bytes the file requires.
-     * @param checksumForValidationAtPillar The checksum for validating at pillar side.
-     * @param checksumRequestsForValidation The checksum for validating at client side.
-     * @param eventHandler The EventHandler for the operation.
-     * @param auditTrailInformation The audit trail information.
+     * @see GetChecksumsClient#getChecksums
      */
-    public List<ContributorEvent> putFile(
-            URL url,
-            String fileId,
-            long sizeOfFile,
-            ChecksumDataForFileTYPE checksumForValidationAtPillar,
-            ChecksumSpecTYPE checksumRequestsForValidation,
-            EventHandler eventHandler,
-            String auditTrailInformation)
-            throws OperationFailedException {
+    public List<ContributorEvent> getChecksums(
+        ContributorQuery[] contributorQueries,
+        String fileID,
+        ChecksumSpecTYPE checksumSpec,
+        URL urlForResult,
+        EventHandler eventHandler,
+        String auditTrailInformation)
+        throws NegativeResponseException {
+
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
-        client.putFile(url, fileId, sizeOfFile, checksumForValidationAtPillar, checksumRequestsForValidation,
-                blocker, auditTrailInformation);
+        client.getChecksums(contributorQueries, fileID, checksumSpec, urlForResult, blocker, auditTrailInformation);
         OperationEvent finishEvent = blocker.awaitFinished();
-        if(finishEvent.getEventType() == OperationEvent.OperationEventType.COMPLETE) {
+        if(finishEvent.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
             return blocker.getResults();
-        } else if (finishEvent.getEventType() == OperationEvent.OperationEventType.FAILED) {
-            throw new OperationFailedException(finishEvent.getInfo());
+        } else if (finishEvent.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
+            throw new NegativeResponseException(finishEvent.getInfo(), null);
         } else throw new RuntimeException("Received unexpected event type" + finishEvent);
     }
 }

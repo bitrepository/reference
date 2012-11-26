@@ -25,10 +25,12 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.pillar.PillarSettingsProvider;
+import org.bitrepository.pillar.integration.model.PillarFileManager;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.security.*;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 
 /**
@@ -49,11 +51,21 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected static PillarIntegrationTestConfiguration testConfiguration;
     private EmbeddedReferencePillar embeddedPillar;
 
+    protected CollectionTestHelper collectionHelper;
+    protected PillarFileManager pillarFileManager;
+    protected ClientProvider clientProvider;
+
+    @BeforeMethod(alwaysRun = true)
+    public void initializePillarTest() {pillarFileManager = new PillarFileManager(
+            getPillarID(), settingsForTestClient, clientProvider,testEventManager, httpServer);
+    }
+
     @BeforeSuite(alwaysRun = true)
     @Override
     public void initializeSuite() {
         super.initializeSuite();
         startEmbeddedReferencePillar();
+        clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
     }
 
     @AfterSuite(alwaysRun = true)

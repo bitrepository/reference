@@ -594,7 +594,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
      * @return A new DeleteFileClient(Wrapper).
      */
     private DeleteFileClient createDeleteFileClient() {
-        return new DeleteClientTestWrapper(new ConversationBasedDeleteFileClient(
+        return new DeleteFileClientTestWrapper(new ConversationBasedDeleteFileClient(
                 messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()), testEventManager);
     }
 }

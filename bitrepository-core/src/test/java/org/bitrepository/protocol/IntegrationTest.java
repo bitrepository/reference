@@ -83,6 +83,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected static URL DEFAULT_FILE_URL;
     protected static String DEFAULT_FILE_ADDRESS;
 
+    protected String testMethodName;
+
     @BeforeSuite(alwaysRun = true)
     public void initializeSuite() {
         setupSettings();
@@ -111,7 +113,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     public void beforeMethod(Method method) {
         setupSettings();
         initializeMessageBusListeners();
-        NON_DEFAULT_FILE_ID = method.getName() + "-Test-File-" + createDate();
+        testMethodName = method.getName();
+        NON_DEFAULT_FILE_ID = TestFileHelper.createUniquePrefix(testMethodName);
     }
 
     @AfterMethod(alwaysRun = true)

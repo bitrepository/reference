@@ -32,7 +32,7 @@ import org.jaccept.TestEventManager;
 /**
  * Wrapper class for a PutFileClient.
  */
-public class DeleteClientTestWrapper implements DeleteFileClient {
+public class DeleteFileClientTestWrapper implements DeleteFileClient {
     /** The PutClient to wrap. */
     private DeleteFileClient wrappedDeleteClient;
     /** The manager to monitor the operations.*/
@@ -43,7 +43,7 @@ public class DeleteClientTestWrapper implements DeleteFileClient {
      * @param deleteClientInstance The instance to wrap and monitor.
      * @param eventManager The manager to monitor the operations.
      */
-    public DeleteClientTestWrapper(DeleteFileClient deleteClientInstance, TestEventManager eventManager) {
+    public DeleteFileClientTestWrapper(DeleteFileClient deleteClientInstance, TestEventManager eventManager) {
         this.wrappedDeleteClient = deleteClientInstance;
         this.testEventManager = eventManager;
     }

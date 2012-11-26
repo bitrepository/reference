@@ -25,8 +25,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import org.bitrepository.common.exceptions.OperationFailedException;
 import org.bitrepository.common.utils.TestFileHelper;
-import org.bitrepository.modify.ModifyComponentFactory;
-import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.testng.annotations.BeforeSuite;
@@ -46,7 +44,6 @@ public class PillarFunctionTest extends PillarIntegrationTest {
         putDefaultFile();
     }
 
-
     /**
      * Adds a client topic listener.
      *
@@ -64,12 +61,10 @@ public class PillarFunctionTest extends PillarIntegrationTest {
         alarmReceiver.setFromFilter(pillarFilter);
     }
 
-    public void putDefaultFile() {
+    protected void putDefaultFile() {
         try {
-            BlockingPutFileClient putFileClient = new BlockingPutFileClient(ModifyComponentFactory.getInstance().retrievePutClient(
-                    settingsForTestClient, securityManager, settingsForTestClient.getComponentID()));
-            putFileClient.putFile(DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
-                    null, null, null);
+            clientProvider.getPutClient().putFile(DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
+                null, null, null);
         } catch (OperationFailedException e) {
             throw new RuntimeException(e);
         }

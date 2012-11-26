@@ -34,6 +34,7 @@ import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.messagebus.MessageListener;
+import org.bitrepository.protocol.messagebus.logger.MessageLoggerProvider;
 import org.jaccept.TestEventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,7 @@ public class MessageReceiver {
     //ToDo convert to TestLogger
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final MessageModel messageModel = new MessageModel();
+    private final MessageLoggerProvider messageLoggerProvider;
     private final MessageListener messageListener;
     private final TestEventManager testEventManager;
 
@@ -75,6 +77,7 @@ public class MessageReceiver {
         this.name = name;
         this.testEventManager = testEventManager;
         messageListener = new TestMessageHandler(name + "Listener", messageModel);
+        messageLoggerProvider = MessageLoggerProvider.getInstance();
     }
 
     /** Can be used to ignore messages from irrelevnt components */
@@ -148,7 +151,6 @@ public class MessageReceiver {
                 }
             }
             if (outstandingMessages.length() > 0 ) {
-
                 Assert.fail("Unhandled messages remain:" + outstandingMessages);
             }
         }
@@ -162,7 +164,7 @@ public class MessageReceiver {
         private <T> void addMessage(T message) {
             if (pillarFilter != null && !pillarFilter.contains(((Message)message).getFrom())) return;
             if(testEventManager != null) {
-                testEventManager.addResult(name + " received message: " + message);
+                testEventManager.addResult(name + " received: " + message);
             }
             @SuppressWarnings("unchecked")
             BlockingQueue<T> queue = (BlockingQueue<T>)getMessageQueue(message.getClass());

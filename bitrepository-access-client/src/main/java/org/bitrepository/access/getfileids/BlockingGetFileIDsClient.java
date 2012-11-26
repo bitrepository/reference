@@ -22,9 +22,11 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.access.getaudittrails;
+package org.bitrepository.access.getfileids;
 
+import java.net.URL;
 import java.util.List;
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.client.eventhandler.BlockingEventHandler;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -35,24 +37,24 @@ import org.bitrepository.client.exceptions.NegativeResponseException;
  * Wrappes a <code>PutFileClient</code> to provide a blocking client. The client will block until the PutFileOperation
  * has finished.
  */
-public class BlockingAuditTrailClient {
-    private final AuditTrailClient client;
+public class BlockingGetFileIDsClient {
+    private final GetFileIDsClient client;
 
-    public BlockingAuditTrailClient(AuditTrailClient client) {
+    public BlockingGetFileIDsClient(GetFileIDsClient client) {
         this.client = client;
     }
 
     /**
-     * @see AuditTrailClient#getAuditTrails
+     * @see GetFileIDsClient#getFileIDs
      */
-    public List<ContributorEvent> getAuditTrails(
-            AuditTrailQuery[] componentQueries,
-            String fileID,
-            String urlForResult,
-            EventHandler eventHandler, String auditTrailInformation)
-            throws NegativeResponseException {
+    public List<ContributorEvent> getGetFileIDs(
+        ContributorQuery[] contributorQueries,
+        String fileID,
+        URL addressForResult,
+        EventHandler eventHandler)
+        throws NegativeResponseException {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
-        client.getAuditTrails(componentQueries, fileID, urlForResult, blocker, auditTrailInformation);
+        client.getFileIDs(contributorQueries, fileID, addressForResult, blocker);
         OperationEvent finishEvent = blocker.awaitFinished();
         if(finishEvent.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
             return blocker.getResults();

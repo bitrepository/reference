@@ -22,9 +22,8 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.modify.putfile;
+package org.bitrepository.modify.deletefile;
 
-import java.net.URL;
 import java.util.List;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -35,37 +34,35 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.exceptions.OperationFailedException;
 
 /**
- * Wrappes a <code>PutFileClient</code> to provide a blocking client. The client will block until the PutFileOperation
+ * Wrappes a <code>DeleteFileClient</code> to provide a blocking client. The client will block until the DeleteFileOperation
  * has finished.
  */
-public class BlockingPutFileClient {
-    private final PutFileClient client;
+public class BlockingDeleteFileClient {
+    private final DeleteFileClient client;
 
-    public BlockingPutFileClient(PutFileClient client) {
+    public BlockingDeleteFileClient(DeleteFileClient client) {
         this.client = client;
     }
     /**
-     * Method for performing a blocking put file operation.
+     * Method for performing a blocking delete file operation.
      *
-     * @param url The URL where the file to be put is located.
      * @param fileId The id of the file.
-     * @param sizeOfFile The number of bytes the file requires.
+     * @param pillarID The id of the pillar to delete the file on.
      * @param checksumForValidationAtPillar The checksum for validating at pillar side.
      * @param checksumRequestsForValidation The checksum for validating at client side.
      * @param eventHandler The EventHandler for the operation.
      * @param auditTrailInformation The audit trail information.
      */
-    public List<ContributorEvent> putFile(
-            URL url,
+    public List<ContributorEvent> deleteFile(
             String fileId,
-            long sizeOfFile,
+            String pillarID,
             ChecksumDataForFileTYPE checksumForValidationAtPillar,
             ChecksumSpecTYPE checksumRequestsForValidation,
             EventHandler eventHandler,
             String auditTrailInformation)
             throws OperationFailedException {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
-        client.putFile(url, fileId, sizeOfFile, checksumForValidationAtPillar, checksumRequestsForValidation,
+        client.deleteFile(fileId, pillarID, checksumForValidationAtPillar, checksumRequestsForValidation,
                 blocker, auditTrailInformation);
         OperationEvent finishEvent = blocker.awaitFinished();
         if(finishEvent.getEventType() == OperationEvent.OperationEventType.COMPLETE) {
