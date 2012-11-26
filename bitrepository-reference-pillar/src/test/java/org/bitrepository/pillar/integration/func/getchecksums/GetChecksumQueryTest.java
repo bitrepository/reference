@@ -36,9 +36,10 @@ public class GetChecksumQueryTest extends PillarFunctionTest{
     public void checksumSortingTest() {
         addDescription("Test whether the checksum result is sorted oldest to newest.");
         addFixtureSetup("Ensure at least two files are present on the pillar");
+        pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
-        addStep("Retrieve a list of all checksums.", "Run through the list and verify each element is older or the " +
-            "same age as the folowing element");
+        addStep("Retrieve a list of all checksums.",
+            "Run through the list and verify each element is older or the same age as the folowing element");
         List<ChecksumDataForChecksumSpecTYPE> originalChecksumList = pillarFileManager.getChecksums(null, null);
 
         for (int counter = 0 ; counter < originalChecksumList.size() - 1 ; counter ++) {
@@ -49,7 +50,7 @@ public class GetChecksumQueryTest extends PillarFunctionTest{
         }
     }
 
-        @Test ( groups = {"pillar-integration-test"} )
+    @Test ( groups = {"pillar-integration-test"} )
     public void maxNumberOfResultTest() {
         addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter.");
         addFixtureSetup("Ensure at least two files are present on the pillar");
@@ -70,8 +71,7 @@ public class GetChecksumQueryTest extends PillarFunctionTest{
 
     @Test ( groups = {"pillar-integration-test"} )
     public void minTimeStampTest() {
-        addDescription("Test the pillar support for only retrieving checksums newer that a given time. " +
-            "Note that this test assumes there is at least 2 checksums with different timestamps.");
+        addDescription("Test the pillar support for only retrieving checksums newer that a given time.");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
         addStep("Request default checksums for all files on the pillar",
@@ -111,8 +111,7 @@ public class GetChecksumQueryTest extends PillarFunctionTest{
 
     @Test ( groups = {"pillar-integration-test"} )
     public void maxTimeStampTest() {
-        addDescription("Test the pillar support for only retrieving checksums older that a given time. " +
-            "Note that this test assumes there is at least 2 checksums with different timestamps.");
+        addDescription("Test the pillar support for only retrieving checksums older that a given time.");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
         addStep("Request default checksums for all files on the pillar",

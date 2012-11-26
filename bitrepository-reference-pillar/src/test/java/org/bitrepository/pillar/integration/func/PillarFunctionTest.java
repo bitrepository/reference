@@ -61,6 +61,13 @@ public class PillarFunctionTest extends PillarIntegrationTest {
         alarmReceiver.setFromFilter(pillarFilter);
     }
 
+    @Override
+    protected void teardownMessageBusListeners() {
+        super.teardownMessageBusListeners();
+        messageBus.removeListener(
+            settingsForTestClient.getReceiverDestinationID(), clientReceiver.getMessageListener());
+    }
+
     protected void putDefaultFile() {
         try {
             clientProvider.getPutClient().putFile(DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),

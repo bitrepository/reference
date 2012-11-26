@@ -35,7 +35,7 @@
   </ClientSettings>
   <PillarSettings>
     <PillarID>EmbeddedReferencePillar</PillarID>
-    <FileDir>test-archive</FileDir>
+    <FileDir>target/reference1pillar/test-archive</FileDir>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>
     <MaxAgeForChecksums>3600000</MaxAgeForChecksums>

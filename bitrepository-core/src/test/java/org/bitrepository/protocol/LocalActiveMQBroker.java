@@ -37,6 +37,7 @@ public class LocalActiveMQBroker {
     public LocalActiveMQBroker(MessageBusConfiguration configuration) {
         broker = new BrokerService();
         broker.setPersistent(false);
+        broker.setDataDirectory("target/activemq-data");
         try {
             broker.addConnector(configuration.getURL());
         } catch (Exception ex) {

@@ -30,7 +30,7 @@
   </appender>
 
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <file>bitrepository.log</file>
+    <file>target/bitrepository.log</file>
     <encoder>
       <Pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</Pattern>
     </encoder>
