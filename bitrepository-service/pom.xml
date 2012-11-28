@@ -60,7 +60,7 @@
   <build>
     <resources>
       <resource>
-        <directory>src/main/resources/audittrailContributorDb</directory>
+        <directory>src/main/resources/sql</directory>
         <filtering>true</filtering>
       </resource>
     </resources>
