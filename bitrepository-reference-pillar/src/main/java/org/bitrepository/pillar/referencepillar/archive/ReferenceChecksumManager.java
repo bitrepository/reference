@@ -198,6 +198,7 @@ public class ReferenceChecksumManager {
     }
     
     /**
+<<<<<<< HEAD
      * TODO this should be in the database instead.
      * @param minTimeStamp The minimum date for the timestamp of the extracted file ids entries.
      * @param maxTimeStamp The maximum date for the timestamp of the extracted file ids entries.
@@ -246,6 +247,8 @@ public class ReferenceChecksumManager {
     }
     
     /**
+=======
+>>>>>>> refs/remotes/origin/master
      * Ensures that the cache has an non-deprecated checksum for the given file.
      * @param fileId The id of the file.
      */

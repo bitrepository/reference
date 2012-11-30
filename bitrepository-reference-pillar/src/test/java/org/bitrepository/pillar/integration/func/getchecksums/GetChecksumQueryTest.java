@@ -37,7 +37,7 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
         addDescription("Test whether the checksum result is sorted oldest to newest.");
         addFixtureSetup("Ensure at least two files are present on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
-
+        
         addStep("Retrieve a list of all checksums.", "Run through the list and verify each element is older or the " +
                 "same age as the folowing element");
         List<ChecksumDataForChecksumSpecTYPE> originalChecksumList = pillarFileManager.getChecksums(null, null);
