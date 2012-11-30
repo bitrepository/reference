@@ -24,6 +24,8 @@ package org.bitrepository.pillar.referencepillar.archive;
 import java.io.File;
 import java.util.Date;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -32,6 +34,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
+import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -174,6 +177,21 @@ public class ReferenceChecksumManager {
         res.setChecksumValue(Base16Utils.encodeBase16(csEntry.getChecksum()));
         
         return res;
+    }
+    
+    /**
+     * Ensures, that all files are up to date, and retrieves the requested entries.
+     * @param minTimeStamp The minimum date for the timestamp of the extracted checksum entries.
+     * @param maxTimeStamp The maximum date for the timestamp of the extracted checksum entries.
+     * @param maxNumberOfResults The maximum number of results.
+     * @return The checksum entries from the store.
+     */
+    public ExtractedChecksumResultSet getEntries(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
+            Long maxNumberOfResults) {
+        for(String fileId : archive.getAllFileIds()) {
+            ensureChecksumState(fileId);
+        }
+        return cache.getEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults);
     }
     
     /**

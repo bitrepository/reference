@@ -30,7 +30,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -163,19 +162,14 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
         if(message.getFileIDs().isSetFileID()) {
             ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
             ChecksumEntry entry = getCache().getEntry(message.getFileIDs().getFileID());
-            res.insertChecksumEntry(entry);
+            res.insertChecksumEntry(createChecksumDataForChecksumSpecTYPE(entry));
             return res;
         } else {
             Long maxResults = null;
             if(message.getMaxNumberOfResults() != null) {
                 maxResults = message.getMaxNumberOfResults().longValue();
             }
-            try {
-                return getCache().getEntries(message.getMinTimestamp(), message.getMaxTimestamp(), maxResults);
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                throw e;
-            }
+            return getCache().getEntries(message.getMinTimestamp(), message.getMaxTimestamp(), maxResults);
         }
     }
     
@@ -207,12 +201,8 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
      */
     private ResultingChecksums performPostProcessing(GetChecksumsRequest message, 
             ExtractedChecksumResultSet extractedChecksums) throws RequestHandlerException {
-        ResultingChecksums res = new ResultingChecksums();
-        
-        List<ChecksumDataForChecksumSpecTYPE> checksumList = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
-        for(ChecksumEntry e : extractedChecksums.getEntries()) {
-            checksumList.add(createChecksumDataForChecksumSpecTYPE(e));
-        }
+        ResultingChecksums res = new ResultingChecksums();        
+        List<ChecksumDataForChecksumSpecTYPE> checksumList = extractedChecksums.getEntries();
         
         String url = message.getResultAddress();
         if(url != null) {

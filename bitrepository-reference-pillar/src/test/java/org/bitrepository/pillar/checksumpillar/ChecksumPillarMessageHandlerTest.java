@@ -41,7 +41,6 @@ public class ChecksumPillarMessageHandlerTest extends ChecksumPillarTest {
             Assert.fail("Should throw an IllegalArgumentException here.");
         } catch (IllegalArgumentException e) {
             // expected
-            System.err.println(e);
         }
         
         addStep("Test with invalid checksum type", "Should be invalid and throw an exception.");
@@ -52,7 +51,6 @@ public class ChecksumPillarMessageHandlerTest extends ChecksumPillarTest {
             Assert.fail("Should throw an IllegalArgumentException here.");
         } catch (IllegalArgumentException e) {
             // expected
-            System.err.println(e);
         }
 
         addStep("Check with valid checksum type (MD5)", "Should create message handler.");
