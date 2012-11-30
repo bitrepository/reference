@@ -141,37 +141,6 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
     }
     
     /**
-     * Finds the requested FileIDs and either uploads them or puts them into the final response depending on 
-     * the request. 
-     * @param message The message requesting which fileids to be found.
-     * @param extractedFileIDs The extracted file ids.
-     * @return The ResultingFileIDs with either the list of fileids or the final address for where the 
-     * list of fileids is uploaded.
-     */
-    private ResultingFileIDs performGetFileIDsOperation(GetFileIDsRequest message, 
-            ExtractedFileIDsResultSet extractedFileIDs) throws RequestHandlerException {
-        ResultingFileIDs res = new ResultingFileIDs();
-        
-        String resultingAddress = message.getResultAddress();
-        if(resultingAddress == null) {
-            res.setFileIDsData(extractedFileIDs.getEntries());
-        } else {
-            try {
-                File outputFile = makeTemporaryChecksumFile(message, extractedFileIDs.getEntries());
-                uploadFile(outputFile, resultingAddress);
-                res.setResultAddress(resultingAddress);
-            } catch (Exception e) {
-                ResponseInfo ir = new ResponseInfo();
-                ir.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
-                ir.setResponseText(e.getMessage());
-                throw new InvalidMessageException(ir, e);
-            }
-        }
-        
-        return res;
-    }
-    
-    /**
      * Retrieves the requested FileIDs. Depending on which operation is requested, it will call the appropriate method.
      * 
      * @param request The requested for extracting the file ids.
@@ -194,6 +163,37 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
     }
     
     /**
+     * Finds the requested FileIDs and either uploads them or puts them into the final response depending on 
+     * the request. 
+     * @param message The message requesting which fileids to be found.
+     * @param extractedFileIDs The extracted file ids.
+     * @return The ResultingFileIDs with either the list of fileids or the final address for where the 
+     * list of fileids is uploaded.
+     */
+    private ResultingFileIDs performGetFileIDsOperation(GetFileIDsRequest message, 
+            ExtractedFileIDsResultSet extractedFileIDs) throws RequestHandlerException {
+        ResultingFileIDs res = new ResultingFileIDs();
+        
+        String resultingAddress = message.getResultAddress();
+        if(resultingAddress == null) {
+            res.setFileIDsData(extractedFileIDs.getEntries());
+        } else {
+            try {
+                File outputFile = makeTemporaryResultFile(message, extractedFileIDs.getEntries());
+                uploadFile(outputFile, resultingAddress);
+                res.setResultAddress(resultingAddress);
+            } catch (Exception e) {
+                ResponseInfo ir = new ResponseInfo();
+                ir.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
+                ir.setResponseText(e.getMessage());
+                throw new InvalidMessageException(ir, e);
+            }
+        }
+        
+        return res;
+    }
+    
+    /**
      * Method for creating a file containing the list of calculated checksums.
      * 
      * @param message The GetChecksumMessage requesting the checksum calculations.
@@ -202,7 +202,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
      * @throws IOException If a problem occurs during accessing or handling the data.
      * @throws JAXBException If the resulting structure cannot be serialized or if it is invalid.
      */
-    private File makeTemporaryChecksumFile(GetFileIDsRequest message, FileIDsData fileIDs) 
+    private File makeTemporaryResultFile(GetFileIDsRequest message, FileIDsData fileIDs) 
             throws IOException, JAXBException {
         // Create the temporary file.
         File checksumResultFile = File.createTempFile(message.getCorrelationID(), new Date().getTime() + ".id");

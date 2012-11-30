@@ -2,6 +2,8 @@ package org.bitrepository.pillar.cache.database;
 
 import java.util.Date;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
@@ -31,9 +33,18 @@ public class ExtractedFileIDsResultSet {
      * @param lastModified The last modified date for the file.
      */
     public void insertFileID(String fileID, Date lastModified) {
+        insertFileID(fileID, CalendarUtils.getXmlGregorianCalendar(lastModified));
+    }
+    
+    /**
+     * Adds a file id to this result set. 
+     * @param fileID The id of the file to add.
+     * @param lastModified The last modified date for the file.
+     */
+    public void insertFileID(String fileID, XMLGregorianCalendar lastModified) {
         FileIDsDataItem item = new FileIDsDataItem();
         item.setFileID(fileID);
-        item.setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(lastModified));
+        item.setLastModificationTime(lastModified);
         results.getFileIDsDataItems().getFileIDsDataItem().add(item);
     }
     

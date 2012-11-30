@@ -87,7 +87,7 @@ public class PillarFileManager {
      */
     public void ensureNumberOfFilesOnPillar(int desiredNumberOfFiles, String newFileIDPrefix) {
         if (desiredNumberOfFiles >= knownNumberOfFilesOnPillar) {
-            knownNumberOfFilesOnPillar = getFileIDs().size();
+            knownNumberOfFilesOnPillar = getFileIDs(null).size();
         }
 
         if (desiredNumberOfFiles >= knownNumberOfFilesOnPillar) {
@@ -112,11 +112,14 @@ public class PillarFileManager {
         }
     }
 
-    public List<FileIDsDataItem> getFileIDs() {
-        ContributorQuery singlePillarQuery = new ContributorQuery(pillarID, null, null, null);
+    public List<FileIDsDataItem> getFileIDs(ContributorQuery query) {
+        if(query == null) {
+            query = new ContributorQuery(pillarID, null, null, null);
+        }
+        
         try {
             List<ContributorEvent> result = clientProvider.getGetFileIDsClient().
-                getGetFileIDs(new ContributorQuery[]{singlePillarQuery}, null, null, null);
+                getGetFileIDs(new ContributorQuery[]{query}, null, null, null);
             FileIDsCompletePillarEvent pillarResult = (FileIDsCompletePillarEvent)result.get(0);
             return pillarResult.getFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem();
         } catch (Exception e) {

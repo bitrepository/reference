@@ -161,8 +161,9 @@ public class ChecksumExtractor {
                 hasRestrictions = true;
             }
             args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp));
-            sql.append("" + CS_DATE + " < ? ");
+            sql.append("" + CS_DATE + " <= ? ");
         }
+        sql.append(" ORDER BY " + CS_DATE + " ASC ");
         
         ExtractedFileIDsResultSet results = new ExtractedFileIDsResultSet();
         try {
@@ -177,6 +178,7 @@ public class ChecksumExtractor {
                 int i = 0;
                 while(res.next() && (maxNumberOfResults == null || i < maxNumberOfResults)) {
                     results.insertFileID(res.getString(1), res.getTimestamp(2));
+                    i++;
                 }
                 
                 if(maxNumberOfResults != null && i >= maxNumberOfResults) {
@@ -223,7 +225,7 @@ public class ChecksumExtractor {
                 hasRestrictions = true;
             }
             args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp));
-            sql.append("" + CS_DATE + " > ? ");
+            sql.append("" + CS_DATE + " >= ? ");
         }
         if(maxTimeStamp != null) {
             if(!hasRestrictions) {
@@ -231,8 +233,10 @@ public class ChecksumExtractor {
                 hasRestrictions = true;
             }
             args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp));
-            sql.append("" + CS_DATE + " < ? ");
+            sql.append("" + CS_DATE + " <= ? ");
         }
+        
+        sql.append(" ORDER BY " + CS_DATE + " ASC ");
         
         ExtractedChecksumResultSet results = new ExtractedChecksumResultSet();
         try {
@@ -247,6 +251,7 @@ public class ChecksumExtractor {
                 int i = 0;
                 while(res.next() && (maxNumberOfResults == null || i < maxNumberOfResults)) {
                     results.insertChecksumEntry(extractChecksumEntry(res));
+                    i++;
                 }
                 
                 if(maxNumberOfResults != null && i >= maxNumberOfResults) {

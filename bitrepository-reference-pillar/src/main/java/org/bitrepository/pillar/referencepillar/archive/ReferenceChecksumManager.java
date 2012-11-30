@@ -23,6 +23,10 @@ package org.bitrepository.pillar.referencepillar.archive;
 
 import java.io.File;
 import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
+
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
@@ -32,6 +36,8 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
+import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
+import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -173,6 +179,69 @@ public class ReferenceChecksumManager {
         res.setFileID(csEntry.getFileId());
         res.setChecksumValue(Base16Utils.encodeBase16(csEntry.getChecksum()));
         
+        return res;
+    }
+    
+    /**
+     * Ensures, that all files are up to date, and retrieves the requested entries.
+     * @param minTimeStamp The minimum date for the timestamp of the extracted checksum entries.
+     * @param maxTimeStamp The maximum date for the timestamp of the extracted checksum entries.
+     * @param maxNumberOfResults The maximum number of results.
+     * @return The checksum entries from the store.
+     */
+    public ExtractedChecksumResultSet getEntries(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
+            Long maxNumberOfResults) {
+        for(String fileId : archive.getAllFileIds()) {
+            ensureChecksumState(fileId);
+        }
+        return cache.getEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults);
+    }
+    
+    /**
+     * TODO this should be in the database instead.
+     * @param minTimeStamp The minimum date for the timestamp of the extracted file ids entries.
+     * @param maxTimeStamp The maximum date for the timestamp of the extracted file ids entries.
+     * @param maxNumberOfResults The maximum number of results.
+     * @return The requested file ids.
+     */
+    public ExtractedFileIDsResultSet getFileIds(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
+            Long maxNumberOfResults) {
+        ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
+        
+        Long minTime = 0L;
+        if(minTimeStamp != null) {
+            minTime = CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp).getTime();
+        }
+        Long maxTime = 0L;
+        if(maxTimeStamp != null) {
+            maxTime = CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp).getTime();
+        }
+        
+        // Map between lastModifiedDate and fileID.
+        ConcurrentSkipListMap<Long, String> sortedDateFileIDMap = new ConcurrentSkipListMap<Long, String>();
+        for(String fileId : archive.getAllFileIds()) {
+            Long lastModified = archive.getFile(fileId).lastModified();
+            if((minTimeStamp == null || minTime <= lastModified) &&
+                    (maxTimeStamp == null || maxTime >= lastModified)) {
+                sortedDateFileIDMap.put(lastModified, fileId);
+            }
+        }
+        
+        int i = 0;
+        Map.Entry<Long, String> entry;
+        while((entry = sortedDateFileIDMap.pollFirstEntry()) != null && 
+                (maxNumberOfResults == null || i < maxNumberOfResults)) {
+            res.insertFileID(entry.getValue(), new Date(entry.getKey()));
+            i++;
+        }
+        
+        if(maxNumberOfResults != null && i >= maxNumberOfResults) {
+            res.reportMoreEntriesFound();
+        }
+        
+        System.err.println(res.getEntries());
+        System.err.println(sortedDateFileIDMap);
+        System.err.println(archive.getAllFileIds());
         return res;
     }
     
