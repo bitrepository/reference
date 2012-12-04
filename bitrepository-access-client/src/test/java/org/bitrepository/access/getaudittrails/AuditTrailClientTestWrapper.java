@@ -39,7 +39,9 @@ public class AuditTrailClientTestWrapper implements AuditTrailClient {
     public void getAuditTrails(AuditTrailQuery[] componentQueries, String fileID, String urlForResult,
             EventHandler eventHandler, String auditTrailInformation) {
         testEventManager.addStimuli(
-                "Calling getAuditTrails(" + Arrays.asList(componentQueries) + ", " + fileID + ", " +
+                "Calling getAuditTrails(" +
+                        (componentQueries == null ? "null" : Arrays.asList(componentQueries)) +
+                        ", " + fileID + ", " +
                         "" + urlForResult + ")");
         auditTrailClient.getAuditTrails(componentQueries, fileID, urlForResult, eventHandler, auditTrailInformation);
     }
