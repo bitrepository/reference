@@ -3,6 +3,9 @@ package org.bitrepository.pillar.cache.database;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
+import org.bitrepository.common.utils.Base16Utils;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
 
 /**
@@ -10,7 +13,7 @@ import org.bitrepository.pillar.cache.ChecksumEntry;
  */
 public class ExtractedChecksumResultSet {
     /** The list of checksum entries.*/
-    protected final List<ChecksumEntry> entries;
+    protected final List<ChecksumDataForChecksumSpecTYPE> entries;
     /** Whether more results has been found.*/
     protected boolean moreEntriesReported;
     
@@ -18,7 +21,7 @@ public class ExtractedChecksumResultSet {
      * Constructor.
      */
     public ExtractedChecksumResultSet() {
-        entries = new ArrayList<ChecksumEntry>();
+        entries = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         moreEntriesReported = false;
     }
     
@@ -26,15 +29,27 @@ public class ExtractedChecksumResultSet {
      * Adds an entry to this result set. 
      * @param entry The entry to add.
      */
-    public void insertChecksumEntry(ChecksumEntry entry) {
+    public void insertChecksumEntry(ChecksumDataForChecksumSpecTYPE entry) {
         entries.add(entry);
+    }
+    
+    /**
+     * Adds an entry to this result set. 
+     * @param entry The entry to add.
+     */
+    public void insertChecksumEntry(ChecksumEntry entry) {
+        ChecksumDataForChecksumSpecTYPE res = new ChecksumDataForChecksumSpecTYPE();
+        res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
+        res.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
+        res.setFileID(entry.getFileId());
+        entries.add(res);
     }
     
     /**
      * @return A list with all the reported entries.
      */
-    public List<ChecksumEntry> getEntries() {
-        return new ArrayList<ChecksumEntry>(entries);
+    public List<ChecksumDataForChecksumSpecTYPE> getEntries() {
+        return new ArrayList<ChecksumDataForChecksumSpecTYPE>(entries);
     }
     
     /**

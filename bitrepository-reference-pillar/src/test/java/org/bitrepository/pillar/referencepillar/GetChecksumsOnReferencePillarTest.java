@@ -109,7 +109,7 @@ public class GetChecksumsOnReferencePillarTest extends ReferencePillarTest {
                 EMPTY_FILE_CHECKSUM);
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        Assert.assertEquals(audits.getCallsForAuditEvent(), 1, "Should deliver one audit for calculating the checksum");
+        Assert.assertEquals(audits.getCallsForAuditEvent(), 0, "Should not deliver any audit for calculating the checksum");
     }
 
     @Test( groups = {"regressiontest", "pillartest"})

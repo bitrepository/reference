@@ -23,8 +23,12 @@ package org.bitrepository.pillar.cache;
 
 import java.util.Date;
 import java.util.List;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.common.utils.Base16Utils;
+import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
 import org.bitrepository.pillar.common.ChecksumDatabaseCreator;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
@@ -38,7 +42,7 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
     protected Settings settings;
 
     private static final String DEFAULT_FILE_ID = "TEST-FILE";
-    private static final String DEFAULT_CHECKSUM = "TEST-checksum";
+    private static final String DEFAULT_CHECKSUM = "abcdef0110fedcba";
     private static final Date DEFAULT_DATE = new Date();
 
     
@@ -75,11 +79,12 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         Assert.assertEquals(entry.getCalculationDate(), DEFAULT_DATE);
         
         addStep("Extract all entries", "Should only be the one default.");
-        List<ChecksumEntry> entries = cache.getEntries(null, null, null).getEntries();
+        List<ChecksumDataForChecksumSpecTYPE> entries = cache.getEntries(null, null, null).getEntries();
         Assert.assertEquals(entries.size(), 1);
-        Assert.assertEquals(entries.get(0).getFileId(), DEFAULT_FILE_ID);
-        Assert.assertEquals(entries.get(0).getChecksum(), DEFAULT_CHECKSUM);
-        Assert.assertEquals(entries.get(0).getCalculationDate(), DEFAULT_DATE);
+        Assert.assertEquals(entries.get(0).getFileID(), DEFAULT_FILE_ID);
+        Assert.assertEquals(Base16Utils.decodeBase16(entries.get(0).getChecksumValue()), DEFAULT_CHECKSUM);
+        Assert.assertEquals(CalendarUtils.convertFromXMLGregorianCalendar(entries.get(0).getCalculationTimestamp()),
+                DEFAULT_DATE);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -157,8 +162,53 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         }
     }
 
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void testSpecifiedEntryExtraction() {
+        addDescription("Test that specific entries can be extracted. Has two entries in the database: "
+                + "one for the current timestamp and one for the epoch.");
+        addStep("Instantiate database with appropriate data.", "");
+        Date beforeTest = new Date(System.currentTimeMillis() - 100000);
+        String oldFile = "VeryOldFile";
+        ChecksumDAO cache = getCacheWithData();
+        cache.insertChecksumCalculation(oldFile, DEFAULT_CHECKSUM, new Date(0));
+        
+        addStep("Extract with out restrictions", "Both entries.");
+        ExtractedChecksumResultSet extractedResults = cache.getEntries(null, null, null);
+        Assert.assertEquals(extractedResults.getEntries().size(), 2);
+        
+        addStep("Extract with a maximum of 1 entry", "The oldest entry");
+        extractedResults = cache.getEntries(null, null, 1L);
+        Assert.assertEquals(extractedResults.getEntries().size(), 1);
+        ChecksumDataForChecksumSpecTYPE dataEntry = extractedResults.getEntries().get(0);
+        Assert.assertEquals(CalendarUtils.convertFromXMLGregorianCalendar(dataEntry.getCalculationTimestamp()).getTime(), 0);
+        Assert.assertEquals(dataEntry.getFileID(), oldFile);
+        
+        addStep("Extract all dates older than this tests instantiation", "The oldest entry");
+        extractedResults = cache.getEntries(null, CalendarUtils.getXmlGregorianCalendar(beforeTest), null);
+        Assert.assertEquals(extractedResults.getEntries().size(), 1);
+        dataEntry = extractedResults.getEntries().get(0);
+        Assert.assertEquals(CalendarUtils.convertFromXMLGregorianCalendar(dataEntry.getCalculationTimestamp()).getTime(), 0);
+        Assert.assertEquals(dataEntry.getFileID(), oldFile);
+        
+        addStep("Extract all dates newer than this tests instantiation", "The default entry");
+        extractedResults = cache.getEntries(CalendarUtils.getXmlGregorianCalendar(beforeTest), null, null);
+        Assert.assertEquals(extractedResults.getEntries().size(), 1);
+        dataEntry = extractedResults.getEntries().get(0);
+        Assert.assertEquals(CalendarUtils.convertFromXMLGregorianCalendar(dataEntry.getCalculationTimestamp()), 
+                DEFAULT_DATE);
+        Assert.assertEquals(dataEntry.getFileID(), DEFAULT_FILE_ID);
+        
+        addStep("Extract all dates older than the newest instance", "Both entries");
+        extractedResults = cache.getEntries(null, CalendarUtils.getXmlGregorianCalendar(DEFAULT_DATE), null);
+        Assert.assertEquals(extractedResults.getEntries().size(), 2);
+        
+        addStep("Extract all dates newer than the oldest instantiation", "Both entries");
+        extractedResults = cache.getEntries(CalendarUtils.getEpoch(), null, null);
+        Assert.assertEquals(extractedResults.getEntries().size(), 2);
+    }
+    
     private ChecksumDAO getCacheWithData() {
-        ChecksumDAO res = new ChecksumDAO(settings);;
+        ChecksumDAO res = new ChecksumDAO(settings);
         res.insertChecksumCalculation(DEFAULT_FILE_ID, DEFAULT_CHECKSUM, DEFAULT_DATE);
         return res;
     }

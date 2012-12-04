@@ -32,6 +32,7 @@ import org.bitrepository.protocol.fileexchange.HttpServerConnector;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 
+@SuppressWarnings("unused")
 public class CollectionTestHelper {
     private final Settings settings;
     private final HttpServerConnector httpServer;
