@@ -21,18 +21,19 @@
  */
 package org.bitrepository.alarm.store;
 
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TABLE;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_TABLE;
-
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
-import org.bitrepository.service.database.DBConnector;
-import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.DatabaseTestUtils;
 import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseUtils;
+import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -40,11 +41,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.io.File;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TABLE;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_TABLE;
 
 public class AlarmDatabaseTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
@@ -60,17 +58,12 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("AlarmDatabaseUnderTest");
-        settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase().setDatabaseURL(DATABASE_URL);
-        
-        addStep("Initialise the database", "Should be unpacked from a jar-file.");
-        File dbFile = new File("src/test/resources/alarmservicedb.jar");
-        Assert.assertTrue(dbFile.isFile(), "The database file should exist");
-        
-        dbDir = FileUtils.retrieveDirectory(DATABASE_DIRECTORY);
-        FileUtils.retrieveSubDirectory(dbDir, DATABASE_NAME);
-        
-        Connection dbCon = DatabaseTestUtils.takeDatabase(dbFile, DATABASE_NAME, dbDir);
-        dbCon.close();
+
+        DerbyDatabaseDestroyer.deleteDatabase(
+                settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
+
+        AlarmDatabaseCreator integrityDatabaseCreator = new AlarmDatabaseCreator();
+        integrityDatabaseCreator.createAlarmDatabase(settings, null);
     }
     
     @AfterMethod (alwaysRun = true)

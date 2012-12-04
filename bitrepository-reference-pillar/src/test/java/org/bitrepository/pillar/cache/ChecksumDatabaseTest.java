@@ -21,37 +21,22 @@
  */
 package org.bitrepository.pillar.cache;
 
-import static org.bitrepository.pillar.cache.database.DatabaseConstants.CHECKSUM_TABLE;
-
-import java.io.File;
-import java.sql.Connection;
 import java.util.Date;
 import java.util.List;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.common.utils.DatabaseTestUtils;
-import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
-import org.bitrepository.service.database.DBConnector;
-import org.bitrepository.service.database.DatabaseUtils;
+import org.bitrepository.pillar.common.ChecksumDatabaseCreator;
+import org.bitrepository.service.database.DerbyDatabaseDestroyer;
+import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class ChecksumDatabaseTest extends ExtendedTestCase {
     protected Settings settings;
 
-    protected final String DATABASE_NAME = "checksumdb";
-    protected final String DATABASE_DIRECTORY = "test-database";
-    protected final String DATABASE_URL = "jdbc:derby:" + DATABASE_DIRECTORY + "/" + DATABASE_NAME;
-    
-    private File dbDir = null;
-    private Connection dbCon;
-    
     private static final String DEFAULT_FILE_ID = "TEST-FILE";
     private static final String DEFAULT_CHECKSUM = "TEST-checksum";
     private static final Date DEFAULT_DATE = new Date();
@@ -60,32 +45,13 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("ReferencePillarTest");
-        
-        File dbFile = new File("src/test/resources/checksumdb.jar");
-        Assert.assertTrue(dbFile.isFile(), "The database file should exist");
-        
-        dbDir = FileUtils.retrieveDirectory(DATABASE_DIRECTORY);
-        FileUtils.retrieveSubDirectory(dbDir, DATABASE_NAME);
-        
-        dbCon = DatabaseTestUtils.takeDatabase(dbFile, DATABASE_NAME, dbDir);
-        dbCon.close();
-        settings.getReferenceSettings().getPillarSettings().getChecksumDatabase().setDatabaseURL(DATABASE_URL);
-    }
-    
-    @AfterMethod (alwaysRun = true)
-    public void clearDatabase() throws Exception {
-        DBConnector connector = new DBConnector(settings.getReferenceSettings().getPillarSettings().getChecksumDatabase());
-        DatabaseUtils.executeStatement(connector, "DELETE FROM " + CHECKSUM_TABLE, new Object[0]);
-    }
 
-    @AfterClass (alwaysRun = true)
-    public void cleanup() throws Exception {
-        if(dbCon != null) {
-            dbCon.close();
-        }
-        if(dbDir != null) {
-            FileUtils.delete(dbDir);
-        }
+        DatabaseSpecifics checksumDB =
+                settings.getReferenceSettings().getPillarSettings().getChecksumDatabase();
+        DerbyDatabaseDestroyer.deleteDatabase(checksumDB);
+
+        ChecksumDatabaseCreator checksumDatabaseCreator = new ChecksumDatabaseCreator();
+        checksumDatabaseCreator.createChecksumDatabase(settings, null);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})

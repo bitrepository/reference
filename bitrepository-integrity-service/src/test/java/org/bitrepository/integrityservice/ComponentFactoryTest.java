@@ -25,11 +25,9 @@
 package org.bitrepository.integrityservice;
 
 import java.io.File;
-import java.sql.Connection;
-
 import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.common.utils.DatabaseTestUtils;
 import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.integrityservice.audittrail.IntegrityAuditTrailDatabaseCreator;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
@@ -41,8 +39,10 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.service.scheduler.ServiceScheduler;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
+import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
@@ -135,19 +135,10 @@ public class ComponentFactoryTest extends IntegrityDatabaseTestCase {
     }
     
     private void instantiateAuditContributorDatabase() throws Exception {
-        String DATABASE_NAME = "auditcontributerdb";
-        String DATABASE_DIRECTORY = "test-data";
-        String DATABASE_URL = "jdbc:derby:" + DATABASE_DIRECTORY + "/" + DATABASE_NAME;
-        settings.getReferenceSettings().getIntegrityServiceSettings().getAuditTrailContributerDatabase().setDatabaseURL(DATABASE_URL);
-        
-        addStep("Initialise the database", "Should be unpacked from a jar-file.");
-        File dbFile = new File("../bitrepository-service/src/test/resources/auditcontributerdb.jar");
-        Assert.assertTrue(dbFile.isFile(), "The database file should exist");
-        
-        auditDir = FileUtils.retrieveDirectory(DATABASE_DIRECTORY);
-        FileUtils.retrieveSubDirectory(auditDir, DATABASE_NAME);
-        
-        Connection dbCon = DatabaseTestUtils.takeDatabase(dbFile, DATABASE_NAME, auditDir);
-        dbCon.close();
+        DatabaseSpecifics auditTrailDB =
+                settings.getReferenceSettings().getIntegrityServiceSettings().getAuditTrailContributerDatabase();
+        DerbyDatabaseDestroyer.deleteDatabase(auditTrailDB);
+        IntegrityAuditTrailDatabaseCreator pillarAuditTrailDatabaseCreator = new IntegrityAuditTrailDatabaseCreator();
+        pillarAuditTrailDatabaseCreator.createIntegrityAuditTrailDatabase(settings, null);
     }
 }

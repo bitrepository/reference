@@ -21,55 +21,34 @@
  */
 package org.bitrepository.service.audit;
 
-import java.io.File;
-import java.sql.Connection;
-import java.util.Date;
-
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.common.utils.DatabaseTestUtils;
-import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseCreator;
+import org.bitrepository.service.database.DerbyDatabaseDestroyer;
+import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class AuditDatabaseTest extends ExtendedTestCase {
-    /** The settings for the tests. Should be instantiated in the setup.*/
-    Settings settings;
-    String fileId = "TEST-FILE-ID-" + new Date().getTime();
-    String component1 = "ACTOR-1";
-    String component2 = "ACTOR-2";
-    String DATABASE_NAME = "auditcontributerdb";
-    String DATABASE_DIRECTORY = "test-data";
-    String DATABASE_URL = "jdbc:derby:" + DATABASE_DIRECTORY + "/" + DATABASE_NAME;
-    File dbDir = null;
+public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
+    private Settings settings;
+    private DatabaseSpecifics databaseSpecifics;
 
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
-        settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase().setDatabaseURL(DATABASE_URL);
-        
-        addStep("Initialise the database", "Should be unpacked from a jar-file.");
-        File dbFile = new File("src/test/resources/auditcontributerdb.jar");
-        Assert.assertTrue(dbFile.isFile(), "The database file should exist");
-        
-        dbDir = FileUtils.retrieveDirectory(DATABASE_DIRECTORY);
-        FileUtils.retrieveSubDirectory(dbDir, DATABASE_NAME);
-        
-        Connection dbCon = DatabaseTestUtils.takeDatabase(dbFile, DATABASE_NAME, dbDir);
-        dbCon.close();
-    }
 
-    @AfterClass (alwaysRun = true)
-    public void shutdown() throws Exception {
-        addStep("Cleanup after test.", "Should remove directory with test material.");
-        if(dbDir != null) {
-            FileUtils.delete(dbDir);
-        }
+        databaseSpecifics = new DatabaseSpecifics();
+        databaseSpecifics.setDriverClass("org.apache.derby.jdbc.EmbeddedDriver");
+        databaseSpecifics.setDatabaseURL("jdbc:derby:target/test/auditcontributerdb");
+
+        DerbyDatabaseDestroyer.deleteDatabase(databaseSpecifics);
+
+        TestAuditTrailContributorDBCreator dbCreator = new TestAuditTrailContributorDBCreator();
+        dbCreator.createAuditTrailContributorDatabase(databaseSpecifics);
     }
 
     @Test(groups = {"regressiontest", "databasetest"})
@@ -81,7 +60,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         String actor = "ACTOR";
         String info = "Adding a info";
         String auditTrail = "AuditTrail";
-        DBConnector dbConnector = new DBConnector(settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase());
+        DBConnector dbConnector = new DBConnector(databaseSpecifics);
         AuditTrailContributerDAO daba = new AuditTrailContributerDAO(settings, dbConnector);
         
         addStep("Populate the database.", "Should be inserted into database.");
@@ -126,5 +105,13 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().size(), 5);
         
         dbConnector.destroy();
+    }
+
+    private class TestAuditTrailContributorDBCreator extends DatabaseCreator {
+        public static final String DEFAULT_AUDIT_TRAIL_DB_SCRIPT = "sql/derby/auditContributorDBCreation.sql";
+
+        public void createAuditTrailContributorDatabase(DatabaseSpecifics databaseSpecifics) {
+            createDatabase(databaseSpecifics, DEFAULT_AUDIT_TRAIL_DB_SCRIPT);
+        }
     }
 }

@@ -23,14 +23,14 @@ package org.bitrepository.integrityservice;
 
 import java.io.File;
 import java.sql.Connection;
-import org.bitrepository.service.database.DBConnector;
-import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.common.utils.DatabaseTestUtils;
 import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.integrityservice.cache.database.IntegrityDatabaseCreator;
 import org.bitrepository.protocol.IntegrationTest;
-import org.testng.Assert;
+import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseUtils;
+import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -52,16 +52,12 @@ public class IntegrityDatabaseTestCase extends IntegrationTest {
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
-        
-        File dbFile = new File("src/test/resources/integritydb.jar");
-        Assert.assertTrue(dbFile.isFile(), "The database file should exist");
-        
-        dbDir = FileUtils.retrieveDirectory(DATABASE_DIRECTORY);
-        FileUtils.retrieveSubDirectory(dbDir, DATABASE_NAME);
-        
-        dbCon = DatabaseTestUtils.takeDatabase(dbFile, DATABASE_NAME, dbDir);
-        dbCon.close();
-        settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase().setDatabaseURL(DATABASE_URL);
+
+        DerbyDatabaseDestroyer.deleteDatabase(
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
+
+        IntegrityDatabaseCreator integrityDatabaseCreator = new IntegrityDatabaseCreator();
+        integrityDatabaseCreator.createIntegrityDatabase(settings, null);
     }
     
     @AfterMethod (alwaysRun = true)

@@ -33,16 +33,15 @@ public class EmbeddedReferencePillar implements LifeCycledService {
     private final ReferencePillar pillar;
 
     public EmbeddedReferencePillar(Settings pillarSettings) {
-        ReferencePillarDerbyDBTestUtils.createEmptyDatabases(pillarSettings);
+        ReferencePillarDerbyDBTestUtils dbUtils = new ReferencePillarDerbyDBTestUtils(pillarSettings);
+        dbUtils.createEmptyDatabases();
         MessageBus messageBus =
                 ProtocolComponentFactory.getInstance().getMessageBus(pillarSettings, new DummySecurityManager());
         pillar = new ReferencePillar(messageBus, pillarSettings);
     }
 
     @Override
-    public void start() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+    public void start() {}
 
     @Override
     public void shutdown() {

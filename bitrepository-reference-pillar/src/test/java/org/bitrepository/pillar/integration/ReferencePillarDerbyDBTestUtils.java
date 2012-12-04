@@ -21,16 +21,10 @@
  */
 package org.bitrepository.pillar.integration;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.sql.Connection;
-import java.sql.DriverManager;
-
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.service.database.SqlScriptRunner;
+import org.bitrepository.pillar.common.PillarAuditTrailDatabaseCreator;
+import org.bitrepository.pillar.common.ChecksumDatabaseCreator;
+import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 
 /**
@@ -38,86 +32,31 @@ import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
  * creating and upgrading the databases.
  */
 public class ReferencePillarDerbyDBTestUtils {
-    public static String AUDIT_TRAIL_DB_SCRIPT = "auditContributerDB.sql";
-    public static String CHECKSUM_DB_SCRIPT = "checksumDB.sql";
+    private final Settings pillarSettings;
 
-    /** Prevent instantiation this util class */
-    private ReferencePillarDerbyDBTestUtils() {}
+    public ReferencePillarDerbyDBTestUtils(Settings pillarSettings) {
+        this.pillarSettings = pillarSettings;
+    }
 
     /**
-     * Creates the Derby databses needed by the reference pillar,
+     * Creates the Derby databases needed by the reference pillar,
      * as specified in the settings.
      *
      * Will also remove existing databases.
      */
-    public static void createEmptyDatabases(Settings settings) {
+    public void createEmptyDatabases() {
         DatabaseSpecifics auditTrailDB =
-                settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase();
-        deleteDatabase(auditTrailDB);
-        createDatabase(auditTrailDB, AUDIT_TRAIL_DB_SCRIPT);
+            pillarSettings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase();
+        DerbyDatabaseDestroyer.deleteDatabase(auditTrailDB);
+        PillarAuditTrailDatabaseCreator pillarAuditTrailDatabaseCreator =
+                new PillarAuditTrailDatabaseCreator();
+        pillarAuditTrailDatabaseCreator.createAuditTrailContributorDatabase(pillarSettings, null);
 
         DatabaseSpecifics checksumDB =
-                settings.getReferenceSettings().getPillarSettings().getChecksumDatabase();
-        deleteDatabase(checksumDB);
-        createDatabase(checksumDB, CHECKSUM_DB_SCRIPT);
-    }
+            pillarSettings.getReferenceSettings().getPillarSettings().getChecksumDatabase();
+        DerbyDatabaseDestroyer.deleteDatabase(checksumDB);
 
-    /**
-     * Attempts to find a script with the indicated name in the classpath and run it.
-     * @param scriptName The name of the script in the classpath.
-     */
-    private static void runScript(DatabaseSpecifics databaseSpecifics, String scriptName) throws Exception {
-        Connection connection = getEmbeddedDBConnection(databaseSpecifics);
-        SqlScriptRunner scriptRunner = new SqlScriptRunner(connection, true, true);
-        scriptRunner.runScript(getReaderForFile(scriptName));
-    }
-
-    /**
-     * Creates a reader for the file found at indicated location.
-     */
-    private static Reader getReaderForFile(String filePath) throws java.io.IOException {
-        return new BufferedReader(
-                new InputStreamReader(ReferencePillarDerbyDBTestUtils.class.getClassLoader().getResourceAsStream(filePath)));
-    }
-
-    /**
-     * Appends the specified database url with <code>;create=true</code> to allow creation of the database.
-     */
-    public static DatabaseSpecifics updateDatabaseSpecificsForDBCreation(DatabaseSpecifics databaseSpecifics) {
-        DatabaseSpecifics newDatabaseSpecifics = new DatabaseSpecifics();
-        newDatabaseSpecifics.setDriverClass(databaseSpecifics.getDriverClass());
-        newDatabaseSpecifics.setDatabaseURL(databaseSpecifics.getDatabaseURL() + ";create=true");
-        newDatabaseSpecifics.setUsername(databaseSpecifics.getUsername());
-        newDatabaseSpecifics.setPassword(databaseSpecifics.getPassword());
-        return newDatabaseSpecifics;
-    }
-
-    /**
-     * Creates a connection based on the supplied <code>databaseSpecifics</code>.
-     */
-    private static Connection getEmbeddedDBConnection(DatabaseSpecifics databaseSpecifics) throws Exception {
-        Class.forName(databaseSpecifics.getDriverClass());
-        Connection connection = DriverManager.getConnection(databaseSpecifics.getDatabaseURL());
-        return connection;
-    }
-
-    /**
-     * Creates a database by running the supplied script.
-     * @param databaseSpecifics Specifies where to create the database.
-     */
-    private static void createDatabase(DatabaseSpecifics databaseSpecifics, String scriptName) {
-        DatabaseSpecifics databaseCreationSpecifics = updateDatabaseSpecificsForDBCreation(databaseSpecifics);
-        try {
-            runScript(databaseCreationSpecifics, scriptName);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /** Will delete the database by directly removing the files on disk based on the DB url */
-    private static void deleteDatabase(DatabaseSpecifics databaseSpecifics) {
-        String dbUrl = databaseSpecifics.getDatabaseURL();
-        String[] dbUrlParts = dbUrl.split(":");
-        FileUtils.deleteDirIfExists(new File(dbUrlParts[2]));
+        ChecksumDatabaseCreator checksumDatabaseCreator = new ChecksumDatabaseCreator();
+        checksumDatabaseCreator.createChecksumDatabase(pillarSettings, null);
     }
 }

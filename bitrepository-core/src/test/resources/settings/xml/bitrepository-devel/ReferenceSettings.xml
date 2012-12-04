@@ -41,11 +41,11 @@
     <MaxAgeForChecksums>3600000</MaxAgeForChecksums>
     <AuditTrailContributerDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
-      <DatabaseURL>jdbc:derby:auditcontributerdb</DatabaseURL>
+      <DatabaseURL>jdbc:derby:target/test/referencepillar/auditcontributerdb</DatabaseURL>
     </AuditTrailContributerDatabase>
     <ChecksumDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
-      <DatabaseURL>jdbc:derby:checksumdb</DatabaseURL>
+      <DatabaseURL>jdbc:derby:target/test/referencepillar/checksumdb</DatabaseURL>
     </ChecksumDatabase>
   </PillarSettings>
   <DeleteFileSettings></DeleteFileSettings>
@@ -60,31 +60,31 @@
     <ID>alarm-service</ID>
     <AlarmServiceDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
-      <DatabaseURL>jdbc:derby:alarmservicedb</DatabaseURL>
+      <DatabaseURL>jdbc:derby:target/test/alarmservice/alarmservicedb</DatabaseURL>
     </AlarmServiceDatabase>
   </AlarmServiceSettings>
   <AuditTrailServiceSettings>
     <ID>audit-trail-service</ID>
     <AuditTrailServiceDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
-      <DatabaseURL>jdbc:derby:auditservicedb</DatabaseURL>
+      <DatabaseURL>jdbc:derby:target/auditservicedb</DatabaseURL>
     </AuditTrailServiceDatabase>
     <CollectAuditInterval>3600000</CollectAuditInterval>
     <TimerTaskCheckInterval>60000</TimerTaskCheckInterval>
     <AuditTrailPreservationInterval>604800000</AuditTrailPreservationInterval>
-    <AuditTrailPreservationTemporaryDirectory>tmpDir</AuditTrailPreservationTemporaryDirectory>
+    <AuditTrailPreservationTemporaryDirectory>${build.dir}/test/audittrailservice//tmpDir</AuditTrailPreservationTemporaryDirectory>
   </AuditTrailServiceSettings>
   <IntegrityServiceSettings>
     <ID>integrity-service</ID>
     <SchedulerInterval>600000</SchedulerInterval>
     <IntegrityDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
-      <DatabaseURL>jdbc:derby:integritydb</DatabaseURL>
+      <DatabaseURL>jdbc:derby:target/test/integrityservice/integritydb</DatabaseURL>
     </IntegrityDatabase>
     <TimeBeforeMissingFileCheck>60000</TimeBeforeMissingFileCheck>
     <AuditTrailContributerDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
-      <DatabaseURL>jdbc:derby:auditcontributerdb</DatabaseURL>
+      <DatabaseURL>jdbc:derby:target/test/integrityservice/auditcontributerdb</DatabaseURL>
     </AuditTrailContributerDatabase>
   </IntegrityServiceSettings>
   <MonitoringServiceSettings>

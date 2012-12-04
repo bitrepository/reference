@@ -26,17 +26,21 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
-* Runs a sql script as a sequence of JDBC statements.
+ * Runs a sql script as a sequence of JDBC statements.
  *
-* Slightly modified version of the com.ibatis.common.jdbc.SqlScriptRunner class
-* from the iBATIS Apache project. Only removed dependency on Resource class
-* and a constructor
-*/
+ * Slightly modified version of the com.ibatis.common.jdbc.SqlScriptRunner class
+ * from the iBATIS Apache project. Only removed dependency on Resource class
+ * and a constructor
+ */
 public class SqlScriptRunner {
     private static final String DEFAULT_DELIMITER = ";";
     private static Logger log = LoggerFactory.getLogger(SqlScriptRunner.class);
@@ -84,18 +88,11 @@ public class SqlScriptRunner {
     public void runScript(Reader reader) throws IOException, SQLException {
         try {
             boolean originalAutoCommit = connection.getAutoCommit();
-            try {
-                if (originalAutoCommit != this.autoCommit) {
-                    connection.setAutoCommit(this.autoCommit);
-                }
-                runScript(connection, reader);
-            } finally {
-                connection.setAutoCommit(originalAutoCommit);
+            if (originalAutoCommit != this.autoCommit) {
+                connection.setAutoCommit(this.autoCommit);
             }
-        } catch (IOException e) {
-            throw e;
-        } catch (SQLException e) {
-            throw e;
+            runScript(connection, reader);
+            connection.setAutoCommit(originalAutoCommit);
         } catch (Exception e) {
             throw new RuntimeException("Error running script.  Cause: " + e, e);
         }
@@ -122,7 +119,7 @@ public class SqlScriptRunner {
                 }
                 String trimmedLine = line.trim();
                 if (trimmedLine.startsWith("--") ||
-                    trimmedLine.startsWith("//")) {
+                        trimmedLine.startsWith("//")) {
                     // Ignore comment line
                 } else if (trimmedLine.length() == 0) {
                     // Ignore empty line.
@@ -139,7 +136,7 @@ public class SqlScriptRunner {
 
                     Statement statement = conn.createStatement();
 
-                    log.info("Executing statement: " + command.toString());
+                    log.debug("Executing statement: " + command.toString());
 
                     boolean hasResults = false;
                     if (stopOnError) {
@@ -196,8 +193,6 @@ public class SqlScriptRunner {
             throw e;
         } catch (IOException e) {
             throw e;
-        } finally {
-            conn.rollback();
         }
     }
 

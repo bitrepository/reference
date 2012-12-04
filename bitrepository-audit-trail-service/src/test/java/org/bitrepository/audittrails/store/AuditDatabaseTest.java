@@ -21,23 +21,18 @@
  */
 package org.bitrepository.audittrails.store;
 
-import java.io.File;
 import java.math.BigInteger;
-import java.sql.Connection;
 import java.util.Date;
 import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.DatabaseTestUtils;
-import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -45,39 +40,21 @@ public class AuditDatabaseTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
     String fileId = "TEST-FILE-ID-" + new Date().getTime();
-    String fileId2 = "ANOTHER-FILE-ID" + new Date().getTime();;
+    String fileId2 = "ANOTHER-FILE-ID" + new Date().getTime();
     String pillarId = "MY-TEST-PILLAR";
     String actor1 = "ACTOR-1";
     String actor2 = "ACTOR-2";
-    String DATABASE_NAME = "auditservicedb";
-    String DATABASE_DIRECTORY = "test-data";
-    String DATABASE_URL = "jdbc:derby:" + DATABASE_DIRECTORY + "/" + DATABASE_NAME;
-    File dbDir = null;
 
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("AuditDatabaseUnderTest");
-        settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase().setDatabaseURL(DATABASE_URL);
-        
-        addStep("Initialise the database", "Should be unpacked from a jar-file.");
-        File dbFile = new File("src/test/resources/auditservicedb.jar");
-        Assert.assertTrue(dbFile.isFile(), "The database file should exist");
-        
-        dbDir = FileUtils.retrieveDirectory(DATABASE_DIRECTORY);
-        FileUtils.retrieveSubDirectory(dbDir, DATABASE_NAME);
-        
-        Connection dbCon = DatabaseTestUtils.takeDatabase(dbFile, DATABASE_NAME, dbDir);
-        dbCon.close();
+        DerbyDatabaseDestroyer.deleteDatabase(
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
+
+        AuditTrailDatabaseCreator auditTrailDatabaseCreator = new AuditTrailDatabaseCreator();
+        auditTrailDatabaseCreator.createAuditTrailDatabase(settings, null);
     }
-    
-    @AfterMethod (alwaysRun = true)
-    public void shutdown() throws Exception {
-        addStep("Cleanup after test.", "Should remove directory with test material.");
-        if(dbDir != null) {
-            FileUtils.delete(dbDir);
-        }
-    }
-    
+
     @Test(groups = {"regressiontest", "databasetest"})
     public void AuditDatabaseExtractionTest() throws Exception {
         addDescription("Testing the connection to the audit trail service database especially with regards to "
@@ -147,7 +124,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         res = database.getAuditTrails(null, null, null, null, null, null, null, restrictionDate);
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getFileID(), fileId);
-        
+
         database.close();
     }
 
@@ -156,6 +133,12 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         addDescription("Tests the functions related to the preservation of the database.");
         addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
         AuditTrailServiceDAO database = new AuditTrailServiceDAO(settings);
+
+
+        Assert.assertEquals(database.largestSequenceNumber(pillarId), 0);
+        database.addAuditTrails(createEvents());
+        Assert.assertEquals(database.largestSequenceNumber(pillarId), 10);
+
 
         addStep("Validate the preservation sequence number", 
                 "Should be zero, since it has not been updated yet.");

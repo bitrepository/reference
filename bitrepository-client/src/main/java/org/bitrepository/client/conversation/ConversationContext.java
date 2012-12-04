@@ -103,6 +103,7 @@ public class ConversationContext {
     public GeneralConversationState getState() {
         return state;
     }
+
     public void setState(GeneralConversationState state) {
         this.state = state;
     }

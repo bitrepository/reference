@@ -25,8 +25,9 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-public class DatabaseTestUtils {
-    /** Get access to the database stored in the given file.  This will start
+class DatabaseTestUtils {
+    /**
+     * Get access to the database stored in the given file.  This will start
      * a new transaction that will be rolled back with dropDatabase.
      * Only one connection can be taken at a time.
      *

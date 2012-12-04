@@ -100,6 +100,7 @@
         <configuration>
           <descriptors>
             <descriptor>src/main/assembly/assembly.xml</descriptor>
+            <descriptor>src/main/assembly/tools-assembly.xml</descriptor>
           </descriptors>
           <attach>true</attach>
         </configuration>

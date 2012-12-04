@@ -31,25 +31,29 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.OperationType;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
-/** Encapsulates the context for a GetChecksums operation */
+/**
+ * Encapsulates the context for a GetChecksums operation.
+ */
 public class GetChecksumsConversationContext extends ConversationContext {
     private final URL urlForResult;
     private final ChecksumSpecTYPE checksumSpec;
     private final ContributorQuery[] contributorQueries;
+
     /**
-     * Extends the {@link ConversationContext} constructor with {@link org.bitrepository.access.getchecksums.GetChecksumsClient} specific parameters
+     * Extends the {@link ConversationContext} constructor with
+     * {@link org.bitrepository.access.getchecksums.GetChecksumsClient} specific parameters.
      */
     public GetChecksumsConversationContext(
-        ContributorQuery[] contributorQueries,
-        String fileID,
-        ChecksumSpecTYPE checksumSpec,
-        URL urlForResult,
-        Settings settings,
-        MessageSender messageSender,
-        String clientID,
-        Collection<String> contributors,
-        EventHandler eventHandler,
-        String auditTrailInformation) {
+            ContributorQuery[] contributorQueries,
+            String fileID,
+            ChecksumSpecTYPE checksumSpec,
+            URL urlForResult,
+            Settings settings,
+            MessageSender messageSender,
+            String clientID,
+            Collection<String> contributors,
+            EventHandler eventHandler,
+            String auditTrailInformation) {
         super(OperationType.GET_CHECKSUMS, settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
         this.contributorQueries = contributorQueries;
         this.urlForResult = urlForResult;
@@ -63,7 +67,7 @@ public class GetChecksumsConversationContext extends ConversationContext {
     public URL getUrlForResult() {
         return urlForResult;
     }
-    
+
     public ChecksumSpecTYPE getChecksumSpec() {
         return checksumSpec;
     }
