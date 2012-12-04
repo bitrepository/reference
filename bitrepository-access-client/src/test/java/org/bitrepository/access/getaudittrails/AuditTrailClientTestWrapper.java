@@ -21,6 +21,7 @@
  */
 package org.bitrepository.access.getaudittrails;
 
+import java.util.Arrays;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.jaccept.TestEventManager;
 
@@ -38,7 +39,8 @@ public class AuditTrailClientTestWrapper implements AuditTrailClient {
     public void getAuditTrails(AuditTrailQuery[] componentQueries, String fileID, String urlForResult,
             EventHandler eventHandler, String auditTrailInformation) {
         testEventManager.addStimuli(
-                "Calling getAuditTrails(" + componentQueries + ", " + fileID + ", " + urlForResult + ")");
+                "Calling getAuditTrails(" + Arrays.asList(componentQueries) + ", " + fileID + ", " +
+                        "" + urlForResult + ")");
         auditTrailClient.getAuditTrails(componentQueries, fileID, urlForResult, eventHandler, auditTrailInformation);
     }
 }

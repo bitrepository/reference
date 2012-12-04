@@ -25,6 +25,7 @@
 package org.bitrepository.access.getfileids;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.bitrepository.access.ContributorQuery;
@@ -53,8 +54,9 @@ public class GetFileIDsClientTestWrapper implements GetFileIDsClient {
 
     @Override
     public void getFileIDs(ContributorQuery[] contributorQueries, String fileID, URL addressForResult, EventHandler eventHandler) {
-        eventManager.addStimuli("Calling getFileIDs(" + contributorQueries + ", " + fileID + ", " + addressForResult + ", "
-            + eventHandler + ")");
+        eventManager.addStimuli("Calling getFileIDs(" + Arrays.asList(contributorQueries) + ", " + fileID + ", " +
+                "" + addressForResult + ", "
+                + eventHandler + ")");
         client.getFileIDs(contributorQueries, fileID, addressForResult, eventHandler);
     }
 
