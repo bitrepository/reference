@@ -122,7 +122,7 @@ cd $quickstartdir
 if [ -d "tomcat" ]; then
 	rm -rf tomcat
 fi
-curl http://apache.mirrors.webname.dk/tomcat/tomcat-6/v6.0.35/bin/apache-tomcat-6.0.35.tar.gz > tomcat.tar.gz
+curl http://ftp.download-by.net/apache/tomcat/tomcat-6/v6.0.36/bin/apache-tomcat-6.0.36.tar.gz > tomcat.tar.gz
 tar xfz tomcat.tar.gz
 mv apache-tomcat-* tomcat
 
