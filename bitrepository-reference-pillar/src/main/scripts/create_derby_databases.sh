@@ -25,13 +25,16 @@
 CONFDIR="conf"
 LOGBACK="-Dlogback.configurationFile=$CONFDIR/logback.xml" #configuration directory
 JAVA="/usr/bin/java"
-CLASSPATH="-classpath conf:lib/*"
+CLASSPATH="-classpath ./:lib/*"
 CHECKSUM_DB_SCRIPT="sql/derby/checksumDBCreation_Derby.sql";
 AUDIT_CONTRIBUTOR_DB_SCRIPT="sql/derby/auditContributorDBCreation_Derby.sql";
 
 cd $(dirname $(readlink -f $0))/..
+echo "Running pillar database creation from $PWD dir"
 #Check availability of crucial system components
 [ -x "$JAVA" ] || exit
 
-$JAVA $LOGBACK $CLASSPATH org.bitrepository.pillar.common.ChecksumDatabaseCreator $CONFDIR $CHECKSUM_DB_SCRIPT </dev/null >checksum_database_creation.out 2>&1 &
-$JAVA $LOGBACK $CLASSPATH org.bitrepository.pillar.common.AuditTrailContributorDatabaseCreator $CONFDIR $AUDIT_CONTRIBUTOR_DB_SCRIPT </dev/null >auditcontributor_database_creation.out 2>&1 &
+$JAVA $CLASSPATH org.bitrepository.pillar.common.ChecksumDatabaseCreator $CONFDIR $CHECKSUM_DB_SCRIPT </dev/null
+>checksum_database_creation.out 2>&1 &
+$JAVA $CLASSPATH org.bitrepository.pillar.common.PillarAuditTrailDatabaseCreator $CONFDIR
+$AUDIT_CONTRIBUTOR_DB_SCRIPT </dev/null >auditcontributor_database_creation.out 2>&1 &

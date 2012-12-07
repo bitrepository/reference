@@ -41,12 +41,10 @@
   <fileSets>
     <fileSet>
       <outputDirectory>conf</outputDirectory>
+      <directory>src/main/conf</directory>
       <fileMode>0740</fileMode>
       <directoryMode>0740</directoryMode>
-      <directory>../bitrepository-core/target/test-classes/settings/xml/bitrepository-devel/</directory>
-      <excludes>
-        <exclude>xjb-bindings/</exclude>
-      </excludes>
+      <filtered>true</filtered>
     </fileSet>
     <fileSet>
       <outputDirectory>bin</outputDirectory>

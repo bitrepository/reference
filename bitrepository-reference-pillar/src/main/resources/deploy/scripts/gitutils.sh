@@ -28,10 +28,8 @@ initialize_repository() {
     echo "Initializing repository for $1"
     cd $1
     git init
-    git add testprops/*
-    git add -f bin/*
     echo lib >> .gitignore
-    git add .gitignore
+    git add -A
     git commit -m "Initialized with configurations" --quiet
   else
     if [ ! -d "$1/bin" ] ; then
@@ -45,7 +43,6 @@ initialize_repository() {
 # Commit any changes to the repository
 do_commit() {
   cd $1
-  git add testprops/*
   git add -f bin/*
   if [ $(git status --porcelain| wc -l) -gt 0 ] ; then
     echo "Committing changed files at $PWD: $(git status --porcelain)"
@@ -79,7 +76,7 @@ case "$1" in
   commit)
     do_commit $2 $3
     ;;
-  commit_all)
+   commit_all)
      do_commit_all $2 $3
      ;;
   pull)

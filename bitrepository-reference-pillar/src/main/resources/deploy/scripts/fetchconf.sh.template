@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo "Updating conf files in $1"
+
+#Example fetch commands.
+#scp -q someone@someserver:~/conf/*.pem $1
+
+#cp -q ~/conf/*.xml $1
