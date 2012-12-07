@@ -27,6 +27,7 @@ package org.bitrepository.integrityservice.checking;
 import java.util.Collection;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
+import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
 
 /**
  * This is the interface for checking the integrity of the data in the cache.
@@ -40,7 +41,7 @@ public interface IntegrityChecker {
      * @param fileIDs The ids of the files to validate (e.g. a list of files or all files).
      * @return Whether the given file ids where validated.
      */
-    IntegrityReportModel checkFileIDs(FileIDs fileIDs);
+    MissingFileReportModel checkFileIDs(FileIDs fileIDs);
     
     /**
      * Validates the checksum of all the files for all the pillars.

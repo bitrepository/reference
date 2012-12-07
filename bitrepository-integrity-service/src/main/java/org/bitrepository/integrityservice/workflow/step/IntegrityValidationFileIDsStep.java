@@ -24,7 +24,7 @@ package org.bitrepository.integrityservice.workflow.step;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
-import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
+import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +39,9 @@ public class IntegrityValidationFileIDsStep implements WorkflowStep {
     private final IntegrityChecker checker;
     /** The dispatcher of alarms.*/
     private final IntegrityAlerter dispatcher;
+    
+    /** The final report for this check.*/
+    private MissingFileReportModel finalReport = null; 
     
     /**
      * Constructor.
@@ -57,13 +60,21 @@ public class IntegrityValidationFileIDsStep implements WorkflowStep {
 
     @Override
     public void performStep() {
-        IntegrityReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs());
+        finalReport = checker.checkFileIDs(FileIDsUtils.getAllFileIDs());
         
-        if(report.hasIntegrityIssues()) {
-            log.warn("Integrity issues found: " + report.generateReport());
-            dispatcher.integrityFailed(report);
+        if(finalReport.hasIntegrityIssues()) {
+            log.warn("Integrity issues found: " + finalReport.generateReport());
+            dispatcher.integrityFailed(finalReport);
         } else {
-            log.info("No integrity issues found: " + report.generateReport());
+            log.info("No integrity issues found: " + finalReport.generateReport());
         }
+    }
+    
+    /**
+     * @return The report from this workflow step. 
+     * Will return null, if the step has not yet been run.
+     */
+    public MissingFileReportModel getReport() {
+        return finalReport;
     }
 }
