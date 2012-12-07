@@ -99,9 +99,12 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         } catch (MalformedURLException e) {
             throw new RuntimeException("Never happens");
         }
+
+        initializeMessageBusListeners();
     }
     @AfterSuite(alwaysRun = true)
     public void shutdownSuite() {
+        teardownMessageBusListeners();
         teardownMessageBus();
         teardownHttpServer();
     }
@@ -112,14 +115,12 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     @BeforeMethod(alwaysRun = true)
     public void beforeMethod(Method method) {
         setupSettings();
-        initializeMessageBusListeners();
         testMethodName = method.getName();
         NON_DEFAULT_FILE_ID = TestFileHelper.createUniquePrefix(testMethodName);
     }
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        teardownMessageBusListeners();
     }
 
     /**                                                                          ŒŒ
@@ -205,6 +206,11 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
         alarmReceiver = new MessageReceiver("Alarm receiver", testEventManager);
         messageBus.addListener(settingsForCUT.getAlarmDestination(), alarmReceiver.getMessageListener());
+    }
+
+    protected void checkNoMessagesRemain() {
+        collectionReceiver.checkNoMessagesRemain();
+        alarmReceiver.checkNoMessagesRemain();;
     }
 
     protected void teardownMessageBusListeners() {

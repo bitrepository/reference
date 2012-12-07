@@ -103,7 +103,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
                     OperationEventType.IDENTIFICATION_COMPLETE);
             Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                     OperationEventType.REQUEST_SENT);
-            pillar1Destination.waitForMessage(GetStatusRequest.class);
+            pillar1Receiver.waitForMessage(GetStatusRequest.class);
         }
         
         @Test(groups = {"regressiontest"})
@@ -145,10 +145,10 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
 
             Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                     OperationEventType.REQUEST_SENT);
-            GetStatusRequest requestPillar1 = pillar1Destination.waitForMessage(GetStatusRequest.class);
+            GetStatusRequest requestPillar1 = pillar1Receiver.waitForMessage(GetStatusRequest.class);
             Assert.assertEquals(requestPillar1, testMessageFactory.createGetStatusRequest(
                     requestPillar1, PILLAR1_ID, pillar1DestinationId, settingsForTestClient.getComponentID()));
-            GetStatusRequest requestPillar2 = pillar2Destination.waitForMessage(GetStatusRequest.class);
+            GetStatusRequest requestPillar2 = pillar2Receiver.waitForMessage(GetStatusRequest.class);
             Assert.assertEquals(requestPillar2, testMessageFactory.createGetStatusRequest(
                     requestPillar2, PILLAR2_ID, pillar2DestinationId, settingsForTestClient.getComponentID()));
 

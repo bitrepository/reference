@@ -40,14 +40,14 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     protected static final String DEFAULT_FILE_ID = ClientTestMessageFactory.FILE_ID_DEFAULT;
 
     protected static String clientDestinationId;
-    protected MessageReceiver clientTopic;
+    protected MessageReceiver clientReceiver;
 
     protected static String pillar1DestinationId;
-    protected MessageReceiver pillar1Destination; 
+    protected MessageReceiver pillar1Receiver;
     protected static final String PILLAR1_ID = "Pillar1";
 
     protected static String pillar2DestinationId;
-    protected MessageReceiver pillar2Destination; 
+    protected MessageReceiver pillar2Receiver;
     protected static final String PILLAR2_ID = "Pillar2";
 
     protected static ConversationMediator conversationMediator;
@@ -85,10 +85,17 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     }
 
     @Override
+    protected void checkNoMessagesRemain() {
+        clientReceiver.checkNoMessagesRemain();
+        pillar1Receiver.checkNoMessagesRemain();
+        pillar2Receiver.checkNoMessagesRemain();
+    }
+
+    @Override
     protected void teardownMessageBusListeners() {
-        IntegrationTest.messageBus.removeListener(clientDestinationId, clientTopic.getMessageListener());
-        IntegrationTest.messageBus.removeListener(pillar1DestinationId, pillar1Destination.getMessageListener());
-        IntegrationTest.messageBus.removeListener(pillar2DestinationId, pillar2Destination.getMessageListener());
+        IntegrationTest.messageBus.removeListener(clientDestinationId, clientReceiver.getMessageListener());
+        IntegrationTest.messageBus.removeListener(pillar1DestinationId, pillar1Receiver.getMessageListener());
+        IntegrationTest.messageBus.removeListener(pillar2DestinationId, pillar2Receiver.getMessageListener());
         super.teardownMessageBusListeners();
     }
     
@@ -99,12 +106,12 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
         pillar1DestinationId = "Pillar1_topic" + getTopicPostfix();
         pillar2DestinationId = "Pillar2_topic" + getTopicPostfix();
         
-        clientTopic = new MessageReceiver("Client topic receiver", IntegrationTest.testEventManager);
-        pillar1Destination = new MessageReceiver("Pillar1 topic receiver", IntegrationTest.testEventManager);
-        pillar2Destination = new MessageReceiver("Pillar2 topic receiver", IntegrationTest.testEventManager);
-        IntegrationTest.messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());
-        IntegrationTest.messageBus.addListener(pillar1DestinationId, pillar1Destination.getMessageListener());
-        IntegrationTest.messageBus.addListener(pillar2DestinationId, pillar2Destination.getMessageListener());
+        clientReceiver = new MessageReceiver("Client topic receiver", IntegrationTest.testEventManager);
+        pillar1Receiver = new MessageReceiver("Pillar1 topic receiver", IntegrationTest.testEventManager);
+        pillar2Receiver = new MessageReceiver("Pillar2 topic receiver", IntegrationTest.testEventManager);
+        IntegrationTest.messageBus.addListener(clientDestinationId, clientReceiver.getMessageListener());
+        IntegrationTest.messageBus.addListener(pillar1DestinationId, pillar1Receiver.getMessageListener());
+        IntegrationTest.messageBus.addListener(pillar2DestinationId, pillar2Receiver.getMessageListener());
     }
 
     /**

@@ -127,7 +127,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         IdentifyPillarsForGetChecksumsResponse identifyResponse = testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
                 receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
-        GetChecksumsRequest receivedGetChecksumsRequest = pillar1Destination.waitForMessage(GetChecksumsRequest.class);
+        GetChecksumsRequest receivedGetChecksumsRequest = pillar1Receiver.waitForMessage(GetChecksumsRequest.class);
 
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -181,7 +181,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         IdentifyPillarsForGetChecksumsResponse identifyResponse2 = testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
                 receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(identifyResponse2);
-        GetChecksumsRequest receivedGetChecksumsRequest1 = pillar1Destination.waitForMessage(GetChecksumsRequest.class);
+        GetChecksumsRequest receivedGetChecksumsRequest1 = pillar1Receiver.waitForMessage(GetChecksumsRequest.class);
 
         for(int i = 0; i < settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
@@ -235,7 +235,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
                 testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
                         receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
-        receivedGetChecksumsRequest = pillar1Destination.waitForMessage(GetChecksumsRequest.class);
+        receivedGetChecksumsRequest = pillar1Receiver.waitForMessage(GetChecksumsRequest.class);
 
         for(int i = 0; i < settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
@@ -288,7 +288,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         messageBus.sendMessage(testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
             receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId));
 
-        GetChecksumsRequest receivedGetChecksumsRequest1 = pillar1Destination.waitForMessage(GetChecksumsRequest.class);
+        GetChecksumsRequest receivedGetChecksumsRequest1 = pillar1Receiver.waitForMessage(GetChecksumsRequest.class);
         Assert.assertEquals(receivedGetChecksumsRequest1.getMinTimestamp(),
             CalendarUtils.getXmlGregorianCalendar(query1.getMinTimestamp()),
             "Unexpected MinTimestamp in GetChecksumsRequest to pillar1.");
@@ -299,7 +299,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
             BigInteger.valueOf(query1.getMaxNumberOfResults()),
             "Unexpected MaxNumberOfResults in GetChecksumsRequest to pillar1.");
 
-        GetChecksumsRequest receivedGetChecksumsRequest2 = pillar2Destination.waitForMessage(GetChecksumsRequest.class);
+        GetChecksumsRequest receivedGetChecksumsRequest2 = pillar2Receiver.waitForMessage(GetChecksumsRequest.class);
         Assert.assertEquals(receivedGetChecksumsRequest2.getMinTimestamp(),
             CalendarUtils.getXmlGregorianCalendar((query1.getMinTimestamp())),
             "Unexpected MinTimestamp in GetChecksumsRequest to pillar2.");

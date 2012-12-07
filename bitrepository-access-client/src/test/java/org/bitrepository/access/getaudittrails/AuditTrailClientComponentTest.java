@@ -119,10 +119,10 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
 
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
-        GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
+        GetAuditTrailsRequest requestPillar1 = pillar1Receiver.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertEquals(requestPillar1, testMessageFactory.createGetAuditTrailsRequest(
                 identifyRequest, PILLAR1_ID, pillar1DestinationId));
-        GetAuditTrailsRequest requestPillar2 = pillar2Destination.waitForMessage(GetAuditTrailsRequest.class);
+        GetAuditTrailsRequest requestPillar2 = pillar2Receiver.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertEquals(requestPillar2, testMessageFactory.createGetAuditTrailsRequest(
                 identifyRequest, PILLAR2_ID, pillar2DestinationId));
 
@@ -191,7 +191,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
 
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
-        GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
+        GetAuditTrailsRequest requestPillar1 = pillar1Receiver.waitForMessage(GetAuditTrailsRequest.class);
         GetAuditTrailsRequest request = testMessageFactory.createGetAuditTrailsRequest(
                 identifyRequest, PILLAR1_ID, pillar1DestinationId);
         Assert.assertEquals(requestPillar1.getMaxNumberOfResults().intValue(), 10000);
@@ -199,7 +199,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(requestPillar1.getMaxSequenceNumber().intValue(), 3);
 
         addStep("Verify no request is sent to pillar2", "");
-        pillar2Destination.checkNoMessageIsReceived(GetAuditTrailsRequest.class);
+        pillar2Receiver.checkNoMessageIsReceived(GetAuditTrailsRequest.class);
 
         addStep("Send a final response from pillar 1",
                 "A COMPONENT_COMPLETE event should be generated with the audit trail results." +
@@ -259,7 +259,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                 OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
-        pillar2Destination.waitForMessage(GetAuditTrailsRequest.class);
+        pillar2Receiver.waitForMessage(GetAuditTrailsRequest.class);
     }
 
     @Test(groups = {"regressiontest"})
@@ -302,10 +302,10 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
 
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
-        GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
+        GetAuditTrailsRequest requestPillar1 = pillar1Receiver.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertEquals(requestPillar1, testMessageFactory.createGetAuditTrailsRequest(
                 identifyRequest, PILLAR1_ID, pillar1DestinationId));
-        GetAuditTrailsRequest requestPillar2 = pillar2Destination.waitForMessage(GetAuditTrailsRequest.class);
+        GetAuditTrailsRequest requestPillar2 = pillar2Receiver.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertEquals(requestPillar2, testMessageFactory.createGetAuditTrailsRequest(
                 identifyRequest, PILLAR2_ID, pillar2DestinationId));
 
@@ -378,10 +378,10 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
 
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
-        GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
+        GetAuditTrailsRequest requestPillar1 = pillar1Receiver.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertEquals(requestPillar1, testMessageFactory.createGetAuditTrailsRequest(
                 identifyRequest, PILLAR1_ID, pillar1DestinationId));
-        GetAuditTrailsRequest requestPillar2 = pillar2Destination.waitForMessage(GetAuditTrailsRequest.class);
+        GetAuditTrailsRequest requestPillar2 = pillar2Receiver.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertEquals(requestPillar2, testMessageFactory.createGetAuditTrailsRequest(
                 identifyRequest, PILLAR2_ID, pillar2DestinationId));
 
@@ -447,7 +447,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
                 OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
-        pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
+        pillar1Receiver.waitForMessage(GetAuditTrailsRequest.class);
     }
 
     @Test(groups = {"regressiontest"})
@@ -489,7 +489,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
 
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
-        GetAuditTrailsRequest requestPillar1 = pillar1Destination.waitForMessage(GetAuditTrailsRequest.class);
+        GetAuditTrailsRequest requestPillar1 = pillar1Receiver.waitForMessage(GetAuditTrailsRequest.class);
         Assert.assertNotNull(requestPillar1);
     }
 

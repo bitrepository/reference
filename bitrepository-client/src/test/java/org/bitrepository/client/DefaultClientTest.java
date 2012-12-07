@@ -66,8 +66,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
 
         addStep("Verify that the client continues to the performing phase.",
                 "A REQUEST_SENT event should be generated and a GetFileRequest should be sent only to contributor2.");
-        checkNoRequestIsReceived(pillar1Destination);
-        MessageRequest request = waitForRequest(pillar2Destination);
+        checkNoRequestIsReceived(pillar1Receiver);
+        MessageRequest request = waitForRequest(pillar2Receiver);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
 
         addStep("Send a final response message from contributor2",
@@ -106,8 +106,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
 
         addStep("Verify that the client continues to the performing phase.",
                 "A REQUEST_SENT event should be generated and a GetFileRequest should be sent only to contributor2.");
-        checkNoRequestIsReceived(pillar1Destination);
-        MessageRequest request = waitForRequest(pillar2Destination);
+        checkNoRequestIsReceived(pillar1Receiver);
+        MessageRequest request = waitForRequest(pillar2Receiver);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
 
         addStep("Send a final response message from contributor2",
@@ -145,7 +145,7 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
 
         addStep("Verify that the client continues to the performing phase.",
                 "A REQUEST_SENT event should be generated and a GetFileRequest should be sent to pillar1.");
-        MessageRequest request = waitForRequest(pillar1Destination);
+        MessageRequest request = waitForRequest(pillar1Receiver);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
 
         addStep("Send a final response upload message",

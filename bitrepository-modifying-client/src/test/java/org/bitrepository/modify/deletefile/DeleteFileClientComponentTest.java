@@ -112,7 +112,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                     = messageFactory.createIdentifyPillarsForDeleteFileResponse(receivedIdentifyRequestMessage,
                     PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
             messageBus.sendMessage(identifyResponse);
-            receivedDeleteFileRequest = pillar1Destination.waitForMessage(DeleteFileRequest.class);
+            receivedDeleteFileRequest = pillar1Receiver.waitForMessage(DeleteFileRequest.class);
             Assert.assertEquals(receivedDeleteFileRequest,
                     messageFactory.createDeleteFileRequest(
                             PILLAR1_ID, pillar1DestinationId,
@@ -288,7 +288,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                     = messageFactory.createIdentifyPillarsForDeleteFileResponse(receivedIdentifyRequestMessage,
                     PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
             messageBus.sendMessage(identifyResponse);
-            receivedDeleteFileRequest = pillar1Destination.waitForMessage(DeleteFileRequest.class);
+            receivedDeleteFileRequest = pillar1Receiver.waitForMessage(DeleteFileRequest.class);
             Assert.assertEquals(receivedDeleteFileRequest,
                     messageFactory.createDeleteFileRequest(
                             PILLAR1_ID, pillar1DestinationId,
@@ -362,7 +362,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                     = messageFactory.createIdentifyPillarsForDeleteFileResponse(receivedIdentifyRequestMessage,
                     PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
             messageBus.sendMessage(identifyResponse);
-            receivedDeleteFileRequest = pillar1Destination.waitForMessage(DeleteFileRequest.class);
+            receivedDeleteFileRequest = pillar1Receiver.waitForMessage(DeleteFileRequest.class);
             Assert.assertEquals(receivedDeleteFileRequest,
                     messageFactory.createDeleteFileRequest(
                             PILLAR1_ID, pillar1DestinationId,
@@ -460,7 +460,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
-        DeleteFileRequest receivedDeleteFileRequest = pillar1Destination.waitForMessage(DeleteFileRequest.class);
+        DeleteFileRequest receivedDeleteFileRequest = pillar1Receiver.waitForMessage(DeleteFileRequest.class);
 
         addStep("Send a final response message from pillar 1 to the DeleteClient.",
                 "Should produce a COMPONENT_COMPLETE event followed by a COMPLETE event.");
@@ -507,8 +507,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
-        Assert.assertNotNull(pillar1Destination.waitForMessage(DeleteFileRequest.class));
-        pillar2Destination.checkNoMessageIsReceived(DeleteFileRequest.class);
+        Assert.assertNotNull(pillar1Receiver.waitForMessage(DeleteFileRequest.class));
+        pillar2Receiver.checkNoMessageIsReceived(DeleteFileRequest.class);
     }
 
     @Test(groups={"regressiontest"})
@@ -545,7 +545,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
-        DeleteFileRequest receivedPutFileRequest1 = pillar1Destination.waitForMessage(DeleteFileRequest.class);
+        DeleteFileRequest receivedPutFileRequest1 = pillar1Receiver.waitForMessage(DeleteFileRequest.class);
         Assert.assertEquals(receivedPutFileRequest1.getChecksumRequestForExistingFile(), checksumSpecTYPE);
     }
 
@@ -582,7 +582,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
-        DeleteFileRequest receivedPutFileRequest1 = pillar1Destination.waitForMessage(DeleteFileRequest.class);
+        DeleteFileRequest receivedPutFileRequest1 = pillar1Receiver.waitForMessage(DeleteFileRequest.class);
         Assert.assertNull(receivedPutFileRequest1.getChecksumRequestForExistingFile());
     }
 

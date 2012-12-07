@@ -109,7 +109,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                     .createIdentifyPillarsForPutFileResponse(
                             receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(identifyResponse);
-            receivedPutFileRequest = pillar1Destination.waitForMessage(PutFileRequest.class, 10, TimeUnit.SECONDS);
+            receivedPutFileRequest = pillar1Receiver.waitForMessage(PutFileRequest.class, 10, TimeUnit.SECONDS);
             Assert.assertEquals(receivedPutFileRequest,
                     messageFactory.createPutFileRequest(
                             PILLAR1_ID, pillar1DestinationId,
@@ -213,7 +213,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("The client should proceed to send a putFileOperation request to the responding pillar.",
                 "A REQUEST_SENT event should be generated and a PutFileRequest should be received on the pillar.");
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
-        PutFileRequest receivedPutFileRequest = pillar1Destination.waitForMessage(PutFileRequest.class);
+        PutFileRequest receivedPutFileRequest = pillar1Receiver.waitForMessage(PutFileRequest.class);
 
         addStep("Send a pillar complete event",
                 "The client should generate a COMPONENT_COMPLETE followed by a COMPLETE event");
@@ -283,7 +283,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                 .createIdentifyPillarsForPutFileResponse(
                         receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
-        pillar1Destination.waitForMessage(PutFileRequest.class, 10, TimeUnit.SECONDS);
+        pillar1Receiver.waitForMessage(PutFileRequest.class, 10, TimeUnit.SECONDS);
 
         addStep("Validate the steps of the PutClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
@@ -323,7 +323,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         IdentifyPillarsForPutFileResponse identifyResponse = messageFactory.createIdentifyPillarsForPutFileResponse(
                 receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
-        PutFileRequest receivedPutFileRequest = pillar1Destination.waitForMessage(PutFileRequest.class, 10, TimeUnit.SECONDS);
+        PutFileRequest receivedPutFileRequest = pillar1Receiver.waitForMessage(PutFileRequest.class, 10, TimeUnit.SECONDS);
 
         addStep("Validate the steps of the PutClient by going through the events.",
                 "Should be 'PillarIdentified', 'PillarSelected' and 'RequestSent'");
@@ -463,7 +463,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("The client should proceed to send a putFileOperation request to the second pillar.",
                 "A REQUEST_SENT event should be generated and a PutFileRequest should be received on the pillar.");
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
-        PutFileRequest receivedPutFileRequest = pillar2Destination.waitForMessage(PutFileRequest.class);
+        PutFileRequest receivedPutFileRequest = pillar2Receiver.waitForMessage(PutFileRequest.class);
 
         addStep("Send a pillar complete event",
                 "The client should generate a COMPONENT_COMPLETE followed by a COMPLETE event");
@@ -556,11 +556,11 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
-        PutFileRequest receivedPutFileRequest1 = pillar1Destination.waitForMessage(PutFileRequest.class);
+        PutFileRequest receivedPutFileRequest1 = pillar1Receiver.waitForMessage(PutFileRequest.class);
         Assert.assertNull(receivedPutFileRequest1.getChecksumRequestForNewFile());
 
         PutFileRequest receivedPutFileRequest2 =
-                pillar2Destination.waitForMessage(PutFileRequest.class);
+                pillar2Receiver.waitForMessage(PutFileRequest.class);
         Assert.assertEquals(receivedPutFileRequest2.getChecksumRequestForNewFile(), checksumSpecTYPE);
 
     }
@@ -608,11 +608,11 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
         PutFileRequest receivedPutFileRequest1 =
-                pillar1Destination.waitForMessage(PutFileRequest.class);
+                pillar1Receiver.waitForMessage(PutFileRequest.class);
         Assert.assertEquals(receivedPutFileRequest1.getChecksumRequestForNewFile(), checksumSpecTYPE);
 
         PutFileRequest receivedPutFileRequest2 =
-                pillar2Destination.waitForMessage(PutFileRequest.class);
+                pillar2Receiver.waitForMessage(PutFileRequest.class);
         Assert.assertEquals(receivedPutFileRequest2.getChecksumRequestForNewFile(), checksumSpecTYPE);
     }
 
@@ -655,10 +655,10 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
-        PutFileRequest receivedPutFileRequest1 = pillar1Destination.waitForMessage(PutFileRequest.class);
+        PutFileRequest receivedPutFileRequest1 = pillar1Receiver.waitForMessage(PutFileRequest.class);
         Assert.assertNull(receivedPutFileRequest1.getChecksumRequestForNewFile());
 
-        PutFileRequest receivedPutFileRequest2 = pillar2Destination.waitForMessage(PutFileRequest.class);
+        PutFileRequest receivedPutFileRequest2 = pillar2Receiver.waitForMessage(PutFileRequest.class);
         Assert.assertNull(receivedPutFileRequest2.getChecksumRequestForNewFile());
     }
 

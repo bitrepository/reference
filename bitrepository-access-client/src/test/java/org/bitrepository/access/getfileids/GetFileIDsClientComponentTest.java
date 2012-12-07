@@ -113,7 +113,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         IdentifyPillarsForGetFileIDsResponse identifyResponse = testMessageFactory.createIdentifyPillarsForGetFileIDsResponse(
                 receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
-        GetFileIDsRequest receivedGetFileIDsRequest = pillar1Destination.waitForMessage(GetFileIDsRequest.class);
+        GetFileIDsRequest receivedGetFileIDsRequest = pillar1Receiver.waitForMessage(GetFileIDsRequest.class);
         Assert.assertEquals(receivedGetFileIDsRequest,
                 testMessageFactory.createGetFileIDsRequest(receivedGetFileIDsRequest, PILLAR1_ID, pillar1DestinationId));
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
@@ -190,7 +190,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         IdentifyPillarsForGetFileIDsResponse identifyResponse = testMessageFactory.createIdentifyPillarsForGetFileIDsResponse(
                 receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
-        GetFileIDsRequest receivedGetFileIDsRequest = pillar1Destination.waitForMessage(GetFileIDsRequest.class);
+        GetFileIDsRequest receivedGetFileIDsRequest = pillar1Receiver.waitForMessage(GetFileIDsRequest.class);
         Assert.assertEquals(receivedGetFileIDsRequest,
                 testMessageFactory.createGetFileIDsRequest(receivedGetFileIDsRequest, PILLAR1_ID, pillar1DestinationId));
 
@@ -280,7 +280,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         IdentifyPillarsForGetFileIDsResponse identifyResponse = testMessageFactory.createIdentifyPillarsForGetFileIDsResponse(
                 receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
-        receivedGetFileIDsRequest = pillar1Destination.waitForMessage(GetFileIDsRequest.class);
+        receivedGetFileIDsRequest = pillar1Receiver.waitForMessage(GetFileIDsRequest.class);
         Assert.assertEquals(receivedGetFileIDsRequest,
                 testMessageFactory.createGetFileIDsRequest(receivedGetFileIDsRequest,PILLAR1_ID, pillar1DestinationId));
 
@@ -332,7 +332,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         messageBus.sendMessage(testMessageFactory.createIdentifyPillarsForGetFileIDsResponse(
             receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId));
 
-        GetFileIDsRequest receivedGetFileIDsRequest1 = pillar1Destination.waitForMessage(GetFileIDsRequest.class);
+        GetFileIDsRequest receivedGetFileIDsRequest1 = pillar1Receiver.waitForMessage(GetFileIDsRequest.class);
         Assert.assertEquals(receivedGetFileIDsRequest1.getMinTimestamp(),
             CalendarUtils.getXmlGregorianCalendar(query1.getMinTimestamp()),
             "Unexpected MinTimestamp in GetFileIDsRequest to pillar1.");
@@ -343,7 +343,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
             BigInteger.valueOf(query1.getMaxNumberOfResults()),
             "Unexpected MaxNumberOfResults in GetFileIDsRequest to pillar1.");
 
-        GetFileIDsRequest receivedGetFileIDsRequest2 = pillar2Destination.waitForMessage(GetFileIDsRequest.class);
+        GetFileIDsRequest receivedGetFileIDsRequest2 = pillar2Receiver.waitForMessage(GetFileIDsRequest.class);
         Assert.assertEquals(receivedGetFileIDsRequest2.getMinTimestamp(),
             CalendarUtils.getXmlGregorianCalendar((query1.getMinTimestamp())),
             "Unexpected MinTimestamp in GetFileIDsRequest to pillar2.");
