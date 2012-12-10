@@ -53,7 +53,7 @@ do_commit() {
 # Commit all files to the repository
 do_commit_all() {
   cd $1
-  git add -f *
+  git add -A
   if [ $(git status --porcelain| wc -l) -gt 0 ] ; then
     echo "Committing all files at $PWD: $(git status --porcelain)"
     git commit -m "$2" --quiet

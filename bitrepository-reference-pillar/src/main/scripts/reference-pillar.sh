@@ -22,16 +22,16 @@
 # #L%
 ###
 
-LOGBACK="-Dlogback.configurationFile=../conf/logback.xml" #configuration directory
-CONFDIR="../conf"
-KEYFILE="../conf/client-01.pem" #key file
+LOGBACK="-Dlogback.configurationFile=conf/logback.xml" #configuration directory
+CONFDIR="conf"
+KEYFILE="conf/client-01.pem" #key file
 JAVA="/usr/bin/java"
-JAVA_OPTS="-classpath ../conf:../lib/* org.bitrepository.pillar.referencepillar.ReferencePillarLauncher"
+JAVA_OPTS="-classpath conf:lib/* org.bitrepository.pillar.referencepillar.ReferencePillarLauncher"
 PIDFILE="referencepillar.pid"
 SCRIPTNAME="referencepillar"
 NAME="reference-pillar"
 
-cd $(dirname $(readlink -f $0))
+cd $(dirname $(readlink -f $0))/..
 #Check availability of crucial system components
 [ -x "$JAVA" ] || exit 2
 
@@ -55,7 +55,7 @@ do_start() {
 	fi
 
 	#Start our deamon	
-	exec $JAVA $LOGBACK $JAVA_OPTS $CONFDIR $KEYFILE </dev/null >../refpillar.out 2>&1 &
+	exec $JAVA $LOGBACK $JAVA_OPTS $CONFDIR $KEYFILE </dev/null >refpillar.out 2>&1 &
 	echo $! > $PIDFILE
 	sleep 1
 	if [ -e $PIDFILE ]

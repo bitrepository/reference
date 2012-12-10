@@ -38,5 +38,15 @@
       </includes>
     </dependencySet>
   </dependencySets>
+
+
+  <fileSets>
+    <fileSet>
+      <outputDirectory>sql</outputDirectory>
+      <fileMode>0740</fileMode>
+      <directoryMode>0740</directoryMode>
+      <directory>${project.build.directory}/classes/sql</directory>
+    </fileSet>
+  </fileSets>
 </assembly>
 

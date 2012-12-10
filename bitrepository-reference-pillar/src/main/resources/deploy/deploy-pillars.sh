@@ -22,11 +22,6 @@
 # #L%
 ###
 
-if [ -z "$1" ]; then
-	echo "No version supplied, usage: deploy-pillars.sh <version>"
-	exit 1
-fi
-
 VERSION="$2"
 DIR=$PWD
 PILLAR_DIR="$DIR/pillars"
@@ -83,7 +78,7 @@ download() {
 # Updates the pillar
 update_pillars() {
   echo "Committing downloaded changes"
-  ${DEPLOY_SCRIPTS}/gitutils.sh commit $DOWNLOAD_DIR ${VERSION}
+  ${DEPLOY_SCRIPTS}/gitutils.sh commit_all $DOWNLOAD_DIR "Committing downloaded changes"
   echo "Pulling to master"
   ${DEPLOY_SCRIPTS}/gitutils.sh pull $STANDARD_CONFIG_DIR
   if [ ! -d "$STANDARD_CONFIG_DIR/conf" ] ; then
