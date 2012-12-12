@@ -104,7 +104,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
                 IdentifyPillarsForGetFileIDsRequest.class);
         Assert.assertEquals(receivedIdentifyRequestMessage,
                 testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage,
-                        collectionDestinationID));
+                        settingsForCUT.getCollectionDestination()));
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("The pillar sends a response to the identify message.",
@@ -180,7 +180,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
                 IdentifyPillarsForGetFileIDsRequest.class);
         Assert.assertEquals(receivedIdentifyRequestMessage,
                 testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage,
-                        collectionDestinationID));
+                        settingsForCUT.getCollectionDestination()));
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("The pillar sends a response to the identify message.",
@@ -269,7 +269,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
                 IdentifyPillarsForGetFileIDsRequest.class);
         Assert.assertEquals(receivedIdentifyRequestMessage,
                 testMessageFactory.createIdentifyPillarsForGetFileIDsRequest(receivedIdentifyRequestMessage,
-                        collectionDestinationID));
+                        settingsForCUT.getCollectionDestination()));
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("The pillar sends a response to the identify message.",
@@ -368,20 +368,16 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
     }
 
     @Override
-    protected MessageResponse createIdentifyResponse(MessageRequest identifyRequest, String from, String to, ResponseCode responseCode) {
+    protected MessageResponse createIdentifyResponse(MessageRequest identifyRequest, String from, String to) {
         MessageResponse response = testMessageFactory.createIdentifyPillarsForGetFileIDsResponse(
                 (IdentifyPillarsForGetFileIDsRequest)identifyRequest, from, to);
-        response.setResponseInfo(new ResponseInfo());
-        response.getResponseInfo().setResponseCode(responseCode);
-        response.getResponseInfo().setResponseText("N/A");
         return response;
     }
 
     @Override
-    protected MessageResponse createFinalResponse(MessageRequest request, String from, String to, ResponseCode responseCode) {
+    protected MessageResponse createFinalResponse(MessageRequest request, String from, String to) {
         MessageResponse response =  testMessageFactory.createGetFileIDsFinalResponse(
                 (GetFileIDsRequest)request, from, to);
-        response.getResponseInfo().setResponseCode(responseCode);
         return response;
     }
 

@@ -112,14 +112,6 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         return settingsLoader.getSettings();
 
     }
-    /**
-     * Disable test collection messagebus listeners.
-     */
-    @Override
-    protected void initializeMessageBusListeners() {
-        super.initializeMessageBusListeners();
-        messageBus.removeListener(settingsForCUT.getCollectionDestination(), collectionReceiver.getMessageListener());
-    }
 
     protected String getPillarID() {
         return testConfiguration.getPillarUnderTestID();

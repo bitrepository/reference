@@ -56,7 +56,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReplaceFileTests() throws Exception {
-        msgFactory = new ReplaceFileMessageFactory(clientSettings, getPillarID(), pillarDestinationId);
+        msgFactory = new ReplaceFileMessageFactory(settingsForTestClient, getPillarID(), pillarDestinationId);
         FILE_ADDRESS = httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID).toExternalForm();
 
         csSpec = TestFileHelper.getDefaultFileChecksum().getChecksumSpec();

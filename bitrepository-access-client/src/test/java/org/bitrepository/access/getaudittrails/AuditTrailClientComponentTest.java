@@ -22,14 +22,12 @@
 package org.bitrepository.access.getaudittrails;
 
 import java.math.BigInteger;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
@@ -38,10 +36,13 @@ import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
-import org.bitrepository.client.DefaultFixtureClientTest;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.client.DefaultClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.settings.collectionsettings.GetAuditTrailSettings;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -50,25 +51,13 @@ import org.testng.annotations.Test;
 /**
  * Test the default AuditTrailClient.
  */
-public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
+public class AuditTrailClientComponentTest extends DefaultClientTest {
     private GetAuditTrailsMessageFactory testMessageFactory;
-    private FileIDs ALL_FILE_IDS;
 
     @BeforeMethod(alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
-        testMessageFactory = new GetAuditTrailsMessageFactory(settingsForCUT.getCollectionID(),
-                settingsForTestClient.getComponentID());
-
-        if (settingsForCUT.getCollectionSettings().getGetAuditTrailSettings() == null) {
-            settingsForCUT.getCollectionSettings().setGetAuditTrailSettings(new GetAuditTrailSettings());
-        }
-        List<String> contributers = settingsForCUT.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs();
-        contributers.clear();
-        contributers.add(PILLAR1_ID);
-        contributers.add(PILLAR2_ID);
-
-        ALL_FILE_IDS = new FileIDs();
-        ALL_FILE_IDS.setAllFileIDs("TRUE");
+        testMessageFactory = new GetAuditTrailsMessageFactory(
+                settingsForCUT.getCollectionID(), settingsForTestClient.getComponentID());
     }
 
     @Test(groups = {"regressiontest"})
@@ -81,7 +70,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
     }
 
     @Test(groups = {"regressiontest"})
-    public void getAllAuditTrails() throws InterruptedException {
+    public void getAllAuditTrailsTest() throws InterruptedException {
         addDescription("Tests the simplest case of getting all audit trail event for all contributers.");
 
         addStep("Create a AuditTrailClient.", "");
@@ -155,7 +144,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
 
 
     @Test(groups = {"regressiontest"})
-    public void getSomeAuditTrails() throws InterruptedException {
+    public void getSomeAuditTrailsTest() throws InterruptedException {
         addDescription("Tests the client mappes a AuditTrail query correctly to a GetAuditTrail request.");
 
         addStep("Create a AuditTrailClient.", "");
@@ -217,53 +206,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
     }
 
     @Test(groups = {"regressiontest"})
-    public void negativIdentifyResponse() throws Exception {
-        addDescription("Verify that the GetAuditTrail client works correct when receiving a negativ " +
-        "identify response from one contributers.");
-
-        addStep("Create a AuditTrailClient.", "");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        AuditTrailClient client = createAuditTrailClient();
-
-        addStep("Retrieve all audit trails from the collection by calling with a null componentQueries array",
-        "");
-        client.getAuditTrails(null, null, null, testEventHandler, null);
-        IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
-            collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
-
-        addStep("Send a negative identifyResponse from pillar 1.",
-        "A COMPONENT_FAILED event should be received");
-        IdentifyContributorsForGetAuditTrailsResponse responsePillar1 =
-            testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
-                    PILLAR1_ID, pillar1DestinationId);
-        ResponseInfo info = new ResponseInfo();
-        info.setResponseText("Identify failed");
-        info.setResponseCode(ResponseCode.IDENTIFICATION_NEGATIVE);
-        responsePillar1.setResponseInfo(info);
-        messageBus.sendMessage(responsePillar1);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.COMPONENT_FAILED);
-
-        addStep("Send a positive identifyResponse from pillar 2.",
-                "An COMPONENT_IDENTIFIED and IDENTIFICATION_COMPLETE event should be received" +
-        "Right after this a GetAuditTrailRequest should be sent to pillar2");
-        IdentifyContributorsForGetAuditTrailsResponse responsePillar2 =
-            testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
-                    PILLAR2_ID, pillar2DestinationId);
-        messageBus.sendMessage(responsePillar2);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.REQUEST_SENT);
-        pillar2Receiver.waitForMessage(GetAuditTrailsRequest.class);
-    }
-
-    @Test(groups = {"regressiontest"})
-    public void negativeGetAuditTrailsResponse() throws InterruptedException {
+    public void negativeGetAuditTrailsResponseTest() throws InterruptedException {
         addDescription("Verify that the GetAuditTrail client works correct when receiving a negative " +
         "GetAuditTrails response from one contributers.");
 
@@ -303,11 +246,9 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
         GetAuditTrailsRequest requestPillar1 = pillar1Receiver.waitForMessage(GetAuditTrailsRequest.class);
-        Assert.assertEquals(requestPillar1, testMessageFactory.createGetAuditTrailsRequest(
-                identifyRequest, PILLAR1_ID, pillar1DestinationId));
+        Assert.assertNotNull(requestPillar1);
         GetAuditTrailsRequest requestPillar2 = pillar2Receiver.waitForMessage(GetAuditTrailsRequest.class);
-        Assert.assertEquals(requestPillar2, testMessageFactory.createGetAuditTrailsRequest(
-                identifyRequest, PILLAR2_ID, pillar2DestinationId));
+        Assert.assertNotNull(requestPillar2);
 
         addStep("Send a failed response from pillar 1",
         "A COMPONENT_FAILED event should be generated.");
@@ -340,7 +281,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
     }
 
     @Test(groups = {"regressiontest"})
-    public void progressEvents() throws InterruptedException {
+    public void progressEventsTest() throws InterruptedException {
         addDescription("Tests that progress events are handled correctly.");
 
         addStep("Create a AuditTrailClient.", "");
@@ -413,45 +354,7 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
     }
 
     @Test(groups = {"regressiontest"})
-    public void incompleteSetOfIdendifyResponses() throws Exception {
-        addDescription("Verify that the GetAuditTrail client works correct without receiving responses from all " +
-        "contributers.");
-        addStep("Configure 3 second timeout for identifying contributers. " +
-                "The default 2 contributers collection is used", "");
-
-        settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        AuditTrailClient client = createAuditTrailClient();
-
-        client.getAuditTrails(null, null, null, testEventHandler, null);
-        IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
-            collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
-
-        addStep("Send a identifyResponse from pillar 1",
-        "A COMPONENT_IDENTIFIED event should be received.");
-        IdentifyContributorsForGetAuditTrailsResponse responsePillar1 =
-            testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
-                    PILLAR1_ID, pillar1DestinationId);
-        messageBus.sendMessage(responsePillar1);
-
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-
-        addStep("Wait for 5 seconds", "An IDENTIFY_TIMEOUT, a COMPONENT_FAILED and IDENTIFICATION_COMPLETE event should be received" +
-        "Right after this a GetAuditTrailRequest should be sent to pillar1");
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFY_TIMEOUT);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.REQUEST_SENT);
-        pillar1Receiver.waitForMessage(GetAuditTrailsRequest.class);
-    }
-
-    @Test(groups = {"regressiontest"})
-    public void incompleteSetOfFinalResponses() throws Exception {
+    public void incompleteSetOfFinalResponsesTest() throws Exception {
         addDescription("Verify that the GetAuditTrail client works correct without receiving responses from all " +
         "contributers.");
         addStep("Configure 3 second timeout for the operation itself. " +
@@ -494,35 +397,11 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
     }
 
     @Test(groups = {"regressiontest"})
-    public void noIdentifyResponse() throws Exception {
-        addDescription("Tests the AuditTrailClient handles lack of IdentifyResponses gracefully  ");
-        addStep("Set a 3 second timeout for identifying contributers.", "");
-
-        settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
-        AuditTrailClient client = createAuditTrailClient();
-
-        addStep("Make the client ask for all audit trails.",
-        "It should send a identify message");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        client.getAuditTrails(null, null, null, testEventHandler, null);
-        IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
-            collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
-        Assert.assertNotNull(identifyRequest);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
-
-        addStep("Wait for 5 seconds", "An IDENTIFY_TIMEOUT event should be received follwed by a FAILED event");
-        Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getEventType(),
-                OperationEvent.OperationEventType.IDENTIFY_TIMEOUT);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEvent.OperationEventType.FAILED);
-    }
-
-    @Test(groups = {"regressiontest"})
-    public void noFinalResponses() throws Exception {
+    public void noFinalResponsesTest() throws Exception {
         addDescription("Tests the the AuditTrailClient handles lack of Final Responses gracefully  ");
-        addStep("Set a 3 second timeout for the operation.", "");
+        addStep("Set a 1 second timeout for the operation.", "");
 
-        settingsForCUT.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
+        settingsForCUT.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(1000));
         AuditTrailClient client = createAuditTrailClient();
 
         addStep("Make the client ask for all audit trails.",
@@ -556,33 +435,8 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
 
-        addStep("Wait for 5 seconds", "An failed event should be received");
-        Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getEventType(),
-                OperationEvent.OperationEventType.FAILED);
-    }
-
-    @Test(groups = {"regressiontest"})
-    public void conversationTimeout() throws Exception {
-        addDescription("Tests a Audit Trail conversation times out gracefully.");
-        addStep("Set a 3 second timeout for conversations.", "");
-
-        //We need to use a different collection ID to avoid using a existing conversation mediator.
-        settingsForCUT.getCollectionSettings().setCollectionID("conversationTimeoutTest");
-        settingsForCUT.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(3000));
-        AuditTrailClient client = createAuditTrailClient();
-
-        addStep("Make the client ask for all audit trails.",
-        "It should send a identify message");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        client.getAuditTrails(null, null, null, testEventHandler, null);
-        IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
-            collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
-        Assert.assertNotNull(identifyRequest);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
-
-        addStep("Wait for 5 seconds", "An failed event should be received");
-        Assert.assertEquals(testEventHandler.waitForEvent( 5, TimeUnit.SECONDS).getEventType(),
+        addStep("Wait for 2 seconds", "An failed event should be received");
+        Assert.assertEquals(testEventHandler.waitForEvent( 2, TimeUnit.SECONDS).getEventType(),
                 OperationEvent.OperationEventType.FAILED);
     }
 
@@ -654,5 +508,46 @@ public class AuditTrailClientComponentTest extends DefaultFixtureClientTest {
         events.getAuditTrailEvent().add(event2);
         auditTrails.setAuditTrailEvents(events);
         return auditTrails;
+    }
+
+    @Override
+    protected String getComponentID() {
+        return "AuditTrailClientUnderTest";
+    }
+
+    @Override
+    protected MessageResponse createIdentifyResponse(
+            MessageRequest identifyRequest, String from, String to) {
+        MessageResponse response = testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(
+                (IdentifyContributorsForGetAuditTrailsRequest) identifyRequest, from, to);
+        return response;
+    }
+
+    @Override
+    protected MessageResponse createFinalResponse(MessageRequest request, String from, String to) {
+        MessageResponse response =  testMessageFactory.createGetAuditTrailsFinalResponse(
+                (GetAuditTrailsRequest) request, from, to, null);
+        return response;
+    }
+
+    @Override
+    protected MessageRequest waitForIdentifyRequest() {
+        return collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+    }
+
+    @Override
+    protected MessageRequest waitForRequest(MessageReceiver receiver) {
+        return receiver.waitForMessage(GetAuditTrailsRequest.class);
+    }
+
+    @Override
+    protected void checkNoRequestIsReceived(MessageReceiver receiver) {
+        receiver.checkNoMessageIsReceived(GetAuditTrailsRequest.class);
+    }
+
+    @Override
+    protected void startOperation(TestEventHandler testEventHandler) {
+        AuditTrailClient getAuditTrailClient = createAuditTrailClient();
+        getAuditTrailClient.getAuditTrails(null, null, null, testEventHandler, null);
     }
 }

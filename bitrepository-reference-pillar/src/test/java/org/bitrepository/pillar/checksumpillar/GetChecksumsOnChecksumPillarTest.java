@@ -51,7 +51,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
 
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetChecksumsTests() throws Exception {
-        msgFactory = new GetChecksumsMessageFactory(clientSettings, getPillarID(), pillarDestinationId);
+        msgFactory = new GetChecksumsMessageFactory(settingsForTestClient, getPillarID(), pillarDestinationId);
 
         csSpec = new ChecksumSpecTYPE();
         csSpec.setChecksumSalt(null);

@@ -60,7 +60,6 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFileIDsTestSuccessCase() throws Exception {
         addDescription("Tests the GetFileIDs functionality of the reference pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         FileIDs fileids = FileIDsUtils.createFileIDs(DEFAULT_FILE_ID);
         String auditTrail = null;
         
@@ -83,52 +82,24 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientTopic.waitForMessage(
                 IdentifyPillarsForGetFileIDsResponse.class);
-        Assert.assertEquals(receivedIdentifyResponse, 
-                msgFactory.createIdentifyPillarsForGetFileIDsResponse(
-                        identifyRequest.getCorrelationID(),
-                        fileids,
-                        pillarId,
-                        receivedIdentifyResponse.getReplyTo(),
-                        receivedIdentifyResponse.getResponseInfo(),
-                        receivedIdentifyResponse.getTimeToDeliver(),
-                        receivedIdentifyResponse.getTo()));
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
         
         addStep("Create and send the actual GetFileIDs message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
-                auditTrail, receivedIdentifyResponse.getCorrelationID(), fileids, getPillarID(), pillarId, 
+                auditTrail, receivedIdentifyResponse.getCorrelationID(), fileids, getPillarID(), getPillarID(),
                 clientDestinationId, null, receivedIdentifyResponse.getReplyTo());
         messageBus.sendMessage(getFileIDsRequest);
         
         addStep("Retrieve the ProgressResponse for the GetFileIDs request", 
                 "The GetFileIDs progress response should be sent by the pillar.");
-        GetFileIDsProgressResponse progressResponse = clientTopic.waitForMessage(GetFileIDsProgressResponse.class);
-        Assert.assertEquals(progressResponse,
-                msgFactory.createGetFileIDsProgressResponse(
-                        identifyRequest.getCorrelationID(), 
-                        fileids, 
-                        pillarId, 
-                        progressResponse.getReplyTo(), 
-                        progressResponse.getResponseInfo(), 
-                        null,
-                        progressResponse.getTo()));
+        clientTopic.waitForMessage(GetFileIDsProgressResponse.class);
         
         addStep("Retrieve the FinalResponse for the GetFileIDs request", 
                 "The GetFileIDs response should be sent by the pillar.");
         GetFileIDsFinalResponse finalResponse = clientTopic.waitForMessage(GetFileIDsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-        
-        Assert.assertEquals(finalResponse,
-                msgFactory.createGetFileIDsFinalResponse(
-                        identifyRequest.getCorrelationID(), 
-                        fileids,
-                        pillarId, 
-                        finalResponse.getReplyTo(), 
-                        finalResponse.getResponseInfo(), 
-                        finalResponse.getResultingFileIDs(),
-                        finalResponse.getTo()));
 
         Assert.assertEquals(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size(), 1);        
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
@@ -139,7 +110,6 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFileIDsTestSuccessCaseAllFilesAndURL() throws Exception {
         addDescription("Tests the GetFileIDs functionality of the reference pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
         fileids.setAllFileIDs("true");
         String auditTrail = null;
@@ -160,40 +130,22 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
         messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response getPillarID() the pillar.", 
-                "The pillar should make a response.");
+                "The pillar should make a positive response.");
         IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientTopic.waitForMessage(
                 IdentifyPillarsForGetFileIDsResponse.class);
-        Assert.assertEquals(receivedIdentifyResponse, 
-                msgFactory.createIdentifyPillarsForGetFileIDsResponse(
-                        identifyRequest.getCorrelationID(),
-                        fileids, 
-                        pillarId,
-                        receivedIdentifyResponse.getReplyTo(),
-                        receivedIdentifyResponse.getResponseInfo(),
-                        receivedIdentifyResponse.getTimeToDeliver(),
-                        receivedIdentifyResponse.getTo()));
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
         
         addStep("Create and send the actual GetFileIDs message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
-                auditTrail, receivedIdentifyResponse.getCorrelationID(), fileids, getPillarID(), pillarId, 
+                auditTrail, receivedIdentifyResponse.getCorrelationID(), fileids, getPillarID(), getPillarID(),
                 clientDestinationId, DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
         messageBus.sendMessage(getFileIDsRequest);
         
         addStep("Retrieve the ProgressResponse for the GetFileIDs request", 
                 "The GetFileIDs progress response should be sent by the pillar.");
-        GetFileIDsProgressResponse progressResponse = clientTopic.waitForMessage(GetFileIDsProgressResponse.class);
-        Assert.assertEquals(progressResponse,
-                msgFactory.createGetFileIDsProgressResponse(
-                        identifyRequest.getCorrelationID(), 
-                        fileids, 
-                        pillarId, 
-                        progressResponse.getReplyTo(), 
-                        progressResponse.getResponseInfo(), 
-                        DELIVERY_ADDRESS,
-                        progressResponse.getTo()));
+        clientTopic.waitForMessage(GetFileIDsProgressResponse.class);
         
         addStep("Retrieve the FinalResponse for the GetFileIDs request", 
                 "The GetFileIDs response should be sent by the pillar.");
@@ -204,7 +156,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
                 msgFactory.createGetFileIDsFinalResponse(
                         identifyRequest.getCorrelationID(), 
                         fileids,
-                        pillarId, 
+                        getPillarID(),
                         finalResponse.getReplyTo(), 
                         finalResponse.getResponseInfo(), 
                         finalResponse.getResultingFileIDs(),
@@ -218,7 +170,6 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFileIDsTestFailedNoSuchFile() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetFileIDs requests for a file, which it does not have.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
@@ -234,15 +185,6 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientTopic.waitForMessage(
                 IdentifyPillarsForGetFileIDsResponse.class);
-        Assert.assertEquals(receivedIdentifyResponse, 
-                msgFactory.createIdentifyPillarsForGetFileIDsResponse(
-                        identifyRequest.getCorrelationID(),
-                        fileids, 
-                        pillarId,
-                        receivedIdentifyResponse.getReplyTo(),
-                        receivedIdentifyResponse.getResponseInfo(),
-                        receivedIdentifyResponse.getTimeToDeliver(),
-                        receivedIdentifyResponse.getTo()));
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.FILE_NOT_FOUND_FAILURE);        
     }
@@ -252,7 +194,6 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
         addDescription("Tests that the ReferencePillar is able to reject a GetFileIDs requests for a file, " +
                 "which it does not have. But this time at the GetFileIDs message.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         FileIDs fileids = new FileIDs();
         fileids.setFileID(FILE_ID);
@@ -268,21 +209,12 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientTopic.waitForMessage(
                 IdentifyPillarsForGetFileIDsResponse.class);
-        Assert.assertEquals(receivedIdentifyResponse, 
-                msgFactory.createIdentifyPillarsForGetFileIDsResponse(
-                        identifyRequest.getCorrelationID(),
-                        null, 
-                        pillarId,
-                        receivedIdentifyResponse.getReplyTo(),
-                        receivedIdentifyResponse.getResponseInfo(),
-                        receivedIdentifyResponse.getTimeToDeliver(),
-                        receivedIdentifyResponse.getTo()));
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
         
         addStep("Create and send the GetFileIDs request message.", "Should be caught and handled by the pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
-                auditTrail, msgFactory.getNewCorrelationID(), fileids, getPillarID(), pillarId, 
+                auditTrail, msgFactory.getNewCorrelationID(), fileids, getPillarID(), getPillarID(),
                 clientDestinationId, DELIVERY_ADDRESS, pillarDestinationId);
         messageBus.sendMessage(getFileIDsRequest);
         
@@ -290,16 +222,6 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
                 "The GetFileIDs response should be sent by the pillar.");
         GetFileIDsFinalResponse finalResponse = clientTopic.waitForMessage(GetFileIDsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
-        
-        Assert.assertEquals(finalResponse,
-                msgFactory.createGetFileIDsFinalResponse(
-                        getFileIDsRequest.getCorrelationID(), 
-                        fileids,
-                        pillarId, 
-                        finalResponse.getReplyTo(), 
-                        finalResponse.getResponseInfo(), 
-                        finalResponse.getResultingFileIDs(),
-                        finalResponse.getTo()));      
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

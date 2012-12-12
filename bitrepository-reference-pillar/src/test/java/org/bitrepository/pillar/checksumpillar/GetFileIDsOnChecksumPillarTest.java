@@ -61,20 +61,17 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void pillarGetFileIDsTestSuccessCase() throws Exception {
         addDescription("Tests the GetFileIDs functionality of the checksum pillar for the successful scenario.");
-        addStep("Setting up the variables for the test.", "Should be instantiated.");
-        String auditTrail = "GET-FILE-IDS-TEST";
-        String CHECKSUM = "1234cccccccc4321";
         FileIDs fileids = FileIDsUtils.createFileIDs(TestFileHelper.DEFAULT_FILE_ID);
         String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         settingsForCUT.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         
         addStep("Move the test file into the file directory.", "Should be all-right");
-        cache.insertChecksumCalculation(TestFileHelper.DEFAULT_FILE_ID, CHECKSUM, new Date());
+        cache.insertChecksumCalculation(DEFAULT_FILE_ID, DEFAULT_MD5_CHECKSUM, new Date());
         
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the checksum pillar.");
         IdentifyPillarsForGetFileIDsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileIDsRequest(
-                auditTrail, fileids, getPillarID(), clientDestinationId);
+                null, fileids, getPillarID(), clientDestinationId);
         messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response getPillarID() the checksum pillar.", 
@@ -96,7 +93,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
         addStep("Create and send the actual GetFileIDs message to the checksum pillar.", 
                 "Should be received and handled by the checksum pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
-                auditTrail, receivedIdentifyResponse.getCorrelationID(), fileids, getPillarID(), pillarId, 
+                DEFAULT_AUDITINFORMATION, receivedIdentifyResponse.getCorrelationID(), fileids, getPillarID(), pillarId,
                 clientDestinationId, DELIVERY_ADDRESS, receivedIdentifyResponse.getReplyTo());
         messageBus.sendMessage(getFileIDsRequest);
         

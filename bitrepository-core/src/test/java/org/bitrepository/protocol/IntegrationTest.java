@@ -65,9 +65,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     public static HttpServerConfiguration httpServerConfiguration;
     public static MessageBus messageBus;
 
-    protected static String collectionDestinationID;
-    protected static MessageReceiver collectionReceiver;
-
     protected static String alarmDestinationID;
     protected static MessageReceiver alarmReceiver;
 
@@ -82,6 +79,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected static String DEFAULT_FILE_ID;
     protected static URL DEFAULT_FILE_URL;
     protected static String DEFAULT_FILE_ADDRESS;
+    protected String DEFAULT_AUDITINFORMATION;
 
     protected String testMethodName;
 
@@ -113,14 +111,24 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * Defines the standard BitRepositoryCollection configuration
      */
     @BeforeMethod(alwaysRun = true)
-    public void beforeMethod(Method method) {
-        setupSettings();
+    public final void beforeMethod(Method method) {
         testMethodName = method.getName();
+        setupSettings();
         NON_DEFAULT_FILE_ID = TestFileHelper.createUniquePrefix(testMethodName);
+        DEFAULT_AUDITINFORMATION = testMethodName;
+        initializeCUT();
+    }
+    protected void initializeCUT() {
+        // To be overridden by any concrete tests wishing to do stuff.
     }
 
     @AfterMethod(alwaysRun = true)
-    public void afterMethod() {
+    public final void afterMethod() {
+        shutdownCUT();
+        checkNoMessagesRemain();
+    }
+    protected void shutdownCUT() {
+        // To be overridden by any concrete tests wishing to do stuff.
     }
 
     /**                                                                          ŒŒ
@@ -130,10 +138,12 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         settingsForCUT = loadSettings(getComponentID());
         makeUserSpecificSettings(settingsForCUT);
 
-        collectionDestinationID = settingsForCUT.getCollectionSettings().getProtocolSettings().getCollectionDestination();
         alarmDestinationID = settingsForCUT.getCollectionSettings().getProtocolSettings().getAlarmDestination();
 
-        settingsForTestClient = loadSettings(getClass().getSimpleName());
+        if (testMethodName == null) {
+            testMethodName = "TestInitialiser";
+        }
+        settingsForTestClient = loadSettings(testMethodName);
         makeUserSpecificSettings(settingsForTestClient);
     }
 
@@ -144,7 +154,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     private void makeUserSpecificSettings(Settings settings) {
         settings.getCollectionSettings().getProtocolSettings().setCollectionDestination(
-        settings.getCollectionDestination() + getTopicPostfix());
+                settings.getCollectionDestination() + getTopicPostfix());
         settings.getCollectionSettings().getProtocolSettings().setAlarmDestination(
                 settings.getAlarmDestination() + getTopicPostfix());
     }
@@ -201,20 +211,17 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * Defines the general destinations used in the tests and adds listeners to the message bus.
      */
     protected void initializeMessageBusListeners() {
-        collectionReceiver = new MessageReceiver("Collection topic receiver", testEventManager);
-        messageBus.addListener(settingsForCUT.getCollectionDestination(), collectionReceiver.getMessageListener());
-
         alarmReceiver = new MessageReceiver("Alarm receiver", testEventManager);
         messageBus.addListener(settingsForCUT.getAlarmDestination(), alarmReceiver.getMessageListener());
     }
 
     protected void checkNoMessagesRemain() {
-        collectionReceiver.checkNoMessagesRemain();
-        alarmReceiver.checkNoMessagesRemain();;
+        if (alarmReceiver != null) {
+            alarmReceiver.checkNoMessagesRemain();
+        }
     }
 
     protected void teardownMessageBusListeners() {
-        messageBus.removeListener(settingsForCUT.getCollectionDestination(), collectionReceiver.getMessageListener());
         messageBus.removeListener(settingsForCUT.getAlarmDestination(), alarmReceiver.getMessageListener());
     }
 
@@ -243,7 +250,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * @throws Exception
      */
     protected void setupHttpServer() {
-
         httpServerConfiguration =
                 new HttpServerConfiguration(settingsForTestClient.getReferenceSettings().getFileExchangeSettings());
         if (useEmbeddedHttpServer() && server == null) { // Note that the embedded server isn't fully functional yet

@@ -24,8 +24,6 @@
  */
 package org.bitrepository.pillar;
 
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
@@ -39,7 +37,6 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
 
     protected static String pillarDestinationId;
 
-    protected Settings clientSettings;
     protected String clientDestinationId;
     protected MessageReceiver clientTopic;
     
@@ -52,27 +49,23 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
     @Override
     protected void setupSettings() {
         super.setupSettings();
-        clientSettings = TestSettingsProvider.reloadSettings("TestClientForPillarTest");
-        clientSettings.getCollectionSettings().setCollectionID(settingsForCUT.getCollectionID());
-        clientSettings.getCollectionSettings().getProtocolSettings().setCollectionDestination(collectionDestinationID);
-
         settingsForCUT.getReferenceSettings().getPillarSettings().setPillarID(getPillarID());
     }
 
     @Override
-    protected void initializeMessageBusListeners() {
-        super.initializeMessageBusListeners();
+    protected void initializeCUT() {
         clientTopic = new MessageReceiver("Client topic receiver", testEventManager);
-        clientDestinationId = clientSettings.getReceiverDestinationID();
+        clientDestinationId = settingsForTestClient.getReceiverDestinationID();
         messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());
 
         pillarDestinationId = settingsForCUT.getContributorDestinationID();
     }
 
     @Override
-    protected void teardownMessageBusListeners() {
-        messageBus.removeListener(clientDestinationId, clientTopic.getMessageListener());
-        super.teardownMessageBusListeners();
+    protected void shutdownCUT() {
+        if (messageBus != null && clientTopic != null) {
+            messageBus.removeListener(clientDestinationId, clientTopic.getMessageListener());
+        }
     }
 
     protected String getPillarID() {

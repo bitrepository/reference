@@ -54,7 +54,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
     
     @BeforeMethod (alwaysRun=true)
     public void initialisePutFileTests() throws Exception {
-        msgFactory = new PutFileMessageFactory(clientSettings, getPillarID(), pillarDestinationId);
+        msgFactory = new PutFileMessageFactory(settingsForTestClient, getPillarID(), pillarDestinationId);
         FILE_ADDRESS = httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID).toExternalForm();
     }
 

@@ -21,7 +21,6 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
-import java.lang.reflect.Method;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -34,17 +33,15 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRespo
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.messagefactories.DeleteFileMessageFactory;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
     private DeleteFileMessageFactory msgFactory;
 
     @Override
-    @BeforeMethod(alwaysRun = true)
-    public void beforeMethod(Method testMethod) {
-        super.beforeMethod(testMethod);
-        msgFactory = new DeleteFileMessageFactory(clientSettings, getPillarID(), pillarDestinationId);
+    public void initializeCUT() {
+        super.initializeCUT();
+        msgFactory = new DeleteFileMessageFactory(settingsForTestClient, getPillarID(), pillarDestinationId);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})

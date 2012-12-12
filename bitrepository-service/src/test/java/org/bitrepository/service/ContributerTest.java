@@ -40,22 +40,23 @@ public abstract class ContributerTest extends IntegrationTest {
     protected static final BigInteger defaultTime = BigInteger.valueOf(3000);
 
     @Override
-    protected void teardownMessageBusListeners() {
-        messageBus.removeListener(clientDestinationId, clientTopic.getMessageListener());
-        messageBus.removeListener(contributorDestinationId, contributorDestination.getMessageListener());
-        super.teardownMessageBusListeners();
-    }
-
-    @Override
     protected void initializeMessageBusListeners() {
         super.initializeMessageBusListeners();
         clientDestinationId = settingsForCUT.getReceiverDestinationID();
         clientTopic = new MessageReceiver("Client topic receiver", testEventManager);
 
-        contributorDestinationId =  collectionDestinationID + "-" +  getContributorID() + "-" + getTopicPostfix();
+        contributorDestinationId =
+                settingsForCUT.getCollectionDestination() + "-" +  getContributorID() + "-" + getTopicPostfix();
         contributorDestination = new MessageReceiver(contributorDestinationId + " topic receiver", testEventManager);
         messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());
         messageBus.addListener(contributorDestinationId, contributorDestination.getMessageListener());
+    }
+
+    @Override
+    protected void teardownMessageBusListeners() {
+        messageBus.removeListener(clientDestinationId, clientTopic.getMessageListener());
+        messageBus.removeListener(contributorDestinationId, contributorDestination.getMessageListener());
+        super.teardownMessageBusListeners();
     }
 
     protected abstract String getContributorID();

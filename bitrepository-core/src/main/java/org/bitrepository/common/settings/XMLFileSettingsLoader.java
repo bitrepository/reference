@@ -26,6 +26,7 @@ package org.bitrepository.common.settings;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.bitrepository.common.JaxbHelper;
@@ -51,12 +52,12 @@ public class XMLFileSettingsLoader implements SettingsLoader {
     private static final String XSD_FILE_EXTENSION = ".xsd";
     /** xsd schema directory constant */
     private static final String XSD_SCHEMA_DIR = "xsd/";
-    
+
     /**
      * Creates a new loader
      * @param pathToSettingsFiles The location of the files to load. The settings xml files are assume to be placed as
      * ${CONFIGURATION_CLASS}.xml under this directory.
-     * 
+     *
      */
     public XMLFileSettingsLoader(String pathToSettingsFiles) {
         this.pathToSettingsFiles = pathToSettingsFiles;
@@ -77,26 +78,36 @@ public class XMLFileSettingsLoader implements SettingsLoader {
         String fileLocation = fileLocationBuilder.toString();
         String schemaLocation = settingsClass.getSimpleName() + XSD_FILE_EXTENSION;
         JaxbHelper jaxbHelper = new JaxbHelper(XSD_SCHEMA_DIR, schemaLocation);
-
-        InputStream configStreamLoad = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileLocation);
-        InputStream configStreamValidate = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileLocation);
-        if (configStreamLoad == null) {
+        InputStream configStreamLoad = null;
+        InputStream configStreamValidate = null;
+        try {
+            configStreamLoad = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileLocation);
+            configStreamValidate = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileLocation);
+            if (configStreamLoad == null) {
+                try {
+                    configStreamLoad = new FileInputStream(fileLocation);
+                    configStreamValidate = new FileInputStream(fileLocation);
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException("Unable to load settings from " + fileLocation, e);
+                }
+            }
+            log.debug("Loading the settings file '" + fileLocation + "'.");
             try {
-                configStreamLoad = new FileInputStream(fileLocation);
-                configStreamValidate = new FileInputStream(fileLocation);
-            } catch (FileNotFoundException e) {
+                jaxbHelper.validate(configStreamValidate);
+                return (T) jaxbHelper.loadXml(settingsClass, configStreamLoad);
+            } catch (SAXException e) {
+                throw new RuntimeException("Unable to validate settings from " +
+                        Thread.currentThread().getContextClassLoader().getResource(fileLocation), e);
+            } catch (Exception e) {
                 throw new RuntimeException("Unable to load settings from " + fileLocation, e);
             }
-        }
-        log.debug("Loading the settings file '" + fileLocation + "'.");
-        try {
-            jaxbHelper.validate(configStreamValidate);
-            return (T) jaxbHelper.loadXml(settingsClass, configStreamLoad);
-        } catch (SAXException e) {
-            throw new RuntimeException("Unable to validate settings from " + 
-                    Thread.currentThread().getContextClassLoader().getResource(fileLocation), e);
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to load settings from " + fileLocation, e);
+        } finally {
+            try {
+                if (configStreamLoad != null) configStreamLoad.close();
+                if (configStreamValidate != null) configStreamValidate.close();
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to close inputstream", e);
+            }
         }
     }
 }
