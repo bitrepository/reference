@@ -32,7 +32,6 @@ import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEve
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.slf4j.Logger;
@@ -123,8 +122,7 @@ public class IntegrityCollectorEventHandler implements EventHandler {
             }
         } else if(event instanceof FileIDsCompletePillarEvent) {
             FileIDsCompletePillarEvent fileidEvent = (FileIDsCompletePillarEvent) event;
-            store.addFileIDs(fileidEvent.getFileIDs().getFileIDsData(), FileIDsUtils.getAllFileIDs(), 
-                    fileidEvent.getContributorID());
+            store.addFileIDs(fileidEvent.getFileIDs().getFileIDsData(), fileidEvent.getContributorID());
             if(fileidEvent.isPartialResult()) {
                 contributorsWithPartialResults.add(fileidEvent.getContributorID());
             }

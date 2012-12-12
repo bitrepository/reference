@@ -33,7 +33,6 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.integrityservice.TestIntegrityModel;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
@@ -193,7 +192,7 @@ public class ChecksumIntegrityValidatorTest extends ExtendedTestCase {
         
         addStep("Add new fileids for one pillar", "The given pillar should have ChecksumState 'UNKNOWN', the others 'VALID'");
         FileIDsData fileidData = createFileIdData(FILE_1);
-        cache.addFileIDs(fileidData, FileIDsUtils.getAllFileIDs(), TEST_PILLAR_3);
+        cache.addFileIDs(fileidData, TEST_PILLAR_3);
         
         for(FileInfo fi : cache.getFileInfos(FILE_1)) {
             if(fi.getPillarId().equals(TEST_PILLAR_3)) {

@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
@@ -128,8 +127,8 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         
         addStep("Create data", "Should be ingested into the database");
         FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
-        model.addFileIDs(data1, getAllFileIDs(), TEST_PILLAR_1);
-        model.addFileIDs(data1, getAllFileIDs(), TEST_PILLAR_2);
+        model.addFileIDs(data1, TEST_PILLAR_1);
+        model.addFileIDs(data1, TEST_PILLAR_2);
         
         addStep("Extract the data", "Should be identical to the ingested data");
         Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID);
@@ -174,8 +173,8 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
 
         addStep("Create data", "Should be ingested into the database");
         FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
-        model.addFileIDs(data1, getAllFileIDs(), TEST_PILLAR_1);
-        model.addFileIDs(data1, getAllFileIDs(), TEST_PILLAR_2);
+        model.addFileIDs(data1, TEST_PILLAR_1);
+        model.addFileIDs(data1, TEST_PILLAR_2);
         
         Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID);
         Assert.assertNotNull(fileinfos);
@@ -195,8 +194,8 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
 
         addStep("Create data", "Should be ingested into the database");
         FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
-        model.addFileIDs(data1, getAllFileIDs(), TEST_PILLAR_1);
-        model.addFileIDs(data1, getAllFileIDs(), TEST_PILLAR_2);
+        model.addFileIDs(data1, TEST_PILLAR_1);
+        model.addFileIDs(data1, TEST_PILLAR_2);
         
         Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID);
         Assert.assertNotNull(fileinfos);
@@ -207,38 +206,6 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         
         addStep("Set the file to missing", "Should change state.");
         model.setFileMissing(TEST_FILE_ID, Arrays.asList(TEST_PILLAR_1));
-        fileinfos = model.getFileInfos(TEST_FILE_ID);
-        Assert.assertNotNull(fileinfos);
-        Assert.assertEquals(fileinfos.size(), 2);
-        for(FileInfo fi : fileinfos) {
-            if(fi.getPillarId().equals(TEST_PILLAR_2)) {
-                Assert.assertEquals(fi.getFileState(), FileState.EXISTING);
-            } else {
-                Assert.assertEquals(fi.getFileState(), FileState.MISSING);
-            }
-        }
-    }
-    
-    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
-    public void testFileMissingThroughUpdate() throws Exception {
-        addDescription("Tests that updating file ids can result in a missing file.");
-        IntegrityModel model = new IntegrityDatabase(settings);
-
-        addStep("Create data", "Should be ingested into the database");
-        FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
-        model.addFileIDs(data1, getAllFileIDs(), TEST_PILLAR_1);
-        model.addFileIDs(data1, getAllFileIDs(), TEST_PILLAR_2);
-        
-        Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID);
-        Assert.assertNotNull(fileinfos);
-        Assert.assertEquals(fileinfos.size(), 2);
-        for(FileInfo fi : fileinfos) {
-            Assert.assertEquals(fi.getFileState(), FileState.EXISTING);
-        }
-        
-        addStep("Add file ids, but without any content", "Should change state.");
-        FileIDsData data2 = getFileIDsData();
-        model.addFileIDs(data2, getSpecificFileIDs(TEST_FILE_ID), TEST_PILLAR_1);
         fileinfos = model.getFileInfos(TEST_FILE_ID);
         Assert.assertNotNull(fileinfos);
         Assert.assertEquals(fileinfos.size(), 2);
@@ -337,18 +304,6 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         } 
         
         res.setFileIDsDataItems(items);
-        return res;
-    }
-    
-    private FileIDs getAllFileIDs() {
-        FileIDs res = new FileIDs();
-        res.setAllFileIDs("true");
-        return res;
-    }
-    
-    private FileIDs getSpecificFileIDs(String fileId) {
-        FileIDs res = new FileIDs();
-        res.setFileID(fileId);
         return res;
     }
 }

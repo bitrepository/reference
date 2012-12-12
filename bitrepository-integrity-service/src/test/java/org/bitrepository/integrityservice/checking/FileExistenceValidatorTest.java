@@ -24,7 +24,6 @@ package org.bitrepository.integrityservice.checking;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
@@ -79,8 +78,8 @@ public class FileExistenceValidatorTest extends ExtendedTestCase {
         
         addStep("Add data to the cache", "");
         FileIDsData fileidData = createFileIdData(FILE_1);
-        cache.addFileIDs(fileidData, getAllFileIDs(), TEST_PILLAR_1);
-        cache.addFileIDs(fileidData, getAllFileIDs(), TEST_PILLAR_2);
+        cache.addFileIDs(fileidData, TEST_PILLAR_1);
+        cache.addFileIDs(fileidData, TEST_PILLAR_2);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
         Assert.assertFalse(validator.generateReport(cache.getAllFileIDs()).hasIntegrityIssues());
@@ -94,7 +93,7 @@ public class FileExistenceValidatorTest extends ExtendedTestCase {
         
         addStep("Add data to the cache for only one pillar", "");
         FileIDsData fileidData = createFileIdData(FILE_1);
-        cache.addFileIDs(fileidData, getAllFileIDs(), TEST_PILLAR_1);
+        cache.addFileIDs(fileidData, TEST_PILLAR_1);
         
         addStep("Validate the file ids", "Should be missing at pillar 2.");
         MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs());
@@ -113,8 +112,8 @@ public class FileExistenceValidatorTest extends ExtendedTestCase {
         
         addStep("Add data to the cache for only one pillar", "");
         FileIDsData fileidData = createFileIdData(FILE_1);
-        cache.addFileIDs(fileidData, getAllFileIDs(), TEST_PILLAR_1);
-        cache.addFileIDs(fileidData, getAllFileIDs(), TEST_PILLAR_2);
+        cache.addFileIDs(fileidData, TEST_PILLAR_1);
+        cache.addFileIDs(fileidData, TEST_PILLAR_2);
         cache.setFileMissing(FILE_1, Arrays.asList(TEST_PILLAR_1));
         
         addStep("Validate the file ids", "Should be missing at pillar 1.");
@@ -134,7 +133,7 @@ public class FileExistenceValidatorTest extends ExtendedTestCase {
         
         addStep("Add data to the cache for only one pillar", "");
         FileIDsData fileidData = createFileIdData(FILE_1);
-        cache.addFileIDs(fileidData, getAllFileIDs(), TEST_PILLAR_1);
+        cache.addFileIDs(fileidData, TEST_PILLAR_1);
         cache.setFileMissing(FILE_1, Arrays.asList(TEST_PILLAR_1));
         
         addStep("Validate the file ids", "Should be missing at pillar 1.");
@@ -162,11 +161,4 @@ public class FileExistenceValidatorTest extends ExtendedTestCase {
     private IntegrityModel getIntegrityModel() {
         return new TestIntegrityModel(settings.getCollectionSettings().getClientSettings().getPillarIDs());
     }
-    
-    private FileIDs getAllFileIDs() {
-        FileIDs res = new FileIDs();
-        res.setAllFileIDs("true");
-        return res;
-    }
-
 }
