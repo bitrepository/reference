@@ -43,7 +43,6 @@ import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -61,23 +60,10 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         FILE_ADDRESS = httpServer.getURL("test.txt").toExternalForm();
     }
 
-    @AfterMethod (alwaysRun=true) 
-    public void closeArchive() {
-        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0));
-        if(dir.exists()) {
-            FileUtils.delete(dir);
-        }
-        
-        if(mediator != null) {
-            mediator.close();
-        }
-    }
-    
     @Test( groups = {"regressiontest", "pillartest"})
     public void pillarGetFileTestSuccessCase() throws Exception {
         addDescription("Tests the get functionality of the reference pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         FilePart filePart = null;
         ChecksumDataForFileTYPE csData = null;
@@ -103,56 +89,24 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
-        Assert.assertEquals(receivedIdentifyResponse, 
-                msgFactory.createIdentifyPillarsForGetFileResponse(
-                        identifyRequest.getCorrelationID(),
-                        FILE_ID, 
-                        pillarId,
-                        receivedIdentifyResponse.getReplyTo(),
-                        receivedIdentifyResponse.getResponseInfo(),
-                        receivedIdentifyResponse.getTimeToDeliver(),
-                        receivedIdentifyResponse.getTo()));
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
         
         addStep("Create and send the actual GetFile message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, 
-                receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, getPillarID(), pillarId, 
+                receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, getPillarID(), getPillarID(),
                 clientDestinationId, receivedIdentifyResponse.getReplyTo());
         messageBus.sendMessage(getRequest);
         
         addStep("Retrieve the ProgressResponse for the GetFile request", 
                 "The GetFile progress response should be sent by the pillar.");
-        GetFileProgressResponse progressResponse = clientTopic.waitForMessage(GetFileProgressResponse.class);
-        Assert.assertEquals(progressResponse,
-                msgFactory.createGetFileProgressResponse(
-                        csData, 
-                        identifyRequest.getCorrelationID(), 
-                        progressResponse.getFileAddress(), 
-                        progressResponse.getFileID(), 
-                        filePart,
-                        pillarId, 
-                        FILE_SIZE,
-                        progressResponse.getResponseInfo(), 
-                        progressResponse.getReplyTo(), 
-                        progressResponse.getTo()));
-        
+        clientTopic.waitForMessage(GetFileProgressResponse.class);
+
         addStep("Retrieve the FinalResponse for the GetFile request", 
                 "The GetFile response should be sent by the pillar.");
         GetFileFinalResponse finalResponse = clientTopic.waitForMessage(GetFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-        
-        Assert.assertEquals(finalResponse,
-                msgFactory.createGetFileFinalResponse(
-                        identifyRequest.getCorrelationID(), 
-                        finalResponse.getFileAddress(), 
-                        finalResponse.getFileID(), 
-                        filePart,
-                        pillarId, 
-                        finalResponse.getReplyTo(), 
-                        finalResponse.getResponseInfo(), 
-                        finalResponse.getTo()));
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         Assert.assertEquals(audits.getCallsForAuditEvent(), 1, "Should deliver 1 audit. Handling of the GetFile "
@@ -163,7 +117,6 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFilePartTest() throws Exception {
         addDescription("Tests the get functionality of the reference pillar for a file part. Successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         FilePart filePart = new FilePart();
         filePart.setPartLength(BigInteger.ONE);
@@ -173,7 +126,6 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         addStep("Move the test file into the file directory.", "Should be all-right");
         File testfile = new File("src/test/resources/" + DEFAULT_FILE_ID);
         Assert.assertTrue(testfile.isFile(), "The test file does not exist at '" + testfile.getAbsolutePath() + "'.");
-        Long FILE_SIZE = testfile.length();
         String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
         
         File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0) + "/fileDir");
@@ -184,42 +136,19 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         addStep("Create and send the actual GetFile message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, 
-                msgFactory.getNewCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, getPillarID(), pillarId, 
+                msgFactory.getNewCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, getPillarID(), getPillarID(),
                 clientDestinationId, pillarDestinationId);
         messageBus.sendMessage(getRequest);
         
         addStep("Retrieve the ProgressResponse for the GetFile request", 
                 "The GetFile progress response should be sent by the pillar.");
-        GetFileProgressResponse progressResponse = clientTopic.waitForMessage(GetFileProgressResponse.class);
-        Assert.assertEquals(progressResponse,
-                msgFactory.createGetFileProgressResponse(
-                        csData, 
-                        getRequest.getCorrelationID(), 
-                        FILE_ADDRESS, 
-                        progressResponse.getFileID(), 
-                        filePart,
-                        pillarId, 
-                        FILE_SIZE,
-                        progressResponse.getResponseInfo(), 
-                        progressResponse.getReplyTo(), 
-                        progressResponse.getTo()));
+        Assert.assertNotNull(clientTopic.waitForMessage(GetFileProgressResponse.class));
         
         addStep("Retrieve the FinalResponse for the GetFile request", 
                 "The GetFile response should be sent by the pillar.");
         GetFileFinalResponse finalResponse = clientTopic.waitForMessage(GetFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-        
-        Assert.assertEquals(finalResponse,
-                msgFactory.createGetFileFinalResponse(
-                        getRequest.getCorrelationID(), 
-                        FILE_ADDRESS, 
-                        finalResponse.getFileID(), 
-                        filePart,
-                        pillarId, 
-                        finalResponse.getReplyTo(), 
-                        finalResponse.getResponseInfo(), 
-                        finalResponse.getTo()));
-        
+
         addStep("Validate the uploaded result-file.", "Should only contain the second letter of the file, which is a "
                 + "'A'. Any following extracted bytes should have the value '-1'.");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(settingsForCUT);
@@ -235,7 +164,6 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFileTestFailedNoSuchFile() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetFile requests for a file, which it does not have.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         
         addStep("Move the test file into the file directory.", "Should be all-right");
@@ -251,15 +179,6 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
-        Assert.assertEquals(receivedIdentifyResponse, 
-                msgFactory.createIdentifyPillarsForGetFileResponse(
-                        identifyRequest.getCorrelationID(),
-                        FILE_ID, 
-                        pillarId,
-                        receivedIdentifyResponse.getReplyTo(),
-                        receivedIdentifyResponse.getResponseInfo(),
-                        receivedIdentifyResponse.getTimeToDeliver(),
-                        receivedIdentifyResponse.getTo()));
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.FILE_NOT_FOUND_FAILURE);        
     }
@@ -268,7 +187,6 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGetFileTestFailedNoSuchFileInOperation() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetFile requests for a file, which it does not have.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         FilePart filePart = null;
         
@@ -280,7 +198,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         addStep("Create and send the actual GetFile message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, 
-                msgFactory.getNewCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, getPillarID(), pillarId, 
+                msgFactory.getNewCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, getPillarID(), getPillarID(),
                 clientDestinationId, pillarDestinationId);
         messageBus.sendMessage(getRequest);
         
@@ -288,17 +206,6 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
                 "The GetFile response should be sent by the pillar.");
         GetFileFinalResponse finalResponse = clientTopic.waitForMessage(GetFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
-        
-        Assert.assertEquals(finalResponse,
-                msgFactory.createGetFileFinalResponse(
-                        getRequest.getCorrelationID(),
-                        finalResponse.getFileAddress(), 
-                        finalResponse.getFileID(), 
-                        filePart,
-                        pillarId, 
-                        finalResponse.getReplyTo(), 
-                        finalResponse.getResponseInfo(), 
-                        finalResponse.getTo()));     
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -327,7 +234,6 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
     public void pillarGeneralTestWrongPillarID() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetFile requests with a wrong pillarID.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         String auditTrail = null;
         FilePart filePart = null;
         
@@ -351,24 +257,15 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
-        Assert.assertEquals(receivedIdentifyResponse, 
-                msgFactory.createIdentifyPillarsForGetFileResponse(
-                        identifyRequest.getCorrelationID(),
-                        FILE_ID, 
-                        pillarId,
-                        receivedIdentifyResponse.getReplyTo(),
-                        receivedIdentifyResponse.getResponseInfo(),
-                        receivedIdentifyResponse.getTimeToDeliver(),
-                        receivedIdentifyResponse.getTo()));
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
         
         addStep("Create and send the actual GetFile message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, 
-                receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, getPillarID(), pillarId, 
+                receivedIdentifyResponse.getCorrelationID(), FILE_ADDRESS, FILE_ID, filePart, getPillarID(), getPillarID(),
                 clientDestinationId, receivedIdentifyResponse.getReplyTo());
-        getRequest.setPillarID(pillarId + "-ERROR");
+        getRequest.setPillarID(getPillarID() + "-ERROR");
         messageBus.sendMessage(getRequest);
         
         // TODO fix this!

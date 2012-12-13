@@ -326,19 +326,16 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
 
 
     @Override
-    protected MessageResponse createIdentifyResponse(MessageRequest identifyRequest, String from, String to, ResponseCode responseCode) {
+    protected MessageResponse createIdentifyResponse(MessageRequest identifyRequest, String from, String to) {
         MessageResponse response = testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
             (IdentifyPillarsForGetChecksumsRequest) identifyRequest, from, to);
-        response.setResponseInfo(new ResponseInfo());
-        response.getResponseInfo().setResponseCode(responseCode);
         return response;
     }
 
     @Override
-    protected MessageResponse createFinalResponse(MessageRequest request, String from, String to, ResponseCode responseCode) {
+    protected MessageResponse createFinalResponse(MessageRequest request, String from, String to) {
         MessageResponse response =  testMessageFactory.createGetChecksumsFinalResponse(
             (GetChecksumsRequest) request, from, to);
-        response.getResponseInfo().setResponseCode(responseCode);
         return response;
     }
 
@@ -360,6 +357,6 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
     @Override
     protected void startOperation(TestEventHandler testEventHandler) {
         GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
-        getChecksumsClient.getChecksums((ContributorQuery[])null, null, null, null, testEventHandler, null);
+        getChecksumsClient.getChecksums(null, null, null, null, testEventHandler, null);
     }
 }

@@ -100,7 +100,7 @@ public abstract class AbstractContributorMediator implements ContributorMediator
                     if (MessageUtils.isIdentifyRequest(message)) {
                         log.trace("Received unhandled identity request: \n{}", message);
                     } else
-                    log.warn("Received unhandled message: \n{}", message);
+                    log.warn("Unable to handle messages of this type: \n{}", message);
                 }
             } else {
                 log.trace("Can only handle message requests, but received: \n{}", message);
@@ -113,7 +113,6 @@ public abstract class AbstractContributorMediator implements ContributorMediator
     */
     @Override
     public void close() {
-        handlerMap.clear();
         messageBus.removeListener(getContext().getSettings().getCollectionDestination(), messageHandler);
         messageBus.removeListener(getContext().getSettings().getReceiverDestinationID(), messageHandler);
     }

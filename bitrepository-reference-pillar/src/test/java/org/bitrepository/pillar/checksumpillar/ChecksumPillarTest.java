@@ -34,34 +34,35 @@ import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 
 public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
     protected MemoryCache cache;
     protected ChecksumPillarMediator mediator;
-    protected PillarAlarmDispatcher alarmDispatcher;
     protected MockAuditManager audits;
     protected MessageHandlerContext context;
     protected ChecksumSpecTYPE csSpec;
     protected ChecksumDataForFileTYPE csData;
     protected static String DEFAULT_MD5_CHECKSUM = "1234cccccccc4321";
 
-    @BeforeMethod(alwaysRun=true)
-    public void initialiseChecksumPillarTest() throws Exception {
+    @Override
+    protected void initializeCUT() {
+        super.initializeCUT();
         cache = new MemoryCache();
         audits = new MockAuditManager();
         createChecksumPillar();
+    }
+
+    @Override
+    protected void shutdownCUT() {
+        shutdownMediator();
+        super.shutdownCUT();
     }
 
     /**
      * Used for creating a 'clean' checksum pillar based on the current configuration.
      */
     protected void createChecksumPillar() {
-        // Shutdown any existing mediator.
-        if(mediator != null) {
-            mediator.close();
-        }
+        shutdownMediator();
         addFixtureSetup("Initialize a new checksumPillar.");
         context = new MessageHandlerContext(settingsForCUT,
             new ResponseDispatcher(settingsForCUT, messageBus),
@@ -81,24 +82,19 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
 
     }
 
-    @AfterMethod(alwaysRun=true)
-    public void closeArchive() {
-        if(cache != null) {
-            cache.cleanUp();
-        }
+    public void shutdownMediator() {
         if(mediator != null) {
             mediator.close();
+            mediator = null;
         }
     }
 
     @Override
     protected String getComponentID() {
-        return "ChecksumPillarUnderTest";
+        return "ChecksumPillar-" + testMethodName;
     }
     
     protected void initializeCacheWithMD5ChecksummedFile() {
-        addFixtureSetup("Initialize the Checksum pillar cache with the default file checksum.");
-
         cache.insertChecksumCalculation(DEFAULT_FILE_ID, DEFAULT_MD5_CHECKSUM, new Date());
     }
 }

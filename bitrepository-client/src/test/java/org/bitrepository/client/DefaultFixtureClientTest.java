@@ -24,14 +24,11 @@
  */
 package org.bitrepository.client;
 
-import java.lang.reflect.Method;
 import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 
 /**
  * Contains the generic parts for tests integrating to the message bus. 
@@ -39,33 +36,25 @@ import org.testng.annotations.BeforeMethod;
 public abstract class DefaultFixtureClientTest extends IntegrationTest {
     protected static final String DEFAULT_FILE_ID = ClientTestMessageFactory.FILE_ID_DEFAULT;
 
-    protected static String clientDestinationId;
-    protected MessageReceiver clientReceiver;
+    protected static MessageReceiver collectionReceiver;
 
     protected static String pillar1DestinationId;
-    protected MessageReceiver pillar1Receiver;
+    protected static MessageReceiver pillar1Receiver;
     protected static final String PILLAR1_ID = "Pillar1";
 
     protected static String pillar2DestinationId;
-    protected MessageReceiver pillar2Receiver;
+    protected static MessageReceiver pillar2Receiver;
     protected static final String PILLAR2_ID = "Pillar2";
 
-    protected static ConversationMediator conversationMediator;
+    protected ConversationMediator conversationMediator;
 
-    /**
-     *
-     * @param method Injected by TestNG. Used for logging purposes, eg. to make it visible which method has been
-     *               at work.
-     */
-    @BeforeMethod(alwaysRun = true)
-    public void beforeMethod(Method method) {
-        super.beforeMethod(method);
+    @Override
+    protected void initializeCUT() {
         renewConversationMediator();
     }
-    @AfterMethod(alwaysRun = true)
-    public void afterMethod() {
-        conversationMediator.shutdown();
-        super.afterMethod();
+    @Override
+    protected void shutdownCUT() {
+        shutdownConversationMediator();
     }
 
     /**
@@ -86,33 +75,44 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
 
     @Override
     protected void checkNoMessagesRemain() {
-        clientReceiver.checkNoMessagesRemain();
+        super.checkNoMessagesRemain();
+        collectionReceiver.checkNoMessagesRemain();;
         pillar1Receiver.checkNoMessagesRemain();
         pillar2Receiver.checkNoMessagesRemain();
     }
 
     @Override
-    protected void teardownMessageBusListeners() {
-        IntegrationTest.messageBus.removeListener(clientDestinationId, clientReceiver.getMessageListener());
-        IntegrationTest.messageBus.removeListener(pillar1DestinationId, pillar1Receiver.getMessageListener());
-        IntegrationTest.messageBus.removeListener(pillar2DestinationId, pillar2Receiver.getMessageListener());
-        super.teardownMessageBusListeners();
-    }
-    
-    @Override
     protected void initializeMessageBusListeners() {
         super.initializeMessageBusListeners();
-        clientDestinationId = IntegrationTest.settingsForCUT.getReceiverDestinationID();
+        collectionReceiver = new MessageReceiver("Collection topic receiver", testEventManager);
+        messageBus.addListener(settingsForCUT.getCollectionDestination(), collectionReceiver.getMessageListener());
+
         pillar1DestinationId = "Pillar1_topic" + getTopicPostfix();
-        pillar2DestinationId = "Pillar2_topic" + getTopicPostfix();
-        
-        clientReceiver = new MessageReceiver("Client topic receiver", IntegrationTest.testEventManager);
         pillar1Receiver = new MessageReceiver("Pillar1 topic receiver", IntegrationTest.testEventManager);
+        messageBus.addListener(pillar1DestinationId, pillar1Receiver.getMessageListener());
+
+        pillar2DestinationId = "Pillar2_topic" + getTopicPostfix();
         pillar2Receiver = new MessageReceiver("Pillar2 topic receiver", IntegrationTest.testEventManager);
-        IntegrationTest.messageBus.addListener(clientDestinationId, clientReceiver.getMessageListener());
-        IntegrationTest.messageBus.addListener(pillar1DestinationId, pillar1Receiver.getMessageListener());
-        IntegrationTest.messageBus.addListener(pillar2DestinationId, pillar2Receiver.getMessageListener());
+        messageBus.addListener(pillar2DestinationId, pillar2Receiver.getMessageListener());
     }
+
+    @Override
+    protected void teardownMessageBusListeners() {
+        if (collectionReceiver != null) {
+            collectionReceiver.checkNoMessagesRemain();
+            messageBus.removeListener(settingsForCUT.getCollectionDestination(), collectionReceiver.getMessageListener());
+        }
+        if (pillar1Receiver != null) {
+            pillar1Receiver.checkNoMessagesRemain();
+            messageBus.removeListener(pillar1DestinationId, pillar1Receiver.getMessageListener());
+        }
+        if (pillar2Receiver != null) {
+            pillar2Receiver.checkNoMessagesRemain();
+            messageBus.removeListener(pillar2DestinationId, pillar2Receiver.getMessageListener());
+        }
+        super.teardownMessageBusListeners();
+    }
+
 
     /**
      * Used for creating a new conversationMediator between tests, and for tests needing to use a differently configured
@@ -123,5 +123,12 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
             conversationMediator.shutdown();
         }
         conversationMediator = new CollectionBasedConversationMediator(settingsForCUT, securityManager);
+    }
+
+    private void shutdownConversationMediator() {
+        if (conversationMediator != null) {
+            conversationMediator.shutdown();
+        }
+        conversationMediator = null;
     }
 }

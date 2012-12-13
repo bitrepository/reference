@@ -54,7 +54,7 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
 
     @BeforeMethod (alwaysRun=true)
     public void initialiseDeleteFileTests() throws Exception {
-        msgFactory = new DeleteFileMessageFactory(clientSettings, getPillarID(), pillarDestinationId);
+        msgFactory = new DeleteFileMessageFactory(settingsForTestClient, getPillarID(), pillarDestinationId);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})

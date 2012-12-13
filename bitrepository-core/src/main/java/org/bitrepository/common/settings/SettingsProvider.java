@@ -39,7 +39,7 @@ public class SettingsProvider {
     private Settings settings;
     private String componentID;
     private ReferenceSettings referenceSettings;
-    
+
     /**
      * Creates a <code>SettingsProvider</code> which will use the provided <code>SettingsLoader</code> for loading the 
      * settings.
@@ -61,18 +61,18 @@ public class SettingsProvider {
         }
         return settings;
     }
-    
+
     /**
-    * Will load the settings from disk. Will overwrite any settings already in the provider.
-    */
+     * Will load the settings from disk. Will overwrite any settings already in the provider.
+     */
     public synchronized void reloadSettings() {
-    	CollectionSettings collectionSettings = settingsReader.loadSettings(CollectionSettings.class);
-    	ReferenceSettings referenceSettings = settingsReader.loadSettings(ReferenceSettings.class);
+        CollectionSettings collectionSettings = settingsReader.loadSettings(CollectionSettings.class);
+        ReferenceSettings referenceSettings = settingsReader.loadSettings(ReferenceSettings.class);
 
         String receiverDestinationIDFactoryClass = null;
         if (referenceSettings.getGeneralSettings() != null) {
             receiverDestinationIDFactoryClass =
-                referenceSettings.getGeneralSettings().getReceiverDestinationIDFactoryClass();
+                    referenceSettings.getGeneralSettings().getReceiverDestinationIDFactoryClass();
         }
 
         DestinationHelper dh = new DestinationHelper(

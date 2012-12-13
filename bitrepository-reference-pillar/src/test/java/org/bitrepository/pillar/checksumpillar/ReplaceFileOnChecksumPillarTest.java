@@ -53,7 +53,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
 
     @BeforeMethod(alwaysRun=true)
     public void initialisePutFileTests() throws Exception {
-        msgFactory = new ReplaceFileMessageFactory(clientSettings, getPillarID(), pillarDestinationId);
+        msgFactory = new ReplaceFileMessageFactory(settingsForTestClient, getPillarID(), pillarDestinationId);
         FILE_ADDRESS = httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID).toExternalForm();
     }
 

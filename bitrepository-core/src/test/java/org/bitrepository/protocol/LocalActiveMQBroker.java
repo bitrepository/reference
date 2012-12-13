@@ -49,6 +49,7 @@ public class LocalActiveMQBroker {
     public void start() {
         try {
             broker.start();
+            broker.waitUntilStarted();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -56,6 +57,6 @@ public class LocalActiveMQBroker {
     
     public void stop() throws Exception {
         broker.stop();
-        Thread.sleep(1000);
+        broker.waitUntilStopped();
     }
 }

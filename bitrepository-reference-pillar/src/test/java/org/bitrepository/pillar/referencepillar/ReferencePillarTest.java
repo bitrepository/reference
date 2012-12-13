@@ -36,8 +36,6 @@ import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMe
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 
 public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     protected ReferenceArchive archive;
@@ -49,8 +47,9 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     
     protected final String EMPTY_FILE_CHECKSUM = "d41d8cd98f00b204e9800998ecf8427e";
 
-    @BeforeMethod(alwaysRun=true)
-    public void initialiseReferenceTest() throws Exception {
+    @Override
+    protected void initializeCUT() {
+        super.initializeCUT();
         File fileDir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0));
         if(fileDir.exists()) {
             FileUtils.delete(fileDir);
@@ -59,12 +58,14 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
         createReferencePillar();
     }
 
+    @Override
+    protected void shutdownCUT() {
+        shutdownMediator();
+        super.shutdownCUT();
+    }
+
     protected void createReferencePillar() {
-        // Shutdown any existing mediator.
-        if(mediator != null) {
-            mediator.close();
-        }
-        addStep("Initialize the pillar.", "Should not be a problem.");
+        shutdownMediator();
         csCache = new MemoryCache();
         archive = new ReferenceArchive(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir());
         audits = new MockAuditManager();
@@ -79,22 +80,16 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
         mediator.start();
     }
 
-
-    @AfterMethod(alwaysRun=true)
-    public void closeArchive() {
-        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0));
-        if(dir.exists()) {
-            FileUtils.delete(dir);
-        }
-
+    public void shutdownMediator() {
         if(mediator != null) {
             mediator.close();
+            mediator = null;
         }
     }
 
     @Override
     protected String getComponentID() {
-        return "ReferencePillarUnderTest";
+        return "ReferencePillar-" + testMethodName;
     }
     
     protected void initializeArchiveWithEmptyFile() {

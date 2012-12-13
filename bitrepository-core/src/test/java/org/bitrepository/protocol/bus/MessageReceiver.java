@@ -90,7 +90,7 @@ public class MessageReceiver {
     }
     
     /**
-     * Corresponds to the {@link #waitForMessage(Class, long, TimeUnit)} method with a default timeout of 5 second.
+     * Corresponds to the {@link #waitForMessage(Class, long, TimeUnit)} method with a default timeout of 10 second.
      */
     public <T> T waitForMessage(Class<T> messageType) {
         return waitForMessage(messageType, 10, TimeUnit.SECONDS);
@@ -115,7 +115,7 @@ public class MessageReceiver {
         }
         long waitTime = System.currentTimeMillis()-startWait;
         if (message != null) {
-            log.debug("Received message in (" + waitTime + " ms): " + message);
+            log.debug("Read message after (" + waitTime + " ms): " + message);
         } else {
             log.info("Wait for " + messageType.getSimpleName() + " message timed out (" + waitTime + " ms).");
             Assert.fail("Wait for " + messageType.getSimpleName() + " message timed out (" + waitTime + " ms).");
@@ -151,11 +151,21 @@ public class MessageReceiver {
                 }
             }
             if (outstandingMessages.length() > 0 ) {
-                Assert.fail("Unhandled messages remain:" + outstandingMessages);
+                testEventManager.addResult("The following messages remain(" + name + ") : " + outstandingMessages);
             }
         }
     }
 
+    /**
+     * Clears the message in the queue.
+     */
+    public <T> void clearMessages() {
+        for (BlockingQueue messageQueue:messageModel.getMessageQueues()) {
+            if (!messageQueue.isEmpty()) {
+                messageQueue.clear();
+            }
+        }
+    }
 
     private class MessageModel {
         private Map<Class<?>, BlockingQueue<?>> messageMap = new HashMap<Class<?>, BlockingQueue<?>>();

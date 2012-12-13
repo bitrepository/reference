@@ -25,27 +25,42 @@
 package org.bitrepository.common.settings;
 
 
+import java.util.HashMap;
+import java.util.Map;
+import org.bitrepository.common.ArgumentValidator;
+
 /**
  * Helper class for easy access to the settings located in the <code>settings/xml</code> dir.
  */
 public class TestSettingsProvider {
+    private static final Map<String, SettingsProvider> settingsproviders = new HashMap<String, SettingsProvider>();
+
+    private static final String SETTINGS_LOCATION = "settings/xml/bitrepository-devel";
+
     /** 
      * Returns the settings for the collection defined by the COLLECTIONID_PROPERTY system variable if defined. If 
      * undefined the DEVELOPMENT_ENVIRONMENT settings will be loaded.
      */
     public static Settings getSettings(String componentID) {
-        return createSettingsProvider(componentID).getSettings();
+        return getSettingsProvider(componentID).getSettings();
     }
     
     /** 
      * Reloads the settings from disk.
      */
     public static Settings reloadSettings(String componentID) {
-        createSettingsProvider(componentID).reloadSettings();
+        getSettingsProvider(componentID).reloadSettings();
         return getSettings(componentID);
     }
 
-    private static SettingsProvider createSettingsProvider(String componentID) {
-        return new SettingsProvider(new XMLFileSettingsLoader("settings/xml/bitrepository-devel"), componentID);
+    private static SettingsProvider getSettingsProvider(String componentID) {
+        ArgumentValidator.checkNotNull(componentID, "componentID");
+        if (!settingsproviders.containsKey(componentID)) {
+            settingsproviders.put(componentID,
+                    new SettingsProvider(new XMLFileSettingsLoader(SETTINGS_LOCATION),
+                            componentID));
+        }
+
+        return settingsproviders.get(componentID);
     }
 }

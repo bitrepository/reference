@@ -52,7 +52,12 @@
   </ClientSettings>
 
   <GetAuditTrailSettings>
-    <ContributorIDs>test-pillar</ContributorIDs>
-    <ContributorIDs>integrity-service</ContributorIDs>
+    <ContributorIDs>Pillar1</ContributorIDs>
+    <ContributorIDs>Pillar2</ContributorIDs>
   </GetAuditTrailSettings>
+
+  <GetStatusSettings>
+    <ContributorIDs>Pillar1</ContributorIDs>
+    <ContributorIDs>Pillar2</ContributorIDs>
+  </GetStatusSettings>
 </CollectionSettings>

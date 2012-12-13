@@ -21,6 +21,9 @@
  */
 package org.bitrepository.audittrails.preserver;
 
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.net.URL;
 import org.bitrepository.audittrails.MockAuditStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
@@ -38,10 +41,6 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.net.URL;
 
 public class LocalAuditPreservationTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
@@ -92,8 +91,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 2);
         Assert.assertEquals(client.getCallsToPutFile(), 1);
     }
-    
-    @SuppressWarnings({ "deprecation" })
+
     @Test(groups = {"regressiontest"})
     public void auditPreservationIngestTest() throws Exception {
         addDescription("Tests the ingest of the audit trail preservation.");

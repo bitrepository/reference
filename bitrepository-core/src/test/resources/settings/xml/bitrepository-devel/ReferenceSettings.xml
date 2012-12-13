@@ -34,8 +34,8 @@
     <ConversationTimeout>3600000</ConversationTimeout>
   </ClientSettings>
   <PillarSettings>
-    <PillarID>test-pillar</PillarID>
-    <FileDir>test-archive</FileDir>
+    <PillarID>PillarUnderTest</PillarID>
+    <FileDir>target/test/referencepillar/file-archive</FileDir>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>
     <MaxAgeForChecksums>3600000</MaxAgeForChecksums>
@@ -95,6 +95,7 @@
   <FileExchangeSettings>
     <ProtocolType>HTTP</ProtocolType>
     <ServerName>sandkasse-01.kb.dk</ServerName>
+    <!-- <ServerName>regulus.statsbiblioteket.dk</ServerName> -->
     <Port>80</Port>
     <Path>/dav</Path>
   </FileExchangeSettings>
