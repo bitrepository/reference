@@ -127,6 +127,7 @@ public class ReferenceChecksumManager {
      * @param fileId The id of the file to recalculate its default checksum for.
      */
     public void recalculateChecksum(String fileId) {
+        log.info("Recalculating the checksum of file '" + fileId + "'.");
         File file = archive.getFile(fileId);
         String checksum = ChecksumUtils.generateChecksum(file, defaultChecksumSpec);
         cache.insertChecksumCalculation(fileId, checksum, new Date());
@@ -198,7 +199,6 @@ public class ReferenceChecksumManager {
     }
     
     /**
-<<<<<<< HEAD
      * TODO this should be in the database instead.
      * @param minTimeStamp The minimum date for the timestamp of the extracted file ids entries.
      * @param maxTimeStamp The maximum date for the timestamp of the extracted file ids entries.
@@ -240,16 +240,12 @@ public class ReferenceChecksumManager {
             res.reportMoreEntriesFound();
         }
         
-        System.err.println(res.getEntries());
-        System.err.println(sortedDateFileIDMap);
-        System.err.println(archive.getAllFileIds());
         return res;
     }
     
     /**
-=======
->>>>>>> refs/remotes/origin/master
      * Ensures that the cache has an non-deprecated checksum for the given file.
+     * Also validates, that the checksum is up to date with the file.
      * @param fileId The id of the file.
      */
     private void ensureChecksumState(String fileId) {
@@ -257,9 +253,16 @@ public class ReferenceChecksumManager {
             log.debug("No checksum cached for file '" + fileId + "'. Calculating the checksum.");
             recalculateChecksum(fileId);
         } else {
+            long checksumDate = cache.getCalculationDate(fileId).getTime();
             long minDateForChecksum = System.currentTimeMillis() - maxAgeForChecksums;
-            if(cache.getCalculationDate(fileId).getTime() < minDateForChecksum) {
+            if(checksumDate < minDateForChecksum) {
                 log.info("The checksum for the file '" + fileId + "' is too old. Recalculating.");                
+                recalculateChecksum(fileId);
+                return;
+            } 
+            
+            if(checksumDate < archive.getFile(fileId).lastModified()) {
+                log.info("The last modified date for the file is newer than the latest checksum.");                
                 recalculateChecksum(fileId);
             }
         }
