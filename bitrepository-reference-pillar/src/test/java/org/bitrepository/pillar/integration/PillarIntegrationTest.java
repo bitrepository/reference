@@ -27,10 +27,16 @@ import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.pillar.PillarSettingsProvider;
 import org.bitrepository.pillar.integration.model.PillarFileManager;
 import org.bitrepository.protocol.IntegrationTest;
-import org.bitrepository.protocol.security.*;
+import org.bitrepository.protocol.security.BasicMessageAuthenticator;
+import org.bitrepository.protocol.security.BasicMessageSigner;
+import org.bitrepository.protocol.security.BasicOperationAuthorizor;
+import org.bitrepository.protocol.security.BasicSecurityManager;
+import org.bitrepository.protocol.security.MessageAuthenticator;
+import org.bitrepository.protocol.security.MessageSigner;
+import org.bitrepository.protocol.security.OperationAuthorizor;
+import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 
 /**
@@ -55,8 +61,9 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected PillarFileManager pillarFileManager;
     protected static ClientProvider clientProvider;
 
-    @BeforeMethod(alwaysRun = true)
-    public void initializePillarTest() {
+    @Override
+    protected void initializeCUT() {
+        super.initializeCUT();
         pillarFileManager = new PillarFileManager(
             getPillarID(), settingsForTestClient, clientProvider, testEventManager, httpServer);
     }
@@ -64,6 +71,8 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     @BeforeSuite(alwaysRun = true)
     @Override
     public void initializeSuite() {
+        testConfiguration =
+                new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
         super.initializeSuite();
         startEmbeddedReferencePillar();
         clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
@@ -92,25 +101,12 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         return testConfiguration.useEmbeddedMessagebus();
     }
 
-    @Override
-    protected void setupSettings() {
-        loadTestSettings();
-        super.setupSettings();
-    }
-
-
-    private void loadTestSettings() {
-        testConfiguration =
-                new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
-    }
-
     /** Loads the pillar test specific settings */
     @Override
     protected Settings loadSettings(String componentID) {
         SettingsProvider settingsLoader =
                 new PillarSettingsProvider(new XMLFileSettingsLoader(PATH_TO_CONFIG_DIR), componentID);
         return settingsLoader.getSettings();
-
     }
 
     protected String getPillarID() {
@@ -145,7 +141,6 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             return securityManager;
         }
     }
-
 
     @Override
     protected String getComponentID() {

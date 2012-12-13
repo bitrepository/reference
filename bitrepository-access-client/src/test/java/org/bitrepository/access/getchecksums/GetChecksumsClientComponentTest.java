@@ -105,7 +105,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         Collection<String> pillar1AsCollection = new LinkedList<String>();
         pillar1AsCollection.add(PILLAR1_ID);
         getChecksumsClient.getChecksums(new ContributorQuery[] {new ContributorQuery(PILLAR1_ID, null, null, null)},
-            DEFAULT_FILE_ID, DEFAULT_CHECKSUM_SPECS, null, testEventHandler, "TEST-AUDIT");
+                DEFAULT_FILE_ID, DEFAULT_CHECKSUM_SPECS, null, testEventHandler, "TEST-AUDIT");
 
         IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                 IdentifyPillarsForGetChecksumsRequest.class);
@@ -114,7 +114,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Sends a response from pillar2.",
-            "This should be ignored.");
+                "This should be ignored.");
         IdentifyPillarsForGetChecksumsResponse identifyResponse2 = testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
                 receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(identifyResponse2);
@@ -244,18 +244,16 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
 
         addStep("Send a error that the file cannot be found.", "Should trigger a 'event failed'.");
-        if (useMockupPillar()) {
-            GetChecksumsFinalResponse completeMsg = testMessageFactory.createGetChecksumsFinalResponse(
-                    receivedGetChecksumsRequest, PILLAR1_ID, pillar1DestinationId);
+        GetChecksumsFinalResponse completeMsg = testMessageFactory.createGetChecksumsFinalResponse(
+                receivedGetChecksumsRequest, PILLAR1_ID, pillar1DestinationId);
 
-            ResponseInfo rfInfo = new ResponseInfo();
-            rfInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            rfInfo.setResponseText("No such file.");
-            completeMsg.setResponseInfo(rfInfo);
-            completeMsg.setResultingChecksums(null);
+        ResponseInfo rfInfo = new ResponseInfo();
+        rfInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
+        rfInfo.setResponseText("No such file.");
+        completeMsg.setResponseInfo(rfInfo);
+        completeMsg.setResultingChecksums(null);
 
-            messageBus.sendMessage(completeMsg);
-        }
+        messageBus.sendMessage(completeMsg);
 
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
@@ -265,11 +263,11 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
     @Test(groups = {"regressiontest"})
     public void testPaging() throws Exception {
         addDescription("Tests the GetChecksums client correctly handles functionality for limiting results, either by " +
-            "timestamp or result count.");
+                "timestamp or result count.");
 
         GetChecksumsClient getFileIDsClient = createGetChecksumsClient();
         addStep("Request fileIDs from with MinTimestamp, MaxTimestamp, MaxNumberOfResults set for both pillars .",
-            "A IdentifyPillarsForGetChecksumsRequest should be sent.");
+                "A IdentifyPillarsForGetChecksumsRequest should be sent.");
         Date timestamp3 = new Date();
         Date timestamp2 =  new Date(timestamp3.getTime() - 1000);
         Date timestamp1 =  new Date(timestamp3.getTime() - 1000);
@@ -278,37 +276,37 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         getFileIDsClient.getChecksums(new ContributorQuery[]{query1, query2}, null, null, null, testEventHandler, null);
 
         IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
-            IdentifyPillarsForGetChecksumsRequest.class);
+                IdentifyPillarsForGetChecksumsRequest.class);
 
         addStep("Send a IdentifyPillarsForGetChecksumsResponse from both pillars.",
-            "A GetChecksumsRequest should be sent to both pillars with the appropriate MinTimestamp, MaxTimestamp, " +
-                "MaxNumberOfResults values.");
+                "A GetChecksumsRequest should be sent to both pillars with the appropriate MinTimestamp, MaxTimestamp, " +
+                        "MaxNumberOfResults values.");
         messageBus.sendMessage(testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
-            receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId));
+                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId));
         messageBus.sendMessage(testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
-            receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId));
+                receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId));
 
         GetChecksumsRequest receivedGetChecksumsRequest1 = pillar1Receiver.waitForMessage(GetChecksumsRequest.class);
         Assert.assertEquals(receivedGetChecksumsRequest1.getMinTimestamp(),
-            CalendarUtils.getXmlGregorianCalendar(query1.getMinTimestamp()),
-            "Unexpected MinTimestamp in GetChecksumsRequest to pillar1.");
+                CalendarUtils.getXmlGregorianCalendar(query1.getMinTimestamp()),
+                "Unexpected MinTimestamp in GetChecksumsRequest to pillar1.");
         Assert.assertEquals(receivedGetChecksumsRequest1.getMaxTimestamp(),
-            CalendarUtils.getXmlGregorianCalendar(query1.getMaxTimestamp()),
-            "Unexpected MaxTimestamp in GetChecksumsRequest to pillar1.");
+                CalendarUtils.getXmlGregorianCalendar(query1.getMaxTimestamp()),
+                "Unexpected MaxTimestamp in GetChecksumsRequest to pillar1.");
         Assert.assertEquals(receivedGetChecksumsRequest1.getMaxNumberOfResults(),
-            BigInteger.valueOf(query1.getMaxNumberOfResults()),
-            "Unexpected MaxNumberOfResults in GetChecksumsRequest to pillar1.");
+                BigInteger.valueOf(query1.getMaxNumberOfResults()),
+                "Unexpected MaxNumberOfResults in GetChecksumsRequest to pillar1.");
 
         GetChecksumsRequest receivedGetChecksumsRequest2 = pillar2Receiver.waitForMessage(GetChecksumsRequest.class);
         Assert.assertEquals(receivedGetChecksumsRequest2.getMinTimestamp(),
-            CalendarUtils.getXmlGregorianCalendar((query1.getMinTimestamp())),
-            "Unexpected MinTimestamp in GetChecksumsRequest to pillar2.");
+                CalendarUtils.getXmlGregorianCalendar((query1.getMinTimestamp())),
+                "Unexpected MinTimestamp in GetChecksumsRequest to pillar2.");
         Assert.assertEquals(receivedGetChecksumsRequest2.getMaxTimestamp(),
-            CalendarUtils.getXmlGregorianCalendar(query2.getMaxTimestamp()),
-            "Unexpected MaxTimestamp in GetChecksumsRequest to pillar2.");
+                CalendarUtils.getXmlGregorianCalendar(query2.getMaxTimestamp()),
+                "Unexpected MaxTimestamp in GetChecksumsRequest to pillar2.");
         Assert.assertEquals(receivedGetChecksumsRequest2.getMaxNumberOfResults(),
-            BigInteger.valueOf(query2.getMaxNumberOfResults()),
-            "Unexpected MaxNumberOfResults in GetChecksumsRequest to pillar2.");
+                BigInteger.valueOf(query2.getMaxNumberOfResults()),
+                "Unexpected MaxNumberOfResults in GetChecksumsRequest to pillar2.");
     }
 
 
@@ -321,21 +319,21 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
      */
     private GetChecksumsClient createGetChecksumsClient() {
         return new GetChecksumsClientTestWrapper(new ConversationBasedGetChecksumsClient(
-            messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()), testEventManager);
+                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()), testEventManager);
     }
 
 
     @Override
     protected MessageResponse createIdentifyResponse(MessageRequest identifyRequest, String from, String to) {
         MessageResponse response = testMessageFactory.createIdentifyPillarsForGetChecksumsResponse(
-            (IdentifyPillarsForGetChecksumsRequest) identifyRequest, from, to);
+                (IdentifyPillarsForGetChecksumsRequest) identifyRequest, from, to);
         return response;
     }
 
     @Override
     protected MessageResponse createFinalResponse(MessageRequest request, String from, String to) {
         MessageResponse response =  testMessageFactory.createGetChecksumsFinalResponse(
-            (GetChecksumsRequest) request, from, to);
+                (GetChecksumsRequest) request, from, to);
         return response;
     }
 

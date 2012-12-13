@@ -34,18 +34,17 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.util.Date;
 
 /**
  * Tests the PutFile functionality on the ReferencePillar.
  */
 public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
-    GetFileMessageFactory msgFactory;
-    @BeforeMethod (alwaysRun=true)
-    public void initialiseDeleteFileTests() throws Exception {
+    private GetFileMessageFactory msgFactory;
+
+    @Override
+    public void initializeCUT() {
+        super.initializeCUT();
         msgFactory = new GetFileMessageFactory(settingsForCUT);
     }
     
@@ -53,32 +52,20 @@ public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
     public void checksumPillarGetFileIdentification() throws Exception {
         addDescription("Tests that the ChecksumPillar rejects a GetFile identification.");
         addStep("Setting up the variables for the test.", "Should be instantiated.");
-        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
-        String auditTrail = "GET-FILE-TEST";
-        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
         settingsForCUT.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         FileIDs fileids = new FileIDs();
-        fileids.setFileID(FILE_ID);
+        fileids.setFileID(DEFAULT_FILE_ID);
         
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the checksum pillar.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
-                auditTrail, FILE_ID, getPillarID(), clientDestinationId);
+                DEFAULT_AUDITINFORMATION, DEFAULT_FILE_ID, getPillarID(), clientDestinationId);
         messageBus.sendMessage(identifyRequest);
         
         addStep("Retrieve and validate the response from the checksum pillar.", 
                 "The checksum pillar should make a response.");
-        IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientTopic.waitForMessage(
+        IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
-        Assert.assertEquals(receivedIdentifyResponse, 
-                msgFactory.createIdentifyPillarsForGetFileResponse(
-                        identifyRequest.getCorrelationID(),
-                        FILE_ID, 
-                        pillarId,
-                        receivedIdentifyResponse.getReplyTo(),
-                        receivedIdentifyResponse.getResponseInfo(),
-                        receivedIdentifyResponse.getTimeToDeliver(),
-                        receivedIdentifyResponse.getTo()));
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_SUPPORTED);
     }
@@ -89,26 +76,21 @@ public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
         addStep("Setting up the variables for the test.", "Should be instantiated.");
         String DELIVERY_ADDRESS = httpServer.getURL("test.txt").toExternalForm();
         FilePart filePart = null;
-        String FILE_ID = DEFAULT_FILE_ID + new Date().getTime();
-        String auditTrail = "GET-FILE-TEST";
-        String pillarId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();
-        settingsForCUT.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
-        FileIDs fileids = new FileIDs();
-        fileids.setFileID(FILE_ID);
-        
+
         addStep("Create and send the GetFile request message.", 
                 "Should be received and handled by the pillar.");
-        GetFileRequest getRequest = msgFactory.createGetFileRequest(auditTrail, msgFactory.getNewCorrelationID(),
-                DELIVERY_ADDRESS, FILE_ID, filePart, getPillarID(), pillarId, clientDestinationId, pillarDestinationId);
+        GetFileRequest getRequest = msgFactory.createGetFileRequest(DEFAULT_AUDITINFORMATION, msgFactory.getNewCorrelationID(),
+                DELIVERY_ADDRESS, DEFAULT_FILE_ID, filePart, getPillarID(), getPillarID(), clientDestinationId,
+                pillarDestinationId);
         messageBus.sendMessage(getRequest);
         
         addStep("Retrieve and validate the final response from the checksum pillar.", 
                 "The checksum pillar should reject the operation.");
-        GetFileFinalResponse receivedFinalResponse = clientTopic.waitForMessage(
+        GetFileFinalResponse receivedFinalResponse = clientReceiver.waitForMessage(
                 GetFileFinalResponse.class);
         Assert.assertEquals(receivedFinalResponse, 
                 msgFactory.createGetFileFinalResponse(getRequest.getCorrelationID(), 
-                        receivedFinalResponse.getFileAddress(), FILE_ID, filePart, pillarId, pillarDestinationId, 
+                        receivedFinalResponse.getFileAddress(), DEFAULT_FILE_ID, filePart, getPillarID(), pillarDestinationId,
                         receivedFinalResponse.getResponseInfo(), clientDestinationId));
         Assert.assertEquals(receivedFinalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_SUPPORTED);      

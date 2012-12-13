@@ -61,7 +61,7 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response.", "Should be a positive response.");
-        IdentifyContributorsForGetAuditTrailsResponse identifyResponse = clientTopic.waitForMessage(
+        IdentifyContributorsForGetAuditTrailsResponse identifyResponse = clientReceiver.waitForMessage(
                 IdentifyContributorsForGetAuditTrailsResponse.class);
         Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
@@ -74,7 +74,7 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
         messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
-        GetAuditTrailsProgressResponse progressResponse = clientTopic.waitForMessage(GetAuditTrailsProgressResponse.class);
+        GetAuditTrailsProgressResponse progressResponse = clientReceiver.waitForMessage(GetAuditTrailsProgressResponse.class);
           Assert.assertEquals(progressResponse.getCorrelationID(), request.getCorrelationID());
         Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         Assert.assertEquals(progressResponse.getTo(), clientDestinationId );
@@ -83,7 +83,7 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
-        GetAuditTrailsFinalResponse finalResponse = clientTopic.waitForMessage(GetAuditTrailsFinalResponse.class);
+        GetAuditTrailsFinalResponse finalResponse = clientReceiver.waitForMessage(GetAuditTrailsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().size(), 1);
     }
@@ -109,7 +109,7 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response.", "Should be a positive response.");
-        IdentifyContributorsForGetAuditTrailsResponse identifyResponse = clientTopic.waitForMessage(
+        IdentifyContributorsForGetAuditTrailsResponse identifyResponse = clientReceiver.waitForMessage(
                 IdentifyContributorsForGetAuditTrailsResponse.class);
         Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
@@ -122,7 +122,7 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
         messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
-        GetAuditTrailsProgressResponse progressResponse = clientTopic.waitForMessage(GetAuditTrailsProgressResponse.class);
+        GetAuditTrailsProgressResponse progressResponse = clientReceiver.waitForMessage(GetAuditTrailsProgressResponse.class);
         Assert.assertEquals(progressResponse, msgFactory.createGetAuditTrailsProgressResponse(getComponentID(),
                 request.getCorrelationID(), pillarDestinationId, progressResponse.getResponseInfo(), 
                 null, clientDestinationId));
@@ -130,7 +130,7 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
-        GetAuditTrailsFinalResponse finalResponse = clientTopic.waitForMessage(GetAuditTrailsFinalResponse.class);
+        GetAuditTrailsFinalResponse finalResponse = clientReceiver.waitForMessage(GetAuditTrailsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().size(), 1);
         AuditTrailEvent event = finalResponse.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().get(0);
@@ -148,12 +148,12 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
         messageBus.sendMessage(request);
         
         addStep("A OPERATION_ACCEPTED_PROGRESS progress response should be accepted.", ".");
-        progressResponse = clientTopic.waitForMessage(GetAuditTrailsProgressResponse.class);
+        progressResponse = clientReceiver.waitForMessage(GetAuditTrailsProgressResponse.class);
         Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
-        finalResponse = clientTopic.waitForMessage(GetAuditTrailsFinalResponse.class);
+        finalResponse = clientReceiver.waitForMessage(GetAuditTrailsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().size(), 2);    
         Assert.assertFalse(finalResponse.isPartialResult());
@@ -190,7 +190,7 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
                 msgFactory.getNewCorrelationID(), FILE_ID, settingsForTestClient.getComponentID(), BigInteger.valueOf(maxNumberOfResults),
                 null, null, null, null, clientDestinationId, null, pillarDestinationId);
         messageBus.sendMessage(request);
-        GetAuditTrailsFinalResponse finalResponse = clientTopic.waitForMessage(GetAuditTrailsFinalResponse.class);
+        GetAuditTrailsFinalResponse finalResponse = clientReceiver.waitForMessage(GetAuditTrailsFinalResponse.class);
         
         addStep("Validate the final response", "Contains OPERATION_COMPLETE, with only the requested amount of audits, "
                 + "and acknowledges that it is only a partial result set.");

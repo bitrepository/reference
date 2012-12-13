@@ -59,7 +59,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
         addStep("Receive and validate response from the checksum pillar.",
                 "The pillar should make a positive response.");
         IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse =
-                clientTopic.waitForMessage(IdentifyPillarsForDeleteFileResponse.class);
+                clientReceiver.waitForMessage(IdentifyPillarsForDeleteFileResponse.class);
         Assert.assertNotNull(receivedIdentifyResponse);
         Assert.assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID());
         Assert.assertEquals(receivedIdentifyResponse.getFileID(), DEFAULT_FILE_ID);
@@ -76,7 +76,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
         
         addStep("Retrieve the ProgressResponse for the DeleteFile request", 
                 "The DeleteFile progress response should be sent by the checksum pillar.");
-        DeleteFileProgressResponse progressResponse = clientTopic.waitForMessage(DeleteFileProgressResponse.class);
+        DeleteFileProgressResponse progressResponse = clientReceiver.waitForMessage(DeleteFileProgressResponse.class);
         Assert.assertNotNull(progressResponse);
         Assert.assertEquals(progressResponse.getCorrelationID(), deleteFileRequest.getCorrelationID());
         Assert.assertEquals(progressResponse.getFileID(), DEFAULT_FILE_ID);
@@ -88,7 +88,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
         
         addStep("Retrieve the FinalResponse for the DeleteFile request", 
                 "The DeleteFile response should be sent by the checksum pillar.");
-        DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);
+        DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
 
         Assert.assertNotNull(finalResponse);
         Assert.assertEquals(finalResponse.getCorrelationID(), deleteFileRequest.getCorrelationID());
@@ -120,7 +120,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
         addStep("Retrieve and validate the response from the checksum pillar.",
                 "The checksum pillar should make a response for 'FILE_NOT_FOUND'.");
         IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse =
-                clientTopic.waitForMessage(IdentifyPillarsForDeleteFileResponse.class);
+                clientReceiver.waitForMessage(IdentifyPillarsForDeleteFileResponse.class);
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.FILE_NOT_FOUND_FAILURE);
 
@@ -137,7 +137,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
                 "A FILE_NOT_FOUND_FAILURE response should be return, and the original file should remain in the cache.");
         messageBus.sendMessage(msgFactory.createDeleteFileRequest(csData, csSpec, "NoneExistingFile"));
 
-        DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);
+        DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
         Assert.assertNull(cache.getChecksum(DEFAULT_FILE_ID));
     }
@@ -154,7 +154,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
         ChecksumDataForFileTYPE invalidChecksumData = csData;
         invalidChecksumData.setChecksumValue(Base16Utils.encodeBase16("2234cccccccc4321"));
         messageBus.sendMessage(msgFactory.createDeleteFileRequest(invalidChecksumData, csSpec, DEFAULT_FILE_ID));
-        DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);
+        DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
         Assert.assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
@@ -173,7 +173,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
         ChecksumSpecTYPE badChecksumSpec = csSpec;
         csSpec.setOtherChecksumType("UNSUPPORTED ALGORITHM");
         messageBus.sendMessage(msgFactory.createDeleteFileRequest(csData, badChecksumSpec,DEFAULT_FILE_ID));
-        DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);
+        DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_SUPPORTED);
         Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
@@ -186,7 +186,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(true);
         initializeCacheWithMD5ChecksummedFile();
         messageBus.sendMessage(msgFactory.createDeleteFileRequest(null, null, DEFAULT_FILE_ID));
-        DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);
+        DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
         Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID));
@@ -199,7 +199,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
         initializeCacheWithMD5ChecksummedFile();
         messageBus.sendMessage(msgFactory.createDeleteFileRequest(null, null, DEFAULT_FILE_ID));
-        DeleteFileFinalResponse finalResponse = clientTopic.waitForMessage(DeleteFileFinalResponse.class);
+        DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
         Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));

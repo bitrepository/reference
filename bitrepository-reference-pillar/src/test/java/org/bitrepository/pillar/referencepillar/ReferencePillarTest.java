@@ -23,6 +23,12 @@ package org.bitrepository.pillar.referencepillar;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.util.Date;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.common.utils.Base16Utils;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
@@ -44,8 +50,18 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     protected MockAuditManager audits;
     protected ChecksumStore csCache;
     protected MessageHandlerContext context;
-    
-    protected final String EMPTY_FILE_CHECKSUM = "d41d8cd98f00b204e9800998ecf8427e";
+
+    protected static final String EMPTY_FILE_CHECKSUM = "d41d8cd98f00b204e9800998ecf8427e";
+
+    protected static final ChecksumDataForFileTYPE EMPTY_FILE_CHECKSUM_DATA;
+    static {
+        EMPTY_FILE_CHECKSUM_DATA = new ChecksumDataForFileTYPE();
+        EMPTY_FILE_CHECKSUM_DATA.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+        ChecksumSpecTYPE checksumSpecTYPE = new ChecksumSpecTYPE();
+        checksumSpecTYPE.setChecksumType(ChecksumType.MD5);
+        EMPTY_FILE_CHECKSUM_DATA.setChecksumSpec(checksumSpecTYPE);
+        EMPTY_FILE_CHECKSUM_DATA.setChecksumValue(Base16Utils.encodeBase16(EMPTY_FILE_CHECKSUM));
+    }
 
     @Override
     protected void initializeCUT() {
@@ -61,7 +77,6 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     @Override
     protected void shutdownCUT() {
         shutdownMediator();
-        super.shutdownCUT();
     }
 
     protected void createReferencePillar() {
@@ -78,6 +93,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
                 3600000L);
         mediator = new ReferencePillarMediator(messageBus, context, archive, csManager);
         mediator.start();
+        initializeArchiveWithEmptyFile();
     }
 
     public void shutdownMediator() {
@@ -91,12 +107,13 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     protected String getComponentID() {
         return "ReferencePillar-" + testMethodName;
     }
-    
-    protected void initializeArchiveWithEmptyFile() {
+
+    private void initializeArchiveWithEmptyFile() {
         addFixtureSetup("Initialize the Reference pillar cache with en empty file.");
         try {
             archive.downloadFileForValidation(DEFAULT_FILE_ID, new ByteArrayInputStream(new byte[0]));
             archive.moveToArchive(DEFAULT_FILE_ID);
+            csCache.insertChecksumCalculation(DEFAULT_FILE_ID, EMPTY_FILE_CHECKSUM, new Date());
         } catch (Exception e) {
             Assert.fail("Could not instantiate the archive", e);
         }

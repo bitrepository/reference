@@ -356,7 +356,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
     }
 
     /**
-     * Creates a new test GetFileIDsClient based on the supplied settingsForCUT.
+     * Creates a new test GetFileIDsClient based on the supplied settings.
      *
      * Note that the normal way of creating client through the module factory would reuse components with settings from
      * previous tests.

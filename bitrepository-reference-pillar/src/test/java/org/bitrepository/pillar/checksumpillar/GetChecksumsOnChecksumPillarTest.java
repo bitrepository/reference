@@ -39,7 +39,6 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.messagefactories.GetChecksumsMessageFactory;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -49,8 +48,9 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     private GetChecksumsMessageFactory msgFactory;
     private ChecksumSpecTYPE csSpec;
 
-    @BeforeMethod (alwaysRun=true)
-    public void initialiseGetChecksumsTests() throws Exception {
+    @Override
+    public void initializeCUT() {
+        super.initializeCUT();
         msgFactory = new GetChecksumsMessageFactory(settingsForTestClient, getPillarID(), pillarDestinationId);
 
         csSpec = new ChecksumSpecTYPE();
@@ -75,7 +75,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
 
         addStep("Retrieve and validate the response getPillarID() the pillar.", 
         "The pillar should make a response.");
-        IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientTopic.waitForMessage(
+        IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetChecksumsResponse.class);
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
@@ -91,7 +91,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
 
         addStep("Retrieve the ProgressResponse for the GetChecksums request", 
         "The GetChecksums progress response should be sent by the pillar.");
-        GetChecksumsProgressResponse progressResponse = clientTopic.waitForMessage(GetChecksumsProgressResponse.class);
+        GetChecksumsProgressResponse progressResponse = clientReceiver.waitForMessage(GetChecksumsProgressResponse.class);
         Assert.assertEquals(progressResponse.getChecksumRequestForExistingFile(), csSpec);
         Assert.assertEquals(progressResponse.getFileIDs(), fileids);
         Assert.assertEquals(progressResponse.getPillarID(), getPillarID());
@@ -99,7 +99,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
 
         addStep("Retrieve the FinalResponse for the GetChecksums request", 
         "The GetChecksums response should be sent by the pillar.");
-        GetChecksumsFinalResponse finalResponse = clientTopic.waitForMessage(GetChecksumsFinalResponse.class);
+        GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getChecksumRequestForExistingFile(), csSpec);
         Assert.assertEquals(finalResponse.getPillarID(), getPillarID());
@@ -123,7 +123,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
         IdentifyPillarsForGetChecksumsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetChecksumsRequest(csSpec, fileids);
         messageBus.sendMessage(identifyRequest);
 
-        IdentifyPillarsForGetChecksumsResponse identifyResponse = clientTopic.waitForMessage(IdentifyPillarsForGetChecksumsResponse.class);
+        IdentifyPillarsForGetChecksumsResponse identifyResponse = clientReceiver.waitForMessage(IdentifyPillarsForGetChecksumsResponse.class);
         Assert.assertEquals(identifyResponse.getResponseInfo().getResponseCode(), ResponseCode.IDENTIFICATION_POSITIVE);
         Assert.assertEquals(identifyResponse.getFileIDs(), fileids);
     }
@@ -139,10 +139,10 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
                 csSpec, fileids, null);
         messageBus.sendMessage(getChecksumsRequest);
 
-        GetChecksumsProgressResponse progressResponse = clientTopic.waitForMessage(GetChecksumsProgressResponse.class);
+        GetChecksumsProgressResponse progressResponse = clientReceiver.waitForMessage(GetChecksumsProgressResponse.class);
         Assert.assertTrue(progressResponse.getFileIDs().isSetAllFileIDs());
 
-        GetChecksumsFinalResponse finalResponse = clientTopic.waitForMessage(GetChecksumsFinalResponse.class);
+        GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 
                 1);
@@ -159,10 +159,10 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
                 csSpec, fileids, DELIVERY_ADDRESS);
         messageBus.sendMessage(getChecksumsRequest);
 
-        GetChecksumsProgressResponse progressResponse = clientTopic.waitForMessage(GetChecksumsProgressResponse.class);
+        GetChecksumsProgressResponse progressResponse = clientReceiver.waitForMessage(GetChecksumsProgressResponse.class);
         Assert.assertTrue(progressResponse.getFileIDs().isSetAllFileIDs());
 
-        GetChecksumsFinalResponse finalResponse = clientTopic.waitForMessage(GetChecksumsFinalResponse.class);
+        GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 0);
         Assert.assertEquals(finalResponse.getResultingChecksums().getResultAddress(), DELIVERY_ADDRESS);
@@ -179,10 +179,10 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
                 csSpec, fileids, DELIVERY_ADDRESS);
         messageBus.sendMessage(getChecksumsRequest);
 
-        GetChecksumsProgressResponse progressResponse = clientTopic.waitForMessage(GetChecksumsProgressResponse.class);
+        GetChecksumsProgressResponse progressResponse = clientReceiver.waitForMessage(GetChecksumsProgressResponse.class);
         Assert.assertTrue(progressResponse.getFileIDs().isSetAllFileIDs());
 
-        GetChecksumsFinalResponse finalResponse = clientTopic.waitForMessage(GetChecksumsFinalResponse.class);
+        GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_TRANSFER_FAILURE);
     }
     
@@ -196,7 +196,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
 
         addStep("Retrieve and validate the response getPillarID() the pillar.", 
               "The pillar should make a response.");
-        IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientTopic.waitForMessage(
+        IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetChecksumsResponse.class);
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.FILE_NOT_FOUND_FAILURE);        
@@ -216,7 +216,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
 
         addStep("Retrieve the FinalResponse for the GetChecksums request", 
         "The GetChecksums response should be sent by the pillar.");
-        GetChecksumsFinalResponse finalResponse = clientTopic.waitForMessage(GetChecksumsFinalResponse.class);
+        GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
     }
     
@@ -231,7 +231,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
 
         addStep("Retrieve the IdentifyResponse for the GetChecksums request and validate it.",
                 "The pillar is positively identified.");
-        IdentifyPillarsForGetChecksumsResponse response = clientTopic.waitForMessage(IdentifyPillarsForGetChecksumsResponse.class);
+        IdentifyPillarsForGetChecksumsResponse response = clientReceiver.waitForMessage(IdentifyPillarsForGetChecksumsResponse.class);
         Assert.assertEquals(response.getResponseInfo().getResponseCode(), ResponseCode.IDENTIFICATION_POSITIVE);
     }
     
@@ -250,7 +250,7 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
 
         addStep("Retrieve the IdentifyResponse for the GetChecksums request and validate it.",
                 "The pillar gives a negative identification.");
-        IdentifyPillarsForGetChecksumsResponse response = clientTopic.waitForMessage(IdentifyPillarsForGetChecksumsResponse.class);
+        IdentifyPillarsForGetChecksumsResponse response = clientReceiver.waitForMessage(IdentifyPillarsForGetChecksumsResponse.class);
         Assert.assertEquals(response.getResponseInfo().getResponseCode(), ResponseCode.REQUEST_NOT_SUPPORTED);
     }
 }

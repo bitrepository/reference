@@ -60,24 +60,27 @@ import org.testng.Assert;
  * </pre>  
  */
 public class MessageReceiver {
-    private final String name;
     //ToDo convert to TestLogger
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final MessageModel messageModel = new MessageModel();
+    private final String destination;
     private final MessageLoggerProvider messageLoggerProvider;
     private final MessageListener messageListener;
     private final TestEventManager testEventManager;
 
     /**
-     * @param name The name to use for the receiver. Primarily used for logging purposes.
+     * @param destination The destination to use for the receiver. Primarily used for logging purposes.
      * @param testEventManager The test event manager to use for
      */
-    public MessageReceiver(String name, TestEventManager testEventManager) {
-        super();
-        this.name = name;
+    public MessageReceiver(String destination, TestEventManager testEventManager) {
+        this.destination = destination;
         this.testEventManager = testEventManager;
-        messageListener = new TestMessageHandler(name + "Listener", messageModel);
+        messageListener = new TestMessageHandler();
         messageLoggerProvider = MessageLoggerProvider.getInstance();
+    }
+
+    public String getDestination() {
+        return destination;
     }
 
     /** Can be used to ignore messages from irrelevnt components */
@@ -151,7 +154,9 @@ public class MessageReceiver {
                 }
             }
             if (outstandingMessages.length() > 0 ) {
-                testEventManager.addResult("The following messages remain(" + name + ") : " + outstandingMessages);
+                String info = "The following messages haven't been handled by the testcase: " + outstandingMessages;
+                testEventManager.addResult(info);
+                log.warn(info);
             }
         }
     }
@@ -174,7 +179,7 @@ public class MessageReceiver {
         private <T> void addMessage(T message) {
             if (pillarFilter != null && !pillarFilter.contains(((Message)message).getFrom())) return;
             if(testEventManager != null) {
-                testEventManager.addResult(name + " received: " + message);
+                testEventManager.addResult(this + " received: " + message);
             }
             @SuppressWarnings("unchecked")
             BlockingQueue<T> queue = (BlockingQueue<T>)getMessageQueue(message.getClass());
@@ -198,22 +203,14 @@ public class MessageReceiver {
     
     @Override
     public String toString() {
-        return "MessageReceiver [name=" + name + "]";
+        return "MessageReceiver(" + destination + ")";
     }
 
-    // ToDo: Should the exception lister be part of this class?
     public class TestMessageHandler implements MessageListener, ExceptionListener {
-        private final String listenerName;
-        private MessageModel messageModel;
-
-        public TestMessageHandler(String listenerName, MessageModel messageModel) {
-            this.listenerName = listenerName;
-            this.messageModel = messageModel;
-        }
 
         @Override
         public String toString() {
-            return "TestMessageHandler [listenerName=" + listenerName + "]";
+            return "MessageReceiverListener(" + destination + ")";
         }
 
         public void onMessage(Message message) {
@@ -222,7 +219,7 @@ public class MessageReceiver {
 
         @Override
         public void onException(JMSException e) {
-            e.printStackTrace();
+            log.error("Received error in MessageReceiver", e);
         }
     }
 }

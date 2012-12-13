@@ -84,10 +84,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
                 null, null, testEventHandler, null);
 
-        IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = null;
-        if(useMockupPillar()) {
-            receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
-                    IdentifyPillarsForPutFileRequest.class);
+        IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
+                collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
             Assert.assertEquals(receivedIdentifyRequestMessage,
                     messageFactory.createIdentifyPillarsForPutFileRequest(
                             receivedIdentifyRequestMessage.getCorrelationID(),
@@ -98,13 +96,11 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedIdentifyRequestMessage.getAuditTrailInformation(),
                             settingsForTestClient.getComponentID()
                     ));
-        }
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Make response for the pillar.", "The client should then send the actual PutFileRequest.");
 
         PutFileRequest receivedPutFileRequest = null;
-        if(useMockupPillar()) {
             IdentifyPillarsForPutFileResponse identifyResponse = messageFactory
                     .createIdentifyPillarsForPutFileResponse(
                             receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
@@ -121,7 +117,6 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                             receivedPutFileRequest.getAuditTrailInformation(),
                             settingsForTestClient.getComponentID()
                     ));
-        }
 
         addStep("Validate the steps of the PutClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
@@ -132,20 +127,16 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
 
         addStep("The pillar sends a progress response to the PutClient.", "Should be caught by the event handler.");
-        if(useMockupPillar()) {
             PutFileProgressResponse putFileProgressResponse = messageFactory.createPutFileProgressResponse(
                     receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(putFileProgressResponse);
-        }
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.PROGRESS);
 
         addStep("Send a final response message to the PutClient.",
                 "Should be caught by the event handler. First a PartiallyComplete, then a Complete.");
-        if(useMockupPillar()) {
             PutFileFinalResponse putFileFinalResponse = messageFactory.createPutFileFinalResponse(
                     receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(putFileFinalResponse);
-        }
         for(int i = 1; i < 2* settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             OperationEventType eventType = testEventHandler.waitForEvent().getEventType();
             Assert.assertTrue( (eventType == OperationEventType.COMPONENT_COMPLETE)
@@ -335,7 +326,6 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Send a failed response message to the PutClient.",
                 "Should be caught by the event handler. First a PillarFailed, then a Complete.");
-        if(useMockupPillar()) {
             PutFileFinalResponse putFileFinalResponse = messageFactory.createPutFileFinalResponse(
                     receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
             ResponseInfo ri = new ResponseInfo();
@@ -343,7 +333,6 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
             ri.setResponseText("Verifying that a failure can be understood!");
             putFileFinalResponse.setResponseInfo(ri);
             messageBus.sendMessage(putFileFinalResponse);
-        }
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
@@ -664,7 +653,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
 
         /**
-        * Creates a new test PutFileClient based on the settingsForCUT.
+        * Creates a new test PutFileClient based on the settings.
         *
         * Note that the normal way of creating client through the module factory would reuse components with settings from
         * previous tests.

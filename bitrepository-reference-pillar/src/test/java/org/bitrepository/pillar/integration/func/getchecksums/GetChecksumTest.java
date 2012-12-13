@@ -30,7 +30,7 @@ import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class GetChecksumTest extends PillarFunctionTest{
+public class GetChecksumTest extends PillarFunctionTest {
 
     @Test ( groups = {"pillar-integration-test"} )
     public void testMD5Checksums() throws NegativeResponseException {

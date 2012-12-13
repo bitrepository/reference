@@ -27,7 +27,7 @@ package org.bitrepository.protocol.performancetest;
 import java.util.Date;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.Message;
-import org.bitrepository.protocol.LocalActiveMQBroker;
+import org.bitrepository.protocol.bus.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.message.ExampleMessageFactory;

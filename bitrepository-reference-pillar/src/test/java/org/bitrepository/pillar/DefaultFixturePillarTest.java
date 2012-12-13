@@ -26,25 +26,16 @@ package org.bitrepository.pillar;
 
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /**
  * Contains the generic parts for pillar tests integrating to the message bus. 
  * Mostly copied from DefaultFixtureClientTest...
  */
 public abstract class DefaultFixturePillarTest extends IntegrationTest {
-    protected static final String DEFAULT_FILE_ID = ClientTestMessageFactory.FILE_ID_DEFAULT;
-
     protected static String pillarDestinationId;
 
     protected String clientDestinationId;
-    protected MessageReceiver clientTopic;
-    
-    /** Indicated whether reference pillars should be started should be started and used. Note that mockup pillars 
-     * should be used in this case, e.g. the useMockupPillar() call should return false. */ 
-    public boolean useEmbeddedPillar() {
-        return System.getProperty("useEmbeddedPillar", "false").equals("true");
-    }
+    protected MessageReceiver clientReceiver;
 
     @Override
     protected void setupSettings() {
@@ -53,19 +44,14 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
     }
 
     @Override
-    protected void initializeCUT() {
-        clientTopic = new MessageReceiver("Client topic receiver", testEventManager);
+    protected void registerMessageReceivers() {
+        super.registerMessageReceivers();
+
         clientDestinationId = settingsForTestClient.getReceiverDestinationID();
-        messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());
+        clientReceiver = new MessageReceiver(clientDestinationId, testEventManager);
+        addReceiver(clientReceiver);
 
         pillarDestinationId = settingsForCUT.getContributorDestinationID();
-    }
-
-    @Override
-    protected void shutdownCUT() {
-        if (messageBus != null && clientTopic != null) {
-            messageBus.removeListener(clientDestinationId, clientTopic.getMessageListener());
-        }
     }
 
     protected String getPillarID() {

@@ -31,16 +31,16 @@ import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 
 public class ReferencePillarMediatorTester extends ReferencePillarTest {
     
     ReferenceArchive archive;
     ReferencePillarMediator mediator;
     MockAuditManager audits;
-    
-    @BeforeMethod (alwaysRun=true)
-    public void initialiseGetChecksumsTests() throws Exception {
+
+    @Override
+    public void initializeCUT() {
+        super.initializeCUT();
         File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0));
         settingsForCUT.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         if(dir.exists()) {
@@ -108,7 +108,7 @@ public class ReferencePillarMediatorTester extends ReferencePillarTest {
 //    public void handleMessagesWithNoAlarms() throws Exception {
 //        addDescription("Tests that if the alarm level is too high, then the alarms are not send for the Message.");
 //        addStep("Setup variables, e.g. changing the alarm level.", "Should be ok.");
-//        settingsForCUT.getCollectionSettings().getPillarSettings().setAlarmLevel(AlarmLevel.EMERGENCY);
+//        settings.getCollectionSettings().getPillarSettings().setAlarmLevel(AlarmLevel.EMERGENCY);
 //        
 //        alarmDispatcher.resetCallsForSendAlarm();
 //        audits.resetCallsForAuditEvent();

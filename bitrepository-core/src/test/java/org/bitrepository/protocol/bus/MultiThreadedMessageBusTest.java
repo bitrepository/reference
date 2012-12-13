@@ -22,17 +22,18 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol;
+package org.bitrepository.protocol.bus;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -46,13 +47,14 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
     private int count = 0;
     private final static String FINISH = "FINISH";
     private BlockingQueue<String> finishQueue = new LinkedBlockingQueue<String>(1);
+    MultiMessageListener listener;
     
     @Test(groups = { "regressiontest" })
     public final void manyTheadsBeforeFinish() throws Exception {
         addDescription("Tests whether it is possible to start the handling of many threads simultaneously.");
         IdentifyPillarsForGetFileRequest content =
                 ExampleMessageFactory.createMessage(IdentifyPillarsForGetFileRequest.class);
-        MultiMessageListener listener = new MultiMessageListener();
+        listener = new MultiMessageListener();
         messageBus.addListener("BusActivityTest", listener);
         content.setTo("BusActivityTest");
         
@@ -63,12 +65,12 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
         Assert.assertEquals(finishQueue.poll(TIME_FOR_WAIT, TimeUnit.MILLISECONDS), FINISH);
         Assert.assertEquals(count, threadCount);
     }
-    
-    @Override
-    protected String getComponentID() {
-        return getClass().getSimpleName();
+
+    @AfterMethod(alwaysRun = true)
+    public void removeListener() {
+        messageBus.removeListener("BusActivityTest", listener);
     }
-    
+
     protected class MultiMessageListener implements MessageListener {
         private BlockingQueue<String> queue = new LinkedBlockingQueue<String>(threadCount);
         

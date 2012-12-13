@@ -22,25 +22,34 @@
 package org.bitrepository.integrityservice.workflow.step;
 
 import java.util.Collection;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.checking.MaxChecksumAgeProvider;
 import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReportModel;
 import org.bitrepository.integrityservice.mocks.MockChecker;
 import org.bitrepository.integrityservice.mocks.MockIntegrityAlerter;
-import org.bitrepository.protocol.IntegrationTest;
+import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class FindObsoleteChecksumsStepTest extends IntegrationTest {
+public class FindObsoleteChecksumsStepTest extends ExtendedTestCase {
     public static final String TEST_PILLAR_1 = "test-pillar-1";
     public static final String TEST_FILE_1 = "test-file-1";
+    protected Settings settings;
+
+    @BeforeMethod(alwaysRun = true)
+    public void setup() throws Exception {
+        settings = TestSettingsProvider.reloadSettings("FindObsoleteChecksumsStepTest");
+    }
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testGoodCase() {
         addDescription("Test the step for finding obsolete checksum when the report is positive.");
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
         MockChecker checker = new MockChecker();
-        FindObsoleteChecksumsStep step = new FindObsoleteChecksumsStep(settingsForCUT, checker, alerter);
+        FindObsoleteChecksumsStep step = new FindObsoleteChecksumsStep(settings, checker, alerter);
         
         step.performStep();
         Assert.assertEquals(alerter.getCallsForIntegrityFailed(), 0);
@@ -63,7 +72,7 @@ public class FindObsoleteChecksumsStepTest extends IntegrationTest {
                 return res;
             }
         };
-        FindObsoleteChecksumsStep step = new FindObsoleteChecksumsStep(settingsForCUT, checker, alerter);
+        FindObsoleteChecksumsStep step = new FindObsoleteChecksumsStep(settings, checker, alerter);
         
         step.performStep();
         Assert.assertEquals(alerter.getCallsForIntegrityFailed(), 1);

@@ -21,6 +21,9 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
+import java.math.BigInteger;
+import java.util.Date;
+import javax.xml.datatype.XMLGregorianCalendar;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -32,18 +35,14 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTr
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.messagefactories.GetAuditTrailsMessageFactory;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-import java.math.BigInteger;
-import java.util.Date;
-
 public class GetAuditTrailsOnChecksumPillarTest extends ChecksumPillarTest {
-    GetAuditTrailsMessageFactory msgFactory;
-    
-    @BeforeMethod (alwaysRun=true)
-    public void initialiseGetAuditTrailsOnChecksumPillarTest() throws Exception {
+    private GetAuditTrailsMessageFactory msgFactory;
+
+    @Override
+    public void initializeCUT() {
+        super.initializeCUT();
         msgFactory = new GetAuditTrailsMessageFactory(settingsForCUT);
     }
 
@@ -61,7 +60,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends ChecksumPillarTest {
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response.", "Should be a positive response.");
-        IdentifyContributorsForGetAuditTrailsResponse identifyResponse = clientTopic.waitForMessage(
+        IdentifyContributorsForGetAuditTrailsResponse identifyResponse = clientReceiver.waitForMessage(
                 IdentifyContributorsForGetAuditTrailsResponse.class);
         Assert.assertEquals(identifyResponse, msgFactory.createIdentifyContributorsForGetAuditTrailsResponse(
                 identifyRequest.getCorrelationID(), getComponentID(), pillarDestinationId, 
@@ -77,7 +76,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends ChecksumPillarTest {
         messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
-        GetAuditTrailsProgressResponse progressResponse = clientTopic.waitForMessage(GetAuditTrailsProgressResponse.class);
+        GetAuditTrailsProgressResponse progressResponse = clientReceiver.waitForMessage(GetAuditTrailsProgressResponse.class);
         Assert.assertEquals(progressResponse, msgFactory.createGetAuditTrailsProgressResponse(getComponentID(), 
                 request.getCorrelationID(), pillarDestinationId, progressResponse.getResponseInfo(), 
                 null, clientDestinationId));
@@ -85,7 +84,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends ChecksumPillarTest {
                 ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
-        GetAuditTrailsFinalResponse finalResponse = clientTopic.waitForMessage(GetAuditTrailsFinalResponse.class);
+        GetAuditTrailsFinalResponse finalResponse = clientReceiver.waitForMessage(GetAuditTrailsFinalResponse.class);
         Assert.assertEquals(finalResponse, msgFactory.createGetAuditTrailsFinalResponse(getComponentID(), 
                 request.getCorrelationID(), pillarDestinationId, finalResponse.getResponseInfo(), 
                 finalResponse.getResultingAuditTrails(), clientDestinationId));
@@ -115,7 +114,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends ChecksumPillarTest {
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response.", "Should be a positive response.");
-        IdentifyContributorsForGetAuditTrailsResponse identifyResponse = clientTopic.waitForMessage(
+        IdentifyContributorsForGetAuditTrailsResponse identifyResponse = clientReceiver.waitForMessage(
                 IdentifyContributorsForGetAuditTrailsResponse.class);
         Assert.assertEquals(identifyResponse, msgFactory.createIdentifyContributorsForGetAuditTrailsResponse(
                 identifyRequest.getCorrelationID(), getComponentID(), pillarDestinationId,
@@ -131,7 +130,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends ChecksumPillarTest {
         messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
-        GetAuditTrailsProgressResponse progressResponse = clientTopic.waitForMessage(GetAuditTrailsProgressResponse.class);
+        GetAuditTrailsProgressResponse progressResponse = clientReceiver.waitForMessage(GetAuditTrailsProgressResponse.class);
         Assert.assertEquals(progressResponse, msgFactory.createGetAuditTrailsProgressResponse(getComponentID(), 
                 request.getCorrelationID(), pillarDestinationId, progressResponse.getResponseInfo(), 
                 null, clientDestinationId));
@@ -139,7 +138,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends ChecksumPillarTest {
                 ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
-        GetAuditTrailsFinalResponse finalResponse = clientTopic.waitForMessage(GetAuditTrailsFinalResponse.class);
+        GetAuditTrailsFinalResponse finalResponse = clientReceiver.waitForMessage(GetAuditTrailsFinalResponse.class);
         Assert.assertEquals(finalResponse, msgFactory.createGetAuditTrailsFinalResponse(getComponentID(), 
                 request.getCorrelationID(), pillarDestinationId, finalResponse.getResponseInfo(), 
                 finalResponse.getResultingAuditTrails(), clientDestinationId));
@@ -159,7 +158,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends ChecksumPillarTest {
         messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
-        progressResponse = clientTopic.waitForMessage(GetAuditTrailsProgressResponse.class);
+        progressResponse = clientReceiver.waitForMessage(GetAuditTrailsProgressResponse.class);
         Assert.assertEquals(progressResponse, msgFactory.createGetAuditTrailsProgressResponse(getComponentID(), 
                 request.getCorrelationID(), pillarDestinationId, progressResponse.getResponseInfo(), 
                 null, clientDestinationId));
@@ -167,7 +166,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends ChecksumPillarTest {
                 ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
-        finalResponse = clientTopic.waitForMessage(GetAuditTrailsFinalResponse.class);
+        finalResponse = clientReceiver.waitForMessage(GetAuditTrailsFinalResponse.class);
         Assert.assertEquals(finalResponse, msgFactory.createGetAuditTrailsFinalResponse(getComponentID(), 
                 request.getCorrelationID(), pillarDestinationId, finalResponse.getResponseInfo(), 
                 finalResponse.getResultingAuditTrails(), clientDestinationId));
@@ -206,7 +205,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends ChecksumPillarTest {
                 msgFactory.getNewCorrelationID(), FILE_ID, getPillarID(), BigInteger.valueOf(maxNumberOfResults), 
                 null, null, null, null, clientDestinationId, null, pillarDestinationId);
         messageBus.sendMessage(request);
-        GetAuditTrailsFinalResponse finalResponse = clientTopic.waitForMessage(GetAuditTrailsFinalResponse.class);
+        GetAuditTrailsFinalResponse finalResponse = clientReceiver.waitForMessage(GetAuditTrailsFinalResponse.class);
         
         addStep("Validate the final response", "Contains OPERATION_COMPLETE, with only the requested amount of audits, "
                 + "and acknowledges that it is only a partial result set.");

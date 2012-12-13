@@ -24,10 +24,10 @@ package org.bitrepository.monitoringservice.alarm;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
-import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.bitrepositoryelements.StatusCode;
 import org.bitrepository.bitrepositoryelements.StatusInfo;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.monitoringservice.MockStatusStore;
 import org.bitrepository.monitoringservice.status.ComponentStatus;
@@ -39,8 +39,6 @@ import org.testng.annotations.Test;
 
 public class MonitorAlerterTest extends IntegrationTest {
     
-    static int callsForError = 0;
-    
     @Test(groups = {"regressiontest"})
     public void testMonitorAlerter() throws Exception {
         addDescription("Tests the " + BasicMonitoringServiceAlerter.class.getName());
@@ -50,15 +48,8 @@ public class MonitorAlerterTest extends IntegrationTest {
         AlerterStatusStore store = new AlerterStatusStore();
         
         addStep("Create the alerter, but ignore the part of actually sending the alarms. Just log it.", "");
-        callsForError = 0;
         BasicMonitoringServiceAlerter alerter = new BasicMonitoringServiceAlerter(
-            settingsForCUT, messageBus, AlarmLevel.ERROR, store) {
-            // Workaround to avoid testing that it actually sends the alarm through the messagebus.
-            @Override
-            public void error(Alarm alarm) {
-                callsForError++;
-            }
-        };
+            settingsForCUT, messageBus, AlarmLevel.ERROR, store);
         
         Assert.assertEquals(store.getCallsForGetStatusMap(), 0);
         
@@ -66,7 +57,7 @@ public class MonitorAlerterTest extends IntegrationTest {
         store.statuses = new HashMap<String, ComponentStatus>();
         alerter.checkStatuses();
         Assert.assertEquals(store.getCallsForGetStatusMap(), 1);
-        Assert.assertEquals(callsForError, 0);
+        alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         
         addStep("Check the status when a positive entry exists.", "Should make another call for the GetStatusMap");
         ComponentStatus cs = new ComponentStatus();
@@ -74,7 +65,7 @@ public class MonitorAlerterTest extends IntegrationTest {
         store.statuses.put(componentID, cs);
         alerter.checkStatuses();
         Assert.assertEquals(store.getCallsForGetStatusMap(), 2);
-        Assert.assertEquals(callsForError, 0);
+        alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         
         addStep("Check the status when a negative entry exists.", 
                 "Should send an alarm and make another call for the GetStatusMap");
@@ -82,7 +73,7 @@ public class MonitorAlerterTest extends IntegrationTest {
         store.statuses.put(componentID, cs);
         alerter.checkStatuses();
         Assert.assertEquals(store.getCallsForGetStatusMap(), 3);
-        Assert.assertEquals(callsForError, 1);
+        alarmReceiver.waitForMessage(AlarmMessage.class);
         
         Assert.assertEquals(cs.getStatus(), ComponentStatusCode.UNRESPONSIVE);
     }
