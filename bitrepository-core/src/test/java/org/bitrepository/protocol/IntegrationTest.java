@@ -34,6 +34,7 @@ import javax.swing.JFrame;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.TestFileHelper;
+import org.bitrepository.protocol.bus.LocalActiveMQBroker;
 import org.bitrepository.protocol.bus.MessageBusWrapper;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
@@ -47,6 +48,7 @@ import org.jaccept.gui.ComponentTestFrame;
 import org.jaccept.structure.ExtendedTestCase;
 import org.jaccept.testreport.ReportGenerator;
 import org.slf4j.LoggerFactory;
+import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeMethod;
@@ -65,6 +67,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     public static HttpServerConfiguration httpServerConfiguration;
     public static MessageBus messageBus;
 
+    private MessageReceiverManager receiverManager;
     protected static String alarmDestinationID;
     protected static MessageReceiver alarmReceiver;
 
@@ -85,7 +88,11 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     @BeforeSuite(alwaysRun = true)
     public void initializeSuite() {
-        setupSettings();
+        settingsForCUT = loadSettings(getComponentID());
+        settingsForTestClient = loadSettings("TestSuiteInitialiser");
+        makeUserSpecificSettings(settingsForCUT);
+        makeUserSpecificSettings(settingsForTestClient);
+
         securityManager = createSecurityManager();
         setupMessageBus();
         setupHttpServer();
@@ -97,12 +104,22 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         } catch (MalformedURLException e) {
             throw new RuntimeException("Never happens");
         }
-
-        initializeMessageBusListeners();
     }
+
+    /**
+     * May be extended by subclasses needing to have their receivers managed. Remember to still call
+     * <code>super.registerReceivers()</code> when overriding
+     */
+    protected void registerMessageReceivers() {
+        alarmReceiver = new MessageReceiver(settingsForCUT.getAlarmDestination(), testEventManager);
+        addReceiver(alarmReceiver);
+    }
+    protected void addReceiver(MessageReceiver receiver) {
+        receiverManager.addReceiver(receiver);
+    }
+
     @AfterSuite(alwaysRun = true)
     public void shutdownSuite() {
-        teardownMessageBusListeners();
         teardownMessageBus();
         teardownHttpServer();
     }
@@ -116,22 +133,38 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         setupSettings();
         NON_DEFAULT_FILE_ID = TestFileHelper.createUniquePrefix(testMethodName);
         DEFAULT_AUDITINFORMATION = testMethodName;
+        receiverManager = new MessageReceiverManager(messageBus);
+        registerMessageReceivers();
+        receiverManager.startListeners();
         initializeCUT();
     }
-    protected void initializeCUT() {
-        // To be overridden by any concrete tests wishing to do stuff.
-    }
+    /**
+     *  To be overridden by concrete tests wishing to do stuff. Remember to call super if this is overridden.
+     */
+    protected void initializeCUT() {}
 
     @AfterMethod(alwaysRun = true)
-    public final void afterMethod() {
+    public final void afterMethod(ITestResult testResult) {
+        receiverManager.stopListeners();
+        if (testResult.isSuccess()) {
+            afterMethodVerification();
+        }
         shutdownCUT();
-        checkNoMessagesRemain();
-    }
-    protected void shutdownCUT() {
-        // To be overridden by any concrete tests wishing to do stuff.
     }
 
-    /**                                                                          ŒŒ
+    /**
+     * May be used by by concrete tests for general verification when the test method has finished. Will only be run
+     * if the test has passed (so far).
+     */
+    protected void afterMethodVerification() {
+        receiverManager.checkNoMessagesRemainInReceivers();
+    }
+    /**
+     *  May be overridden by concrete tests wishing to do stuff. Remember to call super if this is overridden.
+     */
+    protected void shutdownCUT() {}
+
+    /**
      * Initializes the settings. Will postfix the alarm and collection topics with '-${user.name}
      */
     protected void setupSettings() {
@@ -140,9 +173,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
         alarmDestinationID = settingsForCUT.getCollectionSettings().getProtocolSettings().getAlarmDestination();
 
-        if (testMethodName == null) {
-            testMethodName = "TestInitialiser";
-        }
         settingsForTestClient = loadSettings(testMethodName);
         makeUserSpecificSettings(settingsForTestClient);
     }
@@ -205,24 +235,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         }
         messageBus = new MessageBusWrapper(
                 ProtocolComponentFactory.getInstance().getMessageBus(settingsForCUT, securityManager), testEventManager);
-    }
-
-    /**
-     * Defines the general destinations used in the tests and adds listeners to the message bus.
-     */
-    protected void initializeMessageBusListeners() {
-        alarmReceiver = new MessageReceiver("Alarm receiver", testEventManager);
-        messageBus.addListener(settingsForCUT.getAlarmDestination(), alarmReceiver.getMessageListener());
-    }
-
-    protected void checkNoMessagesRemain() {
-        if (alarmReceiver != null) {
-            alarmReceiver.checkNoMessagesRemain();
-        }
-    }
-
-    protected void teardownMessageBusListeners() {
-        messageBus.removeListener(settingsForCUT.getAlarmDestination(), alarmReceiver.getMessageListener());
     }
 
     /**

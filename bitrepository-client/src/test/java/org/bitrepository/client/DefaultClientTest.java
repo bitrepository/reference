@@ -178,6 +178,26 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
+
+    //@Test(groups = {"regressiontest"})
+    public void operationTimeoutTest() throws Exception {
+        addDescription("Tests the the GetFileClient handles lack of final responses gracefully.");
+
+        addStep("Set a 3 second operation timeout.", "");
+        settingsForCUT.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
+
+        addStep("Start the operation",
+                "A IDENTIFY_REQUEST_SENT event should be received.");
+        startOperation(testEventHandler);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertNotNull(waitForIdentifyRequest());
+
+        addStep("Send positive identification responses from the contributors",
+                "");
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
+
+    }
+
     @Test(groups = {"regressiontest"})
     public void conversationTimeoutTest() throws Exception {
         addDescription("Tests the the GetFileClient handles lack of IdentifyPillarResponses gracefully  ");

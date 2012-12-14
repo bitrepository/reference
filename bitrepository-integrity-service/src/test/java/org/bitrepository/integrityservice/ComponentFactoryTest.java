@@ -24,9 +24,7 @@
  */
 package org.bitrepository.integrityservice;
 
-import java.io.File;
 import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.integrityservice.audittrail.IntegrityAuditTrailDatabaseCreator;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
@@ -35,110 +33,84 @@ import org.bitrepository.integrityservice.checking.SimpleIntegrityChecker;
 import org.bitrepository.integrityservice.collector.DelegatingIntegrityInformationCollector;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityservice.mocks.MockAuditManager;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.security.DummySecurityManager;
-import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.service.scheduler.ServiceScheduler;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
  * Simple test case for the component factory.
  */
-public class ComponentFactoryTest extends IntegrityDatabaseTestCase {
-    /** The settings for the tests. Should be instantiated in the setup.*/
-    MessageBus messageBus;
-    SecurityManager securityManager;
-    
-    File auditDir = null;
+public class ComponentFactoryTest extends IntegrationTest {
 
-    @BeforeMethod (alwaysRun = true)
-    @Override
-    public void setup() throws Exception {
-        super.setup();
-        securityManager = new DummySecurityManager();
-        messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
-    }
-    
-    @AfterClass (alwaysRun = true)
-    @Override
-    public void cleanup() throws Exception {
-        super.cleanup();
-        if(auditDir != null) {
-            FileUtils.delete(auditDir);
-        }
-    }
-    
     @Test(groups = {"regressiontest", "integritytest"})
     public void verifySchedulerFromFactory() throws Exception {
         addDescription("Test the instantiation of the Scheduler from the component factory.");
-        ServiceScheduler scheduler = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationScheduler(settings);
+        ServiceScheduler scheduler = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationScheduler(settingsForCUT);
         Assert.assertNotNull(scheduler);
         Assert.assertTrue(scheduler instanceof TimerbasedScheduler);
-        Assert.assertEquals(scheduler, IntegrityServiceComponentFactory.getInstance().getIntegrityInformationScheduler(settings));
+        Assert.assertEquals(scheduler, IntegrityServiceComponentFactory.getInstance().getIntegrityInformationScheduler(settingsForCUT));
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
     public void verifyCollectorFromFactory() throws Exception {
         addDescription("Test the instantiation of the Collector from the component factory.");
-        IntegrityInformationCollector collector = IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
-                AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
-                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
-                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
+        IntegrityInformationCollector collector =
+                IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
+                AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
+                        settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getID()),
+                AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,
+                        settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 new MockAuditManager());
         Assert.assertNotNull(collector);
         Assert.assertTrue(collector instanceof DelegatingIntegrityInformationCollector);
         Assert.assertEquals(collector, IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
-                AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
-                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
-                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
+                AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
+                        settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getID()),
+                AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,
+                        settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 new MockAuditManager()));
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
     public void verifyIntegrityCheckerFromFactory() throws Exception {
         addDescription("Test the instantiation of the IntegrityChecker from the component factory.");
-        IntegrityChecker checker = IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, 
-                IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings), 
+        IntegrityChecker checker = IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settingsForCUT,
+                IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settingsForCUT),
                 new MockAuditManager());
         Assert.assertNotNull(checker);
         Assert.assertTrue(checker instanceof SimpleIntegrityChecker);
-        Assert.assertEquals(checker, IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settings, 
-                IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings), 
+        Assert.assertEquals(checker, IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settingsForCUT,
+                IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settingsForCUT),
                 new MockAuditManager()));
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void verifyCacheFromFactory() throws Exception {
         addDescription("Test the instantiation of the IntegrityModel from the component factory.");
-        IntegrityModel integrityModel = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings);
+        IntegrityModel integrityModel = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settingsForCUT);
         Assert.assertNotNull(integrityModel);
         Assert.assertTrue(integrityModel instanceof IntegrityDatabase);
-        Assert.assertEquals(integrityModel, IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settings));
+        Assert.assertEquals(integrityModel, IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settingsForCUT));
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
     public void verifyServiceFromFactory() throws Exception {
         addDescription("Test the instantiation of the IntegrityService from the component factory.");
         instantiateAuditContributorDatabase();
-        IntegrityService service = IntegrityServiceComponentFactory.getInstance().createIntegrityService(settings, securityManager);
+        IntegrityService service = IntegrityServiceComponentFactory.getInstance().createIntegrityService(settingsForCUT, securityManager);
         Assert.assertNotNull(service);
         Assert.assertTrue(service instanceof SimpleIntegrityService);
     }
     
     private void instantiateAuditContributorDatabase() throws Exception {
         DatabaseSpecifics auditTrailDB =
-                settings.getReferenceSettings().getIntegrityServiceSettings().getAuditTrailContributerDatabase();
+                settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getAuditTrailContributerDatabase();
         DerbyDatabaseDestroyer.deleteDatabase(auditTrailDB);
         IntegrityAuditTrailDatabaseCreator pillarAuditTrailDatabaseCreator = new IntegrityAuditTrailDatabaseCreator();
-        pillarAuditTrailDatabaseCreator.createIntegrityAuditTrailDatabase(settings, null);
+        pillarAuditTrailDatabaseCreator.createIntegrityAuditTrailDatabase(settingsForCUT, null);
     }
 }

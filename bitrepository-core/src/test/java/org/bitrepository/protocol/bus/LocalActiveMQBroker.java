@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.protocol;
+package org.bitrepository.protocol.bus;
 
 import org.apache.activemq.broker.BrokerService;
 import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;

@@ -32,14 +32,14 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusR
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class GetStatusOnChecksumPillarTest extends ChecksumPillarTest {
     GetStatusMessageFactory msgFactory;
-    
-    @BeforeMethod (alwaysRun=true)
-    public void initialiseDeleteFileTests() throws Exception {
+
+    @Override
+    public void initializeCUT() {
+        super.initializeCUT();
         msgFactory = new GetStatusMessageFactory(settingsForCUT);
     }
 
@@ -56,7 +56,7 @@ public class GetStatusOnChecksumPillarTest extends ChecksumPillarTest {
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response.", "Should be a positive response.");
-        IdentifyContributorsForGetStatusResponse identifyResponse = clientTopic.waitForMessage(
+        IdentifyContributorsForGetStatusResponse identifyResponse = clientReceiver.waitForMessage(
                 IdentifyContributorsForGetStatusResponse.class);
         Assert.assertEquals(identifyResponse, msgFactory.createIdentifyContributorsForGetStatusResponse(contributorId, 
                 identifyRequest.getCorrelationID(), pillarDestinationId, identifyResponse.getResponseInfo(), 
@@ -71,7 +71,7 @@ public class GetStatusOnChecksumPillarTest extends ChecksumPillarTest {
         messageBus.sendMessage(request);
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
-        GetStatusProgressResponse progressResponse = clientTopic.waitForMessage(GetStatusProgressResponse.class);
+        GetStatusProgressResponse progressResponse = clientReceiver.waitForMessage(GetStatusProgressResponse.class);
         Assert.assertEquals(progressResponse, msgFactory.createGetStatusProgressResponse(contributorId, 
                 request.getCorrelationID(), pillarDestinationId, progressResponse.getResponseInfo(), 
                 clientDestinationId));
@@ -79,7 +79,7 @@ public class GetStatusOnChecksumPillarTest extends ChecksumPillarTest {
                 ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
-        GetStatusFinalResponse finalResponse = clientTopic.waitForMessage(GetStatusFinalResponse.class);
+        GetStatusFinalResponse finalResponse = clientReceiver.waitForMessage(GetStatusFinalResponse.class);
         Assert.assertEquals(finalResponse, msgFactory.createGetStatusFinalResponse(contributorId, 
                 request.getCorrelationID(), pillarDestinationId, finalResponse.getResponseInfo(), 
                 finalResponse.getResultingStatus(), clientDestinationId));
@@ -104,7 +104,7 @@ public class GetStatusOnChecksumPillarTest extends ChecksumPillarTest {
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response.", "Should be a positive response.");
-        IdentifyContributorsForGetStatusResponse identifyResponse = clientTopic.waitForMessage(
+        IdentifyContributorsForGetStatusResponse identifyResponse = clientReceiver.waitForMessage(
                 IdentifyContributorsForGetStatusResponse.class);
         Assert.assertEquals(identifyResponse, msgFactory.createIdentifyContributorsForGetStatusResponse(contributorId, 
                 identifyRequest.getCorrelationID(), pillarDestinationId, identifyResponse.getResponseInfo(), 

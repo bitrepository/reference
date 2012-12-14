@@ -42,7 +42,9 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
     protected MessageHandlerContext context;
     protected ChecksumSpecTYPE csSpec;
     protected ChecksumDataForFileTYPE csData;
+    protected ChecksumDataForFileTYPE NON_DEFAULT_CS;
     protected static String DEFAULT_MD5_CHECKSUM = "1234cccccccc4321";
+    protected static String NON_DEFAULT_MD5_CHECKSUM = "1234cccccccc4322";
 
     @Override
     protected void initializeCUT() {
@@ -80,6 +82,11 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
         csData.setChecksumSpec(csSpec);
         csData.setChecksumValue(Base16Utils.encodeBase16(DEFAULT_MD5_CHECKSUM));
 
+        NON_DEFAULT_CS = new ChecksumDataForFileTYPE();
+        NON_DEFAULT_CS.setCalculationTimestamp(CalendarUtils.getEpoch());
+        NON_DEFAULT_CS.setChecksumSpec(csSpec);
+        NON_DEFAULT_CS.setChecksumValue(Base16Utils.encodeBase16(NON_DEFAULT_MD5_CHECKSUM));
+
     }
 
     public void shutdownMediator() {
@@ -95,6 +102,7 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
     }
     
     protected void initializeCacheWithMD5ChecksummedFile() {
+        addFixtureSetup("Initialize the cache with the default file with default checksum");
         cache.insertChecksumCalculation(DEFAULT_FILE_ID, DEFAULT_MD5_CHECKSUM, new Date());
     }
 }

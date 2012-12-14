@@ -33,7 +33,7 @@ import org.testng.annotations.BeforeSuite;
  * The parent class for pillar acceptance tests. The tests can be run in a multi pillar collection has the tests will
  * ignore responses from other pillars.
  */
-public class PillarFunctionTest extends PillarIntegrationTest {
+public abstract class PillarFunctionTest extends PillarIntegrationTest {
     /** Used for receiving responses from the pillar */
     protected MessageReceiver clientReceiver;
 
@@ -44,33 +44,22 @@ public class PillarFunctionTest extends PillarIntegrationTest {
         putDefaultFile();
     }
 
-    /**
-     * Adds a client topic listener.
-     *
-     * Will also add a pillar filter to the client and alarm receivers, so responses from irrelevant components are
-     * ignored.
-     */
     @Override
-    protected void initializeMessageBusListeners() {
-        super.initializeMessageBusListeners();
-        clientReceiver = new MessageReceiver("Client topic receiver", testEventManager);
-        messageBus.addListener(settingsForTestClient.getReceiverDestinationID(), clientReceiver.getMessageListener());
+    protected void registerMessageReceivers() {
+        super.registerMessageReceivers();
+
+        clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID(), testEventManager);
+        addReceiver(clientReceiver);
 
         Collection<String> pillarFilter = Arrays.asList(testConfiguration.getPillarUnderTestID());
         clientReceiver.setFromFilter(pillarFilter);
         alarmReceiver.setFromFilter(pillarFilter);
     }
 
-    @Override
-    protected void teardownMessageBusListeners() {
-        super.teardownMessageBusListeners();
-        messageBus.removeListener(
-            settingsForTestClient.getReceiverDestinationID(), clientReceiver.getMessageListener());
-    }
-
     protected void putDefaultFile() {
         try {
-            clientProvider.getPutClient().putFile(DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
+            clientProvider.getPutClient().putFile(
+                    DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
                 null, null, null);
         } catch (OperationFailedException e) {
             throw new RuntimeException(e);

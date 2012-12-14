@@ -223,7 +223,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         client.getFileFromFastestPillar(DEFAULT_FILE_ID, NO_FILE_PART, httpServer.getURL(DEFAULT_FILE_ID),
                 testEventHandler, null);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage =
-                    collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+                collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Three pillars send responses. First an average timeToDeliver, then a fast timeToDeliver and last a" +
@@ -328,9 +328,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         client.getFileFromFastestPillar(DEFAULT_FILE_ID, NO_FILE_PART, httpServer.getURL(DEFAULT_FILE_ID),
                 testEventHandler, null);
-        if (useMockupPillar()) {
-            collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
-        }
+        collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Wait for 5 seconds", "An IdentifyPillarTimeout event should be received followed by a FAILED event");
@@ -354,14 +352,12 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         client.getFileFromSpecificPillar( DEFAULT_FILE_ID, NO_FILE_PART, httpServer.getURL(DEFAULT_FILE_ID),
                 PILLAR1_ID, testEventHandler, null);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
-        if (useMockupPillar()) {
-            receivedIdentifyRequestMessage =
-                    collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
-            IdentifyPillarsForGetFileRequest expectedMessage =
-                    testMessageFactory.createIdentifyPillarsForGetFileRequest(receivedIdentifyRequestMessage,
-                            settingsForCUT.getCollectionDestination(), settingsForTestClient.getComponentID());
-            Assert.assertEquals(receivedIdentifyRequestMessage, expectedMessage);
-        }
+        receivedIdentifyRequestMessage =
+                collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+        IdentifyPillarsForGetFileRequest expectedMessage =
+                testMessageFactory.createIdentifyPillarsForGetFileRequest(receivedIdentifyRequestMessage,
+                        settingsForCUT.getCollectionDestination(), settingsForTestClient.getComponentID());
+        Assert.assertEquals(receivedIdentifyRequestMessage, expectedMessage);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("The pillar sends a response to the identify message.",
@@ -495,7 +491,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         GetFileFinalResponse completeMsg = testMessageFactory.createGetFileFinalResponse(
                 getFileRequest, PILLAR2_ID, pillar1DestinationId);
         messageBus.sendMessage(completeMsg);
-            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
@@ -585,7 +581,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
     }
 
     /**
-     * Creates a new test GetFileClient based on the supplied settingsForCUT.
+     * Creates a new test GetFileClient based on the supplied settings.
      *
      * Note that the normal way of creating client through the module factory would reuse components with settings from
      * previous tests.

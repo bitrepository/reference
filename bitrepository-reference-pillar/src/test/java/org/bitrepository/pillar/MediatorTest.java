@@ -78,7 +78,7 @@ public class MediatorTest extends DefaultFixturePillarTest {
             request.setVersion(BigInteger.valueOf(1L));
             messageBus.sendMessage(request);
             
-            MessageResponse response = clientTopic.waitForMessage(IdentifyContributorsForGetStatusResponse.class);
+            MessageResponse response = clientReceiver.waitForMessage(IdentifyContributorsForGetStatusResponse.class);
             Assert.assertEquals(response.getResponseInfo().getResponseCode(), ResponseCode.FAILURE);
             Assert.assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
         } finally {

@@ -57,62 +57,21 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
         shutdownConversationMediator();
     }
 
-    /**
-     * Indicated whether the embedded mockup pillars are going to be used in the test (means the test is run as a client 
-     * component test, or if external pillar are going to be used. If external pillar are going to be used they need 
-     * to be started before running the test, and have the following configuration: <ul>
-     * <li>The pillar should contain one file, the {@link org.bitrepository.protocol.message.ClientTestMessageFactory#FILE_ID_DEFAULT} file. The c
-     */
-    public boolean useMockupPillar() {
-        return System.getProperty("useMockupPillar", "true").equals("true");
-    }
-
-    /** Indicated whether reference pillars should be started should be started and used. Note that mockup pillars 
-     * should be used in this case, e.g. the useMockupPillar() call should return false. */ 
-    public boolean useEmbeddedReferencePillars() {
-        return System.getProperty("useEmbeddedReferencePillars", "false").equals("true");
-    }
-
     @Override
-    protected void checkNoMessagesRemain() {
-        super.checkNoMessagesRemain();
-        collectionReceiver.checkNoMessagesRemain();;
-        pillar1Receiver.checkNoMessagesRemain();
-        pillar2Receiver.checkNoMessagesRemain();
-    }
+    protected void registerMessageReceivers() {
+        super.registerMessageReceivers();
 
-    @Override
-    protected void initializeMessageBusListeners() {
-        super.initializeMessageBusListeners();
-        collectionReceiver = new MessageReceiver("Collection topic receiver", testEventManager);
-        messageBus.addListener(settingsForCUT.getCollectionDestination(), collectionReceiver.getMessageListener());
+        collectionReceiver = new MessageReceiver(settingsForCUT.getCollectionDestination(), testEventManager);
+        addReceiver(collectionReceiver);
 
         pillar1DestinationId = "Pillar1_topic" + getTopicPostfix();
-        pillar1Receiver = new MessageReceiver("Pillar1 topic receiver", IntegrationTest.testEventManager);
-        messageBus.addListener(pillar1DestinationId, pillar1Receiver.getMessageListener());
+        pillar1Receiver = new MessageReceiver(pillar1DestinationId, testEventManager);
+        addReceiver(pillar1Receiver);
 
         pillar2DestinationId = "Pillar2_topic" + getTopicPostfix();
-        pillar2Receiver = new MessageReceiver("Pillar2 topic receiver", IntegrationTest.testEventManager);
-        messageBus.addListener(pillar2DestinationId, pillar2Receiver.getMessageListener());
+        pillar2Receiver = new MessageReceiver(pillar2DestinationId, testEventManager);
+        addReceiver(pillar2Receiver);
     }
-
-    @Override
-    protected void teardownMessageBusListeners() {
-        if (collectionReceiver != null) {
-            collectionReceiver.checkNoMessagesRemain();
-            messageBus.removeListener(settingsForCUT.getCollectionDestination(), collectionReceiver.getMessageListener());
-        }
-        if (pillar1Receiver != null) {
-            pillar1Receiver.checkNoMessagesRemain();
-            messageBus.removeListener(pillar1DestinationId, pillar1Receiver.getMessageListener());
-        }
-        if (pillar2Receiver != null) {
-            pillar2Receiver.checkNoMessagesRemain();
-            messageBus.removeListener(pillar2DestinationId, pillar2Receiver.getMessageListener());
-        }
-        super.teardownMessageBusListeners();
-    }
-
 
     /**
      * Used for creating a new conversationMediator between tests, and for tests needing to use a differently configured

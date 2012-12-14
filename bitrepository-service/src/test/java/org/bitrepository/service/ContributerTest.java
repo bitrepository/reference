@@ -21,42 +21,34 @@
  */
 package org.bitrepository.service;
 
-import java.math.BigInteger;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /**
+ * Contains the general functionality for creating contributor tests.
  */
 public abstract class ContributerTest extends IntegrationTest {
     protected static final String DEFAULT_FILE_ID = ClientTestMessageFactory.FILE_ID_DEFAULT;
 
     protected static String clientDestinationId;
-    protected MessageReceiver clientTopic;
+    protected MessageReceiver clientReceiver;
 
     protected static String contributorDestinationId;
-    protected MessageReceiver contributorDestination;
-
-    protected static final BigInteger defaultTime = BigInteger.valueOf(3000);
+    protected MessageReceiver contributorReceiver;
 
     @Override
-    protected void initializeMessageBusListeners() {
-        super.initializeMessageBusListeners();
-        clientDestinationId = settingsForCUT.getReceiverDestinationID();
-        clientTopic = new MessageReceiver("Client topic receiver", testEventManager);
+    protected void registerMessageReceivers() {
+        super.registerMessageReceivers();
+
+        clientDestinationId = settingsForTestClient.getReceiverDestinationID();
+        clientReceiver = new MessageReceiver(clientDestinationId, testEventManager);
+        addReceiver(clientReceiver);
 
         contributorDestinationId =
                 settingsForCUT.getCollectionDestination() + "-" +  getContributorID() + "-" + getTopicPostfix();
-        contributorDestination = new MessageReceiver(contributorDestinationId + " topic receiver", testEventManager);
-        messageBus.addListener(clientDestinationId, clientTopic.getMessageListener());
-        messageBus.addListener(contributorDestinationId, contributorDestination.getMessageListener());
-    }
-
-    @Override
-    protected void teardownMessageBusListeners() {
-        messageBus.removeListener(clientDestinationId, clientTopic.getMessageListener());
-        messageBus.removeListener(contributorDestinationId, contributorDestination.getMessageListener());
-        super.teardownMessageBusListeners();
+        contributorReceiver = new MessageReceiver(contributorDestinationId + " topic receiver", testEventManager);
+        addReceiver(contributorReceiver);
     }
 
     protected abstract String getContributorID();

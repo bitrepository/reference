@@ -30,7 +30,7 @@ import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.protocol.LocalActiveMQBroker;
+import org.bitrepository.protocol.bus.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
