@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
@@ -47,9 +46,9 @@ public class MockIntegrityModel implements IntegrityModel {
 
     private int callsForAddfileIDs = 0;
     @Override
-    public void addFileIDs(FileIDsData data, FileIDs expectedFileIDs, String pillarId) {
+    public void addFileIDs(FileIDsData data, String pillarId) {
         callsForAddfileIDs++;
-        integrityModel.addFileIDs(data, expectedFileIDs, pillarId);
+        integrityModel.addFileIDs(data, pillarId);
     }
     public int getCallsForAddFileIDs() {
         return callsForAddfileIDs;        
@@ -233,5 +232,23 @@ public class MockIntegrityModel implements IntegrityModel {
     }
     public int getCallsForGetDateForNewestChecksumEntryForPillar() {
         return callsForGetDateForNewestChecksumEntryForPillar;
+    }
+    private int callsForSetAllFilesToUnknownFileState = 0;
+    @Override
+    public void setAllFilesToUnknownFileState() {
+        callsForSetAllFilesToUnknownFileState++;
+        integrityModel.setAllFilesToUnknownFileState();
+    }
+    public int getCallsForSetAllFilesToUnknownFileState() {
+        return callsForSetAllFilesToUnknownFileState;
+    }
+    private int callsForSetUnknownFilesToMissing = 0;
+    @Override
+    public void setUnknownFilesToMissing() {
+        callsForSetUnknownFilesToMissing++;
+        integrityModel.setUnknownFilesToMissing();
+    }
+    public int getCallsForSetUnknownFilesToMissing() {
+        return callsForSetUnknownFilesToMissing;
     }
 }

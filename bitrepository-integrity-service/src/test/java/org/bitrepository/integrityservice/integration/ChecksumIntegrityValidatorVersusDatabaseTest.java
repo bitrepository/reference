@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
@@ -176,9 +175,6 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
                 settings.getCollectionSettings().getClientSettings().getPillarIDs());
         
-        FileIDs fileids = new FileIDs();
-        fileids.setAllFileIDs("true");
-        
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
         cache.addChecksums(csData, TEST_PILLAR_1);
@@ -195,7 +191,7 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         
         addStep("Add new fileids for one pillar", "The given pillar should have ChecksumState 'UNKNOWN', the others 'VALID'");
         FileIDsData fileidData = createFileIdData(FILE_1);
-        cache.addFileIDs(fileidData, fileids, TEST_PILLAR_3);
+        cache.addFileIDs(fileidData, TEST_PILLAR_3);
         
         for(FileInfo fi : cache.getFileInfos(FILE_1)) {
             if(fi.getPillarId().equals(TEST_PILLAR_3)) {

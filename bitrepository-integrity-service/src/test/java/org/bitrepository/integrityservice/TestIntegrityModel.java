@@ -35,7 +35,6 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.utils.Base16Utils;
@@ -75,7 +74,7 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public void addFileIDs(FileIDsData data, FileIDs expectedFileIDs, String pillarId) {
+    public void addFileIDs(FileIDsData data, String pillarId) {
         for(FileIDsDataItem fileId : data.getFileIDsDataItems().getFileIDsDataItem()) {
             log.debug("Adding/updating fileId '" + fileId.getFileID() + "' for the pillar '" + pillarId + "'");
             if(!cache.containsKey(fileId.getFileID())) {
@@ -238,6 +237,21 @@ public class TestIntegrityModel implements IntegrityModel {
             // put it back into the list and that back into the cache.
             fileIDInfos.add(currentInfo);
         }
+        
+        void insertFileInfo(FileInfo fileInfo, String pillarID) {
+            FileInfo oldFi = null;
+            for(FileInfo fi : fileIDInfos) {
+                if(fi.getPillarId() == pillarID) {
+                    oldFi = fi;
+                    break;
+                }
+            }
+            if(oldFi != null) {
+                fileIDInfos.remove(oldFi);
+            }
+            
+            fileIDInfos.add(fileInfo);
+        }
 
         /**
          * @return All the FileIDInfos for this given file.
@@ -249,7 +263,15 @@ public class TestIntegrityModel implements IntegrityModel {
 
     @Override
     public long getNumberOfFiles(String pillarId) {
-        return cache.size();
+        long res = 0L;
+        for(CollectionFileIDInfo fileinfos : cache.values()) {
+            for(FileInfo fi : fileinfos.fileIDInfos) {
+                if((fi.getPillarId() == pillarId) && (fi.getFileState() == FileState.EXISTING)) {
+                    res++;
+                }
+            }
+        }
+        return res;
     }
 
     @Override
@@ -443,5 +465,30 @@ public class TestIntegrityModel implements IntegrityModel {
             }
         }
         return CalendarUtils.convertFromXMLGregorianCalendar(res);
+    }
+
+    @Override
+    public void setAllFilesToUnknownFileState() {
+        for(String s : cache.keySet()) {
+            CollectionFileIDInfo collectionInfo = cache.get(s);
+            CollectionFileIDInfo info = new CollectionFileIDInfo(s);            
+            for(FileInfo fileinfo : collectionInfo.getFileIDInfos()) {
+                fileinfo.setFileState(FileState.UNKNOWN);
+                info.insertFileInfo(fileinfo, fileinfo.getPillarId());
+            }
+            cache.put(s, info);
+            System.err.println("Unknown: " + s);
+        }
+    }
+
+    @Override
+    public void setUnknownFilesToMissing() {
+        for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
+            for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
+                if(fileinfo.getFileState() == FileState.UNKNOWN) {
+                    fileinfo.setFileState(FileState.MISSING);
+                }
+            }
+        }
     }
 }

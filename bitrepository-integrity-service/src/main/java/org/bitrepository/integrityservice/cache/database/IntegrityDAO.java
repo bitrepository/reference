@@ -464,6 +464,26 @@ public class IntegrityDAO {
                 + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ? ) ORDER BY " + FI_LAST_CHECKSUM_UPDATE + " DESC ";
         return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, FileState.EXISTING.ordinal(), pillarId);
     }
+
+    /**
+     * Settings the file state of all the files to unknown.
+     */
+    public void setAllFileStatesToUnknown() {
+        log.trace("Setting the file state for all files to '" + FileState.UNKNOWN + "'.");
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?";
+        DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.UNKNOWN.ordinal());
+    }
+    
+    /**
+     * Settings the file state of all the files to unknown.
+     */
+    public void setUnknownFilesToMissing() {
+        log.trace("Setting the file state for all '" + FileState.UNKNOWN + "' files to '" + FileState.MISSING + "'.");
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? WHERE " + FI_FILE_STATE 
+                + " = ?";
+        DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.MISSING.ordinal(), 
+                FileState.UNKNOWN.ordinal());
+    }
     
     /**
      * Updates the file info for the given file at the given pillar.

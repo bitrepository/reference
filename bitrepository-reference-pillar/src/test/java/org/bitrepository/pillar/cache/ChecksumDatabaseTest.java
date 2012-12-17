@@ -44,7 +44,6 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
     private static final String DEFAULT_FILE_ID = "TEST-FILE";
     private static final String DEFAULT_CHECKSUM = "abcdef0110fedcba";
     private static final Date DEFAULT_DATE = new Date();
-
     
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {

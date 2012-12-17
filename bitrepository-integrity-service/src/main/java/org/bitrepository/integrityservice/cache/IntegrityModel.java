@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 
 /**
@@ -39,10 +38,9 @@ public interface IntegrityModel {
     /**
      * Add file ID data to cache.
      * @param data The received data.
-     * @param expectedFileIDs The expected FileIDs. Those missing will be set to 'missing'.
      * @param pillarId The id of the pillar the received data comes from.
      */
-    void addFileIDs(FileIDsData data, FileIDs expectedFileIDs, String pillarId);
+    void addFileIDs(FileIDsData data, String pillarId);
 
     /**
      * Add checksum data to cache.
@@ -146,6 +144,16 @@ public interface IntegrityModel {
      */
     void setFilesWithConsistentChecksumToValid();
     
+    /**
+     * Set the file state of all files to 'unknown'.
+     */
+    void setAllFilesToUnknownFileState();
+
+    /**
+     * Set the file state of all unknown files to 'missing'.
+     */
+    void setUnknownFilesToMissing();
+
     /**
      * Retrieves the date for the latest file entry for a given pillar.
      * E.g. the date for the latest file which has been positively identified as existing on the given pillar.  

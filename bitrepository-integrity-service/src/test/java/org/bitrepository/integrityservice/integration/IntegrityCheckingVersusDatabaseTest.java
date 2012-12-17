@@ -82,8 +82,8 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
         
         addStep("Initialise the file ids data.", "Should be created and put into the cache.");
         FileIDsData fileidsData1 = createFileIdData(TEST_FILE_1);
-        cache.addFileIDs(fileidsData1, FileIDsUtils.getAllFileIDs(), TEST_PILLAR_1);
-        cache.addFileIDs(fileidsData1, FileIDsUtils.getAllFileIDs(), TEST_PILLAR_2);
+        cache.addFileIDs(fileidsData1, TEST_PILLAR_1);
+        cache.addFileIDs(fileidsData1, TEST_PILLAR_2);
         
         addStep("Check whether all pillars have all the file ids", "They should contain the same files.");
         MissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs());
@@ -99,7 +99,7 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
 
         addStep("Initialise the file ids data.", "Should be created and put into the cache.");
         FileIDsData fileidsData1 = createFileIdData(TEST_FILE_1);
-        cache.addFileIDs(fileidsData1, FileIDsUtils.getAllFileIDs(), TEST_PILLAR_1);
+        cache.addFileIDs(fileidsData1, TEST_PILLAR_1);
         
         addStep("Check whether all pillars have all the file ids", "Only one should contain the fileids, so it should return false");
         MissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs());
@@ -121,7 +121,7 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
 
         addStep("Initialise the file ids data.", "Should be created and put into the cache.");
         FileIDsData fileidsData1 = createFileIdData(TEST_FILE_1);
-        cache.addFileIDs(fileidsData1, FileIDsUtils.getAllFileIDs(), TEST_PILLAR_1);
+        cache.addFileIDs(fileidsData1, TEST_PILLAR_1);
         cache.setFileMissing(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1));
         
         addStep("Check whether all pillars have all the file ids", "Only one should contain the fileids, so it should return false");
@@ -201,8 +201,8 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
        
         addStep("Initialise the data cache", "Should be created and put into the cache.");
         FileIDsData fileidsData = createFileIdData(TEST_FILE_1);
-        cache.addFileIDs(fileidsData, FileIDsUtils.getAllFileIDs(), TEST_PILLAR_1);
-        cache.addFileIDs(fileidsData, FileIDsUtils.getAllFileIDs(), TEST_PILLAR_2);
+        cache.addFileIDs(fileidsData, TEST_PILLAR_1);
+        cache.addFileIDs(fileidsData, TEST_PILLAR_2);
         
         addStep("Check the checksum status.", "Should not find the issue.");
         MissingChecksumReportModel report = checker.checkMissingChecksums();
@@ -220,8 +220,8 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
         
         addStep("Initialise the data cache", "Should be created and put into the cache.");
         FileIDsData fileidsData = createFileIdData(TEST_FILE_1, TEST_FILE_2);
-        cache.addFileIDs(fileidsData, FileIDsUtils.getAllFileIDs(), TEST_PILLAR_1);
-        cache.addFileIDs(fileidsData, FileIDsUtils.getAllFileIDs(), TEST_PILLAR_2);
+        cache.addFileIDs(fileidsData, TEST_PILLAR_1);
+        cache.addFileIDs(fileidsData, TEST_PILLAR_2);
         List<ChecksumDataForChecksumSpecTYPE> checksumData1 = createChecksumData("1234cccc4321", TEST_FILE_1);
         cache.addChecksums(checksumData1, TEST_PILLAR_1);
         cache.addChecksums(checksumData1, TEST_PILLAR_2);
