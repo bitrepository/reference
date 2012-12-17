@@ -67,8 +67,8 @@ create_conf_repos() {
 download() {
   rm -r ${ARTIFACTID}-*
   echo "Downloading new deployment scripts"
-  #${DEPLOY_SCRIPTS}/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c deploy -p tar.gz
-  #tar -xzf $ARTIFACTID-deploy.tar.gz -C ../
+  ${DEPLOY_SCRIPTS}/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c deploy -p tar.gz
+  tar -xzf $ARTIFACTID-deploy.tar.gz
   echo "Downloading new pillar artifacts"
   ${DEPLOY_SCRIPTS}/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c distribution -p tar.gz
   tar -xzf $ARTIFACTID-distribution.tar.gz
@@ -122,6 +122,7 @@ clean_pillars() {
        bin/create_derby_databases.sh
      fi
    done
+   cd
 }
 
 set -e
@@ -150,13 +151,13 @@ case "$1" in
     ;;
   cleanupdate)
     ${PILLAR_SCRIPT} stop
-    clean_pillars
     download
-	update_pillars
+    update_pillars
+    clean_pillars
     ${PILLAR_SCRIPT} start
 	case "$?" in
-		0) echo "$NAME has been cleanly updated" ;;
-		1) echo "$NAME failed to update cleanly" ;;
+		0) echo "Pillars has been cleanly updated" ;;
+		1) echo "Pillars failed to update cleanly" ;;
 	esac
 	;;
 

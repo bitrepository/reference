@@ -1,6 +1,9 @@
 <!--
   #%L
   Bitrepository Reference Pillar
+  
+  $Id$
+  $HeadURL$
   %%
   Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
   %%
@@ -19,15 +22,26 @@
   <http://www.gnu.org/licenses/lgpl-2.1.html>.
   #L%
   -->
-<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="Pillar Acceptance Test" verbose="1" >
-  <test name="Functional tests">
-      <packages>
-        <package name="org.bitrepository.pillar.integration.*" />
-      </packages>
-  </test>
-  <listeners>
-    <listener class-name="org.jaccept.TestNGListerner" />
-  </listeners>
-</suite>
+
+<!-- Work in progress, creating zip distributable for running reference pillar tests. -->
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+  <id>deploy</id>
+  <baseDirectory>.</baseDirectory>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+
+  <fileSets>
+    <fileSet>
+      <outputDirectory>deploy</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0744</fileMode>
+      <directory>src/main/resources/deploy</directory>
+      <filtered>true</filtered>
+    </fileSet>
+  </fileSets>
+</assembly>
+
