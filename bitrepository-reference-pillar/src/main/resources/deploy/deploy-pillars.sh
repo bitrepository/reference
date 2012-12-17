@@ -29,6 +29,7 @@ DOWNLOAD_DIR=$DIR/download
 # Contains reference configuration, the specific configurations are pulling from.
 # Changes here are pulled from the $DOWNLOAD_DIR configuration dir.
 export STANDARD_CONFIG_DIR=$DIR/masterpillar
+export PILLAR_SCRIPT="deploy/pillars.sh"
 export DEPLOY_SCRIPTS=deploy/scripts
 export ARTIFACTID="bitrepository-reference-pillar"
 
@@ -144,11 +145,23 @@ case "$1" in
 		1) echo "$NAME failed to update" ;;
 	esac
 	;;
-	clean)
-    	clean_pillars
+  clean)
+    clean_pillars
     ;;
+  cleanupdate)
+    ${PILLAR_SCRIPT} stop
+    clean_pillars
+    download
+	update_pillars
+    ${PILLAR_SCRIPT} start
+	case "$?" in
+		0) echo "$NAME has been cleanly updated" ;;
+		1) echo "$NAME failed to update cleanly" ;;
+	esac
+	;;
+
   *)
-	echo "Usage: $SCRIPTNAME {create|update|clean}" >&2
+	echo "Usage: $SCRIPTNAME {create|update|clean|cleanupdate}" >&2
 	exit 4
 	;;
 esac
