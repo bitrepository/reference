@@ -30,6 +30,10 @@ TEST_FILE="testprops/pillar-test.xml"
 JAVA_OPTS="-classpath ..:testprops/::lib/* org.testng.TestNG"
 #DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=11111"
 
-$JAVA $DEBUG_OPTS $JAVA_OPTS $TEST_FILE
+rm -r log
+rm -r test-output
+rm -r target
+
+$JAVA $DEBUG_OPTS $LOGBACK $JAVA_OPTS $TEST_FILE
 
 
