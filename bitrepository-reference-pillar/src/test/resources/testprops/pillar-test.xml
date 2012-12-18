@@ -24,7 +24,7 @@
 <suite name="Pillar Acceptance Test" verbose="1" >
   <test name="Functional tests">
       <packages>
-        <package name="org.bitrepository.pillar.integration.*" />
+        <package name="org.bitrepository.pillar.integration.func.*" />
       </packages>
   </test>
   <listeners>
