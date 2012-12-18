@@ -38,13 +38,15 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
         }
     }
 
-    @Test( groups = {"regressiontest", "pillartest"})
+    //@Test( groups = {"regressiontest", "pillartest"})
+    // Fails occasionally, see "BITMAG-801 - Fix ReferenceChecksumManagerTest.testRecalculationWithMockCache"
     public void testRecalculationWithMockCache() throws Exception {
         addDescription("Test the ability to recalculate the checksums automatically with a mock cache.");
-        ReferenceArchive archive = new ReferenceArchive(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir());
+        ReferenceArchive archive =
+                new ReferenceArchive(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir());
         ChecksumStore csCache = new MemoryCache();
-        ReferenceChecksumManager csManager = new ReferenceChecksumManager(archive, csCache, ChecksumUtils.getDefault(settingsForCUT),
-                3600000L);
+        ReferenceChecksumManager csManager =
+                new ReferenceChecksumManager(archive, csCache, ChecksumUtils.getDefault(settingsForCUT), 3600000L);
 
         testRecalculatingChecksumsDueToChangedFile(csManager, archive);
     }
@@ -73,7 +75,7 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
         Date initialDate = new Date();
         ExtractedChecksumResultSet initialCsResults = csManager.getEntries(null, null, null);
         Assert.assertEquals(initialCsResults.getEntries().size(), 0);
-        
+
         synchronized(this) {
             addStep("The file system cannot handle timestamps in millis.", "One second wait, before inserting a file.");
             this.wait(1000);
