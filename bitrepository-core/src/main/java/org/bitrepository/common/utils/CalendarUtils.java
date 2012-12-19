@@ -65,7 +65,19 @@ public final class CalendarUtils {
             throw new IllegalStateException("Could not convert the date '" + date + "' into the xml format.", e);
         }
     }
-    
+
+    /**
+     * Method for easier retrieving the current date in XML format.
+     * @return The current date in XML format
+     */
+    public static XMLGregorianCalendar getXmlGregorianCalendar(GregorianCalendar gregorianCalendar) {
+        try {
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not convert the date '" + gregorianCalendar + "' into the xml format.", e);
+        }
+    }
+
     /**
      * Method for easier retrieving the current date in XML format.
      * @return The current date in XML format

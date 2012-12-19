@@ -48,7 +48,7 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         Assert.assertEquals(calendar.toGregorianCalendar().getTimeInMillis(), DATE_IN_MILLIS);
 
         addStep("Test that a 'null' date is equivalent to epoch", "Should be date '0'");
-        calendar = CalendarUtils.getXmlGregorianCalendar(null);
+        calendar = CalendarUtils.getXmlGregorianCalendar((Date)null);
         Assert.assertEquals(calendar.toGregorianCalendar().getTimeInMillis(), 0);
         
         addStep("Test epoch", "Should be date '0'");

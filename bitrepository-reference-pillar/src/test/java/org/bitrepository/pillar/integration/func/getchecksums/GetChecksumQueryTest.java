@@ -26,8 +26,9 @@ import java.util.List;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
+import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class GetChecksumQueryTest extends PillarFunctionTest {
@@ -100,14 +101,15 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
         Assert.assertTrue(limitedChecksumList.get(0).getCalculationTimestamp().compare(newestTimestamp) == 0,
                 "Different timestamps in the set of newest checksums." + limitedChecksumList);
         
-        addStep("Request checksums with MinTimeStamp set to the timestamp of the newest checksum + 1 ms",
+        addStep("Request checksums with MinTimeStamp set to the timestamp of the newest checksum + 10 ms",
                 "No checksums are returned.");
         GregorianCalendar newerThanNewestTimestamp = newestTimestamp.toGregorianCalendar();
-        newerThanNewestTimestamp.add(GregorianCalendar.MILLISECOND, 1);
+        newerThanNewestTimestamp.add(GregorianCalendar.MILLISECOND, 10);
         query = new ContributorQuery(getPillarID(), newerThanNewestTimestamp.getTime(), null, null);
         limitedChecksumList = pillarFileManager.getChecksums(null, query);
-        Assert.assertTrue(limitedChecksumList.isEmpty(),
-                "Not empty checksum list returned with newerThanNewestTimestamp query.");
+        Assert.assertEmpty(limitedChecksumList,
+                "Non-empty checksum list returned with newerThanNewestTimestamp(" +
+                        CalendarUtils.getXmlGregorianCalendar(newerThanNewestTimestamp) + ") query");
     }
     
     @Test ( groups = {"pillar-integration-test"} )
@@ -144,13 +146,14 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
         Assert.assertTrue(limitedChecksumList.get(0).getCalculationTimestamp().compare(oldestTimestamp) == 0,
                 "Different timestamps in the set of oldest checksums." + limitedChecksumList);
         
-        addStep("Request checksums with MaxTimeStamp set to the timestamp of the oldest checksum - 1 ms",
+        addStep("Request checksums with MaxTimeStamp set to the timestamp of the oldest checksum - 10 ms",
                 "No checksums are returned.");
         GregorianCalendar olderThanOldestTimestamp = oldestTimestamp.toGregorianCalendar();
-        olderThanOldestTimestamp.add(GregorianCalendar.MILLISECOND, -1);
+        olderThanOldestTimestamp.add(GregorianCalendar.MILLISECOND, -10);
         query = new ContributorQuery(getPillarID(), null, olderThanOldestTimestamp.getTime(), null);
         limitedChecksumList = pillarFileManager.getChecksums(null, query);
-        Assert.assertTrue(limitedChecksumList.isEmpty(),
-                "Not empty checksum list returned with olderThanOldestTimestamp query: " + limitedChecksumList.size());
+        Assert.assertEmpty(limitedChecksumList,
+                "Non-empty checksum list returned with olderThanOldestTimestamp(" +
+                        CalendarUtils.getXmlGregorianCalendar(olderThanOldestTimestamp) + ") query");
     }          
 }

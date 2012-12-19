@@ -47,6 +47,6 @@ public class GetChecksumTest extends PillarFunctionTest {
 
         addStep("Retrieve the first two files and verify that the checksums are correct",
             "Not implemented");
-
+        // ToDo implement this
     }
 }
