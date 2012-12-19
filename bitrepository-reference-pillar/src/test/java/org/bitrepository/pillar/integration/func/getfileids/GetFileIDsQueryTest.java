@@ -48,7 +48,8 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
         for (int counter = 0 ; counter < originalFileIDsList.size() - 1 ; counter ++) {
             Assert.assertTrue(originalFileIDsList.get(counter).getLastModificationTime().compare(
                     originalFileIDsList.get(counter + 1).getLastModificationTime()) <= 0,
-                    "file id (" + counter + ") " + originalFileIDsList.get(counter) + " newer than following file id("
+                    "file id (" + counter + ") " + originalFileIDsList.get(counter) + " newer than the following file" +
+                            " id("
                             + counter + ") " + originalFileIDsList.get(counter + 1));
         }
     }
@@ -113,8 +114,6 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
         newerThanNewestTimestamp.add(GregorianCalendar.MILLISECOND, 10);
         query = new ContributorQuery(getPillarID(), newerThanNewestTimestamp.getTime(), null, null);
         limitedFileIDsList = pillarFileManager.getFileIDs(query);
-        Assert.assertTrue(limitedFileIDsList.isEmpty(),
-                "Not empty file id list returned with newerThanNewestTimestamp query.");
         Assert.assertEmpty(limitedFileIDsList, "Non-empty list returned with olderThanOldestTimestamp(" +
                 CalendarUtils.getXmlGregorianCalendar(newerThanNewestTimestamp) + ") query");
     }
