@@ -31,15 +31,21 @@ import org.slf4j.LoggerFactory;
  * Removes all entries for the deletable files from the database. 
  * Uses the results of a MissingFileReport for identifying the files, which should be deleted.
  */
-public class RemoveDeletableFileIDsFromDatabase implements WorkflowStep {
+public class RemoveDeletableFileIDsFromDatabaseStep implements WorkflowStep {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    /** Checker for performing the integrity checks.*/
+    /** The model where the integrity data is stored.*/
     private final IntegrityModel cache;
     /** The report which contains the list of file ids to remove from the database.*/
     private final MissingFileReportModel report;
     
-    public RemoveDeletableFileIDsFromDatabase(IntegrityModel cache, MissingFileReportModel report) {
+    /**
+     * Constructor.
+     * @param cache The IntegrityModel where the integrity data is stored.
+     * @param report The report for missing files, where the files missing at all pillars explicit are marked
+     * as deletable.
+     */
+    public RemoveDeletableFileIDsFromDatabaseStep(IntegrityModel cache, MissingFileReportModel report) {
         ArgumentValidator.checkNotNull(cache, "IntegrityModel cache");
         ArgumentValidator.checkNotNull(report, "MissingFileReportModel report");
         

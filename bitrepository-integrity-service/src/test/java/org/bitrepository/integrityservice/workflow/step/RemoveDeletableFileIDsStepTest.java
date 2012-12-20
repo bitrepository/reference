@@ -60,7 +60,7 @@ public class RemoveDeletableFileIDsStepTest extends ExtendedTestCase {
         addDescription("Testing the case, when no files should be deleted from the database.");
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
         MissingFileReportModel report = new MissingFileReportModel();
-        WorkflowStep step = new RemoveDeletableFileIDsFromDatabase(store, report);
+        WorkflowStep step = new RemoveDeletableFileIDsFromDatabaseStep(store, report);
         Assert.assertEquals(store.getCallsForDeleteFileIdEntry(), 0);
         
         addStep("Perform the step of deleting file id entries based on the report.", 
@@ -76,7 +76,7 @@ public class RemoveDeletableFileIDsStepTest extends ExtendedTestCase {
         store.addChecksums(createChecksumData(DEFAULT_CHECKSUM, TEST_FILE_1), TEST_PILLAR_1);
         MissingFileReportModel report = new MissingFileReportModel();
         report.reportDeletableFile(TEST_FILE_1);
-        WorkflowStep step = new RemoveDeletableFileIDsFromDatabase(store, report);
+        WorkflowStep step = new RemoveDeletableFileIDsFromDatabaseStep(store, report);
         Assert.assertEquals(store.getCallsForDeleteFileIdEntry(), 0);
         
         addStep("Perform the step of deleting file id entries based on the report.", 
@@ -98,7 +98,7 @@ public class RemoveDeletableFileIDsStepTest extends ExtendedTestCase {
             store.addChecksums(createChecksumData(DEFAULT_CHECKSUM, fileId), TEST_PILLAR_1);
             report.reportDeletableFile(fileId);
         }
-        WorkflowStep step = new RemoveDeletableFileIDsFromDatabase(store, report);
+        WorkflowStep step = new RemoveDeletableFileIDsFromDatabaseStep(store, report);
         Assert.assertEquals(store.getCallsForDeleteFileIdEntry(), 0);
         
         addStep("Perform the step of deleting file id entries based on the report.", 
