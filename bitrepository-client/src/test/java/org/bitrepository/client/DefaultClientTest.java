@@ -65,7 +65,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
 
         addStep("Verify that the client continues to the performing phase.",
-                "A REQUEST_SENT event should be generated and a GetFileRequest should be sent only to contributor2.");
+                "A REQUEST_SENT event should be generated and a OperationRequest should be sent only to contributor2" +
+                        ".");
         checkNoRequestIsReceived(pillar1Receiver);
         MessageRequest request = waitForRequest(pillar2Receiver);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
@@ -106,7 +107,7 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
 
         addStep("Verify that the client continues to the performing phase.",
-                "A REQUEST_SENT event should be generated and a GetFileRequest should be sent only to contributor2.");
+                "A REQUEST_SENT event should be generated and a Request should be sent only to contributor2.");
         checkNoRequestIsReceived(pillar1Receiver);
         MessageRequest request = waitForRequest(pillar2Receiver);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
@@ -146,7 +147,7 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
 
         addStep("Verify that the client continues to the performing phase.",
-                "A REQUEST_SENT event should be generated and a GetFileRequest should be sent to pillar1.");
+                "A REQUEST_SENT event should be generated and a Request should be sent to pillar1.");
         MessageRequest request = waitForRequest(pillar1Receiver);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
 
@@ -179,9 +180,9 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
     }
 
 
-    //@Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest"})
     public void operationTimeoutTest() throws Exception {
-        addDescription("Tests the the GetFileClient handles lack of final responses gracefully.");
+        addDescription("Tests the the client handles lack of final responses gracefully.");
 
         addStep("Set a 3 second operation timeout.", "");
         settingsForCUT.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
@@ -190,17 +191,31 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
                 "A IDENTIFY_REQUEST_SENT event should be received.");
         startOperation(testEventHandler);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
-        Assert.assertNotNull(waitForIdentifyRequest());
+        MessageRequest identifyRequest = waitForIdentifyRequest();
 
-        addStep("Send positive identification responses from the contributors",
-                "");
+        addStep("Send positive responses from the pillar1 and a negative response from pillar2",
+                "A COMPONENT_IDENTIFIED + a " +
+                "event should be generated followed by a IDENTIFICATION_COMPLETE. <p>" +
+                "Finally a operation request should be sent to pillar1 and a REQUEST_SENT event be " +
+                "generated");
+        messageBus.sendMessage(createIdentifyResponse(identifyRequest, PILLAR1_ID, pillar1DestinationId));
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
+        MessageResponse identifyResponse2 = createIdentifyResponse(identifyRequest, PILLAR2_ID, pillar2DestinationId);
+        identifyResponse2.getResponseInfo().setResponseCode(ResponseCode.IDENTIFICATION_NEGATIVE);
+        messageBus.sendMessage(identifyResponse2);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        MessageRequest request1 = waitForRequest(pillar1Receiver);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
 
+        addStep("Wait for 5 seconds", "An FAILED event should be received");
+        Assert.assertEquals(testEventHandler.waitForEvent(5, TimeUnit.SECONDS).getEventType(),
+                OperationEventType.FAILED);
     }
 
     @Test(groups = {"regressiontest"})
     public void conversationTimeoutTest() throws Exception {
-        addDescription("Tests the the GetFileClient handles lack of IdentifyPillarResponses gracefully  ");
+        addDescription("Tests the the client handles lack of IdentifyPillarResponses gracefully  ");
 
         addStep("Set a 3 second ConversationTimeout.", "");
         settingsForCUT.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(3000));
