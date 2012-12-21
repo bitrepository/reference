@@ -69,13 +69,6 @@ public class IntegrityCollectorEventHandler implements EventHandler {
         this.timeout = timeout;
     }
     
-    /**
-     * Cleanup between usage of this event handler.
-     */
-    public void clean() {
-        contributorsWithPartialResults.clear();
-    }
-    
     @Override
     public void handleEvent(OperationEvent event) {
         if(event.getEventType() == OperationEventType.COMPONENT_COMPLETE) {

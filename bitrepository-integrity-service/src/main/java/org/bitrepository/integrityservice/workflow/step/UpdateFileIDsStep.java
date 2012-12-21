@@ -91,17 +91,16 @@ public class UpdateFileIDsStep implements WorkflowStep {
     public synchronized void performStep() {
         store.setAllFilesToUnknownFileState();
 
-        IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
         try {
             List<String> pillarsToCollectFrom = new ArrayList<String>(pillarIds);
             while (!pillarsToCollectFrom.isEmpty()) {
+                IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
                 collector.getFileIDs(pillarsToCollectFrom, "IntegrityService: " + getName(), queries, eventHandler);
                 
                 OperationEvent event = eventHandler.getFinish();
                 log.debug("Collection of file ids had the final event: " + event);
                 pillarsToCollectFrom = new ArrayList<String>(eventHandler.getPillarsWithPartialResult());
-                eventHandler.clean();
             }
         } catch (InterruptedException e) {
             log.warn("Interrupted while collecting file ids.", e);

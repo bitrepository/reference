@@ -93,17 +93,16 @@ public class UpdateChecksumsStep implements WorkflowStep{
 
     @Override
     public synchronized void performStep() {
-        IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
         try {
             List<String> pillarsToCollectFrom = new ArrayList<String>(pillarIds);
             while (!pillarsToCollectFrom.isEmpty()) {
+                IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
                 collector.getChecksums(pillarsToCollectFrom, checksumType, "IntegrityService: " + getName(), queries, 
                         eventHandler);
                 OperationEvent event = eventHandler.getFinish();
                 log.debug("Collection of file ids had the final event: " + event);
                 pillarsToCollectFrom = new ArrayList<String>(eventHandler.getPillarsWithPartialResult());
-                eventHandler.clean();
             }
         } catch (InterruptedException e) {
             log.warn("Interrupted while collecting file ids.", e);
