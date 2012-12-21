@@ -51,7 +51,7 @@ public class ContributorQuery {
      * @param maxTimestamp If set, only elements with timestamp earlier than or equal to <code>maxTimestamp</code> are
      *                     requested.
      * @param maxNumberOfResults If set will limit the number of results returned. If the result set is limited, only
-     * the lowest sequence numbers are returned
+     * the oldest timestamps are returned
      */
     public ContributorQuery(String componentID, Date minTimestamp, Date maxTimestamp, Integer maxNumberOfResults) {
         if (minTimestamp != null && maxTimestamp != null && minTimestamp.after(maxTimestamp)) {

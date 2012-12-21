@@ -315,7 +315,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         addStep("Request fileIDs from with MinTimestamp, MaxTimestamp, MaxNumberOfResults set for both pillars .",
             "A IdentifyPillarsForGetFileIDsRequest should be sent.");
         Date timestamp3 = new Date();
-        Date timestamp2 =  new Date(timestamp3.getTime() - 1000);
+        Date timestamp2 =  new Date(timestamp3.getTime() - 100);
         Date timestamp1 =  new Date(timestamp3.getTime() - 1000);
         ContributorQuery query1 = new ContributorQuery(PILLAR1_ID, timestamp1, timestamp2, new Integer(1));
         ContributorQuery query2 = new ContributorQuery(PILLAR2_ID, timestamp2, timestamp3, new Integer(2));
@@ -345,7 +345,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
         GetFileIDsRequest receivedGetFileIDsRequest2 = pillar2Receiver.waitForMessage(GetFileIDsRequest.class);
         Assert.assertEquals(receivedGetFileIDsRequest2.getMinTimestamp(),
-            CalendarUtils.getXmlGregorianCalendar((query1.getMinTimestamp())),
+            CalendarUtils.getXmlGregorianCalendar((query2.getMinTimestamp())),
             "Unexpected MinTimestamp in GetFileIDsRequest to pillar2.");
         Assert.assertEquals(receivedGetFileIDsRequest2.getMaxTimestamp(),
             CalendarUtils.getXmlGregorianCalendar(query2.getMaxTimestamp()),

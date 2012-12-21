@@ -52,10 +52,16 @@ public class AuditTrailQuery extends ContributorQuery {
         this.maxSequenceNumber = maxSequenceNumber;
     }
 
+    /**
+     * @see AuditTrailQuery#AuditTrailQuery(String, Integer, Integer, Integer)
+     */
     public Integer getMinSequenceNumber() {
         return minSequenceNumber;
     }
 
+    /**
+     * @see AuditTrailQuery#AuditTrailQuery(String, Integer, Integer, Integer)
+     */
     public Integer getMaxSequenceNumber() {
         return maxSequenceNumber;
     }

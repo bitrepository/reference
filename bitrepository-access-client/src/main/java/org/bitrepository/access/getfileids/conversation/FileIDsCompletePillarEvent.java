@@ -35,7 +35,6 @@ public class FileIDsCompletePillarEvent extends ContributorCompleteEvent {
     private final ResultingFileIDs result;
     private final boolean isPartialResult;
 
-
     /**
      * @param result The result returned by the pillar.
      * @param pillarID The pillar which generated the result

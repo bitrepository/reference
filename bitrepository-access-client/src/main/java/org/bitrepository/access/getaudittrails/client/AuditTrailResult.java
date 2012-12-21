@@ -25,12 +25,19 @@ import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
 import org.bitrepository.client.eventhandler.ContributorCompleteEvent;
 
 /**
- * Returns the result of a Audit Trail final response.
+ * Returns the result of a Audit Trail final response for a single contributor.
  */
 public class AuditTrailResult extends ContributorCompleteEvent {
     private final ResultingAuditTrails auditTrailEvents;
     private final boolean isPartialResult;
 
+    /**
+     * @param pillarID The Id of the pillar suppying the audit trails.
+     * @param auditTrailEvents The list of audit trail events
+     * @param isPartialResult <code>true</code> if the result return encountered a maxResultLimit and therefore
+     * only returned a subset of results is returned. See {@link org.bitrepository.access.ContributorQuery} for
+     * details.
+     */
     public AuditTrailResult(String pillarID, ResultingAuditTrails auditTrailEvents, boolean isPartialResult) {
         super(pillarID);
         this.auditTrailEvents = auditTrailEvents;
@@ -44,6 +51,9 @@ public class AuditTrailResult extends ContributorCompleteEvent {
         return auditTrailEvents;
     }
 
+    /**
+     * @see #AuditTrailResult(String, org.bitrepository.bitrepositoryelements.ResultingAuditTrails, boolean)
+     */
     public boolean isPartialResult() {
         return isPartialResult;
     }

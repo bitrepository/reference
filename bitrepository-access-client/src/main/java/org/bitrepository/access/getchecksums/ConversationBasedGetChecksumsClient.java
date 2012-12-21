@@ -25,6 +25,7 @@
 package org.bitrepository.access.getchecksums;
 
 import java.net.URL;
+import java.util.Arrays;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getchecksums.conversation.GetChecksumsConversationContext;
@@ -70,7 +71,7 @@ public class ConversationBasedGetChecksumsClient extends AbstractClient implemen
         }
 
         log.info("Requesting the checksums for file '" + "' with the specifications '" + checksumSpec + fileID +
-            "' with query "+ contributorQueries + "." +
+            "' with query "+ Arrays.asList(contributorQueries) + "." +
             (addressForResult != null ?  "The result should be uploaded to '" + addressForResult + "'." : ""));
 
         GetChecksumsConversationContext context = new GetChecksumsConversationContext(

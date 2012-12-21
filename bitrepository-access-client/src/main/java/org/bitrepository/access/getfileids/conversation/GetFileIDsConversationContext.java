@@ -30,10 +30,19 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.OperationType;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
+/**
+ * Encapsulates the context for a GetFileIDs operation.
+ */
 public class GetFileIDsConversationContext extends ConversationContext {
     private final ContributorQuery[] contributorQueries;
     private final URL urlForResult;
 
+    /**
+     * Extends the {@link ConversationContext} constructor with
+     * {@link org.bitrepository.access.getfileids.GetFileIDsClient} specific parameters.
+     * @param contributorQueries See {@link org.bitrepository.access.getfileids.GetFileIDsClient} for details.
+     * @param urlForResult See {@link org.bitrepository.access.getfileids.GetFileIDsClient} for details.
+     */
     public GetFileIDsConversationContext(ContributorQuery[] contributorQueries, String fileID, URL urlForResult,
             Settings settings, MessageSender messageSender, String clientID, Collection<String> contributors,
             EventHandler eventHandler) {
