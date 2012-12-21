@@ -34,7 +34,6 @@ import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.messagebus.MessageListener;
-import org.bitrepository.protocol.messagebus.logger.MessageLoggerProvider;
 import org.jaccept.TestEventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,11 +59,9 @@ import org.testng.Assert;
  * </pre>  
  */
 public class MessageReceiver {
-    //ToDo convert to TestLogger
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final MessageModel messageModel = new MessageModel();
     private final String destination;
-    private final MessageLoggerProvider messageLoggerProvider;
     private final MessageListener messageListener;
     private final TestEventManager testEventManager;
 
@@ -76,14 +73,13 @@ public class MessageReceiver {
         this.destination = destination;
         this.testEventManager = testEventManager;
         messageListener = new TestMessageHandler();
-        messageLoggerProvider = MessageLoggerProvider.getInstance();
     }
 
     public String getDestination() {
         return destination;
     }
 
-    /** Can be used to ignore messages from irrelevnt components */
+    /** Can be used to ignore messages from irrelevant components */
     public void setFromFilter(Collection<String> filter) {
         messageModel.pillarFilter = filter;
     }
