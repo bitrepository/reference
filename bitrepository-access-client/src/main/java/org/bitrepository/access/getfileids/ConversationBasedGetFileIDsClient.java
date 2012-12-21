@@ -26,6 +26,7 @@ package org.bitrepository.access.getfileids;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import org.bitrepository.access.ContributorQuery;
@@ -71,7 +72,8 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
                 settings.getCollectionSettings().getClientSettings().getPillarIDs());
         }
 
-        log.info("Requesting the fileIDs for file '" + fileID + "' with query "+ contributorQueries + "." +
+        log.info("Requesting the fileIDs for file '" + fileID + "' with query "+
+                Arrays.asList(contributorQueries) + ". " +
         (addressForResult != null ?  "The result should be uploaded to '" + addressForResult + "'." : ""));
 
         GetFileIDsConversationContext context = new GetFileIDsConversationContext(

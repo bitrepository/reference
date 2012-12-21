@@ -269,7 +269,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         addStep("Request fileIDs from with MinTimestamp, MaxTimestamp, MaxNumberOfResults set for both pillars .",
                 "A IdentifyPillarsForGetChecksumsRequest should be sent.");
         Date timestamp3 = new Date();
-        Date timestamp2 =  new Date(timestamp3.getTime() - 1000);
+        Date timestamp2 =  new Date(timestamp3.getTime() - 100);
         Date timestamp1 =  new Date(timestamp3.getTime() - 1000);
         ContributorQuery query1 = new ContributorQuery(PILLAR1_ID, timestamp1, timestamp2, new Integer(1));
         ContributorQuery query2 = new ContributorQuery(PILLAR2_ID, timestamp2, timestamp3, new Integer(2));
@@ -299,7 +299,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
 
         GetChecksumsRequest receivedGetChecksumsRequest2 = pillar2Receiver.waitForMessage(GetChecksumsRequest.class);
         Assert.assertEquals(receivedGetChecksumsRequest2.getMinTimestamp(),
-                CalendarUtils.getXmlGregorianCalendar((query1.getMinTimestamp())),
+                CalendarUtils.getXmlGregorianCalendar((query2.getMinTimestamp())),
                 "Unexpected MinTimestamp in GetChecksumsRequest to pillar2.");
         Assert.assertEquals(receivedGetChecksumsRequest2.getMaxTimestamp(),
                 CalendarUtils.getXmlGregorianCalendar(query2.getMaxTimestamp()),

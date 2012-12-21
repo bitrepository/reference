@@ -42,6 +42,9 @@ public class GetChecksumsConversationContext extends ConversationContext {
     /**
      * Extends the {@link ConversationContext} constructor with
      * {@link org.bitrepository.access.getchecksums.GetChecksumsClient} specific parameters.
+     * @param contributorQueries See {@link org.bitrepository.access.getchecksums.GetChecksumsClient} for details.
+     * @param urlForResult See {@link org.bitrepository.access.getchecksums.GetChecksumsClient} for details.
+     * @param checksumSpec See {@link org.bitrepository.access.getchecksums.GetChecksumsClient} for details.
      */
     public GetChecksumsConversationContext(
             ContributorQuery[] contributorQueries,

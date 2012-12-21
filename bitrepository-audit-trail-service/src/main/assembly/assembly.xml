@@ -31,14 +31,15 @@
     <format>tar.gz</format>
   </formats>
 
+  <dependencySets>
+    <dependencySet>
+      <includes>
+        <include>*:war</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+
   <fileSets>
-    <fileSet>
-      <outputDirectory>bin</outputDirectory>
-      <directory>src/main/scripts</directory>
-      <fileMode>0740</fileMode>
-      <directoryMode>0740</directoryMode>
-      <filtered>true</filtered>
-    </fileSet>
     <fileSet>
       <outputDirectory>sql</outputDirectory>
       <fileMode>0740</fileMode>

@@ -61,7 +61,8 @@ public class GettingAuditTrails extends PerformingOperationState {
                 }
                 if (query.getMaxSequenceNumber() != null) {
                     msg.setMaxSequenceNumber(BigInteger.valueOf(query.getMaxSequenceNumber().intValue()));
-                } if (query.getMaxNumberOfResults() != null) {
+                }
+                if (query.getMaxNumberOfResults() != null) {
                     msg.setMaxNumberOfResults(BigInteger.valueOf(query.getMaxNumberOfResults().intValue()));
                 }
                 context.getMessageSender().sendMessage(msg);
