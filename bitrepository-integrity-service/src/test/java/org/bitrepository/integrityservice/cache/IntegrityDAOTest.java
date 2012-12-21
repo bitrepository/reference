@@ -468,11 +468,38 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1), 0);        
         
         addStep("Set the unknown files to missing.", "Both files is missing.");
-        cache.setUnknownFilesToMissing();
+        cache.setOldUnknownFilesToMissing(new Date());
         Assert.assertEquals(cache.getNumberOfExistingFilesForAPillar(TEST_PILLAR_1), 0);
         Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1), 2);        
     }
     
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testSettingNewUnknownFileToMissing() throws Exception {
+        addDescription("Tests that only unknown files older than the time-stamp is set to missing.");
+        IntegrityDAO cache = createDAO();
+        String file2 = TEST_FILE_ID + "2";
+        
+        addStep("Update with two files, one at the time, and record a timestamp in between", 
+                "Ingesting the data into the database");
+        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_1);
+
+        Date betweenFiles = new Date();
+        cache.updateFileIDs(getFileIDsData(file2), TEST_PILLAR_1);
+        Assert.assertEquals(cache.getNumberOfExistingFilesForAPillar(TEST_PILLAR_1), 2);
+        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1), 0);
+        
+        addStep("Set the file state of all files to unknown.", "Neither any missing nor existing files for the pillar");
+        cache.setAllFileStatesToUnknown();
+        Assert.assertEquals(cache.getNumberOfExistingFilesForAPillar(TEST_PILLAR_1), 0);
+        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1), 0);        
+        
+        addStep("Set the unknown files older than the timestamp to missing.", 
+                "Only the oldest file should be marked as missing.");
+        cache.setOldUnknownFilesToMissing(betweenFiles);
+        Assert.assertEquals(cache.getNumberOfExistingFilesForAPillar(TEST_PILLAR_1), 0);
+        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1), 1);        
+    }
+
     private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileId, String checksum) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         

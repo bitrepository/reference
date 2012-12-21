@@ -32,8 +32,7 @@ import org.bitrepository.integrityservice.workflow.step.FindObsoleteChecksumsSte
 import org.bitrepository.integrityservice.workflow.step.IntegrityValidationChecksumStep;
 import org.bitrepository.integrityservice.workflow.step.IntegrityValidationFileIDsStep;
 import org.bitrepository.integrityservice.workflow.step.RemoveDeletableFileIDsFromDatabaseStep;
-import org.bitrepository.integrityservice.workflow.step.SetFileStateToUnknownStep;
-import org.bitrepository.integrityservice.workflow.step.SetUnknownFilesToMissingStep;
+import org.bitrepository.integrityservice.workflow.step.SetOldUnknownFilesToMissingStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
 
@@ -75,19 +74,16 @@ public class BasicIntegrityWorkflow extends StepBasedWorkflow {
     @Override
     public void start() {
         try {
-            SetFileStateToUnknownStep setFileStateToUnknownStep = new SetFileStateToUnknownStep(store);
-            performStep(setFileStateToUnknownStep);
-            
             UpdateFileIDsStep updateFileIDsStep = new UpdateFileIDsStep(collector, store, alerter,
                     settings);
             performStep(updateFileIDsStep);
             
-            SetUnknownFilesToMissingStep setUnknownFilesToMissingStep = new SetUnknownFilesToMissingStep(store);
-            performStep(setUnknownFilesToMissingStep);
-            
             UpdateChecksumsStep updateChecksumStep = new UpdateChecksumsStep(collector, store, alerter,
                     ChecksumUtils.getDefault(settings), settings);
             performStep(updateChecksumStep);
+
+            SetOldUnknownFilesToMissingStep setUnknownFilesToMissingStep = new SetOldUnknownFilesToMissingStep(store);
+            performStep(setUnknownFilesToMissingStep);
             
             IntegrityValidationFileIDsStep validateFileidsStep = new IntegrityValidationFileIDsStep(checker, alerter);
             performStep(validateFileidsStep);

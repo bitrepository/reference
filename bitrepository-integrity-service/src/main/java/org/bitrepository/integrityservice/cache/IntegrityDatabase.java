@@ -181,7 +181,9 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public void setUnknownFilesToMissing() {
-        store.setUnknownFilesToMissing();
+    public void setOldUnknownFilesToMissing() {
+        Date minDate = new Date(System.currentTimeMillis() 
+                - settings.getReferenceSettings().getIntegrityServiceSettings().getTimeBeforeMissingFileCheck());
+        store.setOldUnknownFilesToMissing(minDate);
     }
 }

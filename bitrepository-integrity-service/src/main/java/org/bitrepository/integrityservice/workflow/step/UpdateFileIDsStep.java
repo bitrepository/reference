@@ -84,11 +84,13 @@ public class UpdateFileIDsStep implements WorkflowStep {
     
     @Override
     public String getName() {
-        return "Collecting all file ids.";
+        return "Refreshing the cache and collecting the file ids on all pillars";
     }
 
     @Override
     public synchronized void performStep() {
+        store.setAllFilesToUnknownFileState();
+
         IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
         try {
             List<String> pillarsToCollectFrom = new ArrayList<String>(pillarIds);

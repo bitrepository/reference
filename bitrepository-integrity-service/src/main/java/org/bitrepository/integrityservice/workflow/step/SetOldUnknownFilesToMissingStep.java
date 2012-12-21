@@ -24,9 +24,9 @@ package org.bitrepository.integrityservice.workflow.step;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 
 /**
- * The step for settings the file state of all files to unknown.
+ * The step for settings the file state to 'missing' for all the files, which are currently set to unknown.
  */
-public class SetFileStateToUnknownStep implements WorkflowStep {
+public class SetOldUnknownFilesToMissingStep implements WorkflowStep {
     /** The model where the integrity data is stored.*/
     private final IntegrityModel store;
     
@@ -34,17 +34,17 @@ public class SetFileStateToUnknownStep implements WorkflowStep {
      * Constructor.
      * @param store The storage for the integrity data.
      */
-    public SetFileStateToUnknownStep(IntegrityModel store) {
+    public SetOldUnknownFilesToMissingStep(IntegrityModel store) {
         this.store = store;
     }
     
     @Override
     public String getName() {
-        return "Settings the file state of all files to unknown.";
+        return "Settings the files with unknown file state to missing.";
     }
 
     @Override
     public synchronized void performStep() {
-        store.setAllFilesToUnknownFileState();
+        store.setOldUnknownFilesToMissing();
     }
 }

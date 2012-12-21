@@ -303,9 +303,10 @@
       <DatabaseURL>jdbc:derby:integritydb</DatabaseURL>
     </IntegrityDatabase>
 
-    <!-- 
-      Interval between fileIDs consistency check.
-      Timeunit in milliseconds.    
+    <!--
+        The number of milliseconds a file has to be known by the system before it is sat to missing. 
+        This is to avoid false negatives for a reporting a file missing on a pillar,
+        when it is just not finished with the PutFile operation. (1 hour)
     -->
     <TimeBeforeMissingFileCheck>3600000</TimeBeforeMissingFileCheck> 
     

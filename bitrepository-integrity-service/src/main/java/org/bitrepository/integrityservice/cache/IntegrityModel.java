@@ -152,7 +152,7 @@ public interface IntegrityModel {
     /**
      * Set the file state of all unknown files to 'missing'.
      */
-    void setUnknownFilesToMissing();
+    void setOldUnknownFilesToMissing();
 
     /**
      * Retrieves the date for the latest file entry for a given pillar.

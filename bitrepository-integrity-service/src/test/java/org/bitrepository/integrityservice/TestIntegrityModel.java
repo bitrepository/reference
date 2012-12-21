@@ -477,12 +477,11 @@ public class TestIntegrityModel implements IntegrityModel {
                 info.insertFileInfo(fileinfo, fileinfo.getPillarId());
             }
             cache.put(s, info);
-            System.err.println("Unknown: " + s);
         }
     }
 
     @Override
-    public void setUnknownFilesToMissing() {
+    public void setOldUnknownFilesToMissing() {
         for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
             for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
                 if(fileinfo.getFileState() == FileState.UNKNOWN) {

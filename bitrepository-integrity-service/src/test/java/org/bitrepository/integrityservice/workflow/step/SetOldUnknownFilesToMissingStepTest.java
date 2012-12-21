@@ -34,7 +34,7 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class SetFileStateToUnknownStepTest extends ExtendedTestCase {
+public class SetOldUnknownFilesToMissingStepTest extends ExtendedTestCase {
     public static final String TEST_PILLAR_1 = "test-pillar-1";
     public static final String TEST_FILE_1 = "test-file-1";
     public static final int NUMBER_OF_FILES = 10;
@@ -43,13 +43,13 @@ public class SetFileStateToUnknownStepTest extends ExtendedTestCase {
     public void testUpdatingEmptyStore() {
         addDescription("Test the step for updating an empty integrity store.");
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(Arrays.asList(TEST_PILLAR_1)));
-        SetFileStateToUnknownStep step = new SetFileStateToUnknownStep(store);
+        SetOldUnknownFilesToMissingStep step = new SetOldUnknownFilesToMissingStep(store);
         Assert.assertEquals(store.getCallsForSetAllFilesToUnknownFileState(), 0);
         Assert.assertEquals(store.getNumberOfFiles(TEST_PILLAR_1), 0);
         Assert.assertEquals(store.getNumberOfMissingFiles(TEST_PILLAR_1), 0);
         
         step.performStep();
-        Assert.assertEquals(store.getCallsForSetAllFilesToUnknownFileState(), 1);
+        Assert.assertEquals(store.getCallsForSetUnknownFilesToMissing(), 1);
         Assert.assertEquals(store.getNumberOfFiles(TEST_PILLAR_1), 0);
         Assert.assertEquals(store.getNumberOfMissingFiles(TEST_PILLAR_1), 0);
     }
@@ -61,14 +61,10 @@ public class SetFileStateToUnknownStepTest extends ExtendedTestCase {
         for(int i = 0; i < NUMBER_OF_FILES; i++) {
             store.addFileIDs(getFileIDsData(TEST_FILE_1 + i), TEST_PILLAR_1);
         }
-        SetFileStateToUnknownStep step = new SetFileStateToUnknownStep(store);
-        Assert.assertEquals(store.getCallsForSetAllFilesToUnknownFileState(), 0);
-        Assert.assertEquals(store.getNumberOfFiles(TEST_PILLAR_1), 10);
-        Assert.assertEquals(store.getNumberOfMissingFiles(TEST_PILLAR_1), 0);
-        
+        SetOldUnknownFilesToMissingStep step = new SetOldUnknownFilesToMissingStep(store);
         step.performStep();
-        Assert.assertEquals(store.getCallsForSetAllFilesToUnknownFileState(), 1);
-        Assert.assertEquals(store.getNumberOfFiles(TEST_PILLAR_1), 0);
+        Assert.assertEquals(store.getCallsForSetUnknownFilesToMissing(), 1);
+        Assert.assertEquals(store.getNumberOfFiles(TEST_PILLAR_1), 10);
         Assert.assertEquals(store.getNumberOfMissingFiles(TEST_PILLAR_1), 0);
     }
     
@@ -80,15 +76,27 @@ public class SetFileStateToUnknownStepTest extends ExtendedTestCase {
             store.addFileIDs(getFileIDsData(TEST_FILE_1 + i), TEST_PILLAR_1);
             store.setFileMissing(TEST_FILE_1 + i, Arrays.asList(TEST_PILLAR_1));
         }
-        SetFileStateToUnknownStep step = new SetFileStateToUnknownStep(store);
-        Assert.assertEquals(store.getCallsForSetAllFilesToUnknownFileState(), 0);
+        SetOldUnknownFilesToMissingStep step = new SetOldUnknownFilesToMissingStep(store);
+        step.performStep();
+        Assert.assertEquals(store.getCallsForSetUnknownFilesToMissing(), 1);
         Assert.assertEquals(store.getNumberOfFiles(TEST_PILLAR_1), 0);
         Assert.assertEquals(store.getNumberOfMissingFiles(TEST_PILLAR_1), 10);
+    }
+    
+    @Test(groups = {"regressiontest", "integritytest"})
+    public void testUpdatingUnknownFiles() {
+        addDescription("Testing the step when all the files are marked as unknown.");
+        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(Arrays.asList(TEST_PILLAR_1)));
+        for(int i = 0; i < NUMBER_OF_FILES; i++) {
+            store.addFileIDs(getFileIDsData(TEST_FILE_1 + i), TEST_PILLAR_1);
+        }
+        store.setAllFilesToUnknownFileState();
         
+        SetOldUnknownFilesToMissingStep step = new SetOldUnknownFilesToMissingStep(store);
         step.performStep();
-        Assert.assertEquals(store.getCallsForSetAllFilesToUnknownFileState(), 1);
+        Assert.assertEquals(store.getCallsForSetUnknownFilesToMissing(), 1);
         Assert.assertEquals(store.getNumberOfFiles(TEST_PILLAR_1), 0);
-        Assert.assertEquals(store.getNumberOfMissingFiles(TEST_PILLAR_1), 0);
+        Assert.assertEquals(store.getNumberOfMissingFiles(TEST_PILLAR_1), 10);
     }
     
     private FileIDsData getFileIDsData(String... fileIds) {

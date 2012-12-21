@@ -244,9 +244,9 @@ public class MockIntegrityModel implements IntegrityModel {
     }
     private int callsForSetUnknownFilesToMissing = 0;
     @Override
-    public void setUnknownFilesToMissing() {
+    public void setOldUnknownFilesToMissing() {
         callsForSetUnknownFilesToMissing++;
-        integrityModel.setUnknownFilesToMissing();
+        integrityModel.setOldUnknownFilesToMissing();
     }
     public int getCallsForSetUnknownFilesToMissing() {
         return callsForSetUnknownFilesToMissing;

@@ -466,7 +466,7 @@ public class IntegrityDAO {
     }
 
     /**
-     * Settings the file state of all the files to unknown.
+     * Settings the file state of all the files to UNKNOWN.
      */
     public void setAllFileStatesToUnknown() {
         log.trace("Setting the file state for all files to '" + FileState.UNKNOWN + "'.");
@@ -475,14 +475,19 @@ public class IntegrityDAO {
     }
     
     /**
-     * Settings the file state of all the files to unknown.
+     * Settings the file state of all the UNKNOWN files to MISSING.
+     * @param minAge The date for the minimum age of the file. 
      */
-    public void setUnknownFilesToMissing() {
+    public void setOldUnknownFilesToMissing(Date minAge) {
         log.trace("Setting the file state for all '" + FileState.UNKNOWN + "' files to '" + FileState.MISSING + "'.");
-        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? WHERE " + FI_FILE_STATE 
-                + " = ?";
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? WHERE " + FI_GUID 
+                + " IN ( SELECT " + FILE_INFO_TABLE + "." + FI_GUID + " FROM " + FILES_TABLE + " JOIN " 
+                + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "." 
+                + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? AND " + FILES_TABLE
+                + "." + FILES_CREATION_DATE + " < ? )";
+        
         DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.MISSING.ordinal(), 
-                FileState.UNKNOWN.ordinal());
+                FileState.UNKNOWN.ordinal(), minAge);
     }
     
     /**

@@ -498,7 +498,7 @@
         <xs:element name="TimeBeforeMissingFileCheck" type="xs:long">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The url to the database, which contains the integrity data.
+              The number of milliseconds a file has to be known by the system before it is sat to missing.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
