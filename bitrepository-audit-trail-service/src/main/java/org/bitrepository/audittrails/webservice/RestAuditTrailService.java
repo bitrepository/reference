@@ -114,7 +114,7 @@ public class RestAuditTrailService {
             int month = Integer.parseInt(components[0]);
             int day = Integer.parseInt(components[1]);
             Calendar time = Calendar.getInstance();
-            time.set(year, month, day);
+            time.set(year, (month - 1), day);
             
             return time.getTime();
         }
