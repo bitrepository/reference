@@ -58,7 +58,7 @@ public class FileIDsCompletePillarEvent extends ContributorCompleteEvent {
 
     @Override
     public String additionalInfo() {
-        StringBuilder infoSB = new StringBuilder();
+        StringBuilder infoSB = new StringBuilder(super.additionalInfo());
 
         if (result != null && result.getFileIDsData() != null) {
             infoSB.append(", NumberOfFileIDs=" +

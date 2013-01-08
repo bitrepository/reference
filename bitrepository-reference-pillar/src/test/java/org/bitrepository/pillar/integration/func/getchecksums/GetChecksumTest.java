@@ -29,9 +29,15 @@ import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class GetChecksumTest extends PillarFunctionTest {
+
+    @BeforeClass
+    public void retrieveFirst2Files() {
+        //ToDo
+    }
 
     @Test ( groups = {"pillar-integration-test"} )
     public void testMD5Checksums() throws NegativeResponseException {
@@ -78,7 +84,7 @@ public class GetChecksumTest extends PillarFunctionTest {
         addStep("Request salted MD5 checksums for all files on the pillar",
             "A list (at least 2 long) of MD5 checksums should be returned.");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
-        checksumSpec.setChecksumType(ChecksumType.MD5);
+        checksumSpec.setChecksumType(ChecksumType.HMAC_MD5);
         checksumSpec.setChecksumSalt(Base16Utils.encodeBase16("abab"));
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(checksumSpec, null);
         Assert.assertTrue(checksums.size() >= 2, "The length of the returned checksums were less that 2");
@@ -97,7 +103,7 @@ public class GetChecksumTest extends PillarFunctionTest {
         addStep("Request salted SHA1 checksums for all files on the pillar",
             "A list (at least 2 long) of SHA1 checksums should be returned.");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
-        checksumSpec.setChecksumType(ChecksumType.SHA1);
+        checksumSpec.setChecksumType(ChecksumType.HMAC_SHA1);
         checksumSpec.setChecksumSalt(Base16Utils.encodeBase16("abab"));
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(checksumSpec, null);
         Assert.assertTrue(checksums.size() >= 2, "The length of the returned checksums were less that 2");

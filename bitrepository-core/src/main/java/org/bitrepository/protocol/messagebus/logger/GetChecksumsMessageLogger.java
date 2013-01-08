@@ -42,6 +42,9 @@ public class GetChecksumsMessageLogger extends DefaultMessagingLogger {
         else if (message instanceof GetChecksumsRequest) {
             GetChecksumsRequest request = (GetChecksumsRequest) message;
             messageSB.append(" FileIDs=" + FileIDsUtils.asString(request.getFileIDs()));
+            if (request.getChecksumRequestForExistingFile() != null) {
+                messageSB.append(", ChecksumRequestForExistingFile=" + request.getChecksumRequestForExistingFile());
+            }
             if (request.getResultAddress() != null) {
                 messageSB.append(", FileAddress=" + request.getResultAddress());
             }
@@ -65,6 +68,10 @@ public class GetChecksumsMessageLogger extends DefaultMessagingLogger {
             if (response.getResultingChecksums() != null && response.getResultingChecksums().getChecksumDataItems() != null) {
                 messageSB.append(", NumberOfChecksums=" +
                         response.getResultingChecksums().getChecksumDataItems().size());
+            }
+
+            if (response.getChecksumRequestForExistingFile() != null) {
+                messageSB.append(", ChecksumRequestForExistingFile=" + response.getChecksumRequestForExistingFile());
             }
 
             if (response.isPartialResult() != null) {
