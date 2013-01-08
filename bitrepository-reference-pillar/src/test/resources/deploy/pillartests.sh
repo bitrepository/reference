@@ -72,7 +72,7 @@ create_conf_repos() {
 
 # Download the newest test
 download_test() {
-  rm -r ${ARTIFACTID}-*
+  rm -rf ${ARTIFACTID}-*
   echo "Downloading new deployment scripts"
   ${DEPLOY_SCRIPTS}/nxfetch.sh -i org.bitrepository.reference:$ARTIFACTID:"$VERSION" -c acceptance-test-deploy -p tar.gz
   tar -xzf $ARTIFACTID-acceptance-test-deploy.tar.gz -C ../

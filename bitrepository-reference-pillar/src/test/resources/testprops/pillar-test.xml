@@ -23,9 +23,15 @@
 
 <suite name="Pillar Acceptance Test" verbose="1" >
   <test name="Functional tests">
-      <packages>
+    <groups>
+      <run>
+        <include name="pillar-integration-test"/>
+      </run>
+    </groups>
+
+    <packages>
         <package name="org.bitrepository.pillar.integration.func.*" />
-      </packages>
+    </packages>
   </test>
   <listeners>
     <listener class-name="org.jaccept.TestNGListerner" />

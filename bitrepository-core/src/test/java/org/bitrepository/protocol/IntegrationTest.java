@@ -145,7 +145,9 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     @AfterMethod(alwaysRun = true)
     public final void afterMethod(ITestResult testResult) {
-        receiverManager.stopListeners();
+        if ( receiverManager != null ) {
+            receiverManager.stopListeners();
+        }
         if (testResult.isSuccess()) {
             afterMethodVerification();
         }
