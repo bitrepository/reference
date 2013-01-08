@@ -35,6 +35,8 @@
     <dependencySet>
       <outputDirectory>lib</outputDirectory>
       <useTransitiveFiltering>true</useTransitiveFiltering>
+      <fileMode>0755</fileMode>
+      <directoryMode>0755</directoryMode>
     </dependencySet>
   </dependencySets>
 
@@ -42,21 +44,21 @@
     <fileSet>
       <outputDirectory>conf</outputDirectory>
       <directory>src/main/conf</directory>
-      <fileMode>0740</fileMode>
-      <directoryMode>0740</directoryMode>
+      <fileMode>0755</fileMode>
+      <directoryMode>0755</directoryMode>
       <filtered>true</filtered>
     </fileSet>
     <fileSet>
       <outputDirectory>bin</outputDirectory>
       <directory>src/main/scripts</directory>
-      <fileMode>0740</fileMode>
-      <directoryMode>0740</directoryMode>
+      <fileMode>0755</fileMode>
+      <directoryMode>0755</directoryMode>
       <filtered>true</filtered>
     </fileSet>
     <fileSet>
       <outputDirectory>sql</outputDirectory>
-      <fileMode>0740</fileMode>
-      <directoryMode>0740</directoryMode>
+      <fileMode>0755</fileMode>
+      <directoryMode>0755</directoryMode>
       <directory>${project.build.directory}/classes/sql</directory>
     </fileSet>
   </fileSets>
