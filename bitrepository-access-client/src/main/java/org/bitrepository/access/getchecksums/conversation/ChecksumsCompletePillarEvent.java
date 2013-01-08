@@ -76,7 +76,7 @@ public class ChecksumsCompletePillarEvent extends ContributorCompleteEvent {
 
     @Override
     public String additionalInfo() {
-        StringBuilder infoSB = new StringBuilder();
+        StringBuilder infoSB = new StringBuilder(super.additionalInfo());
         if (result != null && result.getChecksumDataItems() != null) {
             infoSB.append(", NumberOfChecksums=" +
                     result.getChecksumDataItems().size());
