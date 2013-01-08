@@ -150,21 +150,21 @@
         
     <script>
         $("#replaceForm").submit(function() {
-            var fileID = $("#fileID").val();
+            var fileID = $("#replaceForm").find("#fileID").val();
             fileID = fileID.replace(/\s+/g, '');
-            var pillarID = $("#pillarSelector option:selected").val();
-            var fileAddress = $("#fileaddr").val();
-            var fileSize = $("#filesize").val();
-            var oldFileChecksumVal = $("#oldFileChecksum").val();
-            var oldFileChecksumType = $("input[name=oldFileChecksumType]:checked").val();
-            var oldFileChecksumSalt = $("#oldFileChecksumSalt").val();
-            var oldFileRequestChecksumType = $("input[name=oldFileRequestChecksumType]:checked").val();
-            var oldFileRequestChecksumSalt = $("#oldFileRequestChecksumSalt").val(); 
-            var newFileChecksumVal = $("#newFileChecksum").val();
-            var newFileChecksumType = $("input[name=newFileChecksumType]:checked").val();
-            var newFileChecksumSalt = $("#newFileChecksumSalt").val();
-            var newFileRequestChecksumType = $("input[name=newFileRequestChecksumType]:checked").val();
-            var newFileRequestChecksumSalt = $("#newFileRequestChecksumSalt").val();   	  	
+            var pillarID = $("#replaceForm").find("#pillarSelector option:selected").val();
+            var fileAddress = $("#replaceForm").find("#fileaddr").val();
+            var fileSize = $("#replaceForm").find("#filesize").val();
+            var oldFileChecksumVal = $("#replaceForm").find("#oldFileChecksum").val();
+            var oldFileChecksumType = $("#replaceForm").find("input[name=oldFileChecksumType]:checked").val();
+            var oldFileChecksumSalt = $("#replaceForm").find("#oldFileChecksumSalt").val();
+            var oldFileRequestChecksumType = $("#replaceForm").find("input[name=oldFileRequestChecksumType]:checked").val();
+            var oldFileRequestChecksumSalt = $("#replaceForm").find("#oldFileRequestChecksumSalt").val(); 
+            var newFileChecksumVal = $("#replaceForm").find("#newFileChecksum").val();
+            var newFileChecksumType = $("#replaceForm").find("input[name=newFileChecksumType]:checked").val();
+            var newFileChecksumSalt = $("#replaceForm").find("#newFileChecksumSalt").val();
+            var newFileRequestChecksumType = $("#replaceForm").find("input[name=newFileRequestChecksumType]:checked").val();
+            var newFileRequestChecksumSalt = $("#replaceForm").find("#newFileRequestChecksumSalt").val();   	  	
             	
             var command = "repo/reposervice/replaceFile/?fileID=" + fileID + "&pillarID=" + pillarID +
                     "&oldFileChecksum=" + oldFileChecksumVal + "&oldFileChecksumType="+ oldFileChecksumType + 

@@ -110,14 +110,14 @@
     
     <script>
         $("#deleteForm").submit(function() {
-            var fileID = $("#fileID").val();
+            var fileID = $("#deleteForm").find("#fileID").val();
             fileID = fileID.replace(/\s+/g, '');
-            var pillarID = $("#pillarSelector option:selected").val();
-            var verifyChecksumVal = $("#deleteChecksum").val();
-            var verifyChecksumType = $("input[name=deleteChecksumType]:checked").val();
-            var verifyChecksumSalt = $("#deleteChecksumSalt").val();
-            var requestChecksumType = $("input[name=approveChecksumType]:checked").val();
-            var requestChecksumSalt = $("#approveChecksumSalt").val();   	
+            var pillarID = $("#deleteForm").find("#pillarSelector option:selected").val();
+            var verifyChecksumVal = $("#deleteForm").find("#deleteChecksum").val();
+            var verifyChecksumType = $("#deleteForm").find("input[name=deleteChecksumType]:checked").val();
+            var verifyChecksumSalt = $("#deleteForm").find("#deleteChecksumSalt").val();
+            var requestChecksumType = $("#deleteForm").find("input[name=approveChecksumType]:checked").val();
+            var requestChecksumSalt = $("#deleteForm").find("#approveChecksumSalt").val();   	
             	
             var command = "repo/reposervice/deleteFile/?fileID=" + fileID + "&pillarID=" + pillarID +
             		"&deleteChecksum=" + verifyChecksumVal + "&deleteChecksumType="+ verifyChecksumType + 

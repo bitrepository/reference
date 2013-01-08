@@ -78,12 +78,12 @@
 
     <script>
        $("#auditTrailsQueryForm").submit(function() {
-            var fromDateStr = $("#fromDate").val();
-            var toDateStr = $("#toDate").val();
-            var fileIDStr = $("#fileIDFilter").val();
-            var component = $("#componentFilter").val();
-            var actorStr = $("#actorFilter").val();
-            var actionStr = $("#actionFilter").val();
+            var fromDateStr = $("#auditTrailsQueryForm").find("#fromDate").val();
+            var toDateStr = $("#auditTrailsQueryForm").find("#toDate").val();
+            var fileIDStr = $("#auditTrailsQueryForm").find("#fileIDFilter").val();
+            var component = $("#auditTrailsQueryForm").find("#componentFilter").val();
+            var actorStr = $("#auditTrailsQueryForm").find("#actorFilter").val();
+            var actionStr = $("#auditTrailsQueryForm").find("#actionFilter").val();
             
             $.post('<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/queryAuditTrailEvents/',
                 {fromDate: fromDateStr,

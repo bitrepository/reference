@@ -59,9 +59,9 @@
     
     <script>
         $("#getChecksumsForm").submit(function() {
-            var fileID = $("#getChecksumFileID").val();
-            var checksumType = $("input[name=checksumType]:checked").val();
-            var salt = $("#getChecksumSalt").val();
+            var fileID = $("#getChecksumsForm").find("#getChecksumFileID").val();
+            var checksumType = $("#getChecksumsForm").find("input[name=checksumType]:checked").val();
+            var salt = $("#getChecksumsForm").find("#getChecksumSalt").val();
     
     
             if (fileID == "") {

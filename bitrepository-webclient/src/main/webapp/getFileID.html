@@ -52,8 +52,8 @@
     
     <script>
         $("#getFileIDForm").submit(function() {
-            var fileID = $("#getFileID").val();     
-            var allFileIDs = $("#allFileIDs").is(':checked');
+            var fileID = $("#getFileIDForm").find("#getFileID").val();     
+            var allFileIDs = $("#getFileIDForm").find("#allFileIDs").is(':checked');
             //var allFileIDs = $("#allFileIDs").button("option", "checked");
             var setAllFileIDs = "false";
             

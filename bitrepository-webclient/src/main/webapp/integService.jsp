@@ -122,7 +122,7 @@
     
     <script>
         $("#workflowLauncher").submit(function() {
-            var ID = $("#workflowSelector option:selected").val();
+            var ID = $("#workflowLauncher").find("#workflowSelector option:selected").val();
             $('#actionStatus').load(
                 '<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/startWorkflow/',
                 {workflowID: ID}

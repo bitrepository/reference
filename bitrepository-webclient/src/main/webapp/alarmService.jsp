@@ -78,12 +78,12 @@
 
     <script>
         jQuery.fn.updateAlarms = function() {          
-            var fromDateStr = $("#fromDate").val();
-            var toDateStr = $("#toDate").val();
-            var fileIDStr = $("#fileIDFilter").val();
-            var component = $("#componentFilter").val();
-            var alarmCodeStr = $("#alarmCodeFilter").val();
-            var maxAlarmStr = $("#maxAlarms").val();
+            var fromDateStr = $("#alarmQuery").find("#fromDate").val();
+            var toDateStr = $("#alarmQuery").find("#toDate").val();
+            var fileIDStr = $("#alarmQuery").find("#fileIDFilter").val();
+            var component = $("#alarmQuery").find("#componentFilter").val();
+            var alarmCodeStr = $("#alarmQuery").find("#alarmCodeFilter").val();
+            var maxAlarmStr = $("#alarmQuery").find("#maxAlarms").val();
             
             $.post('<%= su.getAlarmServiceUrl() %>/alarm/AlarmService/queryAlarms/',
                 {fromDate: fromDateStr,

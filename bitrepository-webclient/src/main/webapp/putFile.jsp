@@ -101,14 +101,14 @@
     <script>
         $("#putFileForm").submit(function() {
             //$('#putMessagediv').load("").show();
-            var fileName = $("#putFilename").val();
-            var fileAddr = $("#putFileaddr").val();
-            var fileSize = $("#putFilesize").val();
-            var verifyChecksumVal = $("#putChecksum").val();
-            var verifyChecksumType = $("input[name=putChecksumType]:checked").val();
-            var verifyChecksumSalt = $("#putChecksumSalt").val();
-            var approveChecksumType = $("input[name=approveChecksumType]:checked").val();
-            var approveChecksumSalt = $("#approveChecksumSalt").val();      
+            var fileName = $("#putFileForm").find("#putFilename").val();
+            var fileAddr = $("#putFileForm").find("#putFileaddr").val();
+            var fileSize = $("#putFileForm").find("#putFilesize").val();
+            var verifyChecksumVal = $("#putFileForm").find("#putChecksum").val();
+            var verifyChecksumType = $("#putFileForm").find("input[name=putChecksumType]:checked").val();
+            var verifyChecksumSalt = $("#putFileForm").find("#putChecksumSalt").val();
+            var approveChecksumType = $("#putFileForm").find("input[name=approveChecksumType]:checked").val();
+            var approveChecksumSalt = $("#putFileForm").find("#approveChecksumSalt").val();      
     
             if (fileName == "") {
                 //$('#putMessagediv').html("<p2>Invalid filename!</p2>").show();

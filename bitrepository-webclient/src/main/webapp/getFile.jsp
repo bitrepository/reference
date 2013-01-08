@@ -64,8 +64,8 @@
 
     <script>
         $("#getFileForm").submit(function() {
-            var fileName = $("#getFilename").val();
-            var fileAddr = $("#getFileaddr").val();
+            var fileName = $("#getFileForm").find("#getFilename").val();
+            var fileAddr = $("#getFileForm").find("#getFileaddr").val();
     
     
             if (fileName == "") {
