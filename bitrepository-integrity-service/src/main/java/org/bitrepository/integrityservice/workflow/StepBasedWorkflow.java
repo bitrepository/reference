@@ -50,7 +50,11 @@ public abstract class StepBasedWorkflow implements Workflow {
         this.currentStep = step;
         log.info("Starting step: '" + step.getName() + "'");
         long starttime = System.currentTimeMillis();
-        step.performStep();
+        try {
+            step.performStep();
+        } catch (RuntimeException e) {
+            log.error("Failure in step: '" + step.getName() + "'.", e);
+        }
         log.info("Finished step: '" + step.getName() + "' in " + (System.currentTimeMillis() - starttime) + " ms");
     }
     

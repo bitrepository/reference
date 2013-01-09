@@ -251,7 +251,7 @@ public class DatabaseUtils {
      * @return The date from the given statement.
      */
     public static Date selectDateValue(DBConnector dbConnector, String query, Object... args) {
-        return retrieveDateValue(dbConnector, false, query, args);
+        return retrieveDateValue(dbConnector, true, query, args);
     }
     
     /**
@@ -265,7 +265,7 @@ public class DatabaseUtils {
      * @return The date from the given statement.
      */
     public static Date selectFirstDateValue(DBConnector dbConnector, String query, Object... args) {
-        return retrieveDateValue(dbConnector, true, query, args);
+        return retrieveDateValue(dbConnector, false, query, args);
     }
     
     /**
