@@ -119,6 +119,7 @@ clean_pillars() {
        fi
        rm -f *.log
        rm -f *.out
+       rm -r archive
        bin/create_derby_databases.sh
      fi
    done
