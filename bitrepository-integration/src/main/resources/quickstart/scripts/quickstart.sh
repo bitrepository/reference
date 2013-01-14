@@ -76,11 +76,11 @@ do
 	sed -i s%\${user.home}%$quickstartdir% $file
 done
 
-#refpillarzipfile=$(ls -l *.zip | cut -d " " -f10)
-refpillarzipfile=$(ls *.zip)
+#refpillartarfile=$(ls -l *.zip | cut -d " " -f10)
+refpillartarfile=$(ls *.tar.gz)
 if [ ! -z $refpillarzipfile ]; then
-	unzip $refpillarzipfile > /dev/null
-	rm $refpillarzipfile
+	tar -xf $refpillarzipfile > /dev/null
+	rm refpillartarfile
 fi
 
 refpillardistdir=$(ls | grep bitrepository-reference-pillar-*)
