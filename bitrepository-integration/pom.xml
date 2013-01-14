@@ -68,7 +68,7 @@
       <artifactId>bitrepository-reference-pillar</artifactId>
       <version>${project.version}</version>
       <classifier>distribution</classifier>
-      <type>zip</type>
+      <type>tar.gz</type>
     </dependency>
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
