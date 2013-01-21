@@ -30,8 +30,8 @@ import java.util.List;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.IntegrityService;
 import org.bitrepository.service.LifeCycledService;
-import org.bitrepository.service.scheduler.Workflow;
-import org.bitrepository.service.scheduler.WorkflowTimerTask;
+import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.WorkflowTimerTask;
 
 /**
  * The IntegrityService wrapped into the interface for a web server.

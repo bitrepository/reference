@@ -32,6 +32,7 @@ import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityCollectorEventHandler;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
+import org.bitrepository.service.workflow.WorkflowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

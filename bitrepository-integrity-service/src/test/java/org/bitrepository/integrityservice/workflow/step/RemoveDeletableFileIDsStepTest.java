@@ -33,6 +33,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.TestIntegrityModel;
 import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
 import org.bitrepository.integrityservice.mocks.MockIntegrityModel;
+import org.bitrepository.service.workflow.WorkflowStep;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;

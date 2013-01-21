@@ -24,8 +24,8 @@ package org.bitrepository.integrityservice;
 import java.util.Collection;
 
 import org.bitrepository.service.LifeCycledService;
-import org.bitrepository.service.scheduler.Workflow;
-import org.bitrepository.service.scheduler.WorkflowTimerTask;
+import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.WorkflowTimerTask;
 
 public interface IntegrityService extends LifeCycledService {
     /**

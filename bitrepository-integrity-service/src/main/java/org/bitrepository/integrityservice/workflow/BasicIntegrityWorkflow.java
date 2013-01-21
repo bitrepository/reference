@@ -35,6 +35,7 @@ import org.bitrepository.integrityservice.workflow.step.RemoveDeletableFileIDsFr
 import org.bitrepository.integrityservice.workflow.step.SetOldUnknownFilesToMissingStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
+import org.bitrepository.service.workflow.StepBasedWorkflow;
 
 /**
  * Simple workflow for performing integrity checks of the system. 

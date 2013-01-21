@@ -33,13 +33,14 @@ import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityCollectorEventHandler;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
+import org.bitrepository.service.workflow.WorkflowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The step for collecting the checksums of all files from all pillars.
  */
-public class UpdateChecksumsStep implements WorkflowStep{
+public class UpdateChecksumsStep implements WorkflowStep {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     

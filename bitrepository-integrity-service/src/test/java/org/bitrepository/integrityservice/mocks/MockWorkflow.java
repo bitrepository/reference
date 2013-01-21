@@ -21,7 +21,7 @@
  */
 package org.bitrepository.integrityservice.mocks;
 
-import org.bitrepository.service.scheduler.Workflow;
+import org.bitrepository.service.workflow.Workflow;
 
 /**
  * A trigger that triggers every other second, and remembers calls.

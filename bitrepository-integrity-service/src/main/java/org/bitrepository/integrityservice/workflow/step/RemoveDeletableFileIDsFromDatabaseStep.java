@@ -24,6 +24,7 @@ package org.bitrepository.integrityservice.workflow.step;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
+import org.bitrepository.service.workflow.WorkflowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

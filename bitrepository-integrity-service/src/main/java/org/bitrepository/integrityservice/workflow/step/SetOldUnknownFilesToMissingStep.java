@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.workflow.step;
 
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.service.workflow.WorkflowStep;
 
 /**
  * The step for settings the file state to 'missing' for all the files, which are currently set to unknown.

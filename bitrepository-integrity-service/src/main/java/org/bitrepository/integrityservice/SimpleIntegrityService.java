@@ -39,8 +39,8 @@ import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
 import org.bitrepository.service.scheduler.ServiceScheduler;
-import org.bitrepository.service.scheduler.Workflow;
-import org.bitrepository.service.scheduler.WorkflowTimerTask;
+import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.WorkflowTimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

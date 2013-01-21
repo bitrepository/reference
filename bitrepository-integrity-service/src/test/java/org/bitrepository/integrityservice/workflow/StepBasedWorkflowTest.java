@@ -21,7 +21,8 @@
  */
 package org.bitrepository.integrityservice.workflow;
 
-import org.bitrepository.integrityservice.workflow.step.WorkflowStep;
+import org.bitrepository.service.workflow.StepBasedWorkflow;
+import org.bitrepository.service.workflow.WorkflowStep;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;

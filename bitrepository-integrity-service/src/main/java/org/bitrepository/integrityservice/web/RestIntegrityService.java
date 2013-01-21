@@ -36,7 +36,7 @@ import javax.ws.rs.Produces;
 
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.IntegrityServiceFactory;
-import org.bitrepository.service.scheduler.WorkflowTimerTask;
+import org.bitrepository.service.workflow.WorkflowTimerTask;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

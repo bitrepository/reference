@@ -26,8 +26,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bitrepository.service.scheduler.ServiceScheduler;
-import org.bitrepository.service.scheduler.Workflow;
-import org.bitrepository.service.scheduler.WorkflowTimerTask;
+import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.WorkflowTimerTask;
 
 public class MockScheduler implements ServiceScheduler {
     
