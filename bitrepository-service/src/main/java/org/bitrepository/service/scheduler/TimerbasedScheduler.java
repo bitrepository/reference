@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
+import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.WorkflowTimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

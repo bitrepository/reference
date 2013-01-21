@@ -25,6 +25,8 @@
 package org.bitrepository.service.scheduler;
 
 import java.util.Collection;
+import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.WorkflowTimerTask;
 
 /**
  * Interface for scheduling workflows for the services.
