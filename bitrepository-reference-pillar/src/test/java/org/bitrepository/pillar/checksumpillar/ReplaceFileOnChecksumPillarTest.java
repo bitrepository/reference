@@ -275,7 +275,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), badChecksum);
-    }
+    } 
     
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarReplaceFileTestAllowedMissingNewChecksum() throws Exception {
