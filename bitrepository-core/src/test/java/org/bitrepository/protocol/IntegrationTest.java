@@ -81,7 +81,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected String NON_DEFAULT_FILE_ID;
     protected static String DEFAULT_FILE_ID;
     protected static URL DEFAULT_FILE_URL;
-    protected static String DEFAULT_FILE_ADDRESS;
+    protected static String DEFAULT_DOWNLOAD_FILE_ADDRESS;
+    protected static String DEFAULT_UPLOAD_FILE_ADDRESS;
     protected String DEFAULT_AUDITINFORMATION;
 
     protected String testMethodName;
@@ -100,7 +101,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         DEFAULT_FILE_ID = "DefaultFile-" + createDate();
         try {
             DEFAULT_FILE_URL = httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID);
-            DEFAULT_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm();
+            DEFAULT_DOWNLOAD_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm();
+            DEFAULT_UPLOAD_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm() + "-" + DEFAULT_FILE_ID;
         } catch (MalformedURLException e) {
             throw new RuntimeException("Never happens");
         }

@@ -76,7 +76,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
         addStep("Create and send the actual Put message to the pillar.", 
                 "Should be received and handled by the pillar.");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(TestFileHelper.getDefaultFileChecksum(), 
-                TestFileHelper.getDefaultFileChecksum().getChecksumSpec(), DEFAULT_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE);
+                TestFileHelper.getDefaultFileChecksum().getChecksumSpec(), DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE);
         messageBus.sendMessage(putRequest);
         
         addStep("Retrieve the FinalResponse for the put request", "The put response should be sent by the pillar.");
@@ -95,7 +95,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
         addDescription("Tests that the checksum pillar rejects putting a file, which already exists. During the operation fase");
         settingsForCUT.getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
         PutFileRequest putRequest = msgFactory.createPutFileRequest(
-                null, TestFileHelper.getDefaultFileChecksum().getChecksumSpec(), DEFAULT_FILE_ADDRESS, NON_DEFAULT_FILE_ID, FILE_SIZE);
+                null, TestFileHelper.getDefaultFileChecksum().getChecksumSpec(), DEFAULT_DOWNLOAD_FILE_ADDRESS, NON_DEFAULT_FILE_ID, FILE_SIZE);
         messageBus.sendMessage(putRequest);
         
         addStep("Retrieve the FinalResponse for the put request", "The put response should be sent by the pillar.");
@@ -119,7 +119,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
         badData.setChecksumValue(Base16Utils.encodeBase16("baabbbaaabba"));
 
         messageBus.sendMessage(msgFactory.createPutFileRequest(badData, 
-                TestFileHelper.getDefaultFileChecksum().getChecksumSpec(), DEFAULT_FILE_ADDRESS, NON_DEFAULT_FILE_ID, FILE_SIZE));
+                TestFileHelper.getDefaultFileChecksum().getChecksumSpec(), DEFAULT_DOWNLOAD_FILE_ADDRESS, NON_DEFAULT_FILE_ID, FILE_SIZE));
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
@@ -140,7 +140,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
         badData.setChecksumValue(Base16Utils.encodeBase16("baabbbaaabba"));
 
         messageBus.sendMessage(msgFactory.createPutFileRequest(badData, 
-                TestFileHelper.getDefaultFileChecksum().getChecksumSpec(), DEFAULT_FILE_ADDRESS, NON_DEFAULT_FILE_ID, FILE_SIZE));
+                TestFileHelper.getDefaultFileChecksum().getChecksumSpec(), DEFAULT_DOWNLOAD_FILE_ADDRESS, NON_DEFAULT_FILE_ID, FILE_SIZE));
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
@@ -157,7 +157,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
         badCsType.setOtherChecksumType("NOT-EXISTING-TYPE");
 
         messageBus.sendMessage(msgFactory.createPutFileRequest(TestFileHelper.getDefaultFileChecksum(), 
-                badCsType, DEFAULT_FILE_ADDRESS, NON_DEFAULT_FILE_ID, FILE_SIZE));
+                badCsType, DEFAULT_DOWNLOAD_FILE_ADDRESS, NON_DEFAULT_FILE_ID, FILE_SIZE));
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
@@ -192,7 +192,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
     public void referencePillarPutFileTestTooLargeFileInOperation() throws Exception {
         addDescription("Tests when the PutFile identification delivers a too large file.");
         messageBus.sendMessage(msgFactory.createPutFileRequest(TestFileHelper.getDefaultFileChecksum(), 
-                TestFileHelper.getDefaultFileChecksum().getChecksumSpec(), DEFAULT_FILE_ADDRESS, NON_DEFAULT_FILE_ID, Long.MAX_VALUE));
+                TestFileHelper.getDefaultFileChecksum().getChecksumSpec(), DEFAULT_DOWNLOAD_FILE_ADDRESS, NON_DEFAULT_FILE_ID, Long.MAX_VALUE));
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.FAILURE);
@@ -206,7 +206,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
 
         messageBus.sendMessage(msgFactory.createPutFileRequest(null, 
-                null, DEFAULT_FILE_ADDRESS, NON_DEFAULT_FILE_ID, FILE_SIZE));
+                null, DEFAULT_DOWNLOAD_FILE_ADDRESS, NON_DEFAULT_FILE_ID, FILE_SIZE));
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
@@ -235,7 +235,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
         
         addStep("Test the operation", "Should complete successfully.");
         messageBus.sendMessage(msgFactory.createPutFileRequest(null, 
-                null, DEFAULT_FILE_ADDRESS, NON_DEFAULT_FILE_ID, null));
+                null, DEFAULT_DOWNLOAD_FILE_ADDRESS, NON_DEFAULT_FILE_ID, null));
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
@@ -252,7 +252,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
         badData.setChecksumValue(Base16Utils.encodeBase16("baabbbaaabba"));
 
         messageBus.sendMessage(msgFactory.createPutFileRequest(badData,
-                null, DEFAULT_FILE_ADDRESS, NON_DEFAULT_FILE_ID, FILE_SIZE));
+                null, DEFAULT_DOWNLOAD_FILE_ADDRESS, NON_DEFAULT_FILE_ID, FILE_SIZE));
         PutFileFinalResponse finalResponse1 = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse1.getResponseInfo().getResponseCode(), 
                 ResponseCode.NEW_FILE_CHECKSUM_FAILURE);

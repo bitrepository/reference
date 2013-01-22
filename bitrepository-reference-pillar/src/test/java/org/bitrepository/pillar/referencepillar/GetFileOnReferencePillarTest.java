@@ -73,7 +73,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         addStep("Create and send the actual GetFile message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetFileRequest getRequest = msgFactory.createGetFileRequest(DEFAULT_AUDITINFORMATION,
-                receivedIdentifyResponse.getCorrelationID(), DEFAULT_FILE_ADDRESS, DEFAULT_FILE_ID, null,
+                receivedIdentifyResponse.getCorrelationID(), DEFAULT_UPLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, null,
                 getPillarID(),getPillarID(),
                 clientDestinationId, receivedIdentifyResponse.getReplyTo());
         messageBus.sendMessage(getRequest);
@@ -104,7 +104,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         addStep("Create and send the actual GetFile message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetFileRequest getRequest = msgFactory.createGetFileRequest(DEFAULT_AUDITINFORMATION,
-                msgFactory.getNewCorrelationID(), DEFAULT_FILE_ADDRESS, DEFAULT_FILE_ID, filePart, getPillarID(), getPillarID(),
+                msgFactory.getNewCorrelationID(), DEFAULT_UPLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, filePart, getPillarID(), getPillarID(),
                 clientDestinationId, pillarDestinationId);
         messageBus.sendMessage(getRequest);
         
@@ -120,7 +120,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         addStep("Validate the uploaded result-file.", "Should only contain the second letter of the file, which is a "
                 + "'A'. Any following extracted bytes should have the value '-1'.");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(settingsForCUT);
-        InputStream is = fe.downloadFromServer(new URL(DEFAULT_FILE_ADDRESS));
+        InputStream is = fe.downloadFromServer(new URL(DEFAULT_DOWNLOAD_FILE_ADDRESS));
         
         int digit1 = is.read();
         Assert.assertEquals(digit1, (int) 'A');
@@ -150,7 +150,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         addStep("Create and send the actual GetFile message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetFileRequest getRequest = msgFactory.createGetFileRequest(DEFAULT_AUDITINFORMATION,
-                msgFactory.getNewCorrelationID(), DEFAULT_FILE_ADDRESS, NON_DEFAULT_FILE_ID, null, getPillarID(),
+                msgFactory.getNewCorrelationID(), DEFAULT_UPLOAD_FILE_ADDRESS, NON_DEFAULT_FILE_ID, null, getPillarID(),
                 getPillarID(),
                 clientDestinationId, pillarDestinationId);
         messageBus.sendMessage(getRequest);
@@ -169,7 +169,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         addStep("Create and send the identify request message.", 
                 "Should be received by the pillar, which should issue an alarm.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
-                DEFAULT_FILE_ADDRESS, DEFAULT_FILE_ID, getPillarID(), clientDestinationId);
+                DEFAULT_UPLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, getPillarID(), clientDestinationId);
         identifyRequest.setCollectionID(settingsForCUT.getCollectionID() + "ERROR");
         messageBus.sendMessage(identifyRequest);
         
@@ -198,7 +198,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
         addStep("Create and send the actual GetFile message to the pillar.", 
                 "Should be received and handled by the pillar.");
         GetFileRequest getRequest = msgFactory.createGetFileRequest(DEFAULT_AUDITINFORMATION,
-                receivedIdentifyResponse.getCorrelationID(), DEFAULT_FILE_ADDRESS, DEFAULT_FILE_ID, null, getPillarID(),
+                receivedIdentifyResponse.getCorrelationID(), DEFAULT_UPLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, null, getPillarID(),
                 getPillarID(),
                 clientDestinationId, receivedIdentifyResponse.getReplyTo());
         getRequest.setPillarID(getPillarID() + "-ERROR");
