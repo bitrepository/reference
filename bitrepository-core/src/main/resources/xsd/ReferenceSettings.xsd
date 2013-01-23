@@ -94,7 +94,7 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="OperationRetryCount" type="xs:nonNegativeInteger">
+        <xs:element name="OperationRetryCount" type="xs:nonNegativeInteger" minOccurs="0">
           <xs:annotation>
             <xs:documentation xml:lang="en">
               Number of allowed automatic retries for the performing part of an operation.
