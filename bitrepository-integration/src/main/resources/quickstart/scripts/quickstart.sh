@@ -77,14 +77,13 @@ do
 done
 
 #refpillartarfile=$(ls -l *.zip | cut -d " " -f10)
-refpillartarfile=$(ls *.tar.gz)
-if [ ! -z $refpillarzipfile ]; then
-	tar -xf $refpillarzipfile > /dev/null
-	rm refpillartarfile
+refpillartarfile=$(ls bitrepository-reference-pillar*.tar.gz)
+if [ ! -z $refpillartarfile ]; then
+	tar xvf $refpillartarfile > /dev/null
+#	rm $refpillartarfile
 fi
 
-refpillardistdir=$(ls | grep bitrepository-reference-pillar-*)
-
+refpillardistdir=$(ls -t | grep bitrepository-reference-pillar-.* | head -1)
 if [ ! -d "checksumpillar" ]; then 
 	mkdir "checksumpillar"
 	cp -r $refpillardistdir/lib checksumpillar/.
@@ -94,7 +93,6 @@ fi
 cd checksumpillar/bin
 ./checksum-pillar.sh start
 cd $quickstartdir
-
 
 if [ ! -d "reference1pillar" ]; then
 	mkdir "reference1pillar" 

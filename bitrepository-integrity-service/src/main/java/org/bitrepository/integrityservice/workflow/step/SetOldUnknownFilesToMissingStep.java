@@ -41,7 +41,7 @@ public class SetOldUnknownFilesToMissingStep implements WorkflowStep {
     
     @Override
     public String getName() {
-        return "Settings the files with unknown file state to missing.";
+        return "Setting the files with unknown file state to missing.";
     }
 
     @Override
