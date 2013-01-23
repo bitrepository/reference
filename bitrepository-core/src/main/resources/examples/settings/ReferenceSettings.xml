@@ -46,6 +46,14 @@
       when writing the configuration, the values there should be taken into consideration. 
     -->
     <ConversationTimeout>3600000</ConversationTimeout>
+    
+    <!--
+      The maximum number of retries allowed before a file transfer is considered failed. 
+      If 0, only the initial file transfer will be attempted. 
+      If 2, a total of 3 attempts will be made before it is considered a failure.  
+     -->
+    <OperationRetryCount>2</OperationRetryCount>
+    
   </ClientSettings>
 
   <!-- 

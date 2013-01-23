@@ -32,6 +32,7 @@
   <ClientSettings>
     <MediatorCleanupInterval>1000</MediatorCleanupInterval>
     <ConversationTimeout>3600000</ConversationTimeout>
+    <OperationRetryCount>2</OperationRetryCount>
   </ClientSettings>
   <PillarSettings>
     <PillarID>PillarUnderTest</PillarID>

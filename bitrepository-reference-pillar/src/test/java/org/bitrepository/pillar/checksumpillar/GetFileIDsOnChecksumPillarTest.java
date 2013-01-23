@@ -84,7 +84,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
                 "Should be received and handled by the checksum pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
                 DEFAULT_AUDITINFORMATION, receivedIdentifyResponse.getCorrelationID(), fileids, getPillarID(),
-                getPillarID(), clientDestinationId, DEFAULT_FILE_ADDRESS, receivedIdentifyResponse.getReplyTo());
+                getPillarID(), clientDestinationId, DEFAULT_UPLOAD_FILE_ADDRESS, receivedIdentifyResponse.getReplyTo());
         messageBus.sendMessage(getFileIDsRequest);
         
         addStep("Retrieve the ProgressResponse for the GetFileIDs request", 
@@ -97,7 +97,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
                         getPillarID(),
                         progressResponse.getReplyTo(), 
                         progressResponse.getResponseInfo(),
-                        DEFAULT_FILE_ADDRESS,
+                        DEFAULT_UPLOAD_FILE_ADDRESS,
                         progressResponse.getTo()));
         
         addStep("Retrieve the FinalResponse for the GetFileIDs request", 
@@ -143,7 +143,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
                 "Should be received and handled by the pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
                 auditTrail, identifyRequest.getCorrelationID(), fileids, getPillarID(), pillarId,
-                clientDestinationId, DEFAULT_FILE_ADDRESS, receivedIdentifyResponse.getReplyTo());
+                clientDestinationId, DEFAULT_UPLOAD_FILE_ADDRESS, receivedIdentifyResponse.getReplyTo());
         messageBus.sendMessage(getFileIDsRequest);
         
         addStep("Retrieve the ProgressResponse for the GetFileIDs request", 
@@ -154,7 +154,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
                 "The GetFileIDs response should be sent by the pillar.");
         GetFileIDsFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileIDsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-        Assert.assertEquals(finalResponse.getResultingFileIDs().getResultAddress(), DEFAULT_FILE_ADDRESS);
+        Assert.assertEquals(finalResponse.getResultingFileIDs().getResultAddress(), DEFAULT_UPLOAD_FILE_ADDRESS);
         Assert.assertNull(finalResponse.getResultingFileIDs().getFileIDsData(), "Results should be delivered through URL");
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         Assert.assertEquals(audits.getCallsForAuditEvent(), 0, "Should not deliver any audit.");
@@ -200,7 +200,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
                 "Should be caught and handled by the checksum pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
                 DEFAULT_AUDITINFORMATION, msgFactory.getNewCorrelationID(), fileids, getPillarID(), getPillarID(),
-                clientDestinationId, DEFAULT_FILE_ADDRESS, pillarDestinationId);
+                clientDestinationId, DEFAULT_UPLOAD_FILE_ADDRESS, pillarDestinationId);
         messageBus.sendMessage(getFileIDsRequest);
         
         addStep("Retrieve the FinalResponse for the GetFileIDs request", 

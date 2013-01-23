@@ -54,7 +54,7 @@ public class PutFileRequestIT extends PillarFunctionTest {
         addDescription("Tests a normal PutFile sequence");
         addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID(), "");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(
-                TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_FILE_ADDRESS, testSpecificFileID, DEFAULT_FILE_SIZE);
+                TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_DOWNLOAD_FILE_ADDRESS, testSpecificFileID, DEFAULT_FILE_SIZE);
         messageBus.sendMessage(putRequest);
 
         addStep("Await the FinalResponse", "Check all the parameteres are correct.");
@@ -71,7 +71,7 @@ public class PutFileRequestIT extends PillarFunctionTest {
         addDescription("Tests that a pillar sends a progress response after receiving a request");
         addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID(), "");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(
-                TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_FILE_ADDRESS, testSpecificFileID, DEFAULT_FILE_SIZE);
+                TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_DOWNLOAD_FILE_ADDRESS, testSpecificFileID, DEFAULT_FILE_SIZE);
         messageBus.sendMessage(putRequest);
 
         addStep("Await the ProgressResponse", "Check all the parameteres are correct.");

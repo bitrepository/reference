@@ -86,7 +86,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     public void processRequest(ReplaceFileRequest message) throws RequestHandlerException {
         validateMessage(message);
         sendProgressMessageDownloadNewFile(message);
-        String newChecksum = downloadTheNewFile(message);
+        String newChecksum = retrieveChecksum(message);
         sendProgressMessageDeleteOldFile(message);
         ChecksumDataForFileTYPE requestedOldChecksum = calculateChecksumOnOldFile(message);
         replaceTheEntry(message, newChecksum);
@@ -181,11 +181,39 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     }
     
     /**
-     * Downloading the new file to replace the old one. 
+     * Retrieves the checksum for the file according to the configuration of the ChecksumPillarFileDownload setting.
+     * @param message The PutFileRequest message.
+     * @return The checksum, either extracted from the message or calculated from the downloaded file.
+     * @throws RequestHandlerException If the checksum cannot be retrieved.
+     */
+    private String retrieveChecksum(ReplaceFileRequest message) throws RequestHandlerException {
+        String retrievedChecksum;
+        switch(getChecksumPillarFileDownload()) {
+            case ALWAYS_DOWNLOAD:
+                retrievedChecksum = downloadeFileAndCalculateChecksum(message);
+                break;
+            case NEVER_DOWNLOAD:
+                retrievedChecksum = extractChecksumFromMessage(message);
+                break;
+            default:
+                if(message.getChecksumDataForNewFile() != null) {
+                    retrievedChecksum = extractChecksumFromMessage(message);
+                } else {
+                    retrievedChecksum = downloadeFileAndCalculateChecksum(message);
+                }
+                break;
+        }
+        
+        return retrievedChecksum;
+    }
+    
+    /**
+     * Downloading the new file to retrieve the checksum for replacing the old one. 
      * Also validates against the given checksum. Will log a warning, if no checksum for validation is in the request.
      * @param message The request containing the location of the file and the checksum of it.
+     * @return The checksum for the file.
      */
-    private String downloadTheNewFile(ReplaceFileRequest message) throws RequestHandlerException {
+    private String downloadeFileAndCalculateChecksum(ReplaceFileRequest message) throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
 
@@ -220,6 +248,23 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
         }
         
         return checksum;
+    }
+    
+    /**
+     * Extracts the checksum from ReplaceFileRequest message. 
+     * @param message The message to extract the checksum from.
+     * @return The checksum from the message.
+     * @throws RequestHandlerException If the message does not contain the checksum.
+     */
+    private String extractChecksumFromMessage(ReplaceFileRequest message) throws RequestHandlerException {
+        if(message.getChecksumDataForNewFile() != null) {
+            return Base16Utils.decodeBase16(message.getChecksumDataForNewFile().getChecksumValue());
+        } else {
+            ResponseInfo fi = new ResponseInfo();
+            fi.setResponseText("A PutFileRequest without the checksum cannot be handled.");
+            fi.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
+            throw new InvalidMessageException(fi);
+        }
     }
     
     /**

@@ -76,7 +76,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         addStep("Create and send the actual Put message to the pillar.", 
                 "Should be received and handled by the pillar.");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(TestFileHelper.getDefaultFileChecksum(),
-                TestFileHelper.getDefaultFileChecksum().getChecksumSpec(), DEFAULT_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE);
+                TestFileHelper.getDefaultFileChecksum().getChecksumSpec(), DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE);
         putRequest.setCorrelationID(identifyRequest.getCorrelationID());
         messageBus.sendMessage(putRequest);
         
@@ -138,7 +138,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         addStep("Create and send the actual Put message to the pillar.", 
                 "Should be received and handled by the pillar.");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(TestFileHelper.getDefaultFileChecksum(),
-                csSpec, DEFAULT_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE);
+                csSpec, DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE);
         messageBus.sendMessage(putRequest);
         
         addStep("Retrieve the FinalResponse for the put request", "The put response should be sent by the pillar.");
@@ -156,7 +156,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         addDescription("Tests that the checksum pillar rejects putting a file, which already exists. During the operation fase");
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
         PutFileRequest putRequest = msgFactory.createPutFileRequest(null, 
-                csSpec, DEFAULT_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE);
+                csSpec, DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE);
         messageBus.sendMessage(putRequest);
         
         addStep("Retrieve the FinalResponse for the put request", "The put response should be sent by the pillar.");
@@ -183,7 +183,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         badData.setChecksumValue(Base16Utils.encodeBase16("baabbbaaabba"));
 
         messageBus.sendMessage(msgFactory.createPutFileRequest(badData, 
-                csSpec, DEFAULT_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+                csSpec, DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_SUPPORTED);
@@ -200,7 +200,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         badCsType.setOtherChecksumType("NOT-EXISTING-TYPE");
 
         messageBus.sendMessage(msgFactory.createPutFileRequest(TestFileHelper.getDefaultFileChecksum(),
-                badCsType, DEFAULT_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+                badCsType, DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_SUPPORTED);
@@ -214,7 +214,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
 
         messageBus.sendMessage(msgFactory.createPutFileRequest(null, 
-                null, DEFAULT_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+                null, DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
@@ -227,7 +227,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
         Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
 
-        String badUrl = DEFAULT_FILE_ADDRESS + "-ERROR-" + new Date().getTime();
+        String badUrl = DEFAULT_DOWNLOAD_FILE_ADDRESS + "-ERROR-" + new Date().getTime();
         messageBus.sendMessage(msgFactory.createPutFileRequest(null, 
                 null, badUrl, DEFAULT_FILE_ID, FILE_SIZE));
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
@@ -263,7 +263,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         addStep("Send the message with a checksum differing from the one for the file at the address.", 
                 "The incorrect checksum is stored.");
         messageBus.sendMessage(msgFactory.createPutFileRequest(badData, 
-                csSpec, DEFAULT_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+                csSpec, DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
@@ -287,7 +287,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         addStep("Send the message with a checksum differing from the one for the file at the address.", 
                 "Failure reported from the pillar and the incorrect checksum is not stored.");
         messageBus.sendMessage(msgFactory.createPutFileRequest(badData,
-                csSpec, DEFAULT_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+                csSpec, DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
@@ -304,7 +304,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         addStep("Send message without checksum.", 
                 "Failure from the pillar.");
         messageBus.sendMessage(msgFactory.createPutFileRequest(null, 
-                null, DEFAULT_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
+                null, DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
@@ -318,7 +318,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         context.getSettings().getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE);
         Assert.assertEquals(context.getSettings().getReferenceSettings().getPillarSettings().getChecksumPillarFileDownload(), ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE);
 
-        String badUrl = DEFAULT_FILE_ADDRESS + "-ERROR-" + new Date().getTime();
+        String badUrl = DEFAULT_DOWNLOAD_FILE_ADDRESS + "-ERROR-" + new Date().getTime();
         messageBus.sendMessage(msgFactory.createPutFileRequest(TestFileHelper.getDefaultFileChecksum(), 
                 null, badUrl, DEFAULT_FILE_ID, FILE_SIZE));
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
