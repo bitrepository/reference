@@ -94,6 +94,18 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element name="OperationRetryCount" type="xs:nonNegativeInteger">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Number of allowed automatic retries for the performing part of an operation.
+              This relates to operations which can fail due to file transfer errors. 
+              0 denotes that a operation should not be retried (only the initial operation attempt).
+              1 or higher denotes the number of additional attempts of file transfer. I.e. if 2 up to 3 
+              attempts is allowed before the operation fails. 
+              
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
