@@ -75,8 +75,9 @@ public class FinishedState extends GeneralConversationState {
     }
 
     @Override
-    protected void processMessage(MessageResponse message) {
+    protected boolean processMessage(MessageResponse message) {
         context.getMonitor().outOfSequenceMessage(message);
+        return true;
     }
 
 }

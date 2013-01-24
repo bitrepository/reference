@@ -48,7 +48,7 @@ public abstract class IdentifyingState extends GeneralConversationState {
     }
 
     @Override
-    protected final void processMessage(MessageResponse msg) throws UnexpectedResponseException, UnableToFinishException {
+    protected final boolean processMessage(MessageResponse msg) throws UnexpectedResponseException, UnableToFinishException {
         if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.IDENTIFICATION_POSITIVE)) {
             getContext().getMonitor().contributorIdentified(msg);
             getSelector().selectComponent(msg);
@@ -59,6 +59,7 @@ public abstract class IdentifyingState extends GeneralConversationState {
         } else {
             handleFailureResponse(msg);
         }
+        return true;
     }
 
     @Override

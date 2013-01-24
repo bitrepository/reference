@@ -56,7 +56,8 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     }
 
     @Override
-    protected void processMessage(MessageResponse msg) throws UnableToFinishException {
+    protected boolean processMessage(MessageResponse msg) throws UnableToFinishException {
+        boolean isFinalResponse = true;
         if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS) ||
                 msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_PROGRESS)) {
             getContext().getMonitor().progress(msg.getResponseInfo().getResponseText(), msg.getFrom());
@@ -67,12 +68,13 @@ public abstract class PerformingOperationState extends GeneralConversationState 
                 } else {
                     getContext().getMonitor().contributorFailed(
                             msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
-                    handleFailureResponse(msg);
+                    isFinalResponse  = handleFailureResponse(msg);
                 }
             } catch(UnexpectedResponseException ure ) {
                 getContext().getMonitor().warning(ure.getMessage());
             }
         }
+        return isFinalResponse;
     }
 
     @Override
@@ -114,5 +116,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
      * Implements the default handling of failure responses which is is to do nothing
      * (besides being registered in the event monitor, which is handled by the parent class).
      */
-    protected void handleFailureResponse(MessageResponse msg) throws UnableToFinishException {}
+    protected boolean handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
+        return true;
+    }
 }

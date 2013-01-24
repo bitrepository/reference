@@ -99,11 +99,12 @@ public abstract class GeneralConversationState implements ConversationState {
         }
 
         try {
-            responseStatus.responseReceived(response);
-            processMessage(response);
-            if (responseStatus.haveAllComponentsResponded()) {
-                stateTimeoutTask.cancel();
-                changeState();
+            if(processMessage(response)) {
+                responseStatus.responseReceived(response);
+                if (responseStatus.haveAllComponentsResponded()) {
+                    stateTimeoutTask.cancel();
+                    changeState();
+                }
             }
         } catch (UnexpectedResponseException e) {
             getContext().getMonitor().invalidMessage(message, e);
@@ -174,9 +175,11 @@ public abstract class GeneralConversationState implements ConversationState {
     /**
      * Implement by concrete states. Only messages from the indicated contributors and with the right type
      * will be delegate to this method.
+     * @return boolean Return true if response should be considered a final response, false if not. 
+     *      This is intended for use when a failure response results in a retry, so the component is not finished. 
      * @throws UnexpectedResponseException The response could not be processed successfully.
      */
-    protected abstract void processMessage(MessageResponse response)
+    protected abstract boolean processMessage(MessageResponse response)
             throws UnexpectedResponseException, UnableToFinishException;
 
     /**

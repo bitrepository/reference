@@ -71,7 +71,7 @@ class GettingFile extends PerformingOperationState {
     }
 
     @Override
-    protected void handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
+    protected boolean handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
         throw new UnableToFinishException("Failed to get file from " + msg.getFrom() +
                 ", " + msg.getResponseInfo());
     }
