@@ -224,7 +224,7 @@ public class AuditDatabaseIngestor {
      * @param fileId The id of the file.
      * @return The guid of the file with the given id.
      */
-    private long retrieveFileGuid(String fileId) {
+    private synchronized long retrieveFileGuid(String fileId) {
         ArgumentValidator.checkNotNull(fileId, "fileId");
         String sqlRetrieve = "SELECT " + FILE_GUID + " FROM " + FILE_TABLE + " WHERE " + FILE_FILEID + " = ?";
         Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId);
@@ -246,7 +246,7 @@ public class AuditDatabaseIngestor {
      * @param actorName The name of the actor.
      * @return The guid of the actor with the given name.
      */
-    private long retrieveActorGuid(String actorName) {
+    private synchronized long retrieveActorGuid(String actorName) {
         String sqlRetrieve = "SELECT " + ACTOR_GUID + " FROM " + ACTOR_TABLE + " WHERE " + ACTOR_NAME + " = ?";
         
         Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, actorName);

@@ -129,11 +129,13 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
             info = info.substring(0, 255);
         }
 
-        String insertSql = "INSERT INTO " + AUDITTRAIL_TABLE + " ( " + AUDITTRAIL_FILE_GUID + " , "
-                + AUDITTRAIL_ACTOR_GUID + " , " + AUDITTRAIL_OPERATION + " , " + AUDITTRAIL_OPERATION_DATE + " , "
-                + AUDITTRAIL_AUDIT + " , " + AUDITTRAIL_INFORMATION + " ) VALUES ( ? , ? , ? , ? , ? , ? )";
-        DatabaseUtils.executeStatement(dbConnector, insertSql, fileGuid, actorGuid, operation.toString(),
-                new Date(), auditTrail, info);
+        synchronized(this) {
+            String insertSql = "INSERT INTO " + AUDITTRAIL_TABLE + " ( " + AUDITTRAIL_FILE_GUID + " , "
+                    + AUDITTRAIL_ACTOR_GUID + " , " + AUDITTRAIL_OPERATION + " , " + AUDITTRAIL_OPERATION_DATE + " , "
+                    + AUDITTRAIL_AUDIT + " , " + AUDITTRAIL_INFORMATION + " ) VALUES ( ? , ? , ? , ? , ? , ? )";
+            DatabaseUtils.executeStatement(dbConnector, insertSql, fileGuid, actorGuid, operation.toString(),
+                    new Date(), auditTrail, info);
+        }
     }
 
     @Override
@@ -257,7 +259,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
      * @param fileId The id of the file to retrieve. 
      * @return The guid for the given file id.
      */
-    private long retrieveFileGuid(String fileId) {
+    private synchronized long retrieveFileGuid(String fileId) {
         String sqlRetrieve = "SELECT " + FILE_GUID + " FROM " + FILE_TABLE + " WHERE " + FILE_FILEID + " = ?";
 
         Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId);
@@ -289,7 +291,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
      * @param actorName The name of the actor.
      * @return The guid of the actor with the given name.
      */
-    private long retrieveActorGuid(String actorName) {
+    private synchronized long retrieveActorGuid(String actorName) {
         String sqlRetrieve = "SELECT " + ACTOR_GUID + " FROM " + ACTOR_TABLE + " WHERE " + ACTOR_NAME + " = ?";
 
         Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, actorName);
