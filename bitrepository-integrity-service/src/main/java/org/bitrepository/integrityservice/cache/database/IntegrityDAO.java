@@ -71,7 +71,7 @@ public class IntegrityDAO {
     /**
      * Initialises the ids of all the pillars.
      */
-    private void initialisePillars() {
+    private synchronized void initialisePillars() {
         for(String pillarId : pillarIds) {
             if(retrievePillarGuid(pillarId) == null) {
                 log.trace("Inserting the pillar '" + pillarId + "' into the pillar table.");
@@ -583,7 +583,7 @@ public class IntegrityDAO {
      * Also creates an entry in the 'fileinfo' table for every pillar.
      * @param fileId The id of the file to insert.
      */
-    private void insertNewFileID(String fileId) {
+    private synchronized void insertNewFileID(String fileId) {
         log.trace("Inserting the file '" + fileId + "' into the files table.");
         String fileSql = "INSERT INTO " + FILES_TABLE + " ( " + FILES_ID + ", " + FILES_CREATION_DATE 
                 + " ) VALUES ( ?, ? )";

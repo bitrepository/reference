@@ -52,7 +52,7 @@ public class ChecksumIngestor {
      * @param checksum The checksum of the file.
      * @param date The calculation timestamp for the file.
      */
-    public void insertNewEntry(String fileId, String checksum, Date date) {
+    public synchronized void insertNewEntry(String fileId, String checksum, Date date) {
         String sql = "INSERT INTO " + CHECKSUM_TABLE + " ( " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE 
                 + " ) VALUES ( ? , ? , ? )";
         DatabaseUtils.executeStatement(connector, sql, fileId, checksum, date);

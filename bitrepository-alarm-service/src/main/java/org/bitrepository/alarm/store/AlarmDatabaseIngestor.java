@@ -187,7 +187,7 @@ public class AlarmDatabaseIngestor {
      * @param contributorId The name of the actor.
      * @return The guid of the component with the given name.
      */
-    private long retrieveComponentGuid(String componentId) {
+    private synchronized long retrieveComponentGuid(String componentId) {
         String sqlRetrieve = "SELECT " + COMPONENT_GUID + " FROM " + COMPONENT_TABLE + " WHERE " 
                 + COMPONENT_ID + " = ?";
         
