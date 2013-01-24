@@ -72,6 +72,8 @@ class GettingFile extends PerformingOperationState {
 
     @Override
     protected boolean handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
+        getContext().getMonitor().contributorFailed(
+                msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
         throw new UnableToFinishException("Failed to get file from " + msg.getFrom() +
                 ", " + msg.getResponseInfo());
     }

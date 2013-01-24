@@ -24,7 +24,12 @@
  */
 package org.bitrepository.modify.putfile.conversation;
 
+import java.math.BigInteger;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -32,6 +37,7 @@ import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.common.utils.ChecksumUtils;
 
 /**
@@ -40,6 +46,7 @@ import org.bitrepository.common.utils.ChecksumUtils;
  */
 public class PuttingFile extends PerformingOperationState {
     private final PutFileConversationContext context;
+    private final Map<String, Integer> componentRequestCount;
 
     /*
      * @param context The conversation context.
@@ -48,6 +55,7 @@ public class PuttingFile extends PerformingOperationState {
     public PuttingFile(PutFileConversationContext context, Collection<SelectedComponentInfo> contributors) {
         super(contributors);
         this.context = context;
+        this.componentRequestCount = new HashMap<String, Integer>();
     }
 
     @Override
@@ -69,17 +77,22 @@ public class PuttingFile extends PerformingOperationState {
     protected void sendRequest() {
         context.getMonitor().requestSent("Sending request for put file", activeContributors.keySet().toString());
         for(String pillar : activeContributors.keySet()) {
-            PutFileRequest msg = createRequest(pillar);
-            if (context.getChecksumRequestForValidation() != null) {
-                if (!context.isChecksumPillar(pillar) ||
-                        context.getChecksumRequestForValidation().equals(ChecksumUtils.getDefault(context.getSettings()))) {
-                    msg.setChecksumRequestForNewFile(context.getChecksumRequestForValidation());
-                }
-            }
-            context.getMessageSender().sendMessage(msg);
+            sendPillarRequest(pillar);
+            componentRequestCount.put(pillar, 1);
         }
     }
 
+    private void sendPillarRequest(String pillar) {
+        PutFileRequest msg = createRequest(pillar);
+        if (context.getChecksumRequestForValidation() != null) {
+            if (!context.isChecksumPillar(pillar) ||
+                    context.getChecksumRequestForValidation().equals(ChecksumUtils.getDefault(context.getSettings()))) {
+                msg.setChecksumRequestForNewFile(context.getChecksumRequestForValidation());
+            }
+        }
+        context.getMessageSender().sendMessage(msg);
+    }
+    
     /**
      * Will create a PutFileRequest based on the context. The ChecksumRequestForNewFile parameter is not added as this
      * should only be added in case of full pillars.
@@ -105,4 +118,45 @@ public class PuttingFile extends PerformingOperationState {
     protected String getPrimitiveName() {
         return "PutFile";
     }
+    
+    @Override
+    protected boolean handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
+        boolean isFinalResponse = true;
+        if(msg instanceof PutFileFinalResponse) {
+            PutFileFinalResponse response = (PutFileFinalResponse) msg;
+            String pillarID = response.getPillarID();
+            if(response.getResponseInfo().getResponseCode().equals(ResponseCode.FILE_TRANSFER_FAILURE) 
+                    && canRetry(pillarID)) {
+                isFinalResponse = false;
+                sendPillarRequest(pillarID);
+                componentRequestCount.put(pillarID, componentRequestCount.get(pillarID)+1);
+                context.getMonitor().retry("Retrying putfile (attempt number " + componentRequestCount.get(pillarID) + ")",
+                        pillarID);
+            } else {
+                getContext().getMonitor().contributorFailed(
+                        msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+            }
+        }
+        return isFinalResponse;
+    }
+    
+    /**
+     * Method to determine whether it should be allowed to retry a component.  
+     * @param pillarID The id of the pillar that we'd like to retry.
+     * @return boolean indicating whether a retry is allowed. 
+     */
+    private boolean canRetry(String pillarID) {
+        boolean allowed = false;
+        if(context.getSettings().getReferenceSettings().getClientSettings().isSetOperationRetryCount()) {
+            BigInteger allowedRetryCount = context.getSettings().getReferenceSettings().getClientSettings().getOperationRetryCount();
+            Integer pillarRequestCount = componentRequestCount.get(pillarID);
+            if(pillarRequestCount != null) {
+                if(pillarRequestCount <= allowedRetryCount.intValue()) {
+                    allowed = true;
+                }
+            }
+        }       
+        return allowed;
+    }
 }
+

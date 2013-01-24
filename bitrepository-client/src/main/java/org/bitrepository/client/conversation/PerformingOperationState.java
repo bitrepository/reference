@@ -66,8 +66,6 @@ public abstract class PerformingOperationState extends GeneralConversationState 
                 if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_COMPLETED)) {
                     generateContributorCompleteEvent(msg);
                 } else {
-                    getContext().getMonitor().contributorFailed(
-                            msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
                     isFinalResponse  = handleFailureResponse(msg);
                 }
             } catch(UnexpectedResponseException ure ) {
@@ -117,6 +115,8 @@ public abstract class PerformingOperationState extends GeneralConversationState 
      * (besides being registered in the event monitor, which is handled by the parent class).
      */
     protected boolean handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
+        getContext().getMonitor().contributorFailed(
+                msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
         return true;
     }
 }

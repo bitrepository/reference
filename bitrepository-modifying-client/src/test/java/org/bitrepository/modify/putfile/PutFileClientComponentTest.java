@@ -651,7 +651,127 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertNull(receivedPutFileRequest2.getChecksumRequestForNewFile());
     }
 
+    
+    @Test(groups={"regressiontest"})
+    public void onePillarPutRetrySuccess() throws Exception {
+        addReference("<a href=https://sbforge.org/jira/browse/BITMAG-810>" +
+                "BITMAG-810 Reference client should be able to retry failed file transfers</a>");
+        addDescription("Tests the handling of a failed transmission when retry is allowed");
+        addFixtureSetup("Sets the identification timeout to 3 sec, allow two retries and only register one pillar.");
 
+        settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000L));
+        settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));
+        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        PutFileClient putClient = createPutFileClient();
+
+        addStep("Request the putting of a file through the PutClient",
+                "A identification request should be dispatched.");
+        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
+                null, testEventHandler, null);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
+                collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
+
+        addStep("Send an identification response from the one pillar.",
+                "An COMPONENT_IDENTIFIED event should be generate.");
+        IdentifyPillarsForPutFileResponse identifyResponse = messageFactory.createIdentifyPillarsForPutFileResponse(
+                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+        messageBus.sendMessage(identifyResponse);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
+
+        addStep("The client should proceed to send a putFileOperation request to the responding pillar.",
+                "A REQUEST_SENT event should be generated and a PutFileRequest should be received on the pillar.");
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
+        PutFileRequest receivedPutFileRequest = pillar1Receiver.waitForMessage(PutFileRequest.class);
+
+        addStep("Send a PutFileFinalResponse indicating a FILE_TRANSFER_FAILURE",
+                "The client should emit a warning event and generate new PutFileRequest for the pillar");
+        PutFileFinalResponse putFileFinalResponse = messageFactory.createPutFileFinalResponse(
+                receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
+        putFileFinalResponse.getResponseInfo().setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
+        messageBus.sendMessage(putFileFinalResponse);     
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.WARNING);
+        
+        addStep("A new PutFileRequest is send, pillar responds with success", "The client generates " +
+        		"a COMPONENT_COMPLETE, followed by a COMPLETE event.");
+        PutFileRequest receivedPutFileRequest2 = pillar1Receiver.waitForMessage(PutFileRequest.class);
+        PutFileFinalResponse putFileFinalResponse2 = messageFactory.createPutFileFinalResponse(
+                receivedPutFileRequest2, PILLAR1_ID, pillar1DestinationId);
+        messageBus.sendMessage(putFileFinalResponse2);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
+    }
+
+    
+    @Test(groups={"regressiontest"})
+    public void onePillarPutRetryFailure() throws Exception {
+        addReference("<a href=https://sbforge.org/jira/browse/BITMAG-810>" +
+                "BITMAG-810 Reference client should be able to retry failed file transfers</a>");
+        addDescription("Tests that a putfile attempt failing due to FILE_TRANSFER_FAILURE " +
+        		"is only attempted the maximum allowed attempts");
+        addFixtureSetup("Sets the identification timeout to 3 sec, allow two retries and only register one pillar.");
+
+        settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000L));
+        settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));
+        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().clear();
+        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        PutFileClient putClient = createPutFileClient();
+
+        addStep("Request the putting of a file through the PutClient",
+                "A identification request should be dispatched.");
+        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
+                null, testEventHandler, null);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
+                collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
+
+        addStep("Send an identification response from the one pillar.",
+                "An COMPONENT_IDENTIFIED event should be generate.");
+        IdentifyPillarsForPutFileResponse identifyResponse = messageFactory.createIdentifyPillarsForPutFileResponse(
+                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+        messageBus.sendMessage(identifyResponse);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
+
+        addStep("The client should proceed to send a putFileOperation request to the responding pillar.",
+                "A REQUEST_SENT event should be generated and a PutFileRequest should be received on the pillar.");
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
+        PutFileRequest receivedPutFileRequest = pillar1Receiver.waitForMessage(PutFileRequest.class);
+
+        addStep("Send a PutFileFinalResponse indicating a FILE_TRANSFER_FAILURE",
+                "The client should emit a warning event and generate new PutFileRequest for the pillar");
+        PutFileFinalResponse putFileFinalResponse = messageFactory.createPutFileFinalResponse(
+                receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
+        putFileFinalResponse.getResponseInfo().setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
+        messageBus.sendMessage(putFileFinalResponse);     
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.WARNING);
+        
+        addStep("Send a PutFileFinalResponse indicating a FILE_TRANSFER_FAILURE for the second put attempt",
+                "The client should emit a warning event and generate new PutFileRequest for the pillar");
+        receivedPutFileRequest = pillar1Receiver.waitForMessage(PutFileRequest.class);
+        putFileFinalResponse = messageFactory.createPutFileFinalResponse(
+                receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
+        putFileFinalResponse.getResponseInfo().setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
+        messageBus.sendMessage(putFileFinalResponse);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.WARNING);
+        
+        addStep("Send a PutFileFinalResponse indicating a FILE_TRANSFER_FAILURE for the third put attempt",
+                "The client should emit a COMPONENT_FAILED event and fail the put operation");
+        receivedPutFileRequest = pillar1Receiver.waitForMessage(PutFileRequest.class);
+        putFileFinalResponse = messageFactory.createPutFileFinalResponse(
+                receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
+        putFileFinalResponse.getResponseInfo().setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
+        messageBus.sendMessage(putFileFinalResponse);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
+        
+    }
+
+    
         /**
         * Creates a new test PutFileClient based on the settings.
         *
