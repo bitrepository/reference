@@ -149,6 +149,15 @@ public class ConversationEventMonitor {
     public void progress(String progressInfo, String contributorID) {
         notifyEventListerners(createContributorEvent(PROGRESS, progressInfo, contributorID));
     }
+    
+    /**
+     * Notify that a contributor has failed in a way resulting in a retry attempt. 
+     * @param info Information regarding the retry attempt
+     * @param contributorID the contributor that is retried.  
+     */
+    public void retry(String info, String contributorID) {
+        notifyEventListerners(createContributorEvent(WARNING, info, contributorID));
+    }
 
     /**
      * A pillar has completed the operation.
