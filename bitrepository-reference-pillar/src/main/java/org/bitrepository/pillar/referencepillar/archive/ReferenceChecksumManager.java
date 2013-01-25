@@ -28,6 +28,8 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.bitrepository.bitrepositoryelements.Alarm;
+import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -38,6 +40,7 @@ import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
+import org.bitrepository.service.AlarmDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,18 +60,22 @@ public class ReferenceChecksumManager {
     private final long maxAgeForChecksums;
     /** The default checksum specification.*/
     private final ChecksumSpecTYPE defaultChecksumSpec;
+    /** The dispatcher of alarms.*/
+    private final AlarmDispatcher alarmDispatcher;
     
     /**
      * Constructor.
      * @param archive The archive with the data.
      * @param cache The storage for the checksums.
+     * @param alarmDispatcher The alarm dispatcher.
      * @param defaultChecksumSpec The default specifications for the checksums.
      * @param maxAgeForChecksum The maximum age for the checksums.
      */
-    public ReferenceChecksumManager(ReferenceArchive archive, ChecksumStore cache, 
+    public ReferenceChecksumManager(ReferenceArchive archive, ChecksumStore cache, AlarmDispatcher alarmDispatcher, 
             ChecksumSpecTYPE defaultChecksumSpec, long maxAgeForChecksum) {
         this.cache = cache;
         this.archive = archive;
+        this.alarmDispatcher = alarmDispatcher;
         this.maxAgeForChecksums = maxAgeForChecksum;
         this.defaultChecksumSpec = defaultChecksumSpec;
     }
@@ -192,9 +199,7 @@ public class ReferenceChecksumManager {
      */
     public ExtractedChecksumResultSet getEntries(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
             Long maxNumberOfResults) {
-        for(String fileId : archive.getAllFileIds()) {
-            ensureChecksumState(fileId);
-        }
+        ensureStateOfAllData();
         return cache.getEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults);
     }
     
@@ -241,6 +246,42 @@ public class ReferenceChecksumManager {
         }
         
         return res;
+    }
+    
+    /**
+     * Validates that all files in the cache is also in the archive, and that all files in the archive
+     * is also in the cache.
+     */
+    private void ensureStateOfAllData() {
+        for(String fileId : cache.getAllFileIDs()) {
+            ensureFileState(fileId);
+        }
+        
+        for(String fileId : archive.getAllFileIds()) {
+            ensureChecksumState(fileId);
+        }
+    }
+    
+    /**
+     * Ensures that a file id in the cache is also in the archive.
+     * Will send an alarm, if the file is missing, then remove it from index.
+     * @param fileId The id of the file.
+     */
+    private void ensureFileState(String fileId) {
+        if(!archive.hasFile(fileId)) {
+            log.warn("The file '" + fileId + "' in the ChecksumCache is no longer in the archive. "
+                    + "Dispatching an alarm, and removing it from the cache.");
+            Alarm alarm = new Alarm();
+            alarm.setAlarmCode(AlarmCode.COMPONENT_FAILURE);
+            alarm.setAlarmRaiser(null);
+            alarm.setAlarmText("The file '" + fileId + "' has been removed from the archive without it being removed "
+                    + "from index. Removing it from index.");
+            alarm.setFileID(fileId);
+            alarm.setOrigDateTime(CalendarUtils.getNow());
+            alarmDispatcher.error(alarm);
+            
+            cache.deleteEntry(fileId);
+        }
     }
     
     /**
