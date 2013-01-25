@@ -21,6 +21,7 @@
  */
 package org.bitrepository.pillar.cache;
 
+import java.util.Collection;
 import java.util.Date;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -124,6 +125,11 @@ public class ChecksumDAO implements ChecksumStore {
             throw new IllegalStateException("No entry for file '" + fileId + "' to delete.");
         }
         return res;
+    }
+
+    @Override
+    public Collection<String> getAllFileIDs() {
+        return extractor.extractAllFileIDs();
     }
 
     @Override

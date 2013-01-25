@@ -650,8 +650,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         PutFileRequest receivedPutFileRequest2 = pillar2Receiver.waitForMessage(PutFileRequest.class);
         Assert.assertNull(receivedPutFileRequest2.getChecksumRequestForNewFile());
     }
-
-    
+ 
     @Test(groups={"regressiontest"})
     public void onePillarPutRetrySuccess() throws Exception {
         addReference("<a href=https://sbforge.org/jira/browse/BITMAG-810>" +
@@ -659,7 +658,6 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the handling of a failed transmission when retry is allowed");
         addFixtureSetup("Sets the identification timeout to 3 sec, allow two retries and only register one pillar.");
 
-        settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000L));
         settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));
         settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().clear();
         settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
@@ -705,7 +703,6 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    
     @Test(groups={"regressiontest"})
     public void onePillarPutRetryFailure() throws Exception {
         addReference("<a href=https://sbforge.org/jira/browse/BITMAG-810>" +
@@ -714,7 +711,6 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         		"is only attempted the maximum allowed attempts");
         addFixtureSetup("Sets the identification timeout to 3 sec, allow two retries and only register one pillar.");
 
-        settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000L));
         settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));
         settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().clear();
         settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
@@ -768,10 +764,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         messageBus.sendMessage(putFileFinalResponse);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
-        
     }
 
-    
         /**
         * Creates a new test PutFileClient based on the settings.
         *

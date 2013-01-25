@@ -48,6 +48,12 @@
     </div>
     
     <script>
+        function addInfoDialog(content, componentID, element) {
+            $(element).unbind('click');
+            $(element).click(function(){$('<div />').html(content).dialog({title:componentID + " status message"});});
+        }
+    
+    
         jQuery.fn.updateComponentStatus = function() {
             $.getJSON('<%= su.getMonitoringServiceUrl() %>/monitoring/MonitoringService/getComponentStatus/',{}, function(j){
                 var htmlTable;
@@ -68,10 +74,14 @@
                     if(j[i].status == "UNKNOWN") { 
                         rowClass = "status-unknown";
                     }
-                    htmlTable += "<tr class=\"" + rowClass + "\"title=\"" + j[i].info + "\"><td>" + j[i].componentID + "</td><td>" + j[i].status + "</td> <td>" + j[i].timeStamp + "</td></tr>";
+                    htmlTable += "<tr id=\"tr-" + j[i].componentID + "\" class=\"" + rowClass + "\"title=\"" + j[i].info + "\"><td>" + j[i].componentID + "</td><td>" + j[i].status + "</td> <td>" + j[i].timeStamp + "</td></tr>";                    
                }
                 htmlTable += "</tbody></table>"; 
                 $("#componentStatus").html(htmlTable);
+                for(var i = 0; i < j.length; i++) {
+                     addInfoDialog(j[i].info, j[i].componentID, "#tr-"+j[i].componentID);
+                }
+                
             })
         }
 
