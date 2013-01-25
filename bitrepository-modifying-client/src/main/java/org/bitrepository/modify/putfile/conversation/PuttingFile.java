@@ -46,7 +46,7 @@ import org.bitrepository.common.utils.ChecksumUtils;
  */
 public class PuttingFile extends PerformingOperationState {
     private final PutFileConversationContext context;
-    private final Map<String, Integer> componentRequestCount;
+    private final Map<String, Integer> componentRequestCount= new HashMap<String, Integer>();
 
     /*
      * @param context The conversation context.
@@ -55,7 +55,6 @@ public class PuttingFile extends PerformingOperationState {
     public PuttingFile(PutFileConversationContext context, Collection<SelectedComponentInfo> contributors) {
         super(contributors);
         this.context = context;
-        this.componentRequestCount = new HashMap<String, Integer>();
     }
 
     @Override
@@ -82,6 +81,10 @@ public class PuttingFile extends PerformingOperationState {
         }
     }
 
+    /**
+     * Method to send the PutFileRequest to a given pillar.
+     * @param pillar The pillarID to which should have the message sent.  
+     */
     private void sendPillarRequest(String pillar) {
         PutFileRequest msg = createRequest(pillar);
         if (context.getChecksumRequestForValidation() != null) {
