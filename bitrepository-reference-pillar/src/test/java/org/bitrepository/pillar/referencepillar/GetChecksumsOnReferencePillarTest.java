@@ -24,6 +24,7 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
+import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
@@ -36,6 +37,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReq
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.FileIDsUtils;
+import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.messagefactories.GetChecksumsMessageFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -217,5 +219,41 @@ public class GetChecksumsOnReferencePillarTest extends ReferencePillarTest {
         "The GetChecksums response should be sent by the pillar.");
         GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void pillarGetChecksumsOfRemovedFile() throws Exception {
+        addDescription("Tests how the reference pillar acts, when the file it is supposed to retrieve the checksum "
+                + "of is removed between two GetChecksum operations.");
+        addStep("Request the checksum all files", "Message is sent to the pillar.");
+        GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
+                csSpec, FileIDsUtils.getSpecificFileIDs(DEFAULT_FILE_ID), null);
+        messageBus.sendMessage(getChecksumsRequest);
+        
+        addStep("Retrieve the FinalResponse for the GetChecksums request", 
+                "Contains the checksum of the default file.");
+        GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 1);
+        
+        addStep("Remove the file from beneath the pillar", 
+                "The file is not longer in the archive, but still in the database.");
+        FileUtils.delete(archive.getFile(DEFAULT_FILE_ID));
+        Assert.assertFalse(archive.hasFile(DEFAULT_FILE_ID));
+        Assert.assertTrue(csCache.hasFile(DEFAULT_FILE_ID));
+        
+        addStep("Request the checksum of the default file again", "Message is sent to the pillar.");
+        getChecksumsRequest = msgFactory.createGetChecksumsRequest(
+                csSpec, FileIDsUtils.getAllFileIDs(), null);
+        messageBus.sendMessage(getChecksumsRequest);
+        
+        addStep("Retrieve the FinalResponse for the GetChecksums request", 
+                "No checksums returned, the file has been removed from the cache, and an alarm was dispatched.");
+        finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 0);
+        Assert.assertFalse(csCache.hasFile(DEFAULT_FILE_ID));
+        Alarm alarm = alarmDispatcher.poll();
+        Assert.assertNotNull(alarm);
     }
 }

@@ -82,7 +82,6 @@ public abstract class PillarMediator extends AbstractContributorMediator {
             MessageResponse response = handler.generateFailedResponse(request);
             response.setResponseInfo(responseInfo);
             context.getResponseDispatcher().dispatchResponse(response, request);
-
             getAlarmDispatcher().handleRuntimeExceptions(e);
         }
     }
@@ -93,7 +92,7 @@ public abstract class PillarMediator extends AbstractContributorMediator {
     }
 
     protected PillarAlarmDispatcher getAlarmDispatcher() {
-        return (PillarAlarmDispatcher)context.getAlarmDispatcher();
+        return (PillarAlarmDispatcher) context.getAlarmDispatcher();
     }
     
     /**

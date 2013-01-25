@@ -25,6 +25,7 @@
 package org.bitrepository.pillar.referencepillar;
 
 import javax.jms.JMSException;
+
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.ChecksumUtils;
@@ -71,10 +72,10 @@ public class ReferencePillar implements Pillar {
         this.messageBus = messageBus;
         
         log.info("Starting the reference pillar!");
-        
         archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
         csStore = new ChecksumDAO(settings);
-        ReferenceChecksumManager manager = new ReferenceChecksumManager(archive, csStore, 
+        PillarAlarmDispatcher alarmDispatcher = new PillarAlarmDispatcher(settings, messageBus);
+        ReferenceChecksumManager manager = new ReferenceChecksumManager(archive, csStore, alarmDispatcher,
                 ChecksumUtils.getDefault(settings), 
                 settings.getReferenceSettings().getPillarSettings().getMaxAgeForChecksums().longValue());
         AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector( 
@@ -82,7 +83,7 @@ public class ReferencePillar implements Pillar {
         MessageHandlerContext context = new MessageHandlerContext(
             settings,
             new ResponseDispatcher(settings, messageBus),
-            new PillarAlarmDispatcher(settings, messageBus),
+            alarmDispatcher,
             audits);
         mediator = new ReferencePillarMediator(messageBus, context, archive, manager);
         mediator.start();

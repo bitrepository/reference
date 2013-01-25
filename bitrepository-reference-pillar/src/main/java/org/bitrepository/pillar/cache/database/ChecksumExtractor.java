@@ -21,6 +21,11 @@
  */
 package org.bitrepository.pillar.cache.database;
 
+import static org.bitrepository.pillar.cache.database.DatabaseConstants.CHECKSUM_TABLE;
+import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_CHECKSUM;
+import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_DATE;
+import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_FILE_ID;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,16 +36,11 @@ import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.bitrepository.service.database.DBConnector;
-import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
-
-import static org.bitrepository.pillar.cache.database.DatabaseConstants.CHECKSUM_TABLE;
-import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_CHECKSUM;
-import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_DATE;
-import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_FILE_ID;
+import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseUtils;
 
 /**
  * Extracts data from the checksum database.
@@ -202,6 +202,15 @@ public class ChecksumExtractor {
         }
         
         return results;
+    }
+    
+    /**
+     * Retrieves all the file ids in the database.
+     * @return The list of file ids extracted from the database.
+     */
+    public List<String> extractAllFileIDs() {
+        String sql = "SELECT " + CS_FILE_ID + " FROM " + CHECKSUM_TABLE;
+        return DatabaseUtils.selectStringList(connector, sql, new Object[0]);
     }
     
     /**

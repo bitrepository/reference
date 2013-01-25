@@ -21,6 +21,7 @@
  */
 package org.bitrepository.pillar.cache;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -108,5 +109,10 @@ public class MemoryCache implements ChecksumStore {
     @Override
     public void close() {
         cleanUp();
+    }
+
+    @Override
+    public Collection<String> getAllFileIDs() {
+        return checksumMap.keySet();
     }
 }

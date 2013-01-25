@@ -21,6 +21,7 @@
  */
 package org.bitrepository.pillar.cache;
 
+import java.util.Collection;
 import java.util.Date;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -79,6 +80,12 @@ public interface ChecksumStore {
      */
     ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
             Long maxNumberOfResults);
+    
+    /**
+     * Retrieval of all the file ids in the store.
+     * @return The collection of file ids in the store.
+     */
+    Collection<String> getAllFileIDs();
     
     /**
      * Deletes a given entry from the cache.

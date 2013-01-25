@@ -106,7 +106,7 @@ public class AlarmDispatcher extends MessageDispatcher {
      * Method for sending an Alarm when something bad happens.
      * @param alarm The alarm to send to the destination for the alarm service.
      */
-    private void sendAlarm(Alarm alarm) {
+    protected void sendAlarm(Alarm alarm) {
         AlarmMessage message = new AlarmMessage();
         alarm.setAlarmRaiser(settings.getComponentID());
         alarm.setOrigDateTime(CalendarUtils.getNow());

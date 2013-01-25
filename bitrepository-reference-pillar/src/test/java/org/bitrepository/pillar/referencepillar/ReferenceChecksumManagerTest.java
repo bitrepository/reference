@@ -40,6 +40,7 @@ import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.common.ChecksumDatabaseCreator;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
+import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.testng.Assert;
@@ -66,8 +67,9 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
         ReferenceArchive archive =
                 new ReferenceArchive(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir());
         ChecksumStore csCache = new MemoryCache();
+        AlarmDispatcher alarmDispatcher = new AlarmDispatcher(settingsForCUT, messageBus);
         ReferenceChecksumManager csManager =
-                new ReferenceChecksumManager(archive, csCache, ChecksumUtils.getDefault(settingsForCUT), 3600000L);
+                new ReferenceChecksumManager(archive, csCache, alarmDispatcher, ChecksumUtils.getDefault(settingsForCUT), 3600000L);
 
         testRecalculatingChecksumsDueToChangedFile(csManager, archive);
     }
@@ -86,8 +88,9 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
 
         ReferenceArchive archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
         ChecksumStore csCache = new ChecksumDAO(settings);
-        ReferenceChecksumManager csManager = new ReferenceChecksumManager(archive, csCache, ChecksumUtils.getDefault(settingsForCUT),
-                3600000L);
+        AlarmDispatcher alarmDispatcher = new AlarmDispatcher(settingsForCUT, messageBus);
+        ReferenceChecksumManager csManager = new ReferenceChecksumManager(archive, csCache, alarmDispatcher, 
+                ChecksumUtils.getDefault(settingsForCUT), 3600000L);
 
         testRecalculatingChecksumsDueToChangedFile(csManager, archive);
     }
