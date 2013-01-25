@@ -21,6 +21,7 @@
  */
 package org.bitrepository.service.workflow;
 
+import org.bitrepository.common.utils.TimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,13 @@ public abstract class StepBasedWorkflow implements Workflow {
     public static final String PREFIX_FOR_RUNNING_STEP = "Performing step: ";
     /** The current step running.*/
     private WorkflowStep currentStep = null;
-    
+    private long currentRunStart = -1;
+
+    @Override
+    public void start() {
+        currentRunStart = System.currentTimeMillis();
+    }
+
     /**
      * Initiates the given step and sets it to the current running step.
      * @param step The step to start.
@@ -47,13 +54,12 @@ public abstract class StepBasedWorkflow implements Workflow {
     protected void performStep(WorkflowStep step) {
         this.currentStep = step;
         log.info("Starting step: '" + step.getName() + "'");
-        long starttime = System.currentTimeMillis();
         try {
             step.performStep();
         } catch (RuntimeException e) {
             log.error("Failure in step: '" + step.getName() + "'.", e);
         }
-        log.info("Finished step: '" + step.getName() + "' in " + (System.currentTimeMillis() - starttime) + " ms");
+        log.info("Finished step: '" + step.getName() + "' in " + TimeUtils.millisecondsToHuman(step.getRunningTime()));
     }
     
     /**
@@ -61,13 +67,22 @@ public abstract class StepBasedWorkflow implements Workflow {
      */
     protected void finish() {
         this.currentStep = null;
+        currentRunStart = -1;
+        log.info("Finished " + getClass().getSimpleName()+ " in '" + TimeUtils.millisecondsToHuman(getRunningTime()));
     }
     
     @Override
     public String currentState() {
         if(currentStep == null) {
             return NOT_RUNNING;
+        } else {
+            return PREFIX_FOR_RUNNING_STEP + currentStep.getName() +
+                    "\nRunning for " + TimeUtils.millisecondsToHuman(currentStep.getRunningTime()) + "/" +
+                            TimeUtils.millisecondsToHuman(getRunningTime()) + ")";
         }
-        return PREFIX_FOR_RUNNING_STEP + currentStep.getName();
+    }
+
+    private long getRunningTime() {
+        return System.currentTimeMillis() - currentRunStart;
     }
 }

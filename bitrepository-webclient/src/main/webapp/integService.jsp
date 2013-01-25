@@ -76,12 +76,14 @@
                 htmlTable += "<thead> <tr class=\"ui-widget-header\">";
                 htmlTable += "<th width=\"200\">Workflow name</th>";
                 htmlTable += "<th>Next run</th>";
+                htmlTable += "<th>Last run</th>";
                 htmlTable += "<th>Execution interval</th>";
                 htmlTable += "<th>Current state</th>";
                 htmlTable += "</tr></thead><tbody>";
                 for (var i = 0; i < j.length; i++) {
                     htmlTable += "<tr><td>" + j[i].workflowID + "</td>" +
-                                "<td>" + j[i].nextRun + "</td>" + 
+                                "<td>" + j[i].nextRun + "</td>" +
+                                "<td>" + j[i].lastRun + "</td>" +
                                 "<td>" + j[i].executionInterval + "</td>" +
                                 "<td>" + j[i].currentState + "</td></tr>";
                 }

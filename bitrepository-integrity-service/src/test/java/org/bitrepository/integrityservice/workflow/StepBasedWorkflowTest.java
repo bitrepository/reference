@@ -39,7 +39,12 @@ public class StepBasedWorkflowTest extends ExtendedTestCase {
                     @Override
                     public void performStep() {
                     }
-                    
+
+                    @Override
+                    public long getRunningTime() {
+                        return 0;
+                    }
+
                     @Override
                     public String getName() {
                         return NAME_OF_STEP;

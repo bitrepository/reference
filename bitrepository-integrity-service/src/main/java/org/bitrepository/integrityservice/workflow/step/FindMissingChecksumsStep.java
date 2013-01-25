@@ -24,7 +24,7 @@ package org.bitrepository.integrityservice.workflow.step;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
-import org.bitrepository.service.workflow.WorkflowStep;
+import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * A workflow step for finding missing checksums.
  * Uses the IntegrityChecker to perform the actual check.
  */
-public class FindMissingChecksumsStep implements WorkflowStep {
+public class FindMissingChecksumsStep extends AbstractWorkFlowStep {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** Checker for performing the integrity checks.*/
@@ -56,6 +56,7 @@ public class FindMissingChecksumsStep implements WorkflowStep {
      */
     @Override
     public synchronized void performStep() {
+        super.performStep();
         IntegrityReportModel report = checker.checkMissingChecksums();
         
         if(!report.hasIntegrityIssues()) {

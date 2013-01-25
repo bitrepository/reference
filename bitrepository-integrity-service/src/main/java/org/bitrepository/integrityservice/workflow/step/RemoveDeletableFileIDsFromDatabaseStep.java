@@ -24,7 +24,7 @@ package org.bitrepository.integrityservice.workflow.step;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
-import org.bitrepository.service.workflow.WorkflowStep;
+import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * Removes all entries for the deletable files from the database. 
  * Uses the results of a MissingFileReport for identifying the files, which should be deleted.
  */
-public class RemoveDeletableFileIDsFromDatabaseStep implements WorkflowStep {
+public class RemoveDeletableFileIDsFromDatabaseStep extends AbstractWorkFlowStep {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The model where the integrity data is stored.*/
@@ -61,6 +61,7 @@ public class RemoveDeletableFileIDsFromDatabaseStep implements WorkflowStep {
     
     @Override
     public void performStep() {
+        super.performStep();
         for(String fileId : report.getDeleteableFiles()) {
             log.info("Removing entries for the file with id '" + fileId + "' from the database.");
             cache.deleteFileIdEntry(fileId);

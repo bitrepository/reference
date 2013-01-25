@@ -53,7 +53,7 @@ public final class TimeUtils {
      * @return The milliseconds converted into seconds.
      */
     public static String millisecondsToSeconds(long ms) {
-        return "" + (ms / MS_PER_S) + "seconds";
+        return "" + (ms / MS_PER_S) + " seconds";
     }
     
     /**
@@ -62,7 +62,7 @@ public final class TimeUtils {
      * @return The milliseconds converted into minutes.
      */
     public static String millisecondsToMinutes(long ms) {
-        return "" + (ms / ( MS_PER_S * S_PER_M )) + "minutes";
+        return "" + (ms / ( MS_PER_S * S_PER_M )) + " minutes";
     }
     
     /**
@@ -71,7 +71,7 @@ public final class TimeUtils {
      * @return The milliseconds converted into hours.
      */
     public static String millisecondsToHours(long ms) {
-        return "" + (ms /( MS_PER_S * S_PER_M * M_PER_H )) + "hours";
+        return "" + (ms /( MS_PER_S * S_PER_M * M_PER_H )) + " hours";
     }
     
     /**
@@ -80,7 +80,7 @@ public final class TimeUtils {
      * @return The milliseconds converted into days.
      */
     public static String millisecondsToDays(long ms) {
-        return "" + (ms /( MS_PER_S * S_PER_M * M_PER_H * H_PER_D)) + "days";
+        return "" + (ms /( MS_PER_S * S_PER_M * M_PER_H * H_PER_D)) + " days";
     }
     
     /**
@@ -112,7 +112,7 @@ public final class TimeUtils {
                         }
                         ms = (ms % MS_PER_S);
                         if(ms > 0) {
-                            sb.append(" " + ms + "ms");
+                            sb.append(" " + ms + " ms");
                         }
                     }
                 }

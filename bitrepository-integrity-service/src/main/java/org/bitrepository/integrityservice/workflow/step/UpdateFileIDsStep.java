@@ -24,7 +24,6 @@ package org.bitrepository.integrityservice.workflow.step;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.settings.Settings;
@@ -32,14 +31,14 @@ import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityCollectorEventHandler;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
-import org.bitrepository.service.workflow.WorkflowStep;
+import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The step for collecting of all file ids from all pillars.
  */
-public class UpdateFileIDsStep implements WorkflowStep {
+public class UpdateFileIDsStep extends AbstractWorkFlowStep {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
@@ -90,6 +89,7 @@ public class UpdateFileIDsStep implements WorkflowStep {
 
     @Override
     public synchronized void performStep() {
+        super.performStep();
         store.setAllFilesToUnknownFileState();
 
         try {

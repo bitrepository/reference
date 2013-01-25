@@ -24,7 +24,6 @@ package org.bitrepository.integrityservice.workflow.step;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.OperationEvent;
@@ -33,14 +32,14 @@ import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityCollectorEventHandler;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
-import org.bitrepository.service.workflow.WorkflowStep;
+import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The step for collecting the checksums of all files from all pillars.
  */
-public class UpdateChecksumsStep implements WorkflowStep {
+public class UpdateChecksumsStep extends AbstractWorkFlowStep {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
@@ -94,6 +93,7 @@ public class UpdateChecksumsStep implements WorkflowStep {
 
     @Override
     public synchronized void performStep() {
+        super.performStep();
         try {
             List<String> pillarsToCollectFrom = new ArrayList<String>(pillarIds);
             while (!pillarsToCollectFrom.isEmpty()) {

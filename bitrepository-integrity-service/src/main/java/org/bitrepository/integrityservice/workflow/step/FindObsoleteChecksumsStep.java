@@ -27,7 +27,7 @@ import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.checking.MaxChecksumAgeProvider;
 import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
-import org.bitrepository.service.workflow.WorkflowStep;
+import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * A workflow step for finding obsolete checksums.
  * Sends an alarm if any checksums are too old.
  */
-public class FindObsoleteChecksumsStep implements WorkflowStep {
+public class FindObsoleteChecksumsStep extends AbstractWorkFlowStep {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** Checker for performing the integrity checks.*/
@@ -68,6 +68,7 @@ public class FindObsoleteChecksumsStep implements WorkflowStep {
      */
     @Override
     public synchronized void performStep() {
+        super.performStep();
         MaxChecksumAgeProvider maxChecksumAgeProvider = new MaxChecksumAgeProvider(
             DEFAULT_MAX_CHECKSUM_AGE,
             settings.getReferenceSettings().getIntegrityServiceSettings().getObsoleteChecksumSettings());

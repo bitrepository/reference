@@ -137,6 +137,7 @@ public class RestIntegrityService {
         try {
             obj.put("workflowID", workflowTask.getName());
             obj.put("nextRun", workflowTask.getNextRun());
+            obj.put("lastRun", workflowTask.getLastRun());
             obj.put("executionInterval", TimeUtils.millisecondsToHuman(workflowTask.getIntervalBetweenRuns()));
             obj.put("currentState", workflowTask.currentState());
             return obj;

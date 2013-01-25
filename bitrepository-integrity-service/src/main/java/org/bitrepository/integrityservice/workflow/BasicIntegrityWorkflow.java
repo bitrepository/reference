@@ -74,6 +74,7 @@ public class BasicIntegrityWorkflow extends StepBasedWorkflow {
     
     @Override
     public void start() {
+        super.start();
         try {
             UpdateFileIDsStep updateFileIDsStep = new UpdateFileIDsStep(collector, store, alerter,
                     settings);

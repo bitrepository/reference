@@ -34,4 +34,9 @@ public interface WorkflowStep {
      * Perform the task wrapped in this step.
      */
     void performStep();
+
+    /**
+     * @return The time this step has been running.
+     */
+    long getRunningTime();
 }

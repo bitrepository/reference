@@ -19,34 +19,22 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityservice.workflow.step;
 
-import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.service.workflow.AbstractWorkFlowStep;
+package org.bitrepository.service.workflow;
 
 /**
- * The step for settings the file state to 'missing' for all the files, which are currently set to unknown.
+ * Takes care of general step bookkepping
  */
-public class SetOldUnknownFilesToMissingStep extends AbstractWorkFlowStep {
-    /** The model where the integrity data is stored.*/
-    private final IntegrityModel store;
-    
-    /**
-     * Constructor.
-     * @param store The storage for the integrity data.
-     */
-    public SetOldUnknownFilesToMissingStep(IntegrityModel store) {
-        this.store = store;
-    }
-    
+public abstract class AbstractWorkFlowStep implements WorkflowStep {
+    private long startTime;
+
     @Override
-    public String getName() {
-        return "Setting the files with unknown file state to missing.";
+    public void performStep() {
+        startTime = System.currentTimeMillis();
     }
 
     @Override
-    public synchronized void performStep() {
-        super.performStep();
-        store.setOldUnknownFilesToMissing();
+    public long getRunningTime() {
+        return System.currentTimeMillis() - startTime;
     }
 }

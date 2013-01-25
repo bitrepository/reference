@@ -25,7 +25,7 @@ import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
-import org.bitrepository.service.workflow.WorkflowStep;
+import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * The step for validating the integrity of the file ids.
  * Based on this integrity report, it is decided whether to dispatch an alarm.
  */
-public class IntegrityValidationFileIDsStep implements WorkflowStep {
+public class IntegrityValidationFileIDsStep extends AbstractWorkFlowStep {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** Checker for performing the integrity checks.*/
@@ -61,6 +61,7 @@ public class IntegrityValidationFileIDsStep implements WorkflowStep {
 
     @Override
     public void performStep() {
+        super.performStep();
         finalReport = checker.checkFileIDs(FileIDsUtils.getAllFileIDs());
         
         if(finalReport.hasIntegrityIssues()) {
