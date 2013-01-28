@@ -78,14 +78,18 @@ public class WorkflowTimerTask extends TimerTask {
      * Resets the date for the next run of the workflow.
      */
     public void runWorkflow() {
-        //FixMe Should be generalize to work with the general workflow interface.
-        if (workflow.currentState().equals(StepBasedWorkflow.NOT_RUNNING)) {
-            log.info("Starting the workflow: " + getName());
-            nextRun = new Date(System.currentTimeMillis() + interval);
-            workflow.start();
-            lastRun = new Date();
-        } else {
-            log.warn("Ignoring start request for " + getName() + " the workflow is already running");
+        try {
+            //FixMe Should be generalize to work with the general workflow interface.
+            if (workflow.currentState().equals(StepBasedWorkflow.NOT_RUNNING)) {
+                log.info("Starting the workflow: " + getName());
+                nextRun = new Date(System.currentTimeMillis() + interval);
+                workflow.start();
+                lastRun = new Date();
+            } else {
+                log.warn("Ignoring start request for " + getName() + " the workflow is already running");
+            }
+        } catch (Throwable e) {
+            log.error("Fault barrier for '" + getName() + "' caught unexpected exception.", e);
         }
     }
 
