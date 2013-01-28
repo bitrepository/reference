@@ -85,8 +85,7 @@ public class TimerbasedScheduler implements ServiceScheduler {
             return false;
         }
         
-        task.cancel();
-        return true;
+        return task.cancel();
     }
     
     @Override

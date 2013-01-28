@@ -56,10 +56,11 @@ public abstract class StepBasedWorkflow implements Workflow {
         log.info("Starting step: '" + step.getName() + "'");
         try {
             step.performStep();
-        } catch (RuntimeException e) {
+            log.info("Finished step: '" + step.getName() + "' in " 
+                    + TimeUtils.millisecondsToHuman(step.getRunningTime()));
+        } catch (Exception e) {
             log.error("Failure in step: '" + step.getName() + "'.", e);
         }
-        log.info("Finished step: '" + step.getName() + "' in " + TimeUtils.millisecondsToHuman(step.getRunningTime()));
     }
     
     /**
