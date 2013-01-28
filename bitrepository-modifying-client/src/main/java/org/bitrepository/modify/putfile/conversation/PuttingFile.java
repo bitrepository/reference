@@ -127,7 +127,45 @@ public class PuttingFile extends PerformingOperationState {
         boolean isFinalResponse = true;
         if(msg instanceof PutFileFinalResponse) {
             PutFileFinalResponse response = (PutFileFinalResponse) msg;
-            String pillarID = response.getPillarID();
+            ResponseCode responseCode = response.getResponseInfo().getResponseCode();
+            switch(responseCode) {
+            case FILE_TRANSFER_FAILURE:
+                String pillarID = response.getPillarID();
+                if(canRetry(pillarID)) {
+                    isFinalResponse = false;
+                    sendPillarRequest(pillarID);
+                    componentRequestCount.put(pillarID, componentRequestCount.get(pillarID)+1);
+                    context.getMonitor().retry("Retrying putfile (attempt number " + componentRequestCount.get(pillarID) + ")",
+                            pillarID);
+                } else {
+                    getContext().getMonitor().contributorFailed(
+                            msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+                }
+                break;
+            case DUPLICATE_FILE_FAILURE:
+                if(ChecksumUtils.areEqual(
+                        response.getChecksumDataForExistingFile(), context.getChecksumForValidationAtPillar())) {
+                    PutFileCompletePillarEvent event = new PutFileCompletePillarEvent(
+                            response.getPillarID(), response.getChecksumDataForExistingFile());
+                    event.setInfo("File already existed on " + response.getPillarID());
+                    getContext().getMonitor().contributorComplete(event);
+                } else {
+                    getContext().getMonitor().contributorFailed(
+                            "Received negative response from component " + response.getFrom() +
+                                    ":  " + response.getResponseInfo() + " (existing file checksum does not match)",
+                            response.getFrom(), response.getResponseInfo().getResponseCode());
+                    throw new UnableToFinishException("Can not put file " + context.getFileID() +
+                            ", as an different file already exists on pillar " + response.getPillarID());
+                }
+                break;
+            default:
+                getContext().getMonitor().contributorFailed(
+                        msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+            }
+        }
+        return isFinalResponse;
+            
+            /*String pillarID = response.getPillarID();
             if(response.getResponseInfo().getResponseCode().equals(ResponseCode.FILE_TRANSFER_FAILURE) 
                     && canRetry(pillarID)) {
                 isFinalResponse = false;
@@ -135,12 +173,27 @@ public class PuttingFile extends PerformingOperationState {
                 componentRequestCount.put(pillarID, componentRequestCount.get(pillarID)+1);
                 context.getMonitor().retry("Retrying putfile (attempt number " + componentRequestCount.get(pillarID) + ")",
                         pillarID);
+            } else if(response.getResponseInfo().getResponseCode().equals(ResponseCode.DUPLICATE_FILE_FAILURE)) {
+                if(ChecksumUtils.areEqual(
+                        response.getChecksumDataForExistingFile(), context.getChecksumForValidationAtPillar())) {
+                    PutFileCompletePillarEvent event = new PutFileCompletePillarEvent(
+                            response.getPillarID(), response.getChecksumDataForExistingFile());
+                    event.setInfo("File already existed on " + response.getPillarID());
+                    getContext().getMonitor().contributorComplete(event);
+                } else {
+                    getContext().getMonitor().contributorFailed(
+                            "Received negative response from component " + response.getFrom() +
+                                    ":  " + response.getResponseInfo() + " (existing file checksum does not match)",
+                            response.getFrom(), response.getResponseInfo().getResponseCode());
+                    throw new UnableToFinishException("Can not put file " + context.getFileID() +
+                            ", as an different file already exists on pillar " + response.getPillarID());
+                }
             } else {
                 getContext().getMonitor().contributorFailed(
                         msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
             }
         }
-        return isFinalResponse;
+        return isFinalResponse;*/
     }
     
     /**
