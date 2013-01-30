@@ -19,35 +19,41 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.integration.func.getchecksums;
+package org.bitrepository.pillar.integration.func.getaudittrails;
 
 import java.util.GregorianCalendar;
 import java.util.List;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.access.getaudittrails.AuditTrailQuery;
+import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
+import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
+import org.bitrepository.client.eventhandler.ContributorEvent;
+import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.testng.annotations.Test;
 
-public class GetChecksumQueryTest extends PillarFunctionTest {
+public class GetAuditTrailsTest extends PillarFunctionTest {
     
     @Test ( groups = {"pillar-integration-test"} )
-    public void checksumSortingTest() {
+    public void eventSortingTest() throws NegativeResponseException{
         addDescription("Test whether the checksum result is sorted oldest to newest.");
         addFixtureSetup("Ensure at least two files are present on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
-        addStep("Retrieve a list of all checksums.",
-            "Run through the list and verify each element is older or the same age as the following element");
-        List<ChecksumDataForChecksumSpecTYPE> originalChecksumList = pillarFileManager.getChecksums(null, null);
+        addStep("Retrieve a list of all audit trails.",
+            "Run through the list and verify each element sequence number is lower than the following elements.");
+
+        List<AuditTrailEvent> auditTrailEvents = getAuditTrails(null, null);
         
-        for (int counter = 0 ; counter < originalChecksumList.size() - 1 ; counter ++) {
-            Assert.assertTrue(originalChecksumList.get(counter).getCalculationTimestamp().compare(
-                    originalChecksumList.get(counter + 1).getCalculationTimestamp()) <= 0,
-                    "Checksum (" + counter + ") " + originalChecksumList.get(counter) + " newer than following checksum("
-                            + counter + ") " + originalChecksumList.get(counter + 1));
+        for (int counter = 0 ; counter < auditTrailEvents.size() - 1 ; counter ++) {
+            Assert.assertTrue(auditTrailEvents.get(counter).getSequenceNumber().compareTo(
+                    auditTrailEvents.get(counter + 1).getSequenceNumber()) < 0,
+                    "Event (" + counter + ") " + auditTrailEvents.get(counter) + " has higher sequence number" +
+                            " than following event(" + counter + ") " + auditTrailEvents.get(counter + 1));
         }
     }
 
@@ -155,5 +161,20 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
         Assert.assertEmpty(limitedChecksumList,
                 "Non-empty checksum list returned with olderThanOldestTimestamp(" +
                         CalendarUtils.getXmlGregorianCalendar(olderThanOldestTimestamp) + ") query");
-    }          
+    }
+
+    private List<AuditTrailEvent> getAuditTrails(
+            AuditTrailQuery[] componentQueries,
+            String fileID) {
+        List<ContributorEvent> contributorList = null;
+        try {
+            contributorList = clientProvider.getAuditTrailsClient().
+                    getAuditTrails(componentQueries, fileID, null, null, null);
+        } catch (NegativeResponseException e) {
+            throw new RuntimeException(e);
+        }
+        return ((AuditTrailResult)contributorList.get(0)).
+                getAuditTrailEvents().getAuditTrailEvents().getAuditTrailEvent();
+
+    }
 }

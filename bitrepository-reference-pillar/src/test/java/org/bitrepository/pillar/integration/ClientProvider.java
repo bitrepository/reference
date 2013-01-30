@@ -21,6 +21,8 @@ package org.bitrepository.pillar.integration;/*
  */
 
 import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getaudittrails.AuditTrailClientTestWrapper;
+import org.bitrepository.access.getaudittrails.BlockingAuditTrailClient;
 import org.bitrepository.access.getchecksums.BlockingGetChecksumsClient;
 import org.bitrepository.access.getchecksums.GetChecksumsClientTestWrapper;
 import org.bitrepository.access.getfileids.BlockingGetFileIDsClient;
@@ -45,6 +47,7 @@ public class ClientProvider {
     private BlockingDeleteFileClient getDeleteFileClient;
     private BlockingGetChecksumsClient getChecksumsClient;
     private BlockingGetFileIDsClient getFileIDsClient;
+    private BlockingAuditTrailClient getAuditTrailsClient;
 
     /**
      * @param securityManager The security manager to use for the clients.
@@ -111,5 +114,19 @@ public class ClientProvider {
             );
         }
         return getFileIDsClient;
+    }
+
+
+    public synchronized BlockingAuditTrailClient getAuditTrailsClient() {
+        if (getAuditTrailsClient == null) {
+            getAuditTrailsClient = new BlockingAuditTrailClient(
+                    new AuditTrailClientTestWrapper(
+                            AccessComponentFactory.getInstance().createAuditTrailClient(
+                                    settings, securityManager, settings.getComponentID()
+                            ), eventManager
+                    )
+            );
+        }
+        return getAuditTrailsClient;
     }
 }
