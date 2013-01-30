@@ -43,7 +43,7 @@
     <div id=audit-container class="ui-widget">
         <div id="auditTrailsInitiator">
             <h1>Collect audit trails </h1>
-            <form id="collectionInitiationForm">
+            <form id="collectionInitiationForm" action="javascript:submit()">
                 AuditTrails collection <input type="submit" value="Start">
             </form>
             <div id="initiatorStatus"></div> 
