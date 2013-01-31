@@ -24,6 +24,7 @@
  */
 package org.bitrepository.integrityservice.web;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -33,6 +34,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.IntegrityServiceFactory;
@@ -49,12 +52,44 @@ public class RestIntegrityService {
         service = IntegrityServiceFactory.getIntegrityServiceWebInterface();
     }
     
+    @GET
+    @Path("/getChecksumErrorFileIDs/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getChecksumErrors(@QueryParam("pillarD") String pillarID) {
+        List<String> ids = new ArrayList<String>();
+        ids.add("foo");
+        ids.add("bar");
+        ids.add("baz");
+        
+        JSONArray array = new JSONArray();
+        for(String file : ids) {
+            array.put(file);
+        }
+        return array.toString();
+    }
+    
+    @GET
+    @Path("/getMissingFileIDs/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getMissingFileIDs(@QueryParam("pillarD") String pillarID) {
+        List<String> ids = new ArrayList<String>();
+        ids.add("foo");
+        ids.add("bar");
+        ids.add("baz");
+        
+        JSONArray array = new JSONArray();
+        for(String file : ids) {
+            array.put(file);
+        }
+        return array.toString();
+    }
+    
     /**
      * Get the listing of integrity status as a JSON array
      */
     @GET
     @Path("/getIntegrityStatus/")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public String getIntegrityStatus() {
         JSONArray array = new JSONArray();
         List<String> pillars = service.getPillarList();
@@ -69,7 +104,7 @@ public class RestIntegrityService {
      */
     @GET
     @Path("/getWorkflowSetup/")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public String getWorkflowSetup() {
         JSONArray array = new JSONArray();
         Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows();
@@ -84,7 +119,7 @@ public class RestIntegrityService {
      */
     @GET
     @Path("/getWorkflowList/")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public String getWorkflowList() {
         JSONArray array = new JSONArray();
         Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows();
