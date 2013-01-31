@@ -21,22 +21,23 @@
  */
 package org.bitrepository.pillar.integration.func.getaudittrails;
 
-import java.util.GregorianCalendar;
 import java.util.List;
-import javax.xml.datatype.XMLGregorianCalendar;
-import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
-import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.exceptions.NegativeResponseException;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.testng.annotations.Test;
 
 public class GetAuditTrailsTest extends PillarFunctionTest {
+    @Override
+    protected void initializeCUT() {
+        super.initializeCUT();
+        settingsForTestClient.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().clear();
+        settingsForTestClient.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().add(getPillarID());
+    }
     
     @Test ( groups = {"pillar-integration-test"} )
     public void eventSortingTest() throws NegativeResponseException{
@@ -63,113 +64,113 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         addFixtureSetup("Ensure at least two files are present on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
         
-        addStep("Retrieve a list of all checksums by setting maxNumberOfResult to null.", "At least 2 checksums " +
-                "should be returned");
-        List<ChecksumDataForChecksumSpecTYPE> originalChecksumList = pillarFileManager.getChecksums(null, null);
+        addStep("Retrieve a list of all audittrails by setting maxSequece to null.",
+                "At 2 audit trails should be returned");
+        List<AuditTrailEvent> originalAuditTrailEventList = getAuditTrails(null, null);
         
-        addStep("Repeat the request checksums, this time with maxNumberOfResult set to one", "A checksum result with " +
-                "a single checksum should be returned. The checksum should be the oldest/first checksum in the full list.");
-        ContributorQuery singleChecksumQuery = new ContributorQuery(getPillarID(), null, null, 1);
-        List<ChecksumDataForChecksumSpecTYPE> singleChecksumList = pillarFileManager.getChecksums(null, singleChecksumQuery);
-        Assert.assertEquals(singleChecksumList.size(), 1, "The result didn't contain a single checksum");
-        Assert.assertEquals(singleChecksumList.get(0), originalChecksumList.get(0),
-                "The returned checksum wasn't equal to the oldest checksum");
+        addStep("Repeat the audit trail request, this time with maxNumberOfResult set to one",
+                "A result with a single audit event should be returned. The event should be the first " +
+                        "audit event in the full list.");
+        AuditTrailQuery singleEventQuery = new AuditTrailQuery(getPillarID(), null, null, 1);
+        List<AuditTrailEvent> singleEventList = getAuditTrails(singleEventQuery, null);
+        Assert.assertEquals(singleEventList.size(), 1, "The result didn't contain a single event");
+        Assert.assertEquals(singleEventList.get(0), originalAuditTrailEventList.get(0),
+                "The returned event wasn't equal to the first event");
     }
     
     @Test ( groups = {"pillar-integration-test"} )
-    public void minTimeStampTest() {
-        addDescription("Test the pillar support for only retrieving checksums newer that a given time. " +
-                "Note that this test assumes there is at least 2 checksums with different timestamps.");
+    public void minSequenceNumberTest() {
+        addDescription("Test the pillar support for only retrieving events with sequence number higher than the " +
+                "provided MinSequenceNumber" +
+                ". " +
+                "Note that this test assumes there is at least 2 audit event.");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
         
-        addStep("Request default checksums for all files on the pillar",
-                "A list with at least 2 different timestamps (it is not the fault of the pillar if this fails, but " +
-                "the test needs this to be satisfied to make sense).");
-        List<ChecksumDataForChecksumSpecTYPE> originalChecksumList = pillarFileManager.getChecksums(null, null);
-        Assert.assertTrue(originalChecksumList.get(0).getCalculationTimestamp().compare(
-                originalChecksumList.get(originalChecksumList.size()-1).getCalculationTimestamp()) != 0,
-                "The timestamps of the first and last checksum are the same.");
+        addStep("Request audit trails for all files on the pillar",
+                "A list with at least 2 events is returned.");
+        List<AuditTrailEvent> originalAuditTrailEventList = getAuditTrails(null, null);
+        Assert.assertTrue(originalAuditTrailEventList.size() > 1,
+                "The size of the returned list is only " + originalAuditTrailEventList.size() + ", " +
+                        "should be at least 2");
         
-        addStep("Request checksums with MinTimeStamp set to the timestamp of the oldest checksum",
-                "All checksums should be returned.");
-        XMLGregorianCalendar oldestTimestamp = originalChecksumList.get(0).getCalculationTimestamp();
-        ContributorQuery query = new ContributorQuery(getPillarID(),
-                oldestTimestamp.toGregorianCalendar().getTime(), null, null);
-        List<ChecksumDataForChecksumSpecTYPE> limitedChecksumList = pillarFileManager.getChecksums(null, query);
-        Assert.assertEquals(limitedChecksumList, originalChecksumList, "Different list return when setting old minTimestamp");
+        addStep("Request audit events with MinSequenceNumber set to the SequenceNumber of the first event checksum",
+                "The full list of audit events should be returned.");
+        int smallestSequenceNumber = originalAuditTrailEventList.get(0).getSequenceNumber().intValue();
+        AuditTrailQuery firstSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
+                new Integer(smallestSequenceNumber), null, null);
+        List<AuditTrailEvent> limitedEventList = getAuditTrails(firstSequenceNumberQuery, null);
+        Assert.assertEquals(limitedEventList, originalAuditTrailEventList,
+                "Different list return when MinSequenceNumber set to first event");
         
-        addStep("Request checksums with MinTimeStamp set to the timestamp of the newest checksum",
-                "Only checksum with the timestamp equal to MinTimeStamp are returned.");
-        XMLGregorianCalendar newestTimestamp = originalChecksumList.get(originalChecksumList.size()-1).getCalculationTimestamp();
-        query = new ContributorQuery(getPillarID(),
-                newestTimestamp.toGregorianCalendar().getTime(), null, null);
-        limitedChecksumList = pillarFileManager.getChecksums(null, query);
-        Assert.assertTrue(limitedChecksumList.get(0).getCalculationTimestamp().compare(newestTimestamp) == 0,
-                "Different timestamps in the set of newest checksums." + limitedChecksumList);
+        addStep("Request audit trail with MinSequenceNumber set to the SequenceNumber of the last event",
+                "Only the last event is returned.");
+        int largestSequenceNumber = originalAuditTrailEventList.get(originalAuditTrailEventList.size()-1)
+                .getSequenceNumber().intValue();
+        AuditTrailQuery lastSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
+                new Integer(largestSequenceNumber), null, null);
+        limitedEventList = getAuditTrails(lastSequenceNumberQuery, null);
+        Assert.assertTrue(limitedEventList.size() == 1, "Received list with size of " + limitedEventList.size() + " " +
+                "when requesting audit trail with MinSequenceNumber set to latest event");
+        Assert.assertTrue(limitedEventList.get(0).equals(originalAuditTrailEventList.get(originalAuditTrailEventList.size()-1)),
+                "The single event in audit trail result for MinSequenceNumber set to latest are different." +
+                        limitedEventList);
         
-        addStep("Request checksums with MinTimeStamp set to the timestamp of the newest checksum + 10 ms",
-                "No checksums are returned.");
-        GregorianCalendar newerThanNewestTimestamp = newestTimestamp.toGregorianCalendar();
-        newerThanNewestTimestamp.add(GregorianCalendar.MILLISECOND, 10);
-        query = new ContributorQuery(getPillarID(), newerThanNewestTimestamp.getTime(), null, null);
-        limitedChecksumList = pillarFileManager.getChecksums(null, query);
-        Assert.assertEmpty(limitedChecksumList,
-                "Non-empty checksum list returned with newerThanNewestTimestamp(" +
-                        CalendarUtils.getXmlGregorianCalendar(newerThanNewestTimestamp) + ") query");
+        addStep("Request audit trail with MinSequenceNumber set to the SequenceNumber of the last event + 1",
+                "No events are returned.");
+        AuditTrailQuery laterThanLastSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
+                new Integer(largestSequenceNumber + 1), null, null);
+        limitedEventList = getAuditTrails(laterThanLastSequenceNumberQuery, null);
+        Assert.assertEmpty(limitedEventList,
+                "Non-empty event list returned with laterThanLastSequenceNumberQuery: " + limitedEventList);
     }
     
     @Test ( groups = {"pillar-integration-test"} )
-    public void maxTimeStampTest() {
-        addDescription("Test the pillar support for only retrieving checksums older that a given time. " +
-                "Note that this test assumes there is at least 2 checksums with different timestamps.");
+    public void maxSequenceNumberTest() {
+        addDescription("Test the pillar support for only retrieving audit event with SequenceNumbers lower than " +
+                "MaxSequenceNumber.");
+        pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
-        pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
-        
-        addStep("Request default checksums for all files on the pillar",
-                "A list with at least 2 different timestamps (it is not the fault of the pillar if this fails, but " +
-                "the test needs this to be satisfied to make sense).");
-        List<ChecksumDataForChecksumSpecTYPE> originalChecksumList = pillarFileManager.getChecksums(null, null);
-        Assert.assertTrue(originalChecksumList.get(0).getCalculationTimestamp().compare(
-                originalChecksumList.get(originalChecksumList.size()-1).getCalculationTimestamp()) != 0,
-                "The timestamps of the first and last checksum are the same.");
-        
-        addStep("Request checksums with MaxTimeStamp set to the timestamp of the newest checksum",
-                "All checksums should be returned.");
-        XMLGregorianCalendar newestTimestamp = originalChecksumList.get(originalChecksumList.size()-1).getCalculationTimestamp();
-        ContributorQuery query = new ContributorQuery(getPillarID(),
-                null, newestTimestamp.toGregorianCalendar().getTime(), null);
-        List<ChecksumDataForChecksumSpecTYPE> limitedChecksumList = pillarFileManager.getChecksums(null, query);
-        Assert.assertEquals(limitedChecksumList, originalChecksumList, 
-                "Different list return when setting newest maxTimestamp");
-        
-        addStep("Request checksums with MaxTimeStamp set to the timestamp of the oldest checksum",
-                "Only checksum with the timestamp equal to MaxTimeStamp are returned.");
-        XMLGregorianCalendar oldestTimestamp = originalChecksumList.get(0).getCalculationTimestamp();
-        query = new ContributorQuery(getPillarID(),
-                null, oldestTimestamp.toGregorianCalendar().getTime(), null);
-        limitedChecksumList = pillarFileManager.getChecksums(null, query);
-        Assert.assertFalse(limitedChecksumList.isEmpty(), "At least one checksum with the oldest timestamp should be returned.");
-        Assert.assertTrue(limitedChecksumList.get(0).getCalculationTimestamp().compare(oldestTimestamp) == 0,
-                "Different timestamps in the set of oldest checksums." + limitedChecksumList);
-        
-        addStep("Request checksums with MaxTimeStamp set to the timestamp of the oldest checksum - 10 ms",
-                "No checksums are returned.");
-        GregorianCalendar olderThanOldestTimestamp = oldestTimestamp.toGregorianCalendar();
-        olderThanOldestTimestamp.add(GregorianCalendar.MILLISECOND, -10);
-        query = new ContributorQuery(getPillarID(), null, olderThanOldestTimestamp.getTime(), null);
-        limitedChecksumList = pillarFileManager.getChecksums(null, query);
-        Assert.assertEmpty(limitedChecksumList,
-                "Non-empty checksum list returned with olderThanOldestTimestamp(" +
-                        CalendarUtils.getXmlGregorianCalendar(olderThanOldestTimestamp) + ") query");
+        addStep("Request audit trails for all files on the pillar",
+                "A list with at least 2 events is returned.");
+        List<AuditTrailEvent> originalAuditTrailEventList = getAuditTrails(null, null);
+        Assert.assertTrue(originalAuditTrailEventList.size() > 1,
+                "The size of the returned list is only " + originalAuditTrailEventList.size() + ", " +
+                        "should be at least 2");
+
+        addStep("Request audit events with MaxSequenceNumber set to the SequenceNumber of the last event checksum",
+                "The full list of audit events should be returned.");
+        int largestSequenceNumber = originalAuditTrailEventList.get(originalAuditTrailEventList.size()-1)
+                .getSequenceNumber().intValue();
+        AuditTrailQuery lastSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
+                null, new Integer(largestSequenceNumber), null);
+        List<AuditTrailEvent> limitedEventList = getAuditTrails(lastSequenceNumberQuery, null);
+        Assert.assertEquals(limitedEventList, originalAuditTrailEventList,
+                "Different list return when MaxSequenceNumber set to last event");
+
+        addStep("Request audit trail with MaxSequenceNumber set to the SequenceNumber of the first event",
+                "Only the first event is returned.");
+        int smallestSequenceNumber = originalAuditTrailEventList.get(0).getSequenceNumber().intValue();
+        AuditTrailQuery firstSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
+                null, new Integer(smallestSequenceNumber), null);
+        limitedEventList = getAuditTrails(firstSequenceNumberQuery, null);
+        Assert.assertTrue(limitedEventList.size() == 1, "Received list with size of " + limitedEventList.size() + " " +
+                "when requesting audit trail with MaxSequenceNumber set to first event (expected 1 event)");
+        Assert.assertEquals(limitedEventList.get(0),
+                originalAuditTrailEventList.get(0),
+                "Different events in the set of first events.");
     }
 
     private List<AuditTrailEvent> getAuditTrails(
-            AuditTrailQuery[] componentQueries,
+            AuditTrailQuery componentQuery,
             String fileID) {
         List<ContributorEvent> contributorList = null;
+        AuditTrailQuery[] auditTrailQueries = null;
+        if (componentQuery != null) {
+            auditTrailQueries = new AuditTrailQuery[] {componentQuery};
+        }
         try {
             contributorList = clientProvider.getAuditTrailsClient().
-                    getAuditTrails(componentQueries, fileID, null, null, null);
+                    getAuditTrails(auditTrailQueries, fileID, null, null, null);
         } catch (NegativeResponseException e) {
             throw new RuntimeException(e);
         }

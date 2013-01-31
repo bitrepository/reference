@@ -84,7 +84,6 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         this.conversations = Collections.synchronizedMap(new HashMap<String, Conversation>());
         this.settings = settings;
         messagebus = MessageBusManager.getMessageBus(settings, securityManager);
-        // Todo temporary hack which should be removed when all mediator creators calls the start method.
         start();
     }
 

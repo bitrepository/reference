@@ -59,7 +59,6 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNegative(sizeOfFile, "long sizeOfFile");
 
-        //ToDo The start logging should be generalized.
         log.info("Starting putFile of " + fileId + " for client " + clientID + ". " + auditTrailInformation);
         if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
             ArgumentValidator.checkNotNull(checksumForValidationAtPillar, "ChecksumDataForFileTYPE checksumForValidationAtPillar");
