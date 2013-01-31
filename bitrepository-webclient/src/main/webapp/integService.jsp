@@ -94,6 +94,35 @@
     </script>
     
     <script>
+        function showDialog(pillarID, type) {
+            var method;
+            if(type == "Missing files") {
+                method = "getMissingFileIDs";
+            } else if(type == "Checksum errors") {
+                method = "getChecksumErrorFileIDs";
+            }
+            if(method != null) {
+                var url = "<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/" + method
+                    + "?pillarID=" + pillarID;
+                $.getJSON(url,{}, function(j) {
+                    var htmlContent = "";
+                    for(var i = 0; i < j.length; i++) {
+                        htmlContent += j[i] + "<br>";
+                    }
+                    $('<div />').html(htmlContent).dialog({title: type + " on " + pillarID});
+                })
+            }  
+        }
+
+        function addIntegrityInfoDialog(pillarID, type, element) {
+            $(element).unbind('click');
+            $(element).click(function(ID, method) {
+                    return function() {
+                        showDialog(ID, method);
+                    };
+                }(pillarID, type));
+        }
+        
         jQuery.fn.updateIntegrityStatus = function() {
             $.getJSON('<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getIntegrityStatus/',{}, function(j){
                 var htmlTable;
@@ -106,10 +135,16 @@
                 htmlTable += "</tr></thead><tbody>";
                 for (var i = 0; i < j.length; i++) {
                     htmlTable += "<tr><td>" + j[i].pillarID + "</td><td>" + j[i].totalFileCount 
-                        + "</td> <td>" + j[i].missingFilesCount + "</td> <td>" + j[i].checksumErrorCount + "</td></tr>";
+                        + "</td> <td id=\"" + j[i].pillarID + "-missingFiles\">" + j[i].missingFilesCount 
+                        + "</td> <td id=\"" + j[i].pillarID + "-checksumErrors\">" + j[i].checksumErrorCount + "</td></tr>";
                }
                 htmlTable += "</tbody></table>"; 
                 $("#integrityStatus").html(htmlTable);
+                for(var i = 0; i < j.length; i++) {
+                     addIntegrityInfoDialog(j[i].pillarID, "Missing files", "#"+j[i].pillarID+"-missingFiles");
+                     addIntegrityInfoDialog(j[i].pillarID, "Checksum errors", "#"+j[i].pillarID+"-checksumErrors");
+                }
+                
             })
         }
     </script>
