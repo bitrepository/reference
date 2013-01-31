@@ -53,7 +53,8 @@ public final class TimeUtils {
      * @return The milliseconds converted into seconds.
      */
     public static String millisecondsToSeconds(long ms) {
-        return "" + (ms / MS_PER_S) + " seconds";
+        int seconds = (int) (ms / MS_PER_S);
+        return seconds + " second" + (seconds == 1 ? "" : "s");
     }
     
     /**
@@ -62,7 +63,8 @@ public final class TimeUtils {
      * @return The milliseconds converted into minutes.
      */
     public static String millisecondsToMinutes(long ms) {
-        return "" + (ms / ( MS_PER_S * S_PER_M )) + " minutes";
+        int minutes = (int) (ms / ( MS_PER_S * S_PER_M ));
+        return minutes + " minute" + (minutes == 1 ? "" : "s");
     }
     
     /**
@@ -71,7 +73,8 @@ public final class TimeUtils {
      * @return The milliseconds converted into hours.
      */
     public static String millisecondsToHours(long ms) {
-        return "" + (ms /( MS_PER_S * S_PER_M * M_PER_H )) + " hours";
+        int hours = (int) (ms /( MS_PER_S * S_PER_M * M_PER_H ));
+        return hours + " hour" + (hours == 1 ? "" : "s");
     }
     
     /**
@@ -80,7 +83,8 @@ public final class TimeUtils {
      * @return The milliseconds converted into days.
      */
     public static String millisecondsToDays(long ms) {
-        return "" + (ms /( MS_PER_S * S_PER_M * M_PER_H * H_PER_D)) + " days";
+        int days = (int) (ms /( MS_PER_S * S_PER_M * M_PER_H * H_PER_D));
+        return days + " day" + (days == 1 ? "" : "s");
     }
     
     /**
@@ -91,27 +95,31 @@ public final class TimeUtils {
      */
     public static String millisecondsToHuman(long ms) {
         StringBuilder sb = new StringBuilder();
+        boolean includeRemainingMs = true;
+        if(ms >= MS_PER_MINUTE) {
+            includeRemainingMs = false;
+        }
         if(ms > 0) {
-            if(ms > MS_PER_DAY) {
+            if(ms >= MS_PER_DAY) {
                 sb.append(millisecondsToDays(ms));
             }
             ms = (ms % MS_PER_DAY);
             if(ms > 0) {
-                if(ms > MS_PER_HOUR) {
+                if(ms >= MS_PER_HOUR) {
                     sb.append(" " + millisecondsToHours(ms));
                 }
                 ms = (ms % MS_PER_HOUR);
                 if(ms > 0) {
-                    if(ms > MS_PER_MINUTE) {
+                    if(ms >= MS_PER_MINUTE) {
                         sb.append(" " + millisecondsToMinutes(ms));
                     }
                     ms = (ms % MS_PER_MINUTE);
                     if(ms > 0) {
-                        if(ms > MS_PER_S) {
+                        if(ms >= MS_PER_S) {
                             sb.append(" " + millisecondsToSeconds(ms));
                         }
                         ms = (ms % MS_PER_S);
-                        if(ms > 0) {
+                        if(ms > 0 && includeRemainingMs) {
                             sb.append(" " + ms + " ms");
                         }
                     }
