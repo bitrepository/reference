@@ -21,6 +21,8 @@ package org.bitrepository.pillar.integration.perf;
  * #L%
  */
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.utils.TestFileHelper;
@@ -37,7 +39,7 @@ public class PutFileStressIT extends PillarPerformanceTest {
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
         putClient = ModifyComponentFactory.getInstance().retrievePutClient(
-                settingsForCUT, createSecurityManager(), settingsForCUT.getComponentID()
+                settingsForTestClient, createSecurityManager(), settingsForTestClient.getComponentID()
         );
     }
 
@@ -66,14 +68,18 @@ public class PutFileStressIT extends PillarPerformanceTest {
     public void parallelPut() throws Exception {
         final int numberOfFiles = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfFiles");
         final int  partStatisticsInterval = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.partStatisticsInterval");
-        addDescription("Attempt to put " + numberOfFiles + " files into the pillar at the 'same' time.");
+        final int  numberOfParallelPuts = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut" +
+                ".numberOfParallelPuts");
+        addDescription("Attempt to put " + numberOfFiles + " files into the pillar, " + numberOfParallelPuts + " at 'same' time.");
         String[] fileIDs = TestFileHelper.createFileIDs(numberOfFiles, "parallelPutTest");
         final Metrics metrics = new Metrics("put", numberOfFiles, partStatisticsInterval);
         metrics.addAppenders(metricAppenders);
         metrics.start();
         addStep("Add " + numberOfFiles + " files", "Not errors should occur");
-        EventHandler eventHandler = new PutEventHandlerForMetrics(metrics);
+        ParallelPutLimiter putLimiter = new ParallelPutLimiter(numberOfParallelPuts);
+        EventHandler eventHandler = new PutEventHandlerForMetrics(metrics, putLimiter);
         for (String fileID:fileIDs) {
+            putLimiter.addJob(fileID);
             putClient.putFile(httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID), fileID, 10L,
                     TestFileHelper.getDefaultFileChecksum(), null, eventHandler, "parallelPut stress test file");
         }
@@ -89,20 +95,41 @@ public class PutFileStressIT extends PillarPerformanceTest {
 
     private class PutEventHandlerForMetrics implements EventHandler {
         private final Metrics metrics;
-        public PutEventHandlerForMetrics(Metrics metrics) {
+        private final ParallelPutLimiter putLimiter;
+        public PutEventHandlerForMetrics(Metrics metrics, ParallelPutLimiter putLimiter) {
             this.metrics = metrics;
+            this.putLimiter = putLimiter;
         }
 
         @Override
         public void handleEvent(OperationEvent event) {
             if (event.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
-                //CompleteEvent completeEvent = (CompleteEvent)event;
-                // PutFileCompletePillarEvent fileID = (PutFileCompletePillarEvent)completeEvent.getComponentResults()[0];
-                // Todo The current complete event should return a event, so we can detect which file has been affected
                 this.metrics.mark("#" + metrics.getCount());
+                putLimiter.removeJob(event.getFileID());
             } else if (event.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
                 this.metrics.registerError(event.getInfo());
+                putLimiter.removeJob(event.getFileID());
             }
+        }
+    }
+
+    private class ParallelPutLimiter {
+        private final BlockingQueue<String> activePuts;
+
+        ParallelPutLimiter(int limit) {
+            activePuts = new LinkedBlockingQueue<String>(limit);
+        }
+
+        void addJob(String fileID) {
+            try {
+                activePuts.put(fileID);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        void removeJob(String fileID) {
+            activePuts.remove(fileID);
         }
     }
 }

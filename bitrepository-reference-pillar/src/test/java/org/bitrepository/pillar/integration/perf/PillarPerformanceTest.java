@@ -31,6 +31,8 @@ import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.pillar.integration.perf.metrics.ConsoleMetricAppender;
 import org.bitrepository.pillar.integration.perf.metrics.MetricAppender;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.bus.MessageReceiver;
 import org.testng.annotations.BeforeSuite;
 
 public class PillarPerformanceTest extends PillarIntegrationTest {
@@ -53,6 +55,19 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
 
     private void initializeCollectionHelper() {
         collectionHelper = new CollectionTestHelper(settingsForCUT, httpServer);
+    }
+
+    @Override
+    protected void addReceiver(MessageReceiver receiver) {
+        // Do Nothing, test receivers should be used in performance tests.
+    }
+    /**
+     * Avoid usind messagebuswrapper.
+     */
+    @Override
+    protected void setupMessageBus() {
+        super.setupMessageBus();
+        messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settingsForCUT, securityManager);
     }
 
     /**

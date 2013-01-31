@@ -232,7 +232,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     /**
      * Hooks up the message bus.
      */
-    private void setupMessageBus() {
+    protected void setupMessageBus() {
         if (useEmbeddedMessageBus() && broker == null) {
             broker = new LocalActiveMQBroker(settingsForCUT.getMessageBusConfiguration());
             broker.start();
