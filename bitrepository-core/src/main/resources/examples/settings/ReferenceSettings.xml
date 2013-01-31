@@ -48,7 +48,7 @@
     <ConversationTimeout>3600000</ConversationTimeout>
     
     <!--
-      The maximum number of retries allowed before a file transfer is considered failed. 
+      The maximum number of retries allowed before a file transfer is considered failed. The default is not to retry.
       If 0, only the initial file transfer will be attempted. 
       If 2, a total of 3 attempts will be made before it is considered a failure.  
      -->

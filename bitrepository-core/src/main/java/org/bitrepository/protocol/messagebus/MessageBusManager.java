@@ -69,4 +69,13 @@ public final class MessageBusManager {
         ActiveMQMessageBus messageBus = new ActiveMQMessageBus(settings, securityManager);
         return messageBus;
     }
+
+    /**
+     * Can be used to inject a custom messageBus for a specific collectionID.
+     * @param collectionID
+     * @param messageBus The custom instance of the messagebus.
+     */
+    public static void injectCustomMessageBus(String collectionID, MessageBus messageBus) {
+        messageBusMap.put(collectionID, messageBus);
+    }
 }

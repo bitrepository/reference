@@ -40,7 +40,7 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
         addStep("Retrieve a list of all checksums.",
-            "Run through the list and verify each element is older or the same age as the folowing element");
+            "Run through the list and verify each element is older or the same age as the following element");
         List<ChecksumDataForChecksumSpecTYPE> originalChecksumList = pillarFileManager.getChecksums(null, null);
         
         for (int counter = 0 ; counter < originalChecksumList.size() - 1 ; counter ++) {

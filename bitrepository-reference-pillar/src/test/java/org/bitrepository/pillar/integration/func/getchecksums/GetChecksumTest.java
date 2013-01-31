@@ -42,7 +42,6 @@ public class GetChecksumTest extends PillarFunctionTest {
     @Test ( groups = {"pillar-integration-test"} )
     public void testMD5Checksums() throws NegativeResponseException {
         addDescription("Test the pillar support for MD5 type checksums");
-        addReference("Not implemented");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
         addStep("Request MD5 checksums for all files on the pillar",
@@ -60,7 +59,6 @@ public class GetChecksumTest extends PillarFunctionTest {
     @Test ( groups = {"pillar-integration-test"} )
     public void testSHA1Checksums() throws NegativeResponseException {
         addDescription("Test the pillar support for SHA1 type checksums");
-        addReference("Not implemented");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
         addStep("Request SHA1 checksums for all files on the pillar",
@@ -78,7 +76,6 @@ public class GetChecksumTest extends PillarFunctionTest {
     @Test ( groups = {"pillar-integration-test"} )
     public void testMD5SaltChecksums() throws NegativeResponseException {
         addDescription("Test the pillar support for MD5 type checksums with a salt");
-        addReference("Not implemented");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
         addStep("Request salted MD5 checksums for all files on the pillar",
@@ -97,7 +94,6 @@ public class GetChecksumTest extends PillarFunctionTest {
     @Test ( groups = {"pillar-integration-test"} )
     public void testSHA1SaltChecksums() throws NegativeResponseException {
         addDescription("Test the pillar support for SHA1 type checksums with a salt");
-        addReference("Not implemented");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
         addStep("Request salted SHA1 checksums for all files on the pillar",

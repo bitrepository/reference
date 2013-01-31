@@ -45,8 +45,9 @@ public class ConversationMediatorManager {
     /**
      * Will return a the <code>ConversationMediator</code> for the collection indicated in the settings. 
      * If the mediator does doesn't exist, it will be created.
-     * @param collectionID The collectionID to find settings for.
-     * @return The settings for the indicated CollectionID
+     * @param settings The settings to use for this mediator.
+     * @param securityManager The securityManager to use for this conversation mediator.
+     * @return The settings for the indicated CollectionID.
      */
     public static synchronized ConversationMediator getConversationMediator(Settings settings, SecurityManager securityManager) {
         String collectionID = settings.getCollectionID();
@@ -55,5 +56,15 @@ public class ConversationMediatorManager {
             mediatorMap.put(collectionID, mediator);
         }
         return mediatorMap.get(collectionID);
+    }
+
+
+    /**
+     * Can be used to inject a custom messageBus for a mediator collectionID.
+     * @param collectionID
+     * @param mediator The custom instance of the mediator.
+     */
+    public static void injectCustomConversationMediator(String collectionID, ConversationMediator mediator) {
+        mediatorMap.put(collectionID, mediator);
     }
 }

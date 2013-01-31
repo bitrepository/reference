@@ -21,12 +21,15 @@
  */
 package org.bitrepository.pillar.integration;
 
+import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediatorManager;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.pillar.PillarSettingsProvider;
 import org.bitrepository.pillar.integration.model.PillarFileManager;
 import org.bitrepository.protocol.IntegrationTest;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
 import org.bitrepository.protocol.security.BasicMessageSigner;
 import org.bitrepository.protocol.security.BasicOperationAuthorizor;
@@ -64,6 +67,8 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     @Override
     protected void initializeCUT() {
         super.initializeCUT();
+        reloadMessageBus();
+        clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
         pillarFileManager = new PillarFileManager(
             getPillarID(), settingsForTestClient, clientProvider, testEventManager, httpServer);
     }
@@ -75,6 +80,8 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
                 new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
         super.initializeSuite();
         startEmbeddedReferencePillar();
+        MessageBusManager.injectCustomMessageBus(settingsForTestClient.getCollectionID(), messageBus);
+        reloadMessageBus();
         clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
     }
 
@@ -145,5 +152,16 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     @Override
     protected String getComponentID() {
         return getPillarID();
+    }
+
+    protected void reloadMessageBus() {
+        ConversationMediatorManager.injectCustomConversationMediator(settingsForTestClient.getCollectionID(),
+                new CollectionBasedConversationMediator(settingsForTestClient, securityManager));
+    }
+
+    @Override
+    protected void afterMethodVerification() {
+        // Do not run the normal verification of all messages been handled. Message receivers are only used for
+        // logging purposes here.
     }
 }

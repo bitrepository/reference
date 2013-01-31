@@ -20,6 +20,8 @@
   #L%
   -->
 <configuration scan="true">
+  <property name="DEFAULT_LOG_FILE" value="logs/pillar.log" />
+
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <Pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</Pattern>
@@ -27,7 +29,8 @@
   </appender>
 
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <file>logs/pillar.log</file>
+    <!-- Will generate a logfile at ${LOG_FILE} if defined, else ${DEFAULT_LOG_FILE}-->
+    <file>${LOG_FILE:-${DEFAULT_LOG_FILE}}</file>
     <encoder>
       <Pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</Pattern>
     </encoder>

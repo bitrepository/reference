@@ -175,7 +175,7 @@ public class MessageReceiver {
         private <T> void addMessage(T message) {
             if (pillarFilter != null && !pillarFilter.contains(((Message)message).getFrom())) return;
             if(testEventManager != null) {
-                testEventManager.addResult(this + " received: " + message);
+                testEventManager.addResult("Received message on " + getDestination() + " : " + message);
             }
             @SuppressWarnings("unchecked")
             BlockingQueue<T> queue = (BlockingQueue<T>)getMessageQueue(message.getClass());
