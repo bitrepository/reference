@@ -33,6 +33,7 @@
 <script>
     $(function() {
     	$("#auditTrailsQuery").buttonset();
+    	$("#auditTrailsInitiator").buttonset();
         $("#fromDate").datepicker();
         $("#toDate").datepicker();
         $("#auditTrails").html("<p> No query sent </p>");
@@ -40,6 +41,14 @@
 </script>
 
     <div id=audit-container class="ui-widget">
+        <div id="auditTrailsInitiator">
+            <h1>Collect audit trails </h1>
+            <form id="collectionInitiationForm" action="javascript:submit()">
+                AuditTrails collection <input type="submit" value="Start">
+            </form>
+            <div id="initiatorStatus"></div> 
+        </div>
+        <hr>
         <div id=auditTrailsQuery>
             <h1>Filters for audit trails</h1>
             <form id="auditTrailsQueryForm" action="javascript:submit()">
@@ -116,6 +125,16 @@
             , "json")
         });
     </script> 
+    
+    <script> 
+        $("#collectionInitiationForm").submit(function() {
+            $('#initiatorStatus').load(
+                '<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/collectAuditTrails/',
+                {}
+                ).fadeIn("slow");
+            return true;
+        })
+    </script>
     
    	<script>
   		function submit() { return ; }

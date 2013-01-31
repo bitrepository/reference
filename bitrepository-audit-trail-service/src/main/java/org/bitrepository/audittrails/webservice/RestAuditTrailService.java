@@ -89,6 +89,14 @@ public class RestAuditTrailService {
         return array.toString();
     }
     
+    @POST
+    @Path("/collectAuditTrails/")
+    @Produces("text/html")
+    public String collectAuditTrails() {
+        service.collectAuditTrails();
+        return "Started audittrails collection";
+    }
+    
     private JSONObject makeJSONEntry(AuditTrailEvent event) {
         JSONObject obj = new JSONObject();
         try {
