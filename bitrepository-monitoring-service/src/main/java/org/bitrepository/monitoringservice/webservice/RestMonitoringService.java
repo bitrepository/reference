@@ -27,6 +27,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.monitoringservice.MonitoringService;
 import org.bitrepository.monitoringservice.MonitoringServiceFactory;
 import org.bitrepository.monitoringservice.status.ComponentStatus;
@@ -49,7 +50,7 @@ public class RestMonitoringService {
     public String getMonitoringServiceConfiguration() {
         JSONArray array = new JSONArray();
         
-        array.put(makeConfigurationEntry("Check interval", Long.toString(service.getCollectionInterval())));
+        array.put(makeConfigurationEntry("Check interval", TimeUtils.millisecondsToHuman(service.getCollectionInterval())));
         array.put(makeConfigurationEntry("Max retries", Long.toString(service.getMaxRetries())));
         
         return array.toString();
