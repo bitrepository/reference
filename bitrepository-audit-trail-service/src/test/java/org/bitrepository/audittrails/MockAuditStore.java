@@ -37,7 +37,7 @@ public class MockAuditStore implements AuditTrailStore {
     private int callsToGetAuditTrails = 0;
     @Override
     public Collection<AuditTrailEvent> getAuditTrails(String fileId, String contributorId, Long minSeqNumber,
-            Long maxSeqNumber, String actorName, FileAction operation, Date startDate, Date endDate) {
+            Long maxSeqNumber, String actorName, FileAction operation, Date startDate, Date endDate, Integer maxResults) {
         callsToGetAuditTrails++;
         return events;
     }

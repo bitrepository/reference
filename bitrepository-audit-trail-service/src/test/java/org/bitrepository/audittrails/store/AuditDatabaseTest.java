@@ -71,57 +71,57 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         Assert.assertEquals(database.largestSequenceNumber(pillarId), 10);
         
         addStep("Extract the audit trails", "");
-        List<AuditTrailEvent> res = database.getAuditTrails(null, null, null, null, null, null, null, null);
+        List<AuditTrailEvent> res = database.getAuditTrails(null, null, null, null, null, null, null, null, null);
         Assert.assertEquals(res.size(), 2, res.toString());
         
         addStep("Test the extraction of FileID", "Should be able to extract the audit of each file individually.");
-        res = database.getAuditTrails(fileId, null, null, null, null, null, null, null);
+        res = database.getAuditTrails(fileId, null, null, null, null, null, null, null, null);
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getFileID(), fileId);
         
-        res = database.getAuditTrails(fileId2, null, null, null, null, null, null, null);
+        res = database.getAuditTrails(fileId2, null, null, null, null, null, null, null, null);
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getFileID(), fileId2);
         
         addStep("Perform extraction based on the component id.", "");
-        res = database.getAuditTrails(null, pillarId, null, null, null, null, null, null);
+        res = database.getAuditTrails(null, pillarId, null, null, null, null, null, null, null);
         Assert.assertEquals(res.size(), 2, res.toString());
-        res = database.getAuditTrails(null, "NO COMPONENT", null, null, null, null, null, null);
+        res = database.getAuditTrails(null, "NO COMPONENT", null, null, null, null, null, null, null);
         Assert.assertEquals(res.size(), 0, res.toString());
         
         addStep("Perform extraction based on the sequence number restriction", 
                 "Should be possible to have both lower and upper sequence number restrictions.");
-        res = database.getAuditTrails(null, null, 5L, null, null, null, null, null);
+        res = database.getAuditTrails(null, null, 5L, null, null, null, null, null, null);
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getFileID(), fileId2);
-        res = database.getAuditTrails(null, null, null, 5L, null, null, null, null);
+        res = database.getAuditTrails(null, null, null, 5L, null, null, null, null, null);
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getFileID(), fileId);
         
         addStep("Perform extraction based on actor id restriction.", 
                 "Should be possible to restrict on the id of the actor.");
-        res = database.getAuditTrails(null, null, null, null, actor1, null, null, null);
+        res = database.getAuditTrails(null, null, null, null, actor1, null, null, null, null);
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getActorOnFile(), actor1);
-        res = database.getAuditTrails(null, null, null, null, actor2, null, null, null);
+        res = database.getAuditTrails(null, null, null, null, actor2, null, null, null, null);
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getActorOnFile(), actor2);
         
         addStep("Perform extraction based on operation restriction.", 
                 "Should be possible to restrict on the FileAction operation.");
-        res = database.getAuditTrails(null, null, null, null, null, FileAction.INCONSISTENCY, null, null);
+        res = database.getAuditTrails(null, null, null, null, null, FileAction.INCONSISTENCY, null, null, null);
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getActionOnFile(), FileAction.INCONSISTENCY);
-        res = database.getAuditTrails(null, null, null, null, null, FileAction.FAILURE, null, null);
+        res = database.getAuditTrails(null, null, null, null, null, FileAction.FAILURE, null, null, null);
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getActionOnFile(), FileAction.FAILURE);
         
         addStep("Perform extraction based on date restriction.", 
                 "Should be possible to restrict on the date of the audit.");
-        res = database.getAuditTrails(null, null, null, null, null, null, restrictionDate, null);
+        res = database.getAuditTrails(null, null, null, null, null, null, restrictionDate, null, null);
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getFileID(), fileId2);
-        res = database.getAuditTrails(null, null, null, null, null, null, null, restrictionDate);
+        res = database.getAuditTrails(null, null, null, null, null, null, null, restrictionDate, null);
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getFileID(), fileId);
 

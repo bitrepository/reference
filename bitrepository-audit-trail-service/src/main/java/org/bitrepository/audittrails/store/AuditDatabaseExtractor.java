@@ -104,8 +104,10 @@ public class AuditDatabaseExtractor {
                 ps = DatabaseUtils.createPreparedStatement(conn, sql, extractArgumentsFromModel());
                 result = ps.executeQuery();
                 
-                while(result.next()) {
+                int i = 0;
+                while(result.next() && i < model.getMaxCount()) {
                     res.add(extractEvent(result));
+                    i++;
                 }
             } finally {
                 if(result != null) {

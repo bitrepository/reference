@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -64,7 +65,8 @@ public class RestAuditTrailService {
             @FormParam ("fileID") String fileID,
             @FormParam ("reportingComponent") String reportingComponent,
             @FormParam ("actor") String actor,
-            @FormParam ("action") String action) {
+            @FormParam ("action") String action,
+            @DefaultValue("1000") @FormParam("maxAlarms") Integer maxResults) {
         Date from = makeDateObject(fromDate);
         Date to = makeDateObject(toDate);
         String filteredAction;
@@ -75,7 +77,7 @@ public class RestAuditTrailService {
         }
         
         Collection<AuditTrailEvent> events = service.queryAuditTrailEvents(from, to, contentOrNull(fileID),
-                contentOrNull(reportingComponent), contentOrNull(actor), filteredAction);
+                contentOrNull(reportingComponent), contentOrNull(actor), filteredAction, maxResults);
         
         JSONArray array = new JSONArray();
         if(events != null) {

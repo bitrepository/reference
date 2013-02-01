@@ -48,7 +48,7 @@ public interface AuditTrailStore {
      * @return The requested audit trails from the store.
      */
     public Collection<AuditTrailEvent> getAuditTrails(String fileId, String contributorId, Long minSeqNumber, Long maxSeqNumber, 
-            String actorName, FileAction operation, Date startDate, Date endDate);
+            String actorName, FileAction operation, Date startDate, Date endDate, Integer maxResults);
     
     /**
      * ingest audit trails into the store. 
