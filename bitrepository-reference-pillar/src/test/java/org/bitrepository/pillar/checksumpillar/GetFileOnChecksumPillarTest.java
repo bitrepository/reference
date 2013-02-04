@@ -28,6 +28,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
@@ -93,6 +94,7 @@ public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
                         receivedFinalResponse.getFileAddress(), DEFAULT_FILE_ID, filePart, getPillarID(), pillarDestinationId,
                         receivedFinalResponse.getResponseInfo(), clientDestinationId));
         Assert.assertEquals(receivedFinalResponse.getResponseInfo().getResponseCode(), 
-                ResponseCode.REQUEST_NOT_SUPPORTED);      
+                ResponseCode.REQUEST_NOT_SUPPORTED);
+        alarmReceiver.waitForMessage(AlarmMessage.class);
     }
 }
