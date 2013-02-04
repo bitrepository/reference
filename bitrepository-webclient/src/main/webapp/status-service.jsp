@@ -75,7 +75,7 @@
       html += "<td>" + id + "</td>";
       html += "<td>" + status + " </td>";
       html += "<td>" + time + "</td>";
-      html += "<td> <button class=\"btn btn-mini\" id=\"" + id + "-msg-btn\"> Show details <i class="icon-chevron-right"></i></button></td>";
+      html += "<td> <button class=\"btn btn-mini\" id=\"" + id + "-msg-btn\"> Show details <i class=\"icon-chevron-right\"></i></button></td>";
       html += "<tr>";    
       return html;
     }
