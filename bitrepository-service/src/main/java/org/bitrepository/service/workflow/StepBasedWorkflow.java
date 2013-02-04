@@ -36,8 +36,6 @@ public abstract class StepBasedWorkflow implements Workflow {
     
     /** The default state when the workflow is not running.*/
     public static final String NOT_RUNNING = "The workflow is currently not running.";
-    /** The prefix for telling which step is currently running. Should be postfixed with the step name.*/
-    public static final String PREFIX_FOR_RUNNING_STEP = "Performing step: ";
     /** The current step running.*/
     private WorkflowStep currentStep = null;
     private long currentRunStart = -1;
@@ -77,7 +75,7 @@ public abstract class StepBasedWorkflow implements Workflow {
         if(currentStep == null) {
             return NOT_RUNNING;
         } else {
-            return PREFIX_FOR_RUNNING_STEP + currentStep.getName() +
+            return currentStep.getName() +
                     "\nRunning for " + TimeUtils.millisecondsToHuman(currentStep.getRunningTime()) + "/" +
                             TimeUtils.millisecondsToHuman(getRunningTime()) + ")";
         }
