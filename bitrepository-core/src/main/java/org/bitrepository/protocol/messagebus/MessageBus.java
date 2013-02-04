@@ -54,4 +54,9 @@ public interface MessageBus extends MessageSender {
      * Closes the messagebus connection so that everything can be shutdown nicely.  
      */
     void close() throws JMSException;
+
+    /**
+     * @return The componentID used by the messagebus to filter messages.
+     */
+    String getComponentID();
 }

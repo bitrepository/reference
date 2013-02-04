@@ -61,4 +61,9 @@ public class MessageBusWrapper implements MessageBus {
     public void close() throws JMSException {
         messageBus.close();
     }
+
+    @Override
+    public String getComponentID() {
+        return messageBus.getComponentID();
+    }
 }

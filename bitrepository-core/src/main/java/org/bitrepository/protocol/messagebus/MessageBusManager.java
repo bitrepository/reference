@@ -50,7 +50,10 @@ public final class MessageBusManager {
     public synchronized static MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
         String collectionID = settings.getCollectionID();
         if (!messageBusMap.containsKey(collectionID)) {
-            MessageBus messageBus = createMessageBus(settings.getMessageBusConfiguration(), securityManager);
+            MessageBus messageBus = createMessageBus(
+                    settings.getMessageBusConfiguration(),
+                    securityManager,
+                    settings.getComponentID());
             messageBusMap.put(collectionID, messageBus);
         }
         return messageBusMap.get(collectionID);
@@ -65,8 +68,11 @@ public final class MessageBusManager {
         return messageBusMap.get(collectionID);
     }
 
-    private static MessageBus createMessageBus(MessageBusConfiguration settings, SecurityManager securityManager) {
-        ActiveMQMessageBus messageBus = new ActiveMQMessageBus(settings, securityManager);
+    private static MessageBus createMessageBus(
+            MessageBusConfiguration settings,
+            SecurityManager securityManager,
+            String componentID) {
+        ActiveMQMessageBus messageBus = new ActiveMQMessageBus(settings, securityManager, componentID);
         return messageBus;
     }
 

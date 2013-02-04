@@ -187,7 +187,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         private final String id;
 
         public MessageSenderThread(MessageBusConfiguration conf, SecurityManager securityManager, int numberOfMessages, String id) {
-            this.bus = new ActiveMQMessageBus(conf, securityManager);
+            this.bus = new ActiveMQMessageBus(conf, securityManager, null);
             this.numberOfMessages = numberOfMessages;
             this.id = id;
         }
@@ -204,8 +204,8 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
-            }						
-        }		
+            }
+        }
     }
 
     /**
@@ -228,7 +228,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
          * @param conf The configurations for declaring the messagebus.
          */
         public CountMessagesListener(MessageBusConfiguration conf, SecurityManager securityManager) {
-            this.bus = new ActiveMQMessageBus(conf, securityManager);
+            this.bus = new ActiveMQMessageBus(conf, securityManager, null);
             this.count = 0;
 
             bus.addListener(QUEUE, this);

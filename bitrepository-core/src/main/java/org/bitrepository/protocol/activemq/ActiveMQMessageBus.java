@@ -80,6 +80,7 @@ public class ActiveMQMessageBus implements MessageBus {
     public static final String COLLECTION_ID_KEY = "org.bitrepository.messages.collectionid";
     /** The key for storing the message type in a string property in the message headers. */
     public static final String MESSAGE_SIGNATURE_KEY = "org.bitrepository.messages.signature";
+    public static final String MESSAGE_RECIPIENT_KEY = "org.bitrepository.messages.recipient";
     /** Default transacted. */
     public static final boolean TRANSACTED = false;
 
@@ -118,6 +119,8 @@ public class ActiveMQMessageBus implements MessageBus {
     private final Connection connection;
     private final SecurityManager securityManager;
 
+    private final String componentID;
+
     /** The queue with the runnable threads for handling the received messages. */
     private final BlockingQueue<Runnable> threadQueue;
     /** The executor for threading of the message handling.*/
@@ -129,11 +132,19 @@ public class ActiveMQMessageBus implements MessageBus {
      * <code>ProtocolComponentFactory</code> eyes only.
      *
      * @param messageBusConfiguration The properties for the connection.
+     * @param securityManager The security manager to use for message authentication.
+     * @param componentID The optional componentID, which might be used to ignore message sent to other component. If
+     * this is different from the the message bus will be able to avoid using resources for parsing irrelevant
+     * messages.
      */
-    public ActiveMQMessageBus(MessageBusConfiguration messageBusConfiguration, SecurityManager securityManager) {
+    public ActiveMQMessageBus(
+            MessageBusConfiguration messageBusConfiguration,
+            SecurityManager securityManager,
+            String componentID) {
         log.info("Initializing ActiveMQMessageBus:'" + messageBusConfiguration + "'.");
         this.configuration = messageBusConfiguration;
         this.securityManager = securityManager;
+        this.componentID = componentID;
         jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getURL());
         registerCustomMessageLoggers();
@@ -230,7 +241,7 @@ public class ActiveMQMessageBus implements MessageBus {
 
     @Override
     public void sendMessage(Message content) {
-        sendMessage(content.getTo(), content.getReplyTo(), content.getCollectionID(),
+        sendMessage(content.getTo(), content.getReplyTo(), content.getRecipient(), content.getCollectionID(),
                 content.getCorrelationID(), content);
         MessageLoggerProvider.getInstance().logMessageSent(content);
     }
@@ -246,7 +257,11 @@ public class ActiveMQMessageBus implements MessageBus {
      * @param correlationID The correlation ID of the message.
      * @param content       JAXB-serializable object to send.
      */
-    private synchronized void sendMessage(String destinationID, String replyTo, String collectionID, String correlationID,
+    private synchronized void sendMessage(String destinationID,
+                                          String replyTo,
+                                          String recipient,
+                                          String collectionID,
+                                          String correlationID,
                                           Message content) {
         String xmlContent = null;
         try {
@@ -262,6 +277,9 @@ public class ActiveMQMessageBus implements MessageBus {
             String messageSignature = securityManager.signMessage(stringData);
             msg.setStringProperty(MESSAGE_SIGNATURE_KEY, messageSignature);
             msg.setStringProperty(MESSAGE_TYPE_KEY, content.getClass().getSimpleName());
+            if (recipient != null) {
+                msg.setStringProperty(MESSAGE_RECIPIENT_KEY, recipient);
+            }
             msg.setStringProperty(COLLECTION_ID_KEY, collectionID);
             msg.setJMSCorrelationID(correlationID);
             msg.setJMSReplyTo(getDestination(replyTo, producerSession));
@@ -406,16 +424,19 @@ public class ActiveMQMessageBus implements MessageBus {
         public void onMessage(final javax.jms.Message jmsMessage) {
             String type = null;
             String text = null;
-            String signature = null;
-
-            Message content;
             try {
+                String recipientID = jmsMessage.getStringProperty(MESSAGE_RECIPIENT_KEY);
                 type = jmsMessage.getStringProperty(MESSAGE_TYPE_KEY);
-                signature = jmsMessage.getStringProperty(MESSAGE_SIGNATURE_KEY);
+                if (recipientID != null && !recipientID.equals(componentID)) {
+                    log.trace("Ignoring " + type + " message to other component " + recipientID);
+                    return;
+                }
+                String signature = jmsMessage.getStringProperty(MESSAGE_SIGNATURE_KEY);
                 text = ((TextMessage) jmsMessage).getText();
                 log.trace("Received xml message: " + text);
                 jaxbHelper.validate(new ByteArrayInputStream(text.getBytes()));
-                content = (Message) jaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages." + type),
+                Message content = (Message) jaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages."
+                        + type),
                         new ByteArrayInputStream(text.getBytes()));
                 log.trace("Checking signature " + signature);
                 securityManager.authenticateMessage(text, signature);
@@ -480,5 +501,10 @@ public class ActiveMQMessageBus implements MessageBus {
         loggerProvider.registerLogger(OperationType.GET_AUDIT_TRAILS, new GetAuditTrailsMessageLogger());
         loggerProvider.registerLogger(OperationType.GET_STATUS, new GetStatusMessageLogger());
         loggerProvider.registerLogger(Arrays.asList("AlarmMessage"), new AlarmMessageLogger());
+    }
+
+    @Override
+    public String getComponentID() {
+        return componentID;
     }
 }
