@@ -10,14 +10,16 @@
   </head>
   <body>
   
+  <div id="pageMenu"></div>
   <div class="container">
     <div class="row">
+      <div class="span9"><h2>Status service</h2></div>
       <div class="span9">   
         <div class="accordion" id="configuration-accordion">  
           <div class="accordion-group">
             <div class="accordion-heading">
               <a class="accordion-toggle" data-toggle="collapse" data-parent="#configuration-accordion" href="#collapseOne"> 
-                Monitoring service configuration 
+                Show monitoring service configuration <i class="icon-chevron-down"></i>
               </a>
             </div>
             <div id="collapseOne" class="accordion-body collapse">
@@ -54,8 +56,9 @@
       </div>
     </div>
   </div>
-  <script src="jquery/jquery-1.9.0.min.js"></script>
-  <script src="bootstrap/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="jquery/jquery-1.9.0.min.js"></script>
+  <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="menu.js"></script>
 
   <script>
     function makeComponentRow(id, status, time) {
@@ -72,7 +75,7 @@
       html += "<td>" + id + "</td>";
       html += "<td>" + status + " </td>";
       html += "<td>" + time + "</td>";
-      html += "<td> <button class=\"btn btn-mini\" id=\"" + id + "-msg-btn\"> Show details </button></td>";
+      html += "<td> <button class=\"btn btn-mini\" id=\"" + id + "-msg-btn\"> Show details <i class="icon-chevron-right"></i></button></td>";
       html += "<tr>";    
       return html;
     }
@@ -108,6 +111,7 @@
     }
         
     $(document).ready(function(){
+      makeMenu("status-service.html", "#pageMenu");
       populateStatusServiceConfiguration();
       getStatuses();
       var update_component_status = setInterval(function() {getStatuses(); }, 2500);
