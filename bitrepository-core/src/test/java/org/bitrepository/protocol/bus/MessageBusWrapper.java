@@ -24,6 +24,7 @@
  */
 package org.bitrepository.protocol.bus;
 
+import java.util.Set;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
@@ -63,7 +64,7 @@ public class MessageBusWrapper implements MessageBus {
     }
 
     @Override
-    public String getComponentID() {
-        return messageBus.getComponentID();
+    public Set<String> getComponentFilter() {
+        return messageBus.getComponentFilter();
     }
 }

@@ -27,7 +27,9 @@ package org.bitrepository.protocol.activemq;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -119,7 +121,7 @@ public class ActiveMQMessageBus implements MessageBus {
     private final Connection connection;
     private final SecurityManager securityManager;
 
-    private final String componentID;
+    private final Set<String> componentFilter = new HashSet<String>();
 
     /** The queue with the runnable threads for handling the received messages. */
     private final BlockingQueue<Runnable> threadQueue;
@@ -139,12 +141,10 @@ public class ActiveMQMessageBus implements MessageBus {
      */
     public ActiveMQMessageBus(
             MessageBusConfiguration messageBusConfiguration,
-            SecurityManager securityManager,
-            String componentID) {
+            SecurityManager securityManager) {
         log.info("Initializing ActiveMQMessageBus:'" + messageBusConfiguration + "'.");
         this.configuration = messageBusConfiguration;
         this.securityManager = securityManager;
-        this.componentID = componentID;
         jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getURL());
         registerCustomMessageLoggers();
@@ -427,9 +427,11 @@ public class ActiveMQMessageBus implements MessageBus {
             try {
                 String recipientID = jmsMessage.getStringProperty(MESSAGE_RECIPIENT_KEY);
                 type = jmsMessage.getStringProperty(MESSAGE_TYPE_KEY);
-                if (recipientID != null && !recipientID.equals(componentID)) {
-                    log.trace("Ignoring " + type + " message to other component " + recipientID);
-                    return;
+                if(!componentFilter.isEmpty()) {
+                    if (recipientID != null && !componentFilter.contains(recipientID)) {
+                        log.trace("Ignoring " + type + " message to other component " + recipientID);
+                        return;
+                    }
                 }
                 String signature = jmsMessage.getStringProperty(MESSAGE_SIGNATURE_KEY);
                 text = ((TextMessage) jmsMessage).getText();
@@ -504,7 +506,7 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     @Override
-    public String getComponentID() {
-        return componentID;
+    public Set<String> getComponentFilter() {
+        return componentFilter;
     }
 }
