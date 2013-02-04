@@ -41,7 +41,6 @@
     </div>
     <div class="row">
       <div class="span9"> 
-        <h>Component status:</h>
         <table class="table table-bordered">
           <thead>
             <tr>
