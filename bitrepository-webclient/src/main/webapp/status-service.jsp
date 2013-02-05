@@ -106,11 +106,17 @@
       });
     }
         
+    function getMsg(id) {
+      return function() {
+        return components[id].msg;
+      }
+    } 
+
     function attachButtonAction(id, message) {
       var element = "#" + id + "-msg-btn";
       $(element).popover({placement : "right", 
     	  title: id + " status message", 
-          content: message});
+          content: getMsg(id)});
     }
         
     function getStatuses() {
@@ -125,14 +131,6 @@
               updateComponentRow(j[i].componentID, j[i].status, j[i].timeStamp));
               components[j[i].componentID].msg = j[i].info;
             }
-        }
-        var htmlTableBody = "";
-        for (var i = 0; i < j.length; i++) {
-          htmlTableBody += makeComponentRow(j[i].componentID, j[i].status, j[i].timeStamp);                    
-        }
-        $("#component-status-table-body").html(htmlTableBody);
-        for(var i = 0; i < j.length; i++) {
-          attachButtonAction(j[i].componentID, j[i].info);
         }
       });
     }
