@@ -30,7 +30,6 @@ TEST_FILE="testprops/pillar-performance-test.xml"
 JAVA_OPTS="-classpath ..:testprops/::lib/* org.testng.TestNG"
 #DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=11111"
 
-multiplePut.log
-$JAVA $DEBUG_OPTS $JAVA_OPTS $TEST_FILE < /dev/null > performancetest.log 2>&1 &
+nohup $JAVA $DEBUG_OPTS $JAVA_OPTS $TEST_FILE < /dev/null > performancetest.log 2>&1 &
 
 
