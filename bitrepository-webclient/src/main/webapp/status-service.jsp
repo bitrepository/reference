@@ -128,7 +128,7 @@
               components[j[i].componentID] = {msg : j[i].info};
               attachButtonAction(j[i].componentID, j[i].info);
             } else {
-              updateComponentRow(j[i].componentID, j[i].status, j[i].timeStamp));
+              updateComponentRow(j[i].componentID, j[i].status, j[i].timeStamp);
               components[j[i].componentID].msg = j[i].info;
             }
         }
