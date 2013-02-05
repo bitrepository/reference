@@ -21,6 +21,9 @@
  */
 package org.bitrepository.common.utils;
 
+import java.text.DateFormat;
+import java.util.Date;
+
 /**
  * Util class to handle the presentation of time in a human readable form 
  */
@@ -43,6 +46,8 @@ public final class TimeUtils {
     public static final long MS_PER_DAY = MS_PER_HOUR * H_PER_D;
     /** Milliseconds per normal year.*/
     public static final long MS_PER_YEAR = DAYS_PER_YEAR * MS_PER_DAY;
+
+    public final static DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
     
     /** Private constructor, util class.*/
     private TimeUtils() {}
@@ -127,5 +132,9 @@ public final class TimeUtils {
             }
         }
         return sb.toString();
+    }
+
+    public static String shortDate(Date date) {
+        return formatter.format(date);
     }
 }
