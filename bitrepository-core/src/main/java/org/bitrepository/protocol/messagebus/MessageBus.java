@@ -24,6 +24,7 @@
  */
 package org.bitrepository.protocol.messagebus;
 
+import java.util.Set;
 import javax.jms.JMSException;
 
 
@@ -48,15 +49,21 @@ public interface MessageBus extends MessageSender {
      * @param listener      The listener to remove from the destination.
      */
     void removeListener(String destinationId, MessageListener listener);
-    
-    
+
     /**
      * Closes the messagebus connection so that everything can be shutdown nicely.  
      */
     void close() throws JMSException;
 
     /**
-     * @return The componentID used by the messagebus to filter messages.
+     * @return Defines the list of componentIDs with receiver component ID relevant for this messagebus instance. If
+     * the list contains any elements, the receiverID for incoming messages are read before being parsed. This enables
+     * the message bus to discard messages prior to parsing, if the message is meant for other components.
+     * <p>
+     * Messages will only be discarded if the componentFilter contains at least one componentID and the received
+     * message has a defined receiver.
+     * </p>
+     *
      */
-    String getComponentID();
+    public Set<String> getComponentFilter();
 }

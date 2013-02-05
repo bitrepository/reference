@@ -157,6 +157,9 @@ public abstract class GeneralConversationState implements ConversationState {
         msg.setReplyTo(getContext().getSettings().getReceiverDestinationID());
         msg.setAuditTrailInformation(getContext().getAuditTrailInformation());
         msg.setFrom(getContext().getClientID());
+        if (getContext().getContributors() != null && getContext().getContributors().size() == 1) {
+            msg.setRecipient(getContext().getContributors().iterator().next());
+        }
     }
 
     /** Returns a list of components where a identify response hasn't been received. */

@@ -154,9 +154,6 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 chosenPillar, testEventHandler, null);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
-        Assert.assertEquals(receivedIdentifyRequestMessage,
-                testMessageFactory.createIdentifyPillarsForGetFileRequest(receivedIdentifyRequestMessage,
-                        settingsForCUT.getCollectionDestination(), settingsForTestClient.getComponentID()));
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("The pillar sends a response to the identify message.",
@@ -167,9 +164,6 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 receivedIdentifyRequestMessage, chosenPillar, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
         GetFileRequest receivedGetFileRequest = pillar1Receiver.waitForMessage(GetFileRequest.class);
-        Assert.assertEquals(receivedGetFileRequest,
-                testMessageFactory.createGetFileRequest(receivedGetFileRequest, filePart, chosenPillar,
-                        pillar1DestinationId, settingsForTestClient.getComponentID()));
 
         for(int i = 0; i < settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
@@ -357,7 +351,6 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         IdentifyPillarsForGetFileRequest expectedMessage =
                 testMessageFactory.createIdentifyPillarsForGetFileRequest(receivedIdentifyRequestMessage,
                         settingsForCUT.getCollectionDestination(), settingsForTestClient.getComponentID());
-        Assert.assertEquals(receivedIdentifyRequestMessage, expectedMessage);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("The pillar sends a response to the identify message.",

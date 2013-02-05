@@ -119,7 +119,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
             addStep("Start the broker and initialise the listeners.", 
             "Connections should be established.");
             broker.start();
-            bus = new ActiveMQMessageBus(conf, securityManager, null);
+            bus = new ActiveMQMessageBus(conf, securityManager);
 
             testListeners(conf, securityManager);
         } finally {
@@ -151,7 +151,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
 
         addStep("Start the broker and initialise the listeners.", 
         "Connections should be established.");
-        bus = new ActiveMQMessageBus(conf, securityManager, null);
+        bus = new ActiveMQMessageBus(conf, securityManager);
 
         testListeners(conf, securityManager);
     }
@@ -284,7 +284,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
          * @param conf The configuration for defining the message bus.
          */
         public NotificationMessageListener(MessageBusConfiguration conf, SecurityManager securityManager) {
-            this.bus = new ActiveMQMessageBus(conf, securityManager, null);
+            this.bus = new ActiveMQMessageBus(conf, securityManager);
             this.count = 0;
 
             bus.addListener(QUEUE, this);

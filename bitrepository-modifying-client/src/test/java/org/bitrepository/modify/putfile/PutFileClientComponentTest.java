@@ -86,38 +86,27 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
-            Assert.assertEquals(receivedIdentifyRequestMessage,
-                    messageFactory.createIdentifyPillarsForPutFileRequest(
-                            receivedIdentifyRequestMessage.getCorrelationID(),
-                            receivedIdentifyRequestMessage.getReplyTo(),
-                            receivedIdentifyRequestMessage.getTo(),
-                            DEFAULT_FILE_ID,
-                            0,
-                            receivedIdentifyRequestMessage.getAuditTrailInformation(),
-                            settingsForTestClient.getComponentID()
-                    ));
+        Assert.assertEquals(receivedIdentifyRequestMessage.getCollectionID(), settingsForCUT.getCollectionID());
+        Assert.assertNotNull(receivedIdentifyRequestMessage.getCorrelationID());
+        Assert.assertEquals(receivedIdentifyRequestMessage.getReplyTo(), settingsForCUT.getReceiverDestinationID());
+        Assert.assertEquals(receivedIdentifyRequestMessage.getFileID(), DEFAULT_FILE_ID);
+        Assert.assertEquals(receivedIdentifyRequestMessage.getFrom(), settingsForTestClient.getComponentID());
+        Assert.assertEquals(receivedIdentifyRequestMessage.getTo(), settingsForTestClient.getCollectionDestination());
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Make response for the pillar.", "The client should then send the actual PutFileRequest.");
 
-        PutFileRequest receivedPutFileRequest = null;
-            IdentifyPillarsForPutFileResponse identifyResponse = messageFactory
-                    .createIdentifyPillarsForPutFileResponse(
+        IdentifyPillarsForPutFileResponse identifyResponse = messageFactory.createIdentifyPillarsForPutFileResponse(
                             receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
-            messageBus.sendMessage(identifyResponse);
-            receivedPutFileRequest = pillar1Receiver.waitForMessage(PutFileRequest.class, 10, TimeUnit.SECONDS);
-            Assert.assertEquals(receivedPutFileRequest,
-                    messageFactory.createPutFileRequest(
-                            PILLAR1_ID, pillar1DestinationId,
-                            receivedPutFileRequest.getReplyTo(),
-                            receivedPutFileRequest.getCorrelationID(),
-                            receivedPutFileRequest.getFileAddress(),
-                            receivedPutFileRequest.getFileSize(),
-                            DEFAULT_FILE_ID,
-                            receivedPutFileRequest.getAuditTrailInformation(),
-                            settingsForTestClient.getComponentID()
-                    ));
-
+        messageBus.sendMessage(identifyResponse);
+        PutFileRequest receivedPutFileRequest = pillar1Receiver.waitForMessage(PutFileRequest.class, 10,
+                TimeUnit.SECONDS);
+        Assert.assertEquals(receivedPutFileRequest.getCollectionID(), settingsForCUT.getCollectionID());
+        Assert.assertEquals(receivedPutFileRequest.getCorrelationID(), receivedIdentifyRequestMessage.getCorrelationID());
+        Assert.assertEquals(receivedPutFileRequest.getReplyTo(), settingsForCUT.getReceiverDestinationID());
+        Assert.assertEquals(receivedPutFileRequest.getFileID(), DEFAULT_FILE_ID);
+        Assert.assertEquals(receivedPutFileRequest.getFrom(), settingsForTestClient.getComponentID());
+        Assert.assertEquals(receivedPutFileRequest.getTo(), pillar1DestinationId);
         addStep("Validate the steps of the PutClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
         for(int i = 0; i < settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
