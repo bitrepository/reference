@@ -22,6 +22,7 @@
 package org.bitrepository.common.utils;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -47,7 +48,7 @@ public final class TimeUtils {
     /** Milliseconds per normal year.*/
     public static final long MS_PER_YEAR = DAYS_PER_YEAR * MS_PER_DAY;
 
-    public final static DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+    public final static DateFormat formatter = new SimpleDateFormat("dd.MM.yy hh:mm");
     
     /** Private constructor, util class.*/
     private TimeUtils() {}
