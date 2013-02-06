@@ -68,7 +68,7 @@
         for (var i = 0; i < j.length; i++) {
           $("#workflowSelector").append('<option value="' + j[i].workflowID + '">' + j[i].workflowID + '</option>');          
         }
-      })
+      });
     }
 
     function getWorkflowStatuses() {
@@ -83,7 +83,7 @@
                        "<td>" + j[i].currentState + "</td></tr>";
         }
         $("#workflow-status-table-body").html(htmlTableBody);
-      })
+      });
     }
 
     function makePillarRow(id, totalFileCount, missingFilesCount, checksumErrorCount) {
@@ -115,8 +115,8 @@
           } else {
             updatePillarRow(j[i].pillarID, j[i].totalFileCount, j[i].missingFilesCount, j[i].checksumErrorCount);
           }
-        })
-      }
+        }
+      });
     }
 
 
