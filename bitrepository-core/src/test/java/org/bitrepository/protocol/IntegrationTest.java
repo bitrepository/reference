@@ -237,8 +237,10 @@ public abstract class IntegrationTest extends ExtendedTestCase {
             broker = new LocalActiveMQBroker(settingsForCUT.getMessageBusConfiguration());
             broker.start();
         }
+
         messageBus = new MessageBusWrapper(
                 ProtocolComponentFactory.getInstance().getMessageBus(settingsForCUT, securityManager), testEventManager);
+        messageBus.getComponentFilter().clear();
     }
 
     /**

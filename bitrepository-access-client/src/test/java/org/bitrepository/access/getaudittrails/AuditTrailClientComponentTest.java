@@ -145,9 +145,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
 
     @Test(groups = {"regressiontest"})
     public void getSomeAuditTrailsTest() throws InterruptedException {
-        addDescription("Tests the client mappes a AuditTrail query correctly to a GetAuditTrail request.");
+        addDescription("Tests the client maps a AuditTrail query correctly to a GetAuditTrail request.");
 
-        addStep("Create a AuditTrailClient.", "");
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         AuditTrailClient client = createAuditTrailClient();
 

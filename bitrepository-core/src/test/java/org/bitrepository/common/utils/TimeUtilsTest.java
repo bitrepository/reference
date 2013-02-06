@@ -21,6 +21,7 @@
  */
 package org.bitrepository.common.utils;
 
+import java.util.Date;
 import org.bitrepository.common.TestValidationUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -62,11 +63,18 @@ public class TimeUtilsTest extends ExtendedTestCase {
         Assert.assertTrue(millisInDay.startsWith(expectedDays));
         
         addStep("Test the human readable output.", "");
-        String expectedMillis = (millis % 1000L) + " ms";
         String human = TimeUtils.millisecondsToHuman(millis);
         Assert.assertTrue(human.contains(expectedSec), human);
         Assert.assertTrue(human.contains(expectedMin), human);
         Assert.assertTrue(human.contains(expectedHours), human);
         Assert.assertTrue(human.contains(expectedDays), human);
+    }
+
+
+    @Test(groups = {"regressiontest"})
+    public void shortDateTest() {
+        Date date = new Date(1360054029256L);
+        String shortDateString = TimeUtils.shortDate(date);
+        Assert.assertEquals(shortDateString, "05.02.13 09:47");
     }
 }

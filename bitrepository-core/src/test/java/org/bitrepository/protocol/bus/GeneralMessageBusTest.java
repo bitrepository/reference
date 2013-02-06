@@ -150,6 +150,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
                 "eg. this messages should be handled by all components.",
                 "Verify that the message bus accepts this message.");
         final BlockingQueue<Message> messageList = new LinkedBlockingDeque<Message>();
+        messageBus.getComponentFilter().add(settingsForTestClient.getComponentID());
         RawMessagebus rawMessagebus = new RawMessagebus(
                 settingsForTestClient.getMessageBusConfiguration(),
                 securityManager);
@@ -164,7 +165,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
 
         addStep("Send an message with the 'Receiver' header property set to this component",
                 "Verify that the message bus accepts this message.");
-        msg.setStringProperty(ActiveMQMessageBus.MESSAGE_RECIPIENT_KEY, messageBus.getComponentID());
+        msg.setStringProperty(ActiveMQMessageBus.MESSAGE_RECIPIENT_KEY, settingsForTestClient.getComponentID());
         rawMessagebus.sendMessage(settingsForTestClient.getAlarmDestination(), msg);
         alarmReceiver.waitForMessage(AlarmMessage.class);
 

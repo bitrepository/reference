@@ -75,7 +75,7 @@ public class RestMonitoringService {
             obj.put("componentID", componentID);
             obj.put("status", status.getStatus());
             obj.put("info", status.getInfo());
-            obj.put("timeStamp", status.getLastReply());
+            obj.put("timeStamp", TimeUtils.shortDate(status.getLastReply().toGregorianCalendar().getTime()));
             return obj;
         } catch (JSONException e) {
             return (JSONObject) JSONObject.NULL;

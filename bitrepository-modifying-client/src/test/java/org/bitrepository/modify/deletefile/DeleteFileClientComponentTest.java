@@ -88,19 +88,18 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request a file to be deleted on all pillars (which means only the default pillar).",
                 "A IdentifyPillarsForDeleteFileRequest should be sent to the pillar.");
-        deleteClient.deleteFileAtAllPillars(DEFAULT_FILE_ID, checksumData, checksumRequest, testEventHandler, null);
+        deleteClient.deleteFile(DEFAULT_FILE_ID, PILLAR1_ID, checksumData, checksumRequest, testEventHandler, null);
 
         IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = null;
         receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                 IdentifyPillarsForDeleteFileRequest.class);
-        Assert.assertEquals(receivedIdentifyRequestMessage,
-                messageFactory.createIdentifyPillarsForDeleteFileRequest(
-                        receivedIdentifyRequestMessage.getCorrelationID(),
-                        receivedIdentifyRequestMessage.getReplyTo(),
-                        receivedIdentifyRequestMessage.getTo(),
-                        DEFAULT_FILE_ID,
-                        settingsForTestClient.getComponentID()
-                ));
+        Assert.assertEquals(receivedIdentifyRequestMessage.getCollectionID(), settingsForCUT.getCollectionID());
+        Assert.assertNotNull(receivedIdentifyRequestMessage.getCorrelationID());
+        Assert.assertEquals(receivedIdentifyRequestMessage.getReplyTo(), settingsForCUT.getReceiverDestinationID());
+        Assert.assertEquals(receivedIdentifyRequestMessage.getFileID(), DEFAULT_FILE_ID);
+        Assert.assertEquals(receivedIdentifyRequestMessage.getFrom(), settingsForTestClient.getComponentID());
+        Assert.assertEquals(receivedIdentifyRequestMessage.getTo(), settingsForTestClient.getCollectionDestination());
+
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Make response for the pillar.", "The client receive the response, identify the pillar and send the request.");
@@ -111,16 +110,12 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                 PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
         messageBus.sendMessage(identifyResponse);
         receivedDeleteFileRequest = pillar1Receiver.waitForMessage(DeleteFileRequest.class);
-        Assert.assertEquals(receivedDeleteFileRequest,
-                messageFactory.createDeleteFileRequest(
-                        PILLAR1_ID, pillar1DestinationId,
-                        receivedDeleteFileRequest.getReplyTo(),
-                        receivedDeleteFileRequest.getCorrelationID(),
-                        DEFAULT_FILE_ID,
-                        receivedDeleteFileRequest.getChecksumDataForExistingFile(),
-                        receivedDeleteFileRequest.getChecksumRequestForExistingFile(),
-                        settingsForTestClient.getComponentID()
-                ));
+        Assert.assertEquals(receivedDeleteFileRequest.getCollectionID(), settingsForCUT.getCollectionID());
+        Assert.assertEquals(receivedDeleteFileRequest.getCorrelationID(), receivedIdentifyRequestMessage.getCorrelationID());
+        Assert.assertEquals(receivedDeleteFileRequest.getReplyTo(), settingsForCUT.getReceiverDestinationID());
+        Assert.assertEquals(receivedDeleteFileRequest.getFileID(), DEFAULT_FILE_ID);
+        Assert.assertEquals(receivedDeleteFileRequest.getFrom(), settingsForTestClient.getComponentID());
+        Assert.assertEquals(receivedDeleteFileRequest.getTo(), pillar1DestinationId);
 
         addStep("Validate the steps of the DeleteClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
@@ -215,14 +210,6 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForDeleteFileRequest.class);
-        Assert.assertEquals(receivedIdentifyRequestMessage,
-                messageFactory.createIdentifyPillarsForDeleteFileRequest(
-                        receivedIdentifyRequestMessage.getCorrelationID(),
-                        receivedIdentifyRequestMessage.getReplyTo(),
-                        receivedIdentifyRequestMessage.getTo(),
-                        DEFAULT_FILE_ID,
-                        settingsForTestClient.getComponentID()
-                ));
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Do not respond. Just await the timeout.",
@@ -260,14 +247,6 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForDeleteFileRequest.class);
-        Assert.assertEquals(receivedIdentifyRequestMessage,
-                messageFactory.createIdentifyPillarsForDeleteFileRequest(
-                        receivedIdentifyRequestMessage.getCorrelationID(),
-                        receivedIdentifyRequestMessage.getReplyTo(),
-                        receivedIdentifyRequestMessage.getTo(),
-                        DEFAULT_FILE_ID,
-                        settingsForTestClient.getComponentID()
-                ));
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Make response for the pillar.", "The client receive the response, identify the pillar and send the request.");
@@ -278,16 +257,6 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                 PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
         messageBus.sendMessage(identifyResponse);
         receivedDeleteFileRequest = pillar1Receiver.waitForMessage(DeleteFileRequest.class);
-        Assert.assertEquals(receivedDeleteFileRequest,
-                messageFactory.createDeleteFileRequest(
-                        PILLAR1_ID, pillar1DestinationId,
-                        receivedDeleteFileRequest.getReplyTo(),
-                        receivedDeleteFileRequest.getCorrelationID(),
-                        DEFAULT_FILE_ID,
-                        receivedDeleteFileRequest.getChecksumDataForExistingFile(),
-                        receivedDeleteFileRequest.getChecksumRequestForExistingFile(),
-                        settingsForTestClient.getComponentID()
-                ));
 
         addStep("Validate the steps of the DeleteClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
@@ -329,14 +298,6 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
 
         IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForDeleteFileRequest.class);
-        Assert.assertEquals(receivedIdentifyRequestMessage,
-                messageFactory.createIdentifyPillarsForDeleteFileRequest(
-                        receivedIdentifyRequestMessage.getCorrelationID(),
-                        receivedIdentifyRequestMessage.getReplyTo(),
-                        receivedIdentifyRequestMessage.getTo(),
-                        DEFAULT_FILE_ID,
-                        settingsForTestClient.getComponentID()
-                ));
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Make response for the pillar.", "The client receive the response, identify the pillar and send the request.");
@@ -347,17 +308,6 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                 PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
         messageBus.sendMessage(identifyResponse);
         receivedDeleteFileRequest = pillar1Receiver.waitForMessage(DeleteFileRequest.class);
-        Assert.assertEquals(receivedDeleteFileRequest,
-                messageFactory.createDeleteFileRequest(
-                        PILLAR1_ID, pillar1DestinationId,
-                        receivedDeleteFileRequest.getReplyTo(),
-                        receivedDeleteFileRequest.getCorrelationID(),
-                        DEFAULT_FILE_ID,
-                        receivedDeleteFileRequest.getChecksumDataForExistingFile(),
-                        receivedDeleteFileRequest.getChecksumRequestForExistingFile(),
-                        settingsForTestClient.getComponentID()
-                ));
-
         addStep("Validate the steps of the DeleteClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
         for(int i = 0; i < settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
