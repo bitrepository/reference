@@ -119,12 +119,26 @@
       });
     }
 
+    function startWorkflow() {
+      var ID = $("#workflowSelector option:selected").val();
+      $('#formStatus').load(
+                '<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/startWorkflow/',
+                {workflowID: ID}).show().fadeOut({duration: 5000});
+
+    }
+
 
     $(document).ready(function(){
+      // Load page content
       makeMenu("integrity-service.jsp", "#pageMenu");
       loadWorkflows();
       getWorkflowStatuses();
       getIntegrityStatus();
+    
+      // Setup event / click handling
+      $("#workflowStarter").click(function(event) { event.preventDefault(); startWorkflow(); });
+      
+      // Add page auto update
       var update_page = setInterval(function() {
         getWorkflowStatuses(); 
         getIntegrityStatus();
