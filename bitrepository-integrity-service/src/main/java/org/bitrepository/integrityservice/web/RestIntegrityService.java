@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -55,7 +56,10 @@ public class RestIntegrityService {
     @GET
     @Path("/getChecksumErrorFileIDs/")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getChecksumErrors(@QueryParam("pillarD") String pillarID) {
+    public String getChecksumErrors(@DefaultValue("") @QueryParam("collectionID") String collectionID, 
+            @QueryParam("pillarID") String pillarID,
+            @QueryParam("pageNumber") int pageNumber,
+            @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
         List<String> ids = new ArrayList<String>();
         ids.add("foo");
         ids.add("bar");
@@ -71,7 +75,10 @@ public class RestIntegrityService {
     @GET
     @Path("/getMissingFileIDs/")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getMissingFileIDs(@QueryParam("pillarD") String pillarID) {
+    public String getMissingFileIDs(@DefaultValue("") @QueryParam("collectionID") String collectionID, 
+            @QueryParam("pillarID") String pillarID,
+            @QueryParam("pageNumber") int pageNumber,
+            @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
         List<String> ids = new ArrayList<String>();
         ids.add("foo");
         ids.add("bar");
@@ -83,6 +90,24 @@ public class RestIntegrityService {
         }
         return array.toString();
     }
+    
+    @GET
+    @Path("/getAllFileIDs/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getAllFileIDs(@DefaultValue("") @QueryParam("collectionID") String collectionID, 
+            @QueryParam("pillarID") String pillarID,
+            @QueryParam("pageNumber") int pageNumber,
+            @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
+        List<String> ids = new ArrayList<String>();
+        ids.add("foo");
+        ids.add("bar");
+        ids.add("baz");
+        
+        JSONArray array = new JSONArray();
+        for(String file : ids) {
+            array.put(file);
+        }
+        return array.toString();    }
     
     /**
      * Get the listing of integrity status as a JSON array
