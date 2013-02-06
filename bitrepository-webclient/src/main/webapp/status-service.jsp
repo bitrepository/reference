@@ -136,7 +136,7 @@
     }
         
     $(document).ready(function(){
-      makeMenu("status-service.html", "#pageMenu");
+      makeMenu("status-service.jsp", "#pageMenu");
       populateStatusServiceConfiguration();
       getStatuses();
       var update_component_status = setInterval(function() {getStatuses(); }, 2500);
