@@ -480,10 +480,9 @@ public class IntegrityDAO {
      */
     public void setOldUnknownFilesToMissing(Date minAge) {
         log.trace("Setting the file state for all '" + FileState.UNKNOWN + "' files to '" + FileState.MISSING + "'.");
-        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? WHERE " + FI_GUID 
-                + " IN ( SELECT " + FILE_INFO_TABLE + "." + FI_GUID + " FROM " + FILES_TABLE + " JOIN " 
-                + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "." 
-                + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? AND " + FILES_TABLE
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? WHERE " + FILE_INFO_TABLE
+                + "." + FI_FILE_STATE + " = ? AND " + " EXISTS ( SELECT 1 FROM " + FILES_TABLE + " WHERE "
+                + FILES_TABLE + "." + FILES_GUID + " = " + FILE_INFO_TABLE + "." + FI_FILE_GUID + " AND " + FILES_TABLE
                 + "." + FILES_CREATION_DATE + " < ? )";
         
         DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.MISSING.ordinal(), 
