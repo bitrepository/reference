@@ -20,7 +20,8 @@
         <div class="span10"> 
           <form class="form-inline">
             <select id="workflowSelector"></select>
-            <button type="submit" class=btn">Start</button>
+            <button type="submit" class=btn" id="workflowStarter">Start</button>
+            <div id="formStatus"></div>          
           </form>
         </div>
         <div class="span10"> 
