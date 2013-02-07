@@ -105,4 +105,19 @@ public class IntegrityServiceWebInterface implements IntegrityService, LifeCycle
     public void scheduleWorkflow(Workflow workflow, long timeBetweenRuns) {
         service.scheduleWorkflow(workflow, timeBetweenRuns);
     }
+
+    @Override
+    public List<String> getChecksumErrors(String collectionID, String pillarID, int firstID, int lastID) {
+        return service.getChecksumErrors(collectionID, pillarID, firstID, lastID);
+    }
+
+    @Override
+    public List<String> getMissingFiles(String collectionID, String pillarID, int firstID, int lastID) {
+        return service.getMissingFiles(collectionID, pillarID, firstID, lastID);
+    }
+
+    @Override
+    public List<String> getAllFileIDs(String collectionID, String pillarID, int firstID, int lastID) {
+        return service.getAllFileIDs(collectionID, pillarID, firstID, lastID);
+    }
 }
