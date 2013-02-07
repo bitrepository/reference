@@ -179,11 +179,12 @@ public class RestIntegrityService {
         JSONObject obj = new JSONObject();
         try {
             obj.put("workflowID", workflowTask.getName());
+            obj.put("workflowDescription", workflowTask.getDescription("</br>"));
             obj.put("nextRun", TimeUtils.shortDate(workflowTask.getNextRun()));
             if (workflowTask.getLastRunStatistics().getFinish() == null) {
                 obj.put("lastRun", "Workflow hasn't finished a run yet");
             } else {
-                obj.put("lastRun", workflowTask.getLastRunStatistics().getFinish());
+                obj.put("lastRun", TimeUtils.shortDate(workflowTask.getLastRunStatistics().getFinish()));
             }
             obj.put("lastRunDetails", workflowTask.getLastRunStatistics().getFullStatistics("</br>"));
             obj.put("executionInterval", TimeUtils.millisecondsToHuman(workflowTask.getIntervalBetweenRuns()));

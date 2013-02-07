@@ -86,6 +86,10 @@ public class WorkflowTimerTask extends TimerTask {
         return interval;
     }
 
+    public String getDescription(String linefeed) {
+        return workflow.getDescription(linefeed);
+    }
+
     /**
      * Trigger the workflow.
      * Resets the date for the next run of the workflow.

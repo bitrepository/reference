@@ -58,10 +58,9 @@ public class WorkflowStatistic {
             return "Haven't finished a run yet";
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("Workflow start: " + TimeUtils.shortDate(start) + linieFeed);
-        sb.append("Duration: " + TimeUtils.millisecondsToHuman(getDuration()) + linieFeed);
+        sb.append(getName() + " duration: " + TimeUtils.millisecondsToHuman(getDuration()));
         for (WorkflowStatistic stepStat: subStatistics) {
-            sb.append(stepStat + linieFeed);
+            sb.append(linieFeed +stepStat.getFullStatistics(linieFeed));
         }
         return sb.toString();
     }
