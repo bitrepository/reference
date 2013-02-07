@@ -99,7 +99,7 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
         initializeMessage(msg);
         msg.setFileID(context.getFileID());
         msg.setFileSize(context.getFileSize());
-        msg.setTo(context.getSettings().getCollectionDestination());
+        msg.setDestination(context.getSettings().getCollectionDestination());
         context.getMessageSender().sendMessage(msg);
         context.getMonitor().identifyRequestSent("Identifying pillars for put file");
     }

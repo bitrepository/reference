@@ -99,7 +99,7 @@ public class BasicIntegrityWorkflowTest extends ExtendedTestCase {
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(settings.getCollectionSettings().getClientSettings().getPillarIDs()));
         MockChecker checker = new MockChecker();
-        BasicIntegrityWorkflow workflow = new BasicIntegrityWorkflow(settings, collector, store, checker, alerter);
+        CompleteIntegrityCheck workflow = new CompleteIntegrityCheck(settings, collector, store, checker, alerter);
 
         workflow.start();
 
@@ -163,7 +163,7 @@ public class BasicIntegrityWorkflowTest extends ExtendedTestCase {
             }
         };
 
-        BasicIntegrityWorkflow workflow = new BasicIntegrityWorkflow(settings, collector, store, checker, alerter);
+        CompleteIntegrityCheck workflow = new CompleteIntegrityCheck(settings, collector, store, checker, alerter);
 
         workflow.start();
 
@@ -207,7 +207,7 @@ public class BasicIntegrityWorkflowTest extends ExtendedTestCase {
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(settings.getCollectionSettings().getClientSettings().getPillarIDs()));
         MockChecker checker = new MockChecker();
-        BasicIntegrityWorkflow workflow = new BasicIntegrityWorkflow(settings, collector, store, checker, alerter);
+        CompleteIntegrityCheck workflow = new CompleteIntegrityCheck(settings, collector, store, checker, alerter);
 
         workflow.start();
 

@@ -40,6 +40,6 @@ public abstract class PillarTestMessageFactory {
 
     protected void initializeOperationRequest(MessageRequest request) {
         componentTestMessageFactory.initializeMessageToComponentUnderTest(request);
-        request.setTo(pillarDestinationID);
+        request.setDestination(pillarDestinationID);
     }
 }

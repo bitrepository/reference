@@ -55,7 +55,7 @@ public class GettingAuditTrails extends PerformingOperationState {
                 msg.setResultAddress(context.getUrlForResult());
 
                 msg.setContributor(query.getComponentID());
-                msg.setTo(activeContributors.get(query.getComponentID()));
+                msg.setDestination(activeContributors.get(query.getComponentID()));
                 if (query.getMinSequenceNumber() != null) {
                     msg.setMinSequenceNumber(BigInteger.valueOf(query.getMinSequenceNumber().intValue()));
                 }

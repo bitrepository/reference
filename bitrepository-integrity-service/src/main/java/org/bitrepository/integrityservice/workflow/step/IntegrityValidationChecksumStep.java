@@ -52,7 +52,7 @@ public class IntegrityValidationChecksumStep extends AbstractWorkFlowStep {
     
     @Override
     public String getName() {
-        return "Validating the integrity of the checksums.";
+        return "Validate checksums integrity";
     }
 
     @Override
@@ -66,5 +66,10 @@ public class IntegrityValidationChecksumStep extends AbstractWorkFlowStep {
             log.warn("Found the following integrity:\n" + report.generateReport());
             dispatcher.integrityFailed(report);
         }
+    }
+
+    @Override
+    public String getDescription() {
+        return "????";
     }
 }

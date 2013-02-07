@@ -99,7 +99,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(receivedIdentifyRequestMessage.getReplyTo(), settingsForCUT.getReceiverDestinationID());
         Assert.assertEquals(receivedIdentifyRequestMessage.getFileID(), DEFAULT_FILE_ID);
         Assert.assertEquals(receivedIdentifyRequestMessage.getFrom(), settingsForTestClient.getComponentID());
-        Assert.assertEquals(receivedIdentifyRequestMessage.getTo(), settingsForTestClient.getCollectionDestination());
+        Assert.assertEquals(receivedIdentifyRequestMessage.getDestination(), settingsForTestClient.getCollectionDestination());
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Make response for the pillar.", "The client receive the response, identify the pillar and send the " +
@@ -116,7 +116,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(receivedReplaceFileRequest.getReplyTo(), settingsForCUT.getReceiverDestinationID());
         Assert.assertEquals(receivedReplaceFileRequest.getFileID(), DEFAULT_FILE_ID);
         Assert.assertEquals(receivedReplaceFileRequest.getFrom(), settingsForTestClient.getComponentID());
-        Assert.assertEquals(receivedReplaceFileRequest.getTo(), pillar1DestinationId);
+        Assert.assertEquals(receivedReplaceFileRequest.getDestination(), pillar1DestinationId);
 
         addStep("Validate the steps of the ReplaceClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");

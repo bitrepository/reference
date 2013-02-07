@@ -56,7 +56,7 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
                 ExampleMessageFactory.createMessage(IdentifyPillarsForGetFileRequest.class);
         listener = new MultiMessageListener();
         messageBus.addListener("BusActivityTest", listener);
-        content.setTo("BusActivityTest");
+        content.setDestination("BusActivityTest");
         
         addStep("Send one message for each listener", "When all have receiver, then they give respond on 'finishQueue'");
         for(int i = 0; i < threadCount; i++) {

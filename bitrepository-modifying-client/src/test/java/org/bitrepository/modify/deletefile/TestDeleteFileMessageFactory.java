@@ -90,7 +90,7 @@ public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
                 createIdentifyPillarsForDeleteFileRequest(from);
         identifyPillarsForDeleteFileRequest.setCorrelationID(correlationID);
         identifyPillarsForDeleteFileRequest.setReplyTo(replyTo);
-        identifyPillarsForDeleteFileRequest.setTo(toTopic);
+        identifyPillarsForDeleteFileRequest.setDestination(toTopic);
         identifyPillarsForDeleteFileRequest.setFileID(fileId);
         return identifyPillarsForDeleteFileRequest;
     }
@@ -107,7 +107,7 @@ public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
             String pillarId, String pillarDestinationId, String fileId) {
         IdentifyPillarsForDeleteFileResponse identifyResponse = new IdentifyPillarsForDeleteFileResponse();
         initializeMessageDetails(identifyResponse);
-        identifyResponse.setTo(receivedIdentifyRequestMessage.getReplyTo());
+        identifyResponse.setDestination(receivedIdentifyRequestMessage.getReplyTo());
         identifyResponse.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
         identifyResponse.setPillarID(pillarId);
         identifyResponse.setReplyTo(pillarDestinationId);
@@ -127,7 +127,7 @@ public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
         initializeMessageDetails(deleteFileRequest);
         deleteFileRequest.setFrom(from);
         deleteFileRequest.setPillarID(pillarId);
-        deleteFileRequest.setTo(toTopic);
+        deleteFileRequest.setDestination(toTopic);
         deleteFileRequest.setReplyTo(replyTo);
         deleteFileRequest.setCorrelationID(correlationId);
         deleteFileRequest.setFileID(fileId);
@@ -150,7 +150,7 @@ public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
             String pillarId, String pillarDestinationId) {
         DeleteFileProgressResponse progressResponse = new DeleteFileProgressResponse();
         initializeMessageDetails(progressResponse);
-        progressResponse.setTo(request.getReplyTo());
+        progressResponse.setDestination(request.getReplyTo());
         progressResponse.setCorrelationID(request.getCorrelationID());
         progressResponse.setReplyTo(pillarDestinationId);
         progressResponse.setPillarID(pillarId);
@@ -173,7 +173,7 @@ public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
             String pillarId, String pillarDestinationId, String fileId) {
         DeleteFileFinalResponse finalResponse = new DeleteFileFinalResponse();
         initializeMessageDetails(finalResponse);
-        finalResponse.setTo(request.getReplyTo());
+        finalResponse.setDestination(request.getReplyTo());
         finalResponse.setCorrelationID(request.getCorrelationID());
         finalResponse.setReplyTo(pillarDestinationId);
         finalResponse.setPillarID(pillarId);

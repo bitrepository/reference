@@ -53,7 +53,7 @@ public class ResponseDispatcher extends MessageDispatcher {
     public void dispatchResponse(MessageResponse response, MessageRequest request) {
         response.setCorrelationID(request.getCorrelationID());
         response.setReplyTo(settings.getContributorDestinationID());
-        response.setTo(request.getReplyTo());
+        response.setDestination(request.getReplyTo());
         dispatchMessage(response);
     }
 }

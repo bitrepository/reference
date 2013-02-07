@@ -57,7 +57,7 @@ public class GettingStatus extends PerformingOperationState {
         context.getMonitor().requestSent("Sending GetStatusRequest", activeContributors.keySet().toString());
         for(String ID : activeContributors.keySet()) {
             request.setContributor(ID);
-            request.setTo(activeContributors.get(ID));
+            request.setDestination(activeContributors.get(ID));
             context.getMessageSender().sendMessage(request);
         }
     }

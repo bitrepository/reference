@@ -56,7 +56,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
         res.setCorrelationID(getNewCorrelationID());
         res.setFrom(from);
         res.setReplyTo(replyTo);
-        res.setTo(settings.getCollectionDestination());
+        res.setDestination(settings.getCollectionDestination());
                
         return res;
     }
@@ -70,7 +70,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
         res.setFrom(contributorId);
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
-        res.setTo(toTopic);
+        res.setDestination(toTopic);
         
         return res;
     }
@@ -94,7 +94,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
         res.setMinTimestamp(minTime);
         res.setReplyTo(replyTo);
         res.setResultAddress(url);
-        res.setTo(toTopic);
+        res.setDestination(toTopic);
 
         return res;
     }
@@ -110,7 +110,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setResultAddress(url);
-        res.setTo(toTopic);
+        res.setDestination(toTopic);
         
         return res;
     }
@@ -126,7 +126,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setResultingAuditTrails(auditTrails);
-        res.setTo(toTopic);
+        res.setDestination(toTopic);
         res.setPartialResult(false);
         
         return res;

@@ -56,7 +56,7 @@ public class IntegrityValidationFileIDsStep extends AbstractWorkFlowStep {
     
     @Override
     public String getName() {
-        return "Validating the integrity of the file ids.";
+        return "Validate fileID consistency";
     }
 
     @Override
@@ -71,12 +71,17 @@ public class IntegrityValidationFileIDsStep extends AbstractWorkFlowStep {
             dispatcher.integrityFailed(report);
         }
     }
-    
+
     /**
      * @return The report from this workflow step. 
      * Will return null, if the step has not yet been run.
      */
     public MissingFileReportModel getReport() {
         return report;
+    }
+
+    @Override
+    public String getDescription() {
+        return "????";
     }
 }

@@ -61,7 +61,7 @@ public class TestGetChecksumsMessageFactory extends ClientTestMessageFactory {
             String pillarId, String pillarDestinationId) {
         IdentifyPillarsForGetChecksumsResponse identifyPillarsForGetChecksumsResponse = new IdentifyPillarsForGetChecksumsResponse();
         initializeMessageDetails(identifyPillarsForGetChecksumsResponse);
-        identifyPillarsForGetChecksumsResponse.setTo(receivedIdentifyRequestMessage.getReplyTo());
+        identifyPillarsForGetChecksumsResponse.setDestination(receivedIdentifyRequestMessage.getReplyTo());
         identifyPillarsForGetChecksumsResponse.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
         identifyPillarsForGetChecksumsResponse.setCollectionID(
                 receivedIdentifyRequestMessage.getCollectionID());
@@ -84,7 +84,7 @@ public class TestGetChecksumsMessageFactory extends ClientTestMessageFactory {
             GetChecksumsRequest receivedGetChecksumsRequest, String pillarId, String pillarDestinationId) {
         GetChecksumsFinalResponse getChecksumsFinalResponse = new GetChecksumsFinalResponse();
         initializeMessageDetails(getChecksumsFinalResponse);
-        getChecksumsFinalResponse.setTo(receivedGetChecksumsRequest.getReplyTo());
+        getChecksumsFinalResponse.setDestination(receivedGetChecksumsRequest.getReplyTo());
         getChecksumsFinalResponse.setCorrelationID(receivedGetChecksumsRequest.getCorrelationID());
         getChecksumsFinalResponse.setCollectionID(receivedGetChecksumsRequest.getCollectionID());
         getChecksumsFinalResponse.setReplyTo(pillarDestinationId);

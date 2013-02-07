@@ -85,7 +85,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
 
         addStep("Send a message to the topic", "No exceptions should be thrown");
         AlarmMessage message = ExampleMessageFactory.createMessage(AlarmMessage.class);
-        message.setTo(alarmDestinationID);
+        message.setDestination(alarmDestinationID);
         messageBus.sendMessage(message);
 
         addStep("Make sure both listeners received the message",
@@ -108,7 +108,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
 
         addStep("Send a message to the topic", "No exceptions should be thrown");
         AlarmMessage message = ExampleMessageFactory.createMessage(AlarmMessage.class);
-        message.setTo(alarmDestinationID);
+        message.setDestination(alarmDestinationID);
         messageBus.sendMessage(message);
 
         addStep("Make sure both listeners received the message",
@@ -136,7 +136,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
         });
         IdentifyPillarsForDeleteFileRequest messageToSend =
                 ExampleMessageFactory.createMessage(IdentifyPillarsForDeleteFileRequest.class);
-        messageToSend.setTo(settingsForTestClient.getCollectionDestination());
+        messageToSend.setDestination(settingsForTestClient.getCollectionDestination());
         messageToSend.setRecipient(receiverID);
         messageBus.sendMessage(messageToSend);
         Message receivedMessage = messageList.poll(3, TimeUnit.SECONDS);
@@ -155,7 +155,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
                 settingsForTestClient.getMessageBusConfiguration(),
                 securityManager);
         AlarmMessage messageToSend = ExampleMessageFactory.createMessage(AlarmMessage.class);
-        messageToSend.setTo(settingsForTestClient.getAlarmDestination());
+        messageToSend.setDestination(settingsForTestClient.getAlarmDestination());
         javax.jms.Message msg = rawMessagebus.createMessage(messageToSend);
         rawMessagebus.addHeader(msg, messageToSend.getClass().getSimpleName(), messageToSend.getReplyTo(),
                 messageToSend.getCollectionID(),

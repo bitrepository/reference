@@ -49,7 +49,7 @@ public class ResponsePopulator {
             String correlationID, String to) {
         initializeMessageDetails(response);
         response.setCorrelationID(correlationID);
-        response.setTo(to);
+        response.setDestination(to);
         response.setReplyTo(replyTo);
         response.setFrom(from);
         response.setResponseInfo(new ResponseInfo());

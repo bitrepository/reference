@@ -59,7 +59,7 @@ public class FindObsoleteChecksumsStep extends AbstractWorkFlowStep {
     
     @Override
     public String getName() {
-        return "Finding obsolete checksums";
+        return "Find obsolete checksums";
     }
 
     /**
@@ -82,5 +82,10 @@ public class FindObsoleteChecksumsStep extends AbstractWorkFlowStep {
             log.warn("Found the following integrity:\n" + report.generateReport());
             dispatcher.integrityFailed(report);
         }
+    }
+
+    @Override
+    public String getDescription() {
+        return "????";
     }
 }

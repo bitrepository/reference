@@ -196,7 +196,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         public void run() {
             try {
                 AlarmMessage message = ExampleMessageFactory.createMessage(AlarmMessage.class);
-                message.setTo(QUEUE);
+                message.setDestination(QUEUE);
                 for(int i = 0; i < numberOfMessages; i++) {
                     message.setCorrelationID(id + ":" + i);
                     bus.sendMessage(message);

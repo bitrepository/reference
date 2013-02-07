@@ -88,7 +88,7 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
     
     @Override
     public String getName() {
-        return "Collecting checksums for all files.";
+        return "Collect all checksums from pillars";
     }
 
     @Override
@@ -123,5 +123,10 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
         }
         
         return res.toArray(new ContributorQuery[pillars.size()]);
+    }
+
+    @Override
+    public String getDescription() {
+        return "Contacts all pillar to retrieve the full list of checksums for the pillar";
     }
 }

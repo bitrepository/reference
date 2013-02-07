@@ -65,7 +65,7 @@ class GettingFile extends PerformingOperationState {
         msg.setFileID(context.getFileID());
         msg.setFilePart(context.getFilePart());
         msg.setPillarID(selectedPillar.getID());
-        msg.setTo(selectedPillar.getDestination());
+        msg.setDestination(selectedPillar.getDestination());
         context.getMonitor().requestSent("Sending GetFileRequest to ", selectedPillar.toString());
         context.getMessageSender().sendMessage(msg);
     }

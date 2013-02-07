@@ -85,7 +85,7 @@ public class GettingChecksums extends PerformingOperationState {
                     msg.setResultAddress(context.getUrlForResult().toExternalForm() + "-" + query.getComponentID());
                 }
                 msg.setPillarID(query.getComponentID());
-                msg.setTo(activeContributors.get(query.getComponentID()));
+                msg.setDestination(activeContributors.get(query.getComponentID()));
 
                 if (query.getMinTimestamp() != null) {
                     msg.setMinTimestamp(CalendarUtils.getXmlGregorianCalendar(query.getMinTimestamp()));

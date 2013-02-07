@@ -40,11 +40,11 @@ public class IntegrityServiceContextListener extends AbstractBitrepositoryContex
 
     @Override
     public LifeCycledService getService() {
-        return IntegrityServiceFactory.getIntegrityServiceWebInterface();
+        return IntegrityServiceFactory.getIntegrityService();
     }
 
     @Override
-    public void initialize(String configutrationDir) {
-        IntegrityServiceFactory.init(configutrationDir);        
+    public void initialize(String configurationDir) {
+        IntegrityServiceFactory.init(configurationDir);
     }    
 }

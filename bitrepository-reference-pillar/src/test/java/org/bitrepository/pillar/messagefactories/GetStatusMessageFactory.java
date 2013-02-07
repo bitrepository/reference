@@ -55,7 +55,7 @@ public class GetStatusMessageFactory extends ClientTestMessageFactory {
         res.setCorrelationID(getNewCorrelationID());
         res.setFrom(from);
         res.setReplyTo(replyTo);
-        res.setTo(settings.getCollectionDestination());
+        res.setDestination(settings.getCollectionDestination());
         
         return res;
     }
@@ -72,7 +72,7 @@ public class GetStatusMessageFactory extends ClientTestMessageFactory {
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setTimeToDeliver(timeToDeliver);
-        res.setTo(toTopic);
+        res.setDestination(toTopic);
         
         return res;
     }
@@ -87,7 +87,7 @@ public class GetStatusMessageFactory extends ClientTestMessageFactory {
         res.setCorrelationID(correlationId);
         res.setFrom(from);
         res.setReplyTo(replyTo);
-        res.setTo(toTopic);
+        res.setDestination(toTopic);
         
         return res;
     }
@@ -102,7 +102,7 @@ public class GetStatusMessageFactory extends ClientTestMessageFactory {
         res.setFrom(contributorId);
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
-        res.setTo(toTopic);
+        res.setDestination(toTopic);
         
         return res;
     }
@@ -118,7 +118,7 @@ public class GetStatusMessageFactory extends ClientTestMessageFactory {
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setResultingStatus(status);
-        res.setTo(toTopic);
+        res.setDestination(toTopic);
         
         return res;
     }

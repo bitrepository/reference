@@ -74,7 +74,7 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
                 createIdentifyPillarsForReplaceFileRequest(from);
         identifyPillarsForReplaceFileRequest.setCorrelationID(correlationID);
         identifyPillarsForReplaceFileRequest.setReplyTo(replyTo);
-        identifyPillarsForReplaceFileRequest.setTo(toTopic);
+        identifyPillarsForReplaceFileRequest.setDestination(toTopic);
         identifyPillarsForReplaceFileRequest.setFileID(fileId);
         identifyPillarsForReplaceFileRequest.setAuditTrailInformation(auditTrailInformation);
         return identifyPillarsForReplaceFileRequest;
@@ -92,7 +92,7 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
             String pillarId, String pillarDestinationId) {
         IdentifyPillarsForReplaceFileResponse ipfrfResponse = new IdentifyPillarsForReplaceFileResponse();
         initializeMessageDetails(ipfrfResponse);
-        ipfrfResponse.setTo(receivedIdentifyRequestMessage.getReplyTo());
+        ipfrfResponse.setDestination(receivedIdentifyRequestMessage.getReplyTo());
         ipfrfResponse.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
         ipfrfResponse.setPillarID(pillarId);
         ipfrfResponse.setReplyTo(pillarDestinationId);
@@ -134,7 +134,7 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
             ChecksumDataForFileTYPE oldChecksum, ChecksumDataForFileTYPE newChecksum, ChecksumSpecTYPE checksumRequested) {
         ReplaceFileRequest replaceFileRequest = createReplaceFileRequest(from);
         replaceFileRequest.setPillarID(pillarId);
-        replaceFileRequest.setTo(toTopic);
+        replaceFileRequest.setDestination(toTopic);
         replaceFileRequest.setReplyTo(replyTo);
         replaceFileRequest.setCorrelationID(correlationId);
         replaceFileRequest.setFileAddress(fileAddress);
@@ -160,7 +160,7 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
             String pillarId, String pillarDestinationId) {
         ReplaceFileProgressResponse progressResponse = new ReplaceFileProgressResponse();
         initializeMessageDetails(progressResponse);
-        progressResponse.setTo(request.getReplyTo());
+        progressResponse.setDestination(request.getReplyTo());
         progressResponse.setCorrelationID(request.getCorrelationID());
         progressResponse.setReplyTo(pillarDestinationId);
         progressResponse.setPillarID(pillarId);
@@ -193,7 +193,7 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
         finalResponse.setPillarID(pillarId);
         finalResponse.setReplyTo(pillarDestinationId);
         finalResponse.setResponseInfo(createCompleteResponseInfo());
-        finalResponse.setTo(request.getReplyTo());
+        finalResponse.setDestination(request.getReplyTo());
         finalResponse.setFrom(pillarId);
 
         return finalResponse;

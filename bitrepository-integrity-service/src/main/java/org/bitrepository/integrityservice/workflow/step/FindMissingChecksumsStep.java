@@ -47,7 +47,7 @@ public class FindMissingChecksumsStep extends AbstractWorkFlowStep {
     
     @Override
     public String getName() {
-        return "Finding missing checksums";
+        return "Find missing checksums";
     }
 
     /**
@@ -65,5 +65,10 @@ public class FindMissingChecksumsStep extends AbstractWorkFlowStep {
             log.warn("Found the following integrity:\n" + report.generateReport());
             dispatcher.integrityFailed(report);
         }
+    }
+
+    @Override
+    public String getDescription() {
+        return "Detects files with missing checksum. This is done on a pr. pillar basis.";
     }
 }

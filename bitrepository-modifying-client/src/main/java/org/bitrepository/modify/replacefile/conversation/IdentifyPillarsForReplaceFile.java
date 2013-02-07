@@ -73,7 +73,7 @@ public class IdentifyPillarsForReplaceFile extends IdentifyingState {
         IdentifyPillarsForReplaceFileRequest msg = new IdentifyPillarsForReplaceFileRequest();
         initializeMessage(msg);
         msg.setFileID(context.getFileID());
-        msg.setTo(context.getSettings().getCollectionDestination());
+        msg.setDestination(context.getSettings().getCollectionDestination());
         context.getMessageSender().sendMessage(msg);
         context.getMonitor().identifyRequestSent("Identifying pillars for replace file");
     }

@@ -36,7 +36,7 @@ public interface WorkflowStep {
     void performStep();
 
     /**
-     * @return The time this step has been running.
+     * @return A more detailed description of what this step does.
      */
-    long getRunningTime();
+    String getDescription();
 }

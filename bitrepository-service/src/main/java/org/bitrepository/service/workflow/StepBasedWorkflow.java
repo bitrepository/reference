@@ -21,7 +21,6 @@
  */
 package org.bitrepository.service.workflow;
 
-import org.bitrepository.common.utils.TimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,11 +37,11 @@ public abstract class StepBasedWorkflow implements Workflow {
     public static final String NOT_RUNNING = "The workflow is currently not running.";
     /** The current step running.*/
     private WorkflowStep currentStep = null;
-    private long currentRunStart = -1;
+    private WorkflowStatistic statistics = new WorkflowStatistic(getClass().getSimpleName());
 
     @Override
     public void start() {
-        currentRunStart = System.currentTimeMillis();
+        statistics.start();
     }
 
     /**
@@ -53,9 +52,11 @@ public abstract class StepBasedWorkflow implements Workflow {
         this.currentStep = step;
         log.info("Starting step: '" + step.getName() + "'");
         try {
+            statistics.startSubStatistic(step.getName());
             step.performStep();
-            log.info("Finished step: '" + step.getName() + "' in " 
-                    + TimeUtils.millisecondsToHuman(step.getRunningTime()));
+            statistics.finishSubStatistic();
+            log.info(statistics.getCurrentSubStatistic().toString());
+
         } catch (Exception e) {
             log.error("Failure in step: '" + step.getName() + "'.", e);
         }
@@ -65,9 +66,9 @@ public abstract class StepBasedWorkflow implements Workflow {
      * For telling that the workflow has finished its task.
      */
     protected void finish() {
+        statistics.finish();
         this.currentStep = null;
-        currentRunStart = -1;
-        log.info("Finished " + getClass().getSimpleName()+ " in '" + TimeUtils.millisecondsToHuman(getRunningTime()));
+        log.info(statistics.getFullStatistics("\n"));
     }
     
     @Override
@@ -75,13 +76,20 @@ public abstract class StepBasedWorkflow implements Workflow {
         if(currentStep == null) {
             return NOT_RUNNING;
         } else {
-            return currentStep.getName() +
-                    "\nRunning for " + TimeUtils.millisecondsToHuman(currentStep.getRunningTime()) + "/" +
-                            TimeUtils.millisecondsToHuman(getRunningTime()) + ")";
+            return currentStep.getName();
         }
     }
 
-    private long getRunningTime() {
-        return System.currentTimeMillis() - currentRunStart;
+    /**
+     * @return The statistics for this workflow.
+     */
+    @Override
+    public WorkflowStatistic getWorkflowStatistics() {
+        return statistics;
+    }
+
+    protected String getStepDescriptions(String linefeed) {
+        // Preparing.
+        return null;
     }
 }

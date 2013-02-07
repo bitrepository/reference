@@ -38,7 +38,7 @@ public class IdentifyingContributorsForGetStatus extends IdentifyingState {
     protected void sendRequest() {
         IdentifyContributorsForGetStatusRequest request = new IdentifyContributorsForGetStatusRequest();
         initializeMessage(request);
-        request.setTo(context.getSettings().getCollectionDestination());
+        request.setDestination(context.getSettings().getCollectionDestination());
         
         context.getMonitor().identifyRequestSent("Identifying contributors for getting status");
         context.getMessageSender().sendMessage(request);

@@ -59,7 +59,7 @@ public class IdentifyPillarsForGetChecksums extends IdentifyingState {
     protected void sendRequest() {
         IdentifyPillarsForGetChecksumsRequest msg = new IdentifyPillarsForGetChecksumsRequest();
         initializeMessage(msg);
-        msg.setTo(context.getSettings().getCollectionDestination());
+        msg.setDestination(context.getSettings().getCollectionDestination());
         msg.setFileIDs(FileIDsUtils.createFileIDs(context.getFileID()));
         msg.setChecksumRequestForExistingFile(context.getChecksumSpec());
         context.getMessageSender().sendMessage(msg);

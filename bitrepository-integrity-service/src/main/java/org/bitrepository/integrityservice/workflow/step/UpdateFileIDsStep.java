@@ -84,7 +84,7 @@ public class UpdateFileIDsStep extends AbstractWorkFlowStep {
     
     @Override
     public String getName() {
-        return "Refreshing the cache and collecting the file ids on all pillars";
+        return "Collect all fileIDs from pillars";
     }
 
     @Override
@@ -121,5 +121,10 @@ public class UpdateFileIDsStep extends AbstractWorkFlowStep {
         }
         
         return res.toArray(new ContributorQuery[pillars.size()]);
+    }
+
+    @Override
+    public String getDescription() {
+        return "Contacts all pillar to retrieve the full list of files from the pillars";
     }
 }

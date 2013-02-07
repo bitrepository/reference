@@ -91,7 +91,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(receivedIdentifyRequestMessage.getReplyTo(), settingsForCUT.getReceiverDestinationID());
         Assert.assertEquals(receivedIdentifyRequestMessage.getFileID(), DEFAULT_FILE_ID);
         Assert.assertEquals(receivedIdentifyRequestMessage.getFrom(), settingsForTestClient.getComponentID());
-        Assert.assertEquals(receivedIdentifyRequestMessage.getTo(), settingsForTestClient.getCollectionDestination());
+        Assert.assertEquals(receivedIdentifyRequestMessage.getDestination(), settingsForTestClient.getCollectionDestination());
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Make response for the pillar.", "The client should then send the actual PutFileRequest.");
@@ -106,7 +106,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(receivedPutFileRequest.getReplyTo(), settingsForCUT.getReceiverDestinationID());
         Assert.assertEquals(receivedPutFileRequest.getFileID(), DEFAULT_FILE_ID);
         Assert.assertEquals(receivedPutFileRequest.getFrom(), settingsForTestClient.getComponentID());
-        Assert.assertEquals(receivedPutFileRequest.getTo(), pillar1DestinationId);
+        Assert.assertEquals(receivedPutFileRequest.getDestination(), pillar1DestinationId);
         addStep("Validate the steps of the PutClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
         for(int i = 0; i < settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
