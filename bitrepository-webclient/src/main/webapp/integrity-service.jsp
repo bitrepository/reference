@@ -62,6 +62,7 @@
   <script>
     
     var pillars = new Object();
+    var workflows = new Object();
 
     function loadWorkflows() {
       $.getJSON('<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getWorkflowList/'
@@ -72,18 +73,64 @@
       });
     }
 
+    function makeWorkflowRow(workflowID, nextRun, lastRun, executionInterval, currentState) {
+      var html = "";
+      html += "<tr><td><a class=\"btn btn-link\" id=\"" + workflowID + "-details\">" + workflowID + "</a></td>";
+      html += "<td id=\"" + workflowID + "-nextRun\">" + nextRun + "</td>";
+      html += "<td><a class=\"btn btn-link\" id=\"" + workflowID + "-lastRun\">" + lastRun + "</a></td>";   
+      html += "<td id=\"" + workflowID + "-executionInterval\">" + executionInterval + "</td>";
+      html += "<td id=\"" + workflowID + "-currentState\">" + currentState + "</td></tr>";
+      return html;
+    }
+    
+    function updateWorkflowRow(workflowID, nextRun, lastRun, executionInterval, currentState) {
+      $("#" + workflowID + "-nextRun").html(nextRun);
+      $("#" + workflowID + "-lastRun").html(lastRun);
+      $("#" + workflowID + "-executionInterval").html(executionInterval);
+      $("#" + workflowID + "-currentState").html(currentState);
+    }
+    
+    function getStoredWorkflowInfo(id, type) {
+      return function() {
+        return workflows[id][type];
+      }
+    }
+    
+    funtcion attachWorkflowInfoButton(id, type) {
+      var element;
+      var title;
+      if(type == "workflowDescription") {
+        element = "#" + id + "-" + type;
+        title = "Workflow description";
+      } else if(type == "lastRunDetails") {
+        element = "#" + id + "-" + type;
+        title = "Last run details";
+      }
+      if(element != null) {
+        $(element).popover({placement : "right",
+                            title : title,
+                            content : getStoredWorkflowInfo(id, type)});
+      }
+    }
+
     function getWorkflowStatuses() {
       $.getJSON('<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getWorkflowSetup/',
           {}, function(j){
         var htmlTableBody;
         for (var i = 0; i < j.length; i++) {
-          htmlTableBody += "<tr><td>" + j[i].workflowID + "</td>" +
-                       "<td>" + j[i].nextRun + "</td>" +
-                       "<td>" + j[i].lastRun + "</td>" +
-                       "<td>" + j[i].executionInterval + "</td>" +
-                       "<td>" + j[i].currentState + "</td></tr>";
+          if(workflows[j[i].workflowID] == null) {
+            $("#workflow-status-table-body").append(
+                makeWorkflowRow(j[i].workflowID, j[i].nextRun, j[i].lastRun, j[i].executionInterval, j[i].currentState));
+            workflows[j[i].workflowID] = {workflowDescription : j[i].workflowDescription,
+                                          lastRunDetails : j[i].lastRunDetails};
+            attachWorkflowInfoButton(j[i].workflowID, "workflowDescription");
+            attachWorkflowInfoButton(j[i].workflowID, "lastRunDetails");
+          } else {
+            updateWorkflowRow(j[i].workflowID, j[i].nextRun, j[i].lastRun, j[i].executionInterval, j[i].currentState);
+            workflows[j[i].workflowID].workflowDescription = j[i].workflowDescription;
+            workflows[j[i].workflowID].lastRunDetails = j[i].lastRunDetails;
+          }
         }
-        $("#workflow-status-table-body").html(htmlTableBody);
       });
     }
     
@@ -108,8 +155,8 @@
       }
       if(element != null) {
         $(element).popover({placement : "right", 
-          title: title, 
-          content: getMsg(id)}); 
+          title : title, 
+          content : getMsg(id)}); 
       }
       
     }
