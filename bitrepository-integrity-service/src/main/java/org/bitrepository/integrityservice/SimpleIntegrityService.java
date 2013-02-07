@@ -110,6 +110,28 @@ public class SimpleIntegrityService implements IntegrityService {
         return scheduler.getScheduledWorkflows();
     }
     
+
+    @Override
+    public List<String> getChecksumErrors(String collectionID, String pillarID,
+            int firstID, int lastID) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<String> getMissingFiles(String collectionID, String pillarID,
+            int firstID, int lastID) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<String> getAllFileIDs(String collectionID, String pillarID,
+            int firstID, int lastID) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
     @Override
     public long getNumberOfFiles(String pillarId) {
         return cache.getNumberOfFiles(pillarId);
@@ -151,4 +173,5 @@ public class SimpleIntegrityService implements IntegrityService {
         Workflow w1 = new BasicIntegrityWorkflow(settings, collector, cache, checker, alerter);
         workflows.add(w1);
     }
+
 }
