@@ -128,7 +128,7 @@
               components[j[i].componentID] = {msg : j[i].info};
               attachButtonAction(j[i].componentID, j[i].info);
             } else {
-              updateComponentRow(j[i].componentID, j[i].status, j[i].timeStamp));
+              updateComponentRow(j[i].componentID, j[i].status, j[i].timeStamp);
               components[j[i].componentID].msg = j[i].info;
             }
         }
@@ -136,7 +136,7 @@
     }
         
     $(document).ready(function(){
-      makeMenu("status-service.html", "#pageMenu");
+      makeMenu("status-service.jsp", "#pageMenu");
       populateStatusServiceConfiguration();
       getStatuses();
       var update_component_status = setInterval(function() {getStatuses(); }, 2500);

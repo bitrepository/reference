@@ -33,7 +33,7 @@ import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
-import org.bitrepository.integrityservice.workflow.BasicIntegrityWorkflow;
+import org.bitrepository.integrityservice.workflow.CompleteIntegrityCheck;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorMediator;
@@ -110,6 +110,28 @@ public class SimpleIntegrityService implements IntegrityService {
         return scheduler.getScheduledWorkflows();
     }
     
+
+    @Override
+    public List<String> getChecksumErrors(String collectionID, String pillarID,
+            int firstID, int lastID) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<String> getMissingFiles(String collectionID, String pillarID,
+            int firstID, int lastID) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<String> getAllFileIDs(String collectionID, String pillarID,
+            int firstID, int lastID) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
     @Override
     public long getNumberOfFiles(String pillarId) {
         return cache.getNumberOfFiles(pillarId);
@@ -148,7 +170,7 @@ public class SimpleIntegrityService implements IntegrityService {
      * Initialises the workflows.
      */
     private void initialiseWorkflows() {
-        Workflow w1 = new BasicIntegrityWorkflow(settings, collector, cache, checker, alerter);
+        Workflow w1 = new CompleteIntegrityCheck(settings, collector, cache, checker, alerter);
         workflows.add(w1);
     }
 

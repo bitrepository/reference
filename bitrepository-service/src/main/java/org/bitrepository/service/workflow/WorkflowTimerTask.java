@@ -40,6 +40,7 @@ public class WorkflowTimerTask extends TimerTask {
     /** The interval between triggers. */
     private final long interval;
     private final Workflow workflow;
+    private WorkflowStatistic lastWorkflowStatistics;
 
     /**
      * Initialise trigger.
@@ -51,6 +52,7 @@ public class WorkflowTimerTask extends TimerTask {
         this.name = name;
         this.workflow = workflow;
         nextRun = new Date();
+        lastWorkflowStatistics = new WorkflowStatistic("Not run yet");
 
     }
 
@@ -66,6 +68,14 @@ public class WorkflowTimerTask extends TimerTask {
      * the workflow hasn't been run yet.
      */
     public WorkflowStatistic getLastRunStatistics() {
+        return lastWorkflowStatistics;
+    }
+
+    /**
+     * @return The statistics object with information on the time statistics for the current run.
+     * May be null if the workflow hasn't been run yet.
+     */
+    public WorkflowStatistic getCurrentRunStatistics() {
         return workflow.getWorkflowStatistics();
     }
 
@@ -87,6 +97,7 @@ public class WorkflowTimerTask extends TimerTask {
                 log.info("Starting the workflow: " + getName());
                 nextRun = new Date(System.currentTimeMillis() + interval);
                 workflow.start();
+                lastWorkflowStatistics = workflow.getWorkflowStatistics();
 
             } else {
                 log.warn("Ignoring start request for " + getName() + " the workflow is already running");

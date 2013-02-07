@@ -51,7 +51,7 @@ public class IntegrityAlarmDispatcher extends AlarmDispatcher implements Integri
     public void integrityFailed(IntegrityReportModel report) {
         Alarm ad = new Alarm();
         ad.setAlarmCode(AlarmCode.INTEGRITY_ISSUE);
-        ad.setAlarmText(report.generateReport());
+        ad.setAlarmText(report.generateSummaryOfReport());
         error(ad);
     }
 

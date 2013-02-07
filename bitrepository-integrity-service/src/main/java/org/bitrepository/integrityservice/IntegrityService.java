@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice;
 
 import java.util.Collection;
+import java.util.List;
 
 import java.util.List;
 import org.bitrepository.service.LifeCycledService;
@@ -40,6 +41,33 @@ public interface IntegrityService extends LifeCycledService {
      * @return All the available workflows. 
      */
     Collection<Workflow> getAllWorkflows();
+    
+    /**
+     * Retrieves the list of fileIDs which have checksum errors on the pillar in a given collection
+     * @param collectionID the collection we are dealing with
+     * @param pillarID the pillar from which we want the list
+     * @param firstID the first numerical ID to be included in the list
+     * @param lastId the last numerical ID to be included in the list
+     */
+    List<String> getChecksumErrors(String collectionID, String pillarID, int firstID, int lastID);
+    
+    /**
+     * Retrieves the list of missing fileIDs on the pillar in a given collection
+     * @param collectionID the collection we are dealing with
+     * @param pillarID the pillar from which we want the list
+     * @param firstID the first numerical ID to be included in the list
+     * @param lastId the last numerical ID to be included in the list
+     */
+    List<String> getMissingFiles(String collectionID, String pillarID, int firstID, int lastID);
+    
+    /**
+     * Retrieves the list of all the fileIDs present on the pillar in a given collection
+     * @param collectionID the collection we are dealing with
+     * @param pillarID the pillar from which we want the list
+     * @param firstID the first numerical ID to be included in the list
+     * @param lastId the last numerical ID to be included in the list
+     */
+    List<String> getAllFileIDs(String collectionID, String pillarID, int firstID, int lastID);
     
     /**
      * @param pillarId The pillar which has the files.

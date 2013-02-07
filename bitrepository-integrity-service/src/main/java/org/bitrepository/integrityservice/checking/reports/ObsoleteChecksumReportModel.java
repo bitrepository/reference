@@ -67,6 +67,15 @@ public class ObsoleteChecksumReportModel implements IntegrityReportModel {
         }
         return res.toString();
     }
+
+    @Override
+    public String generateSummaryOfReport() {
+        if(!hasIntegrityIssues()) {
+            return "No checksums issues. \n";
+        }
+        
+        return "Reported obsolete checksum for '" + obsoleteChecksum.size() + "' files.";
+    }
     
     /**
      * @return The mapping between the file ids with obsolete checksums and the obsolete checksum data.

@@ -43,7 +43,7 @@ import org.bitrepository.service.workflow.StepBasedWorkflow;
  * Then the data is validated for integrity issues.
  * And finally it is verified whether any missing or obsolete checksums can be found.
  */
-public class BasicIntegrityWorkflow extends StepBasedWorkflow {
+public class CompleteIntegrityCheck extends StepBasedWorkflow {
     /** The settings.*/
     private final Settings settings;
     /** The client for retrieving the checksums.*/
@@ -63,8 +63,8 @@ public class BasicIntegrityWorkflow extends StepBasedWorkflow {
      * @param checker The checker for validating the content of the database.
      * @param alerter The integrity alerter for sending alarms, when necessary.
      */
-    public BasicIntegrityWorkflow(Settings settings, IntegrityInformationCollector collector, IntegrityModel store,
-            IntegrityChecker checker, IntegrityAlerter alerter) {
+    public CompleteIntegrityCheck(Settings settings, IntegrityInformationCollector collector, IntegrityModel store,
+                                  IntegrityChecker checker, IntegrityAlerter alerter) {
         this.settings = settings;
         this.collector = collector;
         this.store = store;
@@ -106,5 +106,12 @@ public class BasicIntegrityWorkflow extends StepBasedWorkflow {
         } finally {
             finish();
         }
+    }
+
+    @Override
+    public String getDescription(String linefeed) {
+        return "Retrieves all fileIDs and checksums from all pillars and checks for all potential integrity " +
+                "problems." + linefeed +
+                getStepDescriptions(linefeed);
     }
 }

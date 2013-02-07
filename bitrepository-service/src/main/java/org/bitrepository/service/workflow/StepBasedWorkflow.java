@@ -87,4 +87,9 @@ public abstract class StepBasedWorkflow implements Workflow {
     public WorkflowStatistic getWorkflowStatistics() {
         return statistics;
     }
+
+    protected String getStepDescriptions(String linefeed) {
+        // Preparing.
+        return null;
+    }
 }

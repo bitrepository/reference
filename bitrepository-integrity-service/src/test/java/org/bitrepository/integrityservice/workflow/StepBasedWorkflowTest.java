@@ -58,6 +58,11 @@ public class StepBasedWorkflowTest extends ExtendedTestCase {
                 finish();
                 Assert.assertFalse(currentState().contains(NAME_OF_STEP));
             }
+
+            @Override
+            public String getDescription(String linefeed) {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
         };
         
         workflow.start();

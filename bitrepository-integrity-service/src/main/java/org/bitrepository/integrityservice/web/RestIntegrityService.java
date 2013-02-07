@@ -155,7 +155,6 @@ public class RestIntegrityService {
         Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows();
         for(WorkflowTimerTask workflowTask : workflows) {
             if(workflowTask.getName().equals(workflowID)) {
-                log.info(workflowTask.getName() + " requested started");
                 workflowTask.runWorkflow();
                 return "Workflow '" + workflowID + "' started";
             }
@@ -188,7 +187,7 @@ public class RestIntegrityService {
             }
             obj.put("lastRunDetails", workflowTask.getLastRunStatistics().getFullStatistics("</br>"));
             obj.put("executionInterval", TimeUtils.millisecondsToHuman(workflowTask.getIntervalBetweenRuns()));
-            obj.put("currentState", workflowTask.getLastRunStatistics().getPartStatistics("</br>"));
+            obj.put("currentState", workflowTask.getCurrentRunStatistics().getPartStatistics("</br>"));
             return obj;
         } catch (JSONException e) {
             return (JSONObject) JSONObject.NULL;

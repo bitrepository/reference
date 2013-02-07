@@ -34,19 +34,19 @@ public class MockWorkflow implements Workflow {
     public void start() {
         callsForStart++;
     }
-    public int getCallsForStart() {
-        return callsForStart;
-    }
 
-    private int callsForCurrentState = 0;
     @Override
     public String currentState() {
-        callsForCurrentState++;
-        return "Mocking a workflow";
+        return null;
     }
 
     @Override
     public WorkflowStatistic getWorkflowStatistics() {
+        return null;
+    }
+
+    @Override
+    public String getDescription(String linefeed) {
         return null;
     }
 }
