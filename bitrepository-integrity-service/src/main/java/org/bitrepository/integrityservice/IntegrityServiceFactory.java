@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.Properties;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
-import org.bitrepository.integrityservice.web.IntegrityServiceWebInterface;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
 import org.bitrepository.protocol.security.BasicMessageSigner;
 import org.bitrepository.protocol.security.BasicOperationAuthorizor;
@@ -65,8 +64,6 @@ public final class IntegrityServiceFactory {
     private static BasicSecurityManager securityManager;
     /** The implementation of the integrity service.*/
     private static IntegrityService simpleIntegrityService;
-    /** The integrity service wrapped into the web interface.*/
-    private static IntegrityServiceWebInterface integrityServiceWebInterface;
 
     /**
      * Private constructor, use static getInstance method to get instance.
@@ -145,25 +142,7 @@ public final class IntegrityServiceFactory {
         
         return simpleIntegrityService;
     }
-    
-    /**
-     * Factory method to get a singleton instance of the web interface for the integrity service.
-     * Uses the Settings and the SimpleIntegrityService.
-     * @return The IntegrityServiceWebInterface instance.
-     * @see #getSettings()
-     * @see #getIntegrityService()
-     * @see {@link IntegrityServiceWebInterface}
-     */
-    public static synchronized IntegrityServiceWebInterface getIntegrityServiceWebInterface() {
-        if(integrityServiceWebInterface == null) {
-            getSettings();
-            getIntegrityService();
-            integrityServiceWebInterface = new IntegrityServiceWebInterface(simpleIntegrityService, settings);
-            
-        }
-        return integrityServiceWebInterface;
-    }
-    
+
     /**
      * Loads the properties.
      */

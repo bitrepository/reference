@@ -35,7 +35,6 @@ public class WorkflowTimerTask extends TimerTask {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The date for the next run of the workflow.*/
     private Date nextRun;
-    private Date lastRun;
     /** The name of the workflow.*/
     private final String name;
     /** The interval between triggers. */
@@ -52,7 +51,7 @@ public class WorkflowTimerTask extends TimerTask {
         this.name = name;
         this.workflow = workflow;
         nextRun = new Date();
-        lastRun = null;
+
     }
 
     /**
@@ -62,8 +61,12 @@ public class WorkflowTimerTask extends TimerTask {
         return new Date(nextRun.getTime());
     }
 
-    public Date getLastRun() {
-        return lastRun;
+    /**
+     * @return The statistics object with information on the time statistics for the last run. May be null if
+     * the workflow hasn't been run yet.
+     */
+    public WorkflowStatistic getLastRunStatistics() {
+        return workflow.getWorkflowStatistics();
     }
 
     /**
@@ -84,7 +87,7 @@ public class WorkflowTimerTask extends TimerTask {
                 log.info("Starting the workflow: " + getName());
                 nextRun = new Date(System.currentTimeMillis() + interval);
                 workflow.start();
-                lastRun = new Date();
+
             } else {
                 log.warn("Ignoring start request for " + getName() + " the workflow is already running");
             }
@@ -100,14 +103,6 @@ public class WorkflowTimerTask extends TimerTask {
         return name;
     }
 
-    /**
-     * @return The current state of the workflow.
-     */
-    public String currentState() {
-        StringBuffer sb = new StringBuffer(workflow.currentState());
-        return sb.toString();
-    }
-
     @Override
     public void run() {
         try {
@@ -118,4 +113,5 @@ public class WorkflowTimerTask extends TimerTask {
             log.error("Failed to run workflow", e);
         }
     }
+
 }

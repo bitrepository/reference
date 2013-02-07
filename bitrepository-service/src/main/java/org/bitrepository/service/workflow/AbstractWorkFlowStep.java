@@ -32,9 +32,4 @@ public abstract class AbstractWorkFlowStep implements WorkflowStep {
     public void performStep() {
         startTime = System.currentTimeMillis();
     }
-
-    @Override
-    public long getRunningTime() {
-        return System.currentTimeMillis() - startTime;
-    }
 }

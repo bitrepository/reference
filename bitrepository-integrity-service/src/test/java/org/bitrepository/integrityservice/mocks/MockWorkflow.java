@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.mocks;
 
 import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.WorkflowStatistic;
 
 /**
  * A trigger that triggers every other second, and remembers calls.
@@ -43,7 +44,9 @@ public class MockWorkflow implements Workflow {
         callsForCurrentState++;
         return "Mocking a workflow";
     }
-    public int getCallsforCurrentState() {
-        return callsForCurrentState;
+
+    @Override
+    public WorkflowStatistic getWorkflowStatistics() {
+        return null;
     }
 }

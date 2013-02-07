@@ -39,4 +39,6 @@ public interface Workflow {
      * @return A human readable text telling the current state of the workflow.
      */
     String currentState();
+
+    WorkflowStatistic getWorkflowStatistics();
 }

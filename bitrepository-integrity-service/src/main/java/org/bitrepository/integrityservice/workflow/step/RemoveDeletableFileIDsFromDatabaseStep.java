@@ -56,7 +56,7 @@ public class RemoveDeletableFileIDsFromDatabaseStep extends AbstractWorkFlowStep
     
     @Override
     public String getName() {
-        return "Remove deletable file id entries from the database.";
+        return "Remove deleted files";
     }
     
     @Override
@@ -66,5 +66,11 @@ public class RemoveDeletableFileIDsFromDatabaseStep extends AbstractWorkFlowStep
             log.info("Removing entries for the file with id '" + fileId + "' from the database.");
             cache.deleteFileIdEntry(fileId);
         }
+    }
+
+    @Override
+    public String getDescription() {
+        return "Deletes all fileIDs from the database which appear to have been delete, " +
+                "eg. which have disappeared from all pillars";
     }
 }

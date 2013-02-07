@@ -151,4 +151,9 @@ public class SimpleIntegrityService implements IntegrityService {
         Workflow w1 = new BasicIntegrityWorkflow(settings, collector, cache, checker, alerter);
         workflows.add(w1);
     }
+
+    @Override
+    public List<String> getPillarList() {
+        return settings.getCollectionSettings().getClientSettings().getPillarIDs();
+    }
 }

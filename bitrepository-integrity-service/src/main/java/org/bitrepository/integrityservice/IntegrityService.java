@@ -23,6 +23,7 @@ package org.bitrepository.integrityservice;
 
 import java.util.Collection;
 
+import java.util.List;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowTimerTask;
@@ -64,7 +65,12 @@ public interface IntegrityService extends LifeCycledService {
      * @param intervalBetweenRuns The time between running the workflow.
      */
     void scheduleWorkflow(Workflow workflow, long intervalBetweenRuns);
-    
+
+    /**
+     * @return The list of pillars.
+     */
+    public List<String> getPillarList();
+
     /**
      * Shut down the integrity service.
      */
