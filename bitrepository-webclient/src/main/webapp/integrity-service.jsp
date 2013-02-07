@@ -117,7 +117,7 @@
     function makePillarRow(id, totalFileCount, missingFilesCount, checksumErrorCount) {
       var html = "";
       html += "<tr id=\"" + id + "-row\">";
-      html += "<td>" + id + "</td>";
+      html += "<td><div style=\"padding:5px\">" + id + "</div></td>";
       html += "<td><a class=\"btn btn-link\" id=\"" + id + "-totalFileCount\">" + totalFileCount + "</a></td>";
       html += "<td><a class=\"btn btn-link\" id=\"" + id + "-missingFiles\">" + missingFilesCount + "</a></td>";
       html += "<td><a class=\"btn btn-link\" id=\"" + id + "-checksumErrors\">" + checksumErrorCount + "</a></td></tr>";
@@ -138,13 +138,17 @@
           if(pillars[j[i].pillarID] == null) {
             $("#integrity-status-table-body").append(makePillarRow(j[i].pillarID, 
                 j[i].totalFileCount, j[i].missingFilesCount, j[i].checksumErrorCount));
-            pillars[j[i].pillarID] = {id : j[i].pillarID};
+            pillars[j[i].pillarID] = {totalFileCount : j[i].totalFileCount,
+                                      missingFilesCount : j[i].missingFilesCount,
+                                      checksumErrorCount : j[i].checksumErrorCount};
             attachButtonAction(j[i].pillarID, "Total files");
             attachButtonAction(j[i].pillarID, "Missing files");
             attachButtonAction(j[i].pillarID, "Checksum errors");
           } else {
             updatePillarRow(j[i].pillarID, j[i].totalFileCount, j[i].missingFilesCount, j[i].checksumErrorCount);
-            
+            pillars[j[i].pillarID].totalFileCount = j[i].totalFileCount;
+            pillars[j[i].pillarID].missingFilesCount = j[i].missingFilesCount;
+            pillars[j[i].pillarID].checksumErrorCount = j[i].checksumErrorCount;
           }
         }
       });

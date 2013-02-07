@@ -61,9 +61,9 @@ public class RestIntegrityService {
             @QueryParam("pageNumber") int pageNumber,
             @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
         List<String> ids = new ArrayList<String>();
-        ids.add("foo");
-        ids.add("bar");
-        ids.add("baz");
+        ids.add("foo" + pageNumber);
+        ids.add("bar" + pageNumber);
+        ids.add("baz" + pageNumber);
         
         JSONArray array = new JSONArray();
         for(String file : ids) {
@@ -80,9 +80,9 @@ public class RestIntegrityService {
             @QueryParam("pageNumber") int pageNumber,
             @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
         List<String> ids = new ArrayList<String>();
-        ids.add("foo");
-        ids.add("bar");
-        ids.add("baz");
+        ids.add("foo" + pageNumber);
+        ids.add("bar" + pageNumber);
+        ids.add("baz" + pageNumber);
         
         JSONArray array = new JSONArray();
         for(String file : ids) {
@@ -99,9 +99,9 @@ public class RestIntegrityService {
             @QueryParam("pageNumber") int pageNumber,
             @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
         List<String> ids = new ArrayList<String>();
-        ids.add("foo");
-        ids.add("bar");
-        ids.add("baz");
+        ids.add("foo" + pageNumber);
+        ids.add("bar" + pageNumber);
+        ids.add("baz" + pageNumber);
         
         JSONArray array = new JSONArray();
         for(String file : ids) {
