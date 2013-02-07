@@ -65,6 +65,15 @@ public class ChecksumReportModel implements IntegrityReportModel {
         return res.toString();
     }
 
+    @Override
+    public String generateSummaryOfReport() {
+        if(!hasIntegrityIssues()) {
+            return "No checksums issues. \n";
+        }
+        
+        return "Reported checksum issues for '" + filesWithIssues.size() + "' files.";
+    }
+
     /**
      * @return The validated files with issues. A map between the file ids and their issues.
      */

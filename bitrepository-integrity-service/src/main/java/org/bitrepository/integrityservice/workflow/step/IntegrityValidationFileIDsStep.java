@@ -42,7 +42,7 @@ public class IntegrityValidationFileIDsStep extends AbstractWorkFlowStep {
     private final IntegrityAlerter dispatcher;
     
     /** The final report for this check.*/
-    private MissingFileReportModel finalReport = null; 
+    private MissingFileReportModel report = null; 
     
     /**
      * Constructor.
@@ -62,13 +62,13 @@ public class IntegrityValidationFileIDsStep extends AbstractWorkFlowStep {
     @Override
     public void performStep() {
         super.performStep();
-        finalReport = checker.checkFileIDs(FileIDsUtils.getAllFileIDs());
+        report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs());
         
-        if(finalReport.hasIntegrityIssues()) {
-            log.warn("Integrity issues found: " + finalReport.generateReport());
-            dispatcher.integrityFailed(finalReport);
+        if(!report.hasIntegrityIssues()) {
+            log.debug("no files are missing at any pillar.");
         } else {
-            log.info("No integrity issues found: " + finalReport.generateReport());
+            log.warn("Found the following integrity:\n" + report.generateReport());
+            dispatcher.integrityFailed(report);
         }
     }
     
@@ -77,6 +77,6 @@ public class IntegrityValidationFileIDsStep extends AbstractWorkFlowStep {
      * Will return null, if the step has not yet been run.
      */
     public MissingFileReportModel getReport() {
-        return finalReport;
+        return report;
     }
 }

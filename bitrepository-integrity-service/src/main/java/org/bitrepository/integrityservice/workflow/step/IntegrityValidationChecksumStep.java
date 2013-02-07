@@ -60,11 +60,11 @@ public class IntegrityValidationChecksumStep extends AbstractWorkFlowStep {
         super.performStep();
         IntegrityReportModel report = checker.checkChecksum();
         
-        if(report.hasIntegrityIssues()) {
-            log.warn("Integrity issues found: " + report.generateReport());
-            dispatcher.integrityFailed(report);
+        if(!report.hasIntegrityIssues()) {
+            log.debug("No checksum disagreements for any files.");
         } else {
-            log.info("No integrity issues found: " + report.generateReport());
+            log.warn("Found the following integrity:\n" + report.generateReport());
+            dispatcher.integrityFailed(report);
         }
     }
 }

@@ -1,5 +1,7 @@
 package org.bitrepository.integrityservice.stresstest;
 
+import org.testng.annotations.Test;
+import org.testng.AssertJUnit;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILE_INFO_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_TABLE;
@@ -22,10 +24,8 @@ import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.Test;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 
 public class DatabaseStressTests extends ExtendedTestCase {
     
@@ -38,7 +38,7 @@ public class DatabaseStressTests extends ExtendedTestCase {
     
     protected Settings settings;
     
-    @BeforeClass
+    @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
 
@@ -75,7 +75,7 @@ public class DatabaseStressTests extends ExtendedTestCase {
         cache.updateFileIDs(data, PILLAR_4);
     }
     
-    @AfterClass
+    @AfterMethod (alwaysRun = true)
     public void clearDatabase() throws Exception {
         DBConnector connector = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         DatabaseUtils.executeStatement(connector, "DELETE FROM " + FILE_INFO_TABLE, new Object[0]);
@@ -85,9 +85,9 @@ public class DatabaseStressTests extends ExtendedTestCase {
     
     @Test(groups = {"stresstest", "integritytest"})
     public void testDatabasePerformance() {
-        addDescription("Testing the connection to the integrity database.");
+        addDescription("Testing the performance of the SQL queries to the database.");
         IntegrityDAO cache = createDAO();
-        Assert.assertNotNull(cache);
+        AssertJUnit.assertNotNull(cache);
         
         long startTime = System.currentTimeMillis();
         populateDatabase(cache);
