@@ -198,7 +198,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
          */
         public void startSending() throws Exception {
             AlarmMessage message = ExampleMessageFactory.createMessage(AlarmMessage.class);
-            message.setTo(QUEUE);
+            message.setDestination(QUEUE);
             bus.sendMessage(message);
         }
 

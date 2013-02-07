@@ -73,7 +73,7 @@ public abstract class ClientTestMessageFactory extends TestMessageFactory {
             MessageResponse response, MessageRequest request, String componentID, String replyTo) {
         initializeMessageDetails(response);
         response.setCorrelationID(request.getCorrelationID());
-        response.setTo(request.getReplyTo());
+        response.setDestination(request.getReplyTo());
         response.setReplyTo(replyTo);
         response.setFrom(componentID);
         response.setResponseInfo(createPositiveIdentificationResponseInfo());

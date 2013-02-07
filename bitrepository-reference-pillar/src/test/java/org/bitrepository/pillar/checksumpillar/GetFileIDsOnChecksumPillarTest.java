@@ -76,7 +76,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
                         receivedIdentifyResponse.getReplyTo(),
                         receivedIdentifyResponse.getResponseInfo(),
                         receivedIdentifyResponse.getTimeToDeliver(),
-                        receivedIdentifyResponse.getTo()));
+                        receivedIdentifyResponse.getDestination()));
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.IDENTIFICATION_POSITIVE);
         
@@ -98,7 +98,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
                         progressResponse.getReplyTo(), 
                         progressResponse.getResponseInfo(),
                         DEFAULT_UPLOAD_FILE_ADDRESS,
-                        progressResponse.getTo()));
+                        progressResponse.getDestination()));
         
         addStep("Retrieve the FinalResponse for the GetFileIDs request", 
                 "The GetFileIDs response should be sent by the checksum pillar.");
@@ -113,7 +113,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
                         finalResponse.getReplyTo(), 
                         finalResponse.getResponseInfo(), 
                         finalResponse.getResultingFileIDs(),
-                        finalResponse.getTo()));
+                        finalResponse.getDestination()));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

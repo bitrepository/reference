@@ -74,7 +74,7 @@ public class MediatorTest extends DefaultFixturePillarTest {
             request.setFrom(getPillarID());
             request.setMinVersion(BigInteger.valueOf(1L));
             request.setReplyTo(clientDestinationId);
-            request.setTo(settingsForCUT.getCollectionDestination());
+            request.setDestination(settingsForCUT.getCollectionDestination());
             request.setVersion(BigInteger.valueOf(1L));
             messageBus.sendMessage(request);
             
@@ -141,12 +141,12 @@ public class MediatorTest extends DefaultFixturePillarTest {
         public IdentifyContributorsForGetStatusResponse generateFailedResponse(IdentifyContributorsForGetStatusRequest request) {
             IdentifyContributorsForGetStatusResponse res = new IdentifyContributorsForGetStatusResponse();
             res.setCollectionID(request.getCollectionID());
-            res.setContributor(request.getTo());
+            res.setContributor(request.getDestination());
             res.setCorrelationID(request.getCorrelationID());
-            res.setFrom(request.getTo());
+            res.setFrom(request.getDestination());
             res.setMinVersion(request.getMinVersion());
-            res.setReplyTo(request.getTo());
-            res.setTo(request.getReplyTo());
+            res.setReplyTo(request.getDestination());
+            res.setDestination(request.getReplyTo());
             res.setVersion(request.getVersion());
             return res;
         }

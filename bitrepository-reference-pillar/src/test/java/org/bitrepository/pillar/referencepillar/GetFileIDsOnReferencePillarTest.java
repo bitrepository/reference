@@ -134,7 +134,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
                         finalResponse.getReplyTo(),
                         finalResponse.getResponseInfo(),
                         finalResponse.getResultingFileIDs(),
-                        finalResponse.getTo()));
+                        finalResponse.getDestination()));
 
         Assert.assertEquals(finalResponse.getResultingFileIDs().getResultAddress(), DEFAULT_UPLOAD_FILE_ADDRESS);
         Assert.assertNull(finalResponse.getResultingFileIDs().getFileIDsData(), "Results should be delivered through " +

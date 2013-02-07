@@ -59,7 +59,7 @@ public class IdentifyPillarsForPutFileIT extends PillarFunctionTest {
         Assert.assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.IDENTIFICATION_POSITIVE);
-        Assert.assertEquals(receivedIdentifyResponse.getTo(), identifyRequest.getReplyTo());
+        Assert.assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
     }
 
     @Test( groups = {"pillar-integration-test"})
@@ -83,6 +83,6 @@ public class IdentifyPillarsForPutFileIT extends PillarFunctionTest {
         Assert.assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.DUPLICATE_FILE_FAILURE);
-        Assert.assertEquals(receivedIdentifyResponse.getTo(), identifyRequest.getReplyTo());
+        Assert.assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
     }
 }

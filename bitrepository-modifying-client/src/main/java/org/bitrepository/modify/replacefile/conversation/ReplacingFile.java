@@ -96,7 +96,7 @@ public class ReplacingFile extends PerformingOperationState {
         msg.setFileID(context.getFileID());
         msg.setFileSize(context.getSizeOfNewFile());
         msg.setPillarID(pillarID);
-        msg.setTo(activeContributors.get(pillarID));
+        msg.setDestination(activeContributors.get(pillarID));
         return msg;
     }
 

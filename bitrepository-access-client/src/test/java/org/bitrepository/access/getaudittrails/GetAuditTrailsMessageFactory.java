@@ -91,7 +91,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
         initializeMessageDetails(message);
         message.setCorrelationID(identifyRequest.getCorrelationID());
         message.setReplyTo(identifyRequest.getReplyTo());
-        message.setTo(toDestination);
+        message.setDestination(toDestination);
         message.setContributor(componentID);
         message.setFrom(clientID);
         return message;

@@ -77,7 +77,7 @@ public class IdentifyPillarsForDeleteFile extends IdentifyingState {
         IdentifyPillarsForDeleteFileRequest msg = new IdentifyPillarsForDeleteFileRequest();
         initializeMessage(msg);
         msg.setFileID(context.getFileID());
-        msg.setTo(context.getSettings().getCollectionDestination());
+        msg.setDestination(context.getSettings().getCollectionDestination());
         context.getMessageSender().sendMessage(msg);
         context.getMonitor().identifyRequestSent("Identifying pillars for delete file");
     }

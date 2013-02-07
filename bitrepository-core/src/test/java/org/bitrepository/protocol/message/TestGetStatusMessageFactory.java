@@ -39,7 +39,7 @@ public class TestGetStatusMessageFactory extends ClientTestMessageFactory {
         initializeMessageDetails(message);
         message.setCorrelationID(request.getCorrelationID());
         message.setReplyTo(request.getReplyTo());
-        message.setTo(toDestination);
+        message.setDestination(toDestination);
         message.setFrom(componentID);
         return message;
     }
@@ -69,7 +69,7 @@ public class TestGetStatusMessageFactory extends ClientTestMessageFactory {
         initializeMessageDetails(message);
         message.setCorrelationID(request.getCorrelationID());
         message.setReplyTo(request.getReplyTo());
-        message.setTo(toDestination);
+        message.setDestination(toDestination);
         message.setContributor(componentID);
         message.setFrom(from);
         message.setAuditTrailInformation("");

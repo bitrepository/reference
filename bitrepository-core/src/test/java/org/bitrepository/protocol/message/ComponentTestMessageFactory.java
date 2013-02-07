@@ -39,7 +39,7 @@ public class ComponentTestMessageFactory extends TestMessageFactory {
     public void initializeMessageToComponentUnderTest(Message message, Message messageToReplyTo) {
         initializeMessageToComponent(message);
         message.setCorrelationID(messageToReplyTo.getCorrelationID());
-        message.setTo(messageToReplyTo.getReplyTo());
+        message.setDestination(messageToReplyTo.getReplyTo());
     }
 
     /**
@@ -50,7 +50,7 @@ public class ComponentTestMessageFactory extends TestMessageFactory {
     public void initializeMessageToComponentUnderTest(Message message) {
         initializeMessageToComponent(message);
         message.setCorrelationID(CorrelationIDGenerator.generateConversationID());
-        message.setTo(testerSettings.getCollectionDestination());
+        message.setDestination(testerSettings.getCollectionDestination());
     }
 
     private void initializeMessageToComponent(Message message) {

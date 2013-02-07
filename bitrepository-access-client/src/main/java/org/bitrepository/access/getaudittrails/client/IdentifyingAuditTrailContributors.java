@@ -38,7 +38,7 @@ public class IdentifyingAuditTrailContributors extends IdentifyingState {
     protected void sendRequest() {
         IdentifyContributorsForGetAuditTrailsRequest msg = new IdentifyContributorsForGetAuditTrailsRequest();
         initializeMessage(msg);
-        msg.setTo(context.getSettings().getCollectionDestination());
+        msg.setDestination(context.getSettings().getCollectionDestination());
         context.getMessageSender().sendMessage(msg);
         context.getMonitor().identifyRequestSent("Identifying contributers for audit trails");
     }

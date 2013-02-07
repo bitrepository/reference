@@ -227,7 +227,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
          * @throws Exception If a problem with creating the message occurs.
          */
         public void startSending(AlarmMessage message) throws Exception {
-            message.setTo(QUEUE);
+            message.setDestination(QUEUE);
             bus.sendMessage(message);
         }
 

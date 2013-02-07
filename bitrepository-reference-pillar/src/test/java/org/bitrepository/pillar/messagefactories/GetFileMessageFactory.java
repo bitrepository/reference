@@ -58,7 +58,7 @@ public class GetFileMessageFactory extends ClientTestMessageFactory {
         res.setFileID(fileId);
         res.setFrom(from);
         res.setReplyTo(replyTo);
-        res.setTo(settings.getCollectionDestination());
+        res.setDestination(settings.getCollectionDestination());
         
         return res;
     }
@@ -76,7 +76,7 @@ public class GetFileMessageFactory extends ClientTestMessageFactory {
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setTimeToDeliver(timeToDeliver);
-        res.setTo(toTopic);
+        res.setDestination(toTopic);
         
         return res;
     }
@@ -94,7 +94,7 @@ public class GetFileMessageFactory extends ClientTestMessageFactory {
         res.setFrom(from);
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
-        res.setTo(toTopic);
+        res.setDestination(toTopic);
         
         return res;
     }
@@ -115,7 +115,7 @@ public class GetFileMessageFactory extends ClientTestMessageFactory {
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setResponseInfo(prInfo);
-        res.setTo(toTopic);
+        res.setDestination(toTopic);
         
         return res;
     }
@@ -133,7 +133,7 @@ public class GetFileMessageFactory extends ClientTestMessageFactory {
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setResponseInfo(rInfo);
-        res.setTo(toTopic);
+        res.setDestination(toTopic);
         
         return res;
     }

@@ -108,7 +108,7 @@ public class PuttingFile extends PerformingOperationState {
         request.setFileSize(context.getFileSize());
         request.setChecksumDataForNewFile(context.getChecksumForValidationAtPillar());
         request.setPillarID(pillar);
-        request.setTo(activeContributors.get(pillar));
+        request.setDestination(activeContributors.get(pillar));
         return request;
     }
 

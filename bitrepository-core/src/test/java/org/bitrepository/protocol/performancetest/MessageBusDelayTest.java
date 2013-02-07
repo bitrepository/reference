@@ -86,7 +86,7 @@ public class MessageBusDelayTest extends ExtendedTestCase {
         
         List<Long> delayList = new ArrayList<Long>(PERFORMANCE_COUNT);
         AlarmMessage message = ExampleMessageFactory.createMessage(AlarmMessage.class);
-        message.setTo(destination);
+        message.setDestination(destination);
         
         addStep("Sending the message and calculating the time.", "Should be done '" + PERFORMANCE_COUNT + "' times.");
         for(int i = 0; i < PERFORMANCE_COUNT; i++) {

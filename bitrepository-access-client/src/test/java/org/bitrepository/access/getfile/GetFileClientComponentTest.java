@@ -78,7 +78,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         Assert.assertEquals(receivedIdentifyRequestMessage.getReplyTo(), settingsForCUT.getReceiverDestinationID());
         Assert.assertEquals(receivedIdentifyRequestMessage.getFileID(), DEFAULT_FILE_ID);
         Assert.assertEquals(receivedIdentifyRequestMessage.getFrom(), settingsForTestClient.getComponentID());
-        Assert.assertEquals(receivedIdentifyRequestMessage.getTo(), settingsForTestClient.getCollectionDestination());
+        Assert.assertEquals(receivedIdentifyRequestMessage.getDestination(), settingsForTestClient.getCollectionDestination());
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Send a response from pillar1", "Should be ignored, eg. nothing should happen" );
@@ -106,7 +106,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         Assert.assertEquals(receivedGetFileRequest.getFileID(), DEFAULT_FILE_ID);
         Assert.assertEquals(receivedGetFileRequest.getAuditTrailInformation(), auditTrailInformation);
         Assert.assertEquals(receivedGetFileRequest.getFrom(), settingsForTestClient.getComponentID());
-        Assert.assertEquals(receivedGetFileRequest.getTo(), pillar2DestinationId);
+        Assert.assertEquals(receivedGetFileRequest.getDestination(), pillar2DestinationId);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
 
         addStep("Send a GetFileProgressResponse.",

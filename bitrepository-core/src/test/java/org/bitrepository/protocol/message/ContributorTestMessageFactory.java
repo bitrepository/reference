@@ -46,7 +46,7 @@ public class ContributorTestMessageFactory extends TestMessageFactory {
     protected void initializeRequestDetails(MessageRequest request, String correlationID) {
         initializeMessageDetails(request);
         request.setCorrelationID(correlationID);
-        request.setTo(collectionDestination);
+        request.setDestination(collectionDestination);
         request.setCorrelationID(CORRELATION_ID_DEFAULT);
         request.setFrom(clientID);
         request.setReplyTo(clientDestination);
@@ -54,7 +54,7 @@ public class ContributorTestMessageFactory extends TestMessageFactory {
 
     protected void initializeIdentifyRequestDetails(MessageRequest identifyRequest) {
         initializeMessageDetails(identifyRequest);
-        identifyRequest.setTo(collectionDestination);
+        identifyRequest.setDestination(collectionDestination);
         identifyRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         identifyRequest.setFrom(clientID);
         identifyRequest.setReplyTo(clientDestination);

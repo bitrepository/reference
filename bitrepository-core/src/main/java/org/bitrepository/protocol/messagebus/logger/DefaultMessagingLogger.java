@@ -45,7 +45,7 @@ public class DefaultMessagingLogger implements MessageLogger {
             if (message.isSetRecipient()) {
                 messageSB.append(" recipient " + message.getRecipient() + ", ");
             }
-            messageSB.append(" to " + message.getTo() + ": ");
+            messageSB.append(" to " + message.getDestination() + ": ");
             appendShortRepresentation(messageSB, message);
             logShortMessage(messageSB.toString());
         }

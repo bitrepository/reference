@@ -86,7 +86,7 @@ public class TestPutFileMessageFactory extends ClientTestMessageFactory {
         IdentifyPillarsForPutFileRequest identifyPillarsForPutFileRequest = createIdentifyPillarsForPutFileRequest(from);
         identifyPillarsForPutFileRequest.setCorrelationID(correlationID);
         identifyPillarsForPutFileRequest.setReplyTo(replyTo);
-        identifyPillarsForPutFileRequest.setTo(toTopic);
+        identifyPillarsForPutFileRequest.setDestination(toTopic);
         identifyPillarsForPutFileRequest.setFileID(fileId);
         identifyPillarsForPutFileRequest.setFileSize(BigInteger.valueOf(fileSize));
         identifyPillarsForPutFileRequest.setAuditTrailInformation(auditTrailInformation);
@@ -105,7 +105,7 @@ public class TestPutFileMessageFactory extends ClientTestMessageFactory {
             String pillarId, String pillarDestinationId) {
         IdentifyPillarsForPutFileResponse ipfpfResponse = new IdentifyPillarsForPutFileResponse();
         initializeMessageDetails(ipfpfResponse);
-        ipfpfResponse.setTo(receivedIdentifyRequestMessage.getReplyTo());
+        ipfpfResponse.setDestination(receivedIdentifyRequestMessage.getReplyTo());
         ipfpfResponse.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
         ipfpfResponse.setPillarID(pillarId);
         ipfpfResponse.setReplyTo(pillarDestinationId);
@@ -145,7 +145,7 @@ public class TestPutFileMessageFactory extends ClientTestMessageFactory {
             String fileAddress, BigInteger filesize, String fileId, String auditTrailInformation, String from) {
         PutFileRequest putFileRequest = createPutFileRequest(from);
         putFileRequest.setPillarID(pillarId);
-        putFileRequest.setTo(toTopic);
+        putFileRequest.setDestination(toTopic);
         putFileRequest.setReplyTo(replyTo);
         putFileRequest.setCorrelationID(correlationId);
         putFileRequest.setFileAddress(fileAddress);
@@ -170,7 +170,7 @@ public class TestPutFileMessageFactory extends ClientTestMessageFactory {
             String pillarId, String pillarDestinationId) {
         PutFileProgressResponse progressResponse = new PutFileProgressResponse();
         initializeMessageDetails(progressResponse);
-        progressResponse.setTo(request.getReplyTo());
+        progressResponse.setDestination(request.getReplyTo());
         progressResponse.setCorrelationID(request.getCorrelationID());
         progressResponse.setReplyTo(pillarDestinationId);
         progressResponse.setPillarID(pillarId);
@@ -195,7 +195,7 @@ public class TestPutFileMessageFactory extends ClientTestMessageFactory {
             String pillarId, String pillarDestinationId) {
         PutFileFinalResponse finalResponse = new PutFileFinalResponse();
         initializeMessageDetails(finalResponse);
-        finalResponse.setTo(request.getReplyTo());
+        finalResponse.setDestination(request.getReplyTo());
         finalResponse.setCorrelationID(request.getCorrelationID());
         finalResponse.setReplyTo(pillarDestinationId);
         finalResponse.setPillarID(pillarId);

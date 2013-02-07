@@ -73,7 +73,7 @@ public class DeletingFile extends PerformingOperationState {
                 }
             }
             msg.setPillarID(pillar);
-            msg.setTo(activeContributors.get(pillar));
+            msg.setDestination(activeContributors.get(pillar));
             context.getMessageSender().sendMessage(msg);
         }
     }
@@ -88,7 +88,7 @@ public class DeletingFile extends PerformingOperationState {
         request.setFileID(context.getFileID());
         request.setChecksumDataForExistingFile(context.getChecksumForValidationAtPillar());
         request.setPillarID(pillar);
-        request.setTo(activeContributors.get(pillar));
+        request.setDestination(activeContributors.get(pillar));
         return request;
     }
 

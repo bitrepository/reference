@@ -77,7 +77,7 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
         GetAuditTrailsProgressResponse progressResponse = clientReceiver.waitForMessage(GetAuditTrailsProgressResponse.class);
           Assert.assertEquals(progressResponse.getCorrelationID(), request.getCorrelationID());
         Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_ACCEPTED_PROGRESS);
-        Assert.assertEquals(progressResponse.getTo(), clientDestinationId );
+        Assert.assertEquals(progressResponse.getDestination(), clientDestinationId );
         Assert.assertEquals(progressResponse.getReplyTo(), pillarDestinationId);
         Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.OPERATION_ACCEPTED_PROGRESS);

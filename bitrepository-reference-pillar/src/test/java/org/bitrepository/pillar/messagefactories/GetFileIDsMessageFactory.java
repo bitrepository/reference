@@ -57,7 +57,7 @@ public class GetFileIDsMessageFactory extends ClientTestMessageFactory {
         res.setFileIDs(fileId);
         res.setFrom(from);
         res.setReplyTo(replyTo);
-        res.setTo(settings.getCollectionDestination());
+        res.setDestination(settings.getCollectionDestination());
         
         return res;
     }
@@ -75,7 +75,7 @@ public class GetFileIDsMessageFactory extends ClientTestMessageFactory {
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setTimeToDeliver(timeToDeliver);
-        res.setTo(toTopic);
+        res.setDestination(toTopic);
         
         return res;
     }
@@ -92,7 +92,7 @@ public class GetFileIDsMessageFactory extends ClientTestMessageFactory {
         res.setPillarID(pillarId);
         res.setReplyTo(replyTo);
         res.setResultAddress(url);
-        res.setTo(toTopic);
+        res.setDestination(toTopic);
         
         return res;
     }
@@ -109,7 +109,7 @@ public class GetFileIDsMessageFactory extends ClientTestMessageFactory {
         res.setReplyTo(replyTo);
         res.setResponseInfo(prInfo);
         res.setResultAddress(url);
-        res.setTo(toTopic);
+        res.setDestination(toTopic);
         
         return res;
     }
@@ -126,7 +126,7 @@ public class GetFileIDsMessageFactory extends ClientTestMessageFactory {
         res.setReplyTo(replyTo);
         res.setResponseInfo(frInfo);
         res.setResultingFileIDs(results);
-        res.setTo(toTopic);
+        res.setDestination(toTopic);
         
         return res;
     }

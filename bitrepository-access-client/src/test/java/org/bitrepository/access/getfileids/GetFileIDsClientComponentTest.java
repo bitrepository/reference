@@ -107,7 +107,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         Assert.assertEquals(receivedIdentifyRequestMessage.getReplyTo(), settingsForCUT.getReceiverDestinationID());
         Assert.assertEquals(receivedIdentifyRequestMessage.getRecipient(), PILLAR1_ID);
         Assert.assertEquals(receivedIdentifyRequestMessage.getFrom(), settingsForTestClient.getComponentID());
-        Assert.assertEquals(receivedIdentifyRequestMessage.getTo(), settingsForTestClient.getCollectionDestination());
+        Assert.assertEquals(receivedIdentifyRequestMessage.getDestination(), settingsForTestClient.getCollectionDestination());
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("The pillar sends a response to the identify message.",
@@ -125,7 +125,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         Assert.assertEquals(receivedGetFileIDsRequest.getCorrelationID(), receivedIdentifyRequestMessage.getCorrelationID());
         Assert.assertEquals(receivedGetFileIDsRequest.getReplyTo(), settingsForCUT.getReceiverDestinationID());
         Assert.assertEquals(receivedGetFileIDsRequest.getFrom(), settingsForTestClient.getComponentID());
-        Assert.assertEquals(receivedGetFileIDsRequest.getTo(), pillar1DestinationId);
+        Assert.assertEquals(receivedGetFileIDsRequest.getDestination(), pillar1DestinationId);
 
         addStep("The pillar sends a getFileIDsProgressResponse to the GetFileIDsClient.",
                 "The GetFileIDsClient should notify about the response through the callback interface.");

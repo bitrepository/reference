@@ -107,7 +107,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
 
         addStep("Define the message to send.", "Should retrieve the Alarm message from examples and set the To.");
         alarmMessage = ExampleMessageFactory.createMessage(AlarmMessage.class);
-        alarmMessage.setTo(QUEUE);
+        alarmMessage.setDestination(QUEUE);
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
         MessageBusConfiguration conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
@@ -142,7 +142,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
 
         addStep("Define the message to send.", "Should retrieve the Alarm message from examples and set the To.");
         alarmMessage = ExampleMessageFactory.createMessage(AlarmMessage.class);
-        alarmMessage.setTo(QUEUE);
+        alarmMessage.setDestination(QUEUE);
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
         MessageBusConfiguration conf = MessageBusConfigurationFactory.createDefaultConfiguration();
