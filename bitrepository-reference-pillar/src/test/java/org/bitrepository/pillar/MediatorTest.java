@@ -72,10 +72,10 @@ public class MediatorTest extends DefaultFixturePillarTest {
             request.setCollectionID(settingsForCUT.getCollectionID());
             request.setCorrelationID(UUID.randomUUID().toString());
             request.setFrom(getPillarID());
-            request.setMinVersion(BigInteger.valueOf(1L));
+            request.setMinVersion(BigInteger.valueOf(24L));
             request.setReplyTo(clientDestinationId);
             request.setDestination(settingsForCUT.getCollectionDestination());
-            request.setVersion(BigInteger.valueOf(1L));
+            request.setVersion(BigInteger.valueOf(24L));
             messageBus.sendMessage(request);
             
             MessageResponse response = clientReceiver.waitForMessage(IdentifyContributorsForGetStatusResponse.class);
