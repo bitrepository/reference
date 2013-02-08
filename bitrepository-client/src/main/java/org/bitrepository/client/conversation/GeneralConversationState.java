@@ -158,7 +158,7 @@ public abstract class GeneralConversationState implements ConversationState {
         msg.setAuditTrailInformation(getContext().getAuditTrailInformation());
         msg.setFrom(getContext().getClientID());
         if (getContext().getContributors() != null && getContext().getContributors().size() == 1) {
-            msg.setRecipient(getContext().getContributors().iterator().next());
+            msg.setTo(getContext().getContributors().iterator().next());
         }
     }
 

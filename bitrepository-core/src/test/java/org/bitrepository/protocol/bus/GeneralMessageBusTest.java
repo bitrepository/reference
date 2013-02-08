@@ -137,7 +137,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
         IdentifyPillarsForDeleteFileRequest messageToSend =
                 ExampleMessageFactory.createMessage(IdentifyPillarsForDeleteFileRequest.class);
         messageToSend.setDestination(settingsForTestClient.getCollectionDestination());
-        messageToSend.setRecipient(receiverID);
+        messageToSend.setTo(receiverID);
         messageBus.sendMessage(messageToSend);
         Message receivedMessage = messageList.poll(3, TimeUnit.SECONDS);
         Assert.assertEquals(receivedMessage.getStringProperty(ActiveMQMessageBus.MESSAGE_RECIPIENT_KEY), receiverID);

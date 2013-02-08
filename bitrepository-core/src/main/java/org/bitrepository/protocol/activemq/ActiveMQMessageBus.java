@@ -241,7 +241,7 @@ public class ActiveMQMessageBus implements MessageBus {
 
     @Override
     public void sendMessage(Message content) {
-        sendMessage(content.getDestination(), content.getReplyTo(), content.getRecipient(), content.getCollectionID(),
+        sendMessage(content.getDestination(), content.getReplyTo(), content.getTo(), content.getCollectionID(),
                 content.getCorrelationID(), content);
         MessageLoggerProvider.getInstance().logMessageSent(content);
     }
