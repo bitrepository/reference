@@ -152,18 +152,20 @@
 
     function getPagingLimit(id, member) {
       myID = id;
-      myMember = memeber;
-      return function(myID, myMember) {
-        pillars[myID][myMember];
+      myMember = member;
+      return function() {
+        return pillars[myID][myMember];
       }
     }
     
     function showModalPager(id, member, title, url) {
       myTitle = title;
       myUrl = url;
-      return function(title, url) {
-        pager = new Pager(getPagingLimit(id, member), 20, url, "#modalPager", "#modalPagerBody");
-        $("#modalPagerLabel").html(title);
+      myID = id;
+      myMember = member;
+      return function() {
+        pager = new Pager(getPagingLimit(myID, myMember), 20, myUrl, "#modalPager", "#modalPagerBody");
+        $("#modalPagerLabel").html(myTitle);
         pager.getPage(1)();
         $("#modalPagerDialog").modal('show');
       }
