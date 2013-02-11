@@ -88,9 +88,8 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
 
         ReferenceArchive archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
         ChecksumStore csCache = new ChecksumDAO(settings);
-        AlarmDispatcher alarmDispatcher = new AlarmDispatcher(settingsForCUT, messageBus);
-        ReferenceChecksumManager csManager = new ReferenceChecksumManager(archive, csCache, alarmDispatcher, 
-                ChecksumUtils.getDefault(settingsForCUT), 3600000L);
+        ReferenceChecksumManager csManager = new ReferenceChecksumManager(archive, csCache, 
+                new AlarmDispatcher(settingsForCUT, messageBus), ChecksumUtils.getDefault(settingsForCUT), 3600000L);
 
         testRecalculatingChecksumsDueToChangedFile(csManager, archive);
     }

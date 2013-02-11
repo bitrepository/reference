@@ -24,6 +24,7 @@ package org.bitrepository.pillar.referencepillar;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Date;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -39,7 +40,7 @@ import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
-import org.bitrepository.service.MockAlarmDispatcher;
+import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.testng.Assert;
@@ -51,7 +52,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     protected MockAuditManager audits;
     protected ChecksumStore csCache;
     protected MessageHandlerContext context;
-    protected MockAlarmDispatcher alarmDispatcher;
+    protected AlarmDispatcher alarmDispatcher;
 
     protected static final String EMPTY_FILE_CHECKSUM = "d41d8cd98f00b204e9800998ecf8427e";
 
@@ -85,7 +86,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
         shutdownMediator();
         csCache = new MemoryCache();
         archive = new ReferenceArchive(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir());
-        alarmDispatcher = new MockAlarmDispatcher(settingsForCUT, messageBus);
+        alarmDispatcher = new AlarmDispatcher(settingsForCUT, messageBus);
         audits = new MockAuditManager();
         context = new MessageHandlerContext(
                 settingsForCUT,
