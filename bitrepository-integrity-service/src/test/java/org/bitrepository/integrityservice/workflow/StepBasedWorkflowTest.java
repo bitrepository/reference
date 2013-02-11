@@ -41,11 +41,6 @@ public class StepBasedWorkflowTest extends ExtendedTestCase {
                     }
 
                     @Override
-                    public String getDescription() {
-                        return null;
-                    }
-
-                    @Override
                     public String getName() {
                         return NAME_OF_STEP;
                     }

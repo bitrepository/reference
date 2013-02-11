@@ -46,12 +46,10 @@ public class SetOldUnknownFilesToMissingStep extends AbstractWorkFlowStep {
 
     @Override
     public synchronized void performStep() {
-        super.performStep();
         store.setOldUnknownFilesToMissing();
     }
 
-    @Override
-    public String getDescription() {
+    public static String getDescription() {
         return "Finds all files which have been in state 'Unknown' on a pillar for so long that they should be marked" +
                 " as missing";
     }

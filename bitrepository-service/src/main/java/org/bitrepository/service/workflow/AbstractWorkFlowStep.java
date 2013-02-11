@@ -26,10 +26,4 @@ package org.bitrepository.service.workflow;
  * Takes care of general step bookkepping
  */
 public abstract class AbstractWorkFlowStep implements WorkflowStep {
-    private long startTime;
-
-    @Override
-    public void performStep() {
-        startTime = System.currentTimeMillis();
-    }
 }

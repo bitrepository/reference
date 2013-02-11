@@ -61,7 +61,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class BasicIntegrityWorkflowTest extends ExtendedTestCase {
+public class CompleteIntegrityCheckTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
 

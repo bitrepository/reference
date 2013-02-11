@@ -89,7 +89,6 @@ public class UpdateFileIDsStep extends AbstractWorkFlowStep {
 
     @Override
     public synchronized void performStep() {
-        super.performStep();
         store.setAllFilesToUnknownFileState();
 
         try {
@@ -123,8 +122,7 @@ public class UpdateFileIDsStep extends AbstractWorkFlowStep {
         return res.toArray(new ContributorQuery[pillars.size()]);
     }
 
-    @Override
-    public String getDescription() {
+    public static String getDescription() {
         return "Contacts all pillar to retrieve the full list of files from the pillars";
     }
 }

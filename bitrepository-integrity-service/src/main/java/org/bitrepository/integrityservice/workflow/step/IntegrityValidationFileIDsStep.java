@@ -61,7 +61,6 @@ public class IntegrityValidationFileIDsStep extends AbstractWorkFlowStep {
 
     @Override
     public void performStep() {
-        super.performStep();
         report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs());
         
         if(!report.hasIntegrityIssues()) {
@@ -80,8 +79,7 @@ public class IntegrityValidationFileIDsStep extends AbstractWorkFlowStep {
         return report;
     }
 
-    @Override
-    public String getDescription() {
+    public static String getDescription() {
         return "????";
     }
 }

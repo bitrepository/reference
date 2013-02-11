@@ -61,15 +61,13 @@ public class RemoveDeletableFileIDsFromDatabaseStep extends AbstractWorkFlowStep
     
     @Override
     public void performStep() {
-        super.performStep();
         for(String fileId : report.getDeleteableFiles()) {
             log.info("Removing entries for the file with id '" + fileId + "' from the database.");
             cache.deleteFileIdEntry(fileId);
         }
     }
 
-    @Override
-    public String getDescription() {
+    public static String getDescription() {
         return "Deletes all fileIDs from the database which appear to have been delete, " +
                 "eg. which have disappeared from all pillars";
     }

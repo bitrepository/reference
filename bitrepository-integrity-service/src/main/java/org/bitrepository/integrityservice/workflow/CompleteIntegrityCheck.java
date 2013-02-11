@@ -57,7 +57,6 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
 
     private static final String LINEFEED = "\n";
     /**
-     * Constructor.
      * @param settings The settings.
      * @param collector The collector for collecting the file ids and the checksums.
      * @param store The storage for the integrity data.
@@ -112,7 +111,8 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
     @Override
     public String getDescription() {
         return "Retrieves all fileIDs and checksums from all pillars and checks for all potential integrity " +
-                "problems." + LINEFEED +
-                getStepDescriptions(LINEFEED);
+                "problems."
+                //+ LINEFEED + getStepDescriptions()
+                ;
     }
 }

@@ -57,7 +57,6 @@ public class IntegrityValidationChecksumStep extends AbstractWorkFlowStep {
 
     @Override
     public void performStep() {
-        super.performStep();
         IntegrityReportModel report = checker.checkChecksum();
         
         if(!report.hasIntegrityIssues()) {
@@ -68,8 +67,7 @@ public class IntegrityValidationChecksumStep extends AbstractWorkFlowStep {
         }
     }
 
-    @Override
-    public String getDescription() {
+    public static String getDescription() {
         return "????";
     }
 }
