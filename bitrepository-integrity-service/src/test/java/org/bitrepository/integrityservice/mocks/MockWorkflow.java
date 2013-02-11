@@ -46,7 +46,7 @@ public class MockWorkflow implements Workflow {
     }
 
     @Override
-    public String getDescription(String linefeed) {
+    public String getDescription() {
         return null;
     }
 }

@@ -86,8 +86,8 @@ public class WorkflowTimerTask extends TimerTask {
         return interval;
     }
 
-    public String getDescription(String linefeed) {
-        return workflow.getDescription(linefeed);
+    public String getDescription() {
+        return workflow.getDescription();
     }
 
     /**

@@ -60,7 +60,7 @@ public class StepBasedWorkflowTest extends ExtendedTestCase {
             }
 
             @Override
-            public String getDescription(String linefeed) {
+            public String getDescription() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
         };

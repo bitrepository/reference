@@ -37,6 +37,8 @@ public class WorkflowStatistic {
     private Date finish;
     private final List<WorkflowStatistic> subStatistics = new LinkedList<WorkflowStatistic>();
 
+    private static final String LINEFEED = "\n";
+
     public WorkflowStatistic(String name) {
         this.name = name;
     }
@@ -53,14 +55,14 @@ public class WorkflowStatistic {
     public void finishSubStatistic() {
         getCurrentSubStatistic().finish();
     }
-    public String getFullStatistics(String linieFeed) {
+    public String getFullStatistics() {
         if (start == null) {
             return "Haven't finished a run yet";
         }
         StringBuilder sb = new StringBuilder();
         sb.append(getName() + " duration: " + TimeUtils.millisecondsToHuman(getDuration()));
         for (WorkflowStatistic stepStat: subStatistics) {
-            sb.append(linieFeed +stepStat.getFullStatistics(linieFeed));
+            sb.append(LINEFEED +stepStat.getFullStatistics());
         }
         return sb.toString();
     }
@@ -68,10 +70,9 @@ public class WorkflowStatistic {
     /**
      * Will generate a string of the form 'step duration'/'workflow duration'. If the workflow isn't running
      * a "Not running" string will be returned.
-     * @param linieFeed
      * @return
      */
-    public String getPartStatistics(String linieFeed) {
+    public String getPartStatistics() {
         if (start == null) {
             return "Not started yet";
         }
@@ -79,7 +80,7 @@ public class WorkflowStatistic {
             return "Idle";
         } else {
             WorkflowStatistic currentSubStatistic = getCurrentSubStatistic();
-            return currentSubStatistic.getName() + linieFeed +
+            return currentSubStatistic.getName() + LINEFEED +
                     "Running for " +
                     TimeUtils.millisecondsToHuman(currentSubStatistic.getDuration()) + "/" +
                     TimeUtils.millisecondsToHuman(getDuration()) + ")";

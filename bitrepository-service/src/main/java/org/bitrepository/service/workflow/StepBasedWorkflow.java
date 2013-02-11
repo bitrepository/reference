@@ -68,7 +68,7 @@ public abstract class StepBasedWorkflow implements Workflow {
     protected void finish() {
         statistics.finish();
         this.currentStep = null;
-        log.info(statistics.getFullStatistics("\n"));
+        log.info(statistics.getFullStatistics());
     }
     
     @Override

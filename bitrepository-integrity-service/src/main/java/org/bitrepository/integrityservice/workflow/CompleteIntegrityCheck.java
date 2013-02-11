@@ -54,7 +54,8 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
     private final IntegrityChecker checker;
     /** The alerter for dispatching alarms in the case of integrity issues.*/
     private final IntegrityAlerter alerter;
-    
+
+    private static final String LINEFEED = "\n";
     /**
      * Constructor.
      * @param settings The settings.
@@ -109,9 +110,9 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
     }
 
     @Override
-    public String getDescription(String linefeed) {
+    public String getDescription() {
         return "Retrieves all fileIDs and checksums from all pillars and checks for all potential integrity " +
-                "problems." + linefeed +
-                getStepDescriptions(linefeed);
+                "problems." + LINEFEED +
+                getStepDescriptions(LINEFEED);
     }
 }

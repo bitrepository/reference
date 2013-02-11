@@ -204,16 +204,16 @@ public class RestIntegrityService {
         JSONObject obj = new JSONObject();
         try {
             obj.put("workflowID", workflowTask.getName());
-            obj.put("workflowDescription", workflowTask.getDescription("</br>"));
+            obj.put("workflowDescription", workflowTask.getDescription());
             obj.put("nextRun", TimeUtils.shortDate(workflowTask.getNextRun()));
             if (workflowTask.getLastRunStatistics().getFinish() == null) {
                 obj.put("lastRun", "Workflow hasn't finished a run yet");
             } else {
                 obj.put("lastRun", TimeUtils.shortDate(workflowTask.getLastRunStatistics().getFinish()));
             }
-            obj.put("lastRunDetails", workflowTask.getLastRunStatistics().getFullStatistics("</br>"));
+            obj.put("lastRunDetails", workflowTask.getLastRunStatistics().getFullStatistics());
             obj.put("executionInterval", TimeUtils.millisecondsToHuman(workflowTask.getIntervalBetweenRuns()));
-            obj.put("currentState", workflowTask.getCurrentRunStatistics().getPartStatistics("</br>"));
+            obj.put("currentState", workflowTask.getCurrentRunStatistics().getPartStatistics());
             return obj;
         } catch (JSONException e) {
             return (JSONObject) JSONObject.NULL;
