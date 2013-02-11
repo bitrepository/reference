@@ -143,7 +143,9 @@ case "$1" in
 	;;
   update)
     download
+    ${PILLAR_SCRIPT} stop
 	update_pillars
+    ${PILLAR_SCRIPT} start
 	case "$?" in
 		0) echo "$NAME has been updated" ;;
 		1) echo "$NAME failed to update" ;;

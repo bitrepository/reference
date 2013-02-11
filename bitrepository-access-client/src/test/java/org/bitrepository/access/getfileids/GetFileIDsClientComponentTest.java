@@ -105,7 +105,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         Assert.assertEquals(receivedIdentifyRequestMessage.getCollectionID(), settingsForCUT.getCollectionID());
         Assert.assertNotNull(receivedIdentifyRequestMessage.getCorrelationID());
         Assert.assertEquals(receivedIdentifyRequestMessage.getReplyTo(), settingsForCUT.getReceiverDestinationID());
-        Assert.assertEquals(receivedIdentifyRequestMessage.getRecipient(), PILLAR1_ID);
+        Assert.assertEquals(receivedIdentifyRequestMessage.getTo(), PILLAR1_ID);
         Assert.assertEquals(receivedIdentifyRequestMessage.getFrom(), settingsForTestClient.getComponentID());
         Assert.assertEquals(receivedIdentifyRequestMessage.getDestination(), settingsForTestClient.getCollectionDestination());
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
