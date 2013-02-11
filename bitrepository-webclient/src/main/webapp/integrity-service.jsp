@@ -55,14 +55,30 @@
       </div>
     </div>
   </div>
+
+  <div id="modalPagerDialog" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modalPagerLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="modalPagerLabel">Modal header</h3>
+    </div>
+    <div class="modal-body" id="modalPagerBody">
+      <p>One fine body</p>
+    </div>
+    <div class="modal-footer">
+        <div id="modalPager" style="text-align: center"></div>
+    </div>
+  </div>  
+
   <script type="text/javascript" src="jquery/jquery-1.9.0.min.js"></script>
   <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="menu.js"></script>
+  <script type="text/javascript" src="pager.js"></script>
 
   <script>
     
     var pillars = new Object();
     var workflows = new Object();
+    var pager;
 
     function loadWorkflows() {
       $.getJSON('<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getWorkflowList/'
@@ -96,14 +112,14 @@
       }
     }
     
-    funtcion attachWorkflowInfoButton(id, type) {
+    function attachWorkflowInfoButton(id, type) {
       var element;
       var title;
       if(type == "workflowDescription") {
-        element = "#" + id + "-" + type;
+        element = "#" + id + "-details";
         title = "Workflow description";
       } else if(type == "lastRunDetails") {
-        element = "#" + id + "-" + type;
+        element = "#" + id + "-lastRun";
         title = "Last run details";
       }
       if(element != null) {
@@ -133,32 +149,51 @@
         }
       });
     }
-    
-    function getMsg(id) {
-      return function() {
-        return "foo " + id;
+
+    function getPagingLimit(id, member) {
+      myID = id;
+      myMember = memeber;
+      return function(myID, myMember) {
+        pillars[myID][myMember];
       }
-    } 
+    }
+    
+    function showModalPager(id, member, title, url) {
+      myTitle = title;
+      myUrl = url;
+      return function(title, url) {
+        pager = new Pager(getPagingLimit(id, member), 20, url, "#modalPager", "#modalPagerBody");
+        $("#modalPagerLabel").html(title);
+        pager.getPage(1)();
+        $("#modalPagerDialog").modal('show');
+      }
+    }
 
     function attachButtonAction(id, type) {
       var element;
       var title;
+      var member;
+      var url = "<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/";
       if(type == "Total files") {
         element = "#" + id + "-totalFileCount";
         title = type + " on " + id;
+        member = "totalFileCount";
+        url += "getAllFileIDs/";
       } else if(type == "Missing files") {
         element = "#" + id + "-missingFiles";
         title = type + " on " + id;
+        member = "missingFiles";
+        url += "getMissingFileIDs/";
       } else if(type == "Checksum errors") {
         element = "#" + id + "-checksumErrors";
         title = type + " on " + id;
+        member = "checksumErrors";
+        url += "getChecksumErrorFileIDs/";
       }
+      url += "?pillarID=" + id;
       if(element != null) {
-        $(element).popover({placement : "right", 
-          title : title, 
-          content : getMsg(id)}); 
-      }
-      
+        $(element).click(showModalPager(id, member, title, url));
+      }      
     }
 
     function makePillarRow(id, totalFileCount, missingFilesCount, checksumErrorCount) {
