@@ -180,8 +180,7 @@ public class RestIntegrityService {
         Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows();
         for(WorkflowTimerTask workflowTask : workflows) {
             if(workflowTask.getName().equals(workflowID)) {
-                workflowTask.runWorkflow();
-                return "Workflow '" + workflowID + "' started";
+                return workflowTask.runWorkflow();
             }
         }
         return "No workflow named '" + workflowID + "' was found!";

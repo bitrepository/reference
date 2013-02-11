@@ -93,8 +93,9 @@ public class WorkflowTimerTask extends TimerTask {
     /**
      * Trigger the workflow.
      * Resets the date for the next run of the workflow.
+     * @return String
      */
-    public void runWorkflow() {
+    public String runWorkflow() {
         try {
             //FixMe Should be generalize to work with the general workflow interface.
             if (workflow.currentState().equals(StepBasedWorkflow.NOT_RUNNING)) {
@@ -102,12 +103,15 @@ public class WorkflowTimerTask extends TimerTask {
                 nextRun = new Date(System.currentTimeMillis() + interval);
                 workflow.start();
                 lastWorkflowStatistics = workflow.getWorkflowStatistics();
+                return "Workflow '" + workflow.getClass().getSimpleName() + "' started";
 
             } else {
-                log.warn("Ignoring start request for " + getName() + " the workflow is already running");
+                log.info("Ignoring start request for " + getName() + " the workflow is already running");
+                return "Can not start " +getName() + ", it is already running in state " + workflow.currentState();
             }
         } catch (Throwable e) {
             log.error("Fault barrier for '" + getName() + "' caught unexpected exception.", e);
+            throw new RuntimeException("Failed to run workflow" + e.getMessage() + ", see server log for details.");
         }
     }
 
