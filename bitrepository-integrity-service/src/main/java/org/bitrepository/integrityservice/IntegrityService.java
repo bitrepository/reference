@@ -23,8 +23,6 @@ package org.bitrepository.integrityservice;
 
 import java.util.Collection;
 import java.util.List;
-
-import java.util.List;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowTimerTask;
@@ -47,7 +45,7 @@ public interface IntegrityService extends LifeCycledService {
      * @param collectionID the collection we are dealing with
      * @param pillarID the pillar from which we want the list
      * @param firstID the first numerical ID to be included in the list
-     * @param lastId the last numerical ID to be included in the list
+     * @param lastID the last numerical ID to be included in the list
      */
     List<String> getChecksumErrors(String collectionID, String pillarID, int firstID, int lastID);
     
@@ -56,7 +54,7 @@ public interface IntegrityService extends LifeCycledService {
      * @param collectionID the collection we are dealing with
      * @param pillarID the pillar from which we want the list
      * @param firstID the first numerical ID to be included in the list
-     * @param lastId the last numerical ID to be included in the list
+     * @param lastID the last numerical ID to be included in the list
      */
     List<String> getMissingFiles(String collectionID, String pillarID, int firstID, int lastID);
     
@@ -65,7 +63,7 @@ public interface IntegrityService extends LifeCycledService {
      * @param collectionID the collection we are dealing with
      * @param pillarID the pillar from which we want the list
      * @param firstID the first numerical ID to be included in the list
-     * @param lastId the last numerical ID to be included in the list
+     * @param lastID the last numerical ID to be included in the list
      */
     List<String> getAllFileIDs(String collectionID, String pillarID, int firstID, int lastID);
     

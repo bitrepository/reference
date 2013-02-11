@@ -93,7 +93,6 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
 
     @Override
     public synchronized void performStep() {
-        super.performStep();
         try {
             List<String> pillarsToCollectFrom = new ArrayList<String>(pillarIds);
             while (!pillarsToCollectFrom.isEmpty()) {
@@ -125,8 +124,7 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
         return res.toArray(new ContributorQuery[pillars.size()]);
     }
 
-    @Override
-    public String getDescription() {
+    public static String getDescription() {
         return "Contacts all pillar to retrieve the full list of checksums for the pillar";
     }
 }

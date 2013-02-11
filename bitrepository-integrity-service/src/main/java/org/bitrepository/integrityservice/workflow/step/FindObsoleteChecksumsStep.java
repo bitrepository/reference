@@ -68,7 +68,6 @@ public class FindObsoleteChecksumsStep extends AbstractWorkFlowStep {
      */
     @Override
     public synchronized void performStep() {
-        super.performStep();
         MaxChecksumAgeProvider maxChecksumAgeProvider = new MaxChecksumAgeProvider(
             DEFAULT_MAX_CHECKSUM_AGE,
             settings.getReferenceSettings().getIntegrityServiceSettings().getObsoleteChecksumSettings());
@@ -84,8 +83,7 @@ public class FindObsoleteChecksumsStep extends AbstractWorkFlowStep {
         }
     }
 
-    @Override
-    public String getDescription() {
-        return "????";
+    public static String getDescription() {
+        return "Finds all the checksum with timestamp older that the configured 'MaxChecksumAge'";
     }
 }

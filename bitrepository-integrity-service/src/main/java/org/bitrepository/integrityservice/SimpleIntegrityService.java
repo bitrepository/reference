@@ -63,6 +63,8 @@ public class SimpleIntegrityService implements IntegrityService {
     private final Settings settings;
     /** The dispatcher of alarms.*/
     private final IntegrityAlerter alerter;
+    /** The audit trail manager.*/
+    private final AuditTrailManager auditManager;
     /** Provides GetStatus and GetAuditTrails functionality. */
     private final ContributorMediator contributor;
     /** The messagebus for communication.*/
@@ -84,6 +86,7 @@ public class SimpleIntegrityService implements IntegrityService {
         this.checker = checker;
         this.alerter = alerter;
         this.collector = collector;
+        this.auditManager = auditManager;
         
         this.contributor = new SimpleContributorMediator(messageBus, settings, auditManager);
         contributor.start();
@@ -170,7 +173,7 @@ public class SimpleIntegrityService implements IntegrityService {
      * Initialises the workflows.
      */
     private void initialiseWorkflows() {
-        Workflow w1 = new CompleteIntegrityCheck(settings, collector, cache, checker, alerter);
+        Workflow w1 = new CompleteIntegrityCheck(settings, collector, cache, checker, alerter, auditManager);
         workflows.add(w1);
     }
 

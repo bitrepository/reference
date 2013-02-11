@@ -37,10 +37,11 @@ public abstract class StepBasedWorkflow implements Workflow {
     public static final String NOT_RUNNING = "The workflow is currently not running.";
     /** The current step running.*/
     private WorkflowStep currentStep = null;
-    private WorkflowStatistic statistics = new WorkflowStatistic(getClass().getSimpleName());
+    private WorkflowStatistic statistics;
 
     @Override
     public void start() {
+        statistics = new WorkflowStatistic(getClass().getSimpleName());
         statistics.start();
     }
 
@@ -86,10 +87,5 @@ public abstract class StepBasedWorkflow implements Workflow {
     @Override
     public WorkflowStatistic getWorkflowStatistics() {
         return statistics;
-    }
-
-    protected String getStepDescriptions(String linefeed) {
-        // Preparing.
-        return null;
     }
 }

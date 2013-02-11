@@ -71,7 +71,7 @@ public class ChecksumReportModel implements IntegrityReportModel {
             return "No checksums issues. \n";
         }
         
-        return "Reported checksum issues for '" + filesWithIssues.size() + "' files.";
+        return "Reported checksum issues for " + filesWithIssues.size() + " files.";
     }
 
     /**

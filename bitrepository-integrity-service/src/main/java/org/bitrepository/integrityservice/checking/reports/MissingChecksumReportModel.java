@@ -62,10 +62,10 @@ public class MissingChecksumReportModel implements IntegrityReportModel {
     @Override
     public String generateSummaryOfReport() {
         if(!hasIntegrityIssues()) {
-            return "No checksums issues. \n";
+            return "No missing checksums. \n";
         }
         
-        return "Reported checksums missing for '" + missingChecksum.size() + "' files.";
+        return "Reported checksums missing for " + missingChecksum.size() + " files.";
     }
     
     /**

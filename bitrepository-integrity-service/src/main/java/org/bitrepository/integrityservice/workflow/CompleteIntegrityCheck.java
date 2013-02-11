@@ -35,6 +35,7 @@ import org.bitrepository.integrityservice.workflow.step.RemoveDeletableFileIDsFr
 import org.bitrepository.integrityservice.workflow.step.SetOldUnknownFilesToMissingStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
+import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.StepBasedWorkflow;
 
 /**
@@ -54,23 +55,27 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
     private final IntegrityChecker checker;
     /** The alerter for dispatching alarms in the case of integrity issues.*/
     private final IntegrityAlerter alerter;
+    /** The audit trail manager.*/
+    private final AuditTrailManager auditManager;
 
     private static final String LINEFEED = "\n";
+    
     /**
-     * Constructor.
      * @param settings The settings.
      * @param collector The collector for collecting the file ids and the checksums.
      * @param store The storage for the integrity data.
      * @param checker The checker for validating the content of the database.
      * @param alerter The integrity alerter for sending alarms, when necessary.
+     * @param auditManager The audit trial manager.
      */
     public CompleteIntegrityCheck(Settings settings, IntegrityInformationCollector collector, IntegrityModel store,
-                                  IntegrityChecker checker, IntegrityAlerter alerter) {
+                                  IntegrityChecker checker, IntegrityAlerter alerter, AuditTrailManager auditManager) {
         this.settings = settings;
         this.collector = collector;
         this.store = store;
         this.checker = checker;
         this.alerter = alerter;
+        this.auditManager = auditManager;
     }
     
     @Override
@@ -92,7 +97,8 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
             performStep(validateFileidsStep);
             
             RemoveDeletableFileIDsFromDatabaseStep removeDeletableFileIDsFromDatabaseStep 
-                    = new RemoveDeletableFileIDsFromDatabaseStep(store, validateFileidsStep.getReport());
+                    = new RemoveDeletableFileIDsFromDatabaseStep(store, validateFileidsStep.getReport(), 
+                            auditManager, settings);
             performStep(removeDeletableFileIDsFromDatabaseStep);
             
             IntegrityValidationChecksumStep validateChecksumStep = new IntegrityValidationChecksumStep(checker, 
@@ -112,7 +118,8 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
     @Override
     public String getDescription() {
         return "Retrieves all fileIDs and checksums from all pillars and checks for all potential integrity " +
-                "problems." + LINEFEED +
-                getStepDescriptions(LINEFEED);
+                "problems."
+                //+ LINEFEED + getStepDescriptions()
+                ;
     }
 }

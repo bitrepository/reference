@@ -34,9 +34,4 @@ public interface WorkflowStep {
      * Perform the task wrapped in this step.
      */
     void performStep();
-
-    /**
-     * @return A more detailed description of what this step does.
-     */
-    String getDescription();
 }

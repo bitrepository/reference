@@ -35,14 +35,10 @@ public class StepBasedWorkflowTest extends ExtendedTestCase {
         StepBasedWorkflow workflow = new StepBasedWorkflow() {
             @Override
             public void start() {
+                super.start();
                 WorkflowStep step = new WorkflowStep() {
                     @Override
                     public void performStep() {
-                    }
-
-                    @Override
-                    public String getDescription() {
-                        return null;
                     }
 
                     @Override
@@ -50,7 +46,7 @@ public class StepBasedWorkflowTest extends ExtendedTestCase {
                         return NAME_OF_STEP;
                     }
                 };
-                
+
                 performStep(step);
                 Assert.assertEquals(step.getName(), NAME_OF_STEP);
                 Assert.assertTrue(currentState().contains(NAME_OF_STEP));

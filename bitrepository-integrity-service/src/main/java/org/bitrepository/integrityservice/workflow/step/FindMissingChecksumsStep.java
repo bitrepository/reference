@@ -56,7 +56,6 @@ public class FindMissingChecksumsStep extends AbstractWorkFlowStep {
      */
     @Override
     public synchronized void performStep() {
-        super.performStep();
         IntegrityReportModel report = checker.checkMissingChecksums();
         
         if(!report.hasIntegrityIssues()) {
@@ -67,8 +66,7 @@ public class FindMissingChecksumsStep extends AbstractWorkFlowStep {
         }
     }
 
-    @Override
-    public String getDescription() {
+    public static String getDescription() {
         return "Detects files with missing checksum. This is done on a pr. pillar basis.";
     }
 }

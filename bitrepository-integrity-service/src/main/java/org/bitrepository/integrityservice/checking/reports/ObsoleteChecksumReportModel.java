@@ -57,7 +57,7 @@ public class ObsoleteChecksumReportModel implements IntegrityReportModel {
     @Override
     public String generateReport() {
         if(!hasIntegrityIssues()) {
-            return "No missing checksums. \n";
+            return "No obsolete checksums. \n";
         }
         
         StringBuilder res = new StringBuilder();
@@ -71,10 +71,10 @@ public class ObsoleteChecksumReportModel implements IntegrityReportModel {
     @Override
     public String generateSummaryOfReport() {
         if(!hasIntegrityIssues()) {
-            return "No checksums issues. \n";
+            return "No obsolete issues. \n";
         }
         
-        return "Reported obsolete checksum for '" + obsoleteChecksum.size() + "' files.";
+        return "Reported obsolete checksum for " + obsoleteChecksum.size() + " files.";
     }
     
     /**
