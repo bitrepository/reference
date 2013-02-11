@@ -43,8 +43,7 @@ public interface Workflow {
     WorkflowStatistic getWorkflowStatistics();
 
     /**
-     * @param linefeed A optional linefeed to use to separate lines. Use '</br> for html or '\n' for text.
      * @return Provides a human readable description of the workflow.
      */
-    String getDescription(String linefeed);
+    String getDescription();
 }
