@@ -56,6 +56,7 @@ import org.bitrepository.integrityservice.mocks.MockChecker;
 import org.bitrepository.integrityservice.mocks.MockCollector;
 import org.bitrepository.integrityservice.mocks.MockIntegrityAlerter;
 import org.bitrepository.integrityservice.mocks.MockIntegrityModel;
+import org.bitrepository.service.audit.MockAuditManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -99,7 +100,8 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(settings.getCollectionSettings().getClientSettings().getPillarIDs()));
         MockChecker checker = new MockChecker();
-        CompleteIntegrityCheck workflow = new CompleteIntegrityCheck(settings, collector, store, checker, alerter);
+        MockAuditManager auditManager = new MockAuditManager();
+        CompleteIntegrityCheck workflow = new CompleteIntegrityCheck(settings, collector, store, checker, alerter, auditManager);
 
         workflow.start();
 
@@ -134,6 +136,7 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(settings.getCollectionSettings().getClientSettings().getPillarIDs()));
+        MockAuditManager auditManager = new MockAuditManager();
         MockChecker checker = new MockChecker() {
             @Override
             public ObsoleteChecksumReportModel checkObsoleteChecksums(
@@ -163,7 +166,8 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
             }
         };
 
-        CompleteIntegrityCheck workflow = new CompleteIntegrityCheck(settings, collector, store, checker, alerter);
+        CompleteIntegrityCheck workflow = new CompleteIntegrityCheck(settings, collector, store, checker, alerter, 
+                auditManager);
 
         workflow.start();
 
@@ -207,7 +211,8 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(settings.getCollectionSettings().getClientSettings().getPillarIDs()));
         MockChecker checker = new MockChecker();
-        CompleteIntegrityCheck workflow = new CompleteIntegrityCheck(settings, collector, store, checker, alerter);
+        MockAuditManager auditManager = new MockAuditManager();
+        CompleteIntegrityCheck workflow = new CompleteIntegrityCheck(settings, collector, store, checker, alerter, auditManager);
 
         workflow.start();
 

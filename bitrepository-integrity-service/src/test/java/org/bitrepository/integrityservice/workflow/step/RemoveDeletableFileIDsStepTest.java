@@ -33,6 +33,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.TestIntegrityModel;
 import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
 import org.bitrepository.integrityservice.mocks.MockIntegrityModel;
+import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.workflow.WorkflowStep;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -61,7 +62,8 @@ public class RemoveDeletableFileIDsStepTest extends ExtendedTestCase {
         addDescription("Testing the case, when no files should be deleted from the database.");
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
         MissingFileReportModel report = new MissingFileReportModel();
-        WorkflowStep step = new RemoveDeletableFileIDsFromDatabaseStep(store, report);
+        MockAuditManager auditManager = new MockAuditManager();
+        WorkflowStep step = new RemoveDeletableFileIDsFromDatabaseStep(store, report, auditManager, settings);
         Assert.assertEquals(store.getCallsForDeleteFileIdEntry(), 0);
         
         addStep("Perform the step of deleting file id entries based on the report.", 
@@ -77,7 +79,8 @@ public class RemoveDeletableFileIDsStepTest extends ExtendedTestCase {
         store.addChecksums(createChecksumData(DEFAULT_CHECKSUM, TEST_FILE_1), TEST_PILLAR_1);
         MissingFileReportModel report = new MissingFileReportModel();
         report.reportDeletableFile(TEST_FILE_1);
-        WorkflowStep step = new RemoveDeletableFileIDsFromDatabaseStep(store, report);
+        MockAuditManager auditManager = new MockAuditManager();
+        WorkflowStep step = new RemoveDeletableFileIDsFromDatabaseStep(store, report, auditManager, settings);
         Assert.assertEquals(store.getCallsForDeleteFileIdEntry(), 0);
         
         addStep("Perform the step of deleting file id entries based on the report.", 
@@ -99,7 +102,8 @@ public class RemoveDeletableFileIDsStepTest extends ExtendedTestCase {
             store.addChecksums(createChecksumData(DEFAULT_CHECKSUM, fileId), TEST_PILLAR_1);
             report.reportDeletableFile(fileId);
         }
-        WorkflowStep step = new RemoveDeletableFileIDsFromDatabaseStep(store, report);
+        MockAuditManager auditManager = new MockAuditManager();
+        WorkflowStep step = new RemoveDeletableFileIDsFromDatabaseStep(store, report, auditManager, settings);
         Assert.assertEquals(store.getCallsForDeleteFileIdEntry(), 0);
         
         addStep("Perform the step of deleting file id entries based on the report.", 

@@ -21,9 +21,12 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
+import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,19 +42,30 @@ public class RemoveDeletableFileIDsFromDatabaseStep extends AbstractWorkFlowStep
     private final IntegrityModel cache;
     /** The report which contains the list of file ids to remove from the database.*/
     private final MissingFileReportModel report;
+    /** The manager of audit trails.*/
+    private final AuditTrailManager auditManager;
+    /** The settings.*/
+    private final Settings settings;
     
     /**
      * Constructor.
      * @param cache The IntegrityModel where the integrity data is stored.
      * @param report The report for missing files, where the files missing at all pillars explicit are marked
      * as deletable.
+     * @param auditManager The audit trail manager.
+     * @param settings The settings.
      */
-    public RemoveDeletableFileIDsFromDatabaseStep(IntegrityModel cache, MissingFileReportModel report) {
+    public RemoveDeletableFileIDsFromDatabaseStep(IntegrityModel cache, MissingFileReportModel report, 
+            AuditTrailManager auditManager, Settings settings) {
         ArgumentValidator.checkNotNull(cache, "IntegrityModel cache");
         ArgumentValidator.checkNotNull(report, "MissingFileReportModel report");
+        ArgumentValidator.checkNotNull(auditManager, "AuditTrailManager auditManager");
+        ArgumentValidator.checkNotNull(settings,  "Settings settings");
         
         this.cache = cache;
         this.report = report;
+        this.auditManager = auditManager;
+        this.settings = settings;
     }
     
     @Override
@@ -63,6 +77,9 @@ public class RemoveDeletableFileIDsFromDatabaseStep extends AbstractWorkFlowStep
     public void performStep() {
         for(String fileId : report.getDeleteableFiles()) {
             log.info("Removing entries for the file with id '" + fileId + "' from the database.");
+            auditManager.addAuditEvent(fileId, settings.getComponentID(), "Deleting entry in database.", 
+                    "The file has been reported missing at all pillars, and will thus be removed from integrity "
+                    + "checking", FileAction.DELETE_FILE);
             cache.deleteFileIdEntry(fileId);
         }
     }
