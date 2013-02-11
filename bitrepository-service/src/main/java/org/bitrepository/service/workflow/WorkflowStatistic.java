@@ -39,22 +39,40 @@ public class WorkflowStatistic {
 
     private static final String LINEFEED = "\n";
 
+    /**
+     * Creates a fresh <code>WorkflowStatistic</code> instance.
+     * @param name The name of this instance to be used as title for the statistics.
+     */
     public WorkflowStatistic(String name) {
         this.name = name;
     }
 
+    /**
+     * Marks the start time of the statistics.
+     */
     public void start() {
         start = new Date();
     }
 
+    /**
+     * Marks the start time of a sub step of the statistics statistics.
+     * @param name The name of the substep to be used as identifier in the statistics.
+     */
     public void startSubStatistic(String name) {
         subStatistics.add(new WorkflowStatistic(name));
         getCurrentSubStatistic().start();
     }
 
+    /**
+     * Marks the end time of a sub step of the statistics statistics.
+     */
     public void finishSubStatistic() {
         getCurrentSubStatistic().finish();
     }
+
+    /**
+     * @return A string representation of statistics, including all substatistics.
+     */
     public String getFullStatistics() {
         if (start == null) {
             return "Haven't finished a run yet";
@@ -112,6 +130,9 @@ public class WorkflowStatistic {
         return name;
     }
 
+    /**
+     * @return The duration of the workflow if it has been started, else 0.
+     */
     private long getDuration() {
         if (start == null) {
             return 0;
