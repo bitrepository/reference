@@ -58,10 +58,10 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
     @Override
     public void setup() throws Exception {
         super.setup();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_1);
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_3);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_1);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_2);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_3);
         settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0L);
         auditManager = new MockAuditManager();
     }
@@ -71,7 +71,7 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         addDescription("Test the checksum integrity validator without any data in the cache.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getCollectionSettings().getClientSettings().getPillarIDs());
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
         
         addStep("Validate the file ids", "Should not have integrity issues.");
         ChecksumReportModel report = validator.generateReport();
@@ -83,7 +83,7 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         addDescription("Test the checksum integrity validator when all pillars have similar data.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getCollectionSettings().getClientSettings().getPillarIDs());
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
@@ -106,7 +106,7 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         addDescription("Test the checksum integrity validator when one pillar is missing the data.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getCollectionSettings().getClientSettings().getPillarIDs());
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
@@ -124,7 +124,7 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         addDescription("Test the checksum integrity validator when only two pillar has data, but it it different.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getCollectionSettings().getClientSettings().getPillarIDs());
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData1 = createChecksumData("1234cccc4321", FILE_1);
@@ -138,7 +138,7 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         Assert.assertEquals(report.getFilesWithIssues().size(), 1);
         Assert.assertNotNull(report.getFilesWithIssues().get(FILE_1));
         Assert.assertEquals(report.getFilesWithIssues().get(FILE_1).getPillarChecksumMap().size(), 
-                settings.getCollectionSettings().getClientSettings().getPillarIDs().size());
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().size());
         Assert.assertEquals(report.getFilesWithIssues().get(FILE_1).getFileId(), FILE_1);
         for(FileInfo fi : cache.getFileInfos(FILE_1)) {
             Assert.assertTrue(fi.getChecksumState() != ChecksumState.VALID);
@@ -150,7 +150,7 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         addDescription("Test the checksum integrity validator when all pillars have different checksums.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getCollectionSettings().getClientSettings().getPillarIDs());
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData1 = createChecksumData("1234cccc4321", FILE_1);
@@ -173,7 +173,7 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         addDescription("Test the checksum integrity validator when two pillars agreee about the checksum, but the third does not.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getCollectionSettings().getClientSettings().getPillarIDs());
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);

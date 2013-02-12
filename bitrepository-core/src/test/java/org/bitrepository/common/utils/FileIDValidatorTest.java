@@ -41,7 +41,7 @@ public class FileIDValidatorTest extends ExtendedTestCase {
     public void validatorTest() throws Exception {
         addDescription("Tests the FileIDValidator class for the input handling based on a given regex.");
         addStep("Setup the validator", "Should be ok.");
-        settings.getCollectionSettings().getProtocolSettings().setAllowedFileIDPattern("[a-zA-z0-9\\-_.]{5,250}");
+        settings.getRepositorySettings().getProtocolSettings().setAllowedFileIDPattern("[a-zA-z0-9\\-_.]{5,250}");
         FileIDValidator validator = new FileIDValidator(settings);
         String validFileID = "abcdefghijklmnopqrstuvwxyz";
         String invalidCharacters = "¾§?+±|´~$½¥½{¥[]{[¡@£";
@@ -70,7 +70,7 @@ public class FileIDValidatorTest extends ExtendedTestCase {
     public void validatorDefaultTest() throws Exception {
         addDescription("Tests the FileIDValidator class default restrictions. Only the length should fail.");
         addStep("Setup the validator, where all file ids are allowed at default.", "Should be ok.");
-        settings.getCollectionSettings().getProtocolSettings().setAllowedFileIDPattern(".+");
+        settings.getRepositorySettings().getProtocolSettings().setAllowedFileIDPattern(".+");
         FileIDValidator validator = new FileIDValidator(settings);
         String validFileID = "abcdefghijklmnopqrstuvwxyz";
         String invalidCharacters = "¾§?+±|´~$½¥½{¥[]{[¡@£";
@@ -100,12 +100,12 @@ public class FileIDValidatorTest extends ExtendedTestCase {
     public void badRegexTest() throws Exception {
         addDescription("Tests the FileIDValidator handling of bad file id pattern.");
         addStep("Give the validator a 'null' as allowed file id pattern", "Should be a null stored as regex." );
-        settings.getCollectionSettings().getProtocolSettings().setAllowedFileIDPattern(null);
+        settings.getRepositorySettings().getProtocolSettings().setAllowedFileIDPattern(null);
         TestFileIDValidator validator = new TestFileIDValidator(settings);
         Assert.assertNull(validator.getRegex());
         
         addStep("Give the validator an empty string as allowed file id pattern", "Should be a null stored as regex." );
-        settings.getCollectionSettings().getProtocolSettings().setAllowedFileIDPattern("");
+        settings.getRepositorySettings().getProtocolSettings().setAllowedFileIDPattern("");
         validator = new TestFileIDValidator(settings);
         Assert.assertNull(validator.getRegex());
     }

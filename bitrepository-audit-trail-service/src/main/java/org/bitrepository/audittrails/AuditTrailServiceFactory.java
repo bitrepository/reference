@@ -107,7 +107,7 @@ public final class AuditTrailServiceFactory {
                 authenticator = new BasicMessageAuthenticator(permissionStore);
                 signer = new BasicMessageSigner();
                 authorizer = new BasicOperationAuthorizor(permissionStore);
-                securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
+                securityManager = new BasicSecurityManager(settings.getRepositorySettings(), privateKeyFile,
                         authenticator, signer, authorizer, permissionStore, 
                         settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
                 

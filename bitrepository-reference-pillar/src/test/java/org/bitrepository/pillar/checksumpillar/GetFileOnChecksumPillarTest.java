@@ -53,7 +53,7 @@ public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
     public void checksumPillarGetFileIdentification() throws Exception {
         addDescription("Tests that the ChecksumPillar rejects a GetFile identification.");
         addStep("Setting up the variables for the test.", "Should be instantiated.");
-        settingsForCUT.getCollectionSettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
+        settingsForCUT.getRepositorySettings().getProtocolSettings().setDefaultChecksumType(ChecksumType.MD5.toString());
         FileIDs fileids = new FileIDs();
         fileids.setFileID(DEFAULT_FILE_ID);
         

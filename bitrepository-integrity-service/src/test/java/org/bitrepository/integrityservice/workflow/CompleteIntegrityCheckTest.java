@@ -75,8 +75,8 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
     @BeforeClass (alwaysRun = true)
     public void setup() {
         settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_1);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_1);
         settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0L);
     }
 
@@ -98,7 +98,7 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
             }
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
-        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(settings.getCollectionSettings().getClientSettings().getPillarIDs()));
+        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()));
         MockChecker checker = new MockChecker();
         MockAuditManager auditManager = new MockAuditManager();
         CompleteIntegrityCheck workflow = new CompleteIntegrityCheck(settings, collector, store, checker, alerter, auditManager);
@@ -135,7 +135,7 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
             }
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
-        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(settings.getCollectionSettings().getClientSettings().getPillarIDs()));
+        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()));
         MockAuditManager auditManager = new MockAuditManager();
         MockChecker checker = new MockChecker() {
             @Override
@@ -209,7 +209,7 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
             }
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
-        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(settings.getCollectionSettings().getClientSettings().getPillarIDs()));
+        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()));
         MockChecker checker = new MockChecker();
         MockAuditManager auditManager = new MockAuditManager();
         CompleteIntegrityCheck workflow = new CompleteIntegrityCheck(settings, collector, store, checker, alerter, auditManager);

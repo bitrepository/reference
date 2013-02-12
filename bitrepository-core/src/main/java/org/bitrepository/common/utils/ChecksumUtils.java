@@ -233,7 +233,7 @@ public final class ChecksumUtils {
     public static ChecksumSpecTYPE getDefault(Settings settings) {
         ChecksumSpecTYPE res = new ChecksumSpecTYPE();
         res.setChecksumType(ChecksumType.valueOf(
-                settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType()));
+                settings.getRepositorySettings().getProtocolSettings().getDefaultChecksumType()));
         
         try {
             verifyAlgorithm(res);

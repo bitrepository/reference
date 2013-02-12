@@ -474,7 +474,7 @@ in preparation for the xsd -> java class file generation -->
 
   <properties>
     <message.xml.version>24-SNAPSHOT</message.xml.version>
-    <collection.settings.version>0.9</collection.settings.version>
+    <repository.settings.version>0.10-SNAPSHOT</repository.settings.version>
     <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
     <slf4j.version>1.6.5</slf4j.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

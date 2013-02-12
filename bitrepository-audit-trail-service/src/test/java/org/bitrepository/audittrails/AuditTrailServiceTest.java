@@ -47,8 +47,8 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
     @Test(groups = {"unstable"})
     public void auditTrailServiceTest() throws Exception {
         addDescription("Test the Audit Trail Service");
-        settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().clear();
-        settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().add("Contributor1");
+        settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().clear();
+        settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().add("Contributor1");
         
         MockAuditStore store = new MockAuditStore();
         MockAuditClient client = new MockAuditClient();

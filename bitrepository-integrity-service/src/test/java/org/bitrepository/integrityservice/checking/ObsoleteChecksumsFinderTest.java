@@ -56,9 +56,9 @@ public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_1);
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_1);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_2);
         settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0L);
         auditManager = new MockAuditManager();
     }
@@ -217,6 +217,6 @@ public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
     }
 
     private IntegrityModel getIntegrityModel() {
-        return new TestIntegrityModel(settings.getCollectionSettings().getClientSettings().getPillarIDs());
+        return new TestIntegrityModel(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
     }
 }

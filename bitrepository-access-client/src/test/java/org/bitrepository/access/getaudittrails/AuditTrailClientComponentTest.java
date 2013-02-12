@@ -43,7 +43,7 @@ import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.bitrepository.settings.collectionsettings.GetAuditTrailSettings;
+import org.bitrepository.settings.repositorysettings.GetAuditTrailSettings;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -359,7 +359,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         addStep("Configure 3 second timeout for the operation itself. " +
                 "The default 2 contributers collection is used", "");
 
-        settingsForCUT.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
+        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         AuditTrailClient client = createAuditTrailClient();
 
@@ -400,7 +400,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         addDescription("Tests the the AuditTrailClient handles lack of Final Responses gracefully  ");
         addStep("Set a 1 second timeout for the operation.", "");
 
-        settingsForCUT.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(1000));
+        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(1000));
         AuditTrailClient client = createAuditTrailClient();
 
         addStep("Make the client ask for all audit trails.",
@@ -443,8 +443,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     public void badSettingsTest() throws Exception {
         addDescription("Tests that the Audit Trail can handle missing Settings.");
         addStep("Remove the GetAuditTrailSettings.", "Should fail.");
-        GetAuditTrailSettings auditSettings = settingsForCUT.getCollectionSettings().getGetAuditTrailSettings();
-        settingsForCUT.getCollectionSettings().setGetAuditTrailSettings(null);
+        GetAuditTrailSettings auditSettings = settingsForCUT.getRepositorySettings().getGetAuditTrailSettings();
+        settingsForCUT.getRepositorySettings().setGetAuditTrailSettings(null);
         AuditTrailClient client1 = createAuditTrailClient();
 
         try {
@@ -455,8 +455,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         }
         
         addStep("Tests when the contributor list is emptied", "Should also fail.");
-        settingsForCUT.getCollectionSettings().setGetAuditTrailSettings(auditSettings);
-        settingsForCUT.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().clear();
+        settingsForCUT.getRepositorySettings().setGetAuditTrailSettings(auditSettings);
+        settingsForCUT.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().clear();
         AuditTrailClient client2 = createAuditTrailClient();
 
         try {

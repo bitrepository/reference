@@ -24,7 +24,7 @@
  */
 package org.bitrepository.protocol.bus;
 
-import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
+import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 
 /**
  * Consider moving definitions to disk

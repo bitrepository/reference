@@ -37,7 +37,7 @@ import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.message.TestGetStatusMessageFactory;
-import org.bitrepository.settings.collectionsettings.GetStatusSettings;
+import org.bitrepository.settings.repositorysettings.GetStatusSettings;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -50,10 +50,10 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         public void beforeMethodSetup() throws Exception {
             testMessageFactory = new TestGetStatusMessageFactory(settingsForCUT.getCollectionID());
 
-            if (settingsForCUT.getCollectionSettings().getGetStatusSettings() == null) {
-                settingsForCUT.getCollectionSettings().setGetStatusSettings(new GetStatusSettings());
+            if (settingsForCUT.getRepositorySettings().getGetStatusSettings() == null) {
+                settingsForCUT.getRepositorySettings().setGetStatusSettings(new GetStatusSettings());
             }
-            List<String> contributers = settingsForCUT.getCollectionSettings().getGetStatusSettings().getContributorIDs();
+            List<String> contributers = settingsForCUT.getRepositorySettings().getGetStatusSettings().getContributorIDs();
             contributers.clear();
             contributers.add(PILLAR1_ID);
             contributers.add(PILLAR2_ID);
@@ -75,7 +75,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
             addStep("Configure 5 second timeout for identifying contributers. " +
                     "The default 2 contributers collection is used", "");
 
-            settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(5000));
+            settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(5000));
             TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
             GetStatusClient client = createGetStatusClient();
 

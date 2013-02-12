@@ -60,14 +60,14 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
         ArgumentValidator.checkNotNegative(sizeOfFile, "long sizeOfFile");
 
         log.info("Starting putFile of " + fileId + " for client " + clientID + ". " + auditTrailInformation);
-        if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
+        if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
             ArgumentValidator.checkNotNull(checksumForValidationAtPillar, "ChecksumDataForFileTYPE checksumForValidationAtPillar");
         }
         validateFileID(fileId);
         
         PutFileConversationContext context = new PutFileConversationContext(fileId, url, sizeOfFile, 
                 checksumForValidationAtPillar, checksumRequestsForValidation, settings, messageBus,
-                clientID, settings.getCollectionSettings().getClientSettings().getPillarIDs(), eventHandler, auditTrailInformation);
+                clientID, settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(), eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForPutFile(context));
     }
 

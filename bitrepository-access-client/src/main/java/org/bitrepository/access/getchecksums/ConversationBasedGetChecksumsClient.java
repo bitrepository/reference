@@ -67,7 +67,7 @@ public class ConversationBasedGetChecksumsClient extends AbstractClient implemen
         validateFileID(fileID);
         if (contributorQueries == null) {
             contributorQueries = ContributorQueryUtils.createFullContributorQuery(
-                settings.getCollectionSettings().getClientSettings().getPillarIDs());
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
         }
 
         log.info("Requesting the checksums for file '" + "' with the specifications '" + checksumSpec + fileID +

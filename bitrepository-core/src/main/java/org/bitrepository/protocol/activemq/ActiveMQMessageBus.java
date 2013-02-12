@@ -64,7 +64,7 @@ import org.bitrepository.protocol.messagebus.logger.GetStatusMessageLogger;
 import org.bitrepository.protocol.messagebus.logger.MessageLoggerProvider;
 import org.bitrepository.protocol.messagebus.logger.PutFileMessageLogger;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
+import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;

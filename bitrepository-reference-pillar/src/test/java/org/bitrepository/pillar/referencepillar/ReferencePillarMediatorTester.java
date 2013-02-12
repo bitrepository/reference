@@ -108,7 +108,7 @@ public class ReferencePillarMediatorTester extends ReferencePillarTest {
 //    public void handleMessagesWithNoAlarms() throws Exception {
 //        addDescription("Tests that if the alarm level is too high, then the alarms are not send for the Message.");
 //        addStep("Setup variables, e.g. changing the alarm level.", "Should be ok.");
-//        settings.getCollectionSettings().getPillarSettings().setAlarmLevel(AlarmLevel.EMERGENCY);
+//        settings.getRepositorySettings().getPillarSettings().setAlarmLevel(AlarmLevel.EMERGENCY);
 //        
 //        alarmDispatcher.resetCallsForSendAlarm();
 //        audits.resetCallsForAuditEvent();

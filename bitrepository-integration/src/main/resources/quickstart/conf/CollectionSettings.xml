@@ -21,7 +21,7 @@
   #L%
   -->
 
-<CollectionSettings xmlns="http://bitrepository.org/settings/CollectionSettings.xsd">
+<RepositorySettings xmlns="http://bitrepository.org/settings/RepositorySettings.xsd">
   <CollectionID>quick-start-collection</CollectionID>
   <ProtocolSettings>
     <DefaultChecksumType>MD5</DefaultChecksumType>
@@ -67,4 +67,4 @@
   <PutFileSettings></PutFileSettings>
   <ReplaceFileSettings></ReplaceFileSettings>
 
-</CollectionSettings>
+</RepositorySettings>

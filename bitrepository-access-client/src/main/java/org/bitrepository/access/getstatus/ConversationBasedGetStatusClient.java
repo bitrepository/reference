@@ -43,7 +43,7 @@ public class ConversationBasedGetStatusClient extends AbstractClient implements 
             ConversationMediator conversationMediator,
             Settings settings, String clientID) {
         super(settings, conversationMediator, messageBus, clientID);
-        ArgumentValidator.checkNotNullOrEmpty(settings.getCollectionSettings().getGetStatusSettings().getContributorIDs(),
+        ArgumentValidator.checkNotNullOrEmpty(settings.getRepositorySettings().getGetStatusSettings().getContributorIDs(),
                 "ContributorIDs");
     }
 
@@ -53,7 +53,7 @@ public class ConversationBasedGetStatusClient extends AbstractClient implements 
         log.info("Requesting status for collection of components.");
         GetStatusConversationContext context = new GetStatusConversationContext(
                 settings, messageBus, eventHandler, clientID,
-                settings.getCollectionSettings().getGetStatusSettings().getContributorIDs());
+                settings.getRepositorySettings().getGetStatusSettings().getContributorIDs());
         startConversation(context, new IdentifyingContributorsForGetStatus(context));
     }
 }

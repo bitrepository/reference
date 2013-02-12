@@ -46,8 +46,8 @@ public class AuditCollectorTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest"})
     public void AuditCollectorIntervalTest() throws Exception {
         addDescription("Test that the collector calls the AuditClient at the correct intervals.");
-        settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().clear();
-        settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs().add("Contributor1");
+        settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().clear();
+        settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().add("Contributor1");
         settings.getReferenceSettings().getAuditTrailServiceSettings().setCollectAuditInterval(500);
         settings.getReferenceSettings().getAuditTrailServiceSettings().setTimerTaskCheckInterval(100L);
         

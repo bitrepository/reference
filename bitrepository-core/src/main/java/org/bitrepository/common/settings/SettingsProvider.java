@@ -25,7 +25,7 @@
 package org.bitrepository.common.settings;
 
 import org.bitrepository.protocol.messagebus.destination.DestinationHelper;
-import org.bitrepository.settings.collectionsettings.CollectionSettings;
+import org.bitrepository.settings.repositorysettings.RepositorySettings;
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
 
 /**
@@ -66,7 +66,7 @@ public class SettingsProvider {
      * Will load the settings from disk. Will overwrite any settings already in the provider.
      */
     public synchronized void reloadSettings() {
-        CollectionSettings collectionSettings = settingsReader.loadSettings(CollectionSettings.class);
+        RepositorySettings repositorySettings = settingsReader.loadSettings(RepositorySettings.class);
         ReferenceSettings referenceSettings = settingsReader.loadSettings(ReferenceSettings.class);
 
         String receiverDestinationIDFactoryClass = null;
@@ -78,8 +78,8 @@ public class SettingsProvider {
         DestinationHelper dh = new DestinationHelper(
                 getComponentID(referenceSettings),
                 receiverDestinationIDFactoryClass,
-                collectionSettings.getProtocolSettings().getCollectionDestination());
-        settings = new Settings(getComponentID(referenceSettings), dh.getReceiverDestinationID(), collectionSettings, referenceSettings);
+                repositorySettings.getProtocolSettings().getCollectionDestination());
+        settings = new Settings(getComponentID(referenceSettings), dh.getReceiverDestinationID(), repositorySettings, referenceSettings);
     }
 
     /**

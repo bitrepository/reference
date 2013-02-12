@@ -43,7 +43,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequ
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.protocol.security.exception.UnregisteredPermissionException;
-import org.bitrepository.settings.collectionsettings.Operation;
+import org.bitrepository.settings.repositorysettings.Operation;
 
 /**
  * Class to map between a Operation/RequestType (Bitrepository message request type) and

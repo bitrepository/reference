@@ -38,7 +38,7 @@ import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.settings.collectionsettings.CollectionSettings;
+import org.bitrepository.settings.repositorysettings.RepositorySettings;
 import org.bitrepository.utils.HexUtils;
 import org.bitrepository.utils.XMLGregorianCalendarConverter;
 import org.slf4j.Logger;
@@ -180,21 +180,21 @@ public class BasicClient {
 
     public String getSettingsSummary() {
         StringBuilder sb = new StringBuilder();
-        CollectionSettings collectionSettings = settings.getCollectionSettings();
-        sb.append("CollectionID: <i>" + collectionSettings.getCollectionID() + "</i><br>");
+        RepositorySettings repositorySettings = settings.getRepositorySettings();
+        sb.append("CollectionID: <i>" + settings.getCollectionID() + "</i><br>");
         sb.append("Pillar(s) in configuration: <br> <i>");
-        List<String> pillarIDs = collectionSettings.getClientSettings().getPillarIDs(); 
+        List<String> pillarIDs = repositorySettings.getCollections().getCollection().get(0).getPillarIDs().getPillarID();
         for(String pillarID : pillarIDs) {
             sb.append("&nbsp;&nbsp;&nbsp; " + pillarID + "<br>");
         }
         sb.append("</i>");
         sb.append("Messagebus URL: <br> &nbsp;&nbsp;&nbsp; <i>"); 
-        sb.append(collectionSettings.getProtocolSettings().getMessageBusConfiguration().getURL() + "</i><br>");
+        sb.append(repositorySettings.getProtocolSettings().getMessageBusConfiguration().getURL() + "</i><br>");
         return sb.toString();
     }
 
     public List<String> getPillarList() {
-        return settings.getCollectionSettings().getClientSettings().getPillarIDs();
+        return settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID();
     }
 
     public Map<String, Map<String, String>> getChecksums(String fileIDsText, String checksumType, String salt) {
@@ -218,7 +218,7 @@ public class BasicClient {
 
     public GetFileIDsResults getFileIDs(String fileIDsText, boolean allFileIDs) {
         GetFileIDsResults results = new GetFileIDsResults(
-                settings.getCollectionSettings().getClientSettings().getPillarIDs());
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
         GetFileIDsEventHandler handler = new GetFileIDsEventHandler(results, eventHandler);
         FileIDs fileIDs = new FileIDs();
 
@@ -228,7 +228,7 @@ public class BasicClient {
             fileIDs.setFileID(fileIDsText);
         }
         try {
-            getFileIDsClient.getFileIDs(settings.getCollectionSettings().getClientSettings().getPillarIDs(),
+            getFileIDsClient.getFileIDs(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(),
                     fileIDs, null, handler);
 
             while(!results.isDone() && !results.hasFailed()) {
@@ -245,7 +245,7 @@ public class BasicClient {
         if(fileID == null) {
             return "Missing fileID!";
         }
-        if(pillarID == null || !settings.getCollectionSettings().getClientSettings().getPillarIDs().contains(pillarID)) {
+        if(pillarID == null || !settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().contains(pillarID)) {
             return "Missing or unknown pillarID!";
         }
         if(deleteChecksum == null || deleteChecksum.equals("")) {
@@ -275,7 +275,7 @@ public class BasicClient {
         if(fileID == null) {
             return "Missing fileID!";
         }
-        if(pillarID == null || !settings.getCollectionSettings().getClientSettings().getPillarIDs().contains(pillarID)) {
+        if(pillarID == null || !settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().contains(pillarID)) {
             return "Missing or unknown pillarID!";
         }
         if(oldFileChecksum == null || oldFileChecksum.equals("")) {
@@ -345,7 +345,7 @@ public class BasicClient {
         ChecksumSpecTYPE spec = new ChecksumSpecTYPE();
 
         if(checksumType == null || checksumType.trim().equals("")) {
-            checksumType = settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType();
+            checksumType = settings.getRepositorySettings().getProtocolSettings().getDefaultChecksumType();
         }
 
         if(checksumSalt != null && !checksumSalt.trim().equals("")) {

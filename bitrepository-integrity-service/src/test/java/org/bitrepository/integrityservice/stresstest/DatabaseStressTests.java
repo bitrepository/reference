@@ -48,11 +48,11 @@ public class DatabaseStressTests extends ExtendedTestCase {
         IntegrityDatabaseCreator integrityDatabaseCreator = new IntegrityDatabaseCreator();
         integrityDatabaseCreator.createIntegrityDatabase(settings, null);
         
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR_1);
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR_2);
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR_3);
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR_4);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR_1);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR_2);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR_3);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR_4);
         
         settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0);
     }
@@ -113,7 +113,7 @@ public class DatabaseStressTests extends ExtendedTestCase {
     private IntegrityDAO createDAO() {
         return new IntegrityDAO(new DBConnector(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
-                settings.getCollectionSettings().getClientSettings().getPillarIDs());
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
     }
 
 }

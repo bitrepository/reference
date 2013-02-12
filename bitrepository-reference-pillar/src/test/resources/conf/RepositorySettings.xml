@@ -23,9 +23,14 @@
   <http://www.gnu.org/licenses/lgpl-2.1.html>.
   #L%
   -->
-  
-<CollectionSettings xmlns="http://bitrepository.org/settings/CollectionSettings.xsd">
-  <CollectionID>TEST</CollectionID>
+
+<RepositorySettings xmlns="http://bitrepository.org/settings/RepositorySettings.xsd">
+  <Name>EmbeddedReferencePillarTest</Name>
+  <Collections>
+    <Collection><ID>EmbeddedReferencePillarTest</ID>
+      <PillarIDs><PillarID>EmbeddedReferencePillar</PillarID></PillarIDs>
+    </Collection>
+  </Collections>
   <ProtocolSettings>
     <DefaultChecksumType>MD5</DefaultChecksumType>
     <AllowedFileIDPattern>[a-zA-z0-9\-_.]{5,250}</AllowedFileIDPattern>
@@ -33,31 +38,22 @@
     <RequireOperationAuthorization>false</RequireOperationAuthorization>
     <RequireChecksumForDestructiveRequests>true</RequireChecksumForDestructiveRequests>
     <RequireChecksumForNewFileRequests>false</RequireChecksumForNewFileRequests>
-    <CollectionDestination>TEST-TOPIC</CollectionDestination>
-    <AlarmDestination>TEST-ALARM-TOPIC</AlarmDestination>
+    <CollectionDestination>PILLAR-TEST-TOPIC</CollectionDestination>
+    <AlarmDestination>PILLAR-TEST-ALARM-TOPIC</AlarmDestination>
     <MessageBusConfiguration>
-      <Name>MyMessageBus</Name>
+      <Name>PillarIntegrationTestMessageBus</Name>
       <!--
       <URL>failover://(tcp://sandkasse-01.kb.dk:61616?keepAlive=true)?timeout=10000</URL>
       -->
       <URL>tcp://localhost:9999</URL>
     </MessageBusConfiguration>
   </ProtocolSettings>
-  
+
   <ClientSettings>
-    <IdentificationTimeout>60000</IdentificationTimeout>
-    <OperationTimeout>60000</OperationTimeout>
-    <PillarIDs>Pillar1</PillarIDs>
-    <PillarIDs>Pillar2</PillarIDs>
+    <IdentificationTimeout>1000000</IdentificationTimeout>
+    <OperationTimeout>10000000</OperationTimeout>
   </ClientSettings>
 
   <GetAuditTrailSettings>
-    <ContributorIDs>Pillar1</ContributorIDs>
-    <ContributorIDs>Pillar2</ContributorIDs>
   </GetAuditTrailSettings>
-
-  <GetStatusSettings>
-    <ContributorIDs>Pillar1</ContributorIDs>
-    <ContributorIDs>Pillar2</ContributorIDs>
-  </GetStatusSettings>
-</CollectionSettings>
+</RepositorySettings>

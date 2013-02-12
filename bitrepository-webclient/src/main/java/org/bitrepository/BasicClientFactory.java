@@ -80,7 +80,7 @@ public class BasicClientFactory {
             MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
             MessageSigner signer = new BasicMessageSigner();
             OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
-            SecurityManager securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile,
+            SecurityManager securityManager = new BasicSecurityManager(settings.getRepositorySettings(), privateKeyFile,
                     authenticator, signer, authorizer, permissionStore, clientID);
 
             try {

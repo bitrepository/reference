@@ -99,7 +99,7 @@ public class FileExistenceValidator {
      */
     private boolean isAllPillars(List<String> pillarIds) {
         List<String> knownPillars = new ArrayList<String>(
-                settings.getCollectionSettings().getClientSettings().getPillarIDs());
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
         
         for(String pillarId : pillarIds) {
             knownPillars.remove(pillarId);

@@ -124,7 +124,7 @@ public class AuditTrailCollector {
          * Run the operation and when finished set the date for the next collection.
          */
         public synchronized void runCollection() {
-            collector.performCollection(settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs());
+            collector.performCollection(settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs());
             nextRun = new Date(System.currentTimeMillis() + interval);
         }
 

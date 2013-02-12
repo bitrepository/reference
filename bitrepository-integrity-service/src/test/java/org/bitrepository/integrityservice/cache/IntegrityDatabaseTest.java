@@ -58,9 +58,9 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     @Override
     public void setup() throws Exception {
         super.setup();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_1);
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_1);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_2);
         auditManager = new MockAuditManager();
     }
 
