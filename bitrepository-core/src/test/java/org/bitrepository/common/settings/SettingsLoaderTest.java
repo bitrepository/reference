@@ -42,7 +42,9 @@ public class SettingsLoaderTest extends ExtendedTestCase{
 
         Settings settings = settingsLoader.getSettings();
         List<String> expectedPillarIDs = Arrays.asList(new String[] {"Pillar1", "Pillar2"});
-        Assert.assertEquals(settings.getCollectionSettings().getClientSettings().getPillarIDs(), expectedPillarIDs);
+        Assert.assertEquals(
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(),
+                expectedPillarIDs);
     }
     
     @Test(groups = { "regressiontest" })

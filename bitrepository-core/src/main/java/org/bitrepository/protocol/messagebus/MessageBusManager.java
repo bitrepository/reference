@@ -29,7 +29,7 @@ import java.util.Map;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
+import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 
 /**
  * The place to get message buses. Only one message bus is created for each collection ID.

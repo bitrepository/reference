@@ -159,6 +159,6 @@ public class GetFileIDs {
             return Arrays.asList(cmdHandler.getOptionValue(Constants.PILLAR_ARG));
         }
         
-        return new ArrayList<String>(settings.getCollectionSettings().getClientSettings().getPillarIDs());
+        return new ArrayList<String>(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
     }
 }

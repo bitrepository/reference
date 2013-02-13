@@ -25,75 +25,74 @@
 package org.bitrepository.common.settings;
 
 import java.util.List;
-
-import org.bitrepository.settings.collectionsettings.CollectionSettings;
-import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
-import org.bitrepository.settings.collectionsettings.Permission;
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
+import org.bitrepository.settings.repositorysettings.RepositorySettings;
+import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
+import org.bitrepository.settings.repositorysettings.Permission;
 
 /**
  * Contains the general configuration to be used by reference code components. Provides acces to both
- * {@link ReferenceSettings} and {@link CollectionSettings}. Use a {@link SettingsProvider} to access settings create
+ * {@link ReferenceSettings} and {@link org.bitrepository.settings.repositorysettings.RepositorySettings}. Use a {@link SettingsProvider} to access settings create
  * <code>Settings</code> objects.
  */
 public class Settings {
     protected final String componentID;
     protected final String receiverDestinationID;
     protected final ReferenceSettings referenceSettings;
-    protected final CollectionSettings collectionSettings;
+    protected final RepositorySettings repositorySettings;
     
     protected Settings(
             String componentID,
             String receiverDestinationID,
-            CollectionSettings collectionSettings,
+            RepositorySettings repositorySettings,
             ReferenceSettings referenceSettings) {
         this.componentID = componentID;
         this.receiverDestinationID = receiverDestinationID;
 
         this.referenceSettings = referenceSettings;
-        this.collectionSettings = collectionSettings;
+        this.repositorySettings = repositorySettings;
     }
 
     /**
-     * Wraps the {@link CollectionSettings#getCollectionID()} method.
+     * Returns the first Collections ID.
      */
     public String getCollectionID() {
-        return getCollectionSettings().getCollectionID();
+        return getRepositorySettings().getCollections().getCollection().get(0).getID();
     }
     
     /**
-     * Wraps the {@link org.bitrepository.settings.collectionsettings.ProtocolSettings#getAlarmDestination()} method.
+     * Wraps the {@link org.bitrepository.settings.repositorysettings.ProtocolSettings#getAlarmDestination()} method.
      */
     public String getAlarmDestination() {
-        return getCollectionSettings().getProtocolSettings().getAlarmDestination();
+        return getRepositorySettings().getProtocolSettings().getAlarmDestination();
     }
     
     /**
-     * Wraps the {@link org.bitrepository.settings.collectionsettings.ProtocolSettings#getCollectionDestination()} method.
+     * Wraps the {@link org.bitrepository.settings.repositorysettings.ProtocolSettings#getCollectionDestination()} method.
      */
     public String getCollectionDestination() {
-        return getCollectionSettings().getProtocolSettings().getCollectionDestination();
+        return getRepositorySettings().getProtocolSettings().getCollectionDestination();
     }
     
     /**
-     * Wraps the {@link org.bitrepository.settings.collectionsettings.ProtocolSettings#getMessageBusConfiguration()} method.
+     * Wraps the {@link org.bitrepository.settings.repositorysettings.ProtocolSettings#getMessageBusConfiguration()} method.
      */
     public MessageBusConfiguration getMessageBusConfiguration() {
-        return getCollectionSettings().getProtocolSettings().getMessageBusConfiguration();
+        return getRepositorySettings().getProtocolSettings().getMessageBusConfiguration();
     }
     
     /**
-     * Wraps the {@link org.bitrepository.settings.collectionsettings.PermissionSet#getPermission()}} method.
+     * Wraps the {@link org.bitrepository.settings.repositorysettings.PermissionSet#getPermission()}} method.
      */
     public List<Permission> getPermissions() {
-        return getCollectionSettings().getPermissionSet().getPermission();
+        return getRepositorySettings().getPermissionSet().getPermission();
     }
     
     /**
-     * Wraps the {@link org.bitrepository.settings.collectionsettings.ClientSettings#getIdentificationTimeout()} method.
+     * Wraps the {@link org.bitrepository.settings.repositorysettings.ClientSettings#getIdentificationTimeout()} method.
      */
     public long getIdentificationTimeout() {
-        return getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue();
+        return getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue();
     }
       
     /**
@@ -106,8 +105,8 @@ public class Settings {
     /**
      * @return The standard settings for a collection.
      */
-    public CollectionSettings getCollectionSettings() {
-        return collectionSettings;
+    public RepositorySettings getRepositorySettings() {
+        return repositorySettings;
     }
 
     public String getComponentID() {

@@ -12,8 +12,8 @@
   <dependencies>
     <dependency>
       <groupId>org.bitrepository</groupId>
-      <artifactId>bitrepository-collection-settings</artifactId>
-      <version>${collection.settings.version}</version>
+      <artifactId>bitrepository-repository-settings</artifactId>
+      <version>${repository.settings.version}</version>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
@@ -151,7 +151,7 @@
               <attached>false</attached>
               <resourceBundles>
                 <resourceBundle>org.bitrepository:bitrepository-message-xml:${message.xml.version}</resourceBundle>
-                <resourceBundle>org.bitrepository:bitrepository-collection-settings:${collection.settings.version}</resourceBundle>
+                <resourceBundle>org.bitrepository:bitrepository-repository-settings:${repository.settings.version}</resourceBundle>
               </resourceBundles>
             </configuration>
           </execution>

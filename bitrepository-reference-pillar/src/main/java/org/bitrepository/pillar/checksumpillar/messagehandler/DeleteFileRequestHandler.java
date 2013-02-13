@@ -90,7 +90,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
         validateChecksumSpec(message.getChecksumRequestForExistingFile());
         if(message.getChecksumDataForExistingFile() != null) {
             validateChecksumSpec(message.getChecksumDataForExistingFile().getChecksumSpec());
-        } else if(getSettings().getCollectionSettings()
+        } else if(getSettings().getRepositorySettings()
                 .getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);

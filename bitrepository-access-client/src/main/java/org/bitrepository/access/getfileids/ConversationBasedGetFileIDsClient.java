@@ -69,7 +69,7 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
         validateFileID(fileID);
         if (contributorQueries == null) {
             contributorQueries = ContributorQueryUtils.createFullContributorQuery(
-                settings.getCollectionSettings().getClientSettings().getPillarIDs());
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
         }
 
         log.info("Requesting the fileIDs for file '" + fileID + "' with query "+
@@ -88,7 +88,7 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
      * @return A <code>AuditTrailQuery[]</code> array requesting all audit trails from all the defined contributers.
      */
     private ContributorQuery[] createFullContributorQuery() {
-        List<String> contributers = settings.getCollectionSettings().getClientSettings().getPillarIDs();
+        List<String> contributers = settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID();
         List<AuditTrailQuery> componentQueryList = new ArrayList<AuditTrailQuery>(contributers.size());
         for (String contributer : contributers) {
             componentQueryList.add(new AuditTrailQuery(contributer, null, null, null));

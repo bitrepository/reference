@@ -21,12 +21,12 @@
  */
 package org.bitrepository.protocol.security;
 
-import org.bitrepository.settings.collectionsettings.Certificate;
-import org.bitrepository.settings.collectionsettings.ComponentIDs;
-import org.bitrepository.settings.collectionsettings.Operation;
-import org.bitrepository.settings.collectionsettings.OperationPermission;
-import org.bitrepository.settings.collectionsettings.Permission;
-import org.bitrepository.settings.collectionsettings.PermissionSet;
+import org.bitrepository.settings.repositorysettings.Certificate;
+import org.bitrepository.settings.repositorysettings.ComponentIDs;
+import org.bitrepository.settings.repositorysettings.Operation;
+import org.bitrepository.settings.repositorysettings.OperationPermission;
+import org.bitrepository.settings.repositorysettings.Permission;
+import org.bitrepository.settings.repositorysettings.PermissionSet;
 
 /**
  * Class to hold constants for used with the security module tests.

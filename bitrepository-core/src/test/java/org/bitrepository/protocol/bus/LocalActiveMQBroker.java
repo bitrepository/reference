@@ -25,7 +25,7 @@
 package org.bitrepository.protocol.bus;
 
 import org.apache.activemq.broker.BrokerService;
-import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
+import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

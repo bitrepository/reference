@@ -70,9 +70,9 @@ public class UpdateFileIDsStep extends AbstractWorkFlowStep {
         this.collector = collector;
         this.store = store;
         this.alerter = alerter;
-        this.pillarIds = settings.getCollectionSettings().getClientSettings().getPillarIDs();
-        this.timeout = settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue()
-                + settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue();
+        this.pillarIds = settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID();
+        this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
+                + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
         if(settings.getReferenceSettings().getIntegrityServiceSettings().getMaximumNumberOfResultsPerConversation() 
                 != null) {
             this.maxNumberOfResultsPerConversation = settings.getReferenceSettings().getIntegrityServiceSettings()

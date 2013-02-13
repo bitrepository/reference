@@ -31,12 +31,12 @@ import org.bitrepository.protocol.security.exception.CertificateUseException;
 import org.bitrepository.protocol.security.exception.MessageAuthenticationException;
 import org.bitrepository.protocol.security.exception.MessageSigningException;
 import org.bitrepository.protocol.security.exception.OperationAuthorizationException;
-import org.bitrepository.settings.collectionsettings.Certificate;
-import org.bitrepository.settings.collectionsettings.ComponentIDs;
-import org.bitrepository.settings.collectionsettings.Operation;
-import org.bitrepository.settings.collectionsettings.OperationPermission;
-import org.bitrepository.settings.collectionsettings.Permission;
-import org.bitrepository.settings.collectionsettings.PermissionSet;
+import org.bitrepository.settings.repositorysettings.Certificate;
+import org.bitrepository.settings.repositorysettings.ComponentIDs;
+import org.bitrepository.settings.repositorysettings.Operation;
+import org.bitrepository.settings.repositorysettings.OperationPermission;
+import org.bitrepository.settings.repositorysettings.Permission;
+import org.bitrepository.settings.repositorysettings.PermissionSet;
 import org.bouncycastle.util.encoders.Base64;
 import org.jaccept.structure.ExtendedTestCase;
 import org.slf4j.Logger;
@@ -57,10 +57,10 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
         MessageSigner messageSigner = new BasicMessageSigner();
         Settings settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
-        settings.getCollectionSettings().getProtocolSettings().setRequireMessageAuthentication(true);
-        settings.getCollectionSettings().getProtocolSettings().setRequireOperationAuthorization(true);
-        settings.getCollectionSettings().setPermissionSet(SecurityTestConstants.getDefaultPermissions());
-        securityManager = new BasicSecurityManager(settings.getCollectionSettings(),
+        settings.getRepositorySettings().getProtocolSettings().setRequireMessageAuthentication(true);
+        settings.getRepositorySettings().getProtocolSettings().setRequireOperationAuthorization(true);
+        settings.getRepositorySettings().setPermissionSet(SecurityTestConstants.getDefaultPermissions());
+        securityManager = new BasicSecurityManager(settings.getRepositorySettings(),
                         SecurityTestConstants.getKeyFile(), 
                         authenticator, 
                         messageSigner, 

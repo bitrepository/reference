@@ -73,7 +73,7 @@ public class FindObsoleteChecksumsStep extends AbstractWorkFlowStep {
             settings.getReferenceSettings().getIntegrityServiceSettings().getObsoleteChecksumSettings());
         IntegrityReportModel report = checker.checkObsoleteChecksums(
             maxChecksumAgeProvider,
-            settings.getCollectionSettings().getClientSettings().getPillarIDs());
+            settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
         
         if(!report.hasIntegrityIssues()) {
             log.debug("No checksums are obsolete at any pillar.");

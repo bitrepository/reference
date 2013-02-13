@@ -24,7 +24,6 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
-import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
@@ -253,7 +252,7 @@ public class GetChecksumsOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 0);
         Assert.assertFalse(csCache.hasFile(DEFAULT_FILE_ID));
-        Alarm alarm = alarmDispatcher.poll();
+        AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
         Assert.assertNotNull(alarm);
     }
 }

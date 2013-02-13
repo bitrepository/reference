@@ -24,7 +24,7 @@
  */
 package org.bitrepository.common.settings;
 
-import org.bitrepository.settings.collectionsettings.CollectionSettings;
+import org.bitrepository.settings.repositorysettings.RepositorySettings;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -36,7 +36,7 @@ public class XMLFileSettingsLoaderTest extends ExtendedTestCase{
     public void testCollectionSettingsLoading() throws Exception {
         SettingsLoader settingsLoader = new XMLFileSettingsLoader(PATH_TO_SETTINGS);
         
-        CollectionSettings collectionSettings = settingsLoader.loadSettings(CollectionSettings.class);
-        Assert.assertNotNull(collectionSettings, "CollectionSettings");
+        RepositorySettings repositorySettings = settingsLoader.loadSettings(RepositorySettings.class);
+        Assert.assertNotNull(repositorySettings, "RepositorySettings");
     }
 }

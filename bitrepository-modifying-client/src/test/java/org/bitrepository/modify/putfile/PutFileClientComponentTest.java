@@ -71,8 +71,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the PutClient. Makes a whole conversation for the put client for a 'good' scenario.");
         addFixtureSetup("Initialise the number of pillars to one");
 
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
 
@@ -109,7 +109,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(receivedPutFileRequest.getDestination(), pillar1DestinationId);
         addStep("Validate the steps of the PutClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
-        for(int i = 0; i < settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -126,7 +126,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
             PutFileFinalResponse putFileFinalResponse = messageFactory.createPutFileFinalResponse(
                     receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
             messageBus.sendMessage(putFileFinalResponse);
-        for(int i = 1; i < 2* settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 1; i < 2* settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().size(); i++) {
             OperationEventType eventType = testEventHandler.waitForEvent().getEventType();
             Assert.assertTrue( (eventType == OperationEventType.COMPONENT_COMPLETE)
                     || (eventType == OperationEventType.PROGRESS),
@@ -140,7 +140,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the handling of missing identification responses from all pillar");
         addFixtureSetup("Sets the identification timeout to 1 sec.");
 
-        settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(1000L));
+        settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(1000L));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
 
@@ -165,7 +165,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                 "when partial put are allowed");
         addFixtureSetup("Sets the identification timeout to 3 sec and allow partial puts.");
 
-        settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000L));
+        settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000L));
         settingsForCUT.getReferenceSettings().getPutFileSettings().setPartialPutsAllow(true);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
@@ -210,7 +210,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                 "when partial put are allowed");
         addFixtureSetup("Sets the identification timeout to 3 sec and disallow partial puts.");
 
-        settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000L));
+        settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000L));
         settingsForCUT.getReferenceSettings().getPutFileSettings().setPartialPutsAllow(false);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
@@ -243,9 +243,9 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the handling of a failed operation for the PutClient");
         addStep("Initialise the number of pillars and the PutClient. Sets the operation timeout to 1 sec.",
                 "Should be OK.");
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
-        settingsForCUT.getCollectionSettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(1000L));
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
+        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(1000L));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
 
@@ -267,7 +267,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Validate the steps of the PutClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");
-        for(int i = 0; i < settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -283,8 +283,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the handling of a operation failure for the PutClient. ");
         addStep("Initialise the number of pillars to one", "Should be OK.");
 
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
 
@@ -307,7 +307,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Validate the steps of the PutClient by going through the events.",
                 "Should be 'PillarIdentified', 'PillarSelected' and 'RequestSent'");
-        for(int i = 0; i < settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -648,8 +648,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addFixtureSetup("Sets the identification timeout to 3 sec, allow two retries and only register one pillar.");
 
         settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
 
@@ -701,8 +701,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addFixtureSetup("Sets the identification timeout to 3 sec, allow two retries and only register one pillar.");
 
         settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
 

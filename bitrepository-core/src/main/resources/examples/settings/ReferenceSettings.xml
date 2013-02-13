@@ -42,7 +42,7 @@
 
     <!-- 
       The maximum amount of time a whole conversation may take. 
-      This has some relation to Timeouts in CollectionSettings under ClientSettings. As such
+      This has some relation to Timeouts in RepositorySettings under ClientSettings. As such
       when writing the configuration, the values there should be taken into consideration. 
     -->
     <ConversationTimeout>3600000</ConversationTimeout>
@@ -127,7 +127,7 @@
         - EMERGENCY - will only send an Alarm for the severest protocol issues (e.g. invalid message 
         or certificate).
         - ERROR - sends an Alarm in the case of checksum errors or if a request does not uphold the 
-        contract in CollectionSettings (e.g. does not contain the required checksums).
+        contract in RepositorySettings (e.g. does not contain the required checksums).
         - WARNING - Sends an Alarm whenever an operation or identification fails (e.g. missing file, 
         file already exist, etc.)
     -->

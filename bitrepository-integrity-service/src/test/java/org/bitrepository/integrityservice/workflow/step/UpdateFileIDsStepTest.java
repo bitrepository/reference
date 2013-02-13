@@ -61,8 +61,8 @@ public class UpdateFileIDsStepTest extends ExtendedTestCase {
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().addAll(PILLAR_IDS);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().addAll(PILLAR_IDS);
     }
     
     @Test(groups = {"regressiontest", "integritytest"})

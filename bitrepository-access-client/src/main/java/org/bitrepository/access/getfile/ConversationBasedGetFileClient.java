@@ -68,7 +68,7 @@ public class ConversationBasedGetFileClient extends AbstractClient implements Ge
         
         log.info("Requesting the file '" + fileID + " from the fastest pillar");
         getFile(messageBus, settings, fileID, filePart,
-                settings.getCollectionSettings().getClientSettings().getPillarIDs(),
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(),
                  uploadUrl, eventHandler, auditTrailInformation);
     }
 

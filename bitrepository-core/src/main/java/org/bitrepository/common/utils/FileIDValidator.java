@@ -43,7 +43,7 @@ public class FileIDValidator {
      * @param settings The context for the pillar.
      */
     public FileIDValidator(Settings settings) {
-        regex = settings.getCollectionSettings().getProtocolSettings().getAllowedFileIDPattern();
+        regex = settings.getRepositorySettings().getProtocolSettings().getAllowedFileIDPattern();
         if(regex != null && regex.isEmpty()) {
             regex = null;
         }

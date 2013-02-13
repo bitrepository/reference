@@ -35,11 +35,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bitrepository.protocol.security.exception.PermissionStoreException;
-import org.bitrepository.settings.collectionsettings.InfrastructurePermission;
-import org.bitrepository.settings.collectionsettings.Operation;
-import org.bitrepository.settings.collectionsettings.OperationPermission;
-import org.bitrepository.settings.collectionsettings.PermissionSet;
-import org.bitrepository.settings.collectionsettings.Permission;
+import org.bitrepository.settings.repositorysettings.InfrastructurePermission;
+import org.bitrepository.settings.repositorysettings.Operation;
+import org.bitrepository.settings.repositorysettings.OperationPermission;
+import org.bitrepository.settings.repositorysettings.PermissionSet;
+import org.bitrepository.settings.repositorysettings.Permission;
 import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
@@ -69,7 +69,7 @@ public class PermissionStore {
     
     /**
      * Load permissions and certificates into the store based.
-     * @param permissions the PermissionSet from CollectionSettings.
+     * @param permissions the PermissionSet from RepositorySettings.
      * @param componentID the ID of the component using the PermissionStore. 
      * @throws CertificateException in case a bad certificate data in PermissionSet.   
      */
@@ -89,8 +89,9 @@ public class PermissionStore {
                 X509Certificate certificate = null;
                 if(permission.getOperationPermission() != null) {
                     for(OperationPermission perm : permission.getOperationPermission()) {
-                        if(perm.getAllowedComponents() == null || 
-                                perm.getAllowedComponents().getIDs().contains(componentID)) {
+                        if(perm.getAllowedComponents() == null ||
+                                perm.getAllowedComponents().isEmpty() ||
+                                perm.getAllowedComponents().contains(componentID)) {
                             allowedOperations.add(perm.getOperation());
                         }
                     }

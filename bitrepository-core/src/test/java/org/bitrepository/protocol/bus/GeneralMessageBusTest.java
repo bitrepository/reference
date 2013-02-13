@@ -67,7 +67,9 @@ public class GeneralMessageBusTest extends IntegrationTest {
         addDescription("Verify the message bus manager");
         addStep("Test the extraction of the messagebus from the manager.", 
                 "Null before it has been instantiated, and otherwise the same");
-        settingsForCUT.getCollectionSettings().setCollectionID("A completely different id");
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).setID("A completely " +
+                "" +
+                "different id");
         Assert.assertNull(MessageBusManager.getMessageBus(settingsForCUT.getCollectionID()));
         MessageBus b1 = MessageBusManager.getMessageBus(settingsForCUT, securityManager);
         Assert.assertNotNull(b1);

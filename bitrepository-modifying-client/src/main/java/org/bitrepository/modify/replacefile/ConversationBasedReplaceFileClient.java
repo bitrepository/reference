@@ -61,10 +61,10 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         validateFileID(fileId);
-        if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
+        if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
             ArgumentValidator.checkNotNull(checksumForDeleteAtPillar, "ChecksumDataForFileTYPE checksumForDeleteAtPillar");
         }
-        if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
+        if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
             ArgumentValidator.checkNotNull(checksumForNewFileValidationAtPillar,
                     "ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar");
         }
@@ -89,10 +89,10 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
             EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         validateFileID(fileId);
-        if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
+        if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
             ArgumentValidator.checkNotNull(checksumForDeleteAtPillar, "ChecksumDataForFileTYPE checksumForDeleteAtPillar");
         }
-        if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
+        if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
             ArgumentValidator.checkNotNull(checksumForNewFileValidationAtPillar,
                     "ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar");
         }
@@ -106,7 +106,7 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
         ReplaceFileConversationContext context = new ReplaceFileConversationContext(fileId,
                 sizeOfNewFile, url, checksumForDeleteAtPillar, checksumRequestedForDeletedFile, 
                 checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, settings, messageBus, 
-                clientID, settings.getCollectionSettings().getClientSettings().getPillarIDs(), eventHandler, auditTrailInformation);
+                clientID, settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(), eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForReplaceFile(context));
     }
     

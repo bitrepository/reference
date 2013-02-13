@@ -21,9 +21,20 @@
   #L%
   -->
 
-<CollectionSettings xmlns="http://bitrepository.org/settings/CollectionSettings.xsd">
-  <!-- CollectionID is identifier for the collection -->
-  <CollectionID>dummy-collection-id</CollectionID>
+<RepositorySettings xmlns="http://bitrepository.org/settings/RepositorySettings.xsd">
+  <Name>Example Repository</Name>
+  <!-- The list of collection in this repository -->
+  <Collections>
+    <Collection><ID>TwoPillarCollection</ID>
+        <!--List of pillars that belongs in the collection. Clients will only expect answers from
+        pillars listed here.
+      -->
+      <PillarIDs><PillarID>Pillar1</PillarID><PillarID>Pillar2</PillarID></PillarIDs>
+    </Collection>
+    <Collection><ID>SinglePillarCollection</ID>
+      <PillarIDs><PillarID>Pillar1</PillarID></PillarIDs>
+    </Collection>
+  </Collections>
   <ProtocolSettings>
     <!-- 
       DefaultChecksumType is the checksum that should be used by default in the collection.
@@ -43,7 +54,7 @@
     <RequireMessageAuthentication>true</RequireMessageAuthentication>
     <!-- 
       RequireOperationAuthorization, defines whether operations should be authorized against 
-      permissions defined in CollectionSettings (in the bottom of this file).
+      permissions defined in RepositorySettings (in the bottom of this file).
     -->
     <RequireOperationAuthorization>true</RequireOperationAuthorization>
     <!--
@@ -91,12 +102,6 @@
       Unit in milliseconds. 
     -->
     <OperationTimeout>3600000</OperationTimeout>
-    <!--
-      List of pillars that belongs in the collection. Clients will only expect answers from 
-      pillars listed here.
-    -->
-    <PillarIDs>pillar1</PillarIDs>
-    <PillarIDs>pillar2</PillarIDs>
   </ClientSettings>
 
   <!-- 
@@ -241,4 +246,4 @@
       </OperationPermission>
     </Permission>
 </PermissionSet>
-</CollectionSettings>
+</RepositorySettings>

@@ -60,9 +60,9 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     @Override
     public void setup() throws Exception {
         super.setup();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_1);
-        settings.getCollectionSettings().getClientSettings().getPillarIDs().add(TEST_PILLAR_2);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_1);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_2);
         auditManager = new MockAuditManager();
     }
 
@@ -80,7 +80,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         DBConnector connector = new DBConnector(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
                         
-        IntegrityDAO cache = new IntegrityDAO(connector, settings.getCollectionSettings().getClientSettings().getPillarIDs());
+        IntegrityDAO cache = new IntegrityDAO(connector, settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
         Assert.assertNotNull(cache);
 
         addStep("Close the connection and create another one.", "Should not fail");
@@ -92,7 +92,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         
         DBConnector reconnector = new DBConnector(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        cache = new IntegrityDAO(reconnector, settings.getCollectionSettings().getClientSettings().getPillarIDs());
+        cache = new IntegrityDAO(reconnector, settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
     }
 
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
@@ -530,6 +530,6 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     private IntegrityDAO createDAO() {
         return new IntegrityDAO(new DBConnector(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
-                settings.getCollectionSettings().getClientSettings().getPillarIDs());
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
     }
 }

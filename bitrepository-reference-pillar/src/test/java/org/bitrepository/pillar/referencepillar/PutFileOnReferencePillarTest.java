@@ -93,7 +93,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void referencePillarPutFileTestMissingChecksum() throws Exception {
         addDescription("Tests that the checksum pillar rejects putting a file, which already exists. During the operation fase");
-        settingsForCUT.getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
+        settingsForCUT.getRepositorySettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
         PutFileRequest putRequest = msgFactory.createPutFileRequest(
                 null, TestFileHelper.getDefaultFileChecksum().getChecksumSpec(), DEFAULT_DOWNLOAD_FILE_ADDRESS, NON_DEFAULT_FILE_ID, FILE_SIZE);
         messageBus.sendMessage(putRequest);
@@ -111,7 +111,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void referencePillarPutFileTestBadChecksumArgument() throws Exception {
         addDescription("Tests the file will not be put if a bad checksum is given.");
-        Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+        Assert.assertTrue(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         
         ChecksumDataForFileTYPE badData = new ChecksumDataForFileTYPE();
         badData.setCalculationTimestamp(CalendarUtils.getEpoch());
@@ -129,7 +129,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void referencePillarPutFileTestBadChecksumSpecGiven() throws Exception {
         addDescription("Tests the file will not be put if a bad checksum is given.");
-        Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+        Assert.assertTrue(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         
         ChecksumSpecTYPE badCsType = new ChecksumSpecTYPE();
         badCsType.setChecksumType(ChecksumType.OTHER);
@@ -150,7 +150,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void referencePillarPutFileTestBadChecksumSpecRequested() throws Exception {
         addDescription("Tests the file will not be put if a bad checksum is given.");
-        Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+        Assert.assertTrue(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         
         ChecksumSpecTYPE badCsType = new ChecksumSpecTYPE();
         badCsType.setChecksumType(ChecksumType.OTHER);
@@ -167,7 +167,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void referencePillarPutFileTestBadURL() throws Exception {
         addDescription("Tests the ReferencePillars handling of a bad URL in the PutFile request.");
-        Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+        Assert.assertTrue(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         
         messageBus.sendMessage(msgFactory.createPutFileRequest(TestFileHelper.getDefaultFileChecksum(), 
                 TestFileHelper.getDefaultFileChecksum().getChecksumSpec(), "http://localhost:1/error",
@@ -202,8 +202,8 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void referencePillarPutFileTestNoChecksumRequired() throws Exception {
         addDescription("Tests that it is possible to put without any checksums if the collection settings allows it.");
-        context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
-        Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+        context.getSettings().getRepositorySettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
+        Assert.assertFalse(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
 
         messageBus.sendMessage(msgFactory.createPutFileRequest(null, 
                 null, DEFAULT_DOWNLOAD_FILE_ADDRESS, NON_DEFAULT_FILE_ID, FILE_SIZE));

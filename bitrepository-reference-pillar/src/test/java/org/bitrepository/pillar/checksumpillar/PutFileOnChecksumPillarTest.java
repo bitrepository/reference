@@ -154,7 +154,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarPutFileTestMissingChecksum() throws Exception {
         addDescription("Tests that the checksum pillar rejects putting a file, which already exists. During the operation fase");
-        context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
+        context.getSettings().getRepositorySettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
         PutFileRequest putRequest = msgFactory.createPutFileRequest(null, 
                 csSpec, DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE);
         messageBus.sendMessage(putRequest);
@@ -172,7 +172,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarPutFileTestBadChecksumSpecGiven() throws Exception {
         addDescription("Tests the file will not be put if a bad checksum is given.");
-        Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+        Assert.assertTrue(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         
         ChecksumSpecTYPE badCsType = new ChecksumSpecTYPE();
         badCsType.setChecksumType(ChecksumType.OTHER);
@@ -193,7 +193,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarPutFileTestBadChecksumSpecRequested() throws Exception {
         addDescription("Tests whether the file will not be put if a bad checksum is given.");
-        Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+        Assert.assertTrue(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         
         ChecksumSpecTYPE badCsType = new ChecksumSpecTYPE();
         badCsType.setChecksumType(ChecksumType.OTHER);
@@ -210,8 +210,8 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarPutFileTestNoChecksumAllowed() throws Exception {
         addDescription("Tests that it is possible to put without any checksums if the collection settings allows it.");
-        context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
-        Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+        context.getSettings().getRepositorySettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
+        Assert.assertFalse(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
 
         messageBus.sendMessage(msgFactory.createPutFileRequest(null, 
                 null, DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
@@ -224,8 +224,8 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void checksumPillarPutFileTestBadURL() throws Exception {
         addDescription("Tests that the pillar handles a bad URL correct.");
-        context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
-        Assert.assertFalse(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+        context.getSettings().getRepositorySettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
+        Assert.assertFalse(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
 
         String badUrl = DEFAULT_DOWNLOAD_FILE_ADDRESS + "-ERROR-" + new Date().getTime();
         messageBus.sendMessage(msgFactory.createPutFileRequest(null, 
@@ -252,7 +252,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
                 + "the URL, when the ChecksumPillar is set to only use the checksum from the message.");
         context.getSettings().getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE);
         Assert.assertEquals(context.getSettings().getReferenceSettings().getPillarSettings().getChecksumPillarFileDownload(), ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE);
-        Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+        Assert.assertTrue(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         
         String badChecksum = "baabbbaaabba";
         ChecksumDataForFileTYPE badData = new ChecksumDataForFileTYPE();
@@ -277,7 +277,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
                 + "checksum given as validation in the PutFileRequest message.");
         context.getSettings().getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(ChecksumPillarFileDownload.ALWAYS_DOWNLOAD);
         Assert.assertEquals(context.getSettings().getReferenceSettings().getPillarSettings().getChecksumPillarFileDownload(), ChecksumPillarFileDownload.ALWAYS_DOWNLOAD);
-        Assert.assertTrue(context.getSettings().getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
+        Assert.assertTrue(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         
         ChecksumDataForFileTYPE badData = new ChecksumDataForFileTYPE();
         badData.setCalculationTimestamp(CalendarUtils.getEpoch());

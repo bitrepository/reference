@@ -179,6 +179,6 @@ public class SimpleIntegrityService implements IntegrityService {
 
     @Override
     public List<String> getPillarList() {
-        return settings.getCollectionSettings().getClientSettings().getPillarIDs();
+        return settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID();
     }
 }

@@ -22,12 +22,11 @@
 package org.bitrepository.protocol.security;
 
 import java.util.List;
-
 import org.bitrepository.protocol.security.exception.CertificateUseException;
 import org.bitrepository.protocol.security.exception.OperationAuthorizationException;
 import org.bitrepository.protocol.security.exception.PermissionStoreException;
 import org.bitrepository.protocol.security.exception.UnregisteredPermissionException;
-import org.bitrepository.settings.collectionsettings.Operation;
+import org.bitrepository.settings.repositorysettings.Operation;
 import org.bouncycastle.cms.SignerId;
 
 /**

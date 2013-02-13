@@ -166,7 +166,7 @@ public class CommandLineArgumentsHandler {
         MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
         MessageSigner signer = new BasicMessageSigner();
         OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
-        return new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile,
+        return new BasicSecurityManager(settings.getRepositorySettings(), privateKeyFile,
                 authenticator, signer, authorizer, permissionStore,
                 settings.getComponentID());
     }

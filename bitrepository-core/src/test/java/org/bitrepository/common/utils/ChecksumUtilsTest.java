@@ -34,7 +34,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.TestValidationUtils;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -260,7 +259,7 @@ public class ChecksumUtilsTest extends ExtendedTestCase {
         addStep("Use utils to extract default checksum spec", "Should be the one defined in Settings.");
         ChecksumSpecTYPE csType = ChecksumUtils.getDefault(settings);
         Assert.assertEquals(csType.getChecksumType().name(), 
-                settings.getCollectionSettings().getProtocolSettings().getDefaultChecksumType());
+                settings.getRepositorySettings().getProtocolSettings().getDefaultChecksumType());
         Assert.assertNull(csType.getChecksumSalt(), "Should not contain any salt.");
     }
 }

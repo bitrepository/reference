@@ -24,7 +24,7 @@
   #L%
   -->
   
-<CollectionSettings xmlns="http://bitrepository.org/settings/0.3.0/CollectionSettings.xsd">
+<RepositorySettings xmlns="http://bitrepository.org/settings/0.3.0/RepositorySettings.xsd">
   <CollectionID>integrationtest1</CollectionID>
   <ProtocolSettings>
     <DefaultChecksumType>md5</DefaultChecksumType>
@@ -46,4 +46,4 @@
     <OperationTimeout>60000</OperationTimeout>
     <PillarIDs>sbtape1</PillarIDs>
   </ClientSettings>
-</CollectionSettings>
+</RepositorySettings>

@@ -38,7 +38,7 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.settings.collectionsettings.MessageBusConfiguration;
+import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;

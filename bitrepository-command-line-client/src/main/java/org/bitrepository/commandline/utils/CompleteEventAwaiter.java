@@ -49,8 +49,8 @@ public class CompleteEventAwaiter implements EventHandler {
      * @param settings The settings.
      */
     public CompleteEventAwaiter(Settings settings, OutputHandler outputHandler) {
-        this.timeout = settings.getCollectionSettings().getClientSettings().getIdentificationTimeout().longValue() 
-                + settings.getCollectionSettings().getClientSettings().getOperationTimeout().longValue();
+        this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
+                + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
         this.output = outputHandler;
     }
     

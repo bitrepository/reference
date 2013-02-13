@@ -112,7 +112,7 @@ public final class IntegrityServiceFactory {
             MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
             MessageSigner signer = new BasicMessageSigner();
             OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
-            securityManager = new BasicSecurityManager(settings.getCollectionSettings(), privateKeyFile, 
+            securityManager = new BasicSecurityManager(settings.getRepositorySettings(), privateKeyFile,
                     authenticator, signer, authorizer, permissionStore,
                     settings.getReferenceSettings().getIntegrityServiceSettings().getID());
         }

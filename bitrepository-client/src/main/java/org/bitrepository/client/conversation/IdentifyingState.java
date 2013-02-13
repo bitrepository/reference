@@ -79,7 +79,7 @@ public abstract class IdentifyingState extends GeneralConversationState {
 
     @Override
     protected long getTimeoutValue() {
-        return getContext().getSettings().getCollectionSettings().getClientSettings().getIdentificationTimeout()
+        return getContext().getSettings().getRepositorySettings().getClientSettings().getIdentificationTimeout()
                 .longValue();
     }
 

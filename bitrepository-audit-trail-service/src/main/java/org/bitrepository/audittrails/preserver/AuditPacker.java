@@ -77,7 +77,7 @@ public class AuditPacker {
      * Retrieves the preservation sequence number for each contributor and inserts it into the map.
      */
     private void initialiseReachedSequenceNumbers() {
-        for(String contributor : settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs()) {
+        for(String contributor : settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs()) {
             Long seq = store.getPreservationSequenceNumber(contributor);
             seqReached.put(contributor, seq);
         }
@@ -114,7 +114,7 @@ public class AuditPacker {
         PrintWriter writer = null;
         try {
             writer = new PrintWriter(new FileOutputStream(container, APPEND));
-            for(String contributor : settings.getCollectionSettings().getGetAuditTrailSettings().getContributorIDs()) {
+            for(String contributor : settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs()) {
                 Long seq = packContributor(contributor, writer);
                 seqReached.put(contributor, seq);
             }

@@ -53,10 +53,10 @@ import org.bitrepository.protocol.security.exception.MessageSigningException;
 import org.bitrepository.protocol.security.exception.OperationAuthorizationException;
 import org.bitrepository.protocol.security.exception.SecurityException;
 import org.bitrepository.protocol.security.exception.UnregisteredPermissionException;
-import org.bitrepository.settings.collectionsettings.CollectionSettings;
-import org.bitrepository.settings.collectionsettings.InfrastructurePermission;
-import org.bitrepository.settings.collectionsettings.Permission;
-import org.bitrepository.settings.collectionsettings.PermissionSet;
+import org.bitrepository.settings.repositorysettings.RepositorySettings;
+import org.bitrepository.settings.repositorysettings.InfrastructurePermission;
+import org.bitrepository.settings.repositorysettings.Permission;
+import org.bitrepository.settings.repositorysettings.PermissionSet;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
@@ -81,8 +81,8 @@ public class BasicSecurityManager implements SecurityManager {
     private static final String defaultPassword = "123456";
     /** path to file containing the components private key and certificate */
     private final String privateKeyFile;
-    /** CollectionSettings */
-    private final CollectionSettings collectionSettings;
+    /** RepositorySettings */
+    private final RepositorySettings repositorySettings;
     /** Object to authenticate messages */
     private final MessageAuthenticator authenticator;
     /** Object to sign messages */
@@ -102,7 +102,7 @@ public class BasicSecurityManager implements SecurityManager {
     
     /**
      * Constructor for the SecurityManager.
-     * @param collectionSettings the collection settings to retrieve settings from
+     * @param repositorySettings the collection settings to retrieve settings from
      * @param privateKeyFile path to the file containing the components private key and certificate, may be null if not using
      *        certificates and encryption.
      * @param authenticator MessageAuthenticator for authenticating messages
@@ -110,15 +110,15 @@ public class BasicSecurityManager implements SecurityManager {
      * @param authorizer OperationAuthorizer to authorize operations
      * @param permissionStore the PermissionStore to hold certificates and adjoining permissions
      */
-    public BasicSecurityManager(CollectionSettings collectionSettings, String privateKeyFile, MessageAuthenticator authenticator,
+    public BasicSecurityManager(RepositorySettings repositorySettings, String privateKeyFile, MessageAuthenticator authenticator,
             MessageSigner signer, OperationAuthorizor authorizer, PermissionStore permissionStore, String componentID) {
-        ArgumentValidator.checkNotNull(collectionSettings, "collectionSettings");
+        ArgumentValidator.checkNotNull(repositorySettings, "repositorySettings");
         ArgumentValidator.checkNotNull(authenticator, "authenticator");
         ArgumentValidator.checkNotNull(signer, "signer");
         ArgumentValidator.checkNotNull(authorizer, "authorizer");
         ArgumentValidator.checkNotNull(permissionStore, "permissionStore");
         this.privateKeyFile = privateKeyFile;
-        this.collectionSettings = collectionSettings;
+        this.repositorySettings = repositorySettings;
         this.authenticator = authenticator;
         this.signer = signer;
         this.authorizer = authorizer;
@@ -134,7 +134,7 @@ public class BasicSecurityManager implements SecurityManager {
      * @throws MessageAuthenticationException in case of failure.
      */
     public void authenticateMessage(String message, String signature) throws MessageAuthenticationException {
-        if(collectionSettings.getProtocolSettings().isRequireMessageAuthentication()) {
+        if(repositorySettings.getProtocolSettings().isRequireMessageAuthentication()) {
             if (signature != null) {
             try {
                 byte[] decodedSig = Base64.decode(signature.getBytes(SecurityModuleConstants.defaultEncodingType));
@@ -156,7 +156,7 @@ public class BasicSecurityManager implements SecurityManager {
      * @throws MessageSigningException if signing of the message fails.   
      */
     public String signMessage(String message) throws MessageSigningException {
-        if(collectionSettings.getProtocolSettings().isRequireMessageAuthentication()) {
+        if(repositorySettings.getProtocolSettings().isRequireMessageAuthentication()) {
             try {
                 byte[] signature = signer.signMessage(message.getBytes(SecurityModuleConstants.defaultEncodingType));
                 return new String(Base64.encode(signature));   
@@ -177,7 +177,7 @@ public class BasicSecurityManager implements SecurityManager {
      */
     public void authorizeCertificateUse(String certificateUser, String messageData, String signature) 
             throws CertificateUseException {
-        if(collectionSettings.getProtocolSettings().isRequireOperationAuthorization()) {
+        if(repositorySettings.getProtocolSettings().isRequireOperationAuthorization()) {
             byte[] decodeSig = Base64.decode(signature.getBytes());
             CMSSignedData s;
             try {
@@ -200,7 +200,7 @@ public class BasicSecurityManager implements SecurityManager {
      */
     public void authorizeOperation(String operationType, String messageData, String signature) 
             throws OperationAuthorizationException {
-        if(collectionSettings.getProtocolSettings().isRequireOperationAuthorization()) {
+        if(repositorySettings.getProtocolSettings().isRequireOperationAuthorization()) {
             byte[] decodeSig = Base64.decode(signature.getBytes());
             CMSSignedData s;
             try {
@@ -233,8 +233,8 @@ public class BasicSecurityManager implements SecurityManager {
             keyStore = KeyStore.getInstance(SecurityModuleConstants.keyStoreType);
             keyStore.load(null);
             loadPrivateKey(privateKeyFile);
-            loadInfrastructureCertificates(collectionSettings.getPermissionSet());
-            permissionStore.loadPermissions(collectionSettings.getPermissionSet(), componentID);
+            loadInfrastructureCertificates(repositorySettings.getPermissionSet());
+            permissionStore.loadPermissions(repositorySettings.getPermissionSet(), componentID);
             signer.setPrivateKeyEntry(privateKeyEntry);
             setupDefaultSSLContext();
         } catch (Exception e) {

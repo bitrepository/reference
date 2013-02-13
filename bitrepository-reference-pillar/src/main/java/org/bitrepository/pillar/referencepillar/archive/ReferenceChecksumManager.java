@@ -273,11 +273,9 @@ public class ReferenceChecksumManager {
                     + "Dispatching an alarm, and removing it from the cache.");
             Alarm alarm = new Alarm();
             alarm.setAlarmCode(AlarmCode.COMPONENT_FAILURE);
-            alarm.setAlarmRaiser(null);
             alarm.setAlarmText("The file '" + fileId + "' has been removed from the archive without it being removed "
                     + "from index. Removing it from index.");
             alarm.setFileID(fileId);
-            alarm.setOrigDateTime(CalendarUtils.getNow());
             alarmDispatcher.error(alarm);
             
             cache.deleteEntry(fileId);

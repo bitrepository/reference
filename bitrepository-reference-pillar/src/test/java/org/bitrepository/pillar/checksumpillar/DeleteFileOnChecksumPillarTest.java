@@ -183,7 +183,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
     public void checksumPillarDeleteFileTestMissingChecksumArgument() {
         addDescription("Tests that a missing 'ChecksumOnExistingFile' will not delete the file.");
 
-        context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(true);
+        context.getSettings().getRepositorySettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(true);
         initializeCacheWithMD5ChecksummedFile();
         messageBus.sendMessage(msgFactory.createDeleteFileRequest(null, null, DEFAULT_FILE_ID));
         DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
@@ -196,7 +196,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
     public void checksumPillarDeleteFileTestAllowedMissingChecksum() {
         addDescription("Tests that a missing 'ChecksumOnExistingFile' will delete the file, when it has been allowed "
                 + "to perform destructive operations in the settings.");
-        context.getSettings().getCollectionSettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
+        context.getSettings().getRepositorySettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
         initializeCacheWithMD5ChecksummedFile();
         messageBus.sendMessage(msgFactory.createDeleteFileRequest(null, null, DEFAULT_FILE_ID));
         DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);

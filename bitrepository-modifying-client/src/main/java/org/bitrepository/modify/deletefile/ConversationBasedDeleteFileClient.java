@@ -55,7 +55,7 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         validateFileID(fileId);
-        if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
+        if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
             ArgumentValidator.checkNotNull(checksumForPillar, "ChecksumForPillar");
         }
         
@@ -74,7 +74,7 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
             ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         validateFileID(fileId);
-        if(settings.getCollectionSettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
+        if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
             ArgumentValidator.checkNotNull(checksumForPillar, "ChecksumForPillar");
         }
         
@@ -84,7 +84,7 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
         
         DeleteFileConversationContext context = new DeleteFileConversationContext(fileId,
                 checksumForPillar, checksumRequested, settings, messageBus, clientID,
-                settings.getCollectionSettings().getClientSettings().getPillarIDs(),eventHandler, auditTrailInformation);
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(),eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForDeleteFile(context));
     }
 }

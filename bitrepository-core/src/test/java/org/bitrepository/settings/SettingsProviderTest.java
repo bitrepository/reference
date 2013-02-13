@@ -50,13 +50,14 @@ public class SettingsProviderTest {
         String originalCollectionID = settings.getCollectionID();
 
         String newCollectionID = "newCollectionID";
-        settings.getCollectionSettings().setCollectionID(newCollectionID);
-        Assert.assertEquals(settings.getCollectionSettings().getCollectionID(), newCollectionID);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).setID(newCollectionID);
+        Assert.assertEquals(settings.getRepositorySettings().getCollections().getCollection().get(0).getID(),
+                newCollectionID);
         Assert.assertEquals(settings.getCollectionID(), newCollectionID);
 
         settingsLoader.reloadSettings();
         settings = settingsLoader.getSettings();
-        Assert.assertEquals(settings.getCollectionSettings().getCollectionID(), originalCollectionID);
+        Assert.assertEquals(settings.getRepositorySettings().getCollections().getCollection().get(0).getID(), originalCollectionID);
         Assert.assertEquals(settings.getCollectionID(), originalCollectionID);
     }
 }

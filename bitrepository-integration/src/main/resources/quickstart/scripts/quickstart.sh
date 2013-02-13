@@ -80,7 +80,7 @@ done
 refpillartarfile=$(ls bitrepository-reference-pillar*.tar.gz)
 if [ ! -z $refpillartarfile ]; then
 	tar xvf $refpillartarfile > /dev/null
-#	rm $refpillartarfile
+	rm $refpillartarfile
 fi
 
 refpillardistdir=$(ls -t | grep bitrepository-reference-pillar-.* | head -1)

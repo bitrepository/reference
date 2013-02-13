@@ -93,7 +93,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         validatePillarId(message.getPillarID());
         if(message.getChecksumDataForNewFile() != null) {
             validateChecksumSpec(message.getChecksumDataForNewFile().getChecksumSpec());
-        } else if(getSettings().getCollectionSettings()
+        } else if(getSettings().getRepositorySettings()
                 .getProtocolSettings().isRequireChecksumForNewFileRequests()) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);

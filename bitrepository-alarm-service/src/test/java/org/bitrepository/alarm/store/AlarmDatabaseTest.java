@@ -179,7 +179,7 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         
         StringBuilder text = new StringBuilder();
         for(int i = 0; i < 10; i++) {
-            text.append(settings.getCollectionSettings().toString());
+            text.append(settings.getRepositorySettings().toString());
             text.append("\n");
             text.append(settings.getReferenceSettings().toString());
             text.append("\n");

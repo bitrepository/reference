@@ -175,7 +175,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         settingsForCUT = loadSettings(getComponentID());
         makeUserSpecificSettings(settingsForCUT);
 
-        alarmDestinationID = settingsForCUT.getCollectionSettings().getProtocolSettings().getAlarmDestination();
+        alarmDestinationID = settingsForCUT.getRepositorySettings().getProtocolSettings().getAlarmDestination();
 
         settingsForTestClient = loadSettings(testMethodName);
         makeUserSpecificSettings(settingsForTestClient);
@@ -187,9 +187,9 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     }
 
     private void makeUserSpecificSettings(Settings settings) {
-        settings.getCollectionSettings().getProtocolSettings().setCollectionDestination(
+        settings.getRepositorySettings().getProtocolSettings().setCollectionDestination(
                 settings.getCollectionDestination() + getTopicPostfix());
-        settings.getCollectionSettings().getProtocolSettings().setAlarmDestination(
+        settings.getRepositorySettings().getProtocolSettings().setAlarmDestination(
                 settings.getAlarmDestination() + getTopicPostfix());
     }
 

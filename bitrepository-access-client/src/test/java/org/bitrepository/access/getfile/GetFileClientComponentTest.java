@@ -136,8 +136,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 "participates. Also validate, that the 'FilePart' can be used.");
         addStep("Set the number of pillars to 1", "");
 
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
 
         FilePart filePart = new FilePart();
         filePart.setPartLength(BigInteger.TEN);
@@ -146,7 +146,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         GetFileClient client = createGetFileClient();
 
-        String chosenPillar = settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().get(0);
+        String chosenPillar = settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().get(0);
 
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
@@ -165,7 +165,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         messageBus.sendMessage(identifyResponse);
         GetFileRequest receivedGetFileRequest = pillar1Receiver.waitForMessage(GetFileRequest.class);
 
-        for(int i = 0; i < settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().size(); i++) {
+        for(int i = 0; i < settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().size(); i++) {
             Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         }
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
@@ -202,10 +202,10 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         String averagePillarID = "THE-AVERAGE-PILLAR";
         String fastPillarID = "THE-FAST-PILLAR";
         String slowPillarID = "THE-SLOW-PILLAR";
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(averagePillarID);
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(fastPillarID);
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(slowPillarID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(averagePillarID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(fastPillarID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(slowPillarID);
         GetFileClient client = createGetFileClient();
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
 
@@ -267,7 +267,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
     public void getFileClientWithIdentifyTimeout() throws Exception {
         addDescription("Verify that the GetFile works correct without receiving responses from all pillars.");
         addFixtureSetup("Set the a identification timeout to 3 seconds ");
-        settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
+        settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
 
 
         addStep("Call getFile form fastest pillar.",
@@ -314,7 +314,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addDescription("Tests the the GetFileClient handles lack of IdentifyPillarResponses gracefully  ");
         addStep("Set  a 3 second timeout for identifying pillar.", "");
 
-        settingsForCUT.getCollectionSettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
+        settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
         GetFileClient client = createGetFileClient();
 
         addStep("Make the GetClient ask for fastest pillar.",
@@ -335,8 +335,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addDescription("Tests the the GetFileClient handles lack of IdentifyPillarResponses gracefully  ");
         addStep("Set the number of pillars to 1 and a 3 second timeout for the conversation.", "");
 
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
         settingsForCUT.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(1000));
         GetFileClient client = createGetFileClient();
 
@@ -375,8 +375,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
     public void testNoSuchFileSpecificPillar() throws Exception {
         addDescription("Testing how a request for a non-existing file is handled on a specific pillar request.");
         addStep("Define 1 pillar.", "");
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().clear();
-        settingsForCUT.getCollectionSettings().getClientSettings().getPillarIDs().add(PILLAR1_ID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
         String fileName = "ERROR-NO-SUCH-FILE-ERROR";
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         URL url = httpServer.getURL(DEFAULT_FILE_ID);

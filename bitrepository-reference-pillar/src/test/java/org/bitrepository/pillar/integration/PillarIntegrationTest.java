@@ -142,7 +142,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             MessageSigner signer = new BasicMessageSigner();
             OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
             org.bitrepository.protocol.security.SecurityManager securityManager =
-                    new BasicSecurityManager(settingsForTestClient.getCollectionSettings(),
+                    new BasicSecurityManager(settingsForTestClient.getRepositorySettings(),
                             testConfiguration.getPrivateKeyFileLocation(),
                             authenticator, signer, authorizer, permissionStore, settingsForTestClient.getComponentID());
             return securityManager;

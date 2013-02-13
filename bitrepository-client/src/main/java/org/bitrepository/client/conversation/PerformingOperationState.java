@@ -83,7 +83,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
 
     @Override
     protected long getTimeoutValue() {
-        return getContext().getSettings().getCollectionSettings().getClientSettings().getOperationTimeout().longValue();
+        return getContext().getSettings().getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
     }
 
     @Override
