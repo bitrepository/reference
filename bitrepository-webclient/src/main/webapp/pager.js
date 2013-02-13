@@ -10,26 +10,26 @@
  
     this.makePager = function(currentPage) {
       var lastPage = Math.ceil(this.maxCountMethod() / this.pageSize);
-      var html = "<div class=\"pagination\"><ul>";
+      var html = "<div class=\"pagination\" style=\"padding: 0px\"><ul style=\"padding: 0px\">";
       if(currentPage == 1) {
-        html += "<li class=\"disabled\">";
+        html += "<li class=\"disabled\" style=\"padding: 0px\">";
       } else {
-        html += "<li>";
+        html += "<li style=\"padding: 0px\">";
       }
       html += "<a id=\"prev-button\" href=\"#\">Prev</a></li>";
-      if(currentPage == lastPage) {
-        html += "<li class=\"disabled\">";
+      if(currentPage >= lastPage) {
+        html += "<li class=\"disabled\" style=\"padding: 0px\">";
       } else { 
-        html += "<li>";
+        html += "<li style=\"padding: 0px\">";
       }
       html += "<a id=\"next-button\" href=\"#\">Next</a></li>";
       html += "</ul></div>";
       $(pagerElement).html(html);
 
-      if(currentPage != lastPage) {
+      if(currentPage < lastPage) {
         $("#next-button").click(this.getPage(currentPage + 1));
       }
-      if(currentPage != 1) {
+      if(currentPage > 1) {
         $("#prev-button").click(this.getPage(currentPage - 1));
       }
     }

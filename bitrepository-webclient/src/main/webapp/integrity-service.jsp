@@ -64,8 +64,8 @@
     <div class="modal-body" id="modalPagerBody">
       <p>Loading</p>
     </div>
-    <div class="modal-footer">
-        <div id="modalPager" style="text-align: center"></div>
+    <div class="modal-footer" style="padding: 0px">
+        <div id="modalPager" style="text-align: center; padding: 0px"></div>
     </div>
   </div>  
 
