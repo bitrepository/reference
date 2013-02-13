@@ -92,10 +92,10 @@
     function makeWorkflowRow(workflowID, nextRun, lastRun, executionInterval, currentState) {
       var html = "";
       html += "<tr><td><a class=\"btn btn-link\" id=\"" + workflowID + "-details\">" + workflowID + "</a></td>";
-      html += "<td id=\"" + workflowID + "-nextRun\">" + nextRun + "</td>";
+      html += "<td id=\"" + workflowID + "-nextRun\" style=\"padding:5px\">" + nextRun + "</td>";
       html += "<td><a class=\"btn btn-link\" id=\"" + workflowID + "-lastRun\">" + lastRun + "</a></td>";   
-      html += "<td id=\"" + workflowID + "-executionInterval\">" + executionInterval + "</td>";
-      html += "<td id=\"" + workflowID + "-currentState\">" + currentState + "</td></tr>";
+      html += "<td id=\"" + workflowID + "-executionInterval\" style=\"padding:5px\">" + executionInterval + "</td>";
+      html += "<td id=\"" + workflowID + "-currentState\" style=\"padding:5px\">" + currentState + "</td></tr>";
       return html;
     }
     
@@ -159,10 +159,10 @@
     }
     
     function showModalPager(id, member, title, url) {
-      myTitle = title;
-      myUrl = url;
-      myID = id;
-      myMember = member;
+      var myTitle = title;
+      var myUrl = url;
+      var myID = id;
+      var myMember = member;
       return function() {
         pager = new Pager(getPagingLimit(myID, myMember), 20, myUrl, "#modalPager", "#modalPagerBody");
         $("#modalPagerLabel").html(myTitle);
@@ -184,12 +184,12 @@
       } else if(type == "Missing files") {
         element = "#" + id + "-missingFiles";
         title = type + " on " + id;
-        member = "missingFiles";
+        member = "missingFilesCount";
         url += "getMissingFileIDs/";
       } else if(type == "Checksum errors") {
         element = "#" + id + "-checksumErrors";
         title = type + " on " + id;
-        member = "checksumErrors";
+        member = "checksumErrorCount";
         url += "getChecksumErrorFileIDs/";
       }
       url += "?pillarID=" + id;
