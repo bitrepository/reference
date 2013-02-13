@@ -107,8 +107,10 @@
     }
     
     function getStoredWorkflowInfo(id, type) {
+      var myID = id;
+      var myType = type;
       return function() {
-        return workflows[id][type];
+        return workflows[myID][myType];
       }
     }
     
@@ -151,8 +153,8 @@
     }
 
     function getPagingLimit(id, member) {
-      myID = id;
-      myMember = member;
+      var myID = id;
+      var myMember = member;
       return function() {
         return pillars[myID][myMember];
       }
