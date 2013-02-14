@@ -22,25 +22,25 @@
             <legend>Alarm display filters</legend>
             <div class="input-append">
               <label> From date: <br>
-                <input class="input-small" type="text" id="fromDate" placeholder="From date" style="height:30px">
+                <input class="input-small" type="text" id="fromDate" placeholder="From date">
                 <button class="btn" id="fromDateClearButton" type="button">Clear</button>
               </label>
             </div>
             <div class="input-append">
               <label> To date: <br>
-                <input class="input-small" type="text" id="toDate" placeholder="To date" style="height:30px">
+                <input class="input-small" type="text" id="toDate" placeholder="To date">
                 <button class="btn" id="toDateClearButton" type="button">Clear</button>
               </label>
             </div>
             <div class="input-append">
               <label> FileID: <br>
-                <input id="fileIDFilter" type="text" placeholder="FileID" style="height:30px">
+                <input id="fileIDFilter" type="text" placeholder="FileID">
                 <button class="btn" id="fileIDClearButton" type="button">Clear</button>
               </label>              
             </div>
             <div class="input-append">
               <label> Reporting component: <br>
-                <input id="componentFilter" type="text" placeholder="ComponentID" style="height:30px">
+                <input id="componentFilter" type="text" placeholder="ComponentID">
                 <button class="btn" id="componentIDClearButton" type="button">Clear</button>
               </label>
             </div>
