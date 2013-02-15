@@ -145,7 +145,7 @@ public class GetChecksumsOnReferencePillarTest extends ReferencePillarTest {
         GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 
-                archive.getAllFileIds().size());
+                archives.getAllFileIds(settingsForCUT.getCollectionID()).size());
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
@@ -237,9 +237,9 @@ public class GetChecksumsOnReferencePillarTest extends ReferencePillarTest {
         
         addStep("Remove the file from beneath the pillar", 
                 "The file is not longer in the archive, but still in the database.");
-        FileUtils.delete(archive.getFile(DEFAULT_FILE_ID));
-        Assert.assertFalse(archive.hasFile(DEFAULT_FILE_ID));
-        Assert.assertTrue(csCache.hasFile(DEFAULT_FILE_ID));
+        FileUtils.delete(archives.getFile(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
+        Assert.assertFalse(archives.hasFile(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
+        Assert.assertTrue(csCache.hasFile(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
         
         addStep("Request the checksum of the default file again", "Message is sent to the pillar.");
         getChecksumsRequest = msgFactory.createGetChecksumsRequest(
@@ -251,7 +251,7 @@ public class GetChecksumsOnReferencePillarTest extends ReferencePillarTest {
         finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 0);
-        Assert.assertFalse(csCache.hasFile(DEFAULT_FILE_ID));
+        Assert.assertFalse(csCache.hasFile(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
         AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
         Assert.assertNotNull(alarm);
     }

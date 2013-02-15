@@ -128,7 +128,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         Assert.assertNotNull(receivedIdentifyResponse.getChecksumDataForExistingFile());
         
         addStep("Validate the content of the cache", "Should contain the checksum of the file");
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -148,7 +148,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
                 DUPLICATE_FILE_FAILURE);
         
         addStep("Validate the content of the cache", "Should contain the checksum of the file");
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -166,7 +166,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
                 ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
         
         addStep("Validate the content of the cache", "Should contain the checksum of the file");
-        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
+        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -187,7 +187,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_SUPPORTED);
-        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
+        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -204,7 +204,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_SUPPORTED);
-        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
+        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -218,7 +218,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
-        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID));
+        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -233,7 +233,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.FILE_TRANSFER_FAILURE);
-        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
+        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -267,8 +267,8 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
-        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID));
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), badChecksum);
+        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), badChecksum);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -291,7 +291,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
-        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
+        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -308,7 +308,7 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
-        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
+        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -324,6 +324,6 @@ public class PutFileOnChecksumPillarTest extends ChecksumPillarTest {
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
-        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID));
+        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
     }
 }

@@ -22,10 +22,11 @@
 package org.bitrepository.pillar.referencepillar;
 
 import java.io.File;
+
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
-import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
@@ -34,34 +35,34 @@ import org.testng.annotations.AfterMethod;
 
 public class ReferencePillarMediatorTester extends ReferencePillarTest {
     
-    ReferenceArchive archive;
+    CollectionArchiveManager archives;
     ReferencePillarMediator mediator;
     MockAuditManager audits;
 
     @Override
     public void initializeCUT() {
         super.initializeCUT();
-        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0));
+        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getCollectionDirs().get(0).getFileDir().get(0));
         settingsForCUT.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         if(dir.exists()) {
             FileUtils.delete(dir);
         }
         
         addStep("Initialize the pillar.", "Should not be a problem.");
-        archive = new ReferenceArchive(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir());
+        archives = new CollectionArchiveManager(settingsForCUT);
         audits = new MockAuditManager();
         MessageHandlerContext context = new MessageHandlerContext(
             settingsForCUT,
             new ResponseDispatcher(settingsForCUT, messageBus),
             new PillarAlarmDispatcher(settingsForCUT, messageBus),
             audits);
-        mediator = new ReferencePillarMediator(messageBus, context, archive, csManager);
+        mediator = new ReferencePillarMediator(messageBus, context, archives, csManager);
         mediator.start();
     }
     
     @AfterMethod (alwaysRun=true) 
     public void closeArchive() {
-        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0));
+        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getCollectionDirs().get(0).getFileDir().get(0));
         if(dir.exists()) {
             FileUtils.delete(dir);
         }

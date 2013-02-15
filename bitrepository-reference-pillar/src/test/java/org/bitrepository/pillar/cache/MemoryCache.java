@@ -34,6 +34,7 @@ import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
 /**
  * Very simple memory based implementation of the ChecksumCache.
  * Everything is kept within a map between the file ids and their checksum.
+ * TODO: This does not support several collections, even though it should. Thus all collection id arguments are ignored.
  */
 public class MemoryCache implements ChecksumStore {
     
@@ -45,7 +46,7 @@ public class MemoryCache implements ChecksumStore {
     public MemoryCache() {}
     
     @Override
-    public String getChecksum(String fileId) {
+    public String getChecksum(String fileId, String collectionId) {
         if(checksumMap.containsKey(fileId)) {
             return checksumMap.get(fileId).getChecksum();            
         }
@@ -54,7 +55,7 @@ public class MemoryCache implements ChecksumStore {
     
     @Override
     public ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            Long maxNumberOfResults) {
+            Long maxNumberOfResults, String collectionId) {
         ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
         for(String s : checksumMap.keySet()) {
             res.insertFileID(s, new Date(0));
@@ -63,12 +64,12 @@ public class MemoryCache implements ChecksumStore {
     }
     
     @Override
-    public void deleteEntry(String fileId) {
+    public void deleteEntry(String fileId, String collectionId) {
         checksumMap.remove(fileId);
     }
     
     @Override
-    public boolean hasFile(String fileId) {
+    public boolean hasFile(String fileId, String collectionId) {
         return checksumMap.containsKey(fileId);
     }
     
@@ -81,18 +82,18 @@ public class MemoryCache implements ChecksumStore {
     }
 
     @Override
-    public Date getCalculationDate(String fileId) {
+    public Date getCalculationDate(String fileId, String collectionId) {
         return checksumMap.get(fileId).getCalculationDate();
     }
 
     @Override
-    public ChecksumEntry getEntry(String fileId) {
+    public ChecksumEntry getEntry(String fileId, String collectionId) {
         return checksumMap.get(fileId);
     }
 
     @Override
     public ExtractedChecksumResultSet getEntries(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            Long maxNumberOfResults) {
+            Long maxNumberOfResults, String collectionId) {
         ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
         for(ChecksumEntry cs : checksumMap.values()) {
             res.insertChecksumEntry(cs);
@@ -102,7 +103,7 @@ public class MemoryCache implements ChecksumStore {
     }
 
     @Override
-    public void insertChecksumCalculation(String fileId, String checksum, Date calculationDate) {
+    public void insertChecksumCalculation(String fileId, String collectionId, String checksum, Date calculationDate) {
         checksumMap.put(fileId, new ChecksumEntry(fileId, checksum, calculationDate));
     }
 
@@ -112,7 +113,7 @@ public class MemoryCache implements ChecksumStore {
     }
 
     @Override
-    public Collection<String> getAllFileIDs() {
+    public Collection<String> getAllFileIDs(String collectionId) {
         return checksumMap.keySet();
     }
 }
