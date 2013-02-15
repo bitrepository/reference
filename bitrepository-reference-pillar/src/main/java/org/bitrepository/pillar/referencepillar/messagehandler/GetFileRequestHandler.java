@@ -41,7 +41,7 @@ import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -59,14 +59,14 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
     
     /**
      * @param context The context for the pillar.
-     * @param referenceArchive The archive for the pillar.
+     * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected GetFileRequestHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
+    protected GetFileRequestHandler(MessageHandlerContext context, CollectionArchiveManager archivesManager, 
             ReferenceChecksumManager csManager) {
-        super(context, referenceArchive, csManager);
+        super(context, archivesManager, csManager);
     }
-    
+
     @Override
     public Class<GetFileRequest> getRequestClass() {
         return GetFileRequest.class;
@@ -94,7 +94,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
         validatePillarId(message.getPillarID());
         validateFileID(message.getFileID());
 
-        if(!getArchive().hasFile(message.getFileID())) {
+        if(!getArchives().hasFile(message.getFileID(), message.getCollectionID())) {
             log.warn("The file '" + message.getFileID() + "' has been requested, but we do not have that file!");
             // Then tell the mediator, that we failed.
             ResponseInfo fri = new ResponseInfo();
@@ -107,18 +107,18 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
     
     /**
      * The method for sending a progress response telling, that the operation is about to be performed.
-     * @param request The request for the GetFile operation.
+     * @param message The request for the GetFile operation.
      */
-    protected void sendProgressMessage(GetFileRequest request) {
-        File requestedFile = getArchive().getFile(request.getFileID());
-        GetFileProgressResponse response = createGetFileProgressResponse(request);
+    protected void sendProgressMessage(GetFileRequest message) {
+        File requestedFile = getArchives().getFile(message.getFileID(), message.getCollectionID());
+        GetFileProgressResponse response = createGetFileProgressResponse(message);
 
         response.setFileSize(BigInteger.valueOf(requestedFile.length()));
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Started to retrieve data.");
         response.setResponseInfo(prInfo);
-        getContext().getResponseDispatcher().dispatchResponse(response, request);
+        getContext().getResponseDispatcher().dispatchResponse(response, message);
     } 
 
     /**
@@ -127,7 +127,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      * @throws InvalidMessageException If the upload of the file fails.
      */
     protected void uploadToClient(GetFileRequest message) throws InvalidMessageException {
-        File requestedFile = getArchive().getFile(message.getFileID());
+        File requestedFile = getArchives().getFile(message.getFileID(), message.getCollectionID());
 
         try {
             InputStream is;

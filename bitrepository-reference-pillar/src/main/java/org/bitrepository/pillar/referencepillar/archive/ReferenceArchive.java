@@ -35,7 +35,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.FileStore;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Class for managing the files for the reference pillar. This supports a single CollectionID.
  */
-public class ReferenceArchive implements FileStore {
+public class ReferenceArchive {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The maximum buffer for the stream interaction.*/
     public static final int MAX_BUFFER_SIZE = 32 * 1024;
@@ -64,7 +63,11 @@ public class ReferenceArchive implements FileStore {
         }
     }
 
-    @Override
+    /**
+     * Retrieves the file for the given file id.
+     * @param fileID The id of the file to retrieve.
+     * @return The file.
+     */
     public File getFile(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         
@@ -76,7 +79,10 @@ public class ReferenceArchive implements FileStore {
         throw new IllegalArgumentException("The file '" + fileID + "' is not within the archives.");
     }
 
-    @Override
+    /**
+     * @param fileID The id of the file to find.
+     * @return Whether it has a file with the given id.
+     */
     public boolean hasFile(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         
@@ -88,7 +94,9 @@ public class ReferenceArchive implements FileStore {
         return false;
     }
 
-    @Override
+    /**
+     * @return All the file ids within this archive.
+     */
     public Collection<String> getAllFileIds() {
         List<String> res = new ArrayList<String>();
         for(ArchiveDirectory dir : directories) {
@@ -97,12 +105,24 @@ public class ReferenceArchive implements FileStore {
         return res;
     }
 
-    @Override
+    /**
+     * Retrieves an inputstream to the given file.
+     * @param fileID The id of the file.
+     * @return The inputstream to the file.
+     * @throws IOException If no inputstream can be made.
+     */
     public FileInputStream getFileAsInputstream(String fileID) throws IOException {
         return new FileInputStream(getFile(fileID));
     }
 
-    @Override
+    /**
+     * Creates a file from the data in the inputstream.
+     * The file will be placed in the temporary directory, and requires validation before it can be moved to the 
+     * file archive.
+     * @param fileID The id of the file to create.
+     * @param inputStream The inputstream to extract the content of the file from.
+     * @return The file, which should be validated.
+     */
     public File downloadFileForValidation(String fileID, InputStream inputStream) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         ArgumentValidator.checkNotNull(inputStream, "inputStream");
@@ -135,7 +155,10 @@ public class ReferenceArchive implements FileStore {
         return downloadedFile;
     }
     
-    @Override
+    /**
+     * Moves a file from the tmpDir to fileDir.
+     * @param fileID The id of the file.
+     */
     public void moveToArchive(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         log.info("Moving the file '" + fileID + "' to archive.");
@@ -146,7 +169,10 @@ public class ReferenceArchive implements FileStore {
         }
     }
 
-    @Override
+    /**
+     * Removes a file from the archive.
+     * @param fileID The id of the file.
+     */
     public void deleteFile(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 

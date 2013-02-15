@@ -49,7 +49,7 @@ import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -68,12 +68,12 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
 
     /**
      * @param context The context for the pillar.
-     * @param referenceArchive The archive for the pillar.
+     * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected GetFileIDsRequestHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
+    protected GetFileIDsRequestHandler(MessageHandlerContext context, CollectionArchiveManager archivesManager, 
             ReferenceChecksumManager csManager) {
-        super(context, referenceArchive, csManager);
+        super(context, archivesManager, csManager);
     }
     
     @Override
@@ -121,7 +121,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
             return ;
         }
         
-        if(!getArchive().hasFile(fileids.getFileID())) {
+        if(!getArchives().hasFile(fileids.getFileID(), message.getCollectionID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText("Missing the file: '" + fileids.getFileID() + "'");
@@ -147,22 +147,24 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
     /**
      * Retrieves the requested FileIDs. Depending on which operation is requested, it will call the appropriate method.
      * 
-     * @param request The requested for extracting the file ids.
+     * @param message The requested for extracting the file ids.
      * @return The resulting collection of FileIDs found.
      * file. 
      */
-    private ExtractedFileIDsResultSet retrieveFileIDsData(GetFileIDsRequest request) {
-        if(request.getFileIDs().isSetFileID()) {
+    private ExtractedFileIDsResultSet retrieveFileIDsData(GetFileIDsRequest message) {
+        if(message.getFileIDs().isSetFileID()) {
             ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
-            long timestamp = getArchive().getFile(request.getFileIDs().getFileID()).lastModified();
-            res.insertFileID(request.getFileIDs().getFileID(), CalendarUtils.getFromMillis(timestamp));
+            long timestamp = getArchives().getFile(message.getFileIDs().getFileID(), 
+                    message.getCollectionID()).lastModified();
+            res.insertFileID(message.getFileIDs().getFileID(), CalendarUtils.getFromMillis(timestamp));
             return res;
         } else {
             Long maxResults = null;
-            if(request.getMaxNumberOfResults() != null) {
-                maxResults = request.getMaxNumberOfResults().longValue();
+            if(message.getMaxNumberOfResults() != null) {
+                maxResults = message.getMaxNumberOfResults().longValue();
             }
-            return getCsManager().getFileIds(request.getMinTimestamp(), request.getMaxTimestamp(), maxResults);
+            return getCsManager().getFileIds(message.getMinTimestamp(), message.getMaxTimestamp(), maxResults,
+                    message.getCollectionID());
         }
     }
     

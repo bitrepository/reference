@@ -102,7 +102,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
         validateFileID(message.getFileID());
 
         // Validate, that we have the requested file.
-        if(!getCache().hasFile(message.getFileID())) {
+        if(!getCache().hasFile(message.getFileID(), message.getCollectionID())) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             responseInfo.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
@@ -112,7 +112,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
         
         ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
         if(checksumData != null) {
-            String calculatedChecksum = getCache().getChecksum(message.getFileID());
+            String calculatedChecksum = getCache().getChecksum(message.getFileID(), message.getCollectionID());
             String requestChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
             if(!calculatedChecksum.equals(requestChecksum)) {
                 // Log the different checksums, but do not send the right checksum back!
@@ -156,7 +156,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         ChecksumSpecTYPE checksumType = message.getChecksumRequestForExistingFile();
         
-        ChecksumEntry entry = getCache().getEntry(message.getFileID());
+        ChecksumEntry entry = getCache().getEntry(message.getFileID(), message.getCollectionID());
         res.setChecksumSpec(checksumType);
         res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
         res.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
@@ -171,7 +171,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
     protected void deleteTheFile(DeleteFileRequest message) {
         getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Deleting the file.", 
                 message.getAuditTrailInformation(), FileAction.DELETE_FILE);
-        getCache().deleteEntry(message.getFileID());
+        getCache().deleteEntry(message.getFileID(), message.getCollectionID());
     }
 
     /**
