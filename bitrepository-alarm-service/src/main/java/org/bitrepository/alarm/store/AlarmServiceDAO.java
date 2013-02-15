@@ -60,4 +60,15 @@ public class AlarmServiceDAO implements AlarmStore {
         AlarmDatabaseExtractor extractor = new AlarmDatabaseExtractor(extractModel, dbConnector);
         return extractor.extractAlarms();
     }
+
+
+    @Override
+    public void start() {
+        //Nothing to do.
+    }
+
+    @Override
+    public void shutdown() {
+        dbConnector.destroy();
+    }
 }
