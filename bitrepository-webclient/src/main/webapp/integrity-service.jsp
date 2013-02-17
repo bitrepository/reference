@@ -40,7 +40,7 @@
         </div>
         <div class="span10"> 
           <h4>Integrity status </h4>
-          <table class="table table-bordered">
+          <table class="table table-bordered table-striped">
             <thead>
               <tr>
                 <th>Pillar ID</th>
@@ -73,6 +73,7 @@
   <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="menu.js"></script>
   <script type="text/javascript" src="pager.js"></script>
+  <script type="text/javascript" src="utils.js"></script>
 
   <script>
     
@@ -92,10 +93,10 @@
     function makeWorkflowRow(workflowID, nextRun, lastRun, executionInterval, currentState) {
       var html = "";
       html += "<tr><td><a class=\"btn btn-link\" id=\"" + workflowID + "-details\">" + workflowID + "</a></td>";
-      html += "<td id=\"" + workflowID + "-nextRun\" style=\"padding:5px\">" + nextRun + "</td>";
+      html += "<td><div id=\"" + workflowID + "-nextRun\" style=\"padding:5px\">" + nextRun + "</div></td>";
       html += "<td><a class=\"btn btn-link\" id=\"" + workflowID + "-lastRun\">" + lastRun + "</a></td>";   
-      html += "<td id=\"" + workflowID + "-executionInterval\" style=\"padding:5px\">" + executionInterval + "</td>";
-      html += "<td id=\"" + workflowID + "-currentState\" style=\"padding:5px\">" + currentState + "</td></tr>";
+      html += "<td><div id=\"" + workflowID + "-executionInterval\" style=\"padding:5px\">" + executionInterval + "</div></td>";
+      html += "<td><div id=\"" + workflowID + "-currentState\" style=\"padding:5px\">" + currentState + "</div></td></tr>";
       return html;
     }
     
@@ -110,7 +111,7 @@
       var myID = id;
       var myType = type;
       return function() {
-        return workflows[myID][myType];
+        return nl2br(workflows[myID][myType]);
       }
     }
     
@@ -127,6 +128,7 @@
       if(element != null) {
         $(element).popover({placement : "right",
                             title : title,
+                            html : true,
                             content : getStoredWorkflowInfo(id, type)});
       }
     }
