@@ -4,14 +4,14 @@
     <artifactId>bitrepository-parent</artifactId>
     <version>0.24-SNAPSHOT</version>
   </parent>
-  
+
   <modelVersion>4.0.0</modelVersion>
   <artifactId>bitrepository-integrity-service</artifactId>
   <name>Bitrepository Integrity Service</name>
   <packaging>war</packaging>
   <description>Integrity functionality consists of regularly collecting information about the data in the various
-        pillars, and ensuring that the data are consistent. In case of inconsistency, integrity functionality ensures
-        processes for raising alarms and restoring consistency.
+    pillars, and ensuring that the data are consistent. In case of inconsistency, integrity functionality ensures
+    processes for raising alarms and restoring consistency.
   </description>
   <url>https://sbforge.org/display/BITMAG/Integrity</url>
 
@@ -81,6 +81,12 @@
     </dependency>
   </dependencies>
   <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -107,23 +113,55 @@
           <fork>true</fork>
           <contextFile>src/test/context/context.xml</contextFile>
         </configuration>
-        <executions>
-          <execution>
-            <id>tomcat-run</id>
-            <goals>
-              <goal>run-war-only</goal>
-            </goals>
-            <phase>pre-integration-test</phase>
-          </execution>
-          <execution>
-            <id>tomcat-shutdown</id>
-            <goals>
-              <goal>shutdown</goal>
-            </goals>
-            <phase>post-integration-test</phase>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>component-test</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution><!-- Run our version calculation script -->
+                <id>Generate databases</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>bash</executable>
+                  <arguments>
+                    <argument>${build.directory}/test-classes/scripts/create_test_databases.sh</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.tomcat.maven</groupId>
+            <artifactId>tomcat7-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>tomcat-run</id>
+                <goals>
+                  <goal>run-war-only</goal>
+                </goals>
+                <phase>pre-integration-test</phase>
+              </execution>
+              <execution>
+                <id>tomcat-shutdown</id>
+                <goals>
+                  <goal>shutdown</goal>
+                </goals>
+                <phase>post-integration-test</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
