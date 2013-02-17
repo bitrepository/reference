@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  #%L
+  Bitrepository Common
+  
+  $Id$
+  $HeadURL$
+  %%
+  Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as 
+  published by the Free Software Foundation, either version 2.1 of the 
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Lesser Public License for more details.
+  
+  You should have received a copy of the GNU General Lesser Public 
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/lgpl-2.1.html>.
+  #L%
+  -->
+
+<RepositorySettings xmlns="http://bitrepository.org/settings/RepositorySettings.xsd">
+  <Name>IntegrityServiceTest</Name>
+  <Collections>
+    <Collection><ID>SinglePillarCollection</ID>
+      <PillarIDs><PillarID>PillarMock1</PillarID></PillarIDs>
+    </Collection>
+  </Collections>
+  <ProtocolSettings>
+    <DefaultChecksumType>MD5</DefaultChecksumType>
+    <AllowedFileIDPattern>[a-zA-z0-9\-_.]{5,250}</AllowedFileIDPattern>
+    <RequireMessageAuthentication>false</RequireMessageAuthentication>
+    <RequireOperationAuthorization>false</RequireOperationAuthorization>
+    <RequireChecksumForDestructiveRequests>true</RequireChecksumForDestructiveRequests>
+    <RequireChecksumForNewFileRequests>false</RequireChecksumForNewFileRequests>
+    <CollectionDestination>PILLAR-TEST-TOPIC</CollectionDestination>
+    <AlarmDestination>PILLAR-TEST-ALARM-TOPIC</AlarmDestination>
+    <MessageBusConfiguration>
+      <Name>PillarIntegrationTestMessageBus</Name>
+      <!--
+      <URL>failover://(tcp://sandkasse-01.kb.dk:61616?keepAlive=true)?timeout=10000</URL>
+      -->
+      <URL>tcp://localhost:61616</URL>
+    </MessageBusConfiguration>
+  </ProtocolSettings>
+
+  <ClientSettings>
+    <IdentificationTimeout>1000000</IdentificationTimeout>
+    <OperationTimeout>10000000</OperationTimeout>
+  </ClientSettings>
+
+  <GetAuditTrailSettings>
+  </GetAuditTrailSettings>
+</RepositorySettings>
