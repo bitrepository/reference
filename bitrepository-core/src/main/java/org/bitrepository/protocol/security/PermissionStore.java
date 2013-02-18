@@ -66,7 +66,7 @@ public class PermissionStore {
         Provider provider = new BouncyCastleProvider();
         Security.addProvider(provider);
     }
-    
+
     /**
      * Load permissions and certificates into the store based.
      * @param permissions the PermissionSet from RepositorySettings.
@@ -80,23 +80,22 @@ public class PermissionStore {
             for(Permission permission : permissions.getPermission()) {
                 if(permission.getCertificate().getAllowedCertificateUsers() != null) {
                     allowedUsers = new HashSet<String>();
-                    allowedUsers.addAll(permission.getCertificate().getAllowedCertificateUsers().getIDs());    
+                    allowedUsers.addAll(permission.getCertificate().getAllowedCertificateUsers().getIDs());
                 } else {
                     allowedUsers = null;
                 }
-                
+
                 allowedOperations = new HashSet<Operation>();
                 X509Certificate certificate = null;
                 if(permission.getOperationPermission() != null) {
                     for(OperationPermission perm : permission.getOperationPermission()) {
                         if(perm.getAllowedComponents() == null ||
-                                perm.getAllowedComponents().isEmpty() ||
-                                perm.getAllowedComponents().contains(componentID)) {
+                                perm.getAllowedComponents().getIDs().contains(componentID)) {
                             allowedOperations.add(perm.getOperation());
                         }
                     }
                     if(!allowedOperations.isEmpty()) {
-                        certificate = makeCertificate(permission.getCertificate().getCertificateData());    
+                        certificate = makeCertificate(permission.getCertificate().getCertificateData());
                     }
                 }
                 if(permission.getInfrastructurePermission().contains(InfrastructurePermission.MESSAGE_SIGNER)) {
@@ -104,11 +103,11 @@ public class PermissionStore {
                         certificate = makeCertificate(permission.getCertificate().getCertificateData());
                     }
                 }
-                
+
                 if(certificate != null) {
-                    CertificateID certID = new CertificateID(certificate.getIssuerX500Principal(), 
+                    CertificateID certID = new CertificateID(certificate.getIssuerX500Principal(),
                             certificate.getSerialNumber());
-                    CertificatePermission certificatePermission = new CertificatePermission(certificate, allowedOperations, 
+                    CertificatePermission certificatePermission = new CertificatePermission(certificate, allowedOperations,
                             allowedUsers);
                     permissionMap.put(certID, certificatePermission);
                 }
@@ -117,7 +116,7 @@ public class PermissionStore {
             log.info("The provided PermissionSet was null");
         }
     }
-        
+
     /**
      * Retrieve the certificate based on the signerId.
      * @param signer the identification data of the certificate to retrieve
@@ -133,7 +132,7 @@ public class PermissionStore {
             throw new PermissionStoreException("Failed to find certificate for the requested signer:" + certificateID.toString());
         }
     }
-    
+
     /**
      * @param signer the signerId of the certificate used to sign the message.
      * @param certificateUser the user that claims to have used the certificate.
@@ -151,7 +150,7 @@ public class PermissionStore {
             return certificatePermission.isUserAllowed(certificateUser);
         }
     }
-    
+
     /**
      * Check to see if a certificate has the specified permission. The certificate is identified based 
      * on the SignerId of the signature. 
@@ -168,7 +167,7 @@ public class PermissionStore {
             return certificatePermission.hasPermission(permission);
         }
     }
-    
+
     private X509Certificate makeCertificate(byte[] certificateData) throws CertificateException {
         ByteArrayInputStream bs = new ByteArrayInputStream(certificateData);
         X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance(
@@ -180,7 +179,7 @@ public class PermissionStore {
         }
         return certificate;
     }
-    
+
     /**
      * Class to contain a X509Certificate and the permissions associated with it.    
      */
@@ -188,7 +187,7 @@ public class PermissionStore {
         private final Set<Operation> permissions;
         private final Set<String> allowedUsers;
         private final X509Certificate certificate;
-            
+
         /**
          * Constructor
          * @param certificate the certificate which permissions is to be represented.
@@ -196,7 +195,7 @@ public class PermissionStore {
          * @param allowedUsers the allowed users of this certificate, if users are not restricted provide null
          */
         public CertificatePermission(X509Certificate certificate, Collection<Operation> allowedOperations,
-                Collection<String> allowedUsers) {
+                                     Collection<String> allowedUsers) {
             if(allowedUsers == null) {
                 this.allowedUsers = null;
             } else {
@@ -207,7 +206,7 @@ public class PermissionStore {
             this.certificate = certificate;
             this.permissions.addAll(allowedOperations);
         }
-      
+
         /**
          *  Test if a certain permission has been registered for this object. 
          *  @param permission the permission to test for
@@ -216,7 +215,7 @@ public class PermissionStore {
         public boolean hasPermission(Operation permission) {
             return permissions.contains(permission);
         }
-        
+
         /**
          *  Test if a certain certificate user has been registered as one allowed for use of this certificate.
          *  @param certificateUser the user to test for
@@ -226,17 +225,17 @@ public class PermissionStore {
             if(allowedUsers == null) {
                 return true;
             } else {
-                return allowedUsers.contains(certificateUser);    
+                return allowedUsers.contains(certificateUser);
             }
         }
-        
-        /** 
+
+        /**
          * Retrieve the certificate from the object. 
          * @return the X509Certificate from the object.
          */
         public X509Certificate getCertificate() {
             return certificate;
-        }   
+        }
     }
 
 }
