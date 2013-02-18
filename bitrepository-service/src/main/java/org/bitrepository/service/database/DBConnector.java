@@ -56,6 +56,13 @@ public class DBConnector {
     }
     
     /**
+     * @return The class for the driver for the database.
+     */
+    public String getDatabaseDriverClass() {
+        return databaseSpecifics.getDriverClass();
+    }
+    
+    /**
      * Initialises the ConnectionPool for the connections to the database.
      */
     private void initialiseConnectionPool() {

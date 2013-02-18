@@ -40,6 +40,8 @@ import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /** 
  * Models the storing and retrieval of files as needed in test modeling pillar behavior.
+ * Even though it should support different collections, this implementation does not!
+ * All collection ids are ignored.
  */
 public class TestFileStore implements FileStore {    
     private static final String ROOT_STORE = "target/test-classes/filestorage";
@@ -72,7 +74,7 @@ public class TestFileStore implements FileStore {
     }
 
     @Override
-    public FileInputStream getFileAsInputstream(String fileID) {
+    public FileInputStream getFileAsInputstream(String fileID, String collectionId) {
         try {
             return new FileInputStream(new File(storageDir, fileID));
         } catch (Exception e) {
@@ -81,7 +83,7 @@ public class TestFileStore implements FileStore {
     }
 
     @Override
-    public File downloadFileForValidation(String fileID, InputStream inputStream) {
+    public File downloadFileForValidation(String fileID, String collectionId, InputStream inputStream) {
         File theFile = new File(fileID);
 
         // Check if a file exists.
@@ -116,23 +118,23 @@ public class TestFileStore implements FileStore {
     }
     
     @Override
-    public void moveToArchive(String fileID) {
+    public void moveToArchive(String fileID, String collectionId) {
         // This does nothing.
         return;
     }
 
     @Override
-    public void deleteFile(String fileID) {
-        getFile(fileID).delete();
+    public void deleteFile(String fileID, String collectionId) {
+        getFile(fileID, null).delete();
     }
 
     @Override
-    public File getFile(String fileID) {
+    public File getFile(String fileID, String collectionId) {
         return new File(storageDir, fileID);
     }
 
     @Override
-    public Collection<String> getAllFileIds() {
+    public Collection<String> getAllFileIds(String collectionId) {
         String[] ids = new File(storageDir).list();
         List<String> res = new ArrayList<String>();
         for(String id : ids) {
@@ -142,8 +144,8 @@ public class TestFileStore implements FileStore {
     }
 
     @Override
-    public boolean hasFile(String fileID) {
-        return (getFile(fileID)).isFile();
+    public boolean hasFile(String fileID, String collectionId) {
+        return (getFile(fileID, null)).isFile();
     }
 
     @Override
@@ -152,7 +154,7 @@ public class TestFileStore implements FileStore {
     }
 
     public void storeFile(String fileID, InputStream in) throws IOException {
-        downloadFileForValidation(fileID, in);
-        moveToArchive(fileID);
+        downloadFileForValidation(fileID, null, in);
+        moveToArchive(fileID, null);
     }
 }

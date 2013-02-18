@@ -57,8 +57,8 @@ public class GetFileRequestHandler extends ChecksumPillarMessageHandler<GetFileR
     public void processRequest(GetFileRequest message) throws RequestHandlerException {
         validatePillarId(message.getPillarID());
 
-        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed getting file.", 
-                message.getAuditTrailInformation(), FileAction.FAILURE);
+        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                "Failed getting file.", message.getAuditTrailInformation(), FileAction.FAILURE);
 
         ResponseInfo ri = new ResponseInfo();
         ri.setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);

@@ -24,6 +24,8 @@
  */
 package org.bitrepository.pillar.referencepillar.messagehandler;
 
+import java.math.BigInteger;
+
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
@@ -32,14 +34,12 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.math.BigInteger;
 
 /**
  * Class for handling the identification of this pillar for the purpose of performing the PutFile operation.
@@ -51,12 +51,12 @@ public class IdentifyPillarsForPutFileRequestHandler
     
     /**
      * @param context The context for the pillar.
-     * @param referenceArchive The archive for the pillar.
+     * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected IdentifyPillarsForPutFileRequestHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
-            ReferenceChecksumManager csManager) {
-        super(context, referenceArchive, csManager);
+    protected IdentifyPillarsForPutFileRequestHandler(MessageHandlerContext context, 
+            CollectionArchiveManager archivesManager, ReferenceChecksumManager csManager) {
+        super(context, archivesManager, csManager);
     }
     
     @Override
@@ -93,7 +93,7 @@ public class IdentifyPillarsForPutFileRequestHandler
             return false;
         }
         
-        return getArchive().hasFile(message.getFileID());
+        return getArchives().hasFile(message.getFileID(), message.getCollectionID());
     }
     
     /**
@@ -110,7 +110,7 @@ public class IdentifyPillarsForPutFileRequestHandler
             fileSize = BigInteger.ZERO;
         }
         
-        long useableSizeLeft = getArchive().sizeLeftInArchive() 
+        long useableSizeLeft = getArchives().sizeLeftInArchive(message.getCollectionID()) 
                 - getSettings().getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
         if(useableSizeLeft < fileSize.longValue()) {
             ResponseInfo irInfo = new ResponseInfo();
@@ -124,23 +124,23 @@ public class IdentifyPillarsForPutFileRequestHandler
     
     /**
      * Method for sending a response for 'DUPLICATE_FILE_FAILURE'.
-     * @param request The request to base the response upon.
+     * @param message The request to base the response upon.
      */
-    protected void respondDuplicateFile(IdentifyPillarsForPutFileRequest request) {
-        IdentifyPillarsForPutFileResponse response = createFinalResponse(request);
+    protected void respondDuplicateFile(IdentifyPillarsForPutFileRequest message) {
+        IdentifyPillarsForPutFileResponse response = createFinalResponse(message);
 
         response.setReplyTo(getSettings().getReceiverDestinationID());
         response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
             getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         response.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
-        response.setChecksumDataForExistingFile(getCsManager().getChecksumDataForFile(request.getFileID(),
-            ChecksumUtils.getDefault(getSettings())));
+        response.setChecksumDataForExistingFile(getCsManager().getChecksumDataForFile(message.getFileID(),
+                message.getCollectionID(), ChecksumUtils.getDefault(getSettings())));
         
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
         response.setResponseInfo(irInfo);
 
-        dispatchResponse(response, request);
+        dispatchResponse(response, message);
     }
     
     /**

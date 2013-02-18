@@ -24,8 +24,10 @@
  */
 package org.bitrepository.common.settings;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
+import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.RepositorySettings;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.bitrepository.settings.repositorysettings.Permission;
@@ -54,10 +56,31 @@ public class Settings {
     }
 
     /**
-     * Returns the first Collections ID.
+     * @return the first Collections ID.
      */
     public String getCollectionID() {
         return getRepositorySettings().getCollections().getCollection().get(0).getID();
+    }
+    
+    /**
+     * @return The first collection defined in the repository settings.
+     */
+    public Collection getCollection() {
+        return getRepositorySettings().getCollections().getCollection().get(0);
+    }
+    
+    /**
+     * @return The list of collection ids, which this component is part of.
+     */
+    public List<String> getMyCollectionIDs() {
+        List<String> res = new ArrayList<String>();
+        for(Collection c : getRepositorySettings().getCollections().getCollection()) {
+            if(c.getPillarIDs().getPillarID().contains(componentID)) {
+                res.add(c.getID());
+            }
+        }
+        
+        return res;
     }
     
     /**

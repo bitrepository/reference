@@ -104,7 +104,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         validateFileID(message.getFileID());
         
         // verify, that we already have the file
-        if(getCache().hasFile(message.getFileID())) {
+        if(getCache().hasFile(message.getFileID(), message.getCollectionID())) {
             log.warn("Cannot perform put for a file, '" + message.getFileID() 
                     + "', which we already have within the archive");
             // Then tell the mediator, that we failed.
@@ -154,9 +154,11 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
                 break;
         }
         
-        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Putting the checksum of the file "
-                + "into archive.", message.getAuditTrailInformation(), FileAction.PUT_FILE);
-        getCache().insertChecksumCalculation(message.getFileID(), calculatedChecksum, new Date());
+        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                "Putting the checksum of the file into archive.", message.getAuditTrailInformation(), 
+                FileAction.PUT_FILE);
+        getCache().insertChecksumCalculation(message.getFileID(), message.getCollectionID(), calculatedChecksum, 
+                new Date());
     }
     
     /**
@@ -186,9 +188,9 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
         
-        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the validation "
-                + "checksum for the file before putting it into the cache.", message.getAuditTrailInformation(), 
-                FileAction.CHECKSUM_CALCULATED);
+        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                "Calculating the validation checksum for the file before putting it into the cache.", 
+                message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
         String calculatedChecksum = null;
         try {
             calculatedChecksum = ChecksumUtils.generateChecksum(fe.downloadFromServer(new URL(message.getFileAddress())),
@@ -223,24 +225,24 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
     
     /**
      * Method for sending the final response for the requested put operation.
-     * @param request The request requesting the put operation.
+     * @param message The message requesting the put operation.
      */
-    private void sendFinalResponse(PutFileRequest request) {
-        PutFileFinalResponse response = createFinalResponse(request);
+    private void sendFinalResponse(PutFileRequest message) {
+        PutFileFinalResponse response = createFinalResponse(message);
 
         ResponseInfo frInfo = new ResponseInfo();
         frInfo.setResponseCode(ResponseCode.OPERATION_COMPLETED);
         response.setResponseInfo(frInfo);
         response.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
         
-        if(request.getChecksumRequestForNewFile() != null) {
+        if(message.getChecksumRequestForNewFile() != null) {
             ChecksumDataForFileTYPE checksumForValidation = new ChecksumDataForFileTYPE();
             
-            ChecksumEntry entry = getCache().getEntry(request.getFileID());
+            ChecksumEntry entry = getCache().getEntry(message.getFileID(), message.getCollectionID());
             checksumForValidation.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
             checksumForValidation.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(
                     entry.getCalculationDate()));
-            checksumForValidation.setChecksumSpec(request.getChecksumRequestForNewFile());
+            checksumForValidation.setChecksumSpec(message.getChecksumRequestForNewFile());
             log.debug("Requested checksum calculated: " + checksumForValidation);
             
             response.setChecksumDataForNewFile(checksumForValidation);
@@ -249,7 +251,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
             log.info("No checksum validation requested.");
         }
 
-        dispatchResponse(response, request);
+        dispatchResponse(response, message);
     }
     
     /**

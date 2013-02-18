@@ -55,9 +55,9 @@ public class IdentifyPillarsForGetFileRequestHandler extends ChecksumPillarMessa
 
     @Override
     public void processRequest(IdentifyPillarsForGetFileRequest message) throws RequestHandlerException {
-        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Failed identification, since the "
-                + "checksum pillar cannot perform the GetFile operation.", message.getAuditTrailInformation(), 
-                FileAction.FAILURE);
+        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                "Failed identification, since the checksum pillar cannot perform the GetFile operation.", 
+                message.getAuditTrailInformation(), FileAction.FAILURE);
         
         ResponseInfo ri = new ResponseInfo();
         ri.setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);

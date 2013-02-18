@@ -64,7 +64,7 @@ public class ComponentFactoryTest extends IntegrationTest {
                         settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,
                         settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                new MockAuditManager());
+                new MockAuditManager(), settingsForCUT.getCollectionID());
         Assert.assertNotNull(collector);
         Assert.assertTrue(collector instanceof DelegatingIntegrityInformationCollector);
         Assert.assertEquals(collector, IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
@@ -72,7 +72,7 @@ public class ComponentFactoryTest extends IntegrationTest {
                         settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,
                         settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                new MockAuditManager()));
+                new MockAuditManager(), settingsForCUT.getCollectionID()));
     }
 
     @Test(groups = {"regressiontest", "integritytest"})

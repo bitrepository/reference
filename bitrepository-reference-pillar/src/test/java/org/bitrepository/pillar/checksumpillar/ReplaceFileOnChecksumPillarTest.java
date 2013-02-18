@@ -127,7 +127,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         Assert.assertEquals(Base16Utils.decodeBase16(receivedChecksumData.getChecksumValue()), NON_DEFAULT_MD5_CHECKSUM);
 
         addStep("Check the cached checksum.", "Should have been replaced by the new checksum.");
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), NON_DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), NON_DEFAULT_MD5_CHECKSUM);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -149,7 +149,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
                 ResponseCode.FILE_NOT_FOUND_FAILURE);
 
         addStep("Validate the content of the cache", "Should not contain the checksum of the file");
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -165,7 +165,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
 
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -173,13 +173,13 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         addDescription("Tests that a missing 'ChecksumOnExistingFile' will not delete the file.");
         Assert.assertTrue(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         initializeCacheWithMD5ChecksummedFile();
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
         messageBus.sendMessage(msgFactory.createReplaceFileRequest(null, TestFileHelper.getDefaultFileChecksum(),
                 csSpec, csSpec, DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -187,7 +187,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         addDescription("Tests that a wrong checksum in 'ChecksumOnExistingFile' will not delete the file.");
         Assert.assertTrue(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         initializeCacheWithMD5ChecksummedFile();
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
         
         ChecksumDataForFileTYPE badData = new ChecksumDataForFileTYPE();
         badData.setCalculationTimestamp(CalendarUtils.getEpoch());
@@ -199,7 +199,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
@@ -209,14 +209,14 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         context.getSettings().getRepositorySettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);
         Assert.assertFalse(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         initializeCacheWithMD5ChecksummedFile();
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
         messageBus.sendMessage(msgFactory.createReplaceFileRequest(null, TestFileHelper.getDefaultFileChecksum(),
                 csSpec, csSpec, DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
 
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), Base16Utils.decodeBase16(TestFileHelper.getDefaultFileChecksum().getChecksumValue()));
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), Base16Utils.decodeBase16(TestFileHelper.getDefaultFileChecksum().getChecksumValue()));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -229,7 +229,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
@@ -239,7 +239,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         context.getSettings().getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(ChecksumPillarFileDownload.ALWAYS_DOWNLOAD);
         Assert.assertTrue(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         initializeCacheWithMD5ChecksummedFile();
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
         
         ChecksumDataForFileTYPE badData = new ChecksumDataForFileTYPE();
         badData.setCalculationTimestamp(CalendarUtils.getEpoch());
@@ -251,7 +251,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
@@ -261,7 +261,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         context.getSettings().getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(ChecksumPillarFileDownload.NEVER_DOWNLOAD);
         Assert.assertTrue(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         initializeCacheWithMD5ChecksummedFile();
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
         String badChecksum = "baabbbaaabba";
         
         ChecksumDataForFileTYPE badData = new ChecksumDataForFileTYPE();
@@ -274,7 +274,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), badChecksum);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), badChecksum);
     } 
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -288,7 +288,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), Base16Utils.decodeBase16(TestFileHelper.getDefaultFileChecksum().getChecksumValue()));
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), Base16Utils.decodeBase16(TestFileHelper.getDefaultFileChecksum().getChecksumValue()));
     }
  
     @Test( groups = {"regressiontest", "pillartest"})
@@ -312,7 +312,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_SUPPORTED);
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -335,7 +335,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_SUPPORTED);
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -355,7 +355,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_SUPPORTED);
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -375,7 +375,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_SUPPORTED);
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
@@ -391,7 +391,7 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
-        Assert.assertFalse(cache.getChecksum(DEFAULT_FILE_ID).equals(DEFAULT_MD5_CHECKSUM));
+        Assert.assertFalse(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()).equals(DEFAULT_MD5_CHECKSUM));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -405,6 +405,6 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.FILE_TRANSFER_FAILURE);
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
     }
 }

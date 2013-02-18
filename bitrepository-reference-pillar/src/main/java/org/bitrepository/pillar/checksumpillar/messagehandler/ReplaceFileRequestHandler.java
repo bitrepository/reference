@@ -132,7 +132,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
         validateFileID(message.getFileID());
         
         // Validate, that we have the requested file.
-        if(!getCache().hasFile(message.getFileID())) {
+        if(!getCache().hasFile(message.getFileID(), message.getCollectionID())) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             responseInfo.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
@@ -143,7 +143,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
         // calculate and validate the checksum of the file.
         ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
         if(checksumData != null) { 
-            String checksum = getCache().getChecksum(message.getFileID());
+            String checksum = getCache().getChecksum(message.getFileID(), message.getCollectionID());
             String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
             if(!checksum.equals(requestedChecksum)) {
                 // Log the different checksums, but do not send the right checksum back!
@@ -217,9 +217,9 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
 
-        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the checksum of the "
-                + "downloaded file for the replace operation.", message.getAuditTrailInformation(), 
-                FileAction.CHECKSUM_CALCULATED);
+        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                "Calculating the checksum of the downloaded file for the replace operation.", 
+                message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
         String checksum = null;
         try {
             checksum = ChecksumUtils.generateChecksum(fe.downloadFromServer(new URL(message.getFileAddress())), 
@@ -273,9 +273,9 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
      * @param newChecksum The new checksum to replace the old one with.
      */
     private void replaceTheEntry(ReplaceFileRequest message, String newChecksum) {
-        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Replacing the file.", 
-                message.getAuditTrailInformation(), FileAction.REPLACE_FILE); 
-        getCache().insertChecksumCalculation(message.getFileID(), newChecksum, new Date());
+        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                "Replacing the file.", message.getAuditTrailInformation(), FileAction.REPLACE_FILE); 
+        getCache().insertChecksumCalculation(message.getFileID(), message.getCollectionID(), newChecksum, new Date());
     }
 
     /**
@@ -307,7 +307,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     private ChecksumDataForFileTYPE calculateChecksumOnOldFile(ReplaceFileRequest message) {
         ChecksumSpecTYPE csType = message.getChecksumRequestForExistingFile();
         if(csType != null) {
-            return calculatedChecksumForFile(csType, message.getFileID());
+            return calculatedChecksumForFile(csType, message);
         }
         
         return null;
@@ -324,7 +324,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     private ChecksumDataForFileTYPE calculateChecksumOnNewFile(ReplaceFileRequest message) {
         ChecksumSpecTYPE csType = message.getChecksumRequestForNewFile();
         if(csType != null) {
-            return calculatedChecksumForFile(csType, message.getFileID());
+            return calculatedChecksumForFile(csType, message);
         }
         
         return null;
@@ -333,13 +333,14 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     /**
      * Calculates the specified checksum on the file in the archive with the given file id.
      * @param checksumType The specification about which type of checksum to calculate.
-     * @param fileId The id of the file to calculate the checksum upon. 
+     * @param message The message requesting the calculation of the checksum.
      * @return The checksum for the given file.
      */
-    private ChecksumDataForFileTYPE calculatedChecksumForFile(ChecksumSpecTYPE checksumType, String fileId) {
+    private ChecksumDataForFileTYPE calculatedChecksumForFile(ChecksumSpecTYPE checksumType, 
+            ReplaceFileRequest message) {
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         
-        ChecksumEntry entry = getCache().getEntry(fileId);
+        ChecksumEntry entry = getCache().getEntry(message.getFileID(), message.getCollectionID());
         
         res.setChecksumSpec(checksumType);
         res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));

@@ -31,7 +31,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -43,12 +43,12 @@ public class IdentifyPillarsForGetFileRequestHandler
         extends ReferencePillarMessageHandler<IdentifyPillarsForGetFileRequest> {
     /**
      * @param context The context for the pillar.
-     * @param referenceArchive The archive for the pillar.
+     * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected IdentifyPillarsForGetFileRequestHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
-            ReferenceChecksumManager csManager) {
-        super(context, referenceArchive, csManager);
+    protected IdentifyPillarsForGetFileRequestHandler(MessageHandlerContext context, 
+            CollectionArchiveManager archivesManager, ReferenceChecksumManager csManager) {
+        super(context, archivesManager, csManager);
     }
     
     @Override
@@ -75,7 +75,7 @@ public class IdentifyPillarsForGetFileRequestHandler
     private void checkThatFileIsAvailable(IdentifyPillarsForGetFileRequest message) 
             throws RequestHandlerException {
         validateFileID(message.getFileID());
-        if(!getArchive().hasFile(message.getFileID())) {
+        if(!getArchives().hasFile(message.getFileID(), message.getCollectionID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText("The file '" + message.getFileID() 

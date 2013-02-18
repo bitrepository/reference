@@ -74,7 +74,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
      */
     private void checkThatRequestedFileIsAvailable(IdentifyPillarsForDeleteFileRequest message) 
             throws RequestHandlerException {
-        if(!getCache().hasFile(message.getFileID())) {
+        if(!getCache().hasFile(message.getFileID(), message.getCollectionID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             throw new IdentifyContributorException(irInfo);

@@ -40,28 +40,28 @@ public interface FileStore {
      * @return A FileInputStream to the requested file.
      * @throws Exception If a problem occurs during the retrieval of the file.
      */
-    public FileInputStream getFileAsInputstream(String fileID) throws IOException;
+    public FileInputStream getFileAsInputstream(String fileID, String collectionId) throws IOException;
     
     /**
      * Retrieves the wanted file.
      * @param fileID The id of the wanted file.
      * @return The requested file.
      */
-    public File getFile(String fileID);
+    public File getFile(String fileID, String collectionId);
     
     /**
      * Method to check whether a file already exists.
      * @param fileID The id of the file.
      * @return Whether it already exists within the archive.
      */
-    public boolean hasFile(String fileID);
+    public boolean hasFile(String fileID, String collectionId);
 
     /**
      * Retrieves id of all the files within the storage.
      * @return The collection of file ids in the storage.
      * @throws Exception If anything unexpected occurs.
      */
-    public Collection<String> getAllFileIds();
+    public Collection<String> getAllFileIds(String collectionId);
 
     /**
      * Stores a file given through an InputStream. The file is only intended to be stored in a temporary zone until it 
@@ -72,7 +72,7 @@ public interface FileStore {
      * @throws Exception If anything unexpected occurs (e.g. file already exists, not enough space, etc.)
      * @see #moveToArchive(String)
      */
-    public File downloadFileForValidation(String fileID, InputStream inputStream) ;
+    public File downloadFileForValidation(String fileID, String collectionId, InputStream inputStream) ;
     
     /**
      * Moves a file from the temporary file zone to the archive.
@@ -80,12 +80,12 @@ public interface FileStore {
      * @throws Exception If anything unexpected occurs (e.g. file already exists, not enough space, etc.)
      * @see #downloadFileForValidation(String, InputStream)
      */
-    public void moveToArchive(String fileID);
+    public void moveToArchive(String fileID, String collectionId);
 
     /**
      * Removes a file from the storage area.
      * @param fileID The id of the file to remove.
      * @throws Exception If anything unexpected occurs (e.g. no such file).
      */
-    public void deleteFile(String fileID);
+    public void deleteFile(String fileID, String collectionId);
 }

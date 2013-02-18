@@ -87,7 +87,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
         validateFileID(message.getFileIDs().getFileID());
         
         String fileID = fileids.getFileID();
-        if(fileID != null && !getCache().hasFile(fileID)) {
+        if(fileID != null && !getCache().hasFile(fileID, message.getCollectionID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             

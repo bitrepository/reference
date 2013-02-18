@@ -39,7 +39,7 @@ create table tableversions (
 insert into tableversions ( tablename, version )
             values ( 'audit', 1);
 insert into tableversions ( tablename, version )
-            values ( 'file', 1);
+            values ( 'file', 2);
 insert into tableversions ( tablename, version )
             values ( 'actor', 1);
 
@@ -76,10 +76,11 @@ create index fileidindex on audittrail ( file_guid );
 create table file (
     file_guid bigint not null generated always as identity primary key,
                                     -- The guid for the file id.
-    fileid varchar(255)             -- The actual file id.
+    fileid varchar(255),            -- The actual file id.
+    collectionid varchar(255)       -- The collection for the file id.
 );
 
-create index fileindex on file ( fileid );
+create index fileindex on file ( fileid, collectionid );
 
 --*************************************************************************--
 -- Name:     actor

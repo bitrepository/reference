@@ -102,7 +102,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
         //Assert.assertEquals(finalResponse.getChecksumDataForExistingFile(), ??);
 
         addStep("Validate the content of the cache", "Should no longer contain the checksum of the file");
-        Assert.assertNull(cache.getChecksum(DEFAULT_FILE_ID));
+        Assert.assertNull(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
     }
 
     // ToDo add test for AuditTrail information.
@@ -125,7 +125,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
                 ResponseCode.FILE_NOT_FOUND_FAILURE);
 
         addStep("Validate the content of the cache", "Should not contain the checksum of the file");
-        Assert.assertNull(cache.getChecksum(DEFAULT_FILE_ID));
+        Assert.assertNull(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -139,7 +139,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
 
         DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
-        Assert.assertNull(cache.getChecksum(DEFAULT_FILE_ID));
+        Assert.assertNull(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -158,7 +158,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
         Assert.assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -176,7 +176,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
         DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_SUPPORTED);
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_MD5_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()), DEFAULT_MD5_CHECKSUM);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
@@ -189,7 +189,7 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
         DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID));
+        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
@@ -202,6 +202,6 @@ public class DeleteFileOnChecksumPillarTest extends ChecksumPillarTest {
         DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
-        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
+        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
     }
 }

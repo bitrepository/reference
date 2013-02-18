@@ -21,16 +21,15 @@
  */
 package org.bitrepository.service.database;
 
-
 import java.io.IOException;
 import java.io.LineNumberReader;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +48,6 @@ public class SqlScriptRunner {
 
     private boolean stopOnError;
     private boolean autoCommit;
-
-    private PrintWriter logWriter = new PrintWriter(System.out);
-    private PrintWriter errorLogWriter = new PrintWriter(System.err);
 
     private String delimiter = DEFAULT_DELIMITER;
     private boolean fullLineDelimiter = false;
