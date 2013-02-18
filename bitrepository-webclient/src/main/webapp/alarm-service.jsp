@@ -20,32 +20,32 @@
         <div class="span10"> 
           <form class="form-inline">
             <legend>Alarm display filters</legend>
-            <div class="input-append">
-              <label> From date: <br>
+            <label> From date: <br>
+              <div class="input-append">
                 <input class="input-small" type="text" id="fromDate" placeholder="From date">
-                <button class="btn" id="fromDateClearButton" type="button">Clear</button>
-              </label>
-            </div>
-            <div class="input-append">
-              <label> To date: <br>
+                <button class="btn" id="fromDateClearButton" type="button"><i class="icon-remove"></i></button>
+              </div>
+            </label>
+            <label> To date: <br>
+              <div class="input-append">
                 <input class="input-small" type="text" id="toDate" placeholder="To date">
-                <button class="btn" id="toDateClearButton" type="button">Clear</button>
-              </label>
-            </div>
-            <div class="input-append">
-              <label> FileID: <br>
+                <button class="btn" id="toDateClearButton" type="button"><i class="icon-remove"></i></button>
+              </div>
+            </label>
+            <label> FileID: <br>
+              <div class="input-append">
                 <input id="fileIDFilter" type="text" placeholder="FileID">
-                <button class="btn" id="fileIDClearButton" type="button">Clear</button>
-              </label>              
-            </div>
-            <div class="input-append">
-              <label> Reporting component: <br>
+                <button class="btn" id="fileIDClearButton" type="button"><i class="icon-remove"></i></button>
+              </div>
+            </label>              
+            <label> Reporting component: <br>
+              <div class="input-append">
                 <input id="componentFilter" type="text" placeholder="ComponentID">
-                <button class="btn" id="componentIDClearButton" type="button">Clear</button>
-              </label>
-            </div>
-            <div class="input-append">
-              <label> Alarm code: <br>
+                <button class="btn" id="componentIDClearButton" type="button"><i class="icon-remove"></i></button>
+              </div>
+            </label>
+            <label> Alarm code: <br>
+              <div class="input-append">
                 <select id="alarmCodeFilter">
                   <option>ALL</option>
                   <option>INCONSISTENT_REQUEST</option>
@@ -58,18 +58,18 @@
                   <option>TIMEOUT</option>    
                   <option>INTEGRITY_ISSUE</option>
                 </select>
-              </label>
-            </div>
-            <div class="input-append">
-              <label> Max alarms: <br>
+              </div>
+            </label>
+            <label> Max alarms: <br>
+              <div class="input-append">
                 <select class="input-small" id=maxAlarms>
                   <option>10</option>
                   <option>20</option>
                   <option>50</option>
                   <option>100</option>
                 </select>
-              </label>
-            </div>
+              </div>
+            </label>
           </form>
         </div>
         <div class="span10">  
