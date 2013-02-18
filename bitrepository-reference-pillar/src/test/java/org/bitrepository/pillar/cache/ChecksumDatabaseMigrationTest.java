@@ -59,7 +59,7 @@ public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
 
         addStep("Validate setup", "Checksums table has version 1");
         String extractVersionSql = "SELECT version FROM tableversions WHERE tablename = ?";
-        int versionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, "checksums");
+        int versionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
         Assert.assertEquals(versionBefore, 1, "Table version before migration");
         
         addStep("Ingest a entry to the database without the collection id", "works only in version 1.");
@@ -70,7 +70,7 @@ public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
         addStep("Perform migration", "Checksums table has version 2");
         ChecksumDBMigrator migrator = new ChecksumDBMigrator(connector, settings);
         migrator.migrate();
-        int versionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, "checksums");
+        int versionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
         Assert.assertEquals(versionAfter, 2, "Table version after migration");
         
         addStep("Validate the entry", "The collection id has been set to the default collection id");

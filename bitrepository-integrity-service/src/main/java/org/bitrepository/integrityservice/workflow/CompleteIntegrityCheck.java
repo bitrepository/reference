@@ -57,8 +57,6 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
     private final IntegrityAlerter alerter;
     /** The audit trail manager.*/
     private final AuditTrailManager auditManager;
-
-    private static final String LINEFEED = "\n";
     
     /**
      * @param settings The settings.

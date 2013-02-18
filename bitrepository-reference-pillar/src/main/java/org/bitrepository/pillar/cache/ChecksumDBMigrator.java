@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Migration class for the ChecksumDatabase of the ReferencePillar and ChecksumPillar.
- * TODO: this should abstract, since different databases has different methods for performing updates. 
  */
 public class ChecksumDBMigrator extends DatabaseMigrator {
     /** The log.*/

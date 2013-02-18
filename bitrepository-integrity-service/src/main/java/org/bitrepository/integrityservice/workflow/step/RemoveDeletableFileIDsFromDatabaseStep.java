@@ -77,9 +77,9 @@ public class RemoveDeletableFileIDsFromDatabaseStep extends AbstractWorkFlowStep
     public void performStep() {
         for(String fileId : report.getDeleteableFiles()) {
             log.info("Removing entries for the file with id '" + fileId + "' from the database.");
-            auditManager.addAuditEvent(fileId, settings.getComponentID(), "Deleting entry in database.", 
-                    "The file has been reported missing at all pillars, and will thus be removed from integrity "
-                    + "checking", FileAction.DELETE_FILE);
+            auditManager.addAuditEvent(settings.getCollectionID(), fileId, settings.getComponentID(), 
+                    "Deleting entry in database.", "The file has been reported missing at all pillars, and will thus "
+                    + "be removed from integrity checking", FileAction.DELETE_FILE);
             cache.deleteFileIdEntry(fileId);
         }
     }

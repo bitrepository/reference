@@ -50,6 +50,8 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     private final GetChecksumsClient getChecksumsClient;
     /** The audit trail manager.*/
     private final AuditTrailManager auditManager;
+    /** The id of the collection for this collector.*/
+    private final String collectionId; 
     
     /**
      * Constructor.
@@ -57,17 +59,18 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
      * @param getChecksumsClient The client for retrieving checksums
      */
     public DelegatingIntegrityInformationCollector(GetFileIDsClient getFileIDsClient, 
-            GetChecksumsClient getChecksumsClient, AuditTrailManager auditManager) {
+            GetChecksumsClient getChecksumsClient, AuditTrailManager auditManager, String collectionId) {
         this.getFileIDsClient = getFileIDsClient;
         this.getChecksumsClient = getChecksumsClient;
         this.auditManager = auditManager;
+        this.collectionId = collectionId;
     }
 
     @Override
     public synchronized void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, 
             ContributorQuery[] queries, EventHandler eventHandler) {
         try {
-            auditManager.addAuditEvent(null, "IntegrityService", 
+            auditManager.addAuditEvent(collectionId, null, "IntegrityService", 
                     "Collecting file ids from '" + pillarIDs + "'", auditTrailInformation, FileAction.INTEGRITY_CHECK);
             getFileIDsClient.getFileIDs(queries, null, null, eventHandler);
         } catch (Exception e) {
@@ -80,7 +83,7 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     public synchronized void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, 
             String auditTrailInformation, ContributorQuery[] queries, EventHandler eventHandler) {
         try {
-            auditManager.addAuditEvent(null, "IntegrityService",
+            auditManager.addAuditEvent(collectionId, null, "IntegrityService",
                     "Collecting checksums", auditTrailInformation, FileAction.INTEGRITY_CHECK);
             getChecksumsClient.getChecksums(queries, null, checksumType, null, eventHandler,
                     auditTrailInformation);

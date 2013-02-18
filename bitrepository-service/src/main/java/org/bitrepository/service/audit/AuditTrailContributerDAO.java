@@ -35,6 +35,7 @@ import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_
 import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_FILEID;
 import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_GUID;
 import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_COLLECTIONID;
 
 import java.math.BigInteger;
 import java.sql.Connection;
@@ -76,8 +77,12 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
 
         this.componentID = settings.getComponentID();
         this.dbConnector = dbConnector;
-
+        
         getConnection();
+        
+        AuditTrailContributorDatabaseMigrator migrator = new AuditTrailContributorDatabaseMigrator(dbConnector, 
+                settings);
+        migrator.migrate();
     }
 
     /**
@@ -95,16 +100,16 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     }
 
     @Override
-    public void addAuditEvent(String fileId, String actor, String info, String auditTrail, FileAction operation) {
+    public void addAuditEvent(String collectionId, String fileId, String actor, String info, String auditTrail, FileAction operation) {
         ArgumentValidator.checkNotNull(operation, "FileAction operation");
         log.trace("Inserting an audit event for file '" + fileId + "', from actor '" + actor
                 + "' performing operation '" + operation + "', with the audit trail information '" + auditTrail + "'");
 
         long fileGuid;
         if(fileId == null || fileId.isEmpty()) {
-            fileGuid = retrieveFileGuid("null");
+            fileGuid = retrieveFileGuid(collectionId, "null");
         } else {
-            fileGuid = retrieveFileGuid(fileId);
+            fileGuid = retrieveFileGuid(collectionId, fileId);
         }
         long actorGuid;
         if(actor == null || actor.isEmpty()) {
@@ -139,10 +144,10 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     }
 
     @Override
-    public AuditTrailDatabaseResults getAudits(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate,
-            Date maxDate, Long maxNumberOfResults) {
-        return extractEvents(new AuditTrailExtractor(fileId, minSeqNumber, maxSeqNumber, minDate, maxDate), 
-                maxNumberOfResults);
+    public AuditTrailDatabaseResults getAudits(String collectionId, String fileId, Long minSeqNumber, 
+            Long maxSeqNumber, Date minDate, Date maxDate, Long maxNumberOfResults) {
+        return extractEvents(new AuditTrailExtractor(collectionId, fileId, minSeqNumber, maxSeqNumber, minDate, 
+                maxDate), maxNumberOfResults);
     }
 
     /**
@@ -256,20 +261,23 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     /**
      * Retrieve the guid for a given file id. If the file id does not exist within the table, then it is created.
      *
+     * @param collectionId The collection id for the file.
      * @param fileId The id of the file to retrieve. 
      * @return The guid for the given file id.
      */
-    private synchronized long retrieveFileGuid(String fileId) {
-        String sqlRetrieve = "SELECT " + FILE_GUID + " FROM " + FILE_TABLE + " WHERE " + FILE_FILEID + " = ?";
+    private synchronized long retrieveFileGuid(String collectionId, String fileId) {
+        String sqlRetrieve = "SELECT " + FILE_GUID + " FROM " + FILE_TABLE + " WHERE " + FILE_FILEID + " = ? AND " 
+                + FILE_COLLECTIONID + " = ?";
 
-        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId);
+        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId, collectionId);
 
         if(guid == null) {
             log.debug("Inserting fileid '" + fileId + "' into the file table.");
-            String sqlInsert = "INSERT INTO " + FILE_TABLE + " ( " + FILE_FILEID + " ) VALUES ( ? )";
-            DatabaseUtils.executeStatement(dbConnector, sqlInsert, fileId);
+            String sqlInsert = "INSERT INTO " + FILE_TABLE + " ( " + FILE_FILEID + " , " + FILE_COLLECTIONID 
+                    + " ) VALUES ( ? , ? )";
+            DatabaseUtils.executeStatement(dbConnector, sqlInsert, fileId, collectionId);
 
-            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId);
+            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId, collectionId);
         }
 
         return guid;
@@ -277,6 +285,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
 
     /**
      * Retrieves a id of an file based on the guid.
+     * @param fileGuid The guid for the file table entry.
      * @return The id of the file corresponding to the guid.
      */
     private String retrieveFileId(long fileGuid) {
@@ -334,19 +343,20 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         private Date maxDate;
 
         /**
-         * Contructor.
+         * Constructor.
+         * @param collectionId The id of the collection.
          * @param fileId The file id limitation for the request.
          * @param minSeqNumber The minimum sequence number limitation for the request.
          * @param maxSeqNumber The maximum sequence number limitation for the request.
          * @param minDate The minimum date limitation for the request.
          * @param maxDate The maximum date limitation for the request.
          */
-        public AuditTrailExtractor(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate,
+        public AuditTrailExtractor(String collectionId, String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate,
                                    Date maxDate) {
             if(fileId == null) {
                 this.fileGuid = null;
             } else {
-                this.fileGuid = retrieveFileGuid(fileId);
+                this.fileGuid = retrieveFileGuid(collectionId, fileId);
             }
             this.minSeqNumber = minSeqNumber;
             this.maxSeqNumber = maxSeqNumber;

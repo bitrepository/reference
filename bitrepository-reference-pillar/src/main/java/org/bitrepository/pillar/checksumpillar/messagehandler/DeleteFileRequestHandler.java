@@ -169,8 +169,8 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
      * @param message The message requesting the file to be deleted.
      */
     protected void deleteTheFile(DeleteFileRequest message) {
-        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Deleting the file.", 
-                message.getAuditTrailInformation(), FileAction.DELETE_FILE);
+        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                "Deleting the file.", message.getAuditTrailInformation(), FileAction.DELETE_FILE);
         getCache().deleteEntry(message.getFileID(), message.getCollectionID());
     }
 

@@ -53,7 +53,7 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
                 + "where all audit trails are requested.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String auditTrail = "";
-        audits.addAuditEvent("fileid", "actor", "info", "auditTrail", FileAction.OTHER);
+        audits.addAuditEvent(settingsForCUT.getCollectionID(), "fileid", "actor", "info", "auditTrail", FileAction.OTHER);
 
         addStep("Send the identification request", "Should be caught and handled by the pillar.");
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest = msgFactory.createIdentifyContributorsForGetAuditTrailsRequest(
@@ -97,8 +97,8 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
         String ACTOR = "ACTOR";
         String INFO = "InFo";
         String AUDITTRAIL = "auditTrails";
-        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.OTHER);
-        audits.addAuditEvent("notThisFile", "UnknownActor", "badInfo", "WrongAuditTrail", FileAction.FAILURE);
+        audits.addAuditEvent(settingsForCUT.getCollectionID(), FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.OTHER);
+        audits.addAuditEvent(settingsForCUT.getCollectionID(), "notThisFile", "UnknownActor", "badInfo", "WrongAuditTrail", FileAction.FAILURE);
         XMLGregorianCalendar minDate = CalendarUtils.getFromMillis(System.currentTimeMillis() - 10000);
         XMLGregorianCalendar maxDate = CalendarUtils.getFromMillis(System.currentTimeMillis() + 10000);
 
@@ -171,18 +171,18 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
         String INFO = "InFo";
         String AUDITTRAIL = "auditTrails";
         long maxNumberOfResults = 5L;
-        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.CHECKSUM_CALCULATED);
-        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.DELETE_FILE);
-        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.FAILURE);
-        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.FILE_MOVED);
-        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.GET_CHECKSUMS);
-        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.GET_FILE);
-        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.GET_FILEID);
-        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.INCONSISTENCY);
-        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.INTEGRITY_CHECK);
-        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.OTHER);
-        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.PUT_FILE);
-        audits.addAuditEvent(FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.REPLACE_FILE);
+        audits.addAuditEvent(settingsForCUT.getCollectionID(), FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.CHECKSUM_CALCULATED);
+        audits.addAuditEvent(settingsForCUT.getCollectionID(), FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.DELETE_FILE);
+        audits.addAuditEvent(settingsForCUT.getCollectionID(), FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.FAILURE);
+        audits.addAuditEvent(settingsForCUT.getCollectionID(), FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.FILE_MOVED);
+        audits.addAuditEvent(settingsForCUT.getCollectionID(), FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.GET_CHECKSUMS);
+        audits.addAuditEvent(settingsForCUT.getCollectionID(), FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.GET_FILE);
+        audits.addAuditEvent(settingsForCUT.getCollectionID(), FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.GET_FILEID);
+        audits.addAuditEvent(settingsForCUT.getCollectionID(), FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.INCONSISTENCY);
+        audits.addAuditEvent(settingsForCUT.getCollectionID(), FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.INTEGRITY_CHECK);
+        audits.addAuditEvent(settingsForCUT.getCollectionID(), FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.OTHER);
+        audits.addAuditEvent(settingsForCUT.getCollectionID(), FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.PUT_FILE);
+        audits.addAuditEvent(settingsForCUT.getCollectionID(), FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.REPLACE_FILE);
 
         addStep("Send the request for the limited amount of audit trails to the pillar.", 
                 "The pillar handles the request and responds.");

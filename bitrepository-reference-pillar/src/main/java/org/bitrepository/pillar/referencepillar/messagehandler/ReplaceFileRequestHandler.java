@@ -155,8 +155,8 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         }
         
         // Make audit about calculating the checksum.
-        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the checksum for "
-                + "validating, the it is the correct file to replace.", 
+        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                "Calculating the checksum for validating, the it is the correct file to replace.", 
                 message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
         
         // calculate and validate the checksum of the file.
@@ -224,9 +224,9 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         
         ChecksumDataForFileTYPE csData = message.getChecksumDataForNewFile();
         if(csData != null) {
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the checksum of the "
-                    + "downloaded file for the replace operation.", message.getAuditTrailInformation(), 
-                    FileAction.CHECKSUM_CALCULATED);
+            getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                    "Calculating the checksum of the downloaded file for the replace operation.", 
+                    message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
             String checksum = getCsManager().getChecksumForTempFile(message.getFileID(), message.getCollectionID(), 
                     csData.getChecksumSpec());
             String requestedChecksum = Base16Utils.decodeBase16(csData.getChecksumValue());
@@ -272,9 +272,9 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
     private ChecksumDataForFileTYPE calculateChecksumOnOldFile(ReplaceFileRequest message) {
         ChecksumSpecTYPE csType = message.getChecksumRequestForExistingFile();
         if(csType != null) {
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the requested " 
-                    + "checksum of the existing file before replacing it.", message.getAuditTrailInformation(), 
-                    FileAction.CHECKSUM_CALCULATED);
+            getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                    "Calculating the requested checksum of the existing file before replacing it.", 
+                    message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
             return calculatedChecksumForFile(csType, message);
         }
         
@@ -293,9 +293,9 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         // TODO insert the new checksum
         ChecksumSpecTYPE csType = message.getChecksumRequestForNewFile();
         if(csType != null) {
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the requested " 
-                    + "checksum of the new file before replacing the old one.", message.getAuditTrailInformation(), 
-                    FileAction.CHECKSUM_CALCULATED);
+            getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                    "Calculating the requested checksum of the new file before replacing the old one.", 
+                    message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
             return calculatedChecksumForFile(csType, message);
         }
         
@@ -321,8 +321,8 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
     private void replaceTheFile(ReplaceFileRequest message) {
         log.info("Replacing the file '" + message.getFileID() + "' in the archive with the one in the "
                 + "temporary area.");
-        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Replacing the file.", 
-                message.getAuditTrailInformation(), FileAction.REPLACE_FILE); 
+        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                "Replacing the file.", message.getAuditTrailInformation(), FileAction.REPLACE_FILE); 
         getArchives().replaceFile(message.getFileID(), message.getCollectionID());
         getCsManager().recalculateChecksum(message.getFileID(), message.getCollectionID());
     }
