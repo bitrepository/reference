@@ -37,23 +37,24 @@ create table tableversions (
 );
 
 insert into tableversions ( tablename, version )
-            values ( 'checksums', 1);
-
+            values ( 'checksums', 2);
 
 --*************************************************************************--
 -- Name:     checksums
--- Descr.:   Container for the checksum entry information: the file ids, their 
---           checksums and the timestamp of the calculation of this checksum. 
+-- Descr.:   Container for the checksum entry information: the file ids and 
+--           collection ids, their checksums and the timestamp of the
+--           calculation of this checksum. 
 -- Purpose:  Keep track of the checksum entries. 
 -- Expected entry count: Very many, one for each file..
 --*************************************************************************--
 create table checksums (
     guid bigint not null generated always as identity primary key,
-                                    -- The sequence number and unique key for this table.
-    fileid varchar(255) not null,   -- The id of the file.
-    checksum varchar(255),          -- The checksum of the file.
-    calculationdate timestamp       -- The timestamp for the calculation of the checksum.
+                                        -- The sequence number and unique key for this table.
+    fileid varchar(255) not null,       -- The id of the file.
+    collectionid varchar(255) not null, -- The id of the collection.
+    checksum varchar(255),              -- The checksum of the file.
+    calculationdate timestamp           -- The timestamp for the calculation of the checksum.
 );
 
-create index fileindex on checksums ( fileid );
+create index fileindex on checksums ( fileid, collectionid );
 create index filedateindex on checksums ( fileid, calculationdate );

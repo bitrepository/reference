@@ -65,10 +65,20 @@
     -->
     <PillarID>test-pillar</PillarID>
 
-    <!-- 
-      Path to the base directory for file storage and checksum files (for the checksumpillar)
-    -->
-    <FileDir>test-archive</FileDir>
+    <!--
+      The directories for the collections for this pillar. 
+     -->
+    <CollectionDirs>
+      <!-- 
+        The id of the collection with the following directories. 
+        -->
+      <CollectionID>TwoPillarCollection</CollectionID>
+      
+      <!-- 
+        Path to the base directory for file storage and checksum files (for the checksumpillar)
+      -->
+      <FileDir>test-archive</FileDir>
+    </CollectionDirs>
 
     <!--
       The minimum amounts of bytes available on storage prior to accepting a PutFileRequest. 

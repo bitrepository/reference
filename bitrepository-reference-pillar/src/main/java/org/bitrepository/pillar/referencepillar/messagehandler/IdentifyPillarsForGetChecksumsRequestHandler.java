@@ -35,7 +35,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRes
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -47,12 +47,12 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         extends ReferencePillarMessageHandler<IdentifyPillarsForGetChecksumsRequest> {
     /**
      * @param context The context for the pillar.
-     * @param referenceArchive The archive for the pillar.
+     * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected IdentifyPillarsForGetChecksumsRequestHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
-            ReferenceChecksumManager csManager) {
-        super(context, referenceArchive, csManager);
+    protected IdentifyPillarsForGetChecksumsRequestHandler(MessageHandlerContext context, 
+            CollectionArchiveManager archivesManager, ReferenceChecksumManager csManager) {
+        super(context, archivesManager, csManager);
     }
     
     @Override
@@ -85,7 +85,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         
         List<String> missingFiles = new ArrayList<String>();
         String fileID = fileids.getFileID();
-        if(fileID != null && !getArchive().hasFile(fileID)) {
+        if(fileID != null && !getArchives().hasFile(fileID, message.getCollectionID())) {
             missingFiles.add(fileID);
         }
         

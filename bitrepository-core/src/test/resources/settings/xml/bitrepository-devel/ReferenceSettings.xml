@@ -36,7 +36,10 @@
   </ClientSettings>
   <PillarSettings>
     <PillarID>PillarUnderTest</PillarID>
-    <FileDir>target/test/referencepillar/file-archive</FileDir>
+    <CollectionDirs>
+      <CollectionID>TwoPillarCollection</CollectionID>
+      <FileDir>target/test/referencepillar/file-archive</FileDir>
+    </CollectionDirs>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>
     <MaxAgeForChecksums>3600000</MaxAgeForChecksums>

@@ -48,7 +48,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -68,12 +68,12 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
 
     /**
      * @param context The context for the pillar.
-     * @param referenceArchive The archive for the pillar.
+     * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected GetChecksumsRequestHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
+    protected GetChecksumsRequestHandler(MessageHandlerContext context, CollectionArchiveManager archivesManager, 
             ReferenceChecksumManager csManager) {
-        super(context, referenceArchive, csManager);
+        super(context, archivesManager, csManager);
     }
     
     @Override
@@ -128,7 +128,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
         validateFileID(fileID);
         
         // if not missing, then all files have been found!
-        if(!getArchive().hasFile(fileID)) {
+        if(!getArchives().hasFile(fileID, message.getCollectionID())) {
             // report on the missing files
             String errText = "The following file is missing: '" + fileID + "'";
             log.warn(errText);
@@ -166,7 +166,8 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
         if(message.getFileIDs().isSetFileID()) {
             ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
             ChecksumDataForChecksumSpecTYPE data = getCsManager().getChecksumDataForChecksumSpec(
-                    message.getFileIDs().getFileID(), message.getChecksumRequestForExistingFile());
+                    message.getFileIDs().getFileID(), message.getCollectionID(),
+                    message.getChecksumRequestForExistingFile());
             res.insertChecksumEntry(data);
             return res;
         } else {
@@ -174,7 +175,8 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
             if(message.getMaxNumberOfResults() != null) {
                 maxResults = message.getMaxNumberOfResults().longValue();
             }
-            return getCsManager().getEntries(message.getMinTimestamp(), message.getMaxTimestamp(), maxResults);
+            return getCsManager().getEntries(message.getMinTimestamp(), message.getMaxTimestamp(), maxResults,
+                    message.getCollectionID());
         }
     }
     

@@ -36,6 +36,8 @@ public class DatabaseConstants {
     public static final String CS_CHECKSUM = "checksum";
     /** The column for the date for the calculation of the checksum.*/
     public static final String CS_DATE = "calculationdate";
+    /** The column for the collection id for the file.*/
+    public static final String CS_COLLECTION_ID = "collectionid";
     
     /** The column for the guid of the entry.*/
     public static final String CS_GUID = "guid";

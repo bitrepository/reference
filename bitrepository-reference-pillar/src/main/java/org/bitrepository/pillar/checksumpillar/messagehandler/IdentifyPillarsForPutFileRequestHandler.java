@@ -89,18 +89,18 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
             return false;
         }
         
-        return getCache().hasFile(message.getFileID());
+        return getCache().hasFile(message.getFileID(), message.getCollectionID());
     }
     
     /**
      * Method for sending a response for 'DUPLICATE_FILE_FAILURE'.
-     * @param request The request to base the response upon.
+     * @param message The request to base the response upon.
      */
-    protected void respondDuplicateFile(IdentifyPillarsForPutFileRequest request) {
-        log.debug("Creating DuplicateFile response for " + MessageUtils.createMessageIdentifier(request));
-        IdentifyPillarsForPutFileResponse response = createFinalResponse(request);
+    protected void respondDuplicateFile(IdentifyPillarsForPutFileRequest message) {
+        log.debug("Creating DuplicateFile response for " + MessageUtils.createMessageIdentifier(message));
+        IdentifyPillarsForPutFileResponse response = createFinalResponse(message);
 
-        ChecksumEntry entry = getCache().getEntry(request.getFileID());
+        ChecksumEntry entry = getCache().getEntry(message.getFileID(), message.getCollectionID());
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
         checksumData.setChecksumSpec(getChecksumType());
@@ -111,7 +111,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
         irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
         response.setResponseInfo(irInfo);
 
-        getContext().getResponseDispatcher().dispatchResponse(response, request);
+        getContext().getResponseDispatcher().dispatchResponse(response, message);
     }
     
     /**

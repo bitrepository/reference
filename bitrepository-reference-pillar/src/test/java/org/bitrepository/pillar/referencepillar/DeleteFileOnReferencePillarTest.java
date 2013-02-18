@@ -165,7 +165,7 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
         DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-        Assert.assertTrue(archive.hasFile(DEFAULT_FILE_ID));
+        Assert.assertTrue(archives.hasFile(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
@@ -178,6 +178,6 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
         DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_COMPLETED);
-        Assert.assertFalse(archive.hasFile(DEFAULT_FILE_ID));
+        Assert.assertFalse(archives.hasFile(DEFAULT_FILE_ID, settingsForCUT.getCollectionID()));
     }
 }

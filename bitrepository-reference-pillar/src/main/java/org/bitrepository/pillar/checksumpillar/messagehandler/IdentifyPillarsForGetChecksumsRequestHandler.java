@@ -92,7 +92,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         
         List<String> missingFiles = new ArrayList<String>();
         String fileID = fileids.getFileID();
-        if(fileID != null && !getCache().hasFile(fileID)) {
+        if(fileID != null && !getCache().hasFile(fileID, message.getCollectionID())) {
             missingFiles.add(fileID);
         }
         

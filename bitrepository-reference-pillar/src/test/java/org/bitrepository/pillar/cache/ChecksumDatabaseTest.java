@@ -63,22 +63,23 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         ChecksumDAO cache = getCacheWithData();
         
         addStep("Check whether the default entry exists.", "It does!");
-        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID));
+        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID, settings.getCollectionID()));
         
         addStep("Extract calculation date", "Should be identical to the default date.");
-        Assert.assertEquals(cache.getCalculationDate(DEFAULT_FILE_ID), DEFAULT_DATE);
+        Assert.assertEquals(cache.getCalculationDate(DEFAULT_FILE_ID, settings.getCollectionID()), DEFAULT_DATE);
         
         addStep("Extract the checksum", "Should be identical to the default checksum");
-        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID), DEFAULT_CHECKSUM);
+        Assert.assertEquals(cache.getChecksum(DEFAULT_FILE_ID, settings.getCollectionID()), DEFAULT_CHECKSUM);
         
         addStep("Extract the whole entry", "Should have the default values.");
-        ChecksumEntry entry = cache.getEntry(DEFAULT_FILE_ID);
+        ChecksumEntry entry = cache.getEntry(DEFAULT_FILE_ID, settings.getCollectionID());
         Assert.assertEquals(entry.getFileId(), DEFAULT_FILE_ID);
         Assert.assertEquals(entry.getChecksum(), DEFAULT_CHECKSUM);
         Assert.assertEquals(entry.getCalculationDate(), DEFAULT_DATE);
         
         addStep("Extract all entries", "Should only be the one default.");
-        List<ChecksumDataForChecksumSpecTYPE> entries = cache.getEntries(null, null, null).getEntries();
+        List<ChecksumDataForChecksumSpecTYPE> entries = cache.getEntries(null, null, null, 
+                settings.getCollectionID()).getEntries();
         Assert.assertEquals(entries.size(), 1);
         Assert.assertEquals(entries.get(0).getFileID(), DEFAULT_FILE_ID);
         Assert.assertEquals(Base16Utils.decodeBase16(entries.get(0).getChecksumValue()), DEFAULT_CHECKSUM);
@@ -92,16 +93,16 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         ChecksumDAO cache = getCacheWithData();
         
         addStep("Check whether the default entry exists.", "It does!");
-        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID));
-        ExtractedFileIDsResultSet res = cache.getFileIDs(null, null, null);
+        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID, settings.getCollectionID()));
+        ExtractedFileIDsResultSet res = cache.getFileIDs(null, null, null, settings.getCollectionID());
         Assert.assertEquals(res.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 1);
         Assert.assertEquals(res.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID(), 
                 DEFAULT_FILE_ID);
         
         addStep("Remove the default entry", "Should no longer exist");
-        cache.deleteEntry(DEFAULT_FILE_ID);
-        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID));
-        res = cache.getFileIDs(null, null, null);
+        cache.deleteEntry(DEFAULT_FILE_ID, settings.getCollectionID());
+        Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID, settings.getCollectionID()));
+        res = cache.getFileIDs(null, null, null, settings.getCollectionID());
         Assert.assertEquals(res.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 0);
     }
     
@@ -114,16 +115,16 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         Date newDate = new Date(System.currentTimeMillis() + 123456789L);
         
         addStep("Check whether the default entry exists.", "It does!");
-        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID));
-        ChecksumEntry oldEntry = cache.getEntry(DEFAULT_FILE_ID);
+        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID, settings.getCollectionID()));
+        ChecksumEntry oldEntry = cache.getEntry(DEFAULT_FILE_ID, settings.getCollectionID());
         Assert.assertEquals(oldEntry.getFileId(), DEFAULT_FILE_ID);
         Assert.assertEquals(oldEntry.getChecksum(), DEFAULT_CHECKSUM);
         Assert.assertEquals(oldEntry.getCalculationDate(), DEFAULT_DATE);
         
         addStep("Replace the checksum and date", "Should still exist, but have different values.");
-        cache.insertChecksumCalculation(DEFAULT_FILE_ID, newChecksum, newDate);
-        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID));
-        ChecksumEntry newEntry = cache.getEntry(DEFAULT_FILE_ID);
+        cache.insertChecksumCalculation(DEFAULT_FILE_ID, settings.getCollectionID(), newChecksum, newDate);
+        Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID, settings.getCollectionID()));
+        ChecksumEntry newEntry = cache.getEntry(DEFAULT_FILE_ID, settings.getCollectionID());
         Assert.assertEquals(newEntry.getFileId(), DEFAULT_FILE_ID);
         Assert.assertEquals(newEntry.getChecksum(), newChecksum);
         Assert.assertFalse(oldEntry.getChecksum().equals(newEntry.getChecksum()));
@@ -138,7 +139,7 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         
         addStep("Try to get the date of a wrong file id.", "Should throw an exception");
         try {
-            cache.getCalculationDate(badFileId);
+            cache.getCalculationDate(badFileId, settings.getCollectionID());
             Assert.fail("Should throw an exception here.");
         } catch (IllegalStateException e) {
             // expected
@@ -146,7 +147,7 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         
         addStep("Try to get the date of a wrong file id.", "Should throw an exception");
         try {
-            cache.getChecksum(badFileId);
+            cache.getChecksum(badFileId, settings.getCollectionID());
             Assert.fail("Should throw an exception here.");
         } catch (IllegalStateException e) {
             // expected
@@ -154,7 +155,7 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
 
         addStep("Try to remove a bad file id", "Should throw an exception");
         try {
-            cache.deleteEntry(badFileId);
+            cache.deleteEntry(badFileId, settings.getCollectionID());
             Assert.fail("Should throw an exception here.");
         } catch (IllegalStateException e) {
             // expected
@@ -169,28 +170,28 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         Date beforeTest = new Date(System.currentTimeMillis() - 100000);
         String oldFile = "VeryOldFile";
         ChecksumDAO cache = getCacheWithData();
-        cache.insertChecksumCalculation(oldFile, DEFAULT_CHECKSUM, new Date(0));
+        cache.insertChecksumCalculation(oldFile, settings.getCollectionID(), DEFAULT_CHECKSUM, new Date(0));
         
         addStep("Extract with out restrictions", "Both entries.");
-        ExtractedChecksumResultSet extractedResults = cache.getEntries(null, null, null);
+        ExtractedChecksumResultSet extractedResults = cache.getEntries(null, null, null, settings.getCollectionID());
         Assert.assertEquals(extractedResults.getEntries().size(), 2);
         
         addStep("Extract with a maximum of 1 entry", "The oldest entry");
-        extractedResults = cache.getEntries(null, null, 1L);
+        extractedResults = cache.getEntries(null, null, 1L, settings.getCollectionID());
         Assert.assertEquals(extractedResults.getEntries().size(), 1);
         ChecksumDataForChecksumSpecTYPE dataEntry = extractedResults.getEntries().get(0);
         Assert.assertEquals(CalendarUtils.convertFromXMLGregorianCalendar(dataEntry.getCalculationTimestamp()).getTime(), 0);
         Assert.assertEquals(dataEntry.getFileID(), oldFile);
         
         addStep("Extract all dates older than this tests instantiation", "The oldest entry");
-        extractedResults = cache.getEntries(null, CalendarUtils.getXmlGregorianCalendar(beforeTest), null);
+        extractedResults = cache.getEntries(null, CalendarUtils.getXmlGregorianCalendar(beforeTest), null, settings.getCollectionID());
         Assert.assertEquals(extractedResults.getEntries().size(), 1);
         dataEntry = extractedResults.getEntries().get(0);
         Assert.assertEquals(CalendarUtils.convertFromXMLGregorianCalendar(dataEntry.getCalculationTimestamp()).getTime(), 0);
         Assert.assertEquals(dataEntry.getFileID(), oldFile);
         
         addStep("Extract all dates newer than this tests instantiation", "The default entry");
-        extractedResults = cache.getEntries(CalendarUtils.getXmlGregorianCalendar(beforeTest), null, null);
+        extractedResults = cache.getEntries(CalendarUtils.getXmlGregorianCalendar(beforeTest), null, null, settings.getCollectionID());
         Assert.assertEquals(extractedResults.getEntries().size(), 1);
         dataEntry = extractedResults.getEntries().get(0);
         Assert.assertEquals(CalendarUtils.convertFromXMLGregorianCalendar(dataEntry.getCalculationTimestamp()), 
@@ -198,17 +199,17 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         Assert.assertEquals(dataEntry.getFileID(), DEFAULT_FILE_ID);
         
         addStep("Extract all dates older than the newest instance", "Both entries");
-        extractedResults = cache.getEntries(null, CalendarUtils.getXmlGregorianCalendar(DEFAULT_DATE), null);
+        extractedResults = cache.getEntries(null, CalendarUtils.getXmlGregorianCalendar(DEFAULT_DATE), null, settings.getCollectionID());
         Assert.assertEquals(extractedResults.getEntries().size(), 2);
         
         addStep("Extract all dates newer than the oldest instantiation", "Both entries");
-        extractedResults = cache.getEntries(CalendarUtils.getEpoch(), null, null);
+        extractedResults = cache.getEntries(CalendarUtils.getEpoch(), null, null, settings.getCollectionID());
         Assert.assertEquals(extractedResults.getEntries().size(), 2);
     }
     
     private ChecksumDAO getCacheWithData() {
         ChecksumDAO res = new ChecksumDAO(settings);
-        res.insertChecksumCalculation(DEFAULT_FILE_ID, DEFAULT_CHECKSUM, DEFAULT_DATE);
+        res.insertChecksumCalculation(DEFAULT_FILE_ID, settings.getCollectionID(), DEFAULT_CHECKSUM, DEFAULT_DATE);
         return res;
     }
 }

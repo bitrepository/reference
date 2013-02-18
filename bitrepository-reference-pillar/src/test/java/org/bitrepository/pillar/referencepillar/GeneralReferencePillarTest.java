@@ -30,7 +30,7 @@ import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMessageHandler;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -42,7 +42,7 @@ public class GeneralReferencePillarTest extends ReferencePillarTest {
     public void testReferencePillarMessageHandler() throws Exception {
         addDescription("Test the handling of the ReferencePillarMessageHandler super-class.");
         addStep("Setup", "Should be OK.");
-        MockRequestHandler mockRequestHandler = new MockRequestHandler(context, archive, csManager);
+        MockRequestHandler mockRequestHandler = new MockRequestHandler(context, archives, csManager);
         
         addStep("Test the MD5 checksum type without any salt.", "Should be valid.");
         ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
@@ -74,9 +74,9 @@ public class GeneralReferencePillarTest extends ReferencePillarTest {
     
     private class MockRequestHandler extends ReferencePillarMessageHandler<MessageRequest> {
 
-        protected MockRequestHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
+        protected MockRequestHandler(MessageHandlerContext context, CollectionArchiveManager archives,
                 ReferenceChecksumManager manager) {
-            super(context, referenceArchive, manager);
+            super(context, archives, manager);
         }
 
         @Override

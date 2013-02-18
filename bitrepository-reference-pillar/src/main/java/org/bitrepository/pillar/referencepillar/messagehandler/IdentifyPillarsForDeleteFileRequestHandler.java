@@ -31,7 +31,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRespo
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -43,12 +43,12 @@ public class IdentifyPillarsForDeleteFileRequestHandler
         extends ReferencePillarMessageHandler<IdentifyPillarsForDeleteFileRequest> {
     /**
      * @param context The context for the pillar.
-     * @param referenceArchive The archive for the pillar.
+     * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected IdentifyPillarsForDeleteFileRequestHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
-            ReferenceChecksumManager csManager) {
-        super(context, referenceArchive, csManager);
+    protected IdentifyPillarsForDeleteFileRequestHandler(MessageHandlerContext context, 
+            CollectionArchiveManager archivesManager, ReferenceChecksumManager csManager) {
+        super(context, archivesManager, csManager);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
      */
     private void checkThatRequestedFileIsAvailable(IdentifyPillarsForDeleteFileRequest message) 
             throws RequestHandlerException {
-        if(!getArchive().hasFile(message.getFileID())) {
+        if(!getArchives().hasFile(message.getFileID(), message.getCollectionID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText("Could not find the requested file to delete.");
