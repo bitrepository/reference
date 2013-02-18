@@ -37,8 +37,7 @@
   <PillarSettings>
     <PillarID>PillarUnderTest</PillarID>
     <CollectionDirs>
-      <CollectionID>TwoPillarCollection</CollectionID>
-      <FileDir>target/test/referencepillar/file-archive</FileDir>
+      <FileDirs>target/test/referencepillar/file-archive</FileDirs>
     </CollectionDirs>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>

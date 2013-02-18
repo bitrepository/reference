@@ -24,6 +24,8 @@
  */
 package org.bitrepository.pillar;
 
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.bus.MessageReceiver;
 
@@ -41,6 +43,12 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
     protected void setupSettings() {
         super.setupSettings();
         settingsForCUT.getReferenceSettings().getPillarSettings().setPillarID(getPillarID());
+    }
+    
+    // Overrides for the super-class setupSettings to create the pillar which is defined in the collections.
+    @Override
+    protected Settings loadSettings(String componentID) {
+        return TestSettingsProvider.reloadSettingsForPillar(componentID);
     }
 
     @Override

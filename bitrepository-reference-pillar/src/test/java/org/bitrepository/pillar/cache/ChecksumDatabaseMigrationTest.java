@@ -33,7 +33,7 @@ public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
 
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
-        settings = TestSettingsProvider.reloadSettings("ReferencePillarTest");
+        settings = TestSettingsProvider.reloadSettingsForPillar("ReferencePillarTest");
         
         settings.getReferenceSettings().getPillarSettings().getChecksumDatabase().setDatabaseURL(
                 "jdbc:derby:" + PATH_TO_DATABASE_UNPACKED + "/checksumdb");

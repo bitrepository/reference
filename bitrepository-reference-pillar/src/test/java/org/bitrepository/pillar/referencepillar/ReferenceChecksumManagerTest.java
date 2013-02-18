@@ -54,7 +54,7 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
     
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
-        File fileDir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getCollectionDirs().get(0).getFileDir().get(0));
+        File fileDir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getCollectionDirs().get(0).getFileDirs().get(0));
         if(fileDir.exists()) {
             FileUtils.delete(fileDir);
         }
@@ -76,17 +76,16 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void testRecalculationWithRealCache() throws Exception {
         addDescription("Test the ability to recalculate the checksums automatically with a database cache.");
-        Settings settings = TestSettingsProvider.reloadSettings("ReferencePillarTest");
 
         DatabaseSpecifics checksumDB =
-                settings.getReferenceSettings().getPillarSettings().getChecksumDatabase();
+                settingsForCUT.getReferenceSettings().getPillarSettings().getChecksumDatabase();
         DerbyDatabaseDestroyer.deleteDatabase(checksumDB);
 
         ChecksumDatabaseCreator checksumDatabaseCreator = new ChecksumDatabaseCreator();
-        checksumDatabaseCreator.createChecksumDatabase(settings, null);
+        checksumDatabaseCreator.createChecksumDatabase(settingsForCUT, null);
 
         CollectionArchiveManager archives = new CollectionArchiveManager(settingsForCUT);
-        ChecksumStore csCache = new ChecksumDAO(settings);
+        ChecksumStore csCache = new ChecksumDAO(settingsForCUT);
         ReferenceChecksumManager csManager = new ReferenceChecksumManager(archives, csCache, 
                 new AlarmDispatcher(settingsForCUT, messageBus), ChecksumUtils.getDefault(settingsForCUT), 3600000L);
 

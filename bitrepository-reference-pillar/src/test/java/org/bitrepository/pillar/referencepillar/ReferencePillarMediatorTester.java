@@ -42,7 +42,7 @@ public class ReferencePillarMediatorTester extends ReferencePillarTest {
     @Override
     public void initializeCUT() {
         super.initializeCUT();
-        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getCollectionDirs().get(0).getFileDir().get(0));
+        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getCollectionDirs().get(0).getFileDirs().get(0));
         settingsForCUT.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         if(dir.exists()) {
             FileUtils.delete(dir);
@@ -62,7 +62,7 @@ public class ReferencePillarMediatorTester extends ReferencePillarTest {
     
     @AfterMethod (alwaysRun=true) 
     public void closeArchive() {
-        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getCollectionDirs().get(0).getFileDir().get(0));
+        File dir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getCollectionDirs().get(0).getFileDirs().get(0));
         if(dir.exists()) {
             FileUtils.delete(dir);
         }
