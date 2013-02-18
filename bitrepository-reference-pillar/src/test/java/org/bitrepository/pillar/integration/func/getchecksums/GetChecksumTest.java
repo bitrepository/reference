@@ -48,7 +48,8 @@ public class GetChecksumTest extends PillarFunctionTest {
             "A list (at least 2 long) of MD5 checksums should be returned.");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.MD5);
-        List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(checksumSpec, null);
+        List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(checksumSpec,
+                null);
         Assert.assertTrue(checksums.size() >= 2, "The length of the returned checksums were less that 2");
 
         addStep("Retrieve the first two files and verify that the checksums are correct",

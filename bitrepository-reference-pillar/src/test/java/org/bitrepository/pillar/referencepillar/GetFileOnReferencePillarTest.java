@@ -50,7 +50,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
     @Override
     public void initializeCUT() {
         super.initializeCUT();
-        msgFactory = new GetFileMessageFactory(settingsForCUT);
+        msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
@@ -170,7 +170,7 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
                 "Should be received by the pillar, which should issue an alarm.");
         IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
                 DEFAULT_UPLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, getPillarID(), clientDestinationId);
-        identifyRequest.setCollectionID(settingsForCUT.getCollectionID() + "ERROR");
+        identifyRequest.setCollectionID(collectionID + "ERROR");
         messageBus.sendMessage(identifyRequest);
         
         // TODO fix this!

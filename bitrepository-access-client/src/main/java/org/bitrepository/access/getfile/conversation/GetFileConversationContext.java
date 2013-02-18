@@ -42,11 +42,12 @@ public class GetFileConversationContext extends ConversationContext {
      * @param filePart The part of the file. Null if whole file is wanted.
      * @param urlForResult
      */
-    public GetFileConversationContext(
+    public GetFileConversationContext(String collectionID,
             String fileID, URL urlForResult, FilePart filePart, Collection<String> contributors,
             Settings settings, MessageSender messageSender, String clientID, EventHandler eventHandler,
             String auditTrailInformation) {
-        super(OperationType.GET_FILE, settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
+        super(collectionID, OperationType.GET_FILE, settings, messageSender, clientID, fileID, contributors,
+                eventHandler, auditTrailInformation);
         this.filePart = filePart;
         this.urlForResult = urlForResult;
     }

@@ -53,7 +53,8 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
     }
     
     @Override
-    public void putFile(URL url, String fileId, long sizeOfFile, ChecksumDataForFileTYPE checksumForValidationAtPillar,
+    public void putFile(String collectionID, URL url, String fileId, long sizeOfFile,
+                        ChecksumDataForFileTYPE checksumForValidationAtPillar,
             ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNull(url, "URL url");
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
@@ -65,7 +66,7 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
         }
         validateFileID(fileId);
         
-        PutFileConversationContext context = new PutFileConversationContext(fileId, url, sizeOfFile, 
+        PutFileConversationContext context = new PutFileConversationContext(collectionID, fileId, url, sizeOfFile,
                 checksumForValidationAtPillar, checksumRequestsForValidation, settings, messageBus,
                 clientID, settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(), eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForPutFile(context));

@@ -150,10 +150,11 @@ public abstract class GeneralConversationState implements ConversationState {
     }
 
     protected void initializeMessage(MessageRequest msg) {
+        msg.setCollectionID(getContext().getCollectionID());
         msg.setCorrelationID(getContext().getConversationID());
         msg.setMinVersion(ProtocolVersionLoader.loadProtocolVersion().getMinVersion());
         msg.setVersion(ProtocolVersionLoader.loadProtocolVersion().getVersion());
-        msg.setCollectionID(getContext().getSettings().getCollectionID());
+        msg.setCollectionID(getContext().getCollectionID());
         msg.setReplyTo(getContext().getSettings().getReceiverDestinationID());
         msg.setAuditTrailInformation(getContext().getAuditTrailInformation());
         msg.setFrom(getContext().getClientID());

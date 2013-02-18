@@ -46,7 +46,8 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
 
         addStep("Start a collection with two contributors", "A call should be made to the store to find out which " +
             "sequence number to continue from");
-        IncrementalCollector collector = new IncrementalCollector("Client1", client, store, BigInteger.ONE);
+        IncrementalCollector collector = new IncrementalCollector("dummy-collection", "Client1", client, store,
+                BigInteger.ONE);
         Collection<String> contributors = Arrays.asList("Contributor1", "Contributors2");
         CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
         Thread t = new Thread(collectionRunner);
@@ -84,7 +85,8 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
 
         addStep("Start a collection with two contributors", "A call should be made to the store to find out which " +
             "sequence number to continue from");
-        IncrementalCollector collector = new IncrementalCollector("Client1", client, store, BigInteger.ONE);
+        IncrementalCollector collector = new IncrementalCollector("dummy-collection", "Client1", client, store,
+                BigInteger.ONE);
         Collection<String> contributors = Arrays.asList("Contributor1", "Contributors2");
         CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
         Thread t = new Thread(collectionRunner);
@@ -135,7 +137,8 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
 
         addStep("Start a collection with two contributors", "A call should be made to the store to find out which " +
             "sequence number to continue from");
-        IncrementalCollector collector = new IncrementalCollector("Client1", client, store, BigInteger.ONE);
+        IncrementalCollector collector = new IncrementalCollector("dummy-collection", "Client1", client, store,
+                BigInteger.ONE);
         Collection<String> contributors = Arrays.asList("Contributor1", "Contributors2");
         CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
         Thread t = new Thread(collectionRunner);

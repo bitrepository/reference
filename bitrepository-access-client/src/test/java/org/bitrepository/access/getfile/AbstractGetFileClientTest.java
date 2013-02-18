@@ -47,6 +47,6 @@ public abstract class AbstractGetFileClientTest extends DefaultFixtureClientTest
 
     @BeforeMethod (alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
-        testMessageFactory = new TestGetFileMessageFactory(settingsForCUT.getCollectionID());
+        testMessageFactory = new TestGetFileMessageFactory(settingsForTestClient.getComponentID());
     }
 }

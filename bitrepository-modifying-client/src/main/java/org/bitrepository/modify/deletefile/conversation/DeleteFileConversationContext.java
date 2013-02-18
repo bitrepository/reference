@@ -35,10 +35,10 @@ public class DeleteFileConversationContext extends ConversationContext {
     private final ChecksumSpecTYPE checksumRequestsForValidation;
     
     public DeleteFileConversationContext(
-            String fileID, ChecksumDataForFileTYPE checksumForValidationAtPillar,
+            String collectionID, String fileID, ChecksumDataForFileTYPE checksumForValidationAtPillar,
             ChecksumSpecTYPE checksumRequestsForValidation, Settings settings, MessageSender messageSender,
             String clientID,  Collection<String> contributors, EventHandler eventHandler, String auditTrailInformation) {
-        super(OperationType.DELETE_FILE, settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
+        super(collectionID, OperationType.DELETE_FILE, settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
         this.checksumForValidationAtPillar = checksumForValidationAtPillar;
         this.checksumRequestsForValidation = checksumRequestsForValidation;
     }

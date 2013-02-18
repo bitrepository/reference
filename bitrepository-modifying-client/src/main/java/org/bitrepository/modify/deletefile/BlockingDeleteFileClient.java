@@ -54,6 +54,7 @@ public class BlockingDeleteFileClient {
      * @param auditTrailInformation The audit trail information.
      */
     public List<ContributorEvent> deleteFile(
+            String collectionID,
             String fileId,
             String pillarID,
             ChecksumDataForFileTYPE checksumForValidationAtPillar,
@@ -62,7 +63,8 @@ public class BlockingDeleteFileClient {
             String auditTrailInformation)
             throws OperationFailedException {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
-        client.deleteFile(fileId, pillarID, checksumForValidationAtPillar, checksumRequestsForValidation,
+        client.deleteFile(collectionID,  fileId, pillarID, checksumForValidationAtPillar,
+                checksumRequestsForValidation,
                 blocker, auditTrailInformation);
         OperationEvent finishEvent = blocker.awaitFinished();
         if(finishEvent.getEventType() == OperationEvent.OperationEventType.COMPLETE) {

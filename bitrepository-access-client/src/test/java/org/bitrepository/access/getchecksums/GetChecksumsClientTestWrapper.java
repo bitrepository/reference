@@ -45,14 +45,16 @@ public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
     }
 
     @Override
-    public void getChecksums(ContributorQuery[] contributorQueries, String fileID, ChecksumSpecTYPE checksumSpec,
+    public void getChecksums(String collectionID, ContributorQuery[] contributorQueries, String fileID,
+                             ChecksumSpecTYPE checksumSpec,
                            URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
         testEventManager.addStimuli("Calling getChecksums(" +
             (contributorQueries == null ? "null" : Arrays.asList(contributorQueries)) +
             ", " + fileID
             + ", " + checksumSpec + ", " + addressForResult + ", " + eventHandler + ", "
             + auditTrailInformation + ")");
-        getChecksumsClientInstance.getChecksums(contributorQueries, fileID, checksumSpec, addressForResult,
+        getChecksumsClientInstance.getChecksums(collectionID, contributorQueries, fileID, checksumSpec,
+                addressForResult,
             eventHandler, auditTrailInformation);
     }
 }

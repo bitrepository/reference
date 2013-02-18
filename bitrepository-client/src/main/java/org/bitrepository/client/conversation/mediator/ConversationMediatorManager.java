@@ -34,6 +34,8 @@ import org.bitrepository.protocol.security.SecurityManager;
  * Get your <code>ConversationMediator</code> here.
  */
 public class ConversationMediatorManager {
+    public static final String DEFAULT_MEDIATOR = "Default mediator";
+
     /** Map of the loaded mediators */
     private static final Map<String,ConversationMediator> mediatorMap = new HashMap<String,ConversationMediator>();
     
@@ -50,21 +52,19 @@ public class ConversationMediatorManager {
      * @return The settings for the indicated CollectionID.
      */
     public static synchronized ConversationMediator getConversationMediator(Settings settings, SecurityManager securityManager) {
-        String collectionID = settings.getCollectionID();
-        if (!mediatorMap.containsKey(collectionID)) {
+        if (!mediatorMap.containsKey(DEFAULT_MEDIATOR)) {
             ConversationMediator mediator = new CollectionBasedConversationMediator(settings, securityManager);
-            mediatorMap.put(collectionID, mediator);
+            mediatorMap.put(DEFAULT_MEDIATOR, mediator);
         }
-        return mediatorMap.get(collectionID);
+        return mediatorMap.get(DEFAULT_MEDIATOR);
     }
 
 
     /**
-     * Can be used to inject a custom messageBus for a mediator collectionID.
-     * @param collectionID
+     * Can be used to inject a custom messageBus for the efault mediator.
      * @param mediator The custom instance of the mediator.
      */
-    public static void injectCustomConversationMediator(String collectionID, ConversationMediator mediator) {
-        mediatorMap.put(collectionID, mediator);
+    public static void injectCustomConversationMediator(ConversationMediator mediator) {
+        mediatorMap.put(DEFAULT_MEDIATOR, mediator);
     }
 }

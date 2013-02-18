@@ -40,12 +40,13 @@ public class ReplaceFileConversationContext extends ConversationContext {
     private final ChecksumDataForFileTYPE checksumForDeleteAtPillar; 
     private final ChecksumSpecTYPE checksumRequestedForDeletedFile;
     
-    public ReplaceFileConversationContext(String fileID, long sizeOfNewFile, URL urlForFile,
+    public ReplaceFileConversationContext(String collectionID, String fileID, long sizeOfNewFile, URL urlForFile,
             ChecksumDataForFileTYPE checksumForDeleteAtPillar, ChecksumSpecTYPE checksumRequestedForDeletedFile,
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile, 
             Settings settings, MessageSender messageSender, String clientID, Collection<String> contributors,
             EventHandler eventHandler,String auditTrailInformation) {
-        super(OperationType.REPLACE_FILE, settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
+        super(collectionID, OperationType.REPLACE_FILE, settings, messageSender, clientID, fileID,
+                contributors, eventHandler, auditTrailInformation);
         this.urlForFile = urlForFile;
         this.sizeOfNewFile = new BigInteger(Long.toString(sizeOfNewFile));
         this.checksumForDeleteAtPillar = checksumForDeleteAtPillar;

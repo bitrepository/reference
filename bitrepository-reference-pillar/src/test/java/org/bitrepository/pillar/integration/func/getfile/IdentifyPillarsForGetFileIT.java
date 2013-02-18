@@ -35,7 +35,7 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
-        msgFactory = new GetFileMessageFactory(settingsForTestClient);
+        msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient);
     }
 
     @Test( groups = {"pillar-integration-test"})

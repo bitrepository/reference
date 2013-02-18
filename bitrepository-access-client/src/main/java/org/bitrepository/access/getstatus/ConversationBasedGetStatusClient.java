@@ -35,9 +35,6 @@ import org.slf4j.LoggerFactory;
 public class ConversationBasedGetStatusClient extends AbstractClient implements GetStatusClient {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    /**
-     * @see AbstractClient
-     */
     public ConversationBasedGetStatusClient(
             MessageBus messageBus,
             ConversationMediator conversationMediator,
@@ -51,7 +48,7 @@ public class ConversationBasedGetStatusClient extends AbstractClient implements 
     public void getStatus(EventHandler eventHandler) {
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
         log.info("Requesting status for collection of components.");
-        GetStatusConversationContext context = new GetStatusConversationContext(
+        GetStatusConversationContext context = new GetStatusConversationContext(null,
                 settings, messageBus, eventHandler, clientID,
                 settings.getRepositorySettings().getGetStatusSettings().getContributorIDs());
         startConversation(context, new IdentifyingContributorsForGetStatus(context));

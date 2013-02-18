@@ -43,7 +43,8 @@ import org.slf4j.LoggerFactory;
 public class DelegatingIntegrityInformationCollector implements IntegrityInformationCollector {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    
+
+    private final String collectionID;
     /** The client for retrieving file IDs. */
     private final GetFileIDsClient getFileIDsClient;
     /** The client for retrieving checksums. */
@@ -52,24 +53,28 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     private final AuditTrailManager auditManager;
     
     /**
-     * Constructor.
+     * @param collectionID the collection to collect information for.
      * @param getFileIDsClient The client for retrieving file IDs
      * @param getChecksumsClient The client for retrieving checksums
      */
-    public DelegatingIntegrityInformationCollector(GetFileIDsClient getFileIDsClient, 
+    public DelegatingIntegrityInformationCollector(
+            String collectionID,
+            GetFileIDsClient getFileIDsClient,
             GetChecksumsClient getChecksumsClient, AuditTrailManager auditManager) {
+        this.collectionID = collectionID;
         this.getFileIDsClient = getFileIDsClient;
         this.getChecksumsClient = getChecksumsClient;
         this.auditManager = auditManager;
     }
 
     @Override
-    public synchronized void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, 
+    public synchronized void getFileIDs(Collection<String> pillarIDs,
+                                        String auditTrailInformation,
             ContributorQuery[] queries, EventHandler eventHandler) {
         try {
             auditManager.addAuditEvent(null, "IntegrityService", 
                     "Collecting file ids from '" + pillarIDs + "'", auditTrailInformation, FileAction.INTEGRITY_CHECK);
-            getFileIDsClient.getFileIDs(queries, null, null, eventHandler);
+            getFileIDsClient.getFileIDs(collectionID, queries, null, null, eventHandler);
         } catch (Exception e) {
             // Barrier
             log.error("Unexpected failure!", e);
@@ -77,12 +82,14 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     }
 
     @Override
-    public synchronized void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, 
+    public synchronized void getChecksums(Collection<String> pillarIDs,
+                                          ChecksumSpecTYPE checksumType,
             String auditTrailInformation, ContributorQuery[] queries, EventHandler eventHandler) {
         try {
+            // Is this really necessary to audit log. Better to auditlog on workflow exit.
             auditManager.addAuditEvent(null, "IntegrityService",
                     "Collecting checksums", auditTrailInformation, FileAction.INTEGRITY_CHECK);
-            getChecksumsClient.getChecksums(queries, null, checksumType, null, eventHandler,
+            getChecksumsClient.getChecksums(collectionID, queries, null, checksumType, null, eventHandler,
                     auditTrailInformation);
         } catch (Exception e) {
             // Barrier

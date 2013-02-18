@@ -60,13 +60,8 @@ public abstract class ClientTestMessageFactory extends TestMessageFactory {
 
     protected final String clientID;
 
-    public ClientTestMessageFactory(String collectionID, String clientID) {
-        super(collectionID);
+    public ClientTestMessageFactory(String clientID) {
         this.clientID = clientID;
-    }
-
-    public ClientTestMessageFactory(String collectionID) {
-        this(collectionID, null);
     }
 
     protected void setResponseDetails(

@@ -43,7 +43,7 @@ public class GetAuditTrailsOnChecksumPillarTest extends ChecksumPillarTest {
     @Override
     public void initializeCUT() {
         super.initializeCUT();
-        msgFactory = new GetAuditTrailsMessageFactory(settingsForCUT);
+        msgFactory = new GetAuditTrailsMessageFactory(collectionID, settingsForTestClient);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})

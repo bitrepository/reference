@@ -69,7 +69,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         super.initializeCUT();
         reloadMessageBus();
         clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
-        pillarFileManager = new PillarFileManager(
+        pillarFileManager = new PillarFileManager(collectionID,
             getPillarID(), settingsForTestClient, clientProvider, testEventManager, httpServer);
     }
 
@@ -80,7 +80,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
                 new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
         super.initializeSuite();
         startEmbeddedReferencePillar();
-        MessageBusManager.injectCustomMessageBus(settingsForTestClient.getCollectionID(), messageBus);
+        MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
         reloadMessageBus();
         clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
     }
@@ -155,7 +155,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     }
 
     protected void reloadMessageBus() {
-        ConversationMediatorManager.injectCustomConversationMediator(settingsForTestClient.getCollectionID(),
+        ConversationMediatorManager.injectCustomConversationMediator(
                 new CollectionBasedConversationMediator(settingsForTestClient, securityManager));
     }
 

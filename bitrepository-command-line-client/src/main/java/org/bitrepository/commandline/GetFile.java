@@ -98,7 +98,13 @@ public class GetFile {
      */
     private void createOptionsForCmdArgumentHandler() {
         cmdHandler.createDefaultOptions();
-        
+
+        Option collectionOption = new Option(Constants.COLLECTION_ID_ARG, Constants.HAS_ARGUMENT,
+                "[OPTIONAL] The id for the collection to "
+                        + "retrieve the checksum for. If no argument, then first collection in the settings are used.");
+        collectionOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(collectionOption);
+
         Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT, "The id for the file to retrieve.");
         fileOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
         cmdHandler.addOption(fileOption);
@@ -146,14 +152,26 @@ public class GetFile {
         
         if(cmdHandler.hasOption(Constants.PILLAR_ARG)) {
             String pillarId = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
-            client.getFileFromSpecificPillar(fileId, null, fileUrl, pillarId, eventHandler, null);
+            client.getFileFromSpecificPillar(getCollectionID(), fileId, null, fileUrl, pillarId, eventHandler, null);
         } else {
-            client.getFileFromFastestPillar(fileId, null, fileUrl, eventHandler, null);
+            client.getFileFromFastestPillar(getCollectionID(), fileId, null, fileUrl, eventHandler, null);
         }
         
         return eventHandler.getFinish();
     }
-    
+
+    /**
+     * @return The collection to use. If no collection has been idicated the first collection in the settings is used
+     * . .
+     */
+    public String getCollectionID() {
+        if(cmdHandler.hasOption(Constants.COLLECTION_ID_ARG)) {
+            return cmdHandler.getOptionValue(Constants.COLLECTION_ID_ARG);
+        } else {
+            return settings.getCollections().get(0).getID();
+        }
+    }
+
     /**
      * Downloads the file from the URL defined in the conversation.
      */

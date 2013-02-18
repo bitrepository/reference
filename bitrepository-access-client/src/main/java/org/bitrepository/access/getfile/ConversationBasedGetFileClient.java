@@ -59,7 +59,7 @@ public class ConversationBasedGetFileClient extends AbstractClient implements Ge
     }
 
     @Override
-    public void getFileFromFastestPillar(
+    public void getFileFromFastestPillar(String collectionID,
             String fileID, FilePart filePart, URL uploadUrl, EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
@@ -67,13 +67,13 @@ public class ConversationBasedGetFileClient extends AbstractClient implements Ge
         validateFileID(fileID);
         
         log.info("Requesting the file '" + fileID + " from the fastest pillar");
-        getFile(messageBus, settings, fileID, filePart,
+        getFile(collectionID, messageBus, settings, fileID, filePart,
                 settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(),
                  uploadUrl, eventHandler, auditTrailInformation);
     }
 
     @Override
-    public void getFileFromSpecificPillar(
+    public void getFileFromSpecificPillar(String collectionID,
             String fileID, FilePart filePart, URL uploadUrl, String pillarID, EventHandler eventHandler,
             String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
@@ -83,14 +83,14 @@ public class ConversationBasedGetFileClient extends AbstractClient implements Ge
         validateFileID(fileID);
         
         log.info("Requesting the file '" + fileID + "' from pillar '" + pillarID + "'.");
-        getFile(messageBus, settings, fileID, filePart, Arrays.asList(pillarID),
+        getFile(collectionID, messageBus, settings, fileID, filePart, Arrays.asList(pillarID),
                 uploadUrl, eventHandler, auditTrailInformation);
     }
 
-    private void getFile(MessageBus messageBus, Settings settings,
+    private void getFile(String collectionID, MessageBus messageBus, Settings settings,
             String fileID, FilePart filePart, Collection<String> contributors, URL uploadUrl, EventHandler eventHandler,
             String auditTrailInformation) {
-        GetFileConversationContext context = new GetFileConversationContext(
+        GetFileConversationContext context = new GetFileConversationContext(collectionID,
                 fileID, uploadUrl, filePart, contributors, settings, messageBus, clientID, eventHandler,
                 auditTrailInformation
         );

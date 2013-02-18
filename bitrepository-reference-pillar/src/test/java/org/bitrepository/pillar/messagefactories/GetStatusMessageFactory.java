@@ -24,6 +24,7 @@
  */
 package org.bitrepository.pillar.messagefactories;
 
+import java.util.UUID;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
@@ -32,18 +33,11 @@ import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
-import java.util.UUID;
-
 public class GetStatusMessageFactory extends ClientTestMessageFactory {
-
-    final Settings settings;
-    
-    public GetStatusMessageFactory(Settings pSettings) {
-        super(pSettings.getCollectionID());
-        this.settings = pSettings;
+    public GetStatusMessageFactory(String clientID) {
+        super(clientID);
     }
     
     public IdentifyContributorsForGetStatusRequest createIdentifyContributorsForGetStatusRequest( 
@@ -51,11 +45,9 @@ public class GetStatusMessageFactory extends ClientTestMessageFactory {
         IdentifyContributorsForGetStatusRequest res = new IdentifyContributorsForGetStatusRequest();
         initializeMessageDetails(res);
         res.setAuditTrailInformation(auditTrail);
-        res.setCollectionID(settings.getCollectionID());
         res.setCorrelationID(getNewCorrelationID());
         res.setFrom(from);
         res.setReplyTo(replyTo);
-        res.setDestination(settings.getCollectionDestination());
         
         return res;
     }
@@ -65,7 +57,6 @@ public class GetStatusMessageFactory extends ClientTestMessageFactory {
             TimeMeasureTYPE timeToDeliver, String toTopic) {
         IdentifyContributorsForGetStatusResponse res = new IdentifyContributorsForGetStatusResponse();
         initializeMessageDetails(res);
-        res.setCollectionID(settings.getCollectionID());
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
         res.setFrom(contributorId);
@@ -82,7 +73,6 @@ public class GetStatusMessageFactory extends ClientTestMessageFactory {
         GetStatusRequest res = new GetStatusRequest();
         initializeMessageDetails(res);
         res.setAuditTrailInformation(auditTrail);
-        res.setCollectionID(settings.getCollectionID());
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
         res.setFrom(from);
@@ -96,7 +86,6 @@ public class GetStatusMessageFactory extends ClientTestMessageFactory {
             String replyTo, ResponseInfo responseInfo, String toTopic) {
         GetStatusProgressResponse res = new GetStatusProgressResponse();
         initializeMessageDetails(res);
-        res.setCollectionID(settings.getCollectionID());
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
         res.setFrom(contributorId);
@@ -111,7 +100,6 @@ public class GetStatusMessageFactory extends ClientTestMessageFactory {
             String replyTo, ResponseInfo responseInfo, ResultingStatus status, String toTopic) {
         GetStatusFinalResponse res = new GetStatusFinalResponse();
         initializeMessageDetails(res);
-        res.setCollectionID(settings.getCollectionID());
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
         res.setFrom(contributorId);

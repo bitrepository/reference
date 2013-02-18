@@ -48,7 +48,7 @@ public class GetFileIDsOnReferencePillarTest extends ReferencePillarTest {
     @Override
     public void initializeCUT() {
         super.initializeCUT();
-        msgFactory = new GetFileIDsMessageFactory(settingsForCUT);
+        msgFactory = new GetFileIDsMessageFactory(collectionID, settingsForTestClient);
     }
 
     @Test(groups = {"regressiontest", "pillartest"})

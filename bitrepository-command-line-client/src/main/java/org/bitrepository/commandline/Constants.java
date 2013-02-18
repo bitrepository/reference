@@ -45,6 +45,7 @@ public class Constants {
     public static final String PRIVATE_KEY_ARG = "k";
     
     /** The file argument.*/
+    public static final String COLLECTION_ID_ARG = "c";
     public static final String FILE_ARG = "f";
     /** The argument for the id of the file.*/
     public static final String FILE_ID_ARG = "i";

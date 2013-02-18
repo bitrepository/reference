@@ -34,6 +34,7 @@ import org.bitrepository.protocol.messagebus.MessageSender;
  * Encapsulates the shared state for a conversation.
  */
 public class ConversationContext {
+    private final String collectionID;
     private final String conversationID;
     private final Settings settings;
     private final MessageSender messageSender;
@@ -48,6 +49,7 @@ public class ConversationContext {
     /**
      * Encapsulates the common state maintained in a conversation. Will typically be subclasses to provide
      * operation specific attributes.
+     * @param collectionID The collectionID to use perform the conversation for.
      * @param operationType Used for logging purposes.
      * @param settings The settings to use in this conversation context.
      * @param messageSender The messageSender to use in this conversation context.
@@ -58,6 +60,7 @@ public class ConversationContext {
      * @param auditTrailInformation
      */
     public ConversationContext(
+            String collectionID,
             OperationType operationType,
             Settings settings,
             MessageSender messageSender,
@@ -66,6 +69,7 @@ public class ConversationContext {
             Collection<String> contributors,
             EventHandler eventHandler,
             String auditTrailInformation) {
+        this.collectionID = collectionID;
         this.settings = settings;
         this.messageSender = messageSender;
         this.conversationID = CorrelationIDGenerator.generateConversationID();
@@ -74,6 +78,10 @@ public class ConversationContext {
         this.contributors = contributors;
         this.monitor = new ConversationEventMonitor(conversationID, operationType, fileID, eventHandler);
         this.auditTrailInformation = auditTrailInformation;
+    }
+
+    public String getCollectionID() {
+        return collectionID;
     }
 
     public String getConversationID() {

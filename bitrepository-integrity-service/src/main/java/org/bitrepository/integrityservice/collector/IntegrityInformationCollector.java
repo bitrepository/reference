@@ -49,7 +49,8 @@ public interface IntegrityInformationCollector {
      * @param queries The limiting contributor queries for the collection of file ids. 
      * @param eventHandler The eventhandler for the results of the checksum collection. 
      */
-    void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries, 
+    void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation,
+                    ContributorQuery[] queries,
             EventHandler eventHandler);
 
     /**
@@ -61,6 +62,7 @@ public interface IntegrityInformationCollector {
      * @param queries The limiting contributor queries for the collection of file ids. 
      * @param eventHandler The eventhandler for the results of the checksum collection. 
      */
-    void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation, 
+    void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType,
+                      String auditTrailInformation,
             ContributorQuery[] queries, EventHandler eventHandler);
 }

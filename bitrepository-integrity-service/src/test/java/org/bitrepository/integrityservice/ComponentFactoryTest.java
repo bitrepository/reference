@@ -60,6 +60,7 @@ public class ComponentFactoryTest extends IntegrationTest {
         addDescription("Test the instantiation of the Collector from the component factory.");
         IntegrityInformationCollector collector =
                 IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
+                        "dummy-collection",
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
                         settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,
@@ -68,6 +69,7 @@ public class ComponentFactoryTest extends IntegrationTest {
         Assert.assertNotNull(collector);
         Assert.assertTrue(collector instanceof DelegatingIntegrityInformationCollector);
         Assert.assertEquals(collector, IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
+                "dummy-collection",
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
                         settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,

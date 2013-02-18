@@ -40,6 +40,7 @@ import org.bitrepository.protocol.fileexchange.HttpServerConnector;
 import org.jaccept.TestEventManager;
 
 public class PillarFileManager {
+    private final String collectionID;
     private final String pillarID;
     private final Settings mySettings;
     private final ClientProvider clientProvider;
@@ -48,11 +49,13 @@ public class PillarFileManager {
     private int knownNumberOfFilesOnPillar = -1;
 
     public PillarFileManager(
+        String collectionID,
         String pillarID,
         Settings mySettings,
         ClientProvider clientProvider,
         TestEventManager testEventManager,
         HttpServerConnector httpServer) {
+        this.collectionID = collectionID;
         this.pillarID = pillarID;
         this.mySettings = mySettings;
         this.clientProvider = clientProvider;
@@ -71,7 +74,7 @@ public class PillarFileManager {
             checksumDataForFile.setChecksumSpec(ChecksumUtils.getDefault(mySettings));
             checksumDataForFile.setChecksumValue(checksumData.getChecksumValue());
             try {
-                clientProvider.getDeleteFileClient().deleteFile(
+                clientProvider.getDeleteFileClient().deleteFile(collectionID,
                     checksumData.getFileID(), pillarID, checksumDataForFile, null, null, "");
             } catch (OperationFailedException e) {
                 throw new RuntimeException("Failed to delete from pillar " + pillarID, e);
@@ -95,16 +98,17 @@ public class PillarFileManager {
             addFixtureSetup("Putting " + numberOfFilesToAdd + " files to the pillar to ensuring at least " +
                 "" + desiredNumberOfFiles + " files are present on the pillar " + pillarID);
 
-            addFilesToPillar(numberOfFilesToAdd, newFileIDPrefix);
+            addFilesToPillar(collectionID, numberOfFilesToAdd, newFileIDPrefix);
         }
     }
 
-    public void addFilesToPillar(int numberOfFilesToAdd, String testName) {
+    public void addFilesToPillar(String collectionID, int numberOfFilesToAdd, String testName) {
         String[] newFileIDs = TestFileHelper.createFileIDs(numberOfFilesToAdd, testName);
         for (String newFileID:newFileIDs) {
             try {
                 // ToDo: This would be more precise if the client allowed put to a single pillar.
-                clientProvider.getPutClient().putFile(httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID), newFileID, 10L,
+                clientProvider.getPutClient().putFile(collectionID, httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID),
+                        newFileID, 10L,
                     TestFileHelper.getDefaultFileChecksum(), null, null, null);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to put file on pillar " + pillarID, e);
@@ -119,7 +123,7 @@ public class PillarFileManager {
         
         try {
             List<ContributorEvent> result = clientProvider.getGetFileIDsClient().
-                getGetFileIDs(new ContributorQuery[]{query}, null, null, null);
+                getGetFileIDs(collectionID, new ContributorQuery[]{query}, null, null, null);
             FileIDsCompletePillarEvent pillarResult = (FileIDsCompletePillarEvent)result.get(0);
             return pillarResult.getFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem();
         } catch (Exception e) {
@@ -127,7 +131,8 @@ public class PillarFileManager {
         }
     }
 
-    public List<ChecksumDataForChecksumSpecTYPE> getChecksums(ChecksumSpecTYPE checksumSpec, ContributorQuery query) {
+    public List<ChecksumDataForChecksumSpecTYPE> getChecksums(ChecksumSpecTYPE checksumSpec,
+                                                              ContributorQuery query) {
         if (checksumSpec == null) {
             checksumSpec = ChecksumUtils.getDefault(mySettings);
         }
@@ -137,7 +142,7 @@ public class PillarFileManager {
         }
 
         try {
-            List<ContributorEvent> result = clientProvider.getGetChecksumsClient().getChecksums(
+            List<ContributorEvent> result = clientProvider.getGetChecksumsClient().getChecksums(collectionID,
                 new ContributorQuery[]{query}, null, checksumSpec,  null, null, null);
             ChecksumsCompletePillarEvent pillarResult = (ChecksumsCompletePillarEvent)result.get(0);
             return pillarResult.getChecksums().getChecksumDataItems();

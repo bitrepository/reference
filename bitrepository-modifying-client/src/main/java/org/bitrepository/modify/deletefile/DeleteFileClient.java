@@ -36,6 +36,7 @@ public interface DeleteFileClient extends BitrepositoryClient {
     /**
      * Starts the conversation for deleting a file on a given pillar.
      * Takes checksum and checksum specification as argument to validate the file to delete.
+     * @param collectionID The colelction to delete the file in.
      * @param fileId The id of the file to delete.
      * @param pillarId The id of the pillar, where the file should be deleted.
      * @param checksumForPillar The specifications for the checksum of the file.
@@ -46,26 +47,6 @@ public interface DeleteFileClient extends BitrepositoryClient {
      * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation 
      * call.
      */
-    void deleteFile(String fileId, String pillarId, ChecksumDataForFileTYPE checksumForPillar, 
+    void deleteFile(String collectionID, String fileId, String pillarId, ChecksumDataForFileTYPE checksumForPillar,
             ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation);
-    
-    /**
-     * Starts the conversation for deleting a file on a all pillars.
-     * Takes checksum and checksum specification as argument to validate the file to delete.
-     * @param fileId The id of the file to delete.
-     * @param checksumForPillar The specifications for the checksum of the file for the pillar to validate.
-     * @param eventHandler [OPTIONAL] The handler which should receive notifications of the events occurring in 
-     * connection with the pillar communication. This is allowed to be null.
-     * In a good case scenario this will give the events: <br/> 
-     * IdentifyPillarsRequestSent, PillarIdentified (for each pillar), PillarSelected, RequestSent (for each pillar), 
-     * Progress (for each pillar), PillarComplete (for each pillar), Complete
-     * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation 
-     * call.
-     * @deprecated Should be removed, as the ability to delete all copies of a file from a single is a serious
-     * hole in the security model.
-     */
-    @Deprecated
-    void deleteFileAtAllPillars(String fileId, ChecksumDataForFileTYPE checksumForPillar, 
-            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation);
-    
 }

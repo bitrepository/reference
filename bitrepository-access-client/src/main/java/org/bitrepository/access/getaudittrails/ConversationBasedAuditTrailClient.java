@@ -47,6 +47,7 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
 
     @Override
     public void getAuditTrails(
+            String collectionID,
             AuditTrailQuery[] componentQueries,
             String fileID,
             String urlForResult,
@@ -56,7 +57,7 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
             componentQueries = createFullAuditTrailQuery();
         }
         AuditTrailConversationContext context = new AuditTrailConversationContext(
-                componentQueries, fileID, urlForResult,
+                collectionID, componentQueries, fileID, urlForResult,
                 settings, messageBus, clientID, ContributorQueryUtils.getContributors(componentQueries), eventHandler,
             auditTrailInformation);
         startConversation(context, new IdentifyingAuditTrailContributors(context));

@@ -50,8 +50,8 @@ import org.bitrepository.protocol.message.ClientTestMessageFactory;
  */
 public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
 
-    public GetAuditTrailsMessageFactory(String collectionID, String clientID) {
-        super(collectionID, clientID);
+    public GetAuditTrailsMessageFactory(String clientID) {
+        super(clientID);
     }
 
     //---------------------------------------Responses--------------------------------------------

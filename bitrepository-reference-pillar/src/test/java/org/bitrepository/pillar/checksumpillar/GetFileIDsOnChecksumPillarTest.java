@@ -47,7 +47,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
     @Override
     public void initializeCUT() {
         super.initializeCUT();
-        msgFactory = new GetFileIDsMessageFactory(settingsForCUT);
+        msgFactory = new GetFileIDsMessageFactory(collectionID, settingsForTestClient);
     }    
 
     @Test( groups = {"regressiontest", "pillartest"})

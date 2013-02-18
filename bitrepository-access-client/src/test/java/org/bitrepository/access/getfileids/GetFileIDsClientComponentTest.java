@@ -49,7 +49,6 @@ import org.bitrepository.client.DefaultClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -69,7 +68,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
     @BeforeMethod(alwaysRun = true)
     public void setUp() throws JAXBException {
         // TODO getFileIDsFromFastestPillar settings
-        testMessageFactory = new TestGetFileIDsMessageFactory(settingsForCUT.getCollectionID());
+        testMessageFactory = new TestGetFileIDsMessageFactory(settingsForTestClient.getComponentID());
     }
 
     @Test(groups = {"regressiontest"})
@@ -97,12 +96,11 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
         addStep("Request the delivery of the file ids of a file from the pillar(s). A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");
-        getFileIDsClient.getFileIDs(settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(), fileIDs,
-                deliveryUrl, testEventHandler);
+        getFileIDsClient.getFileIDs(collectionID, null, DEFAULT_FILE_ID,deliveryUrl, testEventHandler);
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage  = collectionReceiver.waitForMessage(
                 IdentifyPillarsForGetFileIDsRequest.class);
-        Assert.assertEquals(receivedIdentifyRequestMessage.getCollectionID(), settingsForCUT.getCollectionID());
+        Assert.assertEquals(receivedIdentifyRequestMessage.getCollectionID(), collectionID);
         Assert.assertNotNull(receivedIdentifyRequestMessage.getCorrelationID());
         Assert.assertEquals(receivedIdentifyRequestMessage.getReplyTo(), settingsForCUT.getReceiverDestinationID());
         Assert.assertEquals(receivedIdentifyRequestMessage.getTo(), PILLAR1_ID);
@@ -121,7 +119,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
         GetFileIDsRequest receivedGetFileIDsRequest = pillar1Receiver.waitForMessage(GetFileIDsRequest.class);
-        Assert.assertEquals(receivedGetFileIDsRequest.getCollectionID(), settingsForCUT.getCollectionID());
+        Assert.assertEquals(receivedGetFileIDsRequest.getCollectionID(), collectionID);
         Assert.assertEquals(receivedGetFileIDsRequest.getCorrelationID(), receivedIdentifyRequestMessage.getCorrelationID());
         Assert.assertEquals(receivedGetFileIDsRequest.getReplyTo(), settingsForCUT.getReceiverDestinationID());
         Assert.assertEquals(receivedGetFileIDsRequest.getFrom(), settingsForTestClient.getComponentID());
@@ -164,10 +162,6 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         addStep("Initialise the variables for this test.",
                 "EventManager and GetFileIDsClient should be instantiated.");
 
-        String deliveryFilename = "TEST-FILE-IDS-DELIVERY.xml";
-        FileIDs fileIDs = new FileIDs();
-        fileIDs.setFileID(DEFAULT_FILE_ID);
-
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
 
@@ -178,7 +172,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
         addStep("Request the delivery of the file ids of a file from the pillar(s). A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");
-        getFileIDsClient.getFileIDs(settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(), fileIDs,
+        getFileIDsClient.getFileIDs(collectionID, null, DEFAULT_FILE_ID,
                 null, testEventHandler);
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
@@ -250,18 +244,16 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         addStep("Setting up variables and such.", "Should be OK.");
 
         String deliveryFilename = "TEST-FILE-IDS-DELIVERY.xml";
-        FileIDs fileIDs = new FileIDs();
-        fileIDs.setFileID(DEFAULT_FILE_ID);
 
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
 
-        GetFileIDsClient GetFileIDsClient = createGetFileIDsClient();
+        GetFileIDsClient client = createGetFileIDsClient();
         URL deliveryUrl = httpServer.getURL(deliveryFilename);
 
         addStep("Request the delivery of the file id of a file from the pillar(s). A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");
-        GetFileIDsClient.getFileIDs(settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(), fileIDs,
+        client.getFileIDs(collectionID, null, DEFAULT_FILE_ID,
                 deliveryUrl, testEventHandler);
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
@@ -305,7 +297,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         addDescription("Tests the GetFileIDs client correctly handles functionality for limiting results, either by " +
             "timestamp or result count.");
 
-        GetFileIDsClient getFileIDsClient = createGetFileIDsClient();
+        GetFileIDsClient client = createGetFileIDsClient();
         addStep("Request fileIDs from with MinTimestamp, MaxTimestamp, MaxNumberOfResults set for both pillars .",
             "A IdentifyPillarsForGetFileIDsRequest should be sent.");
         Date timestamp3 = new Date();
@@ -313,7 +305,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         Date timestamp1 =  new Date(timestamp3.getTime() - 1000);
         ContributorQuery query1 = new ContributorQuery(PILLAR1_ID, timestamp1, timestamp2, new Integer(1));
         ContributorQuery query2 = new ContributorQuery(PILLAR2_ID, timestamp2, timestamp3, new Integer(2));
-        getFileIDsClient.getFileIDs(new ContributorQuery[]{query1, query2}, null, null, testEventHandler);
+        client.getFileIDs(collectionID, new ContributorQuery[]{query1, query2}, null, null, testEventHandler);
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
             IdentifyPillarsForGetFileIDsRequest.class);
@@ -393,6 +385,6 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
     @Override
     protected void startOperation(TestEventHandler testEventHandler) {
         GetFileIDsClient getFileIDsClient = createGetFileIDsClient();
-        getFileIDsClient.getFileIDs(null, FileIDsUtils.getAllFileIDs(), null, testEventHandler);
+        getFileIDsClient.getFileIDs(collectionID, null, null, null, testEventHandler);
     }
 }

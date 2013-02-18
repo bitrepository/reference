@@ -29,7 +29,6 @@ public class ComponentTestMessageFactory extends TestMessageFactory {
     protected final Settings testerSettings;
 
     public ComponentTestMessageFactory(Settings testerSettings) {
-        super(testerSettings.getCollectionID());
         this.testerSettings = testerSettings;
     }
 

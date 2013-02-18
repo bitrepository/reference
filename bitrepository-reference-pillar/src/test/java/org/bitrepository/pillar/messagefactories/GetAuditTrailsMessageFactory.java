@@ -39,12 +39,13 @@ import java.math.BigInteger;
 import java.util.UUID;
 
 public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
-
-    final Settings settings;
+    private final String collectionID;
+    private final Settings settings;
     
-    public GetAuditTrailsMessageFactory(Settings pSettings) {
-        super(pSettings.getCollectionID());
+    public GetAuditTrailsMessageFactory(String collectionID, Settings pSettings) {
+        super(pSettings.getComponentID());
         this.settings = pSettings;
+        this.collectionID = collectionID;
     }
     
     public IdentifyContributorsForGetAuditTrailsRequest createIdentifyContributorsForGetAuditTrailsRequest( 
@@ -52,7 +53,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
         IdentifyContributorsForGetAuditTrailsRequest res = new IdentifyContributorsForGetAuditTrailsRequest();
         initializeMessageDetails(res);
         res.setAuditTrailInformation(auditTrail);
-        res.setCollectionID(settings.getCollectionID());
+        res.setCollectionID(collectionID);
         res.setCorrelationID(getNewCorrelationID());
         res.setFrom(from);
         res.setReplyTo(replyTo);
@@ -65,7 +66,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
             String correlationId, String contributorId, String replyTo, ResponseInfo responseInfo, String toTopic) {
         IdentifyContributorsForGetAuditTrailsResponse res = new IdentifyContributorsForGetAuditTrailsResponse();
         initializeMessageDetails(res);
-        res.setCollectionID(settings.getCollectionID());
+        res.setCollectionID(collectionID);
         res.setCorrelationID(correlationId);
         res.setFrom(contributorId);
         res.setReplyTo(replyTo);
@@ -82,7 +83,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
         GetAuditTrailsRequest res = new GetAuditTrailsRequest();
         initializeMessageDetails(res);
         res.setAuditTrailInformation(auditTrail);
-        res.setCollectionID(settings.getCollectionID());
+        res.setCollectionID(collectionID);
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
         res.setFileID(fileId);
@@ -103,7 +104,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
             String replyTo, ResponseInfo responseInfo, String url, String toTopic) {
         GetAuditTrailsProgressResponse res = new GetAuditTrailsProgressResponse();
         initializeMessageDetails(res);
-        res.setCollectionID(settings.getCollectionID());
+        res.setCollectionID(collectionID);
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
         res.setFrom(contributorId);
@@ -119,7 +120,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
             String replyTo, ResponseInfo responseInfo, ResultingAuditTrails auditTrails, String toTopic) {
         GetAuditTrailsFinalResponse res = new GetAuditTrailsFinalResponse();
         initializeMessageDetails(res);
-        res.setCollectionID(settings.getCollectionID());
+        res.setCollectionID(collectionID);
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
         res.setFrom(contributorId);

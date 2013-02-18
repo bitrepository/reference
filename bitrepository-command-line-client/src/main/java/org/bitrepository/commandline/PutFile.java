@@ -113,7 +113,13 @@ public class PutFile {
      */
     private void createOptionsForCmdArgumentHandler() {
         cmdHandler.createDefaultOptions();
-        
+
+        Option collectionOption = new Option(Constants.COLLECTION_ID_ARG, Constants.HAS_ARGUMENT,
+                "[OPTIONAL] The id for the collection to "
+                        + "retrieve the checksum for. If no argument, then first collection in the settings are used.");
+        collectionOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(collectionOption);
+
         Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT, 
                 "The path to the file, which is wanted to be put");
         fileOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
@@ -150,7 +156,7 @@ public class PutFile {
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpec();
         
         CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings, output);
-        client.putFile(url, fileId, f.length(), validationChecksum, requestChecksum, eventHandler, 
+        client.putFile(getCollectionID(), url, fileId, f.length(), validationChecksum, requestChecksum, eventHandler,
                 "Putting the file '" + f + "' with the file id '" + fileId + "' from commandLine.");
         
         return eventHandler.getFinish();
@@ -171,7 +177,20 @@ public class PutFile {
         
         return file;
     }
-    
+
+    /**
+     * @return The collection to use. If no collection has been idicated the first collection in the settings is used
+     * . .
+     */
+    public String getCollectionID() {
+        if(cmdHandler.hasOption(Constants.COLLECTION_ID_ARG)) {
+            return cmdHandler.getOptionValue(Constants.COLLECTION_ID_ARG);
+        } else {
+            return settings.getCollections().get(0).getID();
+        }
+    }
+
+
     /**
      * Extracts the id of the file to be put.
      * @return The either the value of the file id argument, or no such option, then the name of the file.

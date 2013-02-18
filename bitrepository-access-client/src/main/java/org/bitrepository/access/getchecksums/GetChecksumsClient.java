@@ -46,7 +46,7 @@ public interface GetChecksumsClient extends BitrepositoryClient {
      * <br/>
      * The results are returned through as a ChecksumsCompletePillarCompete event as the results are returned by the
      * pillars.
-     *
+     * @param collectionID Identifies the collection to request checksums for.
      * @param contributorQueries Defines which fileIDs to retrieve. If null all fileIDs from all contributers are
      *                           returned.
      * @param fileID The optional fileID to retrieve file information for. If <code>null</code> file information are
@@ -60,6 +60,7 @@ public interface GetChecksumsClient extends BitrepositoryClient {
      *
      */
     public void getChecksums(
+            String collectionID,
         ContributorQuery[] contributorQueries,
         String fileID,
         ChecksumSpecTYPE checksumSpec,

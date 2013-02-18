@@ -36,8 +36,9 @@ import org.bitrepository.client.eventhandler.EventHandler;
  */
 public interface PutFileClient extends BitrepositoryClient {
     /**
-     * Method for performing the put operation.
-     * 
+     * Places a copy of the file located at the given url on each of the pillars defined for the indicated collection.
+     *
+     * @param collectionID The ID of the collection to put the file to.
      * @param url The URL where the file to be put is located.
      * @param fileId The id of the file.
      * @param sizeOfFile The number of bytes the file requires.
@@ -46,7 +47,7 @@ public interface PutFileClient extends BitrepositoryClient {
      * @param eventHandler The EventHandler for the operation.
      * @param auditTrailInformation The audit trail information.
      */
-    void putFile(URL url, String fileId, long sizeOfFile, ChecksumDataForFileTYPE checksumForValidationAtPillar, 
+    void putFile(String collectionID, URL url, String fileId, long sizeOfFile, ChecksumDataForFileTYPE checksumForValidationAtPillar,
             ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation);
     
 }

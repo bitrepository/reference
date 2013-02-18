@@ -34,7 +34,8 @@ public class MockAuditClient implements AuditTrailClient {
     
     private int callsToGetAuditTrails = 0;
     @Override
-    public void getAuditTrails(AuditTrailQuery[] componentQueries, String fileID, String urlForResult,
+    public void getAuditTrails(String collectionID, AuditTrailQuery[] componentQueries, String fileID,
+                               String urlForResult,
             EventHandler eventHandler, String auditTrailInformation) {
         latestEventHandler = eventHandler;
         callsToGetAuditTrails++;

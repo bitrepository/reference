@@ -201,7 +201,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
         GetAuditTrailsResults results = new GetAuditTrailsResults();
         results.setVersion(ProtocolVersionLoader.loadProtocolVersion().getVersion());
         results.setMinVersion(ProtocolVersionLoader.loadProtocolVersion().getMinVersion());
-        results.setCollectionID(getContext().getSettings().getCollectionID());
+        results.setCollectionID(request.getCollectionID());
         results.getAuditTrailEvents().add(extractedAuditTrails.getAuditTrailEvents());
 
         OutputStream is = null;

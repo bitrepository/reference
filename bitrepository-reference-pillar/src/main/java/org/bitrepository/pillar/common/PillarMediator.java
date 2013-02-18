@@ -60,7 +60,6 @@ public abstract class PillarMediator extends AbstractContributorMediator {
     protected void handleRequest(MessageRequest request, RequestHandler handler) {
         try {
             log.debug("Receiving request: " + request.getClass().getSimpleName());
-            validateBitrepositoryCollectionId(request.getCollectionID());
             handler.processRequest(request);
         } catch (IllegalArgumentException e) {
             getAlarmDispatcher().handleIllegalArgumentException(e);
@@ -93,17 +92,5 @@ public abstract class PillarMediator extends AbstractContributorMediator {
 
     protected PillarAlarmDispatcher getAlarmDispatcher() {
         return (PillarAlarmDispatcher) context.getAlarmDispatcher();
-    }
-    
-    /**
-     * Validates that it is the correct BitrepositoryCollectionId.
-     * @param bitrepositoryCollectionId The collection id to validate.
-     */
-    protected void validateBitrepositoryCollectionId(String bitrepositoryCollectionId) {
-        if(!bitrepositoryCollectionId.equals(context.getSettings().getCollectionID())) {
-            throw new IllegalArgumentException("The message had a wrong BitRepositoryIdCollection: "
-                    + "Expected '" + context.getSettings().getCollectionID() + "' but was '" 
-                    + bitrepositoryCollectionId + "'.");
-        }
     }
 }

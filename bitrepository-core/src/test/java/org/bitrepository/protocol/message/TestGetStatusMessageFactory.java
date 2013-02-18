@@ -28,8 +28,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusR
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 
 public class TestGetStatusMessageFactory extends ClientTestMessageFactory {
-    public TestGetStatusMessageFactory(String collectionID) {
-        super(collectionID);
+    public TestGetStatusMessageFactory(String clientID) {
+        super(clientID);
     }
 
     public IdentifyContributorsForGetStatusRequest createIdentifyContributorsForGetStatusRequest(

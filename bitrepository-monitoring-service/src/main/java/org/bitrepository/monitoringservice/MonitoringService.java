@@ -99,7 +99,7 @@ public class MonitoringService implements LifeCycledService {
     @Override
     public void shutdown() {
         collector.stop();
-        MessageBus messageBus = MessageBusManager.getMessageBus(settings.getCollectionID());
+        MessageBus messageBus = MessageBusManager.getMessageBus();
         if ( messageBus != null) {
             try {
                 messageBus.close();

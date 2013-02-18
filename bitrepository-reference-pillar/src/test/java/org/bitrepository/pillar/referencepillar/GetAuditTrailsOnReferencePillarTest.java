@@ -44,7 +44,7 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseGetAuditTrailsOnReferencePillarTest() throws Exception {
-        msgFactory = new GetAuditTrailsMessageFactory(settingsForCUT);
+        msgFactory = new GetAuditTrailsMessageFactory(collectionID, settingsForTestClient);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})

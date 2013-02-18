@@ -24,11 +24,11 @@ package org.bitrepository.commandline;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.apache.commons.cli.Option;
 import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.output.DefaultOutputHandler;
@@ -36,7 +36,6 @@ import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
 import org.bitrepository.commandline.utils.CompleteEventAwaiter;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.protocol.security.SecurityManager;
 
 /**
@@ -94,7 +93,13 @@ public class GetFileIDs {
      */
     private void createOptionsForCmdArgumentHandler() {
         cmdHandler.createDefaultOptions();
-        
+
+        Option collectionOption = new Option(Constants.COLLECTION_ID_ARG, Constants.HAS_ARGUMENT,
+                "[OPTIONAL] The id for the collection to "
+                        + "retrieve the checksum for. If no argument, then first collection in the settings are used.");
+        collectionOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(collectionOption);
+
         Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT, "[OPTIONAL] The id for the file to "
                 + "retrieve. If no argument, then the file id of all files are retrieved.");
         fileOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
@@ -126,13 +131,12 @@ public class GetFileIDs {
      * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
      */
     private OperationEvent performConversation() {
-        FileIDs fileids = getFileIDs();
-        List<String> pillarids = getPillarIds();
+        ContributorQuery[] pillarids = ContributorQueryUtils.createFullContributorQuery(getPillarIds());
         
         CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings, output);
         output.debug("Instantiating the GetFileIDs conversation.");
         
-        client.getFileIDs(pillarids, fileids, null, eventHandler);
+        client.getFileIDs(getCollectionID(), pillarids, getFileIDs(), null, eventHandler);
         
         return eventHandler.getFinish();
     }
@@ -141,14 +145,26 @@ public class GetFileIDs {
      * @return The file ids to request. If a specific file has been given as argument, then it will be returned, 
      * otherwise all file ids will be requested.
      */
-    public FileIDs getFileIDs() {
+    public String getFileIDs() {
         if(cmdHandler.hasOption(Constants.FILE_ARG)) {
-            return FileIDsUtils.getSpecificFileIDs(cmdHandler.getOptionValue(Constants.FILE_ARG));            
+            return cmdHandler.getOptionValue(Constants.FILE_ARG);
         } else {
-            return FileIDsUtils.getAllFileIDs();
+            return null;
         }
     }
-    
+
+    /**
+     * @return The collection to use. If no collection has been idicated the first collection in the settings is used
+     * . .
+     */
+    public String getCollectionID() {
+        if(cmdHandler.hasOption(Constants.COLLECTION_ID_ARG)) {
+            return cmdHandler.getOptionValue(Constants.COLLECTION_ID_ARG);
+        } else {
+            return settings.getCollections().get(0).getID();
+        }
+    }
+
     /**
      * Extract the pillar ids. If a specific pillar is given as argument, then it will be returned, but if no such
      * argument has been given, then the list of all pillar ids are given.

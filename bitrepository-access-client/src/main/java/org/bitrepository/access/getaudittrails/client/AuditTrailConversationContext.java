@@ -40,10 +40,12 @@ public class AuditTrailConversationContext extends ConversationContext {
      * Extends the {@link ConversationContext} constructor with {@link org.bitrepository.access.getaudittrails.AuditTrailClient} specific parameters
      */
     public AuditTrailConversationContext(
-            AuditTrailQuery[] componentQueries, String fileID, String urlForResult, Settings settings,
+            String collectionID, AuditTrailQuery[] componentQueries, String fileID, String urlForResult,
+            Settings settings,
             MessageSender messageSender, String clientID, Collection<String> contributors, EventHandler eventHandler,
             String auditTrailInformation) {
-        super(OperationType.GET_AUDIT_TRAILS, settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
+        super(collectionID, OperationType.GET_AUDIT_TRAILS, settings, messageSender, clientID, fileID,
+                contributors, eventHandler, auditTrailInformation);
         this.componentQueries = componentQueries;
         this.urlForResult = urlForResult;
     }

@@ -23,15 +23,12 @@ package org.bitrepository.integrityservice.collector;
 
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collection;
-
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.integrityservice.mocks.MockAuditManager;
 import org.jaccept.structure.ExtendedTestCase;
@@ -60,7 +57,8 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         
         addStep("Setup a GetFileIDsClient for test purpose.", "Should be OK.");
         MockGetFileIDsClient getFileIDs = new MockGetFileIDsClient();
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(getFileIDs, null, auditManager);
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector("dummy-collection",
+                getFileIDs, null, auditManager);
         
         addStep("Call the getFileIDs on the collector.", "Should go directly to the GetFileIDsClient");
         collector.getFileIDs(Arrays.asList(pillarId), auditTrailInformation, contributorQueries, null);
@@ -86,7 +84,8 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         
         addStep("Setup a GetChecksumsClient for test purpose.", "Should be OK.");
         MockGetChecksumsClient getChecksumsClient = new MockGetChecksumsClient();
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(null, getChecksumsClient, auditManager);
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector("dummy-collection",
+                null, getChecksumsClient, auditManager);
         
         addStep("Call the getChecksumsClient on the collector.", "Should go directly to the GetChecksumsClient");
         collector.getChecksums(Arrays.asList(pillarId), csType, auditTrailInformation, contributorQueries, null);
@@ -107,13 +106,8 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         }
 
         @Override
-        public void getFileIDs(ContributorQuery[] contributorQueries, String fileID, URL addressForResult, EventHandler eventHandler) {
-            callsForGetFileIDs++;
-        }
-
-        @Override
-        public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
-                EventHandler eventHandle) {
+        public void getFileIDs(String collectionID, ContributorQuery[] contributorQueries, String fileID,
+                               URL addressForResult, EventHandler eventHandler) {
             callsForGetFileIDs++;
         }
     }
@@ -125,7 +119,8 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         }
 
         @Override
-        public void getChecksums(ContributorQuery[] contributorQueries, String fileID, ChecksumSpecTYPE checksumSpec,
+        public void getChecksums(String collectionID, ContributorQuery[] contributorQueries, String fileID,
+                                 ChecksumSpecTYPE checksumSpec,
                                URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
             callsForGetChecksums++;
         }
@@ -143,7 +138,8 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
 
         addStep("Setup a FailingGetChecksumClient for test purpose.", "Should be OK.");
         DyingGetChecksumClient getDyingChecksumsClient = new DyingGetChecksumClient();
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(null, getDyingChecksumsClient, auditManager);
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector("dummy-collection",
+                null, getDyingChecksumsClient, auditManager);
         
         addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
                 "Should not throw an unexpected exception");
@@ -152,7 +148,8 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
 
     private class DyingGetChecksumClient implements GetChecksumsClient {
         @Override
-        public void getChecksums(ContributorQuery[] contributorQueries, String fileID, ChecksumSpecTYPE checksumSpec, URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
+        public void getChecksums(String collectionID, ContributorQuery[] contributorQueries, String fileID,
+                                 ChecksumSpecTYPE checksumSpec, URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
             throw new RuntimeException("My purpose is to die!");
         }
     }
@@ -167,7 +164,8 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
 
         addStep("Setup a FailingGetChecksumClient for test purpose.", "Should be OK.");
         DyingGetFileIDsClient getDyingFileIDsClient = new DyingGetFileIDsClient();
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(getDyingFileIDsClient, null, auditManager);
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(
+                "dummy-collection", getDyingFileIDsClient, null, auditManager);
         
         addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
                 "Should not throw an unexpected exception");
@@ -176,14 +174,9 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
 
     private class DyingGetFileIDsClient implements GetFileIDsClient {
         @Override
-        public void getFileIDs(ContributorQuery[] contributorQueries, String fileID, URL addressForResult,
+        public void getFileIDs(String collectionID, ContributorQuery[] contributorQueries, String fileID,
+                               URL addressForResult,
                                EventHandler eventHandler) {
-            throw new RuntimeException("My purpose is to die!");
-        }
-
-        @Override
-        public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
-                EventHandler eventHandler) {
             throw new RuntimeException("My purpose is to die!");
         }
     }

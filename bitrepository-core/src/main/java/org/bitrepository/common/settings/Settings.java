@@ -26,9 +26,10 @@ package org.bitrepository.common.settings;
 
 import java.util.List;
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
-import org.bitrepository.settings.repositorysettings.RepositorySettings;
+import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.bitrepository.settings.repositorysettings.Permission;
+import org.bitrepository.settings.repositorysettings.RepositorySettings;
 
 /**
  * Contains the general configuration to be used by reference code components. Provides acces to both
@@ -56,8 +57,8 @@ public class Settings {
     /**
      * Returns the first Collections ID.
      */
-    public String getCollectionID() {
-        return getRepositorySettings().getCollections().getCollection().get(0).getID();
+    public List<Collection> getCollections() {
+        return getRepositorySettings().getCollections().getCollection();
     }
     
     /**

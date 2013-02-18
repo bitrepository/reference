@@ -170,7 +170,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         }
         try {
             contributorList = clientProvider.getAuditTrailsClient().
-                    getAuditTrails(auditTrailQueries, fileID, null, null, null);
+                    getAuditTrails(collectionID, auditTrailQueries, fileID, null, null, null);
         } catch (NegativeResponseException e) {
             throw new RuntimeException(e);
         }

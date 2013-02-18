@@ -133,7 +133,7 @@ public class AuditTrailService implements LifeCycledService {
         collector.close();
         store.close();
         mediator.close();
-        MessageBus messageBus = MessageBusManager.getMessageBus(settings.getCollectionID());
+        MessageBus messageBus = MessageBusManager.getMessageBus();
         if ( messageBus != null) {
             try {
                 messageBus.close();

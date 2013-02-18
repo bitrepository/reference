@@ -48,13 +48,14 @@ public class BlockingGetFileIDsClient {
      * @see GetFileIDsClient#getFileIDs
      */
     public List<ContributorEvent> getGetFileIDs(
-        ContributorQuery[] contributorQueries,
-        String fileID,
-        URL addressForResult,
-        EventHandler eventHandler)
-        throws NegativeResponseException {
+            String collectionId,
+            ContributorQuery[] contributorQueries,
+            String fileID,
+            URL addressForResult,
+            EventHandler eventHandler)
+            throws NegativeResponseException {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
-        client.getFileIDs(contributorQueries, fileID, addressForResult, blocker);
+        client.getFileIDs(collectionId, contributorQueries, fileID, addressForResult, blocker);
         OperationEvent finishEvent = blocker.awaitFinished();
         if(finishEvent.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
             return blocker.getResults();

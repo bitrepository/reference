@@ -53,7 +53,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         MockAuditStore store = new MockAuditStore();
         MockAuditClient client = new MockAuditClient();
         MockAuditPreserver preserver = new MockAuditPreserver();
-        AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
+        AuditTrailCollector collector = new AuditTrailCollector("dummy-collection", settings, client, store);
         ContributorMediator mediator = new MockContributorMediator();
         
         addStep("Instantiate the service.", "Should work.");

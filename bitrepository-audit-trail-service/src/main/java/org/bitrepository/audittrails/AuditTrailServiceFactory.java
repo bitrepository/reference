@@ -121,7 +121,9 @@ public final class AuditTrailServiceFactory {
                 AuditTrailStore store = new AuditTrailServiceDAO(settings);
                 AuditTrailClient client = AccessComponentFactory.getInstance().createAuditTrailClient(settings, 
                         securityManager, settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
-                AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
+                //Fixme Support for multiple collections.
+                String collectionID = settings.getCollections().get(0).getID();
+                AuditTrailCollector collector = new AuditTrailCollector(collectionID, settings, client, store);
                 AuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, putClient);
                 
                 auditTrailService = new AuditTrailService(store, collector, mediator, preserver, settings);

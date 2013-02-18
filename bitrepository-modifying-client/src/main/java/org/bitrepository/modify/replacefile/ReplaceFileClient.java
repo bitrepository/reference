@@ -39,6 +39,7 @@ public interface ReplaceFileClient extends BitrepositoryClient {
      * Starts the conversation for replacing a file on a given pillar.
      * It is similar to performing the DeleteFile followed by the PutFile operations.
      * Since both of these takes two checksum arguments each, then this takes four!
+     * @param collectionID The collection to repæace the file in.
      * @param fileId The id of the file to delete.
      * @param pillarId The id of the pillar, where the file should be replaced.
      * @param checksumForDeleteAtPillar The checksum of the file on the pillar which should be replaced. Used for 
@@ -58,36 +59,8 @@ public interface ReplaceFileClient extends BitrepositoryClient {
      * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation 
      * call.
      */
-    void replaceFile(String fileId, String pillarId, ChecksumDataForFileTYPE checksumForDeleteAtPillar, 
+    void replaceFile(String collectionID, String fileId, String pillarId, ChecksumDataForFileTYPE checksumForDeleteAtPillar,
             ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile, 
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile, 
             EventHandler eventHandler, String auditTrailInformation);
-
-    /**
-     * Starts the conversation for replacing a file on a given pillar.
-     * It is similar to performing the DeleteFile followed by the PutFile operations.
-     * Since both of these takes two checksum arguments each, then this takes four!
-     * @param fileId The id of the file to delete.
-     * @param checksumForDeleteAtPillar The checksum of the file on the pillar which should be replaced. Used for 
-     * validating at pillar-side.
-     * @param checksumRequestedForDeletedFile [OPTIONAL] Request for calculation of the checksum of the file which 
-     * should be replaced at the pillar. Used for client-side validation.
-     * @param url The URL of the new file to replaced the old one.
-     * @param sizeOfNewFile The size of the new file.
-     * @param checksumForNewFileValidationAtPillar [OPTIONAL] The checksum of the new file. Used for pillar-side 
-     * validation.
-     * @param checksumRequestsForNewFile [OPTIONAL] Request for a checksum calculation of the new file. Used for 
-     * client-side validation.
-     * @param eventHandler [OPTIONAL] The handler which should receive notifications of the events occurring in 
-     * connection with the pillar communication. This is allowed to be null.
-     * In a good case scenario this will give the events: <br/> 
-     * IdentifyPillarsRequestSent, PillarIdentified, PillarSelected, RequestSent, Progress, PillarComplete, Complete
-     * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation 
-     * call.
-     */
-    void replaceFileAtAllPillars(String fileId, ChecksumDataForFileTYPE checksumForDeleteAtPillar, 
-            ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile, 
-            ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile, 
-            EventHandler eventHandler, String auditTrailInformation);
-
 }

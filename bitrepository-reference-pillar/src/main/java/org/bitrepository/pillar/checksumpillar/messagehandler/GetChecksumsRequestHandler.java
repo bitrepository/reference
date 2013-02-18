@@ -230,17 +230,17 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
     /**
      * Method for creating a file containing the list of calculated checksums.
      * 
-     * @param message The GetChecksumMessage requesting the checksum calculations.
+     * @param request The GetChecksumMessage requesting the checksum calculations.
      * @param checksumList The list of checksums to put into the list.
      * @return A file containing all the checksums in the list.
      * @throws IOException If something goes wrong in the upload.
      * @throws JAXBException If the resulting structure cannot be serialized.
      * @throws SAXException If the results does not validate against the XSD.
      */
-    private File makeTemporaryChecksumFile(GetChecksumsRequest message, 
+    private File makeTemporaryChecksumFile(GetChecksumsRequest request,
             List<ChecksumDataForChecksumSpecTYPE> checksumList) throws IOException, JAXBException, SAXException {
         // Create the temporary file.
-        File checksumResultFile = File.createTempFile(message.getCorrelationID(), new Date().getTime() + ".cs");
+        File checksumResultFile = File.createTempFile(request.getCorrelationID(), new Date().getTime() + ".cs");
         log.debug("Writing the list of checksums to the file '" + checksumResultFile + "'");
         
         // Create data format 
@@ -248,7 +248,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
         results.setVersion(VERSION);
         results.setMinVersion(MIN_VERSION);
         results.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        results.setCollectionID(getSettings().getCollectionID());
+        results.setCollectionID(request.getCollectionID());
         for(ChecksumDataForChecksumSpecTYPE cs : checksumList) {
             results.getChecksumDataItems().add(cs);
         }

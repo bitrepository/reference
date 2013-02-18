@@ -278,6 +278,11 @@
     -->
     <AuditTrailPreservationInterval>604800000</AuditTrailPreservationInterval>
 
+    <!--
+      The collection to use for storing the audit trail backup.
+    -->
+    <AuditTrailPreservationCollection>SomeCollection</AuditTrailPreservationCollection>
+
     <!-- 
       Directory for temporary storage of AuditTrails for preservation.
     -->

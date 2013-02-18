@@ -52,13 +52,9 @@ import org.bitrepository.protocol.message.ClientTestMessageFactory;
  * Messages creation factory for the PutFile tests.
  */
 public class TestPutFileMessageFactory extends ClientTestMessageFactory {
-    
-    /**
-     * Constructor.
-     * @param collectionID The id for the collection, where the factory belong.
-     */
-    public TestPutFileMessageFactory(String collectionID) {
-        super(collectionID);
+
+    public TestPutFileMessageFactory(String clientID) {
+        super(clientID);
     }
 
     /**

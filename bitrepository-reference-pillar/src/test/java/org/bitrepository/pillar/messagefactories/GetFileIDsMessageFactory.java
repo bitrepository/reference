@@ -39,12 +39,13 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 public class GetFileIDsMessageFactory extends ClientTestMessageFactory {
-
+    private final String collectionId;
     final Settings settings;
-    
-    public GetFileIDsMessageFactory(Settings pSettings) {
-        super(pSettings.getCollectionID());
+
+    public GetFileIDsMessageFactory(String collectionId, Settings pSettings) {
+        super(pSettings.getComponentID());
         this.settings = pSettings;
+        this.collectionId = collectionId;
     }
     
     public IdentifyPillarsForGetFileIDsRequest createIdentifyPillarsForGetFileIDsRequest(String auditTrail,
@@ -52,7 +53,7 @@ public class GetFileIDsMessageFactory extends ClientTestMessageFactory {
         IdentifyPillarsForGetFileIDsRequest res = new IdentifyPillarsForGetFileIDsRequest();
         initializeMessageDetails(res);
         res.setAuditTrailInformation(auditTrail);
-        res.setCollectionID(settings.getCollectionID());
+        res.setCollectionID(collectionId);
         res.setCorrelationID(getNewCorrelationID());
         res.setFileIDs(fileId);
         res.setFrom(from);
@@ -67,7 +68,7 @@ public class GetFileIDsMessageFactory extends ClientTestMessageFactory {
             ResponseInfo responseInfo, TimeMeasureTYPE timeToDeliver, String toTopic) {
         IdentifyPillarsForGetFileIDsResponse res = new IdentifyPillarsForGetFileIDsResponse();
         initializeMessageDetails(res);
-        res.setCollectionID(settings.getCollectionID());
+        res.setCollectionID(collectionId);
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
         res.setFrom(pillarId);
@@ -85,7 +86,7 @@ public class GetFileIDsMessageFactory extends ClientTestMessageFactory {
         GetFileIDsRequest res = new GetFileIDsRequest();
         initializeMessageDetails(res);
         res.setAuditTrailInformation(auditTrail);
-        res.setCollectionID(settings.getCollectionID());
+        res.setCollectionID(collectionId);
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
         res.setFrom(from);
@@ -101,7 +102,7 @@ public class GetFileIDsMessageFactory extends ClientTestMessageFactory {
             String pillarId, String replyTo, ResponseInfo prInfo, String url, String toTopic) {
         GetFileIDsProgressResponse res = new GetFileIDsProgressResponse();
         initializeMessageDetails(res);
-        res.setCollectionID(settings.getCollectionID());
+        res.setCollectionID(collectionId);
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
         res.setFrom(pillarId);
@@ -118,7 +119,7 @@ public class GetFileIDsMessageFactory extends ClientTestMessageFactory {
             String pillarId, String replyTo, ResponseInfo frInfo, ResultingFileIDs results, String toTopic) {
         GetFileIDsFinalResponse res = new GetFileIDsFinalResponse();
         initializeMessageDetails(res);
-        res.setCollectionID(settings.getCollectionID());
+        res.setCollectionID(collectionId);
         res.setCorrelationID(correlationId);
         res.setFileIDs(fileId);
         res.setFrom(pillarId);

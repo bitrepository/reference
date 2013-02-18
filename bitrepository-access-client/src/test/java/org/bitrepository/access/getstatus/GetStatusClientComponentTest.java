@@ -48,7 +48,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
 
         @BeforeMethod(alwaysRun=true)
         public void beforeMethodSetup() throws Exception {
-            testMessageFactory = new TestGetStatusMessageFactory(settingsForCUT.getCollectionID());
+            testMessageFactory = new TestGetStatusMessageFactory(settingsForTestClient.getComponentID());
 
             if (settingsForCUT.getRepositorySettings().getGetStatusSettings() == null) {
                 settingsForCUT.getRepositorySettings().setGetStatusSettings(new GetStatusSettings());

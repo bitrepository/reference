@@ -55,7 +55,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
 
     @BeforeMethod(alwaysRun = true)
     public void initialise() throws Exception {
-        messageFactory = new TestReplaceFileMessageFactory(settingsForCUT.getCollectionID());
+        messageFactory = new TestReplaceFileMessageFactory(settingsForTestClient.getComponentID());
         DEFAULT_CHECKSUM_SPEC = ChecksumUtils.getDefault(settingsForCUT);
         DEFAULT_OLD_CHECKSUM_DATA = createChecksumData("123checksum321");
         DEFAULT_NEW_CHECKSUM_DATA = createChecksumData("123checksum321");
@@ -89,12 +89,13 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request a file to be replaced on all pillars (which means only the default pillar).",
                 "A IdentifyPillarsForReplaceFileRequest should be sent to the pillar.");
-        replaceClient.replaceFileAtAllPillars(DEFAULT_FILE_ID, DEFAULT_OLD_CHECKSUM_DATA, checksumRequest,
+        replaceClient.replaceFile(collectionID, PILLAR1_ID,DEFAULT_FILE_ID, DEFAULT_OLD_CHECKSUM_DATA,
+                checksumRequest,
                 address, 10, DEFAULT_NEW_CHECKSUM_DATA, checksumRequest, testEventHandler, null);
 
         IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                 IdentifyPillarsForReplaceFileRequest.class);
-        Assert.assertEquals(receivedIdentifyRequestMessage.getCollectionID(), settingsForCUT.getCollectionID());
+        Assert.assertEquals(receivedIdentifyRequestMessage.getCollectionID(), collectionID);
         Assert.assertNotNull(receivedIdentifyRequestMessage.getCorrelationID());
         Assert.assertEquals(receivedIdentifyRequestMessage.getReplyTo(), settingsForCUT.getReceiverDestinationID());
         Assert.assertEquals(receivedIdentifyRequestMessage.getFileID(), DEFAULT_FILE_ID);
@@ -111,7 +112,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                 PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
         receivedReplaceFileRequest = pillar1Receiver.waitForMessage(ReplaceFileRequest.class);
-        Assert.assertEquals(receivedReplaceFileRequest.getCollectionID(), settingsForCUT.getCollectionID());
+        Assert.assertEquals(receivedReplaceFileRequest.getCollectionID(), collectionID);
         Assert.assertEquals(receivedReplaceFileRequest.getCorrelationID(), receivedIdentifyRequestMessage.getCorrelationID());
         Assert.assertEquals(receivedReplaceFileRequest.getReplyTo(), settingsForCUT.getReceiverDestinationID());
         Assert.assertEquals(receivedReplaceFileRequest.getFileID(), DEFAULT_FILE_ID);
@@ -163,7 +164,8 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request a file to be replaced on the default pillar.",
                 "A IdentifyPillarsForReplaceFileRequest should be sent to the pillar.");
-        replaceClient.replaceFile(DEFAULT_FILE_ID, PILLAR1_ID, DEFAULT_OLD_CHECKSUM_DATA, checksumRequest,
+        replaceClient.replaceFile(collectionID, DEFAULT_FILE_ID, PILLAR1_ID, DEFAULT_OLD_CHECKSUM_DATA,
+                checksumRequest,
                 address, 10, DEFAULT_NEW_CHECKSUM_DATA, checksumRequest, testEventHandler, null);
 
         IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
@@ -194,7 +196,8 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request a file to be replaced on the default pillar.",
                 "A IdentifyPillarsForReplaceFileRequest should be sent to the pillar.");
-        replaceClient.replaceFile(DEFAULT_FILE_ID, PILLAR1_ID, DEFAULT_OLD_CHECKSUM_DATA, checksumRequest,
+        replaceClient.replaceFile(collectionID, DEFAULT_FILE_ID, PILLAR1_ID, DEFAULT_OLD_CHECKSUM_DATA,
+                checksumRequest,
                 address, 10, DEFAULT_NEW_CHECKSUM_DATA, checksumRequest, testEventHandler, null);
 
         IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
@@ -240,7 +243,8 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request a file to be replaced on the default pillar.",
                 "A IdentifyPillarsForReplaceFileRequest should be sent to the pillar.");
-        replaceClient.replaceFile(DEFAULT_FILE_ID, PILLAR1_ID, DEFAULT_OLD_CHECKSUM_DATA, checksumRequest,
+        replaceClient.replaceFile(collectionID, DEFAULT_FILE_ID, PILLAR1_ID, DEFAULT_OLD_CHECKSUM_DATA,
+                checksumRequest,
                 address, 0, DEFAULT_NEW_CHECKSUM_DATA, checksumRequest, testEventHandler, null);
 
         IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
@@ -292,7 +296,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
         checksumRequest.setChecksumType(ChecksumType.MD5);
         checksumRequest.setChecksumSalt(Base16Utils.encodeBase16("aa"));
-        replaceClient.replaceFile(DEFAULT_FILE_ID, PILLAR1_ID, DEFAULT_OLD_CHECKSUM_DATA, null,
+        replaceClient.replaceFile(collectionID, DEFAULT_FILE_ID, PILLAR1_ID, DEFAULT_OLD_CHECKSUM_DATA, null,
                 httpServer.getURL(DEFAULT_FILE_ID), 0, DEFAULT_NEW_CHECKSUM_DATA, checksumRequest, testEventHandler,
                 null);
 

@@ -69,7 +69,7 @@ public class MediatorTest extends DefaultFixturePillarTest {
             addStep("Send a request to the mediator.", "Should be caught.");
             IdentifyContributorsForGetStatusRequest request = new IdentifyContributorsForGetStatusRequest();
             request.setAuditTrailInformation("audit");
-            request.setCollectionID(settingsForCUT.getCollectionID());
+            request.setCollectionID(collectionID);
             request.setCorrelationID(UUID.randomUUID().toString());
             request.setFrom(getPillarID());
             request.setMinVersion(BigInteger.valueOf(24L));
@@ -85,21 +85,6 @@ public class MediatorTest extends DefaultFixturePillarTest {
             mediator.close();
         }
     }
-    
-    @Test( groups = {"regressiontest", "pillartest"})
-    public void testMediatorInvalidCollectionID() throws Exception {
-        addDescription("Tests the handling of an invalid collection id");
-        addStep("Setup create and start the mediator.", "");
-        String wrongCollectionID = "wrongCollectionID";
-        
-        TestMediator mediator = new TestMediator(context);
-        try {
-            mediator.testCollectionID(wrongCollectionID);
-            Assert.fail("Should throw an " + IllegalArgumentException.class);
-        } catch (IllegalArgumentException e) {
-            // Expected
-        }
-    }
 
     @Override
     protected String getComponentID() {
@@ -111,11 +96,6 @@ public class MediatorTest extends DefaultFixturePillarTest {
         public TestMediator(MessageHandlerContext context) {
             super(messageBus, context);
         }
-        
-        public void testCollectionID(String collectionID) {
-            validateBitrepositoryCollectionId(collectionID);
-        }
-
         @SuppressWarnings("rawtypes")
         @Override
         protected RequestHandler[] createListOfHandlers() {

@@ -50,7 +50,8 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
     }
     
     @Override
-    public void deleteFile(String fileId, String pillarId, ChecksumDataForFileTYPE checksumForPillar,
+    public void deleteFile(String collectionID, String fileId, String pillarId,
+                           ChecksumDataForFileTYPE checksumForPillar,
             ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
@@ -64,27 +65,8 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
                 + "'. And the audit trail information '" + auditTrailInformation + "'.");
         
         DeleteFileConversationContext context = new DeleteFileConversationContext(fileId,
-                checksumForPillar, checksumRequested, settings, messageBus, clientID,
+                collectionID, checksumForPillar, checksumRequested, settings, messageBus, clientID,
                 Arrays.asList(pillarId), eventHandler, auditTrailInformation);
-        startConversation(context, new IdentifyPillarsForDeleteFile(context));
-    }
-    
-    @Override
-    public void deleteFileAtAllPillars(String fileId, ChecksumDataForFileTYPE checksumForPillar,
-            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) {
-        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
-        validateFileID(fileId);
-        if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
-            ArgumentValidator.checkNotNull(checksumForPillar, "ChecksumForPillar");
-        }
-        
-        log.info("Requesting the deletion of the file '" + fileId + "' from all pillars with checksum '" 
-        + checksumForPillar + "', while requested checksum '" + checksumRequested 
-        + "'. And the audit trail information '" + auditTrailInformation + "'.");
-        
-        DeleteFileConversationContext context = new DeleteFileConversationContext(fileId,
-                checksumForPillar, checksumRequested, settings, messageBus, clientID,
-                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(),eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForDeleteFile(context));
     }
 }

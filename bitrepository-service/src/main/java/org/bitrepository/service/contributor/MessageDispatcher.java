@@ -53,7 +53,6 @@ public class MessageDispatcher {
      * @param message The message which only needs the basic information to be send.
      */
     protected void dispatchMessage(Message message) {
-        message.setCollectionID(settings.getCollectionID());
         message.setFrom(settings.getComponentID());
         message.setMinVersion(ProtocolVersionLoader.loadProtocolVersion().getMinVersion());
         message.setVersion(ProtocolVersionLoader.loadProtocolVersion().getVersion());

@@ -52,7 +52,7 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         metrics.start();
         addStep("Request " + NUMBER_OF_AUDITS + " full audit trails one", "Not errors should occur");
         for (int i = 0; i < NUMBER_OF_AUDITS;i++) {
-            blockingAuditTrailFileClient.getAuditTrails(
+            blockingAuditTrailFileClient.getAuditTrails(collectionID,
                     null, null, null, null, "singleTreadedGetAuditTrails stress test");
             metrics.mark();
         }
@@ -70,7 +70,7 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         addStep("Add " + NUMBER_OF_AUDITS + " files", "Not errors should occur");
         EventHandler eventHandler = new EventHandlerForMetrics(metrics);
         for (int i = 0; i > NUMBER_OF_AUDITS;i++) {
-            auditTrailClient.getAuditTrails(
+            auditTrailClient.getAuditTrails(collectionID,
                     null, null, null, eventHandler, "singleTreadedGetAuditTrails stress test");
         }
 

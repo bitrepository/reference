@@ -35,6 +35,8 @@ import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
  * The place to get message buses. Only one message bus is created for each collection ID.
  */
 public final class MessageBusManager {
+    public static final String DEFAULT_MESSAGE_BUS = "Default message bus";
+
     /**
      * Map of the loaded mediators for the different collectionsIDs.
      * The keys are the collectionID and the values are the message buses
@@ -45,27 +47,26 @@ public final class MessageBusManager {
     private MessageBusManager() {}
 
     /**
-     * @return a new message bus instance based on the supplied configuration.
+     * @return A the default message bus instance based on the supplied configuration. If the default message bus
+     * doesn't already exist, it is created.
      */
     public synchronized static MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
-        String collectionID = settings.getCollectionID();
-        if (!messageBusMap.containsKey(collectionID)) {
+        if (!messageBusMap.containsKey(DEFAULT_MESSAGE_BUS)) {
             MessageBus messageBus = createMessageBus(
                     settings.getMessageBusConfiguration(),
                     securityManager);
-            messageBusMap.put(collectionID, messageBus);
+            messageBusMap.put(DEFAULT_MESSAGE_BUS, messageBus);
             messageBus.getComponentFilter().add(settings.getComponentID());
         }
-        return messageBusMap.get(collectionID);
+        return messageBusMap.get(DEFAULT_MESSAGE_BUS);
     }
 
     /**
      * Returns a messagebus for the given collection if it exists, else null.
-     * @param collectionID
      * @return
      */
-    public synchronized static MessageBus getMessageBus(String collectionID) {
-        return messageBusMap.get(collectionID);
+    public synchronized static MessageBus getMessageBus() {
+        return messageBusMap.get(DEFAULT_MESSAGE_BUS);
     }
 
     private static MessageBus createMessageBus(
@@ -76,11 +77,11 @@ public final class MessageBusManager {
     }
 
     /**
-     * Can be used to inject a custom messageBus for a specific collectionID.
-     * @param collectionID
+     * Can be used to inject a custom messageBus for a specific name.
+     * @param name
      * @param messageBus The custom instance of the messagebus.
      */
-    public static void injectCustomMessageBus(String collectionID, MessageBus messageBus) {
-        messageBusMap.put(collectionID, messageBus);
+    public static void injectCustomMessageBus(String name, MessageBus messageBus) {
+        messageBusMap.put(name, messageBus);
     }
 }

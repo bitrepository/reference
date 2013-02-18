@@ -53,12 +53,13 @@ public class AuditTrailCollector {
      * @param client The client for handling the conversation for collecting the audit trails.
      * @param store The storage of the audit trails data.
      */
-    public AuditTrailCollector(Settings settings, AuditTrailClient client, AuditTrailStore store) {
+    public AuditTrailCollector(String collectionID, Settings settings, AuditTrailClient client,
+                               AuditTrailStore store) {
         ArgumentValidator.checkNotNull(settings, "settings");
         ArgumentValidator.checkNotNull(client, "AuditTrailClient client");
         ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
 
-        IncrementalCollector collector = new IncrementalCollector(
+        IncrementalCollector collector = new IncrementalCollector(collectionID,
             settings.getReferenceSettings().getAuditTrailServiceSettings().getID(),
             client, store,
             settings.getReferenceSettings().getAuditTrailServiceSettings().getMaxNumberOfEventsInRequest());

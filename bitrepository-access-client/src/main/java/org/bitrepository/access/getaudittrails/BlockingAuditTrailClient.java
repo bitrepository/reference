@@ -46,13 +46,14 @@ public class BlockingAuditTrailClient {
      * @see AuditTrailClient#getAuditTrails
      */
     public List<ContributorEvent> getAuditTrails(
+            String collectionID,
             AuditTrailQuery[] componentQueries,
             String fileID,
             String urlForResult,
             EventHandler eventHandler, String auditTrailInformation)
             throws NegativeResponseException {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
-        client.getAuditTrails(componentQueries, fileID, urlForResult, blocker, auditTrailInformation);
+        client.getAuditTrails(collectionID, componentQueries, fileID, urlForResult, blocker, auditTrailInformation);
         OperationEvent finishEvent = blocker.awaitFinished();
         if(finishEvent.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
             return blocker.getResults();

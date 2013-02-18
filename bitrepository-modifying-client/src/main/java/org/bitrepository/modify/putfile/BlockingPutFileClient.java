@@ -45,17 +45,15 @@ public class BlockingPutFileClient {
         this.client = client;
     }
     /**
-     * Method for performing a blocking put file operation.
+     * Method for performing a blocking put file operation. Wraps the asynchronous {@link PutFileClient#putFile
+     * (String, java.net.URL, String, long, org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE,
+     * org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE, org.bitrepository.client.eventhandler.EventHandler,
+     * String)} method.
      *
-     * @param url The URL where the file to be put is located.
-     * @param fileId The id of the file.
-     * @param sizeOfFile The number of bytes the file requires.
-     * @param checksumForValidationAtPillar The checksum for validating at pillar side.
-     * @param checksumRequestsForValidation The checksum for validating at client side.
-     * @param eventHandler The EventHandler for the operation.
-     * @param auditTrailInformation The audit trail information.
+     * @throws OperationFailedException The operation didn't complete successfully.
      */
     public List<ContributorEvent> putFile(
+            String collectionID,
             URL url,
             String fileId,
             long sizeOfFile,
@@ -65,7 +63,8 @@ public class BlockingPutFileClient {
             String auditTrailInformation)
             throws OperationFailedException {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
-        client.putFile(url, fileId, sizeOfFile, checksumForValidationAtPillar, checksumRequestsForValidation,
+        client.putFile(collectionID, url, fileId, sizeOfFile, checksumForValidationAtPillar,
+                checksumRequestsForValidation,
                 blocker, auditTrailInformation);
         OperationEvent finishEvent = blocker.awaitFinished();
         if(finishEvent.getEventType() == OperationEvent.OperationEventType.COMPLETE) {

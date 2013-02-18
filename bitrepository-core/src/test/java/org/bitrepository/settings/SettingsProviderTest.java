@@ -47,17 +47,17 @@ public class SettingsProviderTest {
                 new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS), myComponentID);
 
         Settings settings = settingsLoader.getSettings();
-        String originalCollectionID = settings.getCollectionID();
+        String originalCollectionID = settings.getCollections().get(0).getID();
 
         String newCollectionID = "newCollectionID";
         settings.getRepositorySettings().getCollections().getCollection().get(0).setID(newCollectionID);
         Assert.assertEquals(settings.getRepositorySettings().getCollections().getCollection().get(0).getID(),
                 newCollectionID);
-        Assert.assertEquals(settings.getCollectionID(), newCollectionID);
+        Assert.assertEquals(settings.getCollections().get(0).getID(), newCollectionID);
 
         settingsLoader.reloadSettings();
         settings = settingsLoader.getSettings();
         Assert.assertEquals(settings.getRepositorySettings().getCollections().getCollection().get(0).getID(), originalCollectionID);
-        Assert.assertEquals(settings.getCollectionID(), originalCollectionID);
+        Assert.assertEquals(settings.getCollections().get(0).getID(), originalCollectionID);
     }
 }

@@ -88,6 +88,7 @@ public class GetChecksums {
         output.debug("Instantiating the GetChecksumsClient");
         client = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
                 COMPONENT_ID);
+
     }
     
     /**
@@ -100,6 +101,12 @@ public class GetChecksums {
                 + "retrieve the checksum for. If no argument, then the checksum of all files are retrieved.");
         fileOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(fileOption);
+
+        Option collectionOption = new Option(Constants.COLLECTION_ID_ARG, Constants.HAS_ARGUMENT,
+                "[OPTIONAL] The id for the collection to "
+                + "retrieve the checksum for. If no argument, then first collection in the settings are used.");
+        collectionOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(collectionOption);
         
         Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, "[OPTIONAL] The id of the "
                 + "pillar where the checksums should be retrieved from. If no argument, then the checksums will be "
@@ -144,7 +151,8 @@ public class GetChecksums {
         output.debug("Initiating the GetChecksums conversation");
         ChecksumSpecTYPE checksumtype = getRequestChecksumSpec();
         
-        client.getChecksums(contributorQuerys, fileid, checksumtype, null, eventHandler, "Retrieving the checksum for '"
+        client.getChecksums(getCollectionID(), contributorQuerys, fileid, checksumtype, null, eventHandler,
+                "Retrieving the checksum for '"
                 + fileid + "' from pillars '" + contributorQuerys + "'.");
         
         return eventHandler.getFinish();
@@ -161,7 +169,19 @@ public class GetChecksums {
             return null;
         }
     }
-    
+
+    /**
+     * @return The collection to use. If no collection has been idicated the first collection in the settings is used
+     * . .
+     */
+    public String getCollectionID() {
+        if(cmdHandler.hasOption(Constants.COLLECTION_ID_ARG)) {
+            return cmdHandler.getOptionValue(Constants.COLLECTION_ID_ARG);
+        } else {
+            return settings.getCollections().get(0).getID();
+        }
+    }
+
     /**
      * Extract the pillar ids. If a specific pillar is given as argument, then it will be returned, but if no such
      * argument has been given, then the list of all pillar ids are given.

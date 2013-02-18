@@ -47,6 +47,7 @@ public class GetChecksumsConversationContext extends ConversationContext {
      * @param checksumSpec See {@link org.bitrepository.access.getchecksums.GetChecksumsClient} for details.
      */
     public GetChecksumsConversationContext(
+            String collectionID,
             ContributorQuery[] contributorQueries,
             String fileID,
             ChecksumSpecTYPE checksumSpec,
@@ -57,7 +58,8 @@ public class GetChecksumsConversationContext extends ConversationContext {
             Collection<String> contributors,
             EventHandler eventHandler,
             String auditTrailInformation) {
-        super(OperationType.GET_CHECKSUMS, settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
+        super(collectionID, OperationType.GET_CHECKSUMS, settings, messageSender, clientID, fileID, contributors,
+                eventHandler, auditTrailInformation);
         this.contributorQueries = contributorQueries;
         this.urlForResult = urlForResult;
         this.checksumSpec = checksumSpec;

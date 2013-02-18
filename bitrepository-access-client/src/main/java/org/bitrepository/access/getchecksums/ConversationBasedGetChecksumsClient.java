@@ -58,7 +58,9 @@ public class ConversationBasedGetChecksumsClient extends AbstractClient implemen
 
 
     @Override
-    public void getChecksums(ContributorQuery[] contributorQueries,
+    public void getChecksums(
+            String collectionID,
+            ContributorQuery[] contributorQueries,
                            String fileID,
                            ChecksumSpecTYPE checksumSpec,
                            URL addressForResult,
@@ -74,7 +76,7 @@ public class ConversationBasedGetChecksumsClient extends AbstractClient implemen
             "' with query "+ Arrays.asList(contributorQueries) + "." +
             (addressForResult != null ?  "The result should be uploaded to '" + addressForResult + "'." : ""));
 
-        GetChecksumsConversationContext context = new GetChecksumsConversationContext(
+        GetChecksumsConversationContext context = new GetChecksumsConversationContext(collectionID,
             contributorQueries, fileID, checksumSpec, addressForResult, settings, messageBus, clientID,
             ContributorQueryUtils.getContributors(contributorQueries), eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForGetChecksums(context));

@@ -196,16 +196,16 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
     /**
      * Method for creating a file containing the list of calculated checksums.
      * 
-     * @param message The GetChecksumMessage requesting the checksum calculations.
+     * @param request The GetChecksumMessage requesting the checksum calculations.
      * @param fileIDs The list of checksums to put into the list.
      * @return A file containing all the checksums in the list.
      * @throws IOException If a problem occurs during accessing or handling the data.
      * @throws JAXBException If the resulting structure cannot be serialized or if it is invalid.
      */
-    private File makeTemporaryResultFile(GetFileIDsRequest message, FileIDsData fileIDs) 
+    private File makeTemporaryResultFile(GetFileIDsRequest request, FileIDsData fileIDs)
             throws IOException, JAXBException {
         // Create the temporary file.
-        File checksumResultFile = File.createTempFile(message.getCorrelationID(), new Date().getTime() + ".id");
+        File checksumResultFile = File.createTempFile(request.getCorrelationID(), new Date().getTime() + ".id");
         log.debug("Writing the requested fileids to the file '" + checksumResultFile + "'");
 
         // Print all the checksums safely (close the streams!)
@@ -213,7 +213,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
         try {
             is = new FileOutputStream(checksumResultFile);
             GetFileIDsResults result = new GetFileIDsResults();
-            result.setCollectionID(getSettings().getCollectionID());
+            result.setCollectionID(request.getCollectionID());
             result.setMinVersion(MIN_VERSION);
             result.setVersion(VERSION);
             result.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());

@@ -27,14 +27,12 @@ package org.bitrepository.access.getfileids;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getfileids.conversation.GetFileIDsConversationContext;
 import org.bitrepository.access.getfileids.conversation.IdentifyPillarsForGetFileIDs;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -46,7 +44,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The reference implementation of the client side of the GetFileIDs identification and operation.
  * The default <code>GetFileIDsClient</code>
- * 
+ *
  * This class is just a thin wrapper which creates a conversion each time a operation is started. The conversations 
  * takes over the rest of the operation handling.
  */
@@ -57,28 +55,30 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
      * @see AbstractClient
      */
     public ConversationBasedGetFileIDsClient(MessageBus messageBus, ConversationMediator conversationMediator,
-            Settings settings, String clienID) {
+                                             Settings settings, String clienID) {
         super(settings, conversationMediator, messageBus, clienID);
     }
 
     @Override
-    public void getFileIDs(ContributorQuery[] contributorQueries,
-                           String fileID,
-                           URL addressForResult,
-                           EventHandler eventHandler) {
+    public void getFileIDs(
+            String collectionID,
+            ContributorQuery[] contributorQueries,
+            String fileID,
+            URL addressForResult,
+            EventHandler eventHandler) {
         validateFileID(fileID);
         if (contributorQueries == null) {
             contributorQueries = ContributorQueryUtils.createFullContributorQuery(
-                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+                    settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
         }
 
         log.info("Requesting the fileIDs for file '" + fileID + "' with query "+
                 Arrays.asList(contributorQueries) + ". " +
-        (addressForResult != null ?  "The result should be uploaded to '" + addressForResult + "'." : ""));
+                (addressForResult != null ?  "The result should be uploaded to '" + addressForResult + "'." : ""));
 
         GetFileIDsConversationContext context = new GetFileIDsConversationContext(
-            contributorQueries, fileID, addressForResult, settings, messageBus, clientID,
-            ContributorQueryUtils.getContributors(contributorQueries), eventHandler);
+                collectionID, contributorQueries, fileID, addressForResult, settings, messageBus, clientID,
+                ContributorQueryUtils.getContributors(contributorQueries), eventHandler);
 
         startConversation(context, new IdentifyPillarsForGetFileIDs(context));
     }
@@ -94,17 +94,5 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
             componentQueryList.add(new AuditTrailQuery(contributer, null, null, null));
         }
         return componentQueryList.toArray(new AuditTrailQuery[componentQueryList.size()]);
-    }
-
-    @Override
-    public void getFileIDs(Collection<String> pillarIDs, FileIDs fileIDs, URL addressForResult,
-            EventHandler eventHandler) {
-        ContributorQuery[] contributorQueries = null;
-
-        if (pillarIDs != null) {
-            contributorQueries = ContributorQueryUtils.createFullContributorQuery(pillarIDs);
-        }
-
-        getFileIDs(contributorQueries, fileIDs.getFileID(), addressForResult, eventHandler);
     }
 }

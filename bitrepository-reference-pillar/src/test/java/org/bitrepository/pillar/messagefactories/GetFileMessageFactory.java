@@ -40,12 +40,13 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 public class GetFileMessageFactory extends ClientTestMessageFactory {
-
-    final Settings settings;
+    private final String collectionID;
+    private final Settings settings;
     
-    public GetFileMessageFactory(Settings pSettings) {
-        super(pSettings.getCollectionID());
+    public GetFileMessageFactory(String collectionID, Settings pSettings) {
+        super(pSettings.getComponentID());
         this.settings = pSettings;
+        this.collectionID = collectionID;
     }
     
     public IdentifyPillarsForGetFileRequest createIdentifyPillarsForGetFileRequest(String auditTrail, 
@@ -53,7 +54,7 @@ public class GetFileMessageFactory extends ClientTestMessageFactory {
         IdentifyPillarsForGetFileRequest res = new IdentifyPillarsForGetFileRequest();
         initializeMessageDetails(res);
         res.setAuditTrailInformation(auditTrail);
-        res.setCollectionID(settings.getCollectionID());
+        res.setCollectionID(collectionID);
         res.setCorrelationID(getNewCorrelationID());
         res.setFileID(fileId);
         res.setFrom(from);
@@ -68,7 +69,7 @@ public class GetFileMessageFactory extends ClientTestMessageFactory {
             ResponseInfo responseInfo, TimeMeasureTYPE timeToDeliver, String toTopic) {
         IdentifyPillarsForGetFileResponse res = new IdentifyPillarsForGetFileResponse();
         initializeMessageDetails(res);
-        res.setCollectionID(settings.getCollectionID());
+        res.setCollectionID(collectionID);
         res.setCorrelationID(correlationId);
         res.setFileID(fileId);
         res.setFrom(pillarId);
@@ -86,7 +87,7 @@ public class GetFileMessageFactory extends ClientTestMessageFactory {
         GetFileRequest res = new GetFileRequest();
         initializeMessageDetails(res);
         res.setAuditTrailInformation(auditTrail);
-        res.setCollectionID(settings.getCollectionID());
+        res.setCollectionID(collectionID);
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);
         res.setFileID(fileId);
@@ -105,7 +106,7 @@ public class GetFileMessageFactory extends ClientTestMessageFactory {
         GetFileProgressResponse res = new GetFileProgressResponse();
         initializeMessageDetails(res);
         res.setChecksumDataForExistingFile(csData);
-        res.setCollectionID(settings.getCollectionID());
+        res.setCollectionID(collectionID);
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);
         res.setFileID(fileId);
@@ -124,7 +125,7 @@ public class GetFileMessageFactory extends ClientTestMessageFactory {
             FilePart filePart, String pillarId, String replyTo, ResponseInfo rInfo, String toTopic) {
         GetFileFinalResponse res = new GetFileFinalResponse();
         initializeMessageDetails(res);
-        res.setCollectionID(settings.getCollectionID());
+        res.setCollectionID(collectionID);
         res.setCorrelationID(correlationId);
         res.setFileAddress(url);
         res.setFileID(fileId);

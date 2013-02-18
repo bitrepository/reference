@@ -49,6 +49,7 @@ public class BlockingGetChecksumsClient {
      * @see GetChecksumsClient#getChecksums
      */
     public List<ContributorEvent> getChecksums(
+        String collectionID,
         ContributorQuery[] contributorQueries,
         String fileID,
         ChecksumSpecTYPE checksumSpec,
@@ -58,7 +59,8 @@ public class BlockingGetChecksumsClient {
         throws NegativeResponseException {
 
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
-        client.getChecksums(contributorQueries, fileID, checksumSpec, urlForResult, blocker, auditTrailInformation);
+        client.getChecksums(collectionID, contributorQueries, fileID, checksumSpec, urlForResult, blocker,
+                auditTrailInformation);
         OperationEvent finishEvent = blocker.awaitFinished();
         if(finishEvent.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
             return blocker.getResults();

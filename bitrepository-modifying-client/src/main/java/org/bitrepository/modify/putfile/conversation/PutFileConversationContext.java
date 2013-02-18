@@ -38,11 +38,12 @@ public class PutFileConversationContext extends ConversationContext {
     private final ChecksumDataForFileTYPE checksumForValidationAtPillar;
     private final ChecksumSpecTYPE checksumRequestsForValidation;
     
-    public PutFileConversationContext(String fileID, URL urlForFile, long fileSize,
+    public PutFileConversationContext(String collectionID, String fileID, URL urlForFile, long fileSize,
             ChecksumDataForFileTYPE checksumForValidationAtPillar, ChecksumSpecTYPE checksumRequestsForValidation, 
             Settings settings, MessageSender messageSender, String clientID, Collection<String> contributors,
             EventHandler eventHandler, String auditTrailInformation) {
-        super(OperationType.PUT_FILE, settings, messageSender, clientID, fileID, contributors, eventHandler, auditTrailInformation);
+        super(collectionID, OperationType.PUT_FILE, settings, messageSender, clientID, fileID, contributors,
+                eventHandler, auditTrailInformation);
         this.urlForFile = urlForFile;        
         this.fileSize = new BigInteger(Long.toString(fileSize));
         this.checksumForValidationAtPillar = checksumForValidationAtPillar;

@@ -53,7 +53,7 @@ public class AuditCollectorTest extends ExtendedTestCase {
         
         MockAuditClient client = new MockAuditClient();
         MockAuditStore store = new MockAuditStore();
-        AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
+        AuditTrailCollector collector = new AuditTrailCollector("dummy-collection", settings, client, store);
         Assert.assertEquals(client.getCallsToGetAuditTrails(), 0);
         Thread.sleep(1000);
         EventHandler eventHandler = client.getLatestEventHandler();

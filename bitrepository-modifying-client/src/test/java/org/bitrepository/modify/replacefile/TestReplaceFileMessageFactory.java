@@ -41,11 +41,10 @@ import org.bitrepository.protocol.message.ClientTestMessageFactory;
 public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
 
     /**
-     * Constructor.
-     * @param collectionID The id for the collection, where the factory belong.
+     * @param clientID The id for the collection, where the factory belong.
      */
-    public TestReplaceFileMessageFactory(String collectionID) {
-        super(collectionID);
+    public TestReplaceFileMessageFactory(String clientID) {
+        super(clientID);
     }
 
     /**

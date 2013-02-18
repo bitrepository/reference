@@ -128,7 +128,9 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
             
             EventHandler eventHandler = new AuditPreservationEventHandler(auditPacker.getSequenceNumbersReached(), 
                     store);
-            client.putFile(url, auditPackage.getName(), auditPackage.length(), null, null, eventHandler, 
+            client.putFile(settings.getReferenceSettings().getAuditTrailServiceSettings()
+                    .getAuditTrailPreservationCollection(), url,
+                    auditPackage.getName(), auditPackage.length(), null, null, eventHandler,
                     "Preservation of audit trails from the AuditTrail service.");
 
             log.debug("Cleanup of the uploaded audit trail package.");

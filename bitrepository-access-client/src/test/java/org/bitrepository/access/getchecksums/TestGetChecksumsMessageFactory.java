@@ -52,8 +52,8 @@ import org.bitrepository.protocol.message.ClientTestMessageFactory;
  */
 public class TestGetChecksumsMessageFactory extends ClientTestMessageFactory {
 
-    public TestGetChecksumsMessageFactory(String collectionID) {
-        super(collectionID);
+    public TestGetChecksumsMessageFactory(String clientID) {
+        super(clientID);
     }
 
     public IdentifyPillarsForGetChecksumsResponse createIdentifyPillarsForGetChecksumsResponse(

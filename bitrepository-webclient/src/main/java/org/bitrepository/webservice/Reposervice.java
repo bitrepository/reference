@@ -57,16 +57,17 @@ public class Reposervice {
      * is configured to use. The three parameters are all mandatory.
      * @param fileID Filename of the file to be put in the bitrepository. 
      * @param fileSize Size of the file en bytes
-     * @param url Place where the bitrepository pillars can fetch the file from 
+     * @param url Place where the bitrepository pillars can fetch the file from
      * @return A string indicating if the request was successfully started or has been rejected. 
      */
     @GET
     @Path("/putfile/")
     @Produces("text/plain")
     public String putFile(
+            @QueryParam("collectionID") String collectionID,
             @QueryParam("fileID") String fileID,
             @QueryParam("fileSize") long fileSize,
-            @QueryParam("url") String URL,
+            @QueryParam("url") String url,
             @QueryParam("putChecksum") String putChecksum,
             @QueryParam("putChecksumType") String putChecksumType,
             @QueryParam("putSalt") String putSalt,
@@ -74,7 +75,7 @@ public class Reposervice {
             @QueryParam("approveSalt") String approveSalt) throws WebserviceIllegalArgumentException {
         try {
             WebserviceInputChecker.checkFileIDParameter(fileID);
-            WebserviceInputChecker.checkURLParameter(URL);
+            WebserviceInputChecker.checkURLParameter(url);
             WebserviceInputChecker.checkChecksumParameter(putChecksum);
             WebserviceInputChecker.checkSaltParameter(putSalt);
             WebserviceInputChecker.checkSaltParameter(approveSalt);
@@ -82,7 +83,7 @@ public class Reposervice {
             if(approveChecksumType != null && !approveChecksumType.equals("disabled")) {
                 approveChecksumTypeStr = approveChecksumType;
             }
-            return client.putFile(fileID, fileSize, makeUrl(URL), putChecksum, putChecksumType, putSalt, 
+            return client.putFile(collectionID, fileID, fileSize, makeUrl(url), putChecksum, putChecksumType, putSalt,
                     approveChecksumTypeStr, approveSalt);
         } catch (IllegalArgumentException e) {
             throw new WebserviceIllegalArgumentException(e.getMessage());
@@ -100,12 +101,13 @@ public class Reposervice {
     @Path("/getfile/")
     @Produces("text/plain")
     public String getFile(
+            @QueryParam("collectionID") String collectionID,
             @QueryParam("fileID") String fileID,
-            @QueryParam("url") String URL) throws WebserviceIllegalArgumentException {
+            @QueryParam("url") String url) throws WebserviceIllegalArgumentException {
         WebserviceInputChecker.checkFileIDParameter(fileID);
-        WebserviceInputChecker.checkURLParameter(URL);
+        WebserviceInputChecker.checkURLParameter(url);
         try {
-            return client.getFile(fileID, makeUrl(URL));
+            return client.getFile(collectionID, fileID, makeUrl(url));
         } catch (IllegalArgumentException e) {
             throw new WebserviceIllegalArgumentException(e.getMessage());
         }
@@ -136,7 +138,9 @@ public class Reposervice {
     @GET
     @Path("/getPillarList/")
     @Produces("text/json")
-    public String getPillarList() {
+    public String getPillarList(
+            @QueryParam("collectionID") String collectionID
+    ) {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         List<String> pillars = client.getPillarList();
@@ -193,7 +197,7 @@ public class Reposervice {
     /**
      * getChecksumsHtml exposes the possibility of requesting checksums for the files present in the Bitrepository.
      * The two first parameters are mandatory.
-     * @param fileIDs List of filenames to get checksums for. FileIDs should be seperated by a '\n'
+     * @param fileID List of filenames to get checksums for. FileIDs should be seperated by a '\n'
      * @param checksumType The type of checksum algorithm that the requested checksum should be in.
      * 			The type needs to be one supported by all pillars in the collection. 
      * @param salt A string to alter the preconditions of calculating a checksum. Will result in the returned checksum
@@ -204,6 +208,7 @@ public class Reposervice {
     @Path("getChecksumsHtml")
     @Produces("text/html")
     public String getChecksumsHtml(
+            @QueryParam("collectionID") String collectionID,
             @QueryParam("fileID") String fileID,
             @QueryParam("checksumType") String checksumType,
             @QueryParam("salt") String salt) throws WebserviceIllegalArgumentException {
@@ -212,7 +217,7 @@ public class Reposervice {
         WebserviceInputChecker.checkChecksumTypeParameter(checksumType);
         WebserviceInputChecker.checkSaltParameter(salt);
 
-        Map<String, Map<String, String>> result = client.getChecksums(fileID, checksumType, salt);
+        Map<String, Map<String, String>> result = client.getChecksums(collectionID, fileID, checksumType, salt);
         if(result == null) {
             return "<html><body><b>Failed!</b></body></html>";
         }
@@ -250,7 +255,7 @@ public class Reposervice {
     /**
      * getChecksums exposes the possibility of requesting checksums for the files present in the Bitrepository.
      * The two first parameters are mandatory.
-     * @param fileIDs List of filenames to get checksums for. FileIDs should be seperated by a '\n'
+     * @param fileID List of filenames to get checksums for. FileIDs should be seperated by a '\n'
      * @param checksumType The type of checksum algorithm that the requested checksum should be in.
      * 			The type needs to be one supported by all pillars in the collection. 
      * @param salt A string to alter the preconditions of calculating a checksum. Will result in the returned checksum
@@ -261,6 +266,7 @@ public class Reposervice {
     @Path("getChecksums")
     @Produces("text/plain")
     public String getChecksums(
+            @QueryParam("collectionID") String collectionID,
             @QueryParam("fileID") String fileID,
             @QueryParam("checksumType") String checksumType,
             @QueryParam("salt") String salt) throws WebserviceIllegalArgumentException {
@@ -269,7 +275,7 @@ public class Reposervice {
         WebserviceInputChecker.checkChecksumTypeParameter(checksumType);
         WebserviceInputChecker.checkSaltParameter(salt);
 
-        Map<String, Map<String, String>> result = client.getChecksums(fileID, checksumType, salt);
+        Map<String, Map<String, String>> result = client.getChecksums(collectionID, fileID, checksumType, salt);
         if(result == null) {
             return "Failed!";
         }
@@ -315,9 +321,10 @@ public class Reposervice {
     @Path("getFileIDsHtml")
     @Produces("text/html")
     public String getFileIDsHtml(
+            @QueryParam("collectionID") String collectionID,
             @QueryParam("fileIDs") String fileIDs,
             @QueryParam("allFileIDs") boolean allFileIDs) throws WebserviceIllegalArgumentException {
-        GetFileIDsResults results = client.getFileIDs(fileIDs, allFileIDs);
+        GetFileIDsResults results = client.getFileIDs(collectionID, fileIDs, allFileIDs);
         if(results.getResults() == null) {
             return "<p>Get file ID's provided no results.</p>";
         }
@@ -355,8 +362,9 @@ public class Reposervice {
     @GET
     @Path("getFileIDs")
     @Produces("text/plain")
-    public String getFileIDs() {
-        GetFileIDsResults results = client.getFileIDs("", true);
+    public String getFileIDs(
+            @QueryParam("collectionID") String collectionID) {
+        GetFileIDsResults results = client.getFileIDs(collectionID, "", true);
         StringBuilder sb = new StringBuilder();
         if(results.getResults() != null) {
             for(String ID : results.getResults().keySet()) {
@@ -371,6 +379,7 @@ public class Reposervice {
     @Path("deleteFile")
     @Produces("text/html")
     public String deleteFile(
+            @QueryParam("collectionID") String collectionID,
             @QueryParam("fileID") String fileID, @QueryParam("pillarID") String pillarID,
             @QueryParam("deleteChecksum") String deleteChecksum, 
             @QueryParam("deleteChecksumType") String deleteChecksumType,
@@ -383,7 +392,8 @@ public class Reposervice {
         WebserviceInputChecker.checkChecksumParameter(deleteChecksum);
 
         try {
-            return client.deleteFile(fileID, pillarID, deleteChecksum, deleteChecksumType, deleteChecksumSalt, 
+            return client.deleteFile(collectionID, fileID, pillarID, deleteChecksum, deleteChecksumType,
+                    deleteChecksumSalt,
                     approveChecksumType, approveChecksumSalt);
         } catch (IllegalArgumentException e) {
             throw new WebserviceIllegalArgumentException(e.getMessage());
@@ -394,6 +404,7 @@ public class Reposervice {
     @Path("replaceFile")
     @Produces("text/html")
     public String replaceFile(
+            @QueryParam("collectionID") String collectionID,
             @QueryParam("fileID") String fileID, @QueryParam("pillarID") String pillarID,
             @QueryParam("oldFileChecksum") String oldFileChecksum, 
             @QueryParam("oldFileChecksumType") String oldFileChecksumType,
@@ -423,7 +434,8 @@ public class Reposervice {
         //WebserviceInputChecker.checkChecksumTypeParameter(newFileRequestChecksumType);
 
         try {
-            return client.replaceFile(fileID, pillarID, oldFileChecksum, oldFileChecksumType, oldFileChecksumSalt, 
+            return client.replaceFile(collectionID, fileID, pillarID, oldFileChecksum, oldFileChecksumType,
+                    oldFileChecksumSalt,
                     oldFileRequestChecksumType, oldFileRequestChecksumSalt, makeUrl(url), Long.parseLong(fileSize), newFileChecksum, 
                     newFileChecksumType, newFileChecksumSalt, newFileRequestChecksumType, newFileRequestChecksumSalt);
         } catch (IllegalArgumentException e) {

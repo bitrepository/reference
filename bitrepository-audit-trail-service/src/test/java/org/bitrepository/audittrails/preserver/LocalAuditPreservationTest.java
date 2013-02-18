@@ -147,7 +147,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         }
         private int callsToPutFile = 0;
         @Override
-        public void putFile(URL url, String fileId, long sizeOfFile,
+        public void putFile(String collectionID, URL url, String fileId, long sizeOfFile,
                 ChecksumDataForFileTYPE checksumForValidationAtPillar, ChecksumSpecTYPE checksumRequestsForValidation,
                 EventHandler eventHandler, String auditTrailInformation) {
             this.url = url;

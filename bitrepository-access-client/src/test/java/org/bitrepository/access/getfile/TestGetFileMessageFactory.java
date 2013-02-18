@@ -54,8 +54,8 @@ import org.bitrepository.protocol.message.ClientTestMessageFactory;
  */
 public class TestGetFileMessageFactory extends ClientTestMessageFactory {
 
-    public TestGetFileMessageFactory(String collectionID) {
-        super(collectionID);
+    public TestGetFileMessageFactory(String clientID) {
+        super(clientID);
     }
 
     public IdentifyPillarsForGetFileRequest createIdentifyPillarsForGetFileRequest() {

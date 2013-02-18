@@ -30,7 +30,7 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.jaccept.TestEventManager;
 
 /**
- * Wrapper class for a PutFileClient.
+ * Wrapper class for a DeleteFileClient adding testmanager logging.
  */
 public class DeleteFileClientTestWrapper implements DeleteFileClient {
     /** The PutClient to wrap. */
@@ -49,20 +49,13 @@ public class DeleteFileClientTestWrapper implements DeleteFileClient {
     }
 
     @Override
-    public void deleteFile(String fileId, String pillarId, ChecksumDataForFileTYPE checksumForPillar,
+    public void deleteFile(String collectionID, String fileId, String pillarId,
+                           ChecksumDataForFileTYPE checksumForPillar,
             ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) {
         testEventManager.addStimuli("Calling deleteFile(" + fileId + ", " + pillarId + ", " + checksumForPillar + ", " 
             + checksumRequested + ", eventHandler, " + auditTrailInformation + ")");
-        wrappedDeleteClient.deleteFile(fileId, pillarId, checksumForPillar, checksumRequested, eventHandler, 
-                auditTrailInformation);        
-    }
-    
-    @Override
-    public void deleteFileAtAllPillars(String fileId, ChecksumDataForFileTYPE checksumForPillar,
-            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) {
-        testEventManager.addStimuli("Calling deleteFileAtAllPillars(" + fileId + ", " + checksumForPillar + ", " 
-            + checksumRequested + ", eventHandler, " + auditTrailInformation + ")");
-        wrappedDeleteClient.deleteFileAtAllPillars(fileId, checksumForPillar, checksumRequested, eventHandler, 
+        wrappedDeleteClient.deleteFile(collectionID, fileId, pillarId, checksumForPillar, checksumRequested,
+                eventHandler,
                 auditTrailInformation);        
     }
 }

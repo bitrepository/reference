@@ -41,7 +41,6 @@ public class ReplaceClientTestWrapper implements ReplaceFileClient {
     private TestEventManager testEventManager;
 
     /**
-     * Constructor.
      * @param putClientInstance The instance to wrap and monitor.
      * @param eventManager The manager to monitor the operations.
      */
@@ -51,7 +50,8 @@ public class ReplaceClientTestWrapper implements ReplaceFileClient {
     }
 
     @Override
-    public void replaceFile(String fileId, String pillarId, ChecksumDataForFileTYPE checksumForDeleteAtPillar,
+    public void replaceFile(String collectionID, String fileId, String pillarId,
+                            ChecksumDataForFileTYPE checksumForDeleteAtPillar,
             ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile,
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile,
             EventHandler eventHandler, String auditTrailInformation) {
@@ -59,21 +59,8 @@ public class ReplaceClientTestWrapper implements ReplaceFileClient {
                 + checksumRequestedForDeletedFile + ", " + url + ", " + sizeOfNewFile + ", " 
                 + checksumForNewFileValidationAtPillar + ", " + checksumRequestsForNewFile + ", " + eventHandler + ", "
                 + auditTrailInformation);
-        wrappedReplaceClient.replaceFile(fileId, pillarId, checksumForDeleteAtPillar, checksumRequestedForDeletedFile, 
-                url, sizeOfNewFile, checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, eventHandler, 
-                auditTrailInformation);
-    }
-
-    @Override
-    public void replaceFileAtAllPillars(String fileId, ChecksumDataForFileTYPE checksumForDeleteAtPillar,
-            ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile,
-            ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile,
-            EventHandler eventHandler, String auditTrailInformation) {
-        testEventManager.addStimuli("replaceFileAtAllPillars(" + fileId + ", " + checksumForDeleteAtPillar + ", "
-                + checksumRequestedForDeletedFile + ", " + url + ", " + sizeOfNewFile + ", " 
-                + checksumForNewFileValidationAtPillar + ", " + checksumRequestsForNewFile + ", " + eventHandler + ", "
-                + auditTrailInformation);
-        wrappedReplaceClient.replaceFileAtAllPillars(fileId, checksumForDeleteAtPillar, checksumRequestedForDeletedFile, 
+        wrappedReplaceClient.replaceFile(collectionID, fileId, pillarId, checksumForDeleteAtPillar,
+                checksumRequestedForDeletedFile,
                 url, sizeOfNewFile, checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, eventHandler, 
                 auditTrailInformation);
     }

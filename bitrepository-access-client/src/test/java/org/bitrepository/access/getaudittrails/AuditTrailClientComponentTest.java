@@ -56,8 +56,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
 
     @BeforeMethod(alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
-        testMessageFactory = new GetAuditTrailsMessageFactory(
-                settingsForCUT.getCollectionID(), settingsForTestClient.getComponentID());
+        testMessageFactory = new GetAuditTrailsMessageFactory(settingsForTestClient.getComponentID());
     }
 
     @Test(groups = {"regressiontest"})
@@ -80,7 +79,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         addStep("Retrieve all audit trails from the collection by calling with a null componentQueries array",
                 "This should be interpreted as a request for all audit trails from all the collection settings " +
         "defined contributers.");
-        client.getAuditTrails(null, null, null, testEventHandler, null);
+        client.getAuditTrails(collectionID, null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
@@ -153,7 +152,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         addStep("Request audit trails from pillar 1 with both min and max sequence number set.",
         "A identify request is sent.");
         AuditTrailQuery query1 = new AuditTrailQuery(PILLAR1_ID, 1, 3, 10000);
-        client.getAuditTrails(new AuditTrailQuery[] { query1 }, null, null, testEventHandler, null);
+        client.getAuditTrails(collectionID, new AuditTrailQuery[] { query1 }, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
@@ -216,7 +215,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         addStep("Retrieve all audit trails from the collection by calling with a null componentQueries array",
                 "This should be interpreted as a request for all audit trails from all the collection settings " +
         "defined contributers.");
-        client.getAuditTrails(null, null, null, testEventHandler, null);
+        client.getAuditTrails(collectionID, null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
@@ -290,7 +289,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         addStep("Retrieve all audit trails from the collection by calling with a null componentQueries array",
                 "This should be interpreted as a request for all audit trails from all the collection settings " +
         "defined contributers.");
-        client.getAuditTrails(null, null, null, testEventHandler, null);
+        client.getAuditTrails(collectionID, null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
@@ -363,7 +362,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         AuditTrailClient client = createAuditTrailClient();
 
-        client.getAuditTrails(null, null, null, testEventHandler, null);
+        client.getAuditTrails(collectionID, null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
@@ -406,7 +405,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         addStep("Make the client ask for all audit trails.",
         "It should send a identify message");
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
-        client.getAuditTrails(null, null, null, testEventHandler, null);
+        client.getAuditTrails(collectionID, null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
@@ -448,7 +447,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         AuditTrailClient client1 = createAuditTrailClient();
 
         try {
-            client1.getAuditTrails(null, null, null, null, null);
+            client1.getAuditTrails(collectionID, null, null, null, null, null);
             Assert.fail("Should throw an exception here.");
         } catch(IllegalStateException e) {
             // expected.
@@ -460,7 +459,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         AuditTrailClient client2 = createAuditTrailClient();
 
         try {
-            client2.getAuditTrails(null, null, null, null, null);
+            client2.getAuditTrails(collectionID, null, null, null, null, null);
             Assert.fail("Should throw an exception here.");
         } catch(IllegalStateException e) {
             // expected.
@@ -547,6 +546,6 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     @Override
     protected void startOperation(TestEventHandler testEventHandler) {
         AuditTrailClient getAuditTrailClient = createAuditTrailClient();
-        getAuditTrailClient.getAuditTrails(null, null, null, testEventHandler, null);
+        getAuditTrailClient.getAuditTrails(collectionID, null, null, null, testEventHandler, null);
     }
 }

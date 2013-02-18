@@ -64,7 +64,8 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
         addStep("Repeat the request checksums, this time with maxNumberOfResult set to one", "A checksum result with " +
                 "a single checksum should be returned. The checksum should be the oldest/first checksum in the full list.");
         ContributorQuery singleChecksumQuery = new ContributorQuery(getPillarID(), null, null, 1);
-        List<ChecksumDataForChecksumSpecTYPE> singleChecksumList = pillarFileManager.getChecksums(null, singleChecksumQuery);
+        List<ChecksumDataForChecksumSpecTYPE> singleChecksumList = pillarFileManager.getChecksums(null,
+                singleChecksumQuery);
         Assert.assertEquals(singleChecksumList.size(), 1, "The result didn't contain a single checksum");
         Assert.assertEquals(singleChecksumList.get(0), originalChecksumList.get(0),
                 "The returned checksum wasn't equal to the oldest checksum");
@@ -89,7 +90,8 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
         XMLGregorianCalendar oldestTimestamp = originalChecksumList.get(0).getCalculationTimestamp();
         ContributorQuery query = new ContributorQuery(getPillarID(),
                 oldestTimestamp.toGregorianCalendar().getTime(), null, null);
-        List<ChecksumDataForChecksumSpecTYPE> limitedChecksumList = pillarFileManager.getChecksums(null, query);
+        List<ChecksumDataForChecksumSpecTYPE> limitedChecksumList = pillarFileManager.getChecksums(null,
+                query);
         Assert.assertEquals(limitedChecksumList, originalChecksumList, "Different list return when setting old minTimestamp");
         
         addStep("Request checksums with MinTimeStamp set to the timestamp of the newest checksum",
@@ -132,7 +134,7 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
         XMLGregorianCalendar newestTimestamp = originalChecksumList.get(originalChecksumList.size()-1).getCalculationTimestamp();
         ContributorQuery query = new ContributorQuery(getPillarID(),
                 null, newestTimestamp.toGregorianCalendar().getTime(), null);
-        List<ChecksumDataForChecksumSpecTYPE> limitedChecksumList = pillarFileManager.getChecksums(null, query);
+        List<ChecksumDataForChecksumSpecTYPE> limitedChecksumList = pillarFileManager.getChecksums(null,query);
         Assert.assertEquals(limitedChecksumList, originalChecksumList, 
                 "Different list return when setting newest maxTimestamp");
         

@@ -54,6 +54,7 @@ public class IncrementalCollector {
     private static final String NO_DELIVERY_URL = null;
     /** Will be used in case of no MaxNumberOfResult are provided */
     public static final int DEFAULT_MAX_NUMBER_OF_RESULTS = 10000;
+    private final String collectionID;
 
     /**
      * @param clientID The clientID to use for the requests.
@@ -62,8 +63,9 @@ public class IncrementalCollector {
      * @param maxNumberOfResults A optional limit on the number of audit trail events to request. If not set,
      * {}
      */
-    public IncrementalCollector(String clientID, AuditTrailClient client, AuditTrailStore store,
+    public IncrementalCollector(String collectionID, String clientID, AuditTrailClient client, AuditTrailStore store,
                                 BigInteger maxNumberOfResults) {
+        this.collectionID = collectionID;
         this.clientID = clientID;
         this.client = new BlockingAuditTrailClient(client);
         this.store = store;
@@ -85,7 +87,8 @@ public class IncrementalCollector {
 
         AuditCollectorEventHandler handler = new AuditCollectorEventHandler();
         try {
-            client.getAuditTrails(queries.toArray(new AuditTrailQuery[queries.size()]), NO_FILE_ID, NO_DELIVERY_URL,
+            client.getAuditTrails(collectionID, queries.toArray(new AuditTrailQuery[queries.size()]), NO_FILE_ID,
+                    NO_DELIVERY_URL,
                 handler, clientID);
 
         } catch (NegativeResponseException e) {

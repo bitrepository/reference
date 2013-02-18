@@ -21,29 +21,6 @@
  */
 package org.bitrepository;
 
-import javax.jms.JMSException;
-import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.access.getchecksums.GetChecksumsClient;
-import org.bitrepository.access.getfile.GetFileClient;
-import org.bitrepository.access.getfileids.GetFileIDsClient;
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.modify.ModifyComponentFactory;
-import org.bitrepository.modify.deletefile.DeleteFileClient;
-import org.bitrepository.modify.putfile.PutFileClient;
-import org.bitrepository.modify.replacefile.ReplaceFileClient;
-import org.bitrepository.protocol.messagebus.MessageBusManager;
-import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.settings.repositorysettings.RepositorySettings;
-import org.bitrepository.utils.HexUtils;
-import org.bitrepository.utils.XMLGregorianCalendarConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -58,6 +35,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import javax.jms.JMSException;
+import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getchecksums.GetChecksumsClient;
+import org.bitrepository.access.getfile.GetFileClient;
+import org.bitrepository.access.getfileids.GetFileIDsClient;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.modify.ModifyComponentFactory;
+import org.bitrepository.modify.deletefile.DeleteFileClient;
+import org.bitrepository.modify.putfile.PutFileClient;
+import org.bitrepository.modify.replacefile.ReplaceFileClient;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
+import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.settings.repositorysettings.Collection;
+import org.bitrepository.settings.repositorysettings.RepositorySettings;
+import org.bitrepository.utils.HexUtils;
+import org.bitrepository.utils.XMLGregorianCalendarConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BasicClient {
     private PutFileClient putClient;
@@ -99,13 +98,14 @@ public class BasicClient {
 
     public void shutdown() {
         try {
-            MessageBusManager.getMessageBus(settings.getCollectionID()).close();
+            MessageBusManager.getMessageBus().close();
         } catch (JMSException e) {
             log.warn("Failed to shutdown message bus cleanly, " + e.getMessage());
         }
     }
 
-    public String putFile(String fileID, long fileSize, URL url, String putChecksum, String putChecksumType,
+    public String putFile(String collectionID, String fileID, long fileSize, URL url, String putChecksum,
+                          String putChecksumType,
             String putSalt, String approveChecksumType, String approveSalt) {
         ChecksumDataForFileTYPE checksumDataForNewFile = null;
         if(putChecksum != null) {
@@ -117,14 +117,14 @@ public class BasicClient {
             checksumRequestForNewFile = makeChecksumSpec(approveChecksumType, approveSalt);
         }
 
-        putClient.putFile(url, fileID, fileSize, checksumDataForNewFile, checksumRequestForNewFile, 
+        putClient.putFile(collectionID, url, fileID, fileSize, checksumDataForNewFile, checksumRequestForNewFile,
                 eventHandler, generateAuditTrailMessage("PutFile"));
         return "Placing '" + fileID + "' in Bitrepository :)";
     }
 
-    public String getFile(String fileID, URL url) {
+    public String getFile(String collectionID, String fileID, URL url) {
         GetFileEventHandler handler = new GetFileEventHandler(url, completedFiles, eventHandler);
-        getClient.getFileFromFastestPillar(fileID, null, url, handler, null);
+        getClient.getFileFromFastestPillar(collectionID, fileID, null, url, handler, null);
         return "Fetching '" + fileID + "' from Bitrepository :)";
     }
 
@@ -181,12 +181,15 @@ public class BasicClient {
     public String getSettingsSummary() {
         StringBuilder sb = new StringBuilder();
         RepositorySettings repositorySettings = settings.getRepositorySettings();
-        sb.append("CollectionID: <i>" + settings.getCollectionID() + "</i><br>");
-        sb.append("Pillar(s) in configuration: <br> <i>");
-        List<String> pillarIDs = repositorySettings.getCollections().getCollection().get(0).getPillarIDs().getPillarID();
-        for(String pillarID : pillarIDs) {
-            sb.append("&nbsp;&nbsp;&nbsp; " + pillarID + "<br>");
+        sb.append("Collections:<br>");
+        for (Collection collection: settings.getCollections()) {
+            sb.append("<i>ID:" + collection.getID());
+            sb.append("<i>Pillars:");
+            for (String pillarID: collection.getPillarIDs().getPillarID()) {
+                sb.append("&nbsp; " + pillarID);
+            }
         }
+        sb.append("</i><br>");
         sb.append("</i>");
         sb.append("Messagebus URL: <br> &nbsp;&nbsp;&nbsp; <i>"); 
         sb.append(repositorySettings.getProtocolSettings().getMessageBusConfiguration().getURL() + "</i><br>");
@@ -197,13 +200,14 @@ public class BasicClient {
         return settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID();
     }
 
-    public Map<String, Map<String, String>> getChecksums(String fileIDsText, String checksumType, String salt) {
+    public Map<String, Map<String, String>> getChecksums(String collectionID, String fileIDsText, String checksumType,
+                                                         String salt) {
         ChecksumSpecTYPE checksumSpecItem = makeChecksumSpec(checksumType, salt);
 
         GetChecksumsResults results = new GetChecksumsResults();
         GetChecksumsEventHandler handler = new GetChecksumsEventHandler(results, eventHandler);
 
-        getChecksumClient.getChecksums(null, fileIDsText, checksumSpecItem, null, handler,
+        getChecksumClient.getChecksums(collectionID, null, fileIDsText, checksumSpecItem, null, handler,
             generateAuditTrailMessage("GetChecksum"));
 
         try {
@@ -216,20 +220,13 @@ public class BasicClient {
         return results.getResults();
     }
 
-    public GetFileIDsResults getFileIDs(String fileIDsText, boolean allFileIDs) {
+    public GetFileIDsResults getFileIDs(String collectionID, String fileIDsText, boolean allFileIDs) {
         GetFileIDsResults results = new GetFileIDsResults(
                 settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
         GetFileIDsEventHandler handler = new GetFileIDsEventHandler(results, eventHandler);
-        FileIDs fileIDs = new FileIDs();
-
-        if(allFileIDs) {
-            fileIDs.setAllFileIDs(allFileIDs);
-        } else {
-            fileIDs.setFileID(fileIDsText);
-        }
         try {
-            getFileIDsClient.getFileIDs(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(),
-                    fileIDs, null, handler);
+            getFileIDsClient.getFileIDs(collectionID, null,
+                    fileIDsText, null, handler);
 
             while(!results.isDone() && !results.hasFailed()) {
                 Thread.sleep(500);
@@ -240,7 +237,8 @@ public class BasicClient {
         return results;
     }
 
-    public String deleteFile(String fileID, String pillarID, String deleteChecksum, String deleteChecksumType, 
+    public String deleteFile(String collectionID, String fileID, String pillarID, String deleteChecksum,
+                             String deleteChecksumType,
             String deleteChecksumSalt, String approveChecksumType, String approveChecksumSalt) {
         if(fileID == null) {
             return "Missing fileID!";
@@ -262,13 +260,14 @@ public class BasicClient {
             requestedChecksumSpec = makeChecksumSpec(approveChecksumType, approveChecksumSalt);
         }      
 
-        deleteFileClient.deleteFile(fileID, pillarID, verifyingChecksum, requestedChecksumSpec, 
+        deleteFileClient.deleteFile(collectionID, fileID, pillarID, verifyingChecksum, requestedChecksumSpec,
                 eventHandler, generateAuditTrailMessage("DeleteFile"));
 
         return "Deleting file";
     }
 
-    public String replaceFile(String fileID, String pillarID, String oldFileChecksum, String oldFileChecksumType,
+    public String replaceFile(String collectionID, String fileID, String pillarID, String oldFileChecksum,
+                              String oldFileChecksumType,
             String oldFileChecksumSalt, String oldFileRequestChecksumType, String oldFileRequestChecksumSalt,
             URL url, long newFileSize, String newFileChecksum, String newFileChecksumType,
             String newFileChecksumSalt, String newFileRequestChecksumType, String newFileRequestChecksumSalt) {
@@ -308,7 +307,8 @@ public class BasicClient {
             newFileChecksumRequest = makeChecksumSpec(newFileRequestChecksumType, newFileRequestChecksumSalt);
         }
 
-        replaceFileClient.replaceFile(fileID, pillarID, oldFileChecksumData, oldFileChecksumRequest, url, 
+        replaceFileClient.replaceFile(collectionID, fileID, pillarID, oldFileChecksumData, oldFileChecksumRequest,
+                url,
                 newFileSize, newFileChecksumData, newFileChecksumRequest, eventHandler, generateAuditTrailMessage("ReplaceFile"));
 
         return "Replacing file";

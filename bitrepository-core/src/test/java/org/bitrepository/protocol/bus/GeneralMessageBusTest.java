@@ -36,7 +36,6 @@ import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.jaccept.TestEventManager;
 import org.testng.Assert;
@@ -60,22 +59,6 @@ public class GeneralMessageBusTest extends IntegrationTest {
                 + "<i>MessageBusConnection</i> connection class",
                 "No exceptions should be thrown");
         Assert.assertNotNull(ProtocolComponentFactory.getInstance().getMessageBus(settingsForCUT, securityManager));
-    }
-
-    @Test(groups = { "regressiontest" })
-    public final void messageBusManagerTest() {
-        addDescription("Verify the message bus manager");
-        addStep("Test the extraction of the messagebus from the manager.", 
-                "Null before it has been instantiated, and otherwise the same");
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).setID("A completely " +
-                "" +
-                "different id");
-        Assert.assertNull(MessageBusManager.getMessageBus(settingsForCUT.getCollectionID()));
-        MessageBus b1 = MessageBusManager.getMessageBus(settingsForCUT, securityManager);
-        Assert.assertNotNull(b1);
-        MessageBus b2 = MessageBusManager.getMessageBus(settingsForCUT.getCollectionID());
-        Assert.assertNotNull(b2);
-        Assert.assertEquals(b1, b2);
     }
 
     @Test(groups = { "regressiontest" })

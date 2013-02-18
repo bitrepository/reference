@@ -32,10 +32,8 @@ public class ContributorTestMessageFactory extends TestMessageFactory {
     protected final String clientID;
     protected final String clientDestination;
 
-    public ContributorTestMessageFactory(
-            String collectionID, String collectionDestination, String contributorID,
+    public ContributorTestMessageFactory(String collectionDestination, String contributorID,
             String contributorDestination, String clientID, String clientDestination) {
-        super(collectionID);
         this.contributorID = contributorID;
         this.contributorDestination = contributorDestination;
         this.collectionDestination = collectionDestination;

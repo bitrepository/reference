@@ -51,7 +51,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
     @BeforeMethod(alwaysRun=true)
     public void initialise() throws Exception {
-        messageFactory = new TestPutFileMessageFactory(settingsForCUT.getCollectionID());
+        messageFactory = new TestPutFileMessageFactory(settingsForTestClient.getComponentID());
 
 }
 
@@ -81,12 +81,12 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
-        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
+        putClient.putFile(collectionID, httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
                 null, null, testEventHandler, null);
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
-        Assert.assertEquals(receivedIdentifyRequestMessage.getCollectionID(), settingsForCUT.getCollectionID());
+        Assert.assertEquals(receivedIdentifyRequestMessage.getCollectionID(), collectionID);
         Assert.assertNotNull(receivedIdentifyRequestMessage.getCorrelationID());
         Assert.assertEquals(receivedIdentifyRequestMessage.getReplyTo(), settingsForCUT.getReceiverDestinationID());
         Assert.assertEquals(receivedIdentifyRequestMessage.getFileID(), DEFAULT_FILE_ID);
@@ -101,7 +101,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         messageBus.sendMessage(identifyResponse);
         PutFileRequest receivedPutFileRequest = pillar1Receiver.waitForMessage(PutFileRequest.class, 10,
                 TimeUnit.SECONDS);
-        Assert.assertEquals(receivedPutFileRequest.getCollectionID(), settingsForCUT.getCollectionID());
+        Assert.assertEquals(receivedPutFileRequest.getCollectionID(), collectionID);
         Assert.assertEquals(receivedPutFileRequest.getCorrelationID(), receivedIdentifyRequestMessage.getCorrelationID());
         Assert.assertEquals(receivedPutFileRequest.getReplyTo(), settingsForCUT.getReceiverDestinationID());
         Assert.assertEquals(receivedPutFileRequest.getFileID(), DEFAULT_FILE_ID);
@@ -146,7 +146,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request the putting of a file through the PutClient",
                 "A identification request should be dispatched.");
-        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
+        putClient.putFile(collectionID, httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
                 null, testEventHandler, null);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
         collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
@@ -172,7 +172,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request the putting of a file through the PutClient",
                 "A identification request should be dispatched.");
-        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
+        putClient.putFile(collectionID, httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
                 null, testEventHandler, null);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
@@ -217,7 +217,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request the putting of a file through the PutClient",
                 "A identification request should be dispatched.");
-        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
+        putClient.putFile(collectionID, httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
                 null, testEventHandler, null);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
@@ -251,7 +251,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request the putting of a file through the PutClient",
                 "The identification message should be sent.");
-        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
+        putClient.putFile(collectionID, httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
                 null, testEventHandler, null);
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
@@ -292,7 +292,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
-        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
+        putClient.putFile(collectionID, httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
                 null, null, testEventHandler, "TEST-AUDIT-TRAIL");
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
@@ -336,7 +336,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("Call putFile.",
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar and a " +
                         "IDENTIFY_REQUEST_SENT should be generated.");
-        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
+        putClient.putFile(collectionID, httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
                 null, null, testEventHandler, "TEST-AUDIT-TRAIL");
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
@@ -371,7 +371,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                         "IDENTIFY_REQUEST_SENT should be generated.");
         ChecksumDataForFileTYPE csClientData = TestFileHelper.getDefaultFileChecksum();
         csClientData.setChecksumValue(Base16Utils.encodeBase16("ba"));
-        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
+        putClient.putFile(collectionID, httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
                 csClientData, null, testEventHandler, "TEST-AUDIT-TRAIL");
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
@@ -408,7 +408,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar and a " +
                         "IDENTIFY_REQUEST_SENT should be generated.");
         ChecksumDataForFileTYPE csClientData = TestFileHelper.getDefaultFileChecksum();
-        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
+        putClient.putFile(collectionID, httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
                 csClientData, null, testEventHandler, "TEST-AUDIT-TRAIL");
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
@@ -462,7 +462,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("Call putFile.",
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar and a " +
                         "IDENTIFY_REQUEST_SENT should be generated.");
-        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
+        putClient.putFile(collectionID, httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
                 null, null, testEventHandler, "TEST-AUDIT-TRAIL");
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
@@ -505,7 +505,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         ChecksumSpecTYPE checksumSpecTYPE = new ChecksumSpecTYPE();
         checksumSpecTYPE.setChecksumType(ChecksumType.HMAC_MD5);
         checksumSpecTYPE.setChecksumSalt(Base16Utils.encodeBase16("aa"));
-        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
+        putClient.putFile(collectionID, httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
                 null, checksumSpecTYPE, testEventHandler, "TEST-AUDIT-TRAIL");
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
@@ -556,7 +556,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                         "IDENTIFY_REQUEST_SENT should be generated.");
         ChecksumSpecTYPE checksumSpecTYPE = new ChecksumSpecTYPE();
         checksumSpecTYPE.setChecksumType(ChecksumType.MD5);
-        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
+        putClient.putFile(collectionID, httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
                 null, checksumSpecTYPE, testEventHandler, "TEST-AUDIT-TRAIL");
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
@@ -605,7 +605,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("Call putFile while requesting a salted checksum to be returned.",
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar and a " +
                         "IDENTIFY_REQUEST_SENT should be generated.");
-        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
+        putClient.putFile(collectionID, httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0,
                 null, null, testEventHandler, "TEST-AUDIT-TRAIL");
 
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
@@ -655,7 +655,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request the putting of a file through the PutClient",
                 "A identification request should be dispatched.");
-        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
+        putClient.putFile(collectionID, httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
                 null, testEventHandler, null);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
@@ -708,7 +708,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request the putting of a file through the PutClient",
                 "A identification request should be dispatched.");
-        putClient.putFile(httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
+        putClient.putFile(collectionID, httpServer.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
                 null, testEventHandler, null);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
