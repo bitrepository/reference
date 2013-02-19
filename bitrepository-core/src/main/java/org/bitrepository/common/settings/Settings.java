@@ -24,6 +24,7 @@
  */
 package org.bitrepository.common.settings;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
 import org.bitrepository.settings.repositorysettings.Collection;
@@ -59,6 +60,20 @@ public class Settings {
      */
     public List<Collection> getCollections() {
         return getRepositorySettings().getCollections().getCollection();
+    }
+    
+    /**
+     * @return The list of collection ids, which this component is part of.
+     */
+    public List<String> getMyCollectionIDs() {
+        List<String> res = new ArrayList<String>();
+        for(Collection c : getRepositorySettings().getCollections().getCollection()) {
+            if(c.getPillarIDs().getPillarID().contains(componentID)) {
+                res.add(c.getID());
+            }
+        }
+        
+        return res;
     }
     
     /**

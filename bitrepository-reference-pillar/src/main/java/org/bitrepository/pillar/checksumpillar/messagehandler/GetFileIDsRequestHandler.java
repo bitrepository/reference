@@ -119,7 +119,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
             return ;
         }
         
-        if(!getCache().hasFile(fileids.getFileID())) {
+        if(!getCache().hasFile(fileids.getFileID(), message.getCollectionID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             throw new InvalidMessageException(irInfo);
@@ -143,22 +143,23 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
     /**
      * Retrieves the requested FileIDs. Depending on which operation is requested, it will call the appropriate method.
      * 
-     * @param request The requested for extracting the file ids.
+     * @param message The requested for extracting the file ids.
      * @return The resulting collection of FileIDs found.
      * file. 
      */
-    private ExtractedFileIDsResultSet retrieveFileIDsData(GetFileIDsRequest request) {
-        if(request.getFileIDs().isSetFileID()) {
+    private ExtractedFileIDsResultSet retrieveFileIDsData(GetFileIDsRequest message) {
+        if(message.getFileIDs().isSetFileID()) {
             ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
-            ChecksumEntry entry = getCache().getEntry(request.getFileIDs().getFileID());
+            ChecksumEntry entry = getCache().getEntry(message.getFileIDs().getFileID(), message.getCollectionID());
             res.insertFileID(entry.getFileId(), entry.getCalculationDate());
             return res;
         } else {
             Long maxResults = null;
-            if(request.getMaxNumberOfResults() != null) {
-                maxResults = request.getMaxNumberOfResults().longValue();
+            if(message.getMaxNumberOfResults() != null) {
+                maxResults = message.getMaxNumberOfResults().longValue();
             }
-            return getCache().getFileIDs(request.getMinTimestamp(), request.getMaxTimestamp(), maxResults);
+            return getCache().getFileIDs(message.getMinTimestamp(), message.getMaxTimestamp(), maxResults, 
+                    message.getCollectionID());
         }
     }
     

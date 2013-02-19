@@ -127,7 +127,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
         validateFileID(fileID);
         
         // Throw proper exception, if the file is missing.
-        if(!getCache().hasFile(fileID)) {
+        if(!getCache().hasFile(fileID, message.getCollectionID())) {
             String errText = "The following file is missing: '" + fileID + "'";
             log.warn(errText);
             ResponseInfo fri = new ResponseInfo();
@@ -161,7 +161,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
 
         if(message.getFileIDs().isSetFileID()) {
             ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
-            ChecksumEntry entry = getCache().getEntry(message.getFileIDs().getFileID());
+            ChecksumEntry entry = getCache().getEntry(message.getFileIDs().getFileID(), message.getCollectionID());
             res.insertChecksumEntry(createChecksumDataForChecksumSpecTYPE(entry));
             return res;
         } else {
@@ -169,7 +169,8 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
             if(message.getMaxNumberOfResults() != null) {
                 maxResults = message.getMaxNumberOfResults().longValue();
             }
-            return getCache().getEntries(message.getMinTimestamp(), message.getMaxTimestamp(), maxResults);
+            return getCache().getEntries(message.getMinTimestamp(), message.getMaxTimestamp(), maxResults, 
+                    message.getCollectionID());
         }
     }
     

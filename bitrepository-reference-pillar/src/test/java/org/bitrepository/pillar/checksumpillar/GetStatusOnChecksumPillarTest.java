@@ -40,11 +40,11 @@ public class GetStatusOnChecksumPillarTest extends ChecksumPillarTest {
     @Override
     public void initializeCUT() {
         super.initializeCUT();
-        msgFactory = new GetStatusMessageFactory(settingsForTestClient.getComponentID());
+        msgFactory = new GetStatusMessageFactory(settingsForTestClient);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void goodCae() {
+    public void goodCase() {
         addDescription("Tests the GetStatus functionality of the checksum pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String contributorId = settingsForCUT.getReferenceSettings().getPillarSettings().getPillarID();

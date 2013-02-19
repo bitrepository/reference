@@ -64,8 +64,8 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
                 + "' with checksum '" + checksumForPillar + "', while requested checksum '" + checksumRequested 
                 + "'. And the audit trail information '" + auditTrailInformation + "'.");
         
-        DeleteFileConversationContext context = new DeleteFileConversationContext(fileId,
-                collectionID, checksumForPillar, checksumRequested, settings, messageBus, clientID,
+        DeleteFileConversationContext context = new DeleteFileConversationContext(collectionID, fileId,
+                checksumForPillar, checksumRequested, settings, messageBus, clientID,
                 Arrays.asList(pillarId), eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForDeleteFile(context));
     }

@@ -34,7 +34,7 @@ import org.bitrepository.pillar.cache.ChecksumDAO;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
-import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -55,8 +55,8 @@ public class ReferencePillar implements Pillar {
     private final MessageBus messageBus;
     /** The mediator for the messages.*/
     private final ReferencePillarMediator mediator;
-    /** The archive for the data.*/
-    private final ReferenceArchive archive;
+    /** The archives for the data.*/
+    private final CollectionArchiveManager archives;
     /** The checksum store.*/
     private final ChecksumStore csStore;
 
@@ -72,10 +72,10 @@ public class ReferencePillar implements Pillar {
         this.messageBus = messageBus;
         
         log.info("Starting the reference pillar!");
-        archive = new ReferenceArchive(settings.getReferenceSettings().getPillarSettings().getFileDir());
+        archives = new CollectionArchiveManager(settings);
         csStore = new ChecksumDAO(settings);
         PillarAlarmDispatcher alarmDispatcher = new PillarAlarmDispatcher(settings, messageBus);
-        ReferenceChecksumManager manager = new ReferenceChecksumManager(archive, csStore, alarmDispatcher,
+        ReferenceChecksumManager manager = new ReferenceChecksumManager(archives, csStore, alarmDispatcher,
                 ChecksumUtils.getDefault(settings), 
                 settings.getReferenceSettings().getPillarSettings().getMaxAgeForChecksums().longValue());
         AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector( 
@@ -85,7 +85,7 @@ public class ReferencePillar implements Pillar {
             new ResponseDispatcher(settings, messageBus),
             alarmDispatcher,
             audits);
-        mediator = new ReferencePillarMediator(messageBus, context, archive, manager);
+        mediator = new ReferencePillarMediator(messageBus, context, archives, manager);
         mediator.start();
         log.info("ReferencePillar started!");
     }
@@ -97,7 +97,7 @@ public class ReferencePillar implements Pillar {
         try {
             mediator.close();
             messageBus.close();
-            archive.close();
+            archives.close();
         } catch (JMSException e) {
             log.warn("Could not close the messagebus.", e);
         }

@@ -125,10 +125,10 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="FileDir" type="xs:string" minOccurs="1" maxOccurs="unbounded">
+        <xs:element ref="CollectionDirs" minOccurs="1" maxOccurs="unbounded">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The path to all the directories where the files should be archived.
+              The directories for the given collections.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
@@ -181,6 +181,32 @@
             <xs:documentation xml:lang="en">
               Whether the ChecksumPillar should download the file regarding PutFile operations.
               Default value is 'DOWNLOAD_WHEN_MISSING_FROM_MESSAGE'.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="CollectionDirs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="CollectionID" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The list of collection ids to have its data archived with the following list of directories.
+              Each collection will have its files archived in its own sub-directory with the collection name.
+              A collection is only able to be used in one 'CollectionDir'.    
+              
+              If no collection ids are defined, then it will be used as default directory for the collections, which
+              does not have a specific set of directories defined.              
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="FileDirs" type="xs:string" minOccurs="1" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The path to all the directories where the files should be archived for this collection id.
             </xs:documentation>
           </xs:annotation>
         </xs:element>

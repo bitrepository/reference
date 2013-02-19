@@ -25,25 +25,34 @@ import static org.bitrepository.pillar.cache.database.DatabaseConstants.CHECKSUM
 import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_FILE_ID;
 import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_CHECKSUM;
 import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_DATE;
+import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_COLLECTION_ID;
 
 import java.util.Date;
 
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 
 /**
  * Ingests data to the checksum database. And also deals with the deletion of entries.
+ * This will only handle the ingest operations for one collection id.
  */
 public class ChecksumIngestor {
     /** The connector for the database.*/
     private final DBConnector connector;
+    /** The collection id for this ingestor.*/
+    private final String collectionId;
     
     /**
      * Constructor.
      * @param connector The connector for the database.
      */
-    public ChecksumIngestor(DBConnector connector) {
+    public ChecksumIngestor(DBConnector connector, String collectionId) {
+        ArgumentValidator.checkNotNull(connector, "DBConnector connector");
+        ArgumentValidator.checkNotNullOrEmpty("String collectionId", collectionId);
+        
         this.connector = connector;
+        this.collectionId = collectionId;
     }
     
     /**
@@ -54,8 +63,8 @@ public class ChecksumIngestor {
      */
     public synchronized void insertNewEntry(String fileId, String checksum, Date date) {
         String sql = "INSERT INTO " + CHECKSUM_TABLE + " ( " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE 
-                + " ) VALUES ( ? , ? , ? )";
-        DatabaseUtils.executeStatement(connector, sql, fileId, checksum, date);
+                + " , " + CS_COLLECTION_ID + " ) VALUES ( ? , ? , ? , ? )";
+        DatabaseUtils.executeStatement(connector, sql, fileId, checksum, date, collectionId);
     }
     
     /**
@@ -66,8 +75,8 @@ public class ChecksumIngestor {
      */
     public void updateEntry(String fileId, String checksum, Date date) {
         String sql = "UPDATE " + CHECKSUM_TABLE + " SET " + CS_CHECKSUM + " = ? , " + CS_DATE + " = ? WHERE " 
-                + CS_FILE_ID + " = ?";
-        DatabaseUtils.executeStatement(connector, sql, checksum, date, fileId);
+                + CS_FILE_ID + " = ? AND " + CS_COLLECTION_ID + " = ?";
+        DatabaseUtils.executeStatement(connector, sql, checksum, date, fileId, collectionId);
     }
     
     /**
@@ -75,7 +84,7 @@ public class ChecksumIngestor {
      * @param fileId The id of the file whose entry should be removed.
      */
     public void removeEntry(String fileId) {
-        String sql = "DELETE FROM " + CHECKSUM_TABLE + " WHERE " + CS_FILE_ID + " = ?";
-        DatabaseUtils.executeStatement(connector, sql, fileId);
+        String sql = "DELETE FROM " + CHECKSUM_TABLE + " WHERE " + CS_FILE_ID + " = ? AND " + CS_COLLECTION_ID + " = ?";
+        DatabaseUtils.executeStatement(connector, sql, fileId, collectionId);
     }
 }

@@ -33,11 +33,15 @@ import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 public class GetStatusMessageFactory extends ClientTestMessageFactory {
-    public GetStatusMessageFactory(String clientID) {
-        super(clientID);
+    private final Settings settingsForTestClient;
+
+    public GetStatusMessageFactory(Settings settingsForTestClient) {
+        super(settingsForTestClient.getComponentID());
+        this.settingsForTestClient = settingsForTestClient;
     }
     
     public IdentifyContributorsForGetStatusRequest createIdentifyContributorsForGetStatusRequest( 
@@ -48,7 +52,7 @@ public class GetStatusMessageFactory extends ClientTestMessageFactory {
         res.setCorrelationID(getNewCorrelationID());
         res.setFrom(from);
         res.setReplyTo(replyTo);
-        
+        res.setDestination(settingsForTestClient.getCollectionDestination());
         return res;
     }
 
@@ -64,7 +68,6 @@ public class GetStatusMessageFactory extends ClientTestMessageFactory {
         res.setResponseInfo(responseInfo);
         res.setTimeToDeliver(timeToDeliver);
         res.setDestination(toTopic);
-        
         return res;
     }
     
@@ -78,7 +81,6 @@ public class GetStatusMessageFactory extends ClientTestMessageFactory {
         res.setFrom(from);
         res.setReplyTo(replyTo);
         res.setDestination(toTopic);
-        
         return res;
     }
 
@@ -92,7 +94,6 @@ public class GetStatusMessageFactory extends ClientTestMessageFactory {
         res.setReplyTo(replyTo);
         res.setResponseInfo(responseInfo);
         res.setDestination(toTopic);
-        
         return res;
     }
 
@@ -107,7 +108,6 @@ public class GetStatusMessageFactory extends ClientTestMessageFactory {
         res.setResponseInfo(responseInfo);
         res.setResultingStatus(status);
         res.setDestination(toTopic);
-        
         return res;
     }
     

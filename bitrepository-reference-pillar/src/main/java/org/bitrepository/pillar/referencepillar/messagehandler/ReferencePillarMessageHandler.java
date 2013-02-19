@@ -33,7 +33,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarMessageHandler;
-import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -42,31 +42,31 @@ import org.bitrepository.service.exception.RequestHandlerException;
  * Abstract level for message handling. 
  */
 public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHandler<T> {
-    /** The reference archive.*/
-    private final ReferenceArchive archive;
+    /** The manager of the archives.*/
+    private final CollectionArchiveManager archives;
     /** The manager of checksums.*/
     private final ReferenceChecksumManager csManager;
     
     /**
      * @param context The context for the pillar.
-     * @param referenceArchive The archive for the pillar.
+     * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected ReferencePillarMessageHandler(MessageHandlerContext context, ReferenceArchive referenceArchive,
+    protected ReferencePillarMessageHandler(MessageHandlerContext context, CollectionArchiveManager archivesManager,
             ReferenceChecksumManager csManager) {
         super(context);
-        ArgumentValidator.checkNotNull(referenceArchive, "referenceArchive");
+        ArgumentValidator.checkNotNull(archivesManager, "CollectionArchiveManager archivesManager");
         ArgumentValidator.checkNotNull(csManager, "ReferenceChecksumManager csManager");
 
-        this.archive = referenceArchive;
+        this.archives = archivesManager;
         this.csManager = csManager;
     }
     
     /**
      * @return The cache for this message handler.
      */
-    protected ReferenceArchive getArchive() {
-        return archive;
+    protected CollectionArchiveManager getArchives() {
+        return archives;
     }
     
     /**

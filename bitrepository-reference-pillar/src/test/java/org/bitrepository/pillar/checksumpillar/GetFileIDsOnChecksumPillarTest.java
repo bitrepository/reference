@@ -126,7 +126,7 @@ public class GetFileIDsOnChecksumPillarTest extends ChecksumPillarTest {
         String CHECKSUM = "1234cccccccc4321";
         
         addStep("Move the test file into the file directory.", "Should be all-right");
-        cache.insertChecksumCalculation(DEFAULT_FILE_ID, CHECKSUM, new Date());
+        cache.insertChecksumCalculation(DEFAULT_FILE_ID, collectionID, CHECKSUM, new Date());
         
         addStep("Create and send the identify request message.", 
                 "Should be received and handled by the pillar.");

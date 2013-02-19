@@ -54,8 +54,8 @@ public class ReferenceChecksumManager {
 
     /** The storage of checksums.*/
     private final ChecksumStore cache;
-    /** The archive with the files.*/
-    private final ReferenceArchive archive;
+    /** The file archives for the different collections.*/
+    private final CollectionArchiveManager archives;
     /** The maximum age for a checksum. Measured in milliseconds.*/
     private final long maxAgeForChecksums;
     /** The default checksum specification.*/
@@ -71,10 +71,10 @@ public class ReferenceChecksumManager {
      * @param defaultChecksumSpec The default specifications for the checksums.
      * @param maxAgeForChecksum The maximum age for the checksums.
      */
-    public ReferenceChecksumManager(ReferenceArchive archive, ChecksumStore cache, AlarmDispatcher alarmDispatcher, 
+    public ReferenceChecksumManager(CollectionArchiveManager archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, 
             ChecksumSpecTYPE defaultChecksumSpec, long maxAgeForChecksum) {
         this.cache = cache;
-        this.archive = archive;
+        this.archives = archives;
         this.alarmDispatcher = alarmDispatcher;
         this.maxAgeForChecksums = maxAgeForChecksum;
         this.defaultChecksumSpec = defaultChecksumSpec;
@@ -88,19 +88,20 @@ public class ReferenceChecksumManager {
      * in the database, along with the calculation of the new checksum specification which will be returned. 
      * 
      * @param fileId The id of the file whose checksum is requested.
+     * @param collectionId The id of the collection of the file.
      * @param csType The type of checksum.
      * @return The entry for the requested type of checksum for the given file.
      */
-    public ChecksumEntry getChecksumEntryForFile(String fileId, ChecksumSpecTYPE csType) {
+    public ChecksumEntry getChecksumEntryForFile(String fileId, String collectionId, ChecksumSpecTYPE csType) {
         if(csType.equals(defaultChecksumSpec)) {
             log.trace("Default checksum specification: {}.", csType);
-            ensureChecksumState(fileId);
-            return cache.getEntry(fileId);
+            ensureChecksumState(fileId, collectionId);
+            return cache.getEntry(fileId, collectionId);
         } else {
             log.trace("Non-default checksum specification: {}. Recalculating the checksums.", csType);
-            recalculateChecksum(fileId);
+            recalculateChecksum(fileId, collectionId);
             
-            File file = archive.getFile(fileId);
+            File file = archives.getFile(fileId, collectionId);
             String checksum = ChecksumUtils.generateChecksum(file, csType);
             return new ChecksumEntry(fileId, checksum, new Date());
         }
@@ -114,17 +115,18 @@ public class ReferenceChecksumManager {
      * in the database, along with the calculation of the new checksum specification which will be returned. 
      * 
      * @param fileId The id of the file whose checksum is requested.
+     * @param collectionId The id of the collection of the file.
      * @param csType The type of checksum.
      * @return The requested type of checksum for the given file.
      */
-    public String getChecksumForFile(String fileId, ChecksumSpecTYPE csType) {
+    public String getChecksumForFile(String fileId, String collectionId, ChecksumSpecTYPE csType) {
         if(csType == defaultChecksumSpec) {
-            ensureChecksumState(fileId);
-            return cache.getChecksum(fileId);            
+            ensureChecksumState(fileId, collectionId);
+            return cache.getChecksum(fileId, collectionId);            
         } else {
-            recalculateChecksum(fileId);
+            recalculateChecksum(fileId, collectionId);
             
-            File file = archive.getFile(fileId);
+            File file = archives.getFile(fileId, collectionId);
             return ChecksumUtils.generateChecksum(file, csType);
         }
     }
@@ -132,41 +134,45 @@ public class ReferenceChecksumManager {
     /**
      * Recalculates the checksum of a given file based on the default checksum specification.
      * @param fileId The id of the file to recalculate its default checksum for.
+     * @param collectionId The id of the collection of the file.
      */
-    public void recalculateChecksum(String fileId) {
+    public void recalculateChecksum(String fileId, String collectionId) {
         log.info("Recalculating the checksum of file '" + fileId + "'.");
-        File file = archive.getFile(fileId);
+        File file = archives.getFile(fileId, collectionId);
         String checksum = ChecksumUtils.generateChecksum(file, defaultChecksumSpec);
-        cache.insertChecksumCalculation(fileId, checksum, new Date());
+        cache.insertChecksumCalculation(fileId, collectionId, checksum, new Date());
     }
     
     /**
      * Removes the entry for the given file.
      * @param fileId The id of the file to remove.
+     * @param collectionId The id of the collection of the file.
      */
-    public void deleteEntry(String fileId) {
-        cache.deleteEntry(fileId);
+    public void deleteEntry(String fileId, String collectionId) {
+        cache.deleteEntry(fileId, collectionId);
     }
     
     /**
      * Calculates the checksum of a file within the tmpDir.
      * @param fileId The id of the file to calculate the checksum for.
+     * @param collectionId The id of the collection of the file.
      * @param csType The specification for the type of checksum to calculate.
      * @return The checksum of the given type for the file with the given id.
      */
-    public String getChecksumForTempFile(String fileId, ChecksumSpecTYPE csType) {
-        File file = archive.getFileInTmpDir(fileId);
+    public String getChecksumForTempFile(String fileId, String collectionId, ChecksumSpecTYPE csType) {
+        File file = archives.getFileInTmpDir(fileId, collectionId);
         return ChecksumUtils.generateChecksum(file, csType);
     }
     
     /**
      * Retrieves the entry for a given file with a given checksumSpec in the ChecksumDataForFileTYPE format.
      * @param fileId The id of the file to retrieve the data from.
+     * @param collectionId The id of the collection of the file.
      * @param csType The type of checksum to calculate.
      * @return The entry encapsulated in the ChecksumDataForFileTYPE data format.
      */
-    public ChecksumDataForFileTYPE getChecksumDataForFile(String fileId, ChecksumSpecTYPE csType) {
-        ChecksumEntry entry = getChecksumEntryForFile(fileId, csType);
+    public ChecksumDataForFileTYPE getChecksumDataForFile(String fileId, String collectionId, ChecksumSpecTYPE csType) {
+        ChecksumEntry entry = getChecksumEntryForFile(fileId, collectionId, csType);
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
         res.setChecksumSpec(csType);
@@ -177,11 +183,13 @@ public class ReferenceChecksumManager {
     /**
      * Retrieves the entry for a given file with a given checksumSpec in the ChecksumDataForChecksumSpecTYPE format.
      * @param fileId The id of the file to retrieve the data from.
+     * @param collectionId The id of the collection of the file.
      * @param csType The type of checksum to calculate.
      * @return The entry encapsulated in the ChecksumDataForChecksumSpecTYPE data format.
      */    
-    public ChecksumDataForChecksumSpecTYPE getChecksumDataForChecksumSpec(String fileId, ChecksumSpecTYPE csType) {
-        ChecksumEntry csEntry = getChecksumEntryForFile(fileId, csType);
+    public ChecksumDataForChecksumSpecTYPE getChecksumDataForChecksumSpec(String fileId, String collectionId,
+            ChecksumSpecTYPE csType) {
+        ChecksumEntry csEntry = getChecksumEntryForFile(fileId, collectionId, csType);
         ChecksumDataForChecksumSpecTYPE res = new ChecksumDataForChecksumSpecTYPE();
         res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(csEntry.getCalculationDate()));
         res.setFileID(csEntry.getFileId());
@@ -195,12 +203,13 @@ public class ReferenceChecksumManager {
      * @param minTimeStamp The minimum date for the timestamp of the extracted checksum entries.
      * @param maxTimeStamp The maximum date for the timestamp of the extracted checksum entries.
      * @param maxNumberOfResults The maximum number of results.
+     * @param collectionId The id of the collection.
      * @return The checksum entries from the store.
      */
     public ExtractedChecksumResultSet getEntries(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            Long maxNumberOfResults) {
-        ensureStateOfAllData();
-        return cache.getEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults);
+            Long maxNumberOfResults, String collectionId) {
+        ensureStateOfAllData(collectionId);
+        return cache.getEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults, collectionId);
     }
     
     /**
@@ -208,10 +217,11 @@ public class ReferenceChecksumManager {
      * @param minTimeStamp The minimum date for the timestamp of the extracted file ids entries.
      * @param maxTimeStamp The maximum date for the timestamp of the extracted file ids entries.
      * @param maxNumberOfResults The maximum number of results.
+     * @param collectionId The id of the collection.
      * @return The requested file ids.
      */
     public ExtractedFileIDsResultSet getFileIds(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            Long maxNumberOfResults) {
+            Long maxNumberOfResults, String collectionId) {
         ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
         
         Long minTime = 0L;
@@ -225,8 +235,8 @@ public class ReferenceChecksumManager {
         
         // Map between lastModifiedDate and fileID.
         ConcurrentSkipListMap<Long, String> sortedDateFileIDMap = new ConcurrentSkipListMap<Long, String>();
-        for(String fileId : archive.getAllFileIds()) {
-            Long lastModified = archive.getFile(fileId).lastModified();
+        for(String fileId : archives.getAllFileIds(collectionId)) {
+            Long lastModified = archives.getFile(fileId, collectionId).lastModified();
             if((minTimeStamp == null || minTime <= lastModified) &&
                     (maxTimeStamp == null || maxTime >= lastModified)) {
                 sortedDateFileIDMap.put(lastModified, fileId);
@@ -251,14 +261,15 @@ public class ReferenceChecksumManager {
     /**
      * Validates that all files in the cache is also in the archive, and that all files in the archive
      * is also in the cache.
+     * @param collectionId The id of the collection where the data should be ensured.
      */
-    private void ensureStateOfAllData() {
-        for(String fileId : cache.getAllFileIDs()) {
-            ensureFileState(fileId);
+    private void ensureStateOfAllData(String collectionId) {
+        for(String fileId : cache.getAllFileIDs(collectionId)) {
+            ensureFileState(fileId, collectionId);
         }
         
-        for(String fileId : archive.getAllFileIds()) {
-            ensureChecksumState(fileId);
+        for(String fileId : archives.getAllFileIds(collectionId)) {
+            ensureChecksumState(fileId, collectionId);
         }
     }
     
@@ -266,9 +277,10 @@ public class ReferenceChecksumManager {
      * Ensures that a file id in the cache is also in the archive.
      * Will send an alarm, if the file is missing, then remove it from index.
      * @param fileId The id of the file.
+     * @param collectionId The id of the collection of the file.
      */
-    private void ensureFileState(String fileId) {
-        if(!archive.hasFile(fileId)) {
+    private void ensureFileState(String fileId, String collectionId) {
+        if(!archives.hasFile(fileId, collectionId)) {
             log.warn("The file '" + fileId + "' in the ChecksumCache is no longer in the archive. "
                     + "Dispatching an alarm, and removing it from the cache.");
             Alarm alarm = new Alarm();
@@ -278,7 +290,7 @@ public class ReferenceChecksumManager {
             alarm.setFileID(fileId);
             alarmDispatcher.error(alarm);
             
-            cache.deleteEntry(fileId);
+            cache.deleteEntry(fileId, collectionId);
         }
     }
     
@@ -286,23 +298,24 @@ public class ReferenceChecksumManager {
      * Ensures that the cache has an non-deprecated checksum for the given file.
      * Also validates, that the checksum is up to date with the file.
      * @param fileId The id of the file.
+     * @param collectionId The id of the collection of the file.
      */
-    private void ensureChecksumState(String fileId) {
-        if(!cache.hasFile(fileId)) {
+    private void ensureChecksumState(String fileId, String collectionId) {
+        if(!cache.hasFile(fileId, collectionId)) {
             log.debug("No checksum cached for file '" + fileId + "'. Calculating the checksum.");
-            recalculateChecksum(fileId);
+            recalculateChecksum(fileId, collectionId);
         } else {
-            long checksumDate = cache.getCalculationDate(fileId).getTime();
+            long checksumDate = cache.getCalculationDate(fileId, collectionId).getTime();
             long minDateForChecksum = System.currentTimeMillis() - maxAgeForChecksums;
             if(checksumDate < minDateForChecksum) {
                 log.info("The checksum for the file '" + fileId + "' is too old. Recalculating.");                
-                recalculateChecksum(fileId);
+                recalculateChecksum(fileId, collectionId);
                 return;
             } 
             
-            if(checksumDate < archive.getFile(fileId).lastModified()) {
+            if(checksumDate < archives.getFile(fileId, collectionId).lastModified()) {
                 log.info("The last modified date for the file is newer than the latest checksum.");                
-                recalculateChecksum(fileId);
+                recalculateChecksum(fileId, collectionId);
             }
         }
     }

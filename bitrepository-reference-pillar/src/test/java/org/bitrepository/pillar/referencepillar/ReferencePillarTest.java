@@ -37,7 +37,7 @@ import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.cache.MemoryCache;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
-import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
+import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.service.AlarmDispatcher;
@@ -46,7 +46,7 @@ import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.testng.Assert;
 
 public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
-    protected ReferenceArchive archive;
+    protected CollectionArchiveManager archives;
     protected ReferenceChecksumManager csManager;
     protected ReferencePillarMediator mediator;
     protected MockAuditManager audits;
@@ -69,7 +69,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     @Override
     protected void initializeCUT() {
         super.initializeCUT();
-        File fileDir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir().get(0));
+        File fileDir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getCollectionDirs().get(0).getFileDirs().get(0));
         if(fileDir.exists()) {
             FileUtils.delete(fileDir);
         }
@@ -85,7 +85,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     protected void createReferencePillar() {
         shutdownMediator();
         csCache = new MemoryCache();
-        archive = new ReferenceArchive(settingsForCUT.getReferenceSettings().getPillarSettings().getFileDir());
+        archives = new CollectionArchiveManager(settingsForCUT);
         alarmDispatcher = new AlarmDispatcher(settingsForCUT, messageBus);
         audits = new MockAuditManager();
         context = new MessageHandlerContext(
@@ -93,9 +93,9 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
                 new ResponseDispatcher(settingsForCUT, messageBus),
                 new PillarAlarmDispatcher(settingsForCUT, messageBus),
                 audits);
-        csManager = new ReferenceChecksumManager(archive, csCache, alarmDispatcher, 
+        csManager = new ReferenceChecksumManager(archives, csCache, alarmDispatcher, 
                 ChecksumUtils.getDefault(context.getSettings()), 3600000L);
-        mediator = new ReferencePillarMediator(messageBus, context, archive, csManager);
+        mediator = new ReferencePillarMediator(messageBus, context, archives, csManager);
         mediator.start();
         initializeArchiveWithEmptyFile();
     }
@@ -113,11 +113,11 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     }
 
     private void initializeArchiveWithEmptyFile() {
-        addFixtureSetup("Initialize the Reference pillar cache with en empty file.");
+        addFixtureSetup("Initialize the Reference pillar cache with an empty file.");
         try {
-            archive.downloadFileForValidation(DEFAULT_FILE_ID, new ByteArrayInputStream(new byte[0]));
-            archive.moveToArchive(DEFAULT_FILE_ID);
-            csCache.insertChecksumCalculation(DEFAULT_FILE_ID, EMPTY_FILE_CHECKSUM, new Date());
+            archives.downloadFileForValidation(DEFAULT_FILE_ID, collectionID, new ByteArrayInputStream(new byte[0]));
+            archives.moveToArchive(DEFAULT_FILE_ID, collectionID);
+            csCache.insertChecksumCalculation(DEFAULT_FILE_ID, collectionID, EMPTY_FILE_CHECKSUM, new Date());
         } catch (Exception e) {
             Assert.fail("Could not instantiate the archive", e);
         }

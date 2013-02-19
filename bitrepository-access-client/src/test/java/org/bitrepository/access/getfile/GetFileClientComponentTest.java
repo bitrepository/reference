@@ -250,11 +250,6 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         slowReply.setTimeToDeliver(slowTime);
         messageBus.sendMessage(slowReply);
 
-        GetFileRequest receivedGetFileRequest = pillar1Receiver.waitForMessage(GetFileRequest.class);
-        Assert.assertEquals(receivedGetFileRequest,
-                testMessageFactory.createGetFileRequest(receivedGetFileRequest, NO_FILE_PART, fastPillarID,
-                        pillar1DestinationId, settingsForTestClient.getComponentID()));
-
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
@@ -262,6 +257,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         Assert.assertEquals(event.getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
         Assert.assertEquals(event.getContributorIDs().get(0), fastPillarID);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
+        pillar1Receiver.waitForMessage(GetFileRequest.class);
     }
 
     @Test(groups = {"regressiontest"})

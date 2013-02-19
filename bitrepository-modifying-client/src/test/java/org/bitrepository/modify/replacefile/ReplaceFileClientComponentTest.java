@@ -89,7 +89,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Request a file to be replaced on all pillars (which means only the default pillar).",
                 "A IdentifyPillarsForReplaceFileRequest should be sent to the pillar.");
-        replaceClient.replaceFile(collectionID, PILLAR1_ID,DEFAULT_FILE_ID, DEFAULT_OLD_CHECKSUM_DATA,
+        replaceClient.replaceFile(collectionID, DEFAULT_FILE_ID,PILLAR1_ID,  DEFAULT_OLD_CHECKSUM_DATA,
                 checksumRequest,
                 address, 10, DEFAULT_NEW_CHECKSUM_DATA, checksumRequest, testEventHandler, null);
 

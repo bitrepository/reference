@@ -79,25 +79,30 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         addStep("Retrieve all audit trails from the collection by calling with a null componentQueries array",
                 "This should be interpreted as a request for all audit trails from all the collection settings " +
         "defined contributers.");
-        client.getAuditTrails(collectionID, null, null, null, testEventHandler, null);
-        IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
-            collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+        client.getAuditTrails(collectionID, null, DEFAULT_FILE_ID, null, testEventHandler, null);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
+        IdentifyContributorsForGetAuditTrailsRequest receivedIdentifyRequest =
+            collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
+        Assert.assertEquals(receivedIdentifyRequest.getCollectionID(), collectionID);
+        Assert.assertNotNull(receivedIdentifyRequest.getCorrelationID());
+        Assert.assertEquals(receivedIdentifyRequest.getReplyTo(), settingsForCUT.getReceiverDestinationID());
+        Assert.assertEquals(receivedIdentifyRequest.getFrom(), settingsForTestClient.getComponentID());
+        Assert.assertEquals(receivedIdentifyRequest.getDestination(), settingsForTestClient.getCollectionDestination());
 
         addStep("Send a identifyResponse from each pillar",
                 "Two COMPONENT_IDENTIFIED events and a IDENTIFICATION_COMPLETE event should be received." +
                 "Rights after this a REQUEST_SENT should be received and a GetAuditTrailsRequest should " +
         "be sent to each pillar");
         IdentifyContributorsForGetAuditTrailsResponse responsePillar1 =
-            testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
+            testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(receivedIdentifyRequest,
                     PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(responsePillar1);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
 
         IdentifyContributorsForGetAuditTrailsResponse responsePillar2 =
-            testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
+            testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(receivedIdentifyRequest,
                     PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(responsePillar2);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
@@ -108,11 +113,20 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
         GetAuditTrailsRequest requestPillar1 = pillar1Receiver.waitForMessage(GetAuditTrailsRequest.class);
-        Assert.assertEquals(requestPillar1, testMessageFactory.createGetAuditTrailsRequest(
-                identifyRequest, PILLAR1_ID, pillar1DestinationId));
+        Assert.assertEquals(requestPillar1.getCollectionID(), collectionID);
+        Assert.assertEquals(requestPillar1.getCorrelationID(), receivedIdentifyRequest.getCorrelationID());
+        Assert.assertEquals(requestPillar1.getReplyTo(), settingsForCUT.getReceiverDestinationID());
+        Assert.assertEquals(requestPillar1.getFileID(), DEFAULT_FILE_ID);
+        Assert.assertEquals(requestPillar1.getFrom(), settingsForTestClient.getComponentID());
+        Assert.assertEquals(requestPillar1.getDestination(), pillar1DestinationId);
+
         GetAuditTrailsRequest requestPillar2 = pillar2Receiver.waitForMessage(GetAuditTrailsRequest.class);
-        Assert.assertEquals(requestPillar2, testMessageFactory.createGetAuditTrailsRequest(
-                identifyRequest, PILLAR2_ID, pillar2DestinationId));
+        Assert.assertEquals(requestPillar2.getCollectionID(), collectionID);
+        Assert.assertEquals(requestPillar2.getCorrelationID(), receivedIdentifyRequest.getCorrelationID());
+        Assert.assertEquals(requestPillar2.getReplyTo(), settingsForCUT.getReceiverDestinationID());
+        Assert.assertEquals(requestPillar2.getFileID(), DEFAULT_FILE_ID);
+        Assert.assertEquals(requestPillar2.getFrom(), settingsForTestClient.getComponentID());
+        Assert.assertEquals(requestPillar2.getDestination(), pillar2DestinationId);
 
         addStep("Send a final response from pillar 1",
         "A COMPONENT_COMPLETE event should be generated with the audit trail results.");
@@ -303,7 +317,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
             testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
                     PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(responsePillar1);
-        IdentifyContributorsForGetAuditTrailsResponse responsePillar2 =
+       IdentifyContributorsForGetAuditTrailsResponse responsePillar2 =
             testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(identifyRequest,
                     PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(responsePillar2);
@@ -318,11 +332,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
         GetAuditTrailsRequest requestPillar1 = pillar1Receiver.waitForMessage(GetAuditTrailsRequest.class);
-        Assert.assertEquals(requestPillar1, testMessageFactory.createGetAuditTrailsRequest(
-                identifyRequest, PILLAR1_ID, pillar1DestinationId));
         GetAuditTrailsRequest requestPillar2 = pillar2Receiver.waitForMessage(GetAuditTrailsRequest.class);
-        Assert.assertEquals(requestPillar2, testMessageFactory.createGetAuditTrailsRequest(
-                identifyRequest, PILLAR2_ID, pillar2DestinationId));
 
         addStep("Send a progress accepted response from pillar 1",
         "A PROGRESS event should be generated.");

@@ -160,7 +160,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.FILE_NOT_FOUND_FAILURE);
 
         addStep("Validate the content of the cache", "Should not contain the checksum of the file");
-        Assert.assertEquals(archive.getFile(DEFAULT_FILE_ID).length(), 0);
+        Assert.assertEquals(archives.getFile(DEFAULT_FILE_ID, collectionID).length(), 0);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -173,14 +173,14 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
                 DEFAULT_DOWNLOAD_FILE_ADDRESS, "NoneExistingFile", FILE_SIZE));
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
-        Assert.assertEquals(archive.getFile(DEFAULT_FILE_ID).length(), 0);
+        Assert.assertEquals(archives.getFile(DEFAULT_FILE_ID, collectionID).length(), 0);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
     public void referencePillarReplaceFileTestMissingExistingChecksumArgument() throws Exception {
         addDescription("Tests that a missing 'ChecksumOnExistingFile' will not delete the file.");
         Assert.assertTrue(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
-        Assert.assertTrue(archive.hasFile(DEFAULT_FILE_ID));
+        Assert.assertTrue(archives.hasFile(DEFAULT_FILE_ID, collectionID));
         messageBus.sendMessage(msgFactory.createReplaceFileRequest(null, replaceCsData, csSpec, csSpec,
                 DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, FILE_SIZE));
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
@@ -203,7 +203,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-        Assert.assertEquals(archive.getFile(DEFAULT_FILE_ID).length(), 0);
+        Assert.assertEquals(archives.getFile(DEFAULT_FILE_ID, collectionID).length(), 0);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
