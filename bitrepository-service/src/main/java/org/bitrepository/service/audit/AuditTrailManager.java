@@ -34,6 +34,7 @@ import org.bitrepository.bitrepositoryelements.FileAction;
 public interface AuditTrailManager {
     /**
      * Adds an audit trail event to the manager.
+     * @param collectionId The id of the collection for whom the audit applies.
      * @param fileId The id of the file, where the operation has been performed.
      * Use the argument null for indicating all file ids. 
      * @param actor The name of the actor.
@@ -41,10 +42,11 @@ public interface AuditTrailManager {
      * @param auditTrail The string for the audit trail information from the message performing the operation.
      * @param operation The performed operation.
      */
-    void addAuditEvent(String fileId, String actor, String info, String auditTrail, FileAction operation);
+    void addAuditEvent(String collectionId, String fileId, String actor, String info, String auditTrail, FileAction operation);
     
     /**
      * Method for extracting all the audit trails.
+     * @param collectionId The id of the collection for whom the audit applies.
      * @param fileId [OPTIONAL] The id of the file to request audits for.
      * @param minSeqNumber [OPTIONAL] The lower sequence number requested. 
      * @param maxSeqNumber [OPTIONAL] The upper sequence number requested.
@@ -53,6 +55,6 @@ public interface AuditTrailManager {
      * @param maxNumberOfResults [OPTIONAL] The maximum number of results.
      * @return The audit trails corresponding to the requested arguments.
      */
-    AuditTrailDatabaseResults getAudits(String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate, 
+    AuditTrailDatabaseResults getAudits(String collectionId, String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate, 
             Date maxDate, Long maxNumberOfResults);
 }

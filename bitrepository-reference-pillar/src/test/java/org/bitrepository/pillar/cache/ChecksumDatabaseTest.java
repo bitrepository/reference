@@ -47,7 +47,7 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
     
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
-        settings = TestSettingsProvider.reloadSettings("ReferencePillarTest");
+        settings = TestSettingsProvider.reloadSettingsForPillar("ReferencePillarTest");
 
         DatabaseSpecifics checksumDB =
                 settings.getReferenceSettings().getPillarSettings().getChecksumDatabase();

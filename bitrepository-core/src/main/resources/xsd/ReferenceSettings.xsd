@@ -191,14 +191,19 @@
   <xs:element name="CollectionDirs">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="CollectionID" type="xs:string">
+        <xs:element name="CollectionID" type="xs:string" minOccurs="0" maxOccurs="unbounded">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The collection id for archive with the following list of directories.
+              The list of collection ids to have its data archived with the following list of directories.
+              Each collection will have its files archived in its own sub-directory with the collection name.
+              A collection is only able to be used in one 'CollectionDir'.    
+              
+              If no collection ids are defined, then it will be used as default directory for the collections, which
+              does not have a specific set of directories defined.              
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="FileDir" type="xs:string" minOccurs="1" maxOccurs="unbounded">
+        <xs:element name="FileDirs" type="xs:string" minOccurs="1" maxOccurs="unbounded">
           <xs:annotation>
             <xs:documentation xml:lang="en">
               The path to all the directories where the files should be archived for this collection id.
@@ -475,7 +480,7 @@
         <xs:element name="GracePeriod" type="xs:long" minOccurs="0">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              Initial graze period in milliseconds after startup to allow the system to finish startup. The default is
+              Initial grace period in milliseconds after startup to allow the system to finish startup. The default is
               0 ms.
             </xs:documentation>
           </xs:annotation>
@@ -518,6 +523,14 @@
           <xs:annotation>
             <xs:documentation xml:lang="en">
               The amount of milliseconds between each time the scheduler collects integrity information.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="GracePeriod" type="xs:long" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Initial grace period in milliseconds after startup to allow the system to finish startup. The default is
+              0 ms.
             </xs:documentation>
           </xs:annotation>
         </xs:element>

@@ -70,14 +70,19 @@
      -->
     <CollectionDirs>
       <!-- 
-        The id of the collection with the following directories. 
+          The list of collection ids to have its data archived with the following list of directories.
+          Each collection will have its files archived in its own sub-directory with the collection name.
+          A collection is only able to be used in one 'CollectionDir'.    
+
+          If no collection ids are defined, then it will be used as default directory for the collections, which
+          does not have a specific set of directories defined.              
         -->
       <CollectionID>TwoPillarCollection</CollectionID>
       
       <!-- 
-        Path to the base directory for file storage and checksum files (for the checksumpillar)
+        Paths to the base directory for file storage and checksum files.
       -->
-      <FileDir>test-archive</FileDir>
+      <FileDirs>test-archive</FileDirs>
     </CollectionDirs>
 
     <!--

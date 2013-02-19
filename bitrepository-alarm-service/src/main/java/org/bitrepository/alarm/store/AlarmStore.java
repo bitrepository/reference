@@ -29,11 +29,12 @@ import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
+import org.bitrepository.service.LifeCycledService;
 
 /**
  * The AlarmStore is where the alarms are persisted.
  */
-public interface AlarmStore {
+public interface AlarmStore extends LifeCycledService{
     /**
      * Add an alarm to the store.
      * @param alarm The alarm to be added to the store.

@@ -169,4 +169,9 @@ public interface IntegrityModel {
      * @return The requested date.
      */
     Date getDateForNewestChecksumEntryForPillar(String pillarId);
+
+    /**
+     * Shutdown the model. This will typically consist of closing DB connections.
+     */
+    void close();
 }

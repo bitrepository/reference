@@ -167,6 +167,10 @@ public class SimpleIntegrityService implements IntegrityService {
         if(contributor != null) {
             contributor.close();
         }
+
+        if(cache != null) {
+            cache.close();
+        }
     }
     
     /**

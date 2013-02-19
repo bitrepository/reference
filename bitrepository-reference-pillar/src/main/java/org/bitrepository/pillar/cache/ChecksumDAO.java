@@ -38,7 +38,7 @@ import org.bitrepository.service.database.DatabaseMigrator;
 
 /**
  * The checksum store backed by a database.
- * This contains one ingestor and one extractor for each collection id.
+ * This contains one ingestor and one extractor for each collec
  */
 public class ChecksumDAO implements ChecksumStore {
     /** The map between ingestors for the database and their respective collection ids.*/
@@ -56,13 +56,15 @@ public class ChecksumDAO implements ChecksumStore {
         connector = new DBConnector(
                 settings.getReferenceSettings().getPillarSettings().getChecksumDatabase());
         
-        for(String id : settings.getMyCollectionIDs()) {
-            this.ingestors.put(id, new ChecksumIngestor(connector, id));
-            this.extractors.put(id, new ChecksumExtractor(connector, id));
-        }
+        synchronized(this) {
+            for(String id : settings.getMyCollectionIDs()) {
+                this.ingestors.put(id, new ChecksumIngestor(connector, id));
+                this.extractors.put(id, new ChecksumExtractor(connector, id));
+            }
         
-        DatabaseMigrator migrator = new ChecksumDBMigrator(connector, settings);
-        migrator.migrate();
+            DatabaseMigrator migrator = new ChecksumDBMigrator(connector, settings);
+            migrator.migrate();
+        }
     }
     
     @Override

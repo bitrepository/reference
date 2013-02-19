@@ -53,5 +53,6 @@ public class AlarmStorer implements AlarmHandler {
     @Override
     public void close() { 
         log.debug("Closing the alarmhandler '" + this.getClass().getCanonicalName() + "'");
+        store.shutdown();
     }
 }

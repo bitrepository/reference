@@ -63,7 +63,7 @@ public class FileExistenceValidatorTest extends ExtendedTestCase {
     public void testNoData() {
         addDescription("Test the file existence validator without any data in the cache.");
         IntegrityModel cache = getIntegrityModel();
-        FileExistenceValidator validator = new FileExistenceValidator(settings, cache, auditManager);
+        FileExistenceValidator validator = new FileExistenceValidator(settings.getCollection(), cache, auditManager);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
         MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs());
@@ -74,7 +74,7 @@ public class FileExistenceValidatorTest extends ExtendedTestCase {
     public void testSimilarData() {
         addDescription("Test the file existence validator when both pillars have similar data.");
         IntegrityModel cache = getIntegrityModel();
-        FileExistenceValidator validator = new FileExistenceValidator(settings, cache, auditManager);
+        FileExistenceValidator validator = new FileExistenceValidator(settings.getCollection(), cache, auditManager);
         
         addStep("Add data to the cache", "");
         FileIDsData fileidData = createFileIdData(FILE_1);
@@ -89,7 +89,7 @@ public class FileExistenceValidatorTest extends ExtendedTestCase {
     public void testMissingDataAtOnePillar() {
         addDescription("Test the file existence validator when the pillars data differ.");
         IntegrityModel cache = getIntegrityModel();
-        FileExistenceValidator validator = new FileExistenceValidator(settings, cache, auditManager);
+        FileExistenceValidator validator = new FileExistenceValidator(settings.getCollection(), cache, auditManager);
         
         addStep("Add data to the cache for only one pillar", "");
         FileIDsData fileidData = createFileIdData(FILE_1);
@@ -108,7 +108,7 @@ public class FileExistenceValidatorTest extends ExtendedTestCase {
     public void testDataSatToMissing() {
         addDescription("Test the file existence validator when the filestate is set to missing at one pillar.");
         IntegrityModel cache = getIntegrityModel();
-        FileExistenceValidator validator = new FileExistenceValidator(settings, cache, auditManager);
+        FileExistenceValidator validator = new FileExistenceValidator(settings.getCollection(), cache, auditManager);
         
         addStep("Add data to the cache for only one pillar", "");
         FileIDsData fileidData = createFileIdData(FILE_1);
@@ -129,7 +129,7 @@ public class FileExistenceValidatorTest extends ExtendedTestCase {
     public void testDataMissingAtBothPillars() {
         addDescription("Test the file existence validator when the file is missing at both pillars.");
         IntegrityModel cache = getIntegrityModel();
-        FileExistenceValidator validator = new FileExistenceValidator(settings, cache, auditManager);
+        FileExistenceValidator validator = new FileExistenceValidator(settings.getCollection(), cache, auditManager);
         
         addStep("Add data to the cache for only one pillar", "");
         FileIDsData fileidData = createFileIdData(FILE_1);

@@ -230,6 +230,12 @@ public class MockIntegrityModel implements IntegrityModel {
         callsForGetDateForNewestChecksumEntryForPillar++;
         return integrityModel.getDateForNewestChecksumEntryForPillar(pillarId);
     }
+
+    @Override
+    public void close() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public int getCallsForGetDateForNewestChecksumEntryForPillar() {
         return callsForGetDateForNewestChecksumEntryForPillar;
     }

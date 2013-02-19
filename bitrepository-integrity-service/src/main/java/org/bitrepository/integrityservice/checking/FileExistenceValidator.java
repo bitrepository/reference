@@ -22,14 +22,13 @@
 package org.bitrepository.integrityservice.checking;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
 import org.bitrepository.service.audit.AuditTrailManager;
+import org.bitrepository.settings.repositorysettings.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +40,8 @@ public class FileExistenceValidator {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The cache for the integrity data.*/
     private final IntegrityModel cache;
-    /** The settings.*/
-    private final Settings settings;
+    /** The collection which this FileExistenceValidator belongs to.*/
+    private final Collection collection;
     /** The audit trail manager.*/
     private final AuditTrailManager auditManager;
     
@@ -52,9 +51,9 @@ public class FileExistenceValidator {
      * @param cache The cache with the integrity model.
      * @param auditManager the audit trail manager.
      */
-    public FileExistenceValidator(Settings settings, IntegrityModel cache, AuditTrailManager auditManager) {
+    public FileExistenceValidator(Collection collection, IntegrityModel cache, AuditTrailManager auditManager) {
         this.cache = cache;
-        this.settings = settings;
+        this.collection = collection;
         this.auditManager = auditManager;
     }
     
@@ -68,7 +67,7 @@ public class FileExistenceValidator {
      * @param requestedFileIDs The list of files to validate.
      * @return The report for the existence state of the given files.
      */
-    public MissingFileReportModel generateReport(Collection<String> requestedFileIDs) {
+    public MissingFileReportModel generateReport(java.util.Collection<String> requestedFileIDs) {
         MissingFileReportModel report = new MissingFileReportModel();
         for(String fileId : requestedFileIDs) {
             List<String> pillarIds = cache.getPillarsMissingFile(fileId);
@@ -78,7 +77,7 @@ public class FileExistenceValidator {
                 continue;
             }
             
-            auditManager.addAuditEvent(fileId, "IntegrityService", "The file '" + fileId +"' does not exist at "
+            auditManager.addAuditEvent(collection.getID(), fileId, "IntegrityService", "The file '" + fileId +"' does not exist at "
                     + "the pillars '" + pillarIds + "'", "IntegrityService checking files.", 
                     FileAction.INCONSISTENCY);
             
@@ -99,7 +98,7 @@ public class FileExistenceValidator {
      */
     private boolean isAllPillars(List<String> pillarIds) {
         List<String> knownPillars = new ArrayList<String>(
-                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+                collection.getPillarIDs().getPillarID());
         
         for(String pillarId : pillarIds) {
             knownPillars.remove(pillarId);

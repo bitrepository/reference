@@ -153,7 +153,8 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
             maxNumberOfResults = message.getMaxNumberOfResults().longValue();
         }
         
-        return auditManager.getAudits(message.getFileID(), minSeq, maxSeq, minDate, maxDate, maxNumberOfResults);
+        return auditManager.getAudits(message.getCollectionID(), message.getFileID(), minSeq, maxSeq, minDate, 
+                maxDate, maxNumberOfResults);
     }
     
     /**

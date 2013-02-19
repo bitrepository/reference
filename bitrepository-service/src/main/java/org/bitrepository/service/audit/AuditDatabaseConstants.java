@@ -53,6 +53,8 @@ public final class AuditDatabaseConstants {
     public final static String FILE_GUID = "file_guid";
     /** The name of the fileid field in the file table.*/
     public final static String FILE_FILEID = "fileid";
+    /** The name of the collectionid field in the file table.*/
+    public final static String FILE_COLLECTIONID = "collectionid";
     
     /** The name of the actor table.*/
     public final static String ACTOR_TABLE = "actor";

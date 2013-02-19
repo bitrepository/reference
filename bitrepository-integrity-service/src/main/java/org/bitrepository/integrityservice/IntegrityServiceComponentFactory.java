@@ -98,13 +98,14 @@ public final class IntegrityServiceComponentFactory {
      * @param getFileIDsClient The client for performing the collecting of the file ids.
      * @param getChecksumsClient The client for performing the collecting of the checksums.
      * @param auditManager The manager of audit trails.
+     * @param collectionId The id of the collection.
      * @return an <code>IntegrityInformationCollector</code> that collects integrity information.
      */
     public IntegrityInformationCollector getIntegrityInformationCollector(GetFileIDsClient getFileIDsClient, 
-            GetChecksumsClient getChecksumsClient, AuditTrailManager auditManager) {
+            GetChecksumsClient getChecksumsClient, AuditTrailManager auditManager, String collectionId) {
         if (integrityInformationCollector == null) {
             integrityInformationCollector = new DelegatingIntegrityInformationCollector(getFileIDsClient, 
-                    getChecksumsClient, auditManager);
+                    getChecksumsClient, auditManager, collectionId);
         }
         return integrityInformationCollector;
     }
@@ -157,7 +158,7 @@ public final class IntegrityServiceComponentFactory {
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()), 
-                        auditManager);
+                        auditManager, settings.getCollectionID());
         
         return new SimpleIntegrityService(model, scheduler, checker, alarmDispatcher, collector, auditManager, 
                 settings, messageBus);

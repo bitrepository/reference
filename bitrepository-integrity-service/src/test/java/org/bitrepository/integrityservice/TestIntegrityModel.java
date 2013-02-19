@@ -468,6 +468,11 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
+    public void close() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public void setAllFilesToUnknownFileState() {
         for(String s : cache.keySet()) {
             CollectionFileIDInfo collectionInfo = cache.get(s);

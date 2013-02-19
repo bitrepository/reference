@@ -31,7 +31,7 @@ import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
  * audit trail database as defined in the provided settings.
  */
 public class IntegrityDatabaseCreator extends DatabaseCreator {
-    public static final String DEFAULT_INTEGRITY_DB_SCRIPT = "sql/derby/integrityServiceDBCreation.sql";
+    public static final String DEFAULT_INTEGRITY_DB_SCRIPT = "sql/derby/integrityDBCreation.sql";
 
     /**
      * @param args <ol>

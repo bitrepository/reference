@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bitrepository.common.FileStore;
@@ -24,8 +26,53 @@ public class CollectionArchiveManager implements FileStore {
      * @param settings The settings for the repository.
      */
     public CollectionArchiveManager(Settings settings) {
+        initiateSpecificDirs(settings);
+        initiateDefaultDirs(settings);
+    }
+    
+    /**
+     * Initiates the specified archive directories.
+     * @param settings The settings.
+     */
+    private void initiateSpecificDirs(Settings settings) {
         for(CollectionDirs cd : settings.getReferenceSettings().getPillarSettings().getCollectionDirs()){
-            archives.put(cd.getCollectionID(), new ReferenceArchive(cd.getFileDir()));
+            if(cd.getCollectionID().isEmpty()) {
+                continue;
+            } else {
+                initiateArchive(cd.getCollectionID(), cd.getFileDirs());
+            }
+        }        
+    }
+    
+    /**
+     * Initiates the default archive directories.
+     * These will only be used for the collections, which does not have a specified directory.
+     * @param settings The settings.
+     */
+    private void initiateDefaultDirs(Settings settings) {
+        for(CollectionDirs cd : settings.getReferenceSettings().getPillarSettings().getCollectionDirs()){
+            if(cd.getCollectionID().isEmpty()) {
+                initiateArchive(settings.getMyCollectionIDs(), cd.getFileDirs());
+            }
+        }        
+    }
+    
+    /**
+     * Initiates the archives for a set of collection ids and their respective directory paths.
+     * Only creates archives for the collection, if it does not already has one.
+     * @param collectionIDs
+     * @param fileDirs
+     */
+    private void initiateArchive(Collection<String> collectionIDs, Collection<String> fileDirs) {
+        for(String colId : collectionIDs) {
+            List<String> dirs = new ArrayList<String>();
+            for(String dir : fileDirs) {
+                dirs.add(new File(dir, colId).getPath());
+            }
+            
+            if(!archives.containsKey(colId)) {
+                archives.put(colId, new ReferenceArchive(dirs));
+            }
         }
     }
 

@@ -34,6 +34,9 @@ public class MockWorkflow implements Workflow {
     public void start() {
         callsForStart++;
     }
+    public int getCallsForStart() {
+        return callsForStart;
+    }
 
     @Override
     public String currentState() {

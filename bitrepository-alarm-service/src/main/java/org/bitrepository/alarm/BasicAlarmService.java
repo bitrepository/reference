@@ -88,6 +88,9 @@ public class BasicAlarmService implements AlarmService {
         if(contributorMediator != null) {
             contributorMediator.close();
         }
+        if (store != null) {
+            shutdown();
+        }
         try {
             messageBus.close();
             // TODO Kill any lingering timer threads
