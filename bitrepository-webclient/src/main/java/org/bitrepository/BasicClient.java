@@ -38,6 +38,7 @@ import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.RepositorySettings;
 import org.bitrepository.utils.HexUtils;
 import org.bitrepository.utils.XMLGregorianCalendarConverter;
@@ -95,6 +96,14 @@ public class BasicClient {
                 this.securityManager, clientID);
         log.debug("---- Basic client instantiated ----");
 
+    }
+    
+    public List<String> getCollectionIDs() {
+        List<String> collections = new ArrayList<String>();
+        for(Collection collection : settings.getRepositorySettings().getCollections().getCollection()) {
+            collections.add(collection.getID());
+        }
+        return collections;
     }
 
     public void shutdown() {
