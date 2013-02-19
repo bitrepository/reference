@@ -131,6 +131,8 @@
       var actorStr = $("#actorFilter").val();
       var actionStr = $("#actionFilter").val();
 
+      $("#auditTrailsTableDiv").html("Loading audit trails...");
+
       $.post('<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/queryAuditTrailEvents/',
         {fromDate: fromDateStr,
          toDate: toDateStr,
