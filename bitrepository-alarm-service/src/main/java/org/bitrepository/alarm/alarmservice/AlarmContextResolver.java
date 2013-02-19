@@ -1,6 +1,7 @@
 package org.bitrepository.alarm.alarmservice;
 
 import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
@@ -8,6 +9,7 @@ import org.bitrepository.bitrepositoryelements.Alarm;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.api.json.JSONJAXBContext;
 
+@Provider
 public class AlarmContextResolver implements ContextResolver<JAXBContext> {
 
     private JAXBContext context;
