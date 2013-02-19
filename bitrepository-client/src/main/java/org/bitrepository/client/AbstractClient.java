@@ -74,11 +74,7 @@ public class AbstractClient implements BitrepositoryClient {
      * @param fileID The file id to validate.
      */
     protected void validateFileID(String fileID) {
-        try {
-            validator.validateFileID(fileID);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid file id '" + fileID + "'.", e);
-        }
+        validator.checkFileID(fileID);
     }
     
     /**

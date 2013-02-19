@@ -34,6 +34,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
@@ -66,6 +67,7 @@ public class ConversationBasedGetChecksumsClient extends AbstractClient implemen
                            URL addressForResult,
                            EventHandler eventHandler,
                            String auditTrailInformation) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "collectionID");
         validateFileID(fileID);
         if (contributorQueries == null) {
             contributorQueries = ContributorQueryUtils.createFullContributorQuery(

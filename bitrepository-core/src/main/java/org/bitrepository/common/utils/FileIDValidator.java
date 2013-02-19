@@ -25,7 +25,6 @@
 package org.bitrepository.common.utils;
 
 import java.util.regex.Pattern;
-
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.settings.Settings;
@@ -55,25 +54,32 @@ public class FileIDValidator {
      * @return invalid description if the id is invalid, else null.
      */
     public ResponseInfo validateFileID(String fileID)  {
-        if(fileID != null) {
+        try {
+            checkFileID(fileID);
+            return null;
+        } catch (IllegalArgumentException iae) {
+            ResponseInfo ri = new ResponseInfo();
+            ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+            ri.setResponseText(iae.getMessage());
+            return ri;
+        }
+    }
+
+    /**
+     * @throws IllegalArgumentException The fileID violated the fileID format constraints.
+     */
+    public void checkFileID(String fileID) {
+        if (fileID != null) {
             if(regex != null) {
                 if(!Pattern.matches(regex, fileID)) {
-                    ResponseInfo ri = new ResponseInfo();
-                    ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
-                    ri.setResponseText("The fileID '" + fileID + "' is invalid against the fileID regex '"
+                    throw new IllegalArgumentException("The fileID '" + fileID + "' is invalid against the fileID regex '"
                             + regex + "'.");
-                    return ri;
+                }
+                if(!Pattern.matches(SYSTEM_LIMIT, fileID)) {
+                    throw new IllegalArgumentException("The fileID '" + fileID + "' is invalid against the system limit regex '"
+                            + SYSTEM_LIMIT + "'.");
                 }
             }
-
-            if(!Pattern.matches(SYSTEM_LIMIT, fileID)) {
-                ResponseInfo ri = new ResponseInfo();
-                ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
-                ri.setResponseText("The fileID '" + fileID + "' is invalid against the system limit regex '"
-                        + SYSTEM_LIMIT + "'.");
-                return ri;
-            }
         }
-        return null;
     }
 }

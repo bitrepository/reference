@@ -51,7 +51,8 @@ public class GetChecksumsOnReferencePillarTest extends ReferencePillarTest {
     @Override
     public void initializeCUT() {
         super.initializeCUT();
-        msgFactory = new GetChecksumsMessageFactory(settingsForTestClient, getPillarID(), pillarDestinationId);
+        msgFactory = new GetChecksumsMessageFactory(collectionID, settingsForTestClient, getPillarID(),
+                pillarDestinationId);
 
         csSpec = new ChecksumSpecTYPE();
         csSpec.setChecksumSalt(null);

@@ -27,9 +27,11 @@ import org.bitrepository.protocol.CorrelationIDGenerator;
 
 public class ComponentTestMessageFactory extends TestMessageFactory {
     protected final Settings testerSettings;
+    protected final String collectionID;
 
-    public ComponentTestMessageFactory(Settings testerSettings) {
+    public ComponentTestMessageFactory(String collectionID, Settings testerSettings) {
         this.testerSettings = testerSettings;
+        this.collectionID = collectionID;
     }
 
     /**
@@ -37,6 +39,7 @@ public class ComponentTestMessageFactory extends TestMessageFactory {
      */
     public void initializeMessageToComponentUnderTest(Message message, Message messageToReplyTo) {
         initializeMessageToComponent(message);
+        message.setCollectionID(messageToReplyTo.getCollectionID());
         message.setCorrelationID(messageToReplyTo.getCorrelationID());
         message.setDestination(messageToReplyTo.getReplyTo());
     }
@@ -54,6 +57,7 @@ public class ComponentTestMessageFactory extends TestMessageFactory {
 
     private void initializeMessageToComponent(Message message) {
         initializeMessageDetails(message);
+        message.setCollectionID(collectionID);
         message.setFrom(testerSettings.getComponentID());
         message.setReplyTo(testerSettings.getReceiverDestinationID());
     }

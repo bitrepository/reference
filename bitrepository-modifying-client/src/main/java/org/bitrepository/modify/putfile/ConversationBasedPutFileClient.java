@@ -53,20 +53,21 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
     }
     
     @Override
-    public void putFile(String collectionID, URL url, String fileId, long sizeOfFile,
+    public void putFile(String collectionID, URL url, String fileID, long sizeOfFile,
                         ChecksumDataForFileTYPE checksumForValidationAtPillar,
             ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "collectionID");
         ArgumentValidator.checkNotNull(url, "URL url");
-        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+        validateFileID(fileID);
         ArgumentValidator.checkNotNegative(sizeOfFile, "long sizeOfFile");
 
-        log.info("Starting putFile of " + fileId + " for client " + clientID + ". " + auditTrailInformation);
+        log.info("Starting putFile of " + fileID + " for client " + clientID + ". " + auditTrailInformation);
         if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
             ArgumentValidator.checkNotNull(checksumForValidationAtPillar, "ChecksumDataForFileTYPE checksumForValidationAtPillar");
         }
-        validateFileID(fileId);
+        validateFileID(fileID);
         
-        PutFileConversationContext context = new PutFileConversationContext(collectionID, fileId, url, sizeOfFile,
+        PutFileConversationContext context = new PutFileConversationContext(collectionID, fileID, url, sizeOfFile,
                 checksumForValidationAtPillar, checksumRequestsForValidation, settings, messageBus,
                 clientID, settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(), eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForPutFile(context));

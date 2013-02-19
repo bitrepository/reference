@@ -33,8 +33,9 @@ import org.bitrepository.common.settings.Settings;
 public class DeleteFileMessageFactory extends PillarTestMessageFactory {
     private final String pillarID;
     
-    public DeleteFileMessageFactory(Settings clientSettings, String pillarID, String pillarDestination) {
-        super(clientSettings, pillarDestination);
+    public DeleteFileMessageFactory(String collectionID, Settings clientSettings, String pillarID,
+                                    String pillarDestination) {
+        super(collectionID, clientSettings, pillarDestination);
         this.pillarID = pillarID;
     }
 

@@ -41,7 +41,7 @@ public class GetStatusOnReferencePillarTest extends ReferencePillarTest {
     @Override
     public void initializeCUT() {
         super.initializeCUT();
-        msgFactory = new GetStatusMessageFactory(settingsForTestClient.getComponentID());
+        msgFactory = new GetStatusMessageFactory(settingsForTestClient);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

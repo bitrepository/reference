@@ -49,7 +49,8 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
     @Override
     public void initializeCUT() {
         super.initializeCUT();
-        msgFactory = new PutFileMessageFactory(settingsForTestClient, getPillarID(), pillarDestinationId);
+        msgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(),
+                pillarDestinationId);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

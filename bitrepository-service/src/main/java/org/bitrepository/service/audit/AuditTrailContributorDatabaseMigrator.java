@@ -1,16 +1,15 @@
 package org.bitrepository.service.audit;
 
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_COLLECTIONID;
-
 import java.util.Map;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseMigrator;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_COLLECTIONID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
 
 /**
  * Migration class for the ChecksumDatabase of the ReferencePillar and ChecksumPillar.
@@ -56,6 +55,6 @@ public class AuditTrailContributorDatabaseMigrator extends DatabaseMigrator {
         
         String updateAfterwards = "UPDATE " + FILE_TABLE + " SET " + FILE_COLLECTIONID + " = ? WHERE " 
                 + FILE_COLLECTIONID + " IS NULL";
-        DatabaseUtils.executeStatement(connector, updateAfterwards, settings.getCollectionID());
+        DatabaseUtils.executeStatement(connector, updateAfterwards, settings.getCollections().get(0).getID());
     }
 }

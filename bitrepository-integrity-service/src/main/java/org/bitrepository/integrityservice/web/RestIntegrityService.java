@@ -58,7 +58,9 @@ public class RestIntegrityService {
     @GET
     @Path("/getChecksumErrorFileIDs/")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getChecksumErrors(@DefaultValue("") @QueryParam("collectionID") String collectionID, 
+    public String getChecksumErrors(
+            @DefaultValue("")
+            @QueryParam("collectionID") String collectionID,
             @QueryParam("pillarID") String pillarID,
             @QueryParam("pageNumber") int pageNumber,
             @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
@@ -77,7 +79,9 @@ public class RestIntegrityService {
     @GET
     @Path("/getMissingFileIDs/")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getMissingFileIDs(@DefaultValue("") @QueryParam("collectionID") String collectionID, 
+    public String getMissingFileIDs(
+            @DefaultValue("")
+            @QueryParam("collectionID") String collectionID,
             @QueryParam("pillarID") String pillarID,
             @QueryParam("pageNumber") int pageNumber,
             @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
@@ -96,7 +100,9 @@ public class RestIntegrityService {
     @GET
     @Path("/getAllFileIDs/")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getAllFileIDs(@DefaultValue("") @QueryParam("collectionID") String collectionID, 
+    public String getAllFileIDs(
+            @DefaultValue("")
+            @QueryParam("collectionID") String collectionID,
             @QueryParam("pillarID") String pillarID,
             @QueryParam("pageNumber") int pageNumber,
             @DefaultValue("100") @QueryParam("pageSize") int pageSize) {

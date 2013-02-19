@@ -50,8 +50,9 @@ import org.bitrepository.common.settings.Settings;
 public class ReplaceFileMessageFactory extends PillarTestMessageFactory {
     private final String pillarID;
     
-    public ReplaceFileMessageFactory(Settings clientSettings, String pillarID, String pillarDestination) {
-        super(clientSettings, pillarDestination);
+    public ReplaceFileMessageFactory(String collectionID, Settings clientSettings, String pillarID,
+                                     String pillarDestination) {
+        super(collectionID, clientSettings, pillarDestination);
         this.pillarID = pillarID;
     }
     

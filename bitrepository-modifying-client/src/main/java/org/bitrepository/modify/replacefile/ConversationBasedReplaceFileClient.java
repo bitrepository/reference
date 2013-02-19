@@ -54,13 +54,15 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
     }
     
     @Override
-    public void replaceFile(String collectionID, String fileId, String pillarId, ChecksumDataForFileTYPE checksumForDeleteAtPillar,
+    public void replaceFile(String collectionID, String fileID, String pillarId, ChecksumDataForFileTYPE checksumForDeleteAtPillar,
             ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile, 
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile, 
             EventHandler eventHandler, String auditTrailInformation) {
-        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "collectionID");
+        validateFileID(fileID);
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
-        validateFileID(fileId);
+        validateFileID(fileID);
         if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
             ArgumentValidator.checkNotNull(checksumForDeleteAtPillar, "ChecksumDataForFileTYPE checksumForDeleteAtPillar");
         }
@@ -69,13 +71,13 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
                     "ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar");
         }
         
-        log.info("Requesting the replacement of the file '" + fileId + "' at the pillar '" + pillarId + "' from the "
+        log.info("Requesting the replacement of the file '" + fileID + "' at the pillar '" + pillarId + "' from the "
                 + "URL '" + url + "' and with the size '" + sizeOfNewFile + "', where the old file has the checksum '" 
                 + checksumForDeleteAtPillar + "' and is requested the checksum '" + checksumRequestedForDeletedFile 
                 + "', and the new file has the checksum '" + checksumForNewFileValidationAtPillar + "' and requesting "
                 + "the checksum '" + checksumRequestsForNewFile + "'. With the audittrail '" + auditTrailInformation 
                 + "'");
-        ReplaceFileConversationContext context = new ReplaceFileConversationContext(collectionID, fileId,
+        ReplaceFileConversationContext context = new ReplaceFileConversationContext(collectionID, fileID,
                 sizeOfNewFile, url, checksumForDeleteAtPillar, checksumRequestedForDeletedFile, 
                 checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, settings, messageBus, 
                 clientID, Arrays.asList(pillarId), eventHandler, auditTrailInformation);

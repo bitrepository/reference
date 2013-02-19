@@ -43,10 +43,10 @@ public class PutFileRequestIT extends PillarFunctionTest {
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest(Method method) throws Exception {
-        msgFactory = new PutFileMessageFactory(settingsForTestClient, getPillarID(), null);
+        msgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
         pillarDestination = lookupPutFileDestination();
         testSpecificFileID = method.getName() + "File-" + createDate();
-        msgFactory = new PutFileMessageFactory(settingsForTestClient, getPillarID(), pillarDestination);
+        msgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
     }
 
     @Test( groups = {"pillar-integration-test"})

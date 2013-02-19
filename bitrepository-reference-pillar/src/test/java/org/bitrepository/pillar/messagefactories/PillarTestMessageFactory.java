@@ -29,8 +29,8 @@ public abstract class PillarTestMessageFactory {
     private final ComponentTestMessageFactory componentTestMessageFactory;
     private final String pillarDestinationID;
 
-    protected PillarTestMessageFactory(Settings testerSettings, String pillarDestinationID) {
-        componentTestMessageFactory = new ComponentTestMessageFactory(testerSettings);
+    protected PillarTestMessageFactory(String collectionID, Settings testerSettings, String pillarDestinationID) {
+        componentTestMessageFactory = new ComponentTestMessageFactory(collectionID, testerSettings);
         this.pillarDestinationID = pillarDestinationID;
     }
 

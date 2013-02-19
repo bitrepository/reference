@@ -61,7 +61,8 @@ public class ConversationBasedGetFileClient extends AbstractClient implements Ge
     @Override
     public void getFileFromFastestPillar(String collectionID,
             String fileID, FilePart filePart, URL uploadUrl, EventHandler eventHandler, String auditTrailInformation) {
-        ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "collectionID");
+        validateFileID(fileID);
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");
         validateFileID(fileID);
@@ -76,7 +77,8 @@ public class ConversationBasedGetFileClient extends AbstractClient implements Ge
     public void getFileFromSpecificPillar(String collectionID,
             String fileID, FilePart filePart, URL uploadUrl, String pillarID, EventHandler eventHandler,
             String auditTrailInformation) {
-        ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "collectionID");
+        validateFileID(fileID);
         ArgumentValidator.checkNotNull(uploadUrl, "uploadUrl");
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "pillarID");
         ArgumentValidator.checkNotNull(eventHandler, "eventHandler");

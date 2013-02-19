@@ -61,11 +61,12 @@ public class ComponentFactoryTest extends IntegrationTest {
         IntegrityInformationCollector collector =
                 IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
                         "dummy-collection",
-                AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
+                AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT,
+                        securityManager,
                         settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,
                         settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                new MockAuditManager(), settingsForCUT.getCollectionID());
+                new MockAuditManager());
         Assert.assertNotNull(collector);
         Assert.assertTrue(collector instanceof DelegatingIntegrityInformationCollector);
         Assert.assertEquals(collector, IntegrityServiceComponentFactory.getInstance().getIntegrityInformationCollector(
@@ -74,7 +75,7 @@ public class ComponentFactoryTest extends IntegrationTest {
                         settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,
                         settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                new MockAuditManager(), settingsForCUT.getCollectionID()));
+                new MockAuditManager()));
     }
 
     @Test(groups = {"regressiontest", "integritytest"})

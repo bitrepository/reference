@@ -46,7 +46,8 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
     @Override
     public void initializeCUT() {
         super.initializeCUT();
-        msgFactory = new DeleteFileMessageFactory(settingsForTestClient, getPillarID(), pillarDestinationId);
+        msgFactory = new DeleteFileMessageFactory(collectionID, settingsForTestClient, getPillarID(),
+                pillarDestinationId);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})

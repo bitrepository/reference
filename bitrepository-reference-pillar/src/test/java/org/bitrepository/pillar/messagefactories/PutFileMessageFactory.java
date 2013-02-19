@@ -50,8 +50,9 @@ import org.bitrepository.common.settings.Settings;
 public class PutFileMessageFactory extends PillarTestMessageFactory {
     private final String pillarID;
     
-    public PutFileMessageFactory(Settings clientSettings, String pillarID, String pillarDestination) {
-        super(clientSettings, pillarDestination);
+    public PutFileMessageFactory(String collectionID, Settings clientSettings, String pillarID,
+                                 String pillarDestination) {
+        super(collectionID, clientSettings, pillarDestination);
         this.pillarID = pillarID;
     }
     
@@ -80,7 +81,6 @@ public class PutFileMessageFactory extends PillarTestMessageFactory {
             res.setFileSize(BigInteger.valueOf(fileSize));
         }
         res.setPillarID(pillarID);
-        
         return res;
     }
 }

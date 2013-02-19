@@ -98,7 +98,7 @@ public final class IntegrityServiceComponentFactory {
      * @param getFileIDsClient The client for performing the collecting of the file ids.
      * @param getChecksumsClient The client for performing the collecting of the checksums.
      * @param auditManager The manager of audit trails.
-     * @param collectionId The id of the collection.
+     * @param collectionID The id of the collection.
      * @return an <code>IntegrityInformationCollector</code> that collects integrity information.
      */
     public IntegrityInformationCollector getIntegrityInformationCollector(String collectionID,
@@ -152,8 +152,10 @@ public final class IntegrityServiceComponentFactory {
         ServiceScheduler scheduler = getIntegrityInformationScheduler(settings);
         IntegrityChecker checker = getIntegrityChecker(settings, model, auditManager);
         IntegrityAlerter alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus, AlarmLevel.ERROR);
-        
-        IntegrityInformationCollector collector = getIntegrityInformationCollector( 
+        // Should actually create a list of collectors, one for each collection;
+        String firstCollection = settings.getCollections().get(0).getID();
+
+        IntegrityInformationCollector collector = getIntegrityInformationCollector(firstCollection,
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 

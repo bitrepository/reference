@@ -1,11 +1,6 @@
 package org.bitrepository.service.audit;
 
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_COLLECTIONID;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_FILEID;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
-
 import java.io.File;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.FileUtils;
@@ -18,6 +13,10 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_COLLECTIONID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_FILEID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
 
 public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase {
     protected Settings settings;
@@ -72,6 +71,6 @@ public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase
         String retrieveCollectionIdSql = "SELECT " + FILE_COLLECTIONID + " FROM " + FILE_TABLE + " WHERE " 
                 + FILE_FILEID + " = ?";
         String collectionId = DatabaseUtils.selectStringValue(connector, retrieveCollectionIdSql, FILE_ID);
-        Assert.assertEquals(collectionId, settings.getCollectionID());
+        Assert.assertEquals(collectionId, settings.getCollections().get(0).getID());
     }
 }

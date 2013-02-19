@@ -33,8 +33,9 @@ import org.bitrepository.common.settings.Settings;
 public class GetChecksumsMessageFactory extends PillarTestMessageFactory {
     private final String pillarID;
 
-    public GetChecksumsMessageFactory(Settings clientSettings, String pillarID, String pillarDestination) {
-        super(clientSettings, pillarDestination);
+    public GetChecksumsMessageFactory(String collectionID, Settings clientSettings, String pillarID,
+                                      String pillarDestination) {
+        super(collectionID, clientSettings, pillarDestination);
         this.pillarID = pillarID;
     }
 

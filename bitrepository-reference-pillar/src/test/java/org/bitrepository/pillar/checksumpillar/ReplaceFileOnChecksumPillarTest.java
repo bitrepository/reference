@@ -51,7 +51,8 @@ public class ReplaceFileOnChecksumPillarTest extends ChecksumPillarTest {
 
     public void initializeCUT() {
         super.initializeCUT();
-        msgFactory = new ReplaceFileMessageFactory(settingsForTestClient, getPillarID(), pillarDestinationId);
+        msgFactory = new ReplaceFileMessageFactory(collectionID, settingsForTestClient, getPillarID(),
+                pillarDestinationId);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})

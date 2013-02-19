@@ -55,7 +55,8 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
     @Override
     public void initializeCUT() {
         super.initializeCUT();
-        msgFactory = new ReplaceFileMessageFactory(settingsForTestClient, getPillarID(), pillarDestinationId);
+        msgFactory = new ReplaceFileMessageFactory(collectionID, settingsForTestClient, getPillarID(),
+                pillarDestinationId);
 
         csSpec = TestFileHelper.getDefaultFileChecksum().getChecksumSpec();
         replaceCsData = TestFileHelper.getDefaultFileChecksum();

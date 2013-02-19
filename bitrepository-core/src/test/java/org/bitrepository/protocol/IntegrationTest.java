@@ -92,6 +92,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     public void initializeSuite() {
         settingsForCUT = loadSettings(getComponentID());
         settingsForTestClient = loadSettings("TestSuiteInitialiser");
+        collectionID = settingsForTestClient.getCollections().get(0).getID();
         makeUserSpecificSettings(settingsForCUT);
         makeUserSpecificSettings(settingsForTestClient);
 
@@ -134,7 +135,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     public final void beforeMethod(Method method) {
         testMethodName = method.getName();
         setupSettings();
-        collectionID = settingsForTestClient.getCollections().get(0).getID();
         NON_DEFAULT_FILE_ID = TestFileHelper.createUniquePrefix(testMethodName);
         DEFAULT_AUDITINFORMATION = testMethodName;
         receiverManager = new MessageReceiverManager(messageBus);
