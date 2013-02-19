@@ -33,6 +33,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 
 import org.bitrepository.BasicClient;
@@ -56,8 +57,9 @@ public class Reposervice {
     @GET
     @Path("/getCollectionIDs")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getCollectionIDs() {
-        return client.getCollectionIDs();
+    public GenericEntity<List<String>> getCollectionIDs() {
+        List<String> list = client.getCollectionIDs(); 
+        return new GenericEntity<List<String>>(list) {};
     }
 
     /**
