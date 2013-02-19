@@ -15,7 +15,7 @@
           menuHtml += "<span class=\"icon-bar\"></span>";
           menuHtml += "<span class=\"icon-bar\"></span>";
           menuHtml += "</a>";
-          menuHtml += "<a class=\"brand\" href=\"#\">Bitrepository</a>";
+          menuHtml += "<a class=\"brand\" href=\"bitrepository-frontpage.jsp\">Bitrepository</a>";
           menuHtml += "<div class=\"nav-collapse collapse\">";
           menuHtml += "<ul class=\"nav\">";
           for(var i=0; i<pages.length; i++) {
