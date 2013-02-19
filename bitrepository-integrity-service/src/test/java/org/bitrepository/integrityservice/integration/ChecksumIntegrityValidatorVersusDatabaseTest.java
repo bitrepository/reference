@@ -71,7 +71,7 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         addDescription("Test the checksum integrity validator without any data in the cache.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+                settings.getCollection());
         
         addStep("Validate the file ids", "Should not have integrity issues.");
         ChecksumReportModel report = validator.generateReport();
@@ -83,7 +83,7 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         addDescription("Test the checksum integrity validator when all pillars have similar data.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+                settings.getCollection());
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
@@ -106,7 +106,7 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         addDescription("Test the checksum integrity validator when one pillar is missing the data.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+                settings.getCollection());
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
@@ -124,7 +124,7 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         addDescription("Test the checksum integrity validator when only two pillar has data, but it it different.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+                settings.getCollection());
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData1 = createChecksumData("1234cccc4321", FILE_1);
@@ -150,7 +150,7 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         addDescription("Test the checksum integrity validator when all pillars have different checksums.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+                settings.getCollection());
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData1 = createChecksumData("1234cccc4321", FILE_1);
@@ -173,7 +173,7 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         addDescription("Test the checksum integrity validator when two pillars agreee about the checksum, but the third does not.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+                settings.getCollection());
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);

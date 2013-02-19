@@ -190,9 +190,9 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         }
         
         if(message.getChecksumDataForNewFile() != null) {
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the validation "
-                    + "checksum for the file before putting it into archive.", message.getAuditTrailInformation(), 
-                    FileAction.CHECKSUM_CALCULATED);
+            getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                    "Calculating the validation checksum for the file before putting it into archive.", 
+                    message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
             
             ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
             String calculatedChecksum = getCsManager().getChecksumForTempFile(message.getFileID(), 
@@ -210,8 +210,8 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
             log.warn("No checksums for validating the retrieved file.");
         }
         
-        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Putting the downloaded file "
-                + "into archive.", message.getAuditTrailInformation(), FileAction.PUT_FILE);
+        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                "Putting the downloaded file into archive.", message.getAuditTrailInformation(), FileAction.PUT_FILE);
         getArchives().moveToArchive(message.getFileID(), message.getCollectionID());
         getCsManager().recalculateChecksum(message.getFileID(), message.getCollectionID());
     }
@@ -229,8 +229,9 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         response.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
         
         if(message.getChecksumRequestForNewFile() != null) {
-            getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating requested checksum.",
-                    message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
+            getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                    "Calculating requested checksum.", message.getAuditTrailInformation(), 
+                    FileAction.CHECKSUM_CALCULATED);
             response.setChecksumDataForNewFile(getCsManager().getChecksumDataForFile(message.getFileID(),
                     message.getCollectionID(), message.getChecksumRequestForNewFile()));
         } else {

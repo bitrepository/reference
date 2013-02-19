@@ -154,8 +154,9 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
                 break;
         }
         
-        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Putting the checksum of the file "
-                + "into archive.", message.getAuditTrailInformation(), FileAction.PUT_FILE);
+        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                "Putting the checksum of the file into archive.", message.getAuditTrailInformation(), 
+                FileAction.PUT_FILE);
         getCache().insertChecksumCalculation(message.getFileID(), message.getCollectionID(), calculatedChecksum, 
                 new Date());
     }
@@ -187,9 +188,9 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
         
-        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the validation "
-                + "checksum for the file before putting it into the cache.", message.getAuditTrailInformation(), 
-                FileAction.CHECKSUM_CALCULATED);
+        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                "Calculating the validation checksum for the file before putting it into the cache.", 
+                message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
         String calculatedChecksum = null;
         try {
             calculatedChecksum = ChecksumUtils.generateChecksum(fe.downloadFromServer(new URL(message.getFileAddress())),

@@ -81,5 +81,4 @@ public abstract class AbstractBitrepositoryContextListener implements ServletCon
         getService().shutdown();
         log.debug("Servlet context destroyed");
     }
-    
 }

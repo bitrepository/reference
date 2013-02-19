@@ -186,4 +186,10 @@ public class IntegrityDatabase implements IntegrityModel {
                 - settings.getReferenceSettings().getIntegrityServiceSettings().getTimeBeforeMissingFileCheck());
         store.setOldUnknownFilesToMissing(minDate);
     }
+
+    @Override
+    public void close() {
+        store.close();
+    }
+
 }

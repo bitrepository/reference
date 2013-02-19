@@ -622,4 +622,11 @@ public class IntegrityDAO {
         String sql = "SELECT " + PILLAR_ID + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_GUID + " = ?";
         return DatabaseUtils.selectStringValue(dbConnector, sql, guid);
     }
+
+    /**
+     * Destroys the DB connector.
+     */
+    public void close() {
+        dbConnector.destroy();
+    }
 }

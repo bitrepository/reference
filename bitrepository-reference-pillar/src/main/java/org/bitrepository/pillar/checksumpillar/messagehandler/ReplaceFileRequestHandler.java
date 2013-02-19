@@ -217,9 +217,9 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
 
-        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Calculating the checksum of the "
-                + "downloaded file for the replace operation.", message.getAuditTrailInformation(), 
-                FileAction.CHECKSUM_CALCULATED);
+        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                "Calculating the checksum of the downloaded file for the replace operation.", 
+                message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
         String checksum = null;
         try {
             checksum = ChecksumUtils.generateChecksum(fe.downloadFromServer(new URL(message.getFileAddress())), 
@@ -273,8 +273,8 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
      * @param newChecksum The new checksum to replace the old one with.
      */
     private void replaceTheEntry(ReplaceFileRequest message, String newChecksum) {
-        getAuditManager().addAuditEvent(message.getFileID(), message.getFrom(), "Replacing the file.", 
-                message.getAuditTrailInformation(), FileAction.REPLACE_FILE); 
+        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
+                "Replacing the file.", message.getAuditTrailInformation(), FileAction.REPLACE_FILE); 
         getCache().insertChecksumCalculation(message.getFileID(), message.getCollectionID(), newChecksum, new Date());
     }
 

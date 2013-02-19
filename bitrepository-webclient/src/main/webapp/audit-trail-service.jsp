@@ -21,8 +21,8 @@
           <div class="span11">
            <!-- <legend>Collect audit trails</legend>-->
             <form class="form-inline">
-              <label>Collect audit trails</label>
-              <button type="submit" class="btn" id="collectAuditTrails">Start</button>
+<!--              <label>Collect audit trails</label>-->
+              <button type="submit" class="btn" id="collectAuditTrails">Collect audit trails</button>
               <div id="initiatorStatus"></div>
             </form>
           </div>
@@ -59,9 +59,9 @@
                 <button class="btn" id="actorClearButton" type="button"><i class="icon-remove"></i></button>
               </div>
             </label>
-            <label> Alarm code: <br>
+            <label> Action: <br>
               <div class="input-append">
-                <select id="alarmCodeFilter">
+                <select id="actionFilter">
                   <option>ALL</option>
                   <option>GET_FILE</option>
                   <option>PUT_FILE</option>
@@ -78,9 +78,9 @@
                 </select>
               </div>
             </label>
-            <label> Max alarms: <br>
+            <label> Max audit trails: <br>
               <div class="input-append">
-                <select class="input-small" id=maxAlarms>
+                <select class="input-small" id=maxAuditTrails>
                   <option>10</option>
                   <option>20</option>
                   <option>50</option>
@@ -124,12 +124,14 @@
     }    
 
     function getAuditTrails() {
-      var fromDateStr = $("#auditTrailsQueryForm").find("#fromDate").val();
-      var toDateStr = $("#auditTrailsQueryForm").find("#toDate").val();
-      var fileIDStr = $("#auditTrailsQueryForm").find("#fileIDFilter").val();
-      var component = $("#auditTrailsQueryForm").find("#componentFilter").val();
-      var actorStr = $("#auditTrailsQueryForm").find("#actorFilter").val();
-      var actionStr = $("#auditTrailsQueryForm").find("#actionFilter").val();
+      var fromDateStr = $("#fromDate").val();
+      var toDateStr = $("#toDate").val();
+      var fileIDStr = $("#fileIDFilter").val();
+      var component = $("#componentFilter").val();
+      var actorStr = $("#actorFilter").val();
+      var actionStr = $("#actionFilter").val();
+
+      $("#auditTrailsTableDiv").html("Loading audit trails...");
 
       $.post('<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/queryAuditTrailEvents/',
         {fromDate: fromDateStr,

@@ -365,6 +365,12 @@ in preparation for the xsd -> java class file generation -->
           <artifactId>maven-jaxb2-plugin</artifactId>
           <version>0.8.3</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.tomcat.maven</groupId>
+          <artifactId>tomcat7-maven-plugin</artifactId>
+          <version>2.0</version>
+        </plugin>
+
       </plugins>
     </pluginManagement>
   </build>

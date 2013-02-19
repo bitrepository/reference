@@ -13,7 +13,6 @@ import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_COLLE
 
 /**
  * Migration class for the ChecksumDatabase of the ReferencePillar and ChecksumPillar.
- * TODO: this should abstract, since different databases has different methods for performing updates. 
  */
 public class ChecksumDBMigrator extends DatabaseMigrator {
     /** The log.*/

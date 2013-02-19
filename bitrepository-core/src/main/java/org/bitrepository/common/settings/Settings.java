@@ -56,10 +56,17 @@ public class Settings {
     }
 
     /**
-     * Returns the first Collections ID.
+     * @return the first Collections ID.
      */
     public List<Collection> getCollections() {
         return getRepositorySettings().getCollections().getCollection();
+    }
+    
+    /**
+     * @return The first collection defined in the repository settings.
+     */
+    public Collection getCollection() {
+        return getRepositorySettings().getCollections().getCollection().get(0);
     }
     
     /**

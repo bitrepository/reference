@@ -68,11 +68,10 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     }
 
     @Override
-    public synchronized void getFileIDs(Collection<String> pillarIDs,
-                                        String auditTrailInformation,
+    public synchronized void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, 
             ContributorQuery[] queries, EventHandler eventHandler) {
         try {
-            auditManager.addAuditEvent(null, "IntegrityService", 
+            auditManager.addAuditEvent(collectionID, null, "IntegrityService", 
                     "Collecting file ids from '" + pillarIDs + "'", auditTrailInformation, FileAction.INTEGRITY_CHECK);
             getFileIDsClient.getFileIDs(collectionID, queries, null, null, eventHandler);
         } catch (Exception e) {
@@ -82,12 +81,11 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     }
 
     @Override
-    public synchronized void getChecksums(Collection<String> pillarIDs,
-                                          ChecksumSpecTYPE checksumType,
+    public synchronized void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, 
             String auditTrailInformation, ContributorQuery[] queries, EventHandler eventHandler) {
         try {
             // Is this really necessary to audit log. Better to auditlog on workflow exit.
-            auditManager.addAuditEvent(null, "IntegrityService",
+            auditManager.addAuditEvent(collectionID, null, "IntegrityService",
                     "Collecting checksums", auditTrailInformation, FileAction.INTEGRITY_CHECK);
             getChecksumsClient.getChecksums(collectionID, queries, null, checksumType, null, eventHandler,
                     auditTrailInformation);

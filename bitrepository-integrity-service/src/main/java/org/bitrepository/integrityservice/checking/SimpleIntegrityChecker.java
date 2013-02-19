@@ -68,10 +68,9 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
     public SimpleIntegrityChecker(Settings settings, IntegrityModel cache, AuditTrailManager auditManager) {
         this.cache = cache;
         
-        this.fileIdChecker = new FileExistenceValidator(settings, cache, auditManager);
+        this.fileIdChecker = new FileExistenceValidator(settings.getCollection(), cache, auditManager);
         this.obsoleteChecksumFinder = new ObsoleteChecksumFinder(cache);
-        this.checksumValidator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+        this.checksumValidator = new ChecksumIntegrityValidator(cache, auditManager, settings.getCollection());
     }
     
     @Override
