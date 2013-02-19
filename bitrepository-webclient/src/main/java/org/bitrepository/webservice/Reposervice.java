@@ -33,10 +33,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MediaType;
 
 import org.bitrepository.BasicClient;
 import org.bitrepository.BasicClientFactory;
 import org.bitrepository.GetFileIDsResults;
+import org.json.JSONArray;
 
 /**
  * The class exposes the REST webservices provided by the Bitrepository-webclient using Jersey. 
@@ -50,6 +53,18 @@ public class Reposervice {
 
     public Reposervice() {
         client = BasicClientFactory.getInstance();
+    }
+    
+    @GET
+    @Path("/getCollectionIDs")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getCollectionIDs() {
+        JSONArray array = new JSONArray();
+        for(String collectionID : client.getCollectionIDs()) {
+            array.put(collectionID);
+        }
+        
+        return array.toString();
     }
 
     /**

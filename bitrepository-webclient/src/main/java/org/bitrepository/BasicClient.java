@@ -95,6 +95,14 @@ public class BasicClient {
         log.debug("---- Basic client instantiated ----");
 
     }
+    
+    public List<String> getCollectionIDs() {
+        List<String> collections = new ArrayList<String>();
+        for(Collection collection : settings.getRepositorySettings().getCollections().getCollection()) {
+            collections.add(collection.getID());
+        }
+        return collections;
+    }
 
     public void shutdown() {
         try {
