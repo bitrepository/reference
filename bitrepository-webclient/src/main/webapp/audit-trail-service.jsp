@@ -143,7 +143,6 @@
          function(j){
            var htmlTable;
            htmlTable = "<table class=\"table table-bordered table-striped\">";
-
            htmlTable += "<thead> <tr>";
            htmlTable += "<th style=\"width: 100px\">FileID</th>";
            htmlTable += "<th style=\"width: 180px\">Reporting component</th>";
@@ -161,7 +160,14 @@
            }
            htmlTable += "</tbody></table>"; 
            $("#auditTrailsTableDiv").html(htmlTable);
-         }, "json");
+         }, "json").fail(
+           function(jqXHR, textStatus, errorThrown) {
+             var htmlElement = "<div class\"alert alert-error\">";
+             htmlElement += "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>";
+             htmlElement += "<b>Oh snap!</b> ";
+             htmlElement += "Fetching of Audit trails failed with: " + errorThrown + "</div>";
+             $("#auditTrailsTableDiv").html(htmlElement);
+           });
     }
   
 
