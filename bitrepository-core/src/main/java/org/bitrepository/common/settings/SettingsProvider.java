@@ -25,20 +25,22 @@
 package org.bitrepository.common.settings;
 
 import org.bitrepository.protocol.messagebus.destination.DestinationHelper;
-import org.bitrepository.settings.repositorysettings.RepositorySettings;
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
+import org.bitrepository.settings.repositorysettings.RepositorySettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Used for accessing <code>Settings</code> objects. A <code>SettingsLoader</code> needs to be provides on 
  * instantiation for loading stored settings.
  */
 public class SettingsProvider {
+    private Logger log = LoggerFactory.getLogger(getClass());
     /** The loader to use for accessing stored settings*/
     private final SettingsLoader settingsReader;
     /** The loaded settings */
     private Settings settings;
     private String componentID;
-    private ReferenceSettings referenceSettings;
 
     /**
      * Creates a <code>SettingsProvider</code> which will use the provided <code>SettingsLoader</code> for loading the 
@@ -66,20 +68,27 @@ public class SettingsProvider {
      * Will load the settings from disk. Will overwrite any settings already in the provider.
      */
     public synchronized void reloadSettings() {
-        RepositorySettings repositorySettings = settingsReader.loadSettings(RepositorySettings.class);
-        ReferenceSettings referenceSettings = settingsReader.loadSettings(ReferenceSettings.class);
+        try {
+            RepositorySettings repositorySettings = settingsReader.loadSettings(RepositorySettings.class);
+            ReferenceSettings referenceSettings = settingsReader.loadSettings(ReferenceSettings.class);
 
-        String receiverDestinationIDFactoryClass = null;
-        if (referenceSettings.getGeneralSettings() != null) {
-            receiverDestinationIDFactoryClass =
-                    referenceSettings.getGeneralSettings().getReceiverDestinationIDFactoryClass();
+            String receiverDestinationIDFactoryClass = null;
+            if (referenceSettings.getGeneralSettings() != null) {
+                receiverDestinationIDFactoryClass =
+                        referenceSettings.getGeneralSettings().getReceiverDestinationIDFactoryClass();
+            }
+
+            DestinationHelper dh = new DestinationHelper(
+                    getComponentID(referenceSettings),
+                    receiverDestinationIDFactoryClass,
+                    repositorySettings.getProtocolSettings().getCollectionDestination());
+            settings = new Settings(getComponentID(referenceSettings), dh.getReceiverDestinationID(), repositorySettings, referenceSettings);
+        } catch (RuntimeException re) {
+            // We need to ensure this is log, as the method caller may not have implemented a fault barrier and this
+            // exception is properly fatal.
+            log.error("Failed to load settings", re);
+            throw re;
         }
-
-        DestinationHelper dh = new DestinationHelper(
-                getComponentID(referenceSettings),
-                receiverDestinationIDFactoryClass,
-                repositorySettings.getProtocolSettings().getCollectionDestination());
-        settings = new Settings(getComponentID(referenceSettings), dh.getReceiverDestinationID(), repositorySettings, referenceSettings);
     }
 
     /**
