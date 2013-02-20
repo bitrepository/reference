@@ -80,6 +80,8 @@
     var pillars = new Object();
     var workflows = new Object();
     var pager;
+    var update_page;
+    var collectionID;
 
     function loadWorkflows() {
       $.getJSON('<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getWorkflowList/'
@@ -219,8 +221,9 @@
     }
 
     function getIntegrityStatus() {
-      $.getJSON('<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getIntegrityStatus/',
-          {}, function(j){
+      var url = "<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getIntegrityStatus/?collectionID=" 
+            + collectionID;
+      $.getJSON(url, {}, function(j){
         var htmlTable;
         for (var i = 0; i < j.length; i++) {
           if(pillars[j[i].pillarID] == null) {
@@ -249,6 +252,23 @@
                 {workflowID: ID}).show().fadeOut({duration: 5000});
 
     }
+ 
+    //This needs to be rewritten when support for multiple collections is really implemented. 
+    function getCollectionID() {
+      $.getJSON('repo/reposervice/getCollectionIDs/',
+          {}, function(j){
+        if(j.length >= 1) {
+          collectionID = j[0];
+        }
+        
+        getIntegrityStatus();
+        clearInterval(update_page);
+        update_page = setInterval(function() {
+          getWorkflowStatuses(); 
+          getIntegrityStatus();
+        }, 2500);
+      });
+    }
 
 
     $(document).ready(function(){
@@ -256,15 +276,14 @@
       makeMenu("integrity-service.jsp", "#pageMenu");
       loadWorkflows();
       getWorkflowStatuses();
-      getIntegrityStatus();
+      getCollectionID();
     
       // Setup event / click handling
       $("#workflowStarter").click(function(event) { event.preventDefault(); startWorkflow(); });
       
       // Add page auto update
-      var update_page = setInterval(function() {
+      update_page = setInterval(function() {
         getWorkflowStatuses(); 
-        getIntegrityStatus();
       }, 2500);
     }); 
 
