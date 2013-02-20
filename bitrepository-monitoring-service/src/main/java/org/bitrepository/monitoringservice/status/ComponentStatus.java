@@ -49,7 +49,7 @@ public class ComponentStatus {
         numberOfMissingReplies = 0;
         status = ComponentStatusCode.UNKNOWN;
         lastReply = CalendarUtils.getEpoch();
-        info = "No status requested yet.";
+        info = "No status received yet.";
         alarmed = false;
     }
     
