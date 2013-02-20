@@ -48,7 +48,7 @@ public final class TimeUtils {
     /** Milliseconds per normal year.*/
     public static final long MS_PER_YEAR = DAYS_PER_YEAR * MS_PER_DAY;
 
-    public final static DateFormat formatter = new SimpleDateFormat("dd.MM.yy hh:mm");
+    public final static DateFormat formatter = new SimpleDateFormat("dd.MM.yy HH:mm");
     
     /** Private constructor, util class.*/
     private TimeUtils() {}
