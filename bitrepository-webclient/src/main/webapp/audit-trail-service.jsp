@@ -162,7 +162,7 @@
            $("#auditTrailsTableDiv").html(htmlTable);
          }, "json").fail(
            function(jqXHR, textStatus, errorThrown) {
-             var htmlElement = "<div class\"alert alert-error\">";
+             var htmlElement = "<div class=\"alert alert-error\">";
              htmlElement += "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>";
              htmlElement += "<b>Oh snap!</b> ";
              htmlElement += "Fetching of Audit trails failed with: " + errorThrown + "</div>";
