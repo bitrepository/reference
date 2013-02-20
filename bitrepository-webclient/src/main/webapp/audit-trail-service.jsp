@@ -144,13 +144,13 @@
            var htmlTable;
            htmlTable = "<table class=\"table table-bordered table-striped\">";
            htmlTable += "<thead> <tr>";
-           htmlTable += "<th style=\"width: 100px\">FileID</th>";
-           htmlTable += "<th style=\"width: 180px\">Reporting component</th>";
-           htmlTable += "<th style=\"width: 120px\">Actor</th>";
-           htmlTable += "<th style=\"width: 120px\">Action</th>";
-           htmlTable += "<th style=\"width: 120px\">Timestamp</th>";
-           htmlTable += "<th style=\"width: 120px\">Info</th>";
-           htmlTable += "<th>Message from client</th>";
+           htmlTable += "<th style=\"min-width: 100px\">FileID</th>";
+           htmlTable += "<th style=\"min-width: 160px\">Reporting component</th>";
+           htmlTable += "<th style=\"min-width: 70px\">Actor</th>";
+           htmlTable += "<th style=\"min-width: 70px\">Action</th>";
+           htmlTable += "<th style=\"min-width: 120px\">Timestamp</th>";
+           htmlTable += "<th style=\"min-width: 120px\">Info</th>";
+           htmlTable += "<th style=\"min-width: 150px\">Message from client</th>";
            htmlTable += "</tr></thead><tbody>";
            for (var i = 0; i < j.length; i++) {
              htmlTable += "<tr><td>" + j[i].fileID + "</td><td>" + j[i].reportingComponent 
