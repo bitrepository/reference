@@ -109,8 +109,8 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         AuditTrailQuery lastSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
                 new Integer(largestSequenceNumber), null, null);
         limitedEventList = getAuditTrails(lastSequenceNumberQuery, null);
-        Assert.assertTrue(limitedEventList.size() == 1, "Received list with size of " + limitedEventList.size() + " " +
-                "when requesting audit trail with MinSequenceNumber set to latest event");
+        Assert.assertEquals(limitedEventList.size(), 1, "Received list with size of " + limitedEventList.size() +
+                " when requesting audit trail with MinSequenceNumber set to latest event");
         Assert.assertTrue(limitedEventList.get(0).equals(originalAuditTrailEventList.get(originalAuditTrailEventList.size()-1)),
                 "The single event in audit trail result for MinSequenceNumber set to latest are different." +
                         limitedEventList);
@@ -153,7 +153,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         AuditTrailQuery firstSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
                 null, new Integer(smallestSequenceNumber), null);
         limitedEventList = getAuditTrails(firstSequenceNumberQuery, null);
-        Assert.assertTrue(limitedEventList.size() == 1, "Received list with size of " + limitedEventList.size() + " " +
+        Assert.assertEquals(limitedEventList.size(), 1, "Received list with size of " + limitedEventList.size() + " " +
                 "when requesting audit trail with MaxSequenceNumber set to first event (expected 1 event)");
         Assert.assertEquals(limitedEventList.get(0),
                 originalAuditTrailEventList.get(0),
