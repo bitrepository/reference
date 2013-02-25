@@ -25,9 +25,9 @@
 package org.bitrepository.pillar;
 
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.bus.MessageReceiver;
+import org.bitrepository.settings.repositorysettings.PillarIDs;
 
 /**
  * Contains the generic parts for pillar tests integrating to the message bus. 
@@ -39,16 +39,16 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
     protected String clientDestinationId;
     protected MessageReceiver clientReceiver;
 
-    @Override
-    protected void setupSettings() {
-        super.setupSettings();
-        settingsForCUT.getReferenceSettings().getPillarSettings().setPillarID(getPillarID());
-    }
-    
-    // Overrides for the super-class setupSettings to create the pillar which is defined in the collections.
+
+    /**
+     * Replaces the pillarID references in the settings will test specific pillarIDs.
+     */
     @Override
     protected Settings loadSettings(String componentID) {
-        return TestSettingsProvider.reloadSettingsForPillar(componentID);
+        Settings settings = super.loadSettings(componentID);
+        settings.getReferenceSettings().getPillarSettings().setPillarID(getPillarID());
+        updateSettingsWithSpecificPillarName(settings, getPillarID());
+        return settings;
     }
 
     @Override
@@ -64,5 +64,11 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
 
     protected String getPillarID() {
         return getComponentID();
+    }
+
+    private void updateSettingsWithSpecificPillarName(Settings settings, String pillarID) {
+        PillarIDs pillars = settings.getCollections().get(0).getPillarIDs();
+        pillars.getPillarID().clear();
+        pillars.getPillarID().add(pillarID);
     }
 }

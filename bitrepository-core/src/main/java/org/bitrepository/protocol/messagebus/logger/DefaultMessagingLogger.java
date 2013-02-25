@@ -42,6 +42,7 @@ public class DefaultMessagingLogger implements MessageLogger {
             logFullMessage(appendFullRepresentation(messageSB, message).toString());
         } else {
             appendMessageIDString(messageSB, message);
+            messageSB.append(" collectionID " + message.getCollectionID() + ", ");
             if (message.isSetTo()) {
                 messageSB.append(" to " + message.getTo() + ", ");
             }

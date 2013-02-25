@@ -135,8 +135,6 @@ public class ActiveMQMessageBus implements MessageBus {
      *
      * @param messageBusConfiguration The properties for the connection.
      * @param securityManager The security manager to use for message authentication.
-     * @param componentID The optional componentID, which might be used to ignore message sent to other component. If
-     * this is different from the the message bus will be able to avoid using resources for parsing irrelevant
      * messages.
      */
     public ActiveMQMessageBus(

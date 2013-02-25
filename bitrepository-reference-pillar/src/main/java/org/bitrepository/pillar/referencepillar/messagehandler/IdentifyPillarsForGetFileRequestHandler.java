@@ -58,6 +58,7 @@ public class IdentifyPillarsForGetFileRequestHandler
 
     @Override
     public void processRequest(IdentifyPillarsForGetFileRequest message) throws RequestHandlerException {
+        validateCollectionID(message);
         checkThatFileIsAvailable(message);
         respondSuccesfullIdentification(message);
     }

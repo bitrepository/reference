@@ -27,14 +27,12 @@ package org.bitrepository.pillar.referencepillar;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Arrays;
-
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceArchive;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 public class ReferenceArchiveTest extends ReferencePillarTest {
@@ -48,10 +46,14 @@ public class ReferenceArchiveTest extends ReferencePillarTest {
     
     private static String EXISTING_FILE = "file1";
     private static String MISSING_FILE = "Missing-filE";
-    
-    @AfterMethod (alwaysRun=true)
-    public void shutdownTests() throws Exception {
-        FileUtils.delete(new File(DIR_NAME));
+
+    @Override
+    protected void shutdownCUT() {
+        File archiveDirectory = new File(DIR_NAME);
+        if (archiveDirectory.exists()) {
+            FileUtils.delete(new File(DIR_NAME));
+        }
+        super.shutdownCUT();
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

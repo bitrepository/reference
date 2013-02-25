@@ -99,6 +99,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
      * @throws RequestHandlerException If the requested operation is not possible to perform.
      */
     private void validateMessage(GetFileIDsRequest message) throws RequestHandlerException {
+        validateCollectionID(message);
         validatePillarId(message.getPillarID());
         validateFileID(message.getFileIDs().getFileID());
         checkThatAllRequestedFilesAreAvailable(message);

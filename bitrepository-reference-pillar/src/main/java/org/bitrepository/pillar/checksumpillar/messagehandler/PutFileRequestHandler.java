@@ -90,6 +90,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
      * @param message The message to validate.
      */
     private void validateMessage(PutFileRequest message) throws RequestHandlerException {
+        validateCollectionID(message);
         validatePillarId(message.getPillarID());
         if(message.getChecksumDataForNewFile() != null) {
             validateChecksumSpec(message.getChecksumDataForNewFile().getChecksumSpec());

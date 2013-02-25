@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The default <code>GetChecksumsClient</code>.
- * 
+ *
  * This class is just a thin wrapper which creates a conversion each time a operation is started. The conversations 
  * takes over the rest of the operation handling.
  */
@@ -62,25 +62,25 @@ public class ConversationBasedGetChecksumsClient extends AbstractClient implemen
     public void getChecksums(
             String collectionID,
             ContributorQuery[] contributorQueries,
-                           String fileID,
-                           ChecksumSpecTYPE checksumSpec,
-                           URL addressForResult,
-                           EventHandler eventHandler,
-                           String auditTrailInformation) {
+            String fileID,
+            ChecksumSpecTYPE checksumSpec,
+            URL addressForResult,
+            EventHandler eventHandler,
+            String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "collectionID");
         validateFileID(fileID);
         if (contributorQueries == null) {
             contributorQueries = ContributorQueryUtils.createFullContributorQuery(
-                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+                    settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
         }
 
         log.info("Requesting the checksums for file '" + "' with the specifications '" + checksumSpec + fileID +
-            "' with query "+ Arrays.asList(contributorQueries) + "." +
-            (addressForResult != null ?  "The result should be uploaded to '" + addressForResult + "'." : ""));
+                "' with query "+ Arrays.asList(contributorQueries) + "." +
+                (addressForResult != null ?  "The result should be uploaded to '" + addressForResult + "'." : ""));
 
         GetChecksumsConversationContext context = new GetChecksumsConversationContext(collectionID,
-            contributorQueries, fileID, checksumSpec, addressForResult, settings, messageBus, clientID,
-            ContributorQueryUtils.getContributors(contributorQueries), eventHandler, auditTrailInformation);
+                contributorQueries, fileID, checksumSpec, addressForResult, settings, messageBus, clientID,
+                ContributorQueryUtils.getContributors(contributorQueries), eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForGetChecksums(context));
     }
 }

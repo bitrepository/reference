@@ -54,7 +54,7 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
                            ChecksumDataForFileTYPE checksumForPillar,
             ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "collectionID");
-        validateFileID(fileID);
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "pillarId");
         validateFileID(fileID);
         if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {

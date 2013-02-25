@@ -63,13 +63,12 @@ public abstract class PillarMediator extends AbstractContributorMediator {
             handler.processRequest(request);
         } catch (IllegalArgumentException e) {
             getAlarmDispatcher().handleIllegalArgumentException(e);
+            ResponseInfo responseInfo = new ResponseInfo();
+            responseInfo.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+            responseInfo.setResponseText(e.getMessage());
+            dispatchNegativeResponse(request, handler, responseInfo);
         } catch (RequestHandlerException e) {
-            log.warn("Cannot perform operation. Sending failed response. Cause: \n"
-                    + e.getResponseInfo().getResponseText());
-            MessageResponse response = handler.generateFailedResponse(request);
-            response.setResponseInfo(e.getResponseInfo());
-            context.getResponseDispatcher().dispatchResponse(response, request);
-            
+            dispatchNegativeResponse(request, handler, e.getResponseInfo());
             log.trace("Stack trace for request handler exception.", e);
             getAlarmDispatcher().handleRequestException(e);
         } catch (RuntimeException e) {
@@ -92,5 +91,13 @@ public abstract class PillarMediator extends AbstractContributorMediator {
 
     protected PillarAlarmDispatcher getAlarmDispatcher() {
         return (PillarAlarmDispatcher) context.getAlarmDispatcher();
+    }
+
+    private void dispatchNegativeResponse(MessageRequest request, RequestHandler handler, ResponseInfo info) {
+        log.warn("Cannot perform operation. Sending failed response. Cause: \n"
+                + info.getResponseText());
+        MessageResponse response = handler.generateFailedResponse(request);
+        response.setResponseInfo(info);
+        context.getResponseDispatcher().dispatchResponse(response, request);
     }
 }

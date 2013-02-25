@@ -32,6 +32,7 @@ import org.bitrepository.access.getaudittrails.client.IdentifyingAuditTrailContr
 import org.bitrepository.client.AbstractClient;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBus;
 
@@ -52,6 +53,7 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
             String fileID,
             String urlForResult,
             EventHandler eventHandler, String auditTrailInformation) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "collectionID");
         validateFileID(fileID);
         if (componentQueries == null) {
             componentQueries = createFullAuditTrailQuery();

@@ -91,6 +91,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      * @return Whether it was valid.
      */
     protected void validateMessage(GetFileRequest message) throws RequestHandlerException {
+        validateCollectionID(message);
         validatePillarId(message.getPillarID());
         validateFileID(message.getFileID());
 

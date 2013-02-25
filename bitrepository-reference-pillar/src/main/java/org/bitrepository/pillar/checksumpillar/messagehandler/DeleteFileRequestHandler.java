@@ -87,6 +87,7 @@ public class DeleteFileRequestHandler extends ChecksumPillarMessageHandler<Delet
     protected void validateMessage(DeleteFileRequest message) throws RequestHandlerException {
         // Validate the message.
         validatePillarId(message.getPillarID());
+        validateCollectionID(message);
         validateChecksumSpec(message.getChecksumRequestForExistingFile());
         if(message.getChecksumDataForExistingFile() != null) {
             validateChecksumSpec(message.getChecksumDataForExistingFile().getChecksumSpec());

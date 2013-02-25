@@ -98,6 +98,10 @@ public class CollectionArchiveManager implements FileStore {
 
     @Override
     public File downloadFileForValidation(String fileID, String collectionId, InputStream inputStream) {
+        if (archives.get(collectionId) == null) {
+            throw new RuntimeException("No archive for collectionID: " +  collectionId +
+            "\nArchives are:" +archives);
+        }
         return archives.get(collectionId).downloadFileForValidation(fileID, inputStream);
     }
 

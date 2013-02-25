@@ -57,15 +57,15 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
                         ChecksumDataForFileTYPE checksumForValidationAtPillar,
             ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "collectionID");
-        ArgumentValidator.checkNotNull(url, "URL url");
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
         validateFileID(fileID);
+        ArgumentValidator.checkNotNull(url, "URL url");
         ArgumentValidator.checkNotNegative(sizeOfFile, "long sizeOfFile");
 
         log.info("Starting putFile of " + fileID + " for client " + clientID + ". " + auditTrailInformation);
         if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
             ArgumentValidator.checkNotNull(checksumForValidationAtPillar, "ChecksumDataForFileTYPE checksumForValidationAtPillar");
         }
-        validateFileID(fileID);
         
         PutFileConversationContext context = new PutFileConversationContext(collectionID, fileID, url, sizeOfFile,
                 checksumForValidationAtPillar, checksumRequestsForValidation, settings, messageBus,

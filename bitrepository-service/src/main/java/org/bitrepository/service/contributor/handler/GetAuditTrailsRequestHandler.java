@@ -79,6 +79,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
 
     @Override
     public void processRequest(GetAuditTrailsRequest message) throws RequestHandlerException {
+        validateCollectionID(message);
         validateMessage(message);
         sendProgressMessage(message);
         AuditTrailDatabaseResults resAudits = collectAudits(message);

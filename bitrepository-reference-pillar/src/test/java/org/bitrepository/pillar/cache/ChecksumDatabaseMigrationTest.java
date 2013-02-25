@@ -15,7 +15,11 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.bitrepository.pillar.cache.database.DatabaseConstants.*;
+import static org.bitrepository.pillar.cache.database.DatabaseConstants.CHECKSUM_TABLE;
+import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_CHECKSUM;
+import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_COLLECTION_ID;
+import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_DATE;
+import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_FILE_ID;
 
 public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
     protected Settings settings;
@@ -28,7 +32,7 @@ public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
 
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
-        settings = TestSettingsProvider.reloadSettingsForPillar("ReferencePillarTest");
+        settings = TestSettingsProvider.reloadSettings("ReferencePillarTest");
         
         settings.getReferenceSettings().getPillarSettings().getChecksumDatabase().setDatabaseURL(
                 "jdbc:derby:" + PATH_TO_DATABASE_UNPACKED + "/checksumdb");

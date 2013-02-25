@@ -92,9 +92,9 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     public void initializeSuite() {
         settingsForCUT = loadSettings(getComponentID());
         settingsForTestClient = loadSettings("TestSuiteInitialiser");
-        collectionID = settingsForTestClient.getCollections().get(0).getID();
         makeUserSpecificSettings(settingsForCUT);
         makeUserSpecificSettings(settingsForTestClient);
+        collectionID = settingsForTestClient.getCollections().get(0).getID();
 
         securityManager = createSecurityManager();
         setupMessageBus();

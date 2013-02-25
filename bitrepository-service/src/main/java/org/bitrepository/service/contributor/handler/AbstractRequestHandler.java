@@ -67,4 +67,15 @@ public abstract class AbstractRequestHandler<T> implements RequestHandler<T> {
     protected void dispatchResponse(MessageResponse response, MessageRequest request) {
         context.getResponseDispatcher().dispatchResponse(response, request);
     }
+
+    /**
+     * Validates that the collectionID has been set.
+     * @param request The request to check the collectionID for.
+     */
+    protected void validateCollectionID(MessageRequest request) {
+        if(!request.isSetCollectionID()) {
+            throw new IllegalArgumentException(request.getClass().getSimpleName() +
+                    "'s requires a CollectionID");
+        }
+    }
 }

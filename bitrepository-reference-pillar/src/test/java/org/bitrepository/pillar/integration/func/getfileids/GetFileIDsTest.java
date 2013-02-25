@@ -22,7 +22,6 @@
 package org.bitrepository.pillar.integration.func.getfileids;
 
 import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;

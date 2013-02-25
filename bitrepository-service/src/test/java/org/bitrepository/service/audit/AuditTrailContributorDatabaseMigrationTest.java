@@ -28,7 +28,7 @@ public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase
 
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
-        settings = TestSettingsProvider.reloadSettingsForPillar("ReferencePillarTest");
+        settings = TestSettingsProvider.reloadSettings("ReferencePillarTest");
         
         settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase().setDatabaseURL(
                 "jdbc:derby:" + PATH_TO_DATABASE_UNPACKED + "/auditcontributerdb");

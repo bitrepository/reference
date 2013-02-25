@@ -24,7 +24,6 @@ package org.bitrepository.pillar.referencepillar;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Date;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -43,7 +42,6 @@ import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMe
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
-import org.testng.Assert;
 
 public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     protected CollectionArchiveManager archives;
@@ -73,7 +71,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
         if(fileDir.exists()) {
             FileUtils.delete(fileDir);
         }
-
+        System.out.println("Creating pillar with: " + settingsForCUT.getRepositorySettings());
         createReferencePillar();
     }
 
@@ -93,7 +91,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
                 new ResponseDispatcher(settingsForCUT, messageBus),
                 new PillarAlarmDispatcher(settingsForCUT, messageBus),
                 audits);
-        csManager = new ReferenceChecksumManager(archives, csCache, alarmDispatcher, 
+        csManager = new ReferenceChecksumManager(archives, csCache, alarmDispatcher,
                 ChecksumUtils.getDefault(context.getSettings()), 3600000L);
         mediator = new ReferencePillarMediator(messageBus, context, archives, csManager);
         mediator.start();
@@ -113,13 +111,10 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     }
 
     private void initializeArchiveWithEmptyFile() {
-        addFixtureSetup("Initialize the Reference pillar cache with an empty file.");
-        try {
-            archives.downloadFileForValidation(DEFAULT_FILE_ID, collectionID, new ByteArrayInputStream(new byte[0]));
-            archives.moveToArchive(DEFAULT_FILE_ID, collectionID);
-            csCache.insertChecksumCalculation(DEFAULT_FILE_ID, collectionID, EMPTY_FILE_CHECKSUM, new Date());
-        } catch (Exception e) {
-            Assert.fail("Could not instantiate the archive", e);
-        }
+        addFixtureSetup("Initialize the Reference pillar cache with an empty file in default collection " +
+                collectionID);
+        archives.downloadFileForValidation(DEFAULT_FILE_ID, collectionID, new ByteArrayInputStream(new byte[0]));
+        archives.moveToArchive(DEFAULT_FILE_ID, collectionID);
+        csCache.insertChecksumCalculation(DEFAULT_FILE_ID, collectionID, EMPTY_FILE_CHECKSUM, new Date());
     }
 }

@@ -62,6 +62,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
 
     @Override
     public void processRequest(IdentifyPillarsForGetChecksumsRequest message) throws RequestHandlerException {
+        validateCollectionID(message);
         validateChecksumSpecification(message.getChecksumRequestForExistingFile());
         checkThatAllRequestedFilesAreAvailable(message);
         respondSuccesfullIdentification(message);

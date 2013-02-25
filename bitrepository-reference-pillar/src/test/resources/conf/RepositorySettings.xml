@@ -27,8 +27,14 @@
 <RepositorySettings xmlns="http://bitrepository.org/settings/RepositorySettings.xsd">
   <Name>EmbeddedReferencePillarTest</Name>
   <Collections>
-    <Collection><ID>EmbeddedReferencePillarTest</ID>
+    <Collection><ID>DefaultCollection</ID>
       <PillarIDs><PillarID>EmbeddedReferencePillar</PillarID></PillarIDs>
+    </Collection>
+    <Collection><ID>NonDefaultCollection</ID>
+      <PillarIDs><PillarID>EmbeddedReferencePillar</PillarID></PillarIDs>
+    </Collection>
+    <Collection><ID>IrrelevantCollection</ID>
+      <PillarIDs><PillarID>OtherPillar</PillarID></PillarIDs>
     </Collection>
   </Collections>
   <ProtocolSettings>

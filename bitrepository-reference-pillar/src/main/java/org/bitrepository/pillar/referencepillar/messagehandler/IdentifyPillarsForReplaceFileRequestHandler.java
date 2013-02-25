@@ -65,6 +65,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
 
     @Override
     public void processRequest(IdentifyPillarsForReplaceFileRequest message) throws RequestHandlerException {
+        validateCollectionID(message);
         validateFileID(message.getFileID());
         checkThatRequestedFileIsAvailable(message);
         checkSpaceForStoringNewFile(message);

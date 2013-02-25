@@ -42,7 +42,7 @@ import org.bitrepository.service.exception.RequestHandlerException;
 /**
  * Class for handling the identification of this pillar for the purpose of performing the GetChecksums operation.
  */
-public class IdentifyPillarsForGetChecksumsRequestHandler 
+public class IdentifyPillarsForGetChecksumsRequestHandler
         extends ChecksumPillarMessageHandler<IdentifyPillarsForGetChecksumsRequest> {
     
     /**
@@ -61,6 +61,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
 
     @Override
     public void processRequest(IdentifyPillarsForGetChecksumsRequest message) throws RequestHandlerException {
+        validateCollectionID(message);
         validateMessage(message);
         checkThatAllRequestedFilesAreAvailable(message);
         respondSuccesfullIdentification(message);

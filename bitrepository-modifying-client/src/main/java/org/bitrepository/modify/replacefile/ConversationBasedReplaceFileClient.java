@@ -59,10 +59,10 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile, 
             EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "collectionID");
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
         validateFileID(fileID);
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
-        validateFileID(fileID);
         if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
             ArgumentValidator.checkNotNull(checksumForDeleteAtPillar, "ChecksumDataForFileTYPE checksumForDeleteAtPillar");
         }

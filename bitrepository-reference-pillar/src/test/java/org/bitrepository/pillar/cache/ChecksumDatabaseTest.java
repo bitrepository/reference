@@ -33,6 +33,7 @@ import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
 import org.bitrepository.pillar.common.ChecksumDatabaseCreator;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
+import org.bitrepository.settings.repositorysettings.PillarIDs;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -48,7 +49,7 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
     
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
-        settings = TestSettingsProvider.reloadSettingsForPillar("ReferencePillarTest");
+        loadSettings();
         collectionID = settings.getCollections().get(0).getID();
 
         DatabaseSpecifics checksumDB =
@@ -213,5 +214,25 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         ChecksumDAO res = new ChecksumDAO(settings);
         res.insertChecksumCalculation(DEFAULT_FILE_ID, collectionID, DEFAULT_CHECKSUM, DEFAULT_DATE);
         return res;
+    }
+
+    /**
+     * Replaces the pillarID references in the settings will test specific pillarIDs.
+     */
+    protected Settings loadSettings() {
+        settings = TestSettingsProvider.reloadSettings(getPillarID());
+        settings.getReferenceSettings().getPillarSettings().setPillarID(getPillarID());
+        updateSettingsWithSpecificPillarName(settings, getPillarID());
+        return settings;
+    }
+
+    private void updateSettingsWithSpecificPillarName(Settings settings, String pillarID) {
+        PillarIDs pillars = settings.getCollections().get(0).getPillarIDs();
+        pillars.getPillarID().clear();
+        pillars.getPillarID().add(pillarID);
+    }
+
+    private String getPillarID() {
+        return "ReferencePillarTest";
     }
 }

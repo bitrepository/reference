@@ -38,7 +38,7 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
         msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient);
     }
 
-    @Test( groups = {"pillar-integration-test"})
+    @Test( groups = {"pillar-integration-test", "exclude-checksum-pillar"})
     public void goodCaseIdentificationIT() {
         addDescription("Tests the general IdentifyPillarsForGetFile functionality of the pillar for the successful scenario.");
         addStep("Create and send the identify request message.",
@@ -61,7 +61,7 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
         Assert.assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
     }
 
-    @Test( groups = {"pillar-integration-test"})
+    @Test( groups = {"pillar-integration-test", "exclude-checksum-pillar"})
     public void nonExistingFileIdentificationIT() {
         addDescription("Tests the  IdentifyPillarsForGetFile functionality of the pillar for a IdentificationForGetFile " +
                 "for a non existing file.");

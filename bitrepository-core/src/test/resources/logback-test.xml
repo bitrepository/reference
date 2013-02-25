@@ -41,7 +41,7 @@
     <appender-ref ref="FILE" />
   </root>
 
-  <logger name="org.bitrepository" level="INFO" additivity="false">
+  <logger name="org.bitrepository" level="DEBUG" additivity="false">
     <appender-ref ref="FILE" />
   </logger>
 </configuration>

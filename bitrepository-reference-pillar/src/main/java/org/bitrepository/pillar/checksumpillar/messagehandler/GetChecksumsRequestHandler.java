@@ -104,6 +104,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
      */
     private void validateMessage(GetChecksumsRequest message) throws RequestHandlerException {
         validatePillarId(message.getPillarID());
+        validateCollectionID(message);
         validateChecksumSpec(message.getChecksumRequestForExistingFile());
         validateFileIDs(message);
         

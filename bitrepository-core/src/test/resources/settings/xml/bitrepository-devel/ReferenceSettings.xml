@@ -35,7 +35,7 @@
     <OperationRetryCount>2</OperationRetryCount>
   </ClientSettings>
   <PillarSettings>
-    <PillarID>PillarUnderTest</PillarID>
+    <PillarID>Pillar1</PillarID>
     <CollectionDirs>
       <FileDirs>target/test/referencepillar/file-archive</FileDirs>
     </CollectionDirs>

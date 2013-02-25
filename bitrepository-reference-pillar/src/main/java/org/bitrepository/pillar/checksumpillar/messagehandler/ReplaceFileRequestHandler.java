@@ -105,6 +105,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
      * @return Whether it was valid.
      */
     protected void validateMessage(ReplaceFileRequest message) throws RequestHandlerException {
+        validateCollectionID(message);
         validatePillarId(message.getPillarID());
         validateChecksumSpec(message.getChecksumRequestForExistingFile());
         validateChecksumSpec(message.getChecksumRequestForNewFile());

@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Class for handling the identification of this pillar for the purpose of performing the GetFileIDs operation.
  */
-public class IdentifyPillarsForGetFileIDsRequestHandler 
+public class IdentifyPillarsForGetFileIDsRequestHandler
         extends ChecksumPillarMessageHandler<IdentifyPillarsForGetFileIDsRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -62,6 +62,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
 
     @Override
     public void processRequest(IdentifyPillarsForGetFileIDsRequest message) throws RequestHandlerException {
+        validateCollectionID(message);
         checkThatAllRequestedFilesAreAvailable(message);
         respondSuccesfullIdentification(message);
     }

@@ -64,6 +64,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
 
     @Override
     public void processRequest(IdentifyPillarsForPutFileRequest message) throws RequestHandlerException {
+        validateCollectionID(message);
         if(checkThatTheFileDoesNotAlreadyExist(message)) {
             respondDuplicateFile(message);
         } else {

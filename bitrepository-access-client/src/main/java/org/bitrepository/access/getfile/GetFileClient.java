@@ -32,13 +32,13 @@ import org.bitrepository.client.eventhandler.EventHandler;
 
 /**
  * The <code>GetFileClient</code> is used as a handle for the Bit Repository getFile operation. 
- * 
+ *
  */
 public interface GetFileClient extends BitrepositoryClient {
 
     /**
      * Method for retrieving a file from the pillar able to deliver the file fastest. 
-     * 
+     *
      * The method will return as soon as the communication has been setup.
      *
      * @param  collectionID Identifies the collection the file should be retrieved from.
@@ -54,7 +54,7 @@ public interface GetFileClient extends BitrepositoryClient {
 
     /**
      * Method for retrieving a file from a specific pillar. 
-     * 
+     *
      * The method will return as soon as the communication has been setup.
      * @param  collectionID Identifies the collection the file should be retrieved from.
      * @param fileId The id of the file to retrieve.
@@ -67,5 +67,5 @@ public interface GetFileClient extends BitrepositoryClient {
      */
     void getFileFromSpecificPillar(String collectionID, String fileId, FilePart filePart, URL uploadUrl,
                                    String pillarId,
-            EventHandler eventHandler, String auditTrailInformation);
+                                   EventHandler eventHandler, String auditTrailInformation);
 }

@@ -55,6 +55,7 @@ public class GetFileRequestHandler extends ChecksumPillarMessageHandler<GetFileR
 
     @Override
     public void processRequest(GetFileRequest message) throws RequestHandlerException {
+        validateCollectionID(message);
         validatePillarId(message.getPillarID());
 
         getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 

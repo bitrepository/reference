@@ -29,7 +29,7 @@ import org.bitrepository.client.eventhandler.EventHandler;
 
 public interface AuditTrailClient extends BitrepositoryClient {
     /**
-     * @param collection The collection to request audit trails for.
+     * @param collectionID The collection to request audit trails for.
      * @param componentQueries Defines which components to retrieve audit trail from. Also defines a filter which
      *                         can be used to limit the audit trail result from each pillar. If null all audit trails
      *                         from all contributers are returned.
@@ -41,7 +41,7 @@ public interface AuditTrailClient extends BitrepositoryClient {
      * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation call.
      */
     void getAuditTrails(
-            String collection,
+            String collectionID,
             AuditTrailQuery[] componentQueries,
             String fileID,
             String urlForResult,

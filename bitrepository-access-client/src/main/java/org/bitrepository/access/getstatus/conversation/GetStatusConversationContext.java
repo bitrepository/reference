@@ -30,10 +30,9 @@ import org.bitrepository.protocol.messagebus.MessageSender;
 
 public class GetStatusConversationContext extends ConversationContext {
 
-    public GetStatusConversationContext(String collectionID, Settings settings, MessageSender messageSender,
-                                        EventHandler eventHandler,
+    public GetStatusConversationContext(Settings settings, MessageSender messageSender, EventHandler eventHandler,
                                         String clientID, Collection<String> contributors) {
-        super(collectionID, OperationType.GET_STATUS, settings, messageSender, clientID, null, contributors,
+        super(null, OperationType.GET_STATUS, settings, messageSender, clientID, null, contributors,
                 eventHandler, "");
     }
 }

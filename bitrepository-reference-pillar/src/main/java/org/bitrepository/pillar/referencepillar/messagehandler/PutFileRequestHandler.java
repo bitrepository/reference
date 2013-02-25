@@ -73,8 +73,8 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
 
     @Override
     public void processRequest(PutFileRequest message) throws RequestHandlerException {
+        validateMessage(message);
         try {
-            validateMessage(message);
             dispatchInitialProgressResponse(message);
             retrieveFile(message);
             sendFinalResponse(message);
@@ -93,6 +93,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
      * @param message The message to validate.
      */
     private void validateMessage(PutFileRequest message) throws RequestHandlerException {
+        validateCollectionID(message);
         validatePillarId(message.getPillarID());
         if(message.getChecksumDataForNewFile() != null) {
             validateChecksumSpecification(message.getChecksumDataForNewFile().getChecksumSpec());
