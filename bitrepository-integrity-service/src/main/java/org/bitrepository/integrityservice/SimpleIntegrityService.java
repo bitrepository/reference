@@ -113,26 +113,22 @@ public class SimpleIntegrityService implements IntegrityService {
         return scheduler.getScheduledWorkflows();
     }
     
-
     @Override
-    public List<String> getChecksumErrors(String collectionID, String pillarID,
+    public Collection<String> getChecksumErrors(String collectionID, String pillarID,
             int firstID, int lastID) {
-        // TODO Auto-generated method stub
-        return null;
+        return cache.getFilesWithChecksumErrorsAtPillar(pillarID, firstID, lastID);
     }
 
     @Override
-    public List<String> getMissingFiles(String collectionID, String pillarID,
+    public Collection<String> getMissingFiles(String collectionID, String pillarID,
             int firstID, int lastID) {
-        // TODO Auto-generated method stub
-        return null;
+        return cache.getMissingFilesAtPillar(pillarID, firstID, lastID);
     }
 
     @Override
-    public List<String> getAllFileIDs(String collectionID, String pillarID,
+    public Collection<String> getAllFileIDs(String collectionID, String pillarID,
             int firstID, int lastID) {
-        // TODO Auto-generated method stub
-        return null;
+        return cache.getFilesOnPillar(pillarID, firstID, lastID);
     }
     
     @Override
@@ -182,7 +178,7 @@ public class SimpleIntegrityService implements IntegrityService {
     }
 
     @Override
-    public List<String> getPillarList() {
+    public Collection<String> getPillarList() {
         return settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID();
     }
 }

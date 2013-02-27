@@ -143,8 +143,7 @@ public class RestIntegrityService {
     @Produces(MediaType.APPLICATION_JSON)
     public String getIntegrityStatus(@QueryParam("collectionID") String collectionID) {
         JSONArray array = new JSONArray();
-        List<String> pillars = service.getPillarList();
-        for(String pillar : pillars) {
+        for(String pillar : service.getPillarList()) {
             array.put(makeIntegrityStatusObj(pillar));
         }
         return array.toString();

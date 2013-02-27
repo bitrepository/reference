@@ -192,4 +192,19 @@ public class IntegrityDatabase implements IntegrityModel {
         store.close();
     }
 
+    @Override
+    public Collection<String> getFilesOnPillar(String pillarId, long minId, long maxId) {
+        return store.getFilesOnPillar(pillarId, minId, maxId);
+    }
+
+    @Override
+    public Collection<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId) {
+        return store.getMissingFilesOnPillar(pillarId, minId, maxId);
+    }
+
+    @Override
+    public Collection<String> getFilesWithChecksumErrorsAtPillar(String pillarId, long minId, long maxId) {
+        return store.getFilesWithChecksumErrorsOnPillar(pillarId, minId, maxId);
+    }
+
 }

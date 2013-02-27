@@ -22,7 +22,7 @@
 package org.bitrepository.integrityservice;
 
 import java.util.Collection;
-import java.util.List;
+
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowTimerTask;
@@ -47,7 +47,7 @@ public interface IntegrityService extends LifeCycledService {
      * @param firstID the first numerical ID to be included in the list
      * @param lastID the last numerical ID to be included in the list
      */
-    List<String> getChecksumErrors(String collectionID, String pillarID, int firstID, int lastID);
+    Collection<String> getChecksumErrors(String collectionID, String pillarID, int firstID, int lastID);
     
     /**
      * Retrieves the list of missing fileIDs on the pillar in a given collection
@@ -56,7 +56,7 @@ public interface IntegrityService extends LifeCycledService {
      * @param firstID the first numerical ID to be included in the list
      * @param lastID the last numerical ID to be included in the list
      */
-    List<String> getMissingFiles(String collectionID, String pillarID, int firstID, int lastID);
+    Collection<String> getMissingFiles(String collectionID, String pillarID, int firstID, int lastID);
     
     /**
      * Retrieves the list of all the fileIDs present on the pillar in a given collection
@@ -65,7 +65,7 @@ public interface IntegrityService extends LifeCycledService {
      * @param firstID the first numerical ID to be included in the list
      * @param lastID the last numerical ID to be included in the list
      */
-    List<String> getAllFileIDs(String collectionID, String pillarID, int firstID, int lastID);
+    Collection<String> getAllFileIDs(String collectionID, String pillarID, int firstID, int lastID);
     
     /**
      * @param pillarId The pillar which has the files.
@@ -95,7 +95,7 @@ public interface IntegrityService extends LifeCycledService {
     /**
      * @return The list of pillars.
      */
-    public List<String> getPillarList();
+    public Collection<String> getPillarList();
 
     /**
      * Shut down the integrity service.

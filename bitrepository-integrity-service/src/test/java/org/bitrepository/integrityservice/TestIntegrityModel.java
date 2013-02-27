@@ -495,4 +495,46 @@ public class TestIntegrityModel implements IntegrityModel {
             }
         }
     }
+
+    @Override
+    public Collection<String> getFilesOnPillar(String pillarId, long minId, long maxId) {
+        ArrayList<String> res = new ArrayList<String>();
+        for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
+            for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
+                if(fileinfo.getPillarId().equals(pillarId) && fileinfo.getFileState() == FileState.EXISTING) {
+                    res.add(collectionInfo.getKey());
+                }
+            }
+        }
+        
+        return res.subList((int) minId, (int) maxId);
+    }
+
+    @Override
+    public Collection<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId) {
+        ArrayList<String> res = new ArrayList<String>();
+        for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
+            for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
+                if(fileinfo.getPillarId().equals(pillarId) && fileinfo.getFileState() == FileState.MISSING) {
+                    res.add(collectionInfo.getKey());
+                }
+            }
+        }
+        
+        return res.subList((int) minId, (int) maxId);
+    }
+
+    @Override
+    public Collection<String> getFilesWithChecksumErrorsAtPillar(String pillarId, long minId, long maxId) {
+        ArrayList<String> res = new ArrayList<String>();
+        for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
+            for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
+                if(fileinfo.getPillarId().equals(pillarId) && fileinfo.getChecksumState() == ChecksumState.ERROR) {
+                    res.add(collectionInfo.getKey());
+                }
+            }
+        }
+        
+        return res.subList((int) minId, (int) maxId);
+    }
 }

@@ -257,4 +257,31 @@ public class MockIntegrityModel implements IntegrityModel {
     public int getCallsForSetUnknownFilesToMissing() {
         return callsForSetUnknownFilesToMissing;
     }
+    private int callsForGetFileOnPillar = 0;
+    @Override
+    public Collection<String> getFilesOnPillar(String pillarId, long minId, long maxId) {
+        callsForGetFileOnPillar++;
+        return integrityModel.getFilesOnPillar(pillarId, minId, maxId);
+    }
+    public int getCallsForGetFileOnPillar() {
+        return callsForGetFileOnPillar;
+    }
+    private int callsMissingFilesAtPillar = 0;
+    @Override
+    public Collection<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId) {
+        callsMissingFilesAtPillar++;
+        return integrityModel.getMissingFilesAtPillar(pillarId, minId, maxId);
+    }
+    public int getMissingFilesAtPillar() {
+        return callsMissingFilesAtPillar;
+    }
+    private int callsForFilesWithChecksumErrorsAtPillar = 0;
+    @Override
+    public Collection<String> getFilesWithChecksumErrorsAtPillar(String pillarId, long minId, long maxId) {
+        callsForFilesWithChecksumErrorsAtPillar++;
+        return integrityModel.getFilesWithChecksumErrorsAtPillar(pillarId, minId, maxId);
+    }
+    public int getFilesWithChecksumErrorsAtPillar() {
+        return callsForFilesWithChecksumErrorsAtPillar;
+    }
 }

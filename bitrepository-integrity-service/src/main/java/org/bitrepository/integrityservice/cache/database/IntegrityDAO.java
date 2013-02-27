@@ -29,6 +29,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
@@ -487,6 +488,165 @@ public class IntegrityDAO {
         
         DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.MISSING.ordinal(), 
                 FileState.UNKNOWN.ordinal(), minAge);
+    }
+    
+    /**
+     * Retrieves list of existing files on a pillar, within the defined range.
+     * @param pillarId The id of the pillar.
+     * @param min The minimum count.
+     * @param max The maximum count.
+     * @return The list of file ids between the two counts.
+     */
+    public Collection<String> getFilesOnPillar(String pillarId, long min, long max) {
+        log.trace("Locating all existing files for pillar '" + pillarId + "' from number " + min + " to " + max + ".");
+        String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
+                + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "." 
+                + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? AND " + FILE_INFO_TABLE 
+                + "." + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " 
+                + PILLAR_ID + " = ?)";
+        
+        try {
+            ResultSet dbResult = null;
+            PreparedStatement ps = null;
+            Connection conn = null;
+            try {
+                conn = dbConnector.getConnection();
+                ps = DatabaseUtils.createPreparedStatement(conn, selectSql, FileState.EXISTING.ordinal(), pillarId);
+                dbResult = ps.executeQuery();
+                
+                List<String> res = new ArrayList<String>();
+                
+                int i = 0;
+                while(dbResult.next()) {
+                    if(i >= min && i < max) {
+                        res.add(dbResult.getString(1));
+                        
+                    }
+                    i++;
+                }
+                
+                return res;
+            } finally {
+                if(dbResult != null) {
+                    dbResult.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
+                if(conn != null) {
+                    conn.close();
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not retrieve the file ids for '" + pillarId + "' between counts "
+                    + min + " and " + max + " with the SQL '" + selectSql + "'.", e);
+        }
+    }
+
+    /**
+     * Retrieves list of missing files on a pillar, within the defined range.
+     * @param pillarId The id of the pillar.
+     * @param min The minimum count.
+     * @param max The maximum count.
+     * @return The list of file ids between the two counts.
+     */
+    public Collection<String> getMissingFilesOnPillar(String pillarId, long min, long max) {
+        log.trace("Locating all existing files for pillar '" + pillarId + "' from number " + min + " to " + max + ".");
+        String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
+                + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "." 
+                + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? AND " + FILE_INFO_TABLE 
+                + "." + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " 
+                + PILLAR_ID + " = ?)";
+        
+        try {
+            ResultSet dbResult = null;
+            PreparedStatement ps = null;
+            Connection conn = null;
+            try {
+                conn = dbConnector.getConnection();
+                ps = DatabaseUtils.createPreparedStatement(conn, selectSql, FileState.MISSING.ordinal(), pillarId);
+                dbResult = ps.executeQuery();
+                
+                List<String> res = new ArrayList<String>();
+                
+                int i = 0;
+                while(dbResult.next()) {
+                    if(i >= min && i < max) {
+                        res.add(dbResult.getString(1));
+                        
+                    }
+                    i++;
+                }
+                
+                return res;
+            } finally {
+                if(dbResult != null) {
+                    dbResult.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
+                if(conn != null) {
+                    conn.close();
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not retrieve the file ids for '" + pillarId + "' between counts "
+                    + min + " and " + max + " with the SQL '" + selectSql + "'.", e);
+        }
+    }
+
+    /**
+     * Retrieves list of existing files on a pillar, within the defined range.
+     * @param pillarId The id of the pillar.
+     * @param min The minimum count.
+     * @param max The maximum count.
+     * @return The list of file ids between the two counts.
+     */
+    public Collection<String> getFilesWithChecksumErrorsOnPillar(String pillarId, long min, long max) {
+        log.trace("Locating all existing files for pillar '" + pillarId + "' from number " + min + " to " + max + ".");
+        String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
+                + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "." 
+                + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ? AND " + FILE_INFO_TABLE 
+                + "." + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " 
+                + PILLAR_ID + " = ?)";
+        
+        try {
+            ResultSet dbResult = null;
+            PreparedStatement ps = null;
+            Connection conn = null;
+            try {
+                conn = dbConnector.getConnection();
+                ps = DatabaseUtils.createPreparedStatement(conn, selectSql, ChecksumState.ERROR.ordinal(), pillarId);
+                dbResult = ps.executeQuery();
+                
+                List<String> res = new ArrayList<String>();
+                
+                int i = 0;
+                while(dbResult.next()) {
+                    if(i >= min && i < max) {
+                        res.add(dbResult.getString(1));
+                        
+                    }
+                    i++;
+                }
+                
+                return res;
+            } finally {
+                if(dbResult != null) {
+                    dbResult.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
+                if(conn != null) {
+                    conn.close();
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not retrieve the file ids for '" + pillarId + "' between counts "
+                    + min + " and " + max + " with the SQL '" + selectSql + "'.", e);
+        }
     }
     
     /**

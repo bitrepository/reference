@@ -69,10 +69,28 @@ public interface IntegrityModel {
     long getNumberOfFiles(String pillarId);
     
     /**
+     * A list of files for a given pillar, restricted by min and max ids.
+     * @param pillarId The id of the pillar.
+     * @param minId The minimum result number.
+     * @param maxId The maximum result number.
+     * @return The list of file ids for the pillar, between min and max.
+     */
+    Collection<String> getFilesOnPillar(String pillarId, long minId, long maxId);
+    
+    /**
      * @param pillarId The pillar.
      * @return Retrieves the number of files in the state 'MISSING' at a given pillar.
      */
     long getNumberOfMissingFiles(String pillarId);
+    
+    /**
+     * A list of missing files for a given pillar, restricted by min and max ids.
+     * @param pillarId The id of the pillar.
+     * @param minId The minimum result number.
+     * @param maxId The maximum result number.
+     * @return The list of missing file ids for the pillar, between min and max.
+     */
+    Collection<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId);
     
     /**
      * @param pillarId The pillar.
@@ -80,6 +98,16 @@ public interface IntegrityModel {
      */
     long getNumberOfChecksumErrors(String pillarId);
     
+    
+    /**
+     * A list of files with checksum error for a given pillar, restricted by min and max ids.
+     * @param pillarId The id of the pillar.
+     * @param minId The minimum result number.
+     * @param maxId The maximum result number.
+     * @return The list of ids for the files with checksum errors for the pillar, between min and max.
+     */
+    Collection<String> getFilesWithChecksumErrorsAtPillar(String pillarId, long minId, long maxId);
+
     /**
      * Sets the file to be missing at the given pillars.
      * @param fileId The id of the file, which is missing at some pillars.

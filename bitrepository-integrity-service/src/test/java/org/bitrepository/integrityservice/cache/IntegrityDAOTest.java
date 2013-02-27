@@ -499,7 +499,199 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertEquals(cache.getNumberOfExistingFilesForAPillar(TEST_PILLAR_1), 0);
         Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1), 1);        
     }
+    
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testExtractingAllKnownFilesForPillars() throws Exception {
+        addDescription("Tests that known files can be extracted for specific pillars.");
+        IntegrityDAO cache = createDAO();
+        String file2 = TEST_FILE_ID + "-2";
+        
+        addStep("Insert two files into database for a pillar", "Ingesting the data into the database");
+        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1);
+        
+        addStep("Extract all the existing file ids for the pillar", "Both file ids is found.");
+        Collection<String> fileIds = cache.getFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE);
+        Assert.assertTrue(fileIds.size() == 2, "Number of files: " + fileIds.size());
+        Assert.assertTrue(fileIds.contains(TEST_FILE_ID));
+        Assert.assertTrue(fileIds.contains(file2));
 
+        addStep("Extract all the existing file ids for another pillar", "No files are found.");
+        fileIds = cache.getFilesOnPillar(TEST_PILLAR_2, 0, Long.MAX_VALUE);
+        Assert.assertTrue(fileIds.isEmpty());
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testExtractingAllKnownFilesForPillarsLimits() throws Exception {
+        addDescription("Tests the limits for extracting files for specific pillars.");
+        IntegrityDAO cache = createDAO();
+        String file2 = TEST_FILE_ID + "-2";
+        
+        addStep("Insert two files into database for a pillar", "Ingesting the data into the database");
+        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1);
+        
+        addStep("Extract with a maximum of 0", "No files");
+        Collection<String> fileIds = cache.getFilesOnPillar(TEST_PILLAR_1, 0, 0);
+        Assert.assertTrue(fileIds.isEmpty());
+
+        addStep("Extract with a maximum of 1", "The first file.");
+        fileIds = cache.getFilesOnPillar(TEST_PILLAR_1, 0, 1);
+        Assert.assertTrue(fileIds.size() == 1);
+        Assert.assertTrue(fileIds.contains(TEST_FILE_ID));
+        
+        addStep("Extract with a minimum of 1 and maximum of infinite", "The last file.");
+        fileIds = cache.getFilesOnPillar(TEST_PILLAR_1, 1, Long.MAX_VALUE);
+        Assert.assertTrue(fileIds.size() == 1);
+        Assert.assertTrue(fileIds.contains(file2));
+
+        addStep("Extract with a minimum of 1 and maximum of 0", "No files.");
+        fileIds = cache.getFilesOnPillar(TEST_PILLAR_1, 1, 0);
+        Assert.assertTrue(fileIds.isEmpty());
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testExtractingAllKnownFilesForPillarsIgnoresMissingFiles() throws Exception {
+        addDescription("Tests that only existing files are extracted for specific pillars.");
+        IntegrityDAO cache = createDAO();
+        String file2 = TEST_FILE_ID + "-2";
+        
+        addStep("Insert two files into database for a pillar, and mark one as missing", 
+                "Ingesting the data into the database");
+        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1);
+        cache.setFileMissing(file2, TEST_PILLAR_1);
+        
+        addStep("Extract all the existing file ids for the pillar", "Only one file id is found.");
+        Collection<String> fileIds = cache.getFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE);
+        Assert.assertTrue(fileIds.size() == 1, "Number of files: " + fileIds.size());
+        Assert.assertTrue(fileIds.contains(TEST_FILE_ID));
+        Assert.assertFalse(fileIds.contains(file2));
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testExtractingAllMissingFilesForPillars() throws Exception {
+        addDescription("Tests that missing files can be extracted for specific pillars.");
+        IntegrityDAO cache = createDAO();
+        String file2 = TEST_FILE_ID + "-2";
+        
+        addStep("Insert two files into database for a pillar and mark them as missing", 
+                "Ingesting the data into the database");
+        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1);
+        cache.setFileMissing(TEST_FILE_ID, TEST_PILLAR_1);
+        cache.setFileMissing(file2, TEST_PILLAR_1);
+        
+        addStep("Extract all the missing file ids for the pillar", "Both file ids is found.");
+        Collection<String> fileIds = cache.getMissingFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE);
+        Assert.assertTrue(fileIds.size() == 2, "Number of files: " + fileIds.size());
+        Assert.assertTrue(fileIds.contains(TEST_FILE_ID));
+        Assert.assertTrue(fileIds.contains(file2));
+
+        addStep("Extract all the missing file ids for another pillar", "No files are found.");
+        fileIds = cache.getMissingFilesOnPillar(TEST_PILLAR_2, 0, Long.MAX_VALUE);
+        Assert.assertTrue(fileIds.isEmpty());
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testExtractingAllMissingFilesForPillarsLimits() throws Exception {
+        addDescription("Tests the limits for extracting missing files for specific pillars.");
+        IntegrityDAO cache = createDAO();
+        String file2 = TEST_FILE_ID + "-2";
+        
+        addStep("Insert two files into database for a pillar and set them to missing", 
+                "Ingesting the data into the database");
+        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1);
+        cache.setFileMissing(TEST_FILE_ID, TEST_PILLAR_1);
+        cache.setFileMissing(file2, TEST_PILLAR_1);
+        
+        addStep("Extract with a maximum of 0", "No files");
+        Collection<String> fileIds = cache.getMissingFilesOnPillar(TEST_PILLAR_1, 0, 0);
+        Assert.assertTrue(fileIds.isEmpty());
+
+        addStep("Extract with a maximum of 1", "The first file.");
+        fileIds = cache.getMissingFilesOnPillar(TEST_PILLAR_1, 0, 1);
+        Assert.assertTrue(fileIds.size() == 1);
+        Assert.assertTrue(fileIds.contains(TEST_FILE_ID));
+        
+        addStep("Extract with a minimum of 1 and maximum of infinite", "The last file.");
+        fileIds = cache.getMissingFilesOnPillar(TEST_PILLAR_1, 1, Long.MAX_VALUE);
+        Assert.assertTrue(fileIds.size() == 1);
+        Assert.assertTrue(fileIds.contains(file2));
+
+        addStep("Extract with a minimum of 1 and maximum of 0", "No files.");
+        fileIds = cache.getMissingFilesOnPillar(TEST_PILLAR_1, 1, 0);
+        Assert.assertTrue(fileIds.isEmpty());
+    }
+
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testExtractingMissingFilesForPillarsIgnoresExistingFiles() throws Exception {
+        addDescription("Tests that only missing files are extracted for specific pillars.");
+        IntegrityDAO cache = createDAO();
+        String file2 = TEST_FILE_ID + "-2";
+        
+        addStep("Insert two files into database for a pillar, and mark one as missing", 
+                "Ingesting the data into the database");
+        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1);
+        cache.setFileMissing(file2, TEST_PILLAR_1);
+        
+        addStep("Extract all the missing file ids for the pillar", "Only one file id is found.");
+        Collection<String> fileIds = cache.getMissingFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE);
+        Assert.assertTrue(fileIds.size() == 1, "Number of files: " + fileIds.size());
+        Assert.assertFalse(fileIds.contains(TEST_FILE_ID));
+        Assert.assertTrue(fileIds.contains(file2));
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testExtractingFilesWithChecksumErrorForPillars() throws Exception {
+        addDescription("Tests that files with checksum error can be extracted for specific pillars.");
+        IntegrityDAO cache = createDAO();
+        String file2 = TEST_FILE_ID + "-2";
+        
+        addStep("Insert two files into database for a pillar and mark them as having checksum error", 
+                "Ingesting the data into the database");
+        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1);
+        cache.setChecksumError(TEST_FILE_ID, TEST_PILLAR_1);
+        cache.setChecksumError(file2, TEST_PILLAR_1);
+        
+        addStep("Extract all the files with checksum error for the pillar", "Both file ids is found.");
+        Collection<String> fileIds = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE);
+        Assert.assertTrue(fileIds.size() == 2, "Number of files: " + fileIds.size());
+        Assert.assertTrue(fileIds.contains(TEST_FILE_ID));
+        Assert.assertTrue(fileIds.contains(file2));
+
+        addStep("Extract all the files with checksum error for another pillar", "No files are found.");
+        fileIds = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_2, 0, Long.MAX_VALUE);
+        Assert.assertTrue(fileIds.isEmpty());
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testExtractingFilesWithChecksumErrorForPillarsLimits() throws Exception {
+        addDescription("Tests the limits for extracting files with checksum error for specific pillars.");
+        IntegrityDAO cache = createDAO();
+        String file2 = TEST_FILE_ID + "-2";
+        
+        addStep("Insert two files into database for a pillar and mark them as having checksum error", 
+                "Ingesting the data into the database");
+        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1);
+        cache.setChecksumError(TEST_FILE_ID, TEST_PILLAR_1);
+        cache.setChecksumError(file2, TEST_PILLAR_1);
+        
+        addStep("Extract with a maximum of 0", "No files");
+        Collection<String> fileIds = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_1, 0, 0);
+        Assert.assertTrue(fileIds.isEmpty());
+
+        addStep("Extract with a maximum of 1", "The first file.");
+        fileIds = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_1, 0, 1);
+        Assert.assertTrue(fileIds.size() == 1);
+        Assert.assertTrue(fileIds.contains(TEST_FILE_ID));
+        
+        addStep("Extract with a minimum of 1 and maximum of infinite", "The last file.");
+        fileIds = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_1, 1, Long.MAX_VALUE);
+        Assert.assertTrue(fileIds.size() == 1);
+        Assert.assertTrue(fileIds.contains(file2));
+
+        addStep("Extract with a minimum of 1 and maximum of 0", "No files.");
+        fileIds = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_1, 1, 0);
+        Assert.assertTrue(fileIds.isEmpty());
+    }
+    
     private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileId, String checksum) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         
