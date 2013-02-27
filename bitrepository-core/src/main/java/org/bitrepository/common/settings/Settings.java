@@ -24,8 +24,8 @@
  */
 package org.bitrepository.common.settings;
 
-import java.util.ArrayList;
 import java.util.List;
+
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
@@ -60,13 +60,6 @@ public class Settings {
      */
     public List<Collection> getCollections() {
         return getRepositorySettings().getCollections().getCollection();
-    }
-    
-    /**
-     * @return The first collection defined in the repository settings.
-     */
-    public Collection getCollection() {
-        return getRepositorySettings().getCollections().getCollection().get(0);
     }
     
     /**
