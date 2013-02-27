@@ -33,7 +33,7 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.cache.ChecksumStore;
-import org.bitrepository.pillar.cache.MemoryCache;
+import org.bitrepository.pillar.cache.MemoryCacheMock;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
@@ -82,7 +82,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
 
     protected void createReferencePillar() {
         shutdownMediator();
-        csCache = new MemoryCache();
+        csCache = new MemoryCacheMock();
         archives = new CollectionArchiveManager(settingsForCUT);
         alarmDispatcher = new AlarmDispatcher(settingsForCUT, messageBus);
         audits = new MockAuditManager();

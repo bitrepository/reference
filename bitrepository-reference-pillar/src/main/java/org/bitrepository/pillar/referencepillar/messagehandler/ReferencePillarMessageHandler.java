@@ -43,7 +43,7 @@ import org.bitrepository.service.exception.RequestHandlerException;
  */
 public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHandler<T> {
     /** The manager of the archives.*/
-    private final CollectionArchiveManager archives;
+    private final CollectionArchiveManager archiveManager;
     /** The manager of checksums.*/
     private final ReferenceChecksumManager csManager;
     
@@ -58,7 +58,7 @@ public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHand
         ArgumentValidator.checkNotNull(archivesManager, "CollectionArchiveManager archivesManager");
         ArgumentValidator.checkNotNull(csManager, "ReferenceChecksumManager csManager");
 
-        this.archives = archivesManager;
+        this.archiveManager = archivesManager;
         this.csManager = csManager;
     }
     
@@ -66,7 +66,7 @@ public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHand
      * @return The cache for this message handler.
      */
     protected CollectionArchiveManager getArchives() {
-        return archives;
+        return archiveManager;
     }
     
     /**

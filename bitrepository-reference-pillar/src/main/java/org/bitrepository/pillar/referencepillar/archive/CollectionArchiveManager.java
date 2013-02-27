@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.bitrepository.common.FileStore;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.settings.referencesettings.CollectionDirs;
 
 /**
@@ -52,7 +53,8 @@ public class CollectionArchiveManager implements FileStore {
     private void initiateDefaultDirs(Settings settings) {
         for(CollectionDirs cd : settings.getReferenceSettings().getPillarSettings().getCollectionDirs()){
             if(cd.getCollectionID().isEmpty()) {
-                initiateArchive(settings.getMyCollectionIDs(), cd.getFileDirs());
+                initiateArchive(SettingsUtils.getCollectionIDsForPillar(settings, settings.getComponentID()), 
+                        cd.getFileDirs());
             }
         }        
     }

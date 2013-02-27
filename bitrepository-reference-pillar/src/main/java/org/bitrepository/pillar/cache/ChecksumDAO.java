@@ -22,8 +22,6 @@
 package org.bitrepository.pillar.cache;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -41,10 +39,10 @@ import org.bitrepository.service.database.DatabaseMigrator;
  * This contains one ingestor and one extractor for each collec
  */
 public class ChecksumDAO implements ChecksumStore {
-    /** The map between ingestors for the database and their respective collection ids.*/
-    private final Map<String, ChecksumIngestor> ingestors = new HashMap<String, ChecksumIngestor>();
-    /** The map between extractor for the database and their respective collection ids.*/
-    private final Map<String, ChecksumExtractor> extractors = new HashMap<String, ChecksumExtractor>();
+    /** The ingestors for the database.*/
+    private final ChecksumIngestor ingestor;
+    /** The extractor for the database.*/
+    private final ChecksumExtractor extractor;
     /** The connector for the database.*/
     private final DBConnector connector;
     
@@ -57,10 +55,8 @@ public class ChecksumDAO implements ChecksumStore {
                 settings.getReferenceSettings().getPillarSettings().getChecksumDatabase());
         
         synchronized(this) {
-            for(String id : settings.getMyCollectionIDs()) {
-                this.ingestors.put(id, new ChecksumIngestor(connector, id));
-                this.extractors.put(id, new ChecksumExtractor(connector, id));
-            }
+            this.ingestor = new ChecksumIngestor(connector);
+            this.extractor = new ChecksumExtractor(connector);
         
             DatabaseMigrator migrator = new ChecksumDBMigrator(connector, settings);
             migrator.migrate();
@@ -72,10 +68,10 @@ public class ChecksumDAO implements ChecksumStore {
         ArgumentValidator.checkNotNull(fileId, "String fileId");
         ArgumentValidator.checkNotNull(collectionId, "String collectionId");
         
-        if(extractors.get(collectionId).hasFile(fileId)) {
-            ingestors.get(collectionId).updateEntry(fileId, checksum, calculationDate);
+        if(extractor.hasFile(fileId, collectionId)) {
+            ingestor.updateEntry(fileId, collectionId, checksum, calculationDate);
         } else {
-            ingestors.get(collectionId).insertNewEntry(fileId, checksum, calculationDate);
+            ingestor.insertNewEntry(fileId, collectionId, checksum, calculationDate);
         }
     }
 
@@ -84,10 +80,10 @@ public class ChecksumDAO implements ChecksumStore {
         ArgumentValidator.checkNotNull(fileId, "String fileId");
         ArgumentValidator.checkNotNull(collectionId, "String collectionId");
 
-        if(!extractors.get(collectionId).hasFile(fileId)) {
+        if(!extractor.hasFile(fileId, collectionId)) {
             throw new IllegalStateException("No entry for file '" + fileId + "' to delete.");
         }
-        ingestors.get(collectionId).removeEntry(fileId);
+        ingestor.removeEntry(fileId, collectionId);
     }
 
     @Override
@@ -95,14 +91,14 @@ public class ChecksumDAO implements ChecksumStore {
         ArgumentValidator.checkNotNull(fileId, "String fileId");
         ArgumentValidator.checkNotNull(collectionId, "String collectionId");
         
-        return extractors.get(collectionId).extractSingleEntry(fileId);
+        return extractor.extractSingleEntry(fileId, collectionId);
     }
     
     @Override
     public ExtractedChecksumResultSet getEntries(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
             Long maxNumberOfResults, String collectionId) {
         ArgumentValidator.checkNotNull(collectionId, "String collectionId");
-        return extractors.get(collectionId).extractEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults);
+        return extractor.extractEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults, collectionId);
     }
     
     @Override
@@ -110,7 +106,7 @@ public class ChecksumDAO implements ChecksumStore {
         ArgumentValidator.checkNotNull(fileId, "String fileId");
         ArgumentValidator.checkNotNull(collectionId, "String collectionId");
 
-        Date res = extractors.get(collectionId).extractDateForFile(fileId);
+        Date res = extractor.extractDateForFile(fileId, collectionId);
         if(res == null) {
             throw new IllegalStateException("No entry for file '" + fileId + "' to delete.");
         }
@@ -122,7 +118,7 @@ public class ChecksumDAO implements ChecksumStore {
     public ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
             Long maxNumberOfResults, String collectionId) {
         ArgumentValidator.checkNotNull(collectionId, "String collectionId");
-        return extractors.get(collectionId).getFileIDs(minTimeStamp, maxTimeStamp, maxNumberOfResults);
+        return extractor.getFileIDs(minTimeStamp, maxTimeStamp, maxNumberOfResults, collectionId);
     }
 
     @Override
@@ -130,7 +126,7 @@ public class ChecksumDAO implements ChecksumStore {
         ArgumentValidator.checkNotNull(fileId, "String fileId");
         ArgumentValidator.checkNotNull(collectionId, "String collectionId");
 
-        return extractors.get(collectionId).hasFile(fileId);
+        return extractor.hasFile(fileId, collectionId);
     }
 
     @Override
@@ -138,7 +134,7 @@ public class ChecksumDAO implements ChecksumStore {
         ArgumentValidator.checkNotNull(fileId, "String fileId");
         ArgumentValidator.checkNotNull(collectionId, "String collectionId");
 
-        String res = extractors.get(collectionId).extractChecksumForFile(fileId);
+        String res = extractor.extractChecksumForFile(fileId, collectionId);
         if(res == null) {
             throw new IllegalStateException("No entry for file '" + fileId + "' to delete.");
         }
@@ -148,7 +144,7 @@ public class ChecksumDAO implements ChecksumStore {
     @Override
     public java.util.Collection<String> getAllFileIDs(String collectionId) {
         ArgumentValidator.checkNotNull(collectionId, "String collectionId");
-        return extractors.get(collectionId).extractAllFileIDs();
+        return extractor.extractAllFileIDs(collectionId);
     }
 
     @Override

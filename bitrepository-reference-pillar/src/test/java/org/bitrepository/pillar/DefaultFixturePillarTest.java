@@ -27,7 +27,7 @@ package org.bitrepository.pillar;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.bitrepository.settings.repositorysettings.PillarIDs;
+import org.bitrepository.settings.repositorysettings.Collection;
 
 /**
  * Contains the generic parts for pillar tests integrating to the message bus. 
@@ -46,8 +46,7 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
     @Override
     protected Settings loadSettings(String componentID) {
         Settings settings = super.loadSettings(componentID);
-        settings.getReferenceSettings().getPillarSettings().setPillarID(getPillarID());
-        updateSettingsWithSpecificPillarName(settings, getPillarID());
+        updateSettingsWithSpecificPillarID(settings, componentID);
         return settings;
     }
 
@@ -66,9 +65,20 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
         return getComponentID();
     }
 
-    private void updateSettingsWithSpecificPillarName(Settings settings, String pillarID) {
-        PillarIDs pillars = settings.getCollections().get(0).getPillarIDs();
-        pillars.getPillarID().clear();
-        pillars.getPillarID().add(pillarID);
+    /** The default pillar id in the settings to replace.*/
+    private static final String DEFAULT_PILLAR_ID_TO_REPLACE = "Pillar1";
+
+    /**
+     * Sets the given id to be the pillar id, also in the collections. 
+     * @param settings The settings.
+     * @param pillarID The new pillar id.
+     */
+    private void updateSettingsWithSpecificPillarID(Settings settings, String pillarID) {
+        settings.getReferenceSettings().getPillarSettings().setPillarID(pillarID);
+        for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
+            if(c.getPillarIDs().getPillarID().remove(DEFAULT_PILLAR_ID_TO_REPLACE)) {
+                c.getPillarIDs().getPillarID().add(pillarID);
+            }
+        }
     }
 }

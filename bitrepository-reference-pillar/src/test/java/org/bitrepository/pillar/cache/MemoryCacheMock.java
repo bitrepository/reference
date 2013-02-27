@@ -36,14 +36,14 @@ import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
  * Everything is kept within a map between the file ids and their checksum.
  * TODO: This does not support several collections, even though it should. Thus all collection id arguments are ignored.
  */
-public class MemoryCache implements ChecksumStore {
+public class MemoryCacheMock implements ChecksumStore {
     
     /**
      * The checksum mapping between the file ids and their checksum.
      */
     private Map<String, ChecksumEntry> checksumMap = new HashMap<String, ChecksumEntry>();
     
-    public MemoryCache() {}
+    public MemoryCacheMock() {}
     
     @Override
     public String getChecksum(String fileId, String collectionId) {

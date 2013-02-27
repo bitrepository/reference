@@ -56,7 +56,7 @@ public class ReferencePillar implements Pillar {
     /** The mediator for the messages.*/
     private final ReferencePillarMediator mediator;
     /** The archives for the data.*/
-    private final CollectionArchiveManager archives;
+    private final CollectionArchiveManager archiveManager;
     /** The checksum store.*/
     private final ChecksumStore csStore;
 
@@ -72,10 +72,10 @@ public class ReferencePillar implements Pillar {
         this.messageBus = messageBus;
         
         log.info("Starting the reference pillar!");
-        archives = new CollectionArchiveManager(settings);
+        archiveManager = new CollectionArchiveManager(settings);
         csStore = new ChecksumDAO(settings);
         PillarAlarmDispatcher alarmDispatcher = new PillarAlarmDispatcher(settings, messageBus);
-        ReferenceChecksumManager manager = new ReferenceChecksumManager(archives, csStore, alarmDispatcher,
+        ReferenceChecksumManager manager = new ReferenceChecksumManager(archiveManager, csStore, alarmDispatcher,
                 ChecksumUtils.getDefault(settings), 
                 settings.getReferenceSettings().getPillarSettings().getMaxAgeForChecksums().longValue());
         AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector( 
@@ -85,7 +85,7 @@ public class ReferencePillar implements Pillar {
             new ResponseDispatcher(settings, messageBus),
             alarmDispatcher,
             audits);
-        mediator = new ReferencePillarMediator(messageBus, context, archives, manager);
+        mediator = new ReferencePillarMediator(messageBus, context, archiveManager, manager);
         mediator.start();
         log.info("ReferencePillar started!");
     }
@@ -97,7 +97,7 @@ public class ReferencePillar implements Pillar {
         try {
             mediator.close();
             messageBus.close();
-            archives.close();
+            archiveManager.close();
         } catch (JMSException e) {
             log.warn("Could not close the messagebus.", e);
         }

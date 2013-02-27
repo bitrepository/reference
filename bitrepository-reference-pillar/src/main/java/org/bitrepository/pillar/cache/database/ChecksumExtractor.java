@@ -44,33 +44,29 @@ import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 
 /**
- * Extracts data from the checksum database, though only for a given collection id.
+ * Extracts data from the checksum database.
  */
 public class ChecksumExtractor {
     /** The connector for the database.*/
     private final DBConnector connector;
-    /** The collection id for this ingestor.*/
-    private final String collectionId;
     
     /**
      * Constructor.
      * @param connector The connector for the database.
-     * @param collectionId The collection id for this extractor.
      */
-    public ChecksumExtractor(DBConnector connector, String collectionId) {
+    public ChecksumExtractor(DBConnector connector) {
         ArgumentValidator.checkNotNull(connector, "DBConnector connector");
-        ArgumentValidator.checkNotNullOrEmpty("String collectionId", collectionId);
         
         this.connector = connector;
-        this.collectionId = collectionId;
     }
     
     /**
      * Extracts the date for a given file.
      * @param fileId The id of the file to extract the date for.
+     * @param collectionId The collection id for the file.
      * @return The date for the given file.
      */
-    public Date extractDateForFile(String fileId) {
+    public Date extractDateForFile(String fileId, String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         
         String sql = "SELECT " + CS_DATE + " FROM " + CHECKSUM_TABLE + " WHERE " + CS_FILE_ID + " = ? AND " 
@@ -81,9 +77,10 @@ public class ChecksumExtractor {
     /**
      * Extracts the checksum for a given file.
      * @param fileId The id of the file to extract the checksum for.
+     * @param collectionId The collection id for the file.
      * @return The checksum for the given file.
      */
-    public String extractChecksumForFile(String fileId) {
+    public String extractChecksumForFile(String fileId, String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         
         String sql = "SELECT " + CS_CHECKSUM + " FROM " + CHECKSUM_TABLE + " WHERE " + CS_FILE_ID + " = ? AND "
@@ -94,9 +91,10 @@ public class ChecksumExtractor {
     /**
      * Extracts whether a given file exists.
      * @param fileId The id of the file to extract whose existence is in question.
+     * @param collectionId The collection id for the file.
      * @return Whether the given file exists.
      */
-    public boolean hasFile(String fileId) {
+    public boolean hasFile(String fileId, String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
 
         String sql = "SELECT COUNT(*) FROM " + CHECKSUM_TABLE + " WHERE " + CS_FILE_ID + " = ? AND "
@@ -107,9 +105,10 @@ public class ChecksumExtractor {
     /**
      * Extracts the checksum entry for a single file.
      * @param fileId The id of the file whose checksum entry should be extracted.
+     * @param collectionId The collection id for the extraction.
      * @return The checksum entry for the file.
      */
-    public ChecksumEntry extractSingleEntry(String fileId) {
+    public ChecksumEntry extractSingleEntry(String fileId, String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
 
         String sql = "SELECT " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE 
@@ -148,10 +147,11 @@ public class ChecksumExtractor {
      * @param minTimeStamp The minimum date for the timestamp of the extracted file ids.
      * @param maxTimeStamp The maximum date for the timestamp of the extracted file ids.
      * @param maxNumberOfResults The maximum number of results.
+     * @param collectionId The collection id for the extraction.
      * @return The requested collection of file ids.
      */
     public ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            Long maxNumberOfResults) {
+            Long maxNumberOfResults, String collectionId) {
         List<Object> args = new ArrayList<Object>(); 
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT " + CS_FILE_ID + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE + " WHERE " + CS_COLLECTION_ID
@@ -208,10 +208,11 @@ public class ChecksumExtractor {
     }
     
     /**
-     * Retrieves all the file ids in the database.
+     * Retrieves all the file ids for a given collection id within the database.
+     * @param collectionId The collection id for the extraction.
      * @return The list of file ids extracted from the database.
      */
-    public List<String> extractAllFileIDs() {
+    public List<String> extractAllFileIDs(String collectionId) {
         String sql = "SELECT " + CS_FILE_ID + " FROM " + CHECKSUM_TABLE + " WHERE " + CS_COLLECTION_ID + " = ?";
         return DatabaseUtils.selectStringList(connector, sql, collectionId);
     }
@@ -222,10 +223,11 @@ public class ChecksumExtractor {
      * @param minTimeStamp The minimum date for the timestamp of the extracted checksum entries.
      * @param maxTimeStamp The maximum date for the timestamp of the extracted checksum entries.
      * @param maxNumberOfResults The maximum number of results.
+     * @param collectionId The collection id for the extraction.
      * @return The requested collection of file ids.
      */
     public ExtractedChecksumResultSet extractEntries(XMLGregorianCalendar minTimeStamp, 
-            XMLGregorianCalendar maxTimeStamp, Long maxNumberOfResults) {
+            XMLGregorianCalendar maxTimeStamp, Long maxNumberOfResults, String collectionId) {
         List<Object> args = new ArrayList<Object>(); 
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE 

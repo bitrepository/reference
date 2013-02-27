@@ -32,7 +32,7 @@ import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.cache.ChecksumDAO;
 import org.bitrepository.pillar.cache.ChecksumStore;
-import org.bitrepository.pillar.cache.MemoryCache;
+import org.bitrepository.pillar.cache.MemoryCacheMock;
 import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.common.ChecksumDatabaseCreator;
 import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
@@ -62,7 +62,7 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
     public void testRecalculationWithMockCache() throws Exception {
         addDescription("Test the ability to recalculate the checksums automatically with a mock cache.");
         CollectionArchiveManager archives = new CollectionArchiveManager(settingsForCUT);
-        ChecksumStore csCache = new MemoryCache();
+        ChecksumStore csCache = new MemoryCacheMock();
         AlarmDispatcher alarmDispatcher = new AlarmDispatcher(settingsForCUT, messageBus);
         ReferenceChecksumManager csManager =
                 new ReferenceChecksumManager(archives, csCache, alarmDispatcher, ChecksumUtils.getDefault(settingsForCUT), 3600000L);

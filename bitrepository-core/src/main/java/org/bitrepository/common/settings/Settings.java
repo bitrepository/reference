@@ -70,20 +70,6 @@ public class Settings {
     }
     
     /**
-     * @return The list of collection ids, which this component is part of.
-     */
-    public List<String> getMyCollectionIDs() {
-        List<String> res = new ArrayList<String>();
-        for(Collection c : getRepositorySettings().getCollections().getCollection()) {
-            if(c.getPillarIDs().getPillarID().contains(componentID)) {
-                res.add(c.getID());
-            }
-        }
-        
-        return res;
-    }
-    
-    /**
      * Wraps the {@link org.bitrepository.settings.repositorysettings.ProtocolSettings#getAlarmDestination()} method.
      */
     public String getAlarmDestination() {
