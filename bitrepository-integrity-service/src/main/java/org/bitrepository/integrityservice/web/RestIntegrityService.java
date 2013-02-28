@@ -24,9 +24,9 @@
  */
 package org.bitrepository.integrityservice.web;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -36,6 +36,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.IntegrityService;
 import org.bitrepository.integrityservice.IntegrityServiceFactory;
@@ -70,10 +71,11 @@ public class RestIntegrityService {
             @QueryParam("pillarID") String pillarID,
             @QueryParam("pageNumber") int pageNumber,
             @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
-        List<String> ids = new ArrayList<String>();
-        ids.add("foo" + pageNumber);
-        ids.add("bar" + pageNumber);
-        ids.add("baz" + pageNumber);
+        
+        int firstID = (pageNumber - 1) * pageSize;
+        int lastID = (pageNumber * pageSize) - 1;
+        
+        List<String> ids = service.getChecksumErrors(collectionID, pillarID, firstID, lastID);
         
         JSONArray array = new JSONArray();
         for(String file : ids) {
@@ -97,11 +99,11 @@ public class RestIntegrityService {
             @QueryParam("pillarID") String pillarID,
             @QueryParam("pageNumber") int pageNumber,
             @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
-        List<String> ids = new ArrayList<String>();
-        ids.add("foo" + pageNumber);
-        ids.add("bar" + pageNumber);
-        ids.add("baz" + pageNumber);
         
+        int firstID = (pageNumber - 1) * pageSize;
+        int lastID = (pageNumber * pageSize) - 1;
+        
+        List<String> ids = service.getMissingFiles(collectionID, pillarID, firstID, lastID);
         JSONArray array = new JSONArray();
         for(String file : ids) {
             array.put(file);
@@ -124,10 +126,11 @@ public class RestIntegrityService {
             @QueryParam("pillarID") String pillarID,
             @QueryParam("pageNumber") int pageNumber,
             @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
-        List<String> ids = new ArrayList<String>();
-        ids.add("foo" + pageNumber);
-        ids.add("bar" + pageNumber);
-        ids.add("baz" + pageNumber);
+        
+        int firstID = (pageNumber - 1) * pageSize;
+        int lastID = (pageNumber * pageSize) - 1;
+        
+        List<String> ids = service.getAllFileIDs(collectionID, pillarID, firstID, lastID);
         
         JSONArray array = new JSONArray();
         for(String file : ids) {
