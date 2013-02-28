@@ -24,27 +24,41 @@
  */
 package org.bitrepository.integrityservice.cache.database;
 
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_CREATION_DATE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_GUID;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_ID;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILE_INFO_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_CHECKSUM;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_CHECKSUM_STATE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_GUID;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_STATE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_LAST_CHECKSUM_UPDATE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_LAST_FILE_UPDATE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_PILLAR_GUID;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_GUID;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_ID;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_TABLE;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.service.database.DBConnector;
-import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
+import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.*;
 
 /**
  * Handles the communication with the integrity database.
@@ -530,13 +544,13 @@ public class IntegrityDAO {
      * @param max The maximum count.
      * @return The list of file ids between the two counts.
      */
-    public Collection<String> getFilesOnPillar(String pillarId, long min, long max) {
+    public List<String> getFilesOnPillar(String pillarId, long min, long max) {
         log.trace("Locating all existing files for pillar '" + pillarId + "' from number " + min + " to " + max + ".");
         String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
                 + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "." 
                 + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? AND " + FILE_INFO_TABLE 
                 + "." + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " 
-                + PILLAR_ID + " = ?)";
+                + PILLAR_ID + " = ?) ORDER BY " + FILES_TABLE + "." + FILES_GUID;
         
         try {
             ResultSet dbResult = null;
@@ -583,13 +597,13 @@ public class IntegrityDAO {
      * @param max The maximum count.
      * @return The list of file ids between the two counts.
      */
-    public Collection<String> getMissingFilesOnPillar(String pillarId, long min, long max) {
+    public List<String> getMissingFilesOnPillar(String pillarId, long min, long max) {
         log.trace("Locating all existing files for pillar '" + pillarId + "' from number " + min + " to " + max + ".");
         String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
                 + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "." 
                 + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? AND " + FILE_INFO_TABLE 
                 + "." + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " 
-                + PILLAR_ID + " = ?)";
+                + PILLAR_ID + " = ?) ORDER BY " + FILES_TABLE + "." + FILES_GUID;
         
         try {
             ResultSet dbResult = null;
@@ -636,13 +650,13 @@ public class IntegrityDAO {
      * @param max The maximum count.
      * @return The list of file ids between the two counts.
      */
-    public Collection<String> getFilesWithChecksumErrorsOnPillar(String pillarId, long min, long max) {
+    public List<String> getFilesWithChecksumErrorsOnPillar(String pillarId, long min, long max) {
         log.trace("Locating all existing files for pillar '" + pillarId + "' from number " + min + " to " + max + ".");
         String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
                 + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_GUID + "=" + FILE_INFO_TABLE + "." 
                 + FI_FILE_GUID + " WHERE " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ? AND " + FILE_INFO_TABLE 
                 + "." + FI_PILLAR_GUID + " = ( SELECT " + PILLAR_GUID + " FROM " + PILLAR_TABLE + " WHERE " 
-                + PILLAR_ID + " = ?)";
+                + PILLAR_ID + " = ?) ORDER BY " + FILES_TABLE + "." + FILES_GUID;
         
         try {
             ResultSet dbResult = null;

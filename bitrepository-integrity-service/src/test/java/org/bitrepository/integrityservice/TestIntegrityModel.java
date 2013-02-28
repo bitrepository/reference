@@ -497,7 +497,7 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public Collection<String> getFilesOnPillar(String pillarId, long minId, long maxId) {
+    public List<String> getFilesOnPillar(String pillarId, long minId, long maxId) {
         ArrayList<String> res = new ArrayList<String>();
         for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
             for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
@@ -511,7 +511,7 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public Collection<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId) {
+    public List<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId) {
         ArrayList<String> res = new ArrayList<String>();
         for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
             for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
@@ -525,7 +525,7 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public Collection<String> getFilesWithChecksumErrorsAtPillar(String pillarId, long minId, long maxId) {
+    public List<String> getFilesWithChecksumErrorsAtPillar(String pillarId, long minId, long maxId) {
         ArrayList<String> res = new ArrayList<String>();
         for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
             for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {

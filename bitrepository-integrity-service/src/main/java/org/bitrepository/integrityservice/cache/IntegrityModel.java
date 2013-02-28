@@ -75,7 +75,7 @@ public interface IntegrityModel {
      * @param maxId The maximum result number.
      * @return The list of file ids for the pillar, between min and max.
      */
-    Collection<String> getFilesOnPillar(String pillarId, long minId, long maxId);
+    List<String> getFilesOnPillar(String pillarId, long minId, long maxId);
     
     /**
      * @param pillarId The pillar.
@@ -90,7 +90,7 @@ public interface IntegrityModel {
      * @param maxId The maximum result number.
      * @return The list of missing file ids for the pillar, between min and max.
      */
-    Collection<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId);
+    List<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId);
     
     /**
      * @param pillarId The pillar.
@@ -106,7 +106,7 @@ public interface IntegrityModel {
      * @param maxId The maximum result number.
      * @return The list of ids for the files with checksum errors for the pillar, between min and max.
      */
-    Collection<String> getFilesWithChecksumErrorsAtPillar(String pillarId, long minId, long maxId);
+    List<String> getFilesWithChecksumErrorsAtPillar(String pillarId, long minId, long maxId);
 
     /**
      * Sets the file to be missing at the given pillars.

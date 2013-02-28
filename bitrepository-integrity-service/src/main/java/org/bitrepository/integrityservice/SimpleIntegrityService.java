@@ -114,19 +114,19 @@ public class SimpleIntegrityService implements IntegrityService {
     }
     
     @Override
-    public Collection<String> getChecksumErrors(String collectionID, String pillarID,
+    public List<String> getChecksumErrors(String collectionID, String pillarID,
             int firstID, int lastID) {
         return cache.getFilesWithChecksumErrorsAtPillar(pillarID, firstID, lastID);
     }
 
     @Override
-    public Collection<String> getMissingFiles(String collectionID, String pillarID,
+    public List<String> getMissingFiles(String collectionID, String pillarID,
             int firstID, int lastID) {
         return cache.getMissingFilesAtPillar(pillarID, firstID, lastID);
     }
 
     @Override
-    public Collection<String> getAllFileIDs(String collectionID, String pillarID,
+    public List<String> getAllFileIDs(String collectionID, String pillarID,
             int firstID, int lastID) {
         return cache.getFilesOnPillar(pillarID, firstID, lastID);
     }
@@ -178,7 +178,7 @@ public class SimpleIntegrityService implements IntegrityService {
     }
 
     @Override
-    public Collection<String> getPillarList() {
+    public List<String> getPillarList() {
         return settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID();
     }
 }
