@@ -72,6 +72,37 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         IntegrityDAO cache = createDAO();
         Assert.assertNotNull(cache);
     }
+    
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testPillarInkonsistencies() throws Exception {
+        addDescription("Testing how the database handles inkonsistencies in the list of pillars.");
+        addStep("Test when creating the database when only pillar 1 defined", "Is created and closes fine afterwards.");
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_1);
+        IntegrityDAO cache = createDAO();
+        cache.close();
+        
+        addStep("Testing when only the other pillar is defined.", "Throws an IllegalStateException");
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_2);
+        try {
+            cache = createDAO();
+            Assert.fail("Should throw an IllegalStateException here!");
+        } catch (IllegalStateException e) {
+            // Expected.
+        }
+        
+        addStep("Testing when both the other pillars are defined.", "Throws an IllegalStateException");
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_1);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_2);
+        try {
+            cache = createDAO();
+            Assert.fail("Should throw an IllegalStateException here!");
+        } catch (IllegalStateException e) {
+            // Expected.
+        }
+    }
 
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void reinitialiseDatabaseTest() throws Exception {

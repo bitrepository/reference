@@ -126,13 +126,20 @@ public final class IntegrityServiceComponentFactory {
     }
 
     /**
-     * Gets you a <code>CachedIntegrityInformationStorage</code> that collects integrity information.
-     * TODO implement the database based integrity cache.
-     * @return an <code>CachedIntegrityInformationStorage</code> that collects integrity information.
+     * Gets you a <code>CachedIntegrityInformationStorage</code> that contains the integrity information.
+     * @param settings The settings
+     * @param alarmDispatcher Dispatches an alarm, if the instantiation of the integrity information storage fails.
+     * @return an <code>CachedIntegrityInformationStorage</code> that contains integrity information.
      */
-    public IntegrityModel getCachedIntegrityInformationStorage(Settings settings) {
+    public IntegrityModel getCachedIntegrityInformationStorage(Settings settings, IntegrityAlerter alarmDispatcher) {
         if (cachedIntegrityInformationStorage == null) {
-            cachedIntegrityInformationStorage = new IntegrityDatabase(settings);
+            try {
+                cachedIntegrityInformationStorage = new IntegrityDatabase(settings);
+            } catch (RuntimeException e) {
+                String errMsg = "Could not instantiate the IntegrityInformationStorage: " + e.getMessage();
+                alarmDispatcher.operationFailed(errMsg);
+                throw new IllegalStateException(errMsg, e);
+            }
         }
         return cachedIntegrityInformationStorage;
     }
@@ -148,19 +155,19 @@ public final class IntegrityServiceComponentFactory {
         AuditTrailManager auditManager = new AuditTrailContributerDAO(settings, new DBConnector( 
                 settings.getReferenceSettings().getIntegrityServiceSettings().getAuditTrailContributerDatabase()));
         
-        IntegrityModel model = getCachedIntegrityInformationStorage(settings);
+        IntegrityAlerter alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus, AlarmLevel.ERROR);
+        IntegrityModel model = getCachedIntegrityInformationStorage(settings, alarmDispatcher);
         ServiceScheduler scheduler = getIntegrityInformationScheduler(settings);
         IntegrityChecker checker = getIntegrityChecker(settings, model, auditManager);
-        IntegrityAlerter alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus, AlarmLevel.ERROR);
         // Should actually create a list of collectors, one for each collection;
         String firstCollection = settings.getCollections().get(0).getID();
-
+        
         IntegrityInformationCollector collector = getIntegrityInformationCollector(firstCollection,
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
-                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()), 
-                        auditManager);
+                        AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
+                                settings.getReferenceSettings().getIntegrityServiceSettings().getID()), 
+                                auditManager);
         
         return new SimpleIntegrityService(model, scheduler, checker, alarmDispatcher, collector, auditManager, 
                 settings, messageBus);

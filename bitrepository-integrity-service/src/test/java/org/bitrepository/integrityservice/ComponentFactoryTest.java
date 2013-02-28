@@ -24,19 +24,31 @@
  */
 package org.bitrepository.integrityservice;
 
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.bitrepositoryelements.AlarmCode;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.bitrepository.integrityservice.alerter.IntegrityAlarmDispatcher;
+import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.audittrail.IntegrityAuditTrailDatabaseCreator;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
+import org.bitrepository.integrityservice.cache.database.IntegrityDatabaseCreator;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.checking.SimpleIntegrityChecker;
 import org.bitrepository.integrityservice.collector.DelegatingIntegrityInformationCollector;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityservice.mocks.MockAuditManager;
 import org.bitrepository.protocol.IntegrationTest;
+import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.service.scheduler.ServiceScheduler;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
+import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -81,25 +93,58 @@ public class ComponentFactoryTest extends IntegrationTest {
     @Test(groups = {"regressiontest", "integritytest"})
     public void verifyIntegrityCheckerFromFactory() throws Exception {
         addDescription("Test the instantiation of the IntegrityChecker from the component factory.");
+        IntegrityAlerter alarmDispatcher = new IntegrityAlarmDispatcher(settingsForCUT, messageBus, AlarmLevel.ERROR);
         IntegrityChecker checker = IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settingsForCUT,
-                IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settingsForCUT),
-                new MockAuditManager());
+                IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settingsForCUT, 
+                        alarmDispatcher), new MockAuditManager());
         Assert.assertNotNull(checker);
         Assert.assertTrue(checker instanceof SimpleIntegrityChecker);
         Assert.assertEquals(checker, IntegrityServiceComponentFactory.getInstance().getIntegrityChecker(settingsForCUT,
-                IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settingsForCUT),
-                new MockAuditManager()));
+                IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settingsForCUT,
+                        alarmDispatcher), new MockAuditManager()));
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void verifyCacheFromFactory() throws Exception {
         addDescription("Test the instantiation of the IntegrityModel from the component factory.");
-        IntegrityModel integrityModel = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settingsForCUT);
+        IntegrityAlerter alarmDispatcher = new IntegrityAlarmDispatcher(settingsForCUT, messageBus, AlarmLevel.ERROR);
+        IntegrityModel integrityModel = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(
+                settingsForCUT, alarmDispatcher);
         Assert.assertNotNull(integrityModel);
         Assert.assertTrue(integrityModel instanceof IntegrityDatabase);
-        Assert.assertEquals(integrityModel, IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settingsForCUT));
+        Assert.assertEquals(integrityModel, IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(
+                settingsForCUT, alarmDispatcher));
     }
 
+    @Test(groups = {"regressiontest", "integritytest"})
+    public void verifyAlarmsFromCacheWhenInstantiationErrors() throws Exception {
+        addDescription("Test that an alarm is send, if the the instantiation of the IntegrityModel from the component factory fails.");
+        addStep("Instantiate the database with a wrong list of pillars", "Is created.");
+        cleanIntegrityDatabase();
+        try {
+            List<String> wrongPillars = Arrays.asList("Wrong pillar " + new Date().getTime(), "Another wrong pillar " + new Date().getTime());
+            IntegrityDAO dao = new IntegrityDAO(new DBConnector(
+                    settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
+                    wrongPillars);
+            
+            addStep("Start the database through the component factory with different set of pillars.", 
+                    "Through an exception and sends an alarm.");
+            IntegrityAlerter alarmDispatcher = new IntegrityAlarmDispatcher(settingsForCUT, messageBus, AlarmLevel.ERROR);
+            try {
+                IntegrityModel integrityModel = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(
+                        settingsForCUT, alarmDispatcher);
+            } catch (Exception e) {
+                // expected
+            }
+            AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
+            Assert.assertNotNull(alarm);
+            Assert.assertEquals(alarm.getAlarm().getAlarmCode(), AlarmCode.FAILED_OPERATION);
+            Assert.assertEquals(alarm.getFrom(), settingsForCUT.getComponentID());
+        } finally {
+            cleanIntegrityDatabase();
+        }
+    }
+    
     @Test(groups = {"regressiontest", "integritytest"})
     public void verifyServiceFromFactory() throws Exception {
         addDescription("Test the instantiation of the IntegrityService from the component factory.");
@@ -115,5 +160,11 @@ public class ComponentFactoryTest extends IntegrationTest {
         DerbyDatabaseDestroyer.deleteDatabase(auditTrailDB);
         IntegrityAuditTrailDatabaseCreator pillarAuditTrailDatabaseCreator = new IntegrityAuditTrailDatabaseCreator();
         pillarAuditTrailDatabaseCreator.createIntegrityAuditTrailDatabase(settingsForCUT, null);
+    }
+    
+    private void cleanIntegrityDatabase() throws Exception {
+        DerbyDatabaseDestroyer.deleteDatabase(settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
+        IntegrityDatabaseCreator integrityDatabaseCreator = new IntegrityDatabaseCreator();        
+        integrityDatabaseCreator.createIntegrityDatabase(settingsForCUT, null);
     }
 }

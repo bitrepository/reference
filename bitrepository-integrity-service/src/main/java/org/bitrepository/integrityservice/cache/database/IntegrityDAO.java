@@ -71,16 +71,49 @@ public class IntegrityDAO {
     
     /**
      * Initialises the ids of all the pillars.
+     * Ensures that all pillars in settings are defined properly in the database.
      */
     private synchronized void initialisePillars() {
+        List<String> pillarsInDatabase = retrievePillarsInDatabase();
+        if(pillarsInDatabase.isEmpty()) {
+            insertAllPillarsIntoDatabase();
+        } else {
+            validateKonsistencyBetweenPillarsInDatabaseAndSettings(pillarsInDatabase);
+        }
+    }
+    
+    /**
+     * @return The list of pillars defined in the database.
+     */
+    private List<String> retrievePillarsInDatabase() {
+        String selectSql = "SELECT " + PILLAR_ID + " FROM " + PILLAR_TABLE;
+        return DatabaseUtils.selectStringList(dbConnector, selectSql, new Object[0]);
+    }
+    
+    /**
+     * Inserts all pillar ids into the database.
+     */
+    private void insertAllPillarsIntoDatabase() {
         for(String pillarId : pillarIds) {
-            if(retrievePillarGuid(pillarId) == null) {
-                log.trace("Inserting the pillar '" + pillarId + "' into the pillar table.");
-                String sql = "INSERT INTO " + PILLAR_TABLE +" ( " + PILLAR_ID + " ) VALUES ( ? )";
-                DatabaseUtils.executeStatement(dbConnector, sql, pillarId);
-            } else {
-                log.trace("Already know the pillar '" + pillarId + "'. Will not recreate the entry in the database.");
-            }
+            String sql = "INSERT INTO " + PILLAR_TABLE +" ( " + PILLAR_ID + " ) VALUES ( ? )";
+            DatabaseUtils.executeStatement(dbConnector, sql, pillarId);
+        }
+    }
+    
+    /**
+     * Validates that the list of pillars in the settings corresponds to the list of pillars defined in the database.
+     * It will throw an exception, if they are not similar.
+     * TODO: BITMAG-846.
+     * @param pillarsFromDatabase The pillars extracted from the database.
+     */
+    private void validateKonsistencyBetweenPillarsInDatabaseAndSettings(List<String> pillarsFromDatabase) {
+        List<String> uniquePillarsInDatabase = new ArrayList<String>(pillarsFromDatabase);
+        uniquePillarsInDatabase.removeAll(pillarIds);
+        List<String> uniquePillarsInSettings = new ArrayList<String>(pillarIds);
+        uniquePillarsInSettings.removeAll(pillarsFromDatabase);
+        if(!uniquePillarsInDatabase.isEmpty() || !uniquePillarsInSettings.isEmpty()) {
+            throw new IllegalStateException("There is inkonsistency between the pillars in the database, '" 
+                    + pillarsFromDatabase + "', and the ones in the settings, '" + pillarIds + "'.");
         }
     }
     
