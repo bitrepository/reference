@@ -96,7 +96,7 @@ public class GetStatusRequestHandler extends AbstractRequestHandler<GetStatusReq
 
         ResponseInfo info = new ResponseInfo();
         info.setResponseCode(ResponseCode.OPERATION_COMPLETED);
-        info.setResponseText("Returning status");
+        info.setResponseText("Version: " + getClass().getPackage().getImplementationVersion());
         response.setResponseInfo(info);
 
         getContext().getResponseDispatcher().dispatchResponse(response, request);

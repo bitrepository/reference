@@ -30,7 +30,8 @@ import org.bitrepository.protocol.messagebus.MessageBus;
  * Takes care of the receiver bookkeeping in connect with test setup and testdown.
  */
 public class MessageReceiverManager {
-    private final List<MessageReceiver> messageReceivers = new LinkedList();
+    private final List<MessageReceiver> messageReceivers =
+            new LinkedList<MessageReceiver>();
     private final MessageBus messageBus;
 
     public MessageReceiverManager (MessageBus messageBus) {

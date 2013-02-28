@@ -134,7 +134,7 @@
                 <configuration>
                   <executable>bash</executable>
                   <arguments>
-                    <argument>${build.directory}/test-classes/scripts/create_test_databases.sh</argument>
+                    <argument>${project.build.directory}/test-classes/scripts/create_test_databases.sh</argument>
                   </arguments>
                 </configuration>
               </execution>
