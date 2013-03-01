@@ -96,7 +96,7 @@ public class GetStatusRequestHandler extends AbstractRequestHandler<GetStatusReq
 
         ResponseInfo info = new ResponseInfo();
         info.setResponseCode(ResponseCode.OPERATION_COMPLETED);
-        info.setResponseText("Version: " + getClass().getPackage().getImplementationVersion());
+        info.setResponseText("Returning status");
         response.setResponseInfo(info);
 
         getContext().getResponseDispatcher().dispatchResponse(response, request);
@@ -125,7 +125,7 @@ public class GetStatusRequestHandler extends AbstractRequestHandler<GetStatusReq
         
         StatusInfo status = new StatusInfo();
         status.setStatusCode(StatusCode.OK);
-        status.setStatusText("Ok");
+        status.setStatusText("Version: " + getClass().getPackage().getImplementationVersion());
         
         res.setStatusInfo(status);
         res.setStatusTimestamp(CalendarUtils.getNow());
