@@ -21,8 +21,11 @@
  */
 package org.bitrepository.protocol.security;
 
+import java.io.IOException;
 import java.math.BigInteger;
+
 import javax.security.auth.x500.X500Principal;
+import org.bouncycastle.asn1.x500.X500Name;
 
 /**
  * Class to be used as an identifier of certificates. 
@@ -38,12 +41,21 @@ public class CertificateID {
 
     /**
      * Constructor for the class.
-     * @param issuer The X500Principal object that identifies the certificate issuer. 
+     * @param issuer The X500Principal object that identifies the certificate issuer.
      * 				 Can be extracted from a SignerID and a X509Certificate
-     * @param serialNumber The certificates SerialNumber, ca be extracted from a SignerID and a X509Certificate 
+     * @param serialNumber The certificates SerialNumber, ca be extracted from a SignerID and a X509Certificate
      */
     public CertificateID(X500Principal issuer, BigInteger serialNumber) {
         this.issuer = issuer;
+        this.serial = serialNumber;
+    }
+
+    public CertificateID(X500Name issuer, BigInteger serialNumber) {
+        try {
+            this.issuer = new X500Principal(issuer.getEncoded());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create X500Principal from X500Name", e);
+        }
         this.serial = serialNumber;
     }
 

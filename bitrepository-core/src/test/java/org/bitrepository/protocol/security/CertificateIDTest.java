@@ -28,9 +28,6 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 import javax.security.auth.x500.X500Principal;
-
-import org.bitrepository.protocol.security.CertificateID;
-import org.bitrepository.protocol.security.SecurityModuleConstants;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
@@ -122,25 +119,25 @@ public class CertificateIDTest extends ExtendedTestCase  {
         Assert.assertFalse(certificateID1.equals(new CertificateID(issuer, null)));
         
         addStep("Test with same serial but no issuer", "Should give negative result");
-        Assert.assertFalse(certificateID1.equals(new CertificateID(null, serial)));
+        Assert.assertFalse(certificateID1.equals(new CertificateID((X500Principal)null, serial)));
         
         addStep("Test the positive case, with both the issuer and serial ", "Should give positive result");
         Assert.assertTrue(certificateID1.equals(new CertificateID(issuer, serial)));
         
         addStep("Setup an empty certificate", "");
-        CertificateID certificateID2 = new CertificateID(null, null);
+        CertificateID certificateID2 = new CertificateID((X500Principal)null, null);
         
         addStep("Test empty certificate against issuer but no serial", "Should give negative result");
         Assert.assertFalse(certificateID2.equals(new CertificateID(issuer, null)));
         
         addStep("Test empty certificate against serial but no issuer", "Should give negative result");
-        Assert.assertFalse(certificateID2.equals(new CertificateID(null, serial)));
+        Assert.assertFalse(certificateID2.equals(new CertificateID((X500Principal)null, serial)));
         
         addStep("Test empty certificate against serial and issuer", "Should give negative result");
         Assert.assertFalse(certificateID2.equals(new CertificateID(issuer, serial)));
         
         addStep("Test the positive case, with neither issuer nor serial", "Should give positive result");
-        Assert.assertTrue(certificateID2.equals(new CertificateID(null, null)));
+        Assert.assertTrue(certificateID2.equals(new CertificateID((X500Principal)null, null)));
         
         addStep("Check the hash codes for the two certificate", "Should not be the same");
         Assert.assertTrue(certificateID1.hashCode() != certificateID2.hashCode());

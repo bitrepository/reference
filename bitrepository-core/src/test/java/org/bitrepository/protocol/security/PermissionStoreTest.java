@@ -26,8 +26,6 @@ import java.math.BigInteger;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
-import org.bitrepository.protocol.security.PermissionStore;
-import org.bitrepository.protocol.security.SecurityModuleConstants;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
@@ -79,7 +77,7 @@ public class PermissionStoreTest extends ExtendedTestCase  {
         SignerId signerId= signer.getSID();
         BigInteger serial = signerId.getSerialNumber();
         serial.add(new BigInteger("2"));
-        signerId.setSerialNumber(serial);
+        signerId = new SignerId(signerId.getIssuer(), serial);
         addStep("Lookup certificate based on signerId", "No exceptions");
         X509Certificate certificateFromStore = permissionStore.getCertificate(signerId);        
         ByteArrayInputStream bs = new ByteArrayInputStream(
