@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.bitrepository.reference</groupId>
     <artifactId>bitrepository-parent</artifactId>
-    <version>0.23</version>
+    <version>0.23.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>bitrepository-reference-pillar</artifactId>
