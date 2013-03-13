@@ -67,6 +67,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     @Override
     protected void initializeCUT() {
         super.initializeCUT();
+        collectionID = settingsForTestClient.getCollections().get(0).getID();
         File fileDir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getCollectionDirs().get(0).getFileDirs().get(0));
         if(fileDir.exists()) {
             FileUtils.delete(fileDir);
