@@ -163,7 +163,6 @@ public class RestIntegrityService {
             JSONArray array = new JSONArray();
             Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows();
             for(WorkflowTimerTask workflow : workflows) {
-                log.info("Returning statistics: " + workflow.getLastRunStatistics());
                 array.put(makeWorkflowSetupObj(workflow));
             }
             return array.toString();
