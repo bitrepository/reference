@@ -23,6 +23,7 @@ package org.bitrepository.pillar.referencepillar;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -96,7 +97,12 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
                 ChecksumUtils.getDefault(context.getSettings()), 3600000L);
         mediator = new ReferencePillarMediator(messageBus, context, archives, csManager);
         mediator.start();
-        initializeArchiveWithEmptyFile();
+        
+        try {
+            initializeArchiveWithEmptyFile();
+        } catch (IOException e) {
+            throw new RuntimeException("Could not initialize the archive with an empty file.", e);
+        }
     }
 
     public void shutdownMediator() {
@@ -111,7 +117,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
         return "ReferencePillar-" + testMethodName;
     }
 
-    private void initializeArchiveWithEmptyFile() {
+    private void initializeArchiveWithEmptyFile() throws IOException {
         addFixtureSetup("Initialize the Reference pillar cache with an empty file in default collection " +
                 collectionID);
         archives.downloadFileForValidation(DEFAULT_FILE_ID, collectionID, new ByteArrayInputStream(new byte[0]));

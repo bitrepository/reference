@@ -99,7 +99,8 @@ public class CollectionArchiveManager implements FileStore {
     }
 
     @Override
-    public File downloadFileForValidation(String fileID, String collectionId, InputStream inputStream) {
+    public File downloadFileForValidation(String fileID, String collectionId, InputStream inputStream) 
+            throws IOException {
         return getArchive(collectionId).downloadFileForValidation(fileID, inputStream);
     }
 

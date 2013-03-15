@@ -123,7 +123,7 @@ public class ReferenceArchive {
      * @param inputStream The inputstream to extract the content of the file from.
      * @return The file, which should be validated.
      */
-    public File downloadFileForValidation(String fileID, InputStream inputStream) {
+    public File downloadFileForValidation(String fileID, InputStream inputStream) throws IOException {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         ArgumentValidator.checkNotNull(inputStream, "inputStream");
 
@@ -136,20 +136,16 @@ public class ReferenceArchive {
             // Save InputStream to the file.
             BufferedOutputStream bufferedOutputstream = null;
             try {
-                try {
-                    bufferedOutputstream = new BufferedOutputStream(new FileOutputStream(downloadedFile));
-                    byte[] buffer = new byte[MAX_BUFFER_SIZE];
-                    int bytesRead = 0;
-                    while ((bytesRead = inputStream.read(buffer)) != -1) {
-                        bufferedOutputstream.write(buffer, 0, bytesRead);
-                    }
-                } finally {
-                    if(bufferedOutputstream != null) {
-                        bufferedOutputstream.close();
-                    }
+                bufferedOutputstream = new BufferedOutputStream(new FileOutputStream(downloadedFile));
+                byte[] buffer = new byte[MAX_BUFFER_SIZE];
+                int bytesRead = 0;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    bufferedOutputstream.write(buffer, 0, bytesRead);
                 }
-            } catch (IOException e) {
-                throw new CoordinationLayerException("Could not retrieve file '" + fileID + "'", e);
+            } finally {
+                if(bufferedOutputstream != null) {
+                    bufferedOutputstream.close();
+                }
             }
         }
         return downloadedFile;
