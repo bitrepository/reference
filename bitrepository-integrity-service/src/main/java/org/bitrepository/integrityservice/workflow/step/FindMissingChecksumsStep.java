@@ -62,6 +62,7 @@ public class FindMissingChecksumsStep extends AbstractWorkFlowStep {
         if(!report.hasIntegrityIssues()) {
             log.debug("No checksum are missing from any pillar.");
         } else {
+            log.trace("Found the following integrity issue:\n{}", report.generateReport());
             dispatcher.integrityFailed(report);
         }
     }

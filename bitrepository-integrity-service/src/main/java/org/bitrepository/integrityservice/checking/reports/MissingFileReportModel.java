@@ -97,6 +97,22 @@ public class MissingFileReportModel implements IntegrityReportModel {
         return res.toString();
     }
     
+    @Override
+    public String generateSummaryOfReport() {
+        if(!hasIntegrityIssues()) {
+            return "No missing files. \n";
+        }
+        
+        StringBuilder res = new StringBuilder();
+        res.append("Missing " + missingFiles.size() + " files at some pillar(s). ");
+        if(!deleteableFiles.isEmpty()) {
+            res.append("\nAnd missing '" + deleteableFiles.size() + "' files at all pillars, which will now be "
+                    + "removed from the database of the integrity service.");
+        }
+        
+        return res.toString();
+    }
+    
     /**
      * Container for the information about a single missing file.
      */

@@ -77,8 +77,9 @@ public class FindObsoleteChecksumsStep extends AbstractWorkFlowStep {
             settings.getCollectionSettings().getClientSettings().getPillarIDs());
         
         if(!report.hasIntegrityIssues()) {
-            log.debug("No checksums are obsolete at any pillar.");
+            log.debug("No checksum are missing from any pillar.");
         } else {
+            log.trace("Found the following integrity issue:\n{}", report.generateReport());
             dispatcher.integrityFailed(report);
         }
     }

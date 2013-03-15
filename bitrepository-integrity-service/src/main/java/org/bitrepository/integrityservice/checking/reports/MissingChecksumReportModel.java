@@ -59,6 +59,15 @@ public class MissingChecksumReportModel implements IntegrityReportModel {
         return res.toString();
     }
     
+    @Override
+    public String generateSummaryOfReport() {
+        if(!hasIntegrityIssues()) {
+            return "No checksums issues. \n";
+        }
+        
+        return "Reported checksums missing for " + missingChecksum.size() + " files.";
+    }
+    
     /**
      * @return The missing checksums.
      */
