@@ -55,6 +55,7 @@ public class IntegrityDatabase implements IntegrityModel {
      */
     public IntegrityDatabase(Settings settings) {
         this.settings = settings;
+
         this.store = new IntegrityDAO(new DBConnector(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
                 settings.getCollectionSettings().getClientSettings().getPillarIDs());

@@ -26,7 +26,7 @@ package org.bitrepository.integrityservice;
 
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.integrityservice.audittrail.IntegrityAuditTrailDatabaseCreator;
-import org.bitrepository.integrityservice.cache.IntegrityDatabase;
+import org.bitrepository.integrityservice.cache.IntegrityCache;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.checking.SimpleIntegrityChecker;
@@ -93,7 +93,7 @@ public class ComponentFactoryTest extends IntegrationTest {
         addDescription("Test the instantiation of the IntegrityModel from the component factory.");
         IntegrityModel integrityModel = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settingsForCUT);
         Assert.assertNotNull(integrityModel);
-        Assert.assertTrue(integrityModel instanceof IntegrityDatabase);
+        Assert.assertTrue(integrityModel instanceof IntegrityCache);
         Assert.assertEquals(integrityModel, IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(settingsForCUT));
     }
 

@@ -30,6 +30,7 @@ import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.alerter.IntegrityAlarmDispatcher;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
+import org.bitrepository.integrityservice.cache.IntegrityCache;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
@@ -131,7 +132,7 @@ public final class IntegrityServiceComponentFactory {
      */
     public IntegrityModel getCachedIntegrityInformationStorage(Settings settings) {
         if (cachedIntegrityInformationStorage == null) {
-            cachedIntegrityInformationStorage = new IntegrityDatabase(settings);
+            cachedIntegrityInformationStorage = new IntegrityCache(new IntegrityDatabase(settings));
         }
         return cachedIntegrityInformationStorage;
     }

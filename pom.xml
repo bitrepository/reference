@@ -142,6 +142,12 @@
       <version>6.8</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-core</artifactId>
+    <version>1.9.5</version>
+    <scope>test</scope>
+  </dependency>
     <!-- Hook up the other loggers to use SLF4J -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -300,6 +306,20 @@ in preparation for the xsd -> java class file generation -->
           <autoVersionSubmodules>true</autoVersionSubmodules>
         </configuration>
       </plugin>
+      <plugin>
+      <artifactId>maven-war-plugin</artifactId>
+      <configuration>
+        <!--
+          Exclude JCL and LOG4J since all logging should go through SLF4J.
+          Note that we're excluding log4j-<version>.jar but keeping
+          log4j-over-slf4j-<version>.jar
+        -->
+        <packagingExcludes>
+          WEB-INF/lib/commons-logging-*.jar,
+          %regex[WEB-INF/lib/log4j-(?!over-slf4j).*.jar]
+        </packagingExcludes>
+      </configuration>
+    </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
