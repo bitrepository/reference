@@ -69,10 +69,10 @@ public interface FileStore {
      * @param fileID The id of the file to store.
      * @param inputStream The InputStream with the content of the file.
      * @return The downloaded file, which should be validated before it is moved to the archive.
-     * @throws Exception If anything unexpected occurs (e.g. file already exists, not enough space, etc.)
+     * @throws IOException If anything unexpected occurs (e.g. file already exists, not enough space, etc.)
      * @see #moveToArchive(String)
      */
-    public File downloadFileForValidation(String fileID, InputStream inputStream) ;
+    public File downloadFileForValidation(String fileID, InputStream inputStream) throws IOException;
     
     /**
      * Moves a file from the temporary file zone to the archive.
