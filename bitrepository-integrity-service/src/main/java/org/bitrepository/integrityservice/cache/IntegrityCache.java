@@ -51,10 +51,10 @@ public class IntegrityCache implements IntegrityModel {
         this.integrityModel = integrityModel;
         try {
             missingFilesCache = JCS.getInstance("MissingFilesCache");
-            filesCache = JCS.getInstance("filesCache");
-            corruptFilesCache = JCS.getInstance("corruptFilesCache");
+            filesCache = JCS.getInstance("FilesCache");
+            corruptFilesCache = JCS.getInstance("CorruptFilesCache");
         } catch (CacheException ce) {
-            throw new RuntimeException("Failed to initialise caches", ce);
+            throw new IllegalStateException("Failed to initialise caches", ce);
         }
     }
 
@@ -200,6 +200,13 @@ public class IntegrityCache implements IntegrityModel {
         return integrityModel.getDateForNewestChecksumEntryForPillar(pillarId);
     }
 
+    /**
+     * Will cause the cache to return null after <code>refreshPeriodAfterDirtyMark</code> has passed, since
+     * the value was updated in the cache. This will ensure that the backend model isn't read more than
+     *  each <code>refreshPeriodAfterDirtyMark</code> second.
+     * @param cache The cache to use.
+     * @param pillarIds The pillars to mark dirty
+     */
     private void markPillarsDirty(JCS cache, Collection<String> pillarIds) {
         for (String pillarID:pillarIds) {
             try {
@@ -210,6 +217,9 @@ public class IntegrityCache implements IntegrityModel {
         }
     }
 
+    /**
+     * Updates the cache with the given value.
+     */
     private void updateCache(JCS cache, String pillarID, Object value) {
         try {
             cache.put(getCacheID(pillarID), value);

@@ -27,7 +27,10 @@ import java.util.Arrays;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class IntegrityCacheTest extends ExtendedTestCase {
     private IntegrityModel mockedDB;
@@ -42,6 +45,7 @@ public class IntegrityCacheTest extends ExtendedTestCase {
 
     @Test(groups = {"regressiontest"})
     public void numberOfMissingFileCachingTest() throws InterruptedException {
+        addDescription("Tests the caching functionality related to number of missing files.");
         IntegrityCache cache = new IntegrityCache(mockedDB);
         addStep("Call getNumberOfMissingFiles the first time",
                 "The the db should be used.");
@@ -94,6 +98,7 @@ public class IntegrityCacheTest extends ExtendedTestCase {
 
     @Test(groups = {"regressiontest"})
     public void numberOfFileCachingTest() throws InterruptedException {
+        addDescription("Tests the caching functionality related to number of files.");
         IntegrityCache cache = new IntegrityCache(mockedDB);
         addStep("Call getNumberOfFiles the first time",
                 "The the db should be used.");
@@ -138,6 +143,7 @@ public class IntegrityCacheTest extends ExtendedTestCase {
 
     @Test(groups = {"regressiontest"})
     public void numberOfCorruptFileCachingTest() throws InterruptedException {
+        addDescription("Tests the caching functionality related to number of files with inconsistent checksums.");
         IntegrityCache cache = new IntegrityCache(mockedDB);
         addStep("Call getNumberOfMissingFiles the first time",
                 "The the db should be used.");
