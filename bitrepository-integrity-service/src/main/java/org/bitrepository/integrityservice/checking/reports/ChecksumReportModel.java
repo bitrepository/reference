@@ -94,7 +94,6 @@ public class ChecksumReportModel implements IntegrityReportModel {
         /**
          * Constructor.
          * @param fileId The id of the file where the checksum is missing.
-         * @param pillarIds The list of ids for the pillars where the checksum of the file is missing. 
          */
         public ChecksumIssue(String fileId) {
             this.fileId = fileId;
