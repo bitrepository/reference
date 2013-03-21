@@ -60,12 +60,13 @@ public class RestAuditTrailService {
     @Consumes("application/x-www-form-urlencoded")
     @Produces("application/json")
     public String queryAuditTrailEvents(
-            @FormParam ("fromDate") String fromDate,
-            @FormParam ("toDate") String toDate,
-            @FormParam ("fileID") String fileID,
-            @FormParam ("reportingComponent") String reportingComponent,
-            @FormParam ("actor") String actor,
-            @FormParam ("action") String action,
+            @FormParam("fromDate") String fromDate,
+            @FormParam("toDate") String toDate,
+            @FormParam("fileID") String fileID,
+            @FormParam("reportingComponent") String reportingComponent,
+            @FormParam("actor") String actor,
+            @FormParam("action") String action,
+            @FormParam("collectionID") String collectionID, 
             @DefaultValue("1000") @FormParam("maxAlarms") Integer maxResults) {
         Date from = makeDateObject(fromDate);
         Date to = makeDateObject(toDate);

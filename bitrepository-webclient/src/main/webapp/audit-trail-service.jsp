@@ -14,14 +14,11 @@
   <div id="pageMenu"></div>
   <div class="container-fluid">
     <div class="row-fluid">
-      <div class="span1"></div>
       <div class="span11">
-          <div class="span11"></div>
+          <div class="span11" style="height:0px; min-height:0px"></div>
           <div class="span11"><h2>Audit-trail service</h2></div>
           <div class="span11">
-           <!-- <legend>Collect audit trails</legend>-->
             <form class="form-inline">
-<!--              <label>Collect audit trails</label>-->
               <button type="submit" class="btn" id="collectAuditTrails">Collect audit trails</button>
               <div id="initiatorStatus"></div>
             </form>
@@ -78,6 +75,11 @@
                 </select>
               </div>
             </label>
+            <label> CollectionID: <br>
+              <div class="input-append">
+                <select class="input-medium" id="collectionIDFilter"></select>
+              </div>
+            </label>
             <label> Max audit trails: <br>
               <div class="input-append">
                 <select class="input-small" id=maxAuditTrails>
@@ -130,6 +132,7 @@
       var component = $("#componentFilter").val();
       var actorStr = $("#actorFilter").val();
       var actionStr = $("#actionFilter").val();
+      var collectionIDStr = $("#collectionIDFilter").val();
 
       $("#auditTrailsTableDiv").html("Loading audit trails...");
 
@@ -139,7 +142,8 @@
          fileID: fileIDStr,
          reportingComponent: component,
          actor: actorStr,
-         action: actionStr}, 
+         action: actionStr,
+         collectionID: collectionIDStr}, 
          function(j){
            var htmlTable;
            htmlTable = "<table class=\"table table-bordered table-striped\">";
@@ -169,10 +173,19 @@
              $("#auditTrailsTableDiv").html(htmlElement);
            });
     }
+
+    function getCollectionIDs() {
+      $.getJSON('repo/reposervice/getCollectionIDs/', {}, function(j){
+        for(var i = 0; i < j.length; i++) {
+          $("#collectionIDFilter").append('<option value="' + j[i] + '">' + j[i] + '</option>');
+        }
+      });
+    }
   
 
     $(document).ready(function(){
       makeMenu("audit-trail-service.jsp", "#pageMenu");
+      getCollectionIDs();
       $("#collectAuditTrails").click(function(event) { event.preventDefault(); startAuditTrailsCollection(); });
       $("#fromDate").datepicker();
       $("#toDate").datepicker();
