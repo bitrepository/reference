@@ -59,6 +59,13 @@
                 </select>
               </div>
             </label>
+            <label> CollectionID: <br>
+              <div class="input-append">
+                <select class="input-medium" id="collectionIDFilter">
+                  <option>ALL</option>
+                </select>
+              </div>
+            </label>
             <label> Max alarms: <br>
               <div class="input-append">
                 <select class="input-small" id=maxAlarms>
@@ -105,6 +112,7 @@
       var component = $("#componentFilter").val();
       var alarmCodeStr = $("#alarmCodeFilter").val();
       var maxAlarmStr = $("#maxAlarms").val();
+      var collectionIDStr = $("#collectionIDFilter").val();
             
       $.post('<%= su.getAlarmServiceUrl() %>/alarm/AlarmService/queryAlarms/',
         {fromDate: fromDateStr,
@@ -113,6 +121,7 @@
          reportingComponent: component,
          alarmCode: alarmCodeStr,
          maxAlarms: maxAlarmStr,
+         collectionID: collectionIDStr,
          oldestAlarmFirst: false}, function(j){
         var htmlTableBody = "";
         if(j != null) {
@@ -128,8 +137,17 @@
       })
     }
 
+    function getCollectionIDs() {
+      $.getJSON('repo/reposervice/getCollectionIDs/', {}, function(j){
+        for(var i = 0; i < j.length; i++) {
+          $("#collectionIDFilter").append('<option value="' + j[i] + '">' + j[i] + '</option>');
+        }
+      });
+    }
+
     $(document).ready(function(){
       makeMenu("alarm-service.jsp", "#pageMenu");
+      getCollectionIDs();
       updateAlarms();
       $("#fromDate").datepicker();
       $("#toDate").datepicker();

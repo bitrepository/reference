@@ -91,6 +91,7 @@ public class RestAlarmService {
             @FormParam("fileID") String fileID,
             @FormParam("reportingComponent") String reportingComponent,
             @FormParam("alarmCode") String alarmCode,
+            @FormParam("collectionID") String collectionID,
             @DefaultValue("10") @FormParam("maxAlarms") Integer maxAlarms,
             @DefaultValue("true") @FormParam ("oldestAlarmFirst") boolean oldestAlarmFirst) {
         List<Alarm> alarmList = new ArrayList<Alarm>();
