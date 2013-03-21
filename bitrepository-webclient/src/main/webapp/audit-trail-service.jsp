@@ -14,14 +14,11 @@
   <div id="pageMenu"></div>
   <div class="container-fluid">
     <div class="row-fluid">
-      <div class="span1"></div>
       <div class="span11">
-          <div class="span11"></div>
+          <div class="span11" style="height:0px; min-height:0px"></div>
           <div class="span11"><h2>Audit-trail service</h2></div>
           <div class="span11">
-           <!-- <legend>Collect audit trails</legend>-->
             <form class="form-inline">
-<!--              <label>Collect audit trails</label>-->
               <button type="submit" class="btn" id="collectAuditTrails">Collect audit trails</button>
               <div id="initiatorStatus"></div>
             </form>
