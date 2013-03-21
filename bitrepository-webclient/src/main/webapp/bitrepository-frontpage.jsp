@@ -4,19 +4,30 @@
 <html>
   <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
   <head>
-    <title>Bitrepository webclient frontpage</title>
-    <!-- Bootstrap -->
+    <title>Bitrepository frontpage</title>
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
   </head>
   <body>
   
   <div id="pageMenu"></div>
-  <div class="container">
-    <div class="row">
-      <div class="span9"><h2>Status service</h2></div>
-      <div class="span9">
-       We need some stuff for the front page :) <br>
-       TBD
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span9"> 
+        <div class="span9" style="height:0px; min-height:0px"></div>
+        <div class="span9"><h2>Welcome</h2></div>
+        <div class="span9">
+           Welcome to the Bitrepository services frontpage. <br>
+           We currently do not have much content to put here, so move on the the specific service pages. <br>
+           The services are: 
+           <ul>
+             <li>Alarm</li>
+             <li>Integrity</li>
+             <li>Audit trail</li>
+             <li>Status</li>
+           </ul>
+
+           To perform actions on the content in the repository, use the commandline clients. 
+        </div>
       </div>
     </div>
   </div>
