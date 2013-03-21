@@ -10,12 +10,11 @@
   </head>
   <body>
   
-    <div id="pageMenu"></div>
+  <div id="pageMenu"></div>
   <div class="container-fluid">
     <div class="row-fluid">
-      <div class="span1"></div>
       <div class="span10">
-        <div class="span10"></div>
+        <div class="span10" style="height:0px; min-height:0px"></div>
         <div class="span10"><h2>Alarm service</h2></div>
         <div class="span10"> 
           <form class="form-inline">
