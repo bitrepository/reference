@@ -9,7 +9,7 @@
           var menuHtml = "";
           menuHtml += "<div class=\"navbar navbar-inverse navbar-static-top\">";
           menuHtml += "<div class=\"navbar-inner\">";
-          menuHtml += "<div class=\"container\">";
+          menuHtml += "<div class=\"container-fluid\">";
           menuHtml += "<a class=\"btn btn-navbar\" data-toggle=\"collapse\" data-target=\".nav-collapse\">";
           menuHtml += "<span class=\"icon-bar\"></span>";
           menuHtml += "<span class=\"icon-bar\"></span>";
