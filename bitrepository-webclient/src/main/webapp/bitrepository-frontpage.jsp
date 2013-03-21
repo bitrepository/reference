@@ -17,13 +17,13 @@
         <div class="span9"><h2>Welcome</h2></div>
         <div class="span9">
            Welcome to the Bitrepository services frontpage. <br>
-           We currently do not have much content to put here, so move on the the specific service pages. <br>
+           Please move on the the specific service pages. <br>
            The services are: 
            <ul>
-             <li>Alarm</li>
-             <li>Integrity</li>
-             <li>Audit trail</li>
-             <li>Status</li>
+             <li><a href="alarm-service.jsp">Alarm</a></li>
+             <li><a href="integrity-service.jsp">Integrity</a></li>
+             <li><a href="audit-trail-service.jsp">Audit trail</a></li>
+             <li><a href="status-service.jsp">Status</a></li>
            </ul>
 
            To perform actions on the content in the repository, use the commandline clients. 
