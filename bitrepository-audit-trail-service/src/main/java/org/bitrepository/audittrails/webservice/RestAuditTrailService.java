@@ -38,6 +38,7 @@ import javax.ws.rs.Produces;
 import org.bitrepository.audittrails.AuditTrailService;
 import org.bitrepository.audittrails.AuditTrailServiceFactory;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,15 +71,9 @@ public class RestAuditTrailService {
             @DefaultValue("1000") @FormParam("maxAlarms") Integer maxResults) {
         Date from = makeDateObject(fromDate);
         Date to = makeDateObject(toDate);
-        String filteredAction;
-        if(action.equals("ALL")) {
-            filteredAction = null;
-        } else {
-            filteredAction = action;
-        }
         
         Collection<AuditTrailEvent> events = service.queryAuditTrailEvents(from, to, contentOrNull(fileID),
-                contentOrNull(reportingComponent), contentOrNull(actor), filteredAction, maxResults);
+                collectionID, contentOrNull(reportingComponent), contentOrNull(actor), filterAction(action), maxResults);
         
         JSONArray array = new JSONArray();
         if(events != null) {
@@ -113,6 +108,14 @@ public class RestAuditTrailService {
             return obj;
         } catch (JSONException e) {
             return (JSONObject) JSONObject.NULL;
+        }
+    }
+    
+    private FileAction filterAction(String action) {
+        if(action.equals("ALL")) {
+            return null;
+        } else {
+            return FileAction.fromValue(action);
         }
     }
     

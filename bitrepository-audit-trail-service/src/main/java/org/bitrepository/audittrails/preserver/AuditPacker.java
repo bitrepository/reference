@@ -136,7 +136,7 @@ public class AuditPacker {
         long nextSeqNumber = store.getPreservationSequenceNumber(contributorId);
         long largestSeqNumber = -1;
         
-        Collection<AuditTrailEvent> events = store.getAuditTrails(null, contributorId, nextSeqNumber, 
+        Collection<AuditTrailEvent> events = store.getAuditTrails(null, null, contributorId, nextSeqNumber, 
                 null, null, null, null, null, null);
         
         for(AuditTrailEvent event : events) {
