@@ -60,8 +60,8 @@ public class IntegrityCache implements IntegrityModel {
 
     @Override
     public void addFileIDs(FileIDsData data, String pillarId) {
-        markPillarsDirty(filesCache, Arrays.asList(new String[]{pillarId}));
         integrityModel.addFileIDs(data, pillarId);
+        markPillarsDirty(filesCache, Arrays.asList(new String[]{pillarId}));
     }
 
     @Override
@@ -126,21 +126,21 @@ public class IntegrityCache implements IntegrityModel {
 
     @Override
     public void setFileMissing(String fileId, Collection<String> pillarIds) {
+        integrityModel.setFileMissing(fileId, pillarIds);
         markPillarsDirty(missingFilesCache, pillarIds);
         markPillarsDirty(filesCache, pillarIds);
-        integrityModel.setFileMissing(fileId, pillarIds);
     }
 
     @Override
     public void setChecksumError(String fileId, Collection<String> pillarIds) {
-        markPillarsDirty(corruptFilesCache, pillarIds);
         integrityModel.setChecksumError(fileId, pillarIds);
+        markPillarsDirty(corruptFilesCache, pillarIds);
     }
 
     @Override
     public void setChecksumAgreement(String fileId, Collection<String> pillarIds) {
-        markPillarsDirty(corruptFilesCache, pillarIds);
         integrityModel.setChecksumAgreement(fileId, pillarIds);
+        markPillarsDirty(corruptFilesCache, pillarIds);
     }
 
     @Override
