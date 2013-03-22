@@ -76,7 +76,7 @@ public class ObsoleteChecksumReportModel implements IntegrityReportModel {
         
         return "Reported obsolete checksum for " + obsoleteChecksum.size() + " files.";
     }
-    
+
     /**
      * @return The mapping between the file ids with obsolete checksums and the obsolete checksum data.
      */

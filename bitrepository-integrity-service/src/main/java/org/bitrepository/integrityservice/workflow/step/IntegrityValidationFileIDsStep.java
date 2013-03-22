@@ -78,8 +78,4 @@ public class IntegrityValidationFileIDsStep extends AbstractWorkFlowStep {
     public MissingFileReportModel getReport() {
         return report;
     }
-
-    public static String getDescription() {
-        return "????";
-    }
 }

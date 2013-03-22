@@ -34,7 +34,7 @@ import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.integrityservice.alerter.IntegrityAlarmDispatcher;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.audittrail.IntegrityAuditTrailDatabaseCreator;
-import org.bitrepository.integrityservice.cache.IntegrityDatabase;
+import org.bitrepository.integrityservice.cache.IntegrityCache;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityDatabaseCreator;
@@ -111,9 +111,10 @@ public class ComponentFactoryTest extends IntegrationTest {
         IntegrityModel integrityModel = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(
                 settingsForCUT, alarmDispatcher);
         Assert.assertNotNull(integrityModel);
-        Assert.assertTrue(integrityModel instanceof IntegrityDatabase);
-        Assert.assertEquals(integrityModel, IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(
-                settingsForCUT, alarmDispatcher));
+        Assert.assertTrue(integrityModel instanceof IntegrityCache);
+        Assert.assertEquals(integrityModel,
+                IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(
+                        settingsForCUT,alarmDispatcher));
     }
 
     @Test(groups = {"regressiontest", "integritytest"})

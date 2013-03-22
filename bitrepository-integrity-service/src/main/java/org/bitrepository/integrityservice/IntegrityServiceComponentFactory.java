@@ -30,6 +30,7 @@ import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.alerter.IntegrityAlarmDispatcher;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
+import org.bitrepository.integrityservice.cache.IntegrityCache;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
@@ -134,7 +135,7 @@ public final class IntegrityServiceComponentFactory {
     public IntegrityModel getCachedIntegrityInformationStorage(Settings settings, IntegrityAlerter alarmDispatcher) {
         if (cachedIntegrityInformationStorage == null) {
             try {
-                cachedIntegrityInformationStorage = new IntegrityDatabase(settings);
+                cachedIntegrityInformationStorage = new IntegrityCache(new IntegrityDatabase(settings));
             } catch (RuntimeException e) {
                 String errMsg = "Could not instantiate the IntegrityInformationStorage: " + e.getMessage();
                 alarmDispatcher.operationFailed(errMsg);

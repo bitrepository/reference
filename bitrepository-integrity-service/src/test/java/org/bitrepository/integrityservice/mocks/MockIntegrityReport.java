@@ -41,7 +41,6 @@ public class MockIntegrityReport implements IntegrityReportModel {
     
     @Override
     public String generateSummaryOfReport() {
-        return "Integrity issue: " + state;
+        return "Integrity summary: " + state;
     }
-
 }
