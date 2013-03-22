@@ -64,7 +64,7 @@ public class RestAlarmService {
     @Produces("application/json")
     public List<Alarm> getShortAlarmList() {
         List<Alarm> alarmList = new ArrayList<Alarm>();
-        alarmList.addAll(alarmService.extractAlarms(null, null, null, null, null, 10, false));
+        alarmList.addAll(alarmService.extractAlarms(null, null, null, null, null, null, 10, false));
         return alarmList;
     }
     
@@ -77,7 +77,7 @@ public class RestAlarmService {
     @Produces("application/json")
     public List<Alarm> getFullAlarmList() {
         List<Alarm> alarmList = new ArrayList<Alarm>();
-        alarmList.addAll(alarmService.extractAlarms(null, null, null, null, null, null, true));
+        alarmList.addAll(alarmService.extractAlarms(null, null, null, null, null, null, null, true));
         return alarmList;
     }
     
@@ -95,12 +95,11 @@ public class RestAlarmService {
             @DefaultValue("10") @FormParam("maxAlarms") Integer maxAlarms,
             @DefaultValue("true") @FormParam ("oldestAlarmFirst") boolean oldestAlarmFirst) {
         List<Alarm> alarmList = new ArrayList<Alarm>();
-    	log.info("################### Querying alarms in database...");
         Date from = makeDateObject(fromDate);
         Date to = makeDateObject(toDate);
         
-        Collection<Alarm> alarms = alarmService.extractAlarms(contentOrNull(reportingComponent), makeAlarmCode(alarmCode), from, to, 
-        		contentOrNull(fileID), maxAlarms, oldestAlarmFirst);
+        Collection<Alarm> alarms = alarmService.extractAlarms(contentOrNull(reportingComponent), makeAlarmCode(alarmCode), 
+                from, to, contentOrNull(fileID), makeCollectionID(collectionID), maxAlarms, oldestAlarmFirst);
         if(!alarms.isEmpty()) {
         	log.info("Alarm list contains alarms");
             alarmList.addAll(alarms);        	
@@ -123,6 +122,14 @@ public class RestAlarmService {
             time.set(year, (month - 1), day);
             
             return time.getTime();
+        }
+    }
+    
+    private String makeCollectionID(String collectionID) {
+        if(collectionID.equals("ALL")) {
+           return null;
+        } else {
+            return collectionID;
         }
     }
     

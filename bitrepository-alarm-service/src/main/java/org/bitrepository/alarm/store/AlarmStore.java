@@ -53,5 +53,5 @@ public interface AlarmStore extends LifeCycledService{
      * @return The requested collection of alarms from the store.
      */
     Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate, 
-            String fileID, Integer count, boolean ascending);
+            String fileID, String collectionID, Integer count, boolean ascending);
 }
