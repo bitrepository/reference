@@ -64,7 +64,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     }
     
     @Override
-    public List<AuditTrailEvent> getAuditTrails(String fileId, String contributorId, Long minSeqNumber, 
+    public List<AuditTrailEvent> getAuditTrails(String fileId, String collectionID, String contributorId, Long minSeqNumber, 
             Long maxSeqNumber, String actorName, FileAction operation, Date startDate, Date endDate, Integer maxResults) {
         ExtractModel model = new ExtractModel();
         model.setFileId(fileId);

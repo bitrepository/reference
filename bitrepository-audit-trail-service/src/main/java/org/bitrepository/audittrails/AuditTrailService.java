@@ -98,15 +98,9 @@ public class AuditTrailService implements LifeCycledService {
      * @param action Restrict the results to only be about this type of action
      */
     public Collection<AuditTrailEvent> queryAuditTrailEvents(Date fromDate, Date toDate, String fileID, 
-            String reportingComponent, String actor, String action, Integer maxResults) {
-        FileAction operation;
-        if(action != null) {
-            operation = FileAction.fromValue(action);
-        } else {
-            operation = null;
-        }
-
-        return store.getAuditTrails(fileID, reportingComponent, null, null, actor, operation, fromDate, toDate, maxResults);
+            String collectionID, String reportingComponent, String actor, FileAction action, Integer maxResults) {
+        return store.getAuditTrails(fileID, collectionID, reportingComponent, null, null, actor, action, 
+                fromDate, toDate, maxResults);
     }
 
     /**

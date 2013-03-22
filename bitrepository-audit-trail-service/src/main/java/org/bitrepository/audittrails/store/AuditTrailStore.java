@@ -38,6 +38,7 @@ public interface AuditTrailStore {
     /** 
      * Extract audit trails from the store.
      * @param fileId [OPTIONAL] The id of the file for restricting the extraction.
+     * @param collectionID [OPTIONAL] The id of the collection from which to retrieve audit trails. 
      * @param contributorId [OPTIONAL] The id of the contributor for restricting the extraction.
      * @param minSeqNumber [OPTIONAL] The minimum sequence number for restricting the extraction.
      * @param maxSeqNumber [OPTIONAL] The maximum sequence number for restricting the extraction.
@@ -47,8 +48,9 @@ public interface AuditTrailStore {
      * @param endDate [OPTIONAL] The latest date for the audits for restricting the extraction.
      * @return The requested audit trails from the store.
      */
-    public Collection<AuditTrailEvent> getAuditTrails(String fileId, String contributorId, Long minSeqNumber, Long maxSeqNumber, 
-            String actorName, FileAction operation, Date startDate, Date endDate, Integer maxResults);
+    public Collection<AuditTrailEvent> getAuditTrails(String fileId, String collectionID, String contributorId, 
+            Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation, Date startDate, 
+            Date endDate, Integer maxResults);
     
     /**
      * ingest audit trails into the store. 
