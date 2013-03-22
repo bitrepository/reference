@@ -21,10 +21,11 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
-import org.apache.kahadb.util.ByteArrayInputStream;
+
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;

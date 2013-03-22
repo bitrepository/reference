@@ -46,6 +46,21 @@
       <version>1.48</version>
     </dependency>
     <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-client</artifactId>
+      <version>${activemq.version}</version>
+    </dependency>          <dependency>
+    <groupId>org.apache.activemq</groupId>
+    <artifactId>activemq-openwire-legacy</artifactId>
+    <version>${activemq.version}</version>
+  </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-broker</artifactId>
+      <version>${activemq.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
       <version>8.1.5.v20120716</version>
@@ -58,54 +73,7 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-core</artifactId>
-      <version>5.7.0</version>
-      <scope>compile</scope>
-      <!-- Exclude the non-client JAR files from main code, see
-      http://activemq.2283324.n4.nabble.com/AMQ-1703-Create-lightweight-ActiveMQ-client-jar-td4653093.html -->
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-context</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.activemq</groupId>
-          <artifactId>activeio-core</artifactId>
-        </exclusion>
-        <!-- Need to include the kahadb to allow embedded ActiveMQ to run
-        <exclusion>
-          <groupId>org.apache.activemq</groupId>
-          <artifactId>kahadb</artifactId>
-        </exclusion>
-        -->
-        <exclusion>
-          <groupId>org.jasypt</groupId>
-          <artifactId>jasypt</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.activemq.protobuf</groupId>
-          <artifactId>activemq-protobuf</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>commons-net</groupId>
-          <artifactId>commons-net</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.osgi</groupId>
-          <artifactId>org.osgi.core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.fusesource.mqtt-client</groupId>
-          <artifactId>mqtt-client</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.fusesource.fuse-extra</groupId>
-          <artifactId>fusemq-leveldb</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+
   </dependencies>
 
   <build>
