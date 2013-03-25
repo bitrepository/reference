@@ -28,9 +28,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.ContributorQueryUtils;
-import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getfileids.conversation.GetFileIDsConversationContext;
 import org.bitrepository.access.getfileids.conversation.IdentifyPillarsForGetFileIDs;
 import org.bitrepository.client.AbstractClient;
@@ -91,10 +91,10 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
      */
     private ContributorQuery[] createFullContributorQuery() {
         List<String> contributers = settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID();
-        List<AuditTrailQuery> componentQueryList = new ArrayList<AuditTrailQuery>(contributers.size());
+        List<ContributorQuery> componentQueryList = new ArrayList<ContributorQuery>(contributers.size());
         for (String contributer : contributers) {
-            componentQueryList.add(new AuditTrailQuery(contributer, null, null, null));
+            componentQueryList.add(new ContributorQuery(contributer, null, null, null));
         }
-        return componentQueryList.toArray(new AuditTrailQuery[componentQueryList.size()]);
+        return componentQueryList.toArray(new ContributorQuery[componentQueryList.size()]);
     }
 }
