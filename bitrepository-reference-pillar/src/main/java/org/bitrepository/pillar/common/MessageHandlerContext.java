@@ -32,17 +32,20 @@ import org.bitrepository.service.contributor.ResponseDispatcher;
  */
 public class MessageHandlerContext extends ContributorContext {
     private final AuditTrailManager auditTrailManager;
+    private final String[] pillarCollections;
 
     /**
      * Delegates to the ContributorContext constructor.
      */
     public MessageHandlerContext(Settings settings,
+                                 String[] pillarCollections,
                                  ResponseDispatcher responseDispatcher,
                                  PillarAlarmDispatcher alarmDispatcher,
                                  AuditTrailManager auditTrailManager) {
         super(responseDispatcher, alarmDispatcher, settings);
         ArgumentValidator.checkNotNull(auditTrailManager, "AuditTrailManager");
         this.auditTrailManager = auditTrailManager;
+        this.pillarCollections = pillarCollections;
     }
 
     /**
@@ -50,5 +53,9 @@ public class MessageHandlerContext extends ContributorContext {
      */
     public AuditTrailManager getAuditTrailManager() {
         return auditTrailManager;
+    }
+
+    public String[] getPillarCollections() {
+        return pillarCollections;
     }
 }

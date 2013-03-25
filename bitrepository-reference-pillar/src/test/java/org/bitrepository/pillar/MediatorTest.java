@@ -33,6 +33,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.PillarMediator;
+import org.bitrepository.pillar.common.SettingsHelper;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.contributor.handler.RequestHandler;
@@ -50,6 +51,7 @@ public class MediatorTest extends DefaultFixturePillarTest {
         audits = new MockAuditManager();
         context = new MessageHandlerContext(
                 settingsForCUT,
+                SettingsHelper.getPillarCollections(settingsForCUT.getComponentID(), settingsForCUT.getCollections()),
             new ResponseDispatcher(settingsForCUT, messageBus),
             new PillarAlarmDispatcher(settingsForCUT, messageBus),
             audits);

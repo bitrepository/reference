@@ -64,6 +64,9 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected PillarFileManager pillarFileManager;
     protected static ClientProvider clientProvider;
 
+    protected static String nonDefaultCollectionId;
+    protected static String irrelevantCollectionId;
+
     @Override
     protected void initializeCUT() {
         super.initializeCUT();
@@ -83,6 +86,8 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
         reloadMessageBus();
         clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
+        nonDefaultCollectionId = settingsForTestClient.getCollections().get(1).getID();
+        irrelevantCollectionId = settingsForTestClient.getCollections().get(2).getID();
     }
 
     @AfterSuite(alwaysRun = true)

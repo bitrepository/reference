@@ -25,14 +25,16 @@ import junit.framework.Assert;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.TestFileHelper;
-import org.bitrepository.pillar.integration.func.PillarFunctionTest;
+import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class IdentifyPillarsForPutFileIT extends PillarFunctionTest {
+public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest {
     protected PutFileMessageFactory msgFactory;
 
     @BeforeMethod(alwaysRun=true)
@@ -41,7 +43,7 @@ public class IdentifyPillarsForPutFileIT extends PillarFunctionTest {
     }
 
     @Test( groups = {"pillar-integration-test"})
-    public void normalIdentification() {
+    public void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for putFile identification");
         addStep("Sending a putFile identification.",
             "The pillar under test should make a response with the correct elements.");
@@ -63,7 +65,7 @@ public class IdentifyPillarsForPutFileIT extends PillarFunctionTest {
     }
 
     @Test( groups = {"pillar-integration-test"})
-    public void fileExists() {
+    public void fileExistsTest() {
         addDescription("Verifies the exists of a file with the same ID is handled correctly");
         addStep("Sending a putFile identification for a file already in the pillar.",
                 "The pillar under test should send a DUPLICATE_FILE_FAILURE response with the (default type) checksum " +
@@ -84,5 +86,21 @@ public class IdentifyPillarsForPutFileIT extends PillarFunctionTest {
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.DUPLICATE_FILE_FAILURE);
         Assert.assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
+    }
+
+    @Override
+    protected MessageRequest createRequest() {
+        return msgFactory.createIdentifyPillarsForPutFileRequest(
+                NON_DEFAULT_FILE_ID, 0L);
+    }
+
+    @Override
+    protected MessageResponse receiveResponse() {
+        return clientReceiver.waitForMessage(IdentifyPillarsForPutFileResponse.class);
+    }
+
+    @Override
+    protected void assertNoResponseIsReceived() {
+        clientReceiver.checkNoMessageIsReceived(IdentifyPillarsForPutFileResponse.class);
     }
 }

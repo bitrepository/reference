@@ -67,4 +67,9 @@ public class MessageBusWrapper implements MessageBus {
     public Set<String> getComponentFilter() {
         return messageBus.getComponentFilter();
     }
+
+    @Override
+    public Set<String> getCollectionFilter() {
+        return messageBus.getCollectionFilter();
+    }
 }

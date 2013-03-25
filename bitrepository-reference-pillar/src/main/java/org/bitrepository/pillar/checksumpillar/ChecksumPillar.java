@@ -29,6 +29,7 @@ import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
+import org.bitrepository.pillar.common.SettingsHelper;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.audit.AuditTrailContributerDAO;
 import org.bitrepository.service.contributor.ResponseDispatcher;
@@ -65,6 +66,7 @@ public class ChecksumPillar implements Pillar {
         
         log.info("Starting the checksum pillar!");
         MessageHandlerContext context = new MessageHandlerContext(settings,
+                SettingsHelper.getPillarCollections(settings.getComponentID(), settings.getCollections()),
             new ResponseDispatcher(settings, messageBus),
             new PillarAlarmDispatcher(settings, messageBus),
             new AuditTrailContributerDAO(settings, new DBConnector(

@@ -97,9 +97,10 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
         addStep("Request checksums with MinTimeStamp set to the timestamp of the newest checksum",
                 "Only checksum with the timestamp equal to MinTimeStamp are returned.");
         XMLGregorianCalendar newestTimestamp = originalChecksumList.get(originalChecksumList.size()-1).getCalculationTimestamp();
-        query = new ContributorQuery(getPillarID(),
-                newestTimestamp.toGregorianCalendar().getTime(), null, null);
+        query = new ContributorQuery(getPillarID(), newestTimestamp.toGregorianCalendar().getTime(), null, null);
         limitedChecksumList = pillarFileManager.getChecksums(null, query);
+        Assert.assertTrue(!limitedChecksumList.isEmpty(),
+                "Empty list returned when when minTimestamp is set to newest calculated checksum timestamp");
         Assert.assertTrue(limitedChecksumList.get(0).getCalculationTimestamp().compare(newestTimestamp) == 0,
                 "Different timestamps in the set of newest checksums." + limitedChecksumList);
         

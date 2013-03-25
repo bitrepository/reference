@@ -23,30 +23,12 @@
 package org.bitrepository.pillar.integration.func;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.testng.annotations.Test;
 
-/**
- * General class for testing the pillars robustness towards corrupt messages. The concrete class needs to
- * implement the abstrack methods and add any operation specif tests.
- */
-public abstract class PillarRobustnessTest extends PillarFunctionTest {
-
-    @Test( groups = {"pillar-integration-test"})
-    public void missingCollectionID() {
-        addDescription("Verifies the a missing collectionID in the IdentifyRequest is rejected");
-        addStep("Sending a IdentifyRequest without a collectionID.",
-                "The pillar should send a REQUEST_NOT_UNDERSTOOD_FAILURE Response.");
-        MessageRequest request = createRequest();
-        request.setCollectionID(null);
-        messageBus.sendMessage(request);
-
+public abstract class DefaultPillarOperationTest extends DefaultPillarMessagingTest {
+    protected void assertPositivResponseIsReceived() {
         MessageResponse receivedResponse = receiveResponse();
         Assert.assertEquals(receivedResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+                ResponseCode.OPERATION_COMPLETED);
     }
-
-    protected abstract MessageRequest createRequest();
-    protected abstract MessageResponse receiveResponse();
 }

@@ -26,6 +26,7 @@ import java.io.File;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
+import org.bitrepository.pillar.common.SettingsHelper;
 import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
 import org.bitrepository.service.audit.MockAuditManager;
@@ -53,6 +54,7 @@ public class ReferencePillarMediatorTester extends ReferencePillarTest {
         audits = new MockAuditManager();
         MessageHandlerContext context = new MessageHandlerContext(
             settingsForCUT,
+                SettingsHelper.getPillarCollections(settingsForCUT.getComponentID(), settingsForCUT.getCollections()),
             new ResponseDispatcher(settingsForCUT, messageBus),
             new PillarAlarmDispatcher(settingsForCUT, messageBus),
             audits);

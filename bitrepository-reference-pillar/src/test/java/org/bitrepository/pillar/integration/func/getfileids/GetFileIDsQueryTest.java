@@ -105,6 +105,8 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
         query = new ContributorQuery(getPillarID(),
                 newestTimestamp.toGregorianCalendar().getTime(), null, null);
         limitedFileIDsList = pillarFileManager.getFileIDs(query);
+        Assert.assertTrue(!limitedFileIDsList.isEmpty(),
+                "Empty list returned when when minTimestamp is set to newest calculated checksum timestamp");
         Assert.assertTrue(limitedFileIDsList.get(0).getLastModificationTime().compare(newestTimestamp) == 0,
                 "Different timestamps in the set of newest file ids." + limitedFileIDsList);
 
