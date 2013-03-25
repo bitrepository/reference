@@ -27,6 +27,7 @@ package org.bitrepository.protocol.bus;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
+
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
@@ -39,12 +40,19 @@ import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.jaccept.TestEventManager;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 /**
  * Class for testing the interface with the message bus.
  */
 public class GeneralMessageBusTest extends IntegrationTest {
+
+    @AfterMethod(alwaysRun = true)
+    public void tearDown() {
+        messageBus.getComponentFilter().clear();
+        messageBus.getCollectionFilter().clear();
+    }
 
     @Test(groups = { "regressiontest" })
     public void utilityTester() throws Exception {
@@ -143,7 +151,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
         messageToSend.setDestination(settingsForTestClient.getAlarmDestination());
         javax.jms.Message msg = rawMessagebus.createMessage(messageToSend);
         rawMessagebus.addHeader(msg, messageToSend.getClass().getSimpleName(), messageToSend.getReplyTo(),
-                messageToSend.getCollectionID(),
+                null,
                 messageToSend.getCorrelationID());
         rawMessagebus.sendMessage(settingsForTestClient.getAlarmDestination(), msg);
         alarmReceiver.waitForMessage(AlarmMessage.class);
@@ -157,6 +165,40 @@ public class GeneralMessageBusTest extends IntegrationTest {
         addStep("Send an invalid message with the 'Receiver' header property set to another specific component",
                 "Verify that the message bus ignores this before parsing the message.");
         msg.setStringProperty(ActiveMQMessageBus.MESSAGE_RECIPIENT_KEY, "OtherComponent");
+        rawMessagebus.sendMessage(settingsForTestClient.getAlarmDestination(), msg);
+        alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
+    }
+
+    @Test(groups = {"regressiontest"})
+    public final void collectionFilterTest() throws Exception {
+        addDescription("Test that message bus filters messages to other collection, eg. ignores these.");
+        addStep("Send an message with a undefined 'Collection' header property, " +
+                "eg. this messages should be handled by everybody.",
+                "Verify that the message bus accepts this message.");
+        final BlockingQueue<Message> messageList = new LinkedBlockingDeque<Message>();
+        String myCollectionID = "MyCollection";
+        messageBus.getCollectionFilter().add(myCollectionID);
+        RawMessagebus rawMessagebus = new RawMessagebus(
+                settingsForTestClient.getMessageBusConfiguration(),
+                securityManager);
+        AlarmMessage messageToSend = ExampleMessageFactory.createMessage(AlarmMessage.class);
+        messageToSend.setCollectionID(myCollectionID);
+        javax.jms.Message msg = rawMessagebus.createMessage(messageToSend);
+        rawMessagebus.addHeader(msg, messageToSend.getClass().getSimpleName(), messageToSend.getReplyTo(),
+                null,
+                messageToSend.getCorrelationID());
+        rawMessagebus.sendMessage(settingsForTestClient.getAlarmDestination(), msg);
+        alarmReceiver.waitForMessage(AlarmMessage.class);
+
+        addStep("Send an message with the 'Collection' header property set to my collection",
+                "Verify that the message bus accepts this message.");
+        msg.setStringProperty(ActiveMQMessageBus.COLLECTION_ID_KEY, myCollectionID);
+        rawMessagebus.sendMessage(settingsForTestClient.getAlarmDestination(), msg);
+        alarmReceiver.waitForMessage(AlarmMessage.class);
+
+        addStep("Send an invalid message with the 'Receiver' header property set to another specific component",
+                "Verify that the message bus ignores this before parsing the message.");
+        msg.setStringProperty(ActiveMQMessageBus.COLLECTION_ID_KEY, "OtherCollection");
         rawMessagebus.sendMessage(settingsForTestClient.getAlarmDestination(), msg);
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
     }

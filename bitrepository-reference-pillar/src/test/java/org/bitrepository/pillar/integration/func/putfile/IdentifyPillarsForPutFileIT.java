@@ -25,14 +25,16 @@ import junit.framework.Assert;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.TestFileHelper;
-import org.bitrepository.pillar.integration.func.PillarFunctionTest;
+import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class IdentifyPillarsForPutFileIT extends PillarFunctionTest {
+public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest {
     protected PutFileMessageFactory msgFactory;
 
     @BeforeMethod(alwaysRun=true)
@@ -84,5 +86,21 @@ public class IdentifyPillarsForPutFileIT extends PillarFunctionTest {
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.DUPLICATE_FILE_FAILURE);
         Assert.assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
+    }
+
+    @Override
+    protected MessageRequest createRequest() {
+        return msgFactory.createIdentifyPillarsForPutFileRequest(
+                DEFAULT_FILE_ID, 0L);
+    }
+
+    @Override
+    protected MessageResponse receiveResponse() {
+        return clientReceiver.waitForMessage(IdentifyPillarsForPutFileResponse.class);
+    }
+
+    @Override
+    protected void assertNoResponseIsReceived() {
+        clientReceiver.checkNoMessageIsReceived(IdentifyPillarsForPutFileResponse.class);
     }
 }

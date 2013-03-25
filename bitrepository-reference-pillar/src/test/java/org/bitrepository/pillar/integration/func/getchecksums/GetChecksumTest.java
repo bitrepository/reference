@@ -40,7 +40,7 @@ public class GetChecksumTest extends PillarFunctionTest {
     }
 
     @Test ( groups = {"pillar-integration-test"} )
-    public void testMD5Checksums() throws NegativeResponseException {
+    public void testMD5ChecksumsForAllFiles() throws NegativeResponseException {
         addDescription("Test the pillar support for MD5 type checksums");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
@@ -58,7 +58,7 @@ public class GetChecksumTest extends PillarFunctionTest {
     }
     
     @Test ( groups = {"pillar-integration-test", "exclude-checksum-pillar"} )
-    public void testSHA1Checksums() throws NegativeResponseException {
+    public void testSHA1ChecksumsForAllFiles() throws NegativeResponseException {
         addDescription("Test the pillar support for SHA1 type checksums");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
@@ -75,7 +75,7 @@ public class GetChecksumTest extends PillarFunctionTest {
     }
 
     @Test ( groups = {"pillar-integration-test", "exclude-checksum-pillar"} )
-    public void testMD5SaltChecksums() throws NegativeResponseException {
+    public void testMD5SaltChecksumsForAllFiles() throws NegativeResponseException {
         addDescription("Test the pillar support for MD5 type checksums with a salt");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
@@ -93,7 +93,7 @@ public class GetChecksumTest extends PillarFunctionTest {
     }
     
     @Test ( groups = {"pillar-integration-test", "exclude-checksum-pillar"} )
-    public void testSHA1SaltChecksums() throws NegativeResponseException {
+    public void testSHA1SaltChecksumsForAllFiles() throws NegativeResponseException {
         addDescription("Test the pillar support for SHA1 type checksums with a salt");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 

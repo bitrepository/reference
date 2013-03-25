@@ -35,6 +35,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.util.ByteArrayInputStream;
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
@@ -44,8 +47,6 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.common.JaxbHelper;
@@ -122,6 +123,7 @@ public class ActiveMQMessageBus implements MessageBus {
     private final SecurityManager securityManager;
 
     private final Set<String> componentFilter = new HashSet<String>();
+    private final Set<String> collectionFilter = new HashSet<String>();
 
     /** The queue with the runnable threads for handling the received messages. */
     private final BlockingQueue<Runnable> threadQueue;
@@ -431,6 +433,13 @@ public class ActiveMQMessageBus implements MessageBus {
                         return;
                     }
                 }
+                String collectionID = jmsMessage.getStringProperty(COLLECTION_ID_KEY);
+                if(!collectionFilter.isEmpty()) {
+                    if (collectionID != null && !collectionFilter.contains(collectionID)) {
+                        log.trace("Ignoring message to unknown collection " + collectionID);
+                        return;
+                    }
+                }
                 String signature = jmsMessage.getStringProperty(MESSAGE_SIGNATURE_KEY);
                 text = ((TextMessage) jmsMessage).getText();
                 log.trace("Received xml message: " + text);
@@ -506,5 +515,10 @@ public class ActiveMQMessageBus implements MessageBus {
     @Override
     public Set<String> getComponentFilter() {
         return componentFilter;
+    }
+
+    @Override
+    public Set<String> getCollectionFilter() {
+        return collectionFilter;
     }
 }

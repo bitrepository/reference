@@ -65,5 +65,17 @@ public interface MessageBus extends MessageSender {
      * </p>
      *
      */
-    public Set<String> getComponentFilter();
+    Set<String> getComponentFilter();
+
+    /**
+     * @return If defined specifies the list of componentIDs with should be handled.If
+     * the list contains any elements, the collectionID for incoming messages are read before being parsed. This
+     * enables the message bus to discard messages prior to parsing, if the message is meant for other collections.
+     * <p>
+     * Messages will only be discarded if the collection contains at least one collectionsID and the received
+     * message has a defined collectionID.
+     * </p>
+     *
+     */
+    Set<String> getCollectionFilter();
 }

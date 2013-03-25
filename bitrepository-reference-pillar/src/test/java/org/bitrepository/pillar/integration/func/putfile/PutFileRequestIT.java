@@ -22,20 +22,23 @@
 package org.bitrepository.pillar.integration.func.putfile;
 
 import java.lang.reflect.Method;
+
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.utils.TestFileHelper;
-import org.bitrepository.pillar.integration.func.PillarFunctionTest;
+import org.bitrepository.pillar.integration.func.DefaultPillarOperationTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class PutFileRequestIT extends PillarFunctionTest {
+public class PutFileRequestIT extends DefaultPillarOperationTest {
     protected PutFileMessageFactory msgFactory;
     private String pillarDestination;
     private String testSpecificFileID;
@@ -88,6 +91,20 @@ public class PutFileRequestIT extends PillarFunctionTest {
         Assert.assertNotNull(finalResponse);
     }
 
+    @Override
+    protected MessageRequest createRequest() {
+        return msgFactory.createPutFileRequest(TestFileHelper.getDefaultFileChecksum(), null,
+                DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, DEFAULT_FILE_SIZE);
+    }
+
+    @Override
+    protected MessageResponse receiveResponse() {
+        return clientReceiver.waitForMessage(PutFileFinalResponse.class);
+    }
+
+    protected void assertNoResponseIsReceived() {
+        clientReceiver.checkNoMessageIsReceived(PutFileFinalResponse.class);
+    }
 
     public String lookupPutFileDestination() {
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(

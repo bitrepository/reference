@@ -160,7 +160,7 @@ public class CollectionArchiveManager implements FileStore {
         if(archives.containsKey(collectionId)) {
             return archives.get(collectionId);
         } else {
-            throw new IllegalStateException("The collection '" + collectionId + "' have no attached archive.");
+            throw new IllegalStateException("The collection '" + collectionId + "' has no attached archive.");
         }
     }
     

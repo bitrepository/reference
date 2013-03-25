@@ -24,13 +24,14 @@
  */
 package org.bitrepository.protocol;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.core.util.StatusPrinter;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.core.util.StatusPrinter;
 import javax.jms.JMSException;
-import javax.swing.JFrame;
+import javax.swing.*;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.TestFileHelper;
