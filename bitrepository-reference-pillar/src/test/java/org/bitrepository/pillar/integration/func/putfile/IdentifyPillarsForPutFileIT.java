@@ -43,7 +43,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
     }
 
     @Test( groups = {"pillar-integration-test"})
-    public void normalIdentification() {
+    public void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for putFile identification");
         addStep("Sending a putFile identification.",
             "The pillar under test should make a response with the correct elements.");
@@ -65,7 +65,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
     }
 
     @Test( groups = {"pillar-integration-test"})
-    public void fileExists() {
+    public void fileExistsTest() {
         addDescription("Verifies the exists of a file with the same ID is handled correctly");
         addStep("Sending a putFile identification for a file already in the pillar.",
                 "The pillar under test should send a DUPLICATE_FILE_FAILURE response with the (default type) checksum " +
@@ -91,7 +91,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
     @Override
     protected MessageRequest createRequest() {
         return msgFactory.createIdentifyPillarsForPutFileRequest(
-                DEFAULT_FILE_ID, 0L);
+                NON_DEFAULT_FILE_ID, 0L);
     }
 
     @Override
