@@ -68,7 +68,7 @@ public class RestAuditTrailService {
             @FormParam("actor") String actor,
             @FormParam("action") String action,
             @FormParam("collectionID") String collectionID, 
-            @DefaultValue("1000") @FormParam("maxAlarms") Integer maxResults) {
+            @DefaultValue("1000") @FormParam("maxAudittrails") Integer maxResults) {
         Date from = makeDateObject(fromDate);
         Date to = makeDateObject(toDate);
         
