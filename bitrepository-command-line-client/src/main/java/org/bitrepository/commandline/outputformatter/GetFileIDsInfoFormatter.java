@@ -20,7 +20,15 @@ public class GetFileIDsInfoFormatter implements GetFileIDsOutputFormatter {
     
     public void formatResult(Collection<FileIDsResult> results) {
         for(FileIDsResult result : results) {
-            String line = result.getContributors().size() + " \t"+ result.getSize() + " \t" + result.getID();
+            String filesize;
+            if(result.getSize() == null) {
+                filesize = "???";
+            } else if(result.getSize().intValue() == -1) {
+                filesize = "disagreed";
+            } else {
+                filesize = result.getSize().toString();
+            }
+            String line = result.getContributors().size() + " \t" + filesize + " \t" + result.getID();
             outputHandler.resultLine(line);
         }
     }
