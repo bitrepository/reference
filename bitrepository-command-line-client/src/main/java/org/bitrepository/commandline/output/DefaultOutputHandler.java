@@ -48,7 +48,7 @@ public class DefaultOutputHandler implements OutputHandler {
 
     @Override
     public void startupInfo(String s) {
-        System.out.println(s);
+        System.err.println(s);
     }
 
     @Override
@@ -66,8 +66,18 @@ public class DefaultOutputHandler implements OutputHandler {
 
     @Override
     public void completeEvent(String msg, OperationEvent event) {
-        System.out.println("Final Result: " + event.getEventType());
+        System.err.println("Final Result: " + event.getEventType());
         log.info(msg);
         log.debug(event.toString());
+    }
+
+    @Override
+    public void resultLine(String line) {
+        System.out.println(line);
+    }
+
+    @Override
+    public void resultHeader(String header) {
+        System.out.println(header);
     }
 }

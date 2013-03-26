@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
@@ -19,6 +21,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 public class GetFileIDsResultModel {
 
     private List<FileIDsResult> completeResults;
+    private Set<String> lastCompletedIDs;
     private Map<String, FileIDsResult> uncompleteResults;
     private Map<String, Date> latestContributorDate;
         
@@ -28,6 +31,7 @@ public class GetFileIDsResultModel {
             latestContributorDate.put(contributor, new Date(0));
         }
         completeResults = new ArrayList<FileIDsResult>();
+        lastCompletedIDs = new HashSet<String>();
         uncompleteResults = new HashMap<String, FileIDsResult>();
     }
     
@@ -39,6 +43,9 @@ public class GetFileIDsResultModel {
     public void addResults(String contributor, ResultingFileIDs results) {
         Date latestContribution = latestContributorDate.get(contributor);
         for(FileIDsDataItem item : results.getFileIDsData().getFileIDsDataItems().getFileIDsDataItem()) {
+            if(lastCompletedIDs.contains(item.getFileID())) {
+                continue;
+            }
             FileIDsResult result;
             if(uncompleteResults.containsKey(item.getFileID())) {
                 result = uncompleteResults.get(item.getFileID());
@@ -65,11 +72,18 @@ public class GetFileIDsResultModel {
     
     /**
      * Get the collection of completed results (results from which all expected contributors 
-     * delivered their part)
+     * delivered their part), the call is NOT idempotent. 
      * @return Collection<FileIDsResult> 
      */    
     public Collection<FileIDsResult> getCompletedResults() {
-        return completeResults;
+        List<FileIDsResult> completed = completeResults;
+        completeResults = null;
+        completeResults = new ArrayList<FileIDsResult>();
+        lastCompletedIDs = new HashSet<String>();
+        for(FileIDsResult result : completed) {
+            lastCompletedIDs.add(result.getID());
+        }
+        return completed;
     }
 
     /**

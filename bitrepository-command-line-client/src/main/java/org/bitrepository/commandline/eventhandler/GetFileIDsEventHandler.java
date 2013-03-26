@@ -6,9 +6,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.resultmodel.GetFileIDsResultModel;
 
 public class GetFileIDsEventHandler implements EventHandler {
@@ -20,21 +22,25 @@ public class GetFileIDsEventHandler implements EventHandler {
     
     private List<String> pillarsWithPartialResults;
     private GetFileIDsResultModel model;
+    private OutputHandler outputHandler;
     
-    public GetFileIDsEventHandler(GetFileIDsResultModel model, Long timeout) {
+    public GetFileIDsEventHandler(GetFileIDsResultModel model, Long timeout, OutputHandler outputHandler) {
         this.model = model;
         this.timeout = timeout;
+        this.outputHandler = outputHandler;
         pillarsWithPartialResults = new ArrayList<String>();
     }
     
     @Override
     public void handleEvent(OperationEvent event) {
-        if(event.getEventType() == OperationEventType.COMPLETE) {
+        if(event.getEventType() == OperationEventType.COMPONENT_COMPLETE) {
+            handleResult(event);
+        } else if(event.getEventType() == OperationEventType.COMPLETE) {
             finalEventQueue.add(event);
         } else if(event.getEventType() == OperationEventType.FAILED) {
             finalEventQueue.add(event);
         } else {
-            //foo
+            outputHandler.debug("Received event: " + event.toString());
         }
     }
     
@@ -51,7 +57,22 @@ public class GetFileIDsEventHandler implements EventHandler {
         }
     }
     
+    /**
+     * Gets the list of pillars who's latest result was partial, i.e. the pillars that needs to deliver more results
+     * @return List<String>, the list of pillarIDs.  
+     */
     public List<String> getPillarsWithPartialResults() {
         return pillarsWithPartialResults;
+    }
+    
+    private void handleResult(OperationEvent event) {
+        if(event instanceof FileIDsCompletePillarEvent) {
+            FileIDsCompletePillarEvent pillarEvent = (FileIDsCompletePillarEvent) event;
+            if(pillarEvent.isPartialResult()) {
+                pillarsWithPartialResults.add(pillarEvent.getContributorID());
+            }
+            model.addResults(pillarEvent.getContributorID(), pillarEvent.getFileIDs());
+        }
+        
     }
 }

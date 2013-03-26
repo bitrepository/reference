@@ -8,6 +8,8 @@ import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.commandline.eventhandler.GetFileIDsEventHandler;
+import org.bitrepository.commandline.output.OutputHandler;
+import org.bitrepository.commandline.outputformatter.GetFileIDsOutputFormatter;
 import org.bitrepository.commandline.resultmodel.GetFileIDsResultModel;
 
 public class PagingGetFileIDsClient {
@@ -15,20 +17,26 @@ public class PagingGetFileIDsClient {
     private final GetFileIDsClient client;
     private GetFileIDsResultModel model;
     private GetFileIDsEventHandler eventHandler;
+    private GetFileIDsOutputFormatter outputFormatter;
+    private OutputHandler outputHandler;
     private final static Integer PAGE_SIZE = 10000;
     private long timeout;
       
-    public PagingGetFileIDsClient(GetFileIDsClient client, long timeout) {
+    public PagingGetFileIDsClient(GetFileIDsClient client, long timeout, GetFileIDsOutputFormatter outputFormatter,
+            OutputHandler outputHandler) {
         this.client = client;
         this.timeout = timeout;
+        this.outputFormatter = outputFormatter;
+        this.outputHandler = outputHandler;
     }
     
-    public boolean getFileIDs(String collectionID, String fileID, List<String> pillarIDs) throws InterruptedException {
+    public boolean getFileIDs(String collectionID, String fileID, List<String> pillarIDs) {
         model = new GetFileIDsResultModel(pillarIDs);
         List<String> pillarsToGetFrom = pillarIDs;
+        outputFormatter.formatHeader();
         
         while(!pillarsToGetFrom.isEmpty()) {
-            eventHandler = new GetFileIDsEventHandler(model, timeout);
+            eventHandler = new GetFileIDsEventHandler(model, timeout, outputHandler);
             ContributorQuery[] queries = makeQuery(pillarsToGetFrom);
             client.getFileIDs(collectionID, queries, fileID, null, eventHandler);
             OperationEvent event = eventHandler.getFinish();
@@ -36,9 +44,9 @@ public class PagingGetFileIDsClient {
                 return false;
             }
             pillarsToGetFrom = eventHandler.getPillarsWithPartialResults();
-            // model.getCompletedResults() // Do something with the completed results
+            outputFormatter.formatResult(model.getCompletedResults());
         }
-        // model.getUncompletedResults() // Do something with the uncompleted results
+        outputFormatter.formatResult(model.getUncompletedResults());
         return true;
     }
     
