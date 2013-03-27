@@ -22,7 +22,8 @@
 # #L%
 ###
 
-source init.sh
+SCRIPT_PATH=$(dirname $(readlink -f $0))
+source $SCRIPT_PATH/init.sh
 GET_FILE="org.bitrepository.commandline.GetFile"
 
 if [ -r $KEYFILE ]; then

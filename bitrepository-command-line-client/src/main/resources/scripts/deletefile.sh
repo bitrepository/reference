@@ -22,7 +22,8 @@
 # #L%
 ###
 
-source init.sh
+SCRIPT_PATH=$(dirname $(readlink -f $0))
+source $SCRIPT_PATH/init.sh
 DELETE_FILE="org.bitrepository.commandline.DeleteFile"
 
 if [ -r $KEYFILE ]; then
