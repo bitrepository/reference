@@ -22,7 +22,12 @@
 # #L%
 ###
 
-source init.sh
+SCRIPT_PATH=$(dirname $(readlink -f $0))
+source $SCRIPT_PATH/init.sh
 GET_FILE_IDS="org.bitrepository.commandline.GetFileIDs"
 
-exec $JAVA $JAVA_OPTS $GET_FILE_IDS -s$CONFDIR -k$KEYFILE $* 
+if [ -r $KEYFILE ]; then
+  KEYFILEOPT="-k$KEYFILE"
+fi
+
+exec $JAVA $JAVA_OPTS $GET_FILE_IDS -s$CONFDIR $KEYFILEOPT $* 

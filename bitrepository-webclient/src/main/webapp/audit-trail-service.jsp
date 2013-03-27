@@ -82,7 +82,7 @@
             </label>
             <label> Max audit trails: <br>
               <div class="input-append">
-                <select class="input-small" id=maxAuditTrails>
+                <select class="input-small" id="maxAuditTrails">
                   <option>10</option>
                   <option>20</option>
                   <option>50</option>
@@ -133,6 +133,7 @@
       var actorStr = $("#actorFilter").val();
       var actionStr = $("#actionFilter").val();
       var collectionIDStr = $("#collectionIDFilter").val();
+      var maxAudittrailsStr = $("#maxAuditTrails").val();
 
       $("#auditTrailsTableDiv").html("Loading audit trails...");
 
@@ -143,7 +144,8 @@
          reportingComponent: component,
          actor: actorStr,
          action: actionStr,
-         collectionID: collectionIDStr}, 
+         collectionID: collectionIDStr,
+         maxAudittrails: maxAudittrailsStr}, 
          function(j){
            var htmlTable;
            htmlTable = "<table class=\"table table-bordered table-striped\">";

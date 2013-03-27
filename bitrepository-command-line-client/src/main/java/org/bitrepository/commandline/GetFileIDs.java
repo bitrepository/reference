@@ -24,17 +24,16 @@ package org.bitrepository.commandline;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import org.apache.commons.cli.Option;
 import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.access.ContributorQuery;
-import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
-import org.bitrepository.client.eventhandler.OperationEvent;
-import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.commandline.clients.PagingGetFileIDsClient;
 import org.bitrepository.commandline.output.DefaultOutputHandler;
 import org.bitrepository.commandline.output.OutputHandler;
+import org.bitrepository.commandline.outputformatter.GetFileIDsInfoFormatter;
+import org.bitrepository.commandline.outputformatter.GetFileIDsOutputFormatter;
 import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
-import org.bitrepository.commandline.utils.CompleteEventAwaiter;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.security.SecurityManager;
 
@@ -61,7 +60,7 @@ public class GetFileIDs {
     /** The security manager.*/
     private final SecurityManager securityManager;
     /** The client for performing the GetFileIDs operation.*/
-    private final GetFileIDsClient client;
+    private final PagingGetFileIDsClient pagingClient;
     /** The handler for the command line arguments.*/
     private final CommandLineArgumentsHandler cmdHandler;
     
@@ -84,8 +83,11 @@ public class GetFileIDs {
         securityManager = cmdHandler.loadSecurityManager(settings);
         
         output.debug("Instantiating the GetFileIDsClient");
-        client = AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager, 
-                COMPONENT_ID);
+        GetFileIDsClient client = AccessComponentFactory.getInstance().createGetFileIDsClient(settings, 
+                securityManager, COMPONENT_ID);
+        OutputHandler outputHandler = new DefaultOutputHandler(getClass());
+        GetFileIDsOutputFormatter outputFormatter = new GetFileIDsInfoFormatter(outputHandler);
+        pagingClient = new PagingGetFileIDsClient(client, getTimeout(), outputFormatter, outputHandler); 
     }
     
     /**
@@ -117,28 +119,12 @@ public class GetFileIDs {
      */
     public void performOperation() {
         output.debug("Performing the GetFileIDs operation.");
-        OperationEvent finalEvent = performConversation();
-        output.debug("Results of the GetFileIDs operation: " + finalEvent);
-        if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
+        Boolean success = pagingClient.getFileIDs(getCollectionID(), getFileIDs(), getPillarIDs());
+        if(success) {
             System.exit(Constants.EXIT_SUCCESS);
         } else {
             System.exit(Constants.EXIT_OPERATION_FAILURE);
         }
-    }
-    
-    /**
-     * Initiates the operation and waits for the results.
-     * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
-     */
-    private OperationEvent performConversation() {
-        ContributorQuery[] pillarids = ContributorQueryUtils.createFullContributorQuery(getPillarIds());
-        
-        CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings, output);
-        output.debug("Instantiating the GetFileIDs conversation.");
-        
-        client.getFileIDs(getCollectionID(), pillarids, getFileIDs(), null, eventHandler);
-        
-        return eventHandler.getFinish();
     }
     
     /**
@@ -170,11 +156,16 @@ public class GetFileIDs {
      * argument has been given, then the list of all pillar ids are given.
      * @return The list of pillars to request for the file ids.
      */
-    private List<String> getPillarIds() {
+    private List<String> getPillarIDs() {
         if(cmdHandler.hasOption(Constants.PILLAR_ARG)) {
             return Arrays.asList(cmdHandler.getOptionValue(Constants.PILLAR_ARG));
         }
         
         return new ArrayList<String>(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+    }
+    
+    private long getTimeout() {
+        return settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
+                + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
     }
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <!--
   #%L
   Bitrepository Integration
@@ -20,9 +20,18 @@
   <http://www.gnu.org/licenses/lgpl-2.1.html>.
   #L%
   -->
-
-<CollectionSettings xmlns="http://bitrepository.org/settings/CollectionSettings.xsd">
-  <CollectionID>quick-start-collection</CollectionID>
+<RepositorySettings xmlns="http://bitrepository.org/settings/RepositorySettings.xsd">
+  <Name>quick-start-collection</Name>
+  <Collections>
+    <Collection>
+      <ID>quick-start-collection</ID>
+      <PillarIDs>
+        <PillarID>checksum-pillar</PillarID>
+        <PillarID>reference1-pillar</PillarID>
+        <PillarID>reference2-pillar</PillarID>
+      </PillarIDs>
+    </Collection>
+  </Collections>
   <ProtocolSettings>
     <DefaultChecksumType>MD5</DefaultChecksumType>
     <AllowedFileIDPattern>[a-zA-Z_\.\-0-9]{1,250}</AllowedFileIDPattern>
@@ -40,31 +49,26 @@
   <ClientSettings>
     <IdentificationTimeout>180000</IdentificationTimeout>
     <OperationTimeout>3600000</OperationTimeout>
-    <PillarIDs>checksum-pillar</PillarIDs>
-    <PillarIDs>reference1-pillar</PillarIDs>
-    <PillarIDs>reference2-pillar</PillarIDs>
   </ClientSettings>
-  <PillarSettings></PillarSettings>
-  <DeleteFileSettings></DeleteFileSettings>
+  <PillarSettings/>
+  <DeleteFileSettings/>
   <GetAuditTrailSettings>
     <ContributorIDs>checksum-pillar</ContributorIDs>
     <ContributorIDs>reference1-pillar</ContributorIDs>
     <ContributorIDs>reference2-pillar</ContributorIDs>
     <ContributorIDs>integrity-service</ContributorIDs>
   </GetAuditTrailSettings>
-
-  <GetChecksumsSettings></GetChecksumsSettings>
-  <GetFileSettings></GetFileSettings>
-  <GetFileIDsSettings></GetFileIDsSettings>
+  <GetChecksumsSettings/>
+  <GetFileSettings/>
+  <GetFileIDsSettings/>
   <GetStatusSettings>
-      <ContributorIDs>checksum-pillar</ContributorIDs>
-      <ContributorIDs>reference1-pillar</ContributorIDs>
-      <ContributorIDs>reference2-pillar</ContributorIDs>
-      <ContributorIDs>alarm-service</ContributorIDs>
-      <ContributorIDs>integrity-service</ContributorIDs>
-      <ContributorIDs>audittrail-service</ContributorIDs>
+    <ContributorIDs>checksum-pillar</ContributorIDs>
+    <ContributorIDs>reference1-pillar</ContributorIDs>
+    <ContributorIDs>reference2-pillar</ContributorIDs>
+    <ContributorIDs>alarm-service</ContributorIDs>
+    <ContributorIDs>integrity-service</ContributorIDs>
+    <ContributorIDs>audittrail-service</ContributorIDs>
   </GetStatusSettings>
-  <PutFileSettings></PutFileSettings>
-  <ReplaceFileSettings></ReplaceFileSettings>
-
-</CollectionSettings>
+  <PutFileSettings/>
+  <ReplaceFileSettings/>
+</RepositorySettings>

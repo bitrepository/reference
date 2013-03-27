@@ -58,6 +58,7 @@
   <script type="text/javascript" src="jquery/jquery-1.9.0.min.js"></script>
   <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="menu.js"></script>
+    <script type="text/javascript" src="utils.js"></script>
 
   <script>
     var components = new Object();
@@ -114,9 +115,10 @@
 
     function attachButtonAction(id, message) {
       var element = "#" + id + "-msg-btn";
-      $(element).popover({placement : "right", 
+      $(element).popover({placement : "right",
+          html: true,  
     	  title: id + " status message", 
-          content: getMsg(id)});
+          content: getMsg(nl2br(id))});
     }
         
     function getStatuses() {

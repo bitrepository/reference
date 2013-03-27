@@ -33,7 +33,10 @@
 
   <PillarSettings> 
     <PillarID>checksum-pillar</PillarID>
-    <FileDir><!--foobarpattern-->var/checksumpillar</FileDir>
+    <CollectionDirs>
+      <CollectionID>quick-start-collection</CollectionID>
+      <FileDirs><!--foobarpattern-->var/checksumpillar</FileDirs>
+    </CollectionDirs>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>
     <MaxAgeForChecksums>3600000000000</MaxAgeForChecksums>

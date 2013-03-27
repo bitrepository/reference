@@ -39,6 +39,8 @@ import org.bitrepository.audittrails.AuditTrailService;
 import org.bitrepository.audittrails.AuditTrailServiceFactory;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.TimeUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,7 +70,7 @@ public class RestAuditTrailService {
             @FormParam("actor") String actor,
             @FormParam("action") String action,
             @FormParam("collectionID") String collectionID, 
-            @DefaultValue("1000") @FormParam("maxAlarms") Integer maxResults) {
+            @DefaultValue("1000") @FormParam("maxAudittrails") Integer maxResults) {
         Date from = makeDateObject(fromDate);
         Date to = makeDateObject(toDate);
         
@@ -102,7 +104,8 @@ public class RestAuditTrailService {
             obj.put("reportingComponent", event.getReportingComponent());
             obj.put("actor", event.getActorOnFile());
             obj.put("action", event.getActionOnFile());
-            obj.put("timeStamp", event.getActionDateTime());
+            obj.put("timeStamp", TimeUtils.shortDate(
+                    CalendarUtils.convertFromXMLGregorianCalendar(event.getActionDateTime())));
             obj.put("info", event.getInfo());
             obj.put("auditTrailInfo", event.getAuditTrailInformation());
             return obj;

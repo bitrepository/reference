@@ -24,14 +24,18 @@ public class FileIDsResult {
      * Updates the filesize of the file, if the filesize does not match, mark it as a unknown  
      */
     public void updateSize(BigInteger size) {
-        if(!size.equals(this.size)) {
-            this.size = null;
+        if(size != null) {
+            if(this.size == null) {
+                this.size = size; 
+            } else if(!size.equals(this.size)) {
+                this.size = new BigInteger("-1");
+            }    
         } 
     }
     
     /**
      * Gets the size of the file. 
-     * @return the size of the file, or null if unknown or there are filesize confilicts between contributors 
+     * @return the size of the file, or null if unknown or -1 if there are filesize confilicts between contributors 
      */
     public BigInteger getSize() {
         return size;

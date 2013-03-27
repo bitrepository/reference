@@ -22,9 +22,9 @@
 <configuration>
 
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${user.home}/logs/alarmservice.log</file>
+    <file>${user.home}/logs/commandline.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>${user.home}/logs/alarmservice.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <fileNamePattern>${user.home}/logs/commandline.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
       <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
         <maxFileSize>5MB</maxFileSize>
       </timeBasedFileNamingAndTriggeringPolicy>

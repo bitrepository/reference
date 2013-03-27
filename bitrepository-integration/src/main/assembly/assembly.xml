@@ -48,6 +48,13 @@
         <include>org.bitrepository.reference:bitrepository-reference-pillar:tar.gz:distribution</include>
       </includes>
     </dependencySet>
+    <dependencySet>
+      <!-- <useProjectArtifact>false</useProjectArtifact> -->
+      <outputDirectory>${prefix}</outputDirectory>
+      <includes>
+        <include>org.bitrepository.reference:bitrepository-command-line:tar.gz:distribution</include>
+      </includes>
+    </dependencySet>
   </dependencySets>
 
   <fileSets>

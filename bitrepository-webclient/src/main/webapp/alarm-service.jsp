@@ -68,7 +68,7 @@
             </label>
             <label> Max alarms: <br>
               <div class="input-append">
-                <select class="input-small" id=maxAlarms>
+                <select class="input-small" id="maxAlarms">
                   <option>10</option>
                   <option>20</option>
                   <option>50</option>
@@ -125,11 +125,11 @@
          oldestAlarmFirst: false}, function(j){
         var htmlTableBody = "";
         if(j != null) {
-          for (var i = 0; i < j.Alarm.length; i++) {
-            htmlTableBody += "<tr><td>" + j.Alarm[i].OrigDateTime + 
-                             "</td><td>" + j.Alarm[i].AlarmRaiser +
-                             "</td> <td>" + j.Alarm[i].AlarmCode + 
-                             "</td> <td>" + j.Alarm[i].AlarmText + 
+          for (var i = 0; i < j.length; i++) {
+            htmlTableBody += "<tr><td>" + j[i].OrigDateTime + 
+                             "</td><td>" + j[i].AlarmRaiser +
+                             "</td> <td>" + j[i].AlarmCode + 
+                             "</td> <td>" + j[i].AlarmText + 
                              "</td></tr>";
           }
         }
