@@ -62,21 +62,19 @@ cd $quickstartdir
 for directory in $(find conf -maxdepth 1 -mindepth 1 -type d)
 do
         cd "$directory"
-        ln -sf ../CollectionSettings.xml .
-	sed -i s%\<\!--foobarpattern--\>%$quickstartdir/% ReferenceSettings.xml > /dev/null
-	sed -i s%\{user.home\}%$quickstartdir% logback.xml 
+        ln -sf ../RepositorySettings.xml .
+        sed -i s%\<\!--foobarpattern--\>%$quickstartdir/% ReferenceSettings.xml > /dev/null
+        sed -i s%\{user.home\}%$quickstartdir% logback.xml 
         cd $quickstartdir
 done
 
 sed -i s%eventsfile%$quickstartdir/logs/webclient-events% $configdir/webclient/webclient.properties 
 
-#for file in $(ls -l tomcat-services/*.xml | cut -d " " -f10) 
 for file in $(find tomcat-services -iname '*.xml')
 do
 	sed -i s%\${user.home}%$quickstartdir% $file
 done
 
-#refpillartarfile=$(ls -l *.zip | cut -d " " -f10)
 refpillartarfile=$(ls bitrepository-reference-pillar*.tar.gz)
 if [ ! -z $refpillartarfile ]; then
 	tar xvf $refpillartarfile > /dev/null
@@ -104,7 +102,6 @@ cd reference1pillar/bin
 ./reference-pillar.sh start
 cd $quickstartdir
 
-
 if [ ! -d "reference2pillar" ]; then
         mkdir "reference2pillar"
         cp -r $refpillardistdir/lib reference2pillar/.
@@ -115,6 +112,21 @@ cd reference2pillar/bin
 ./reference-pillar.sh start
 cd $quickstartdir
 
+commandlinetarfile=$(ls bitrepository-command-line-*.tar.gz)
+if [ ! -z $commandlinetarfile ]; then
+        tar xvf $commandlinetarfile > /dev/null
+        rm $commandlinetarfile
+fi
+
+commandlinedistdir=$(ls -t | grep bitrepository-command-line-* | head -1)
+if [ ! -d "commandline" ]; then
+    mv $commandlinedistdir "commandline"
+    cd commandline
+    rm logback.xml
+    ln -s ../conf/commandline conf
+    ln -s conf/logback.xml
+fi
+cd $quickstartdir
 
 #Fetch, unpack, setup Apache Tomcat server
 if [ -d "tomcat" ]; then

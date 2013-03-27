@@ -72,6 +72,13 @@
     </dependency>
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
+      <artifactId>bitrepository-command-line</artifactId>
+      <version>${project.version}</version>
+      <classifier>distribution</classifier>
+      <type>tar.gz</type>
+    </dependency>
+    <dependency>
+      <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-core</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
