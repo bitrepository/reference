@@ -25,4 +25,8 @@
 source init.sh
 GET_CHECKSUMS="org.bitrepository.commandline.GetChecksums"
 
-exec $JAVA $JAVA_OPTS $GET_CHECKSUMS -s$CONFDIR -k$KEYFILE $* 
+if [ -r $KEYFILE ]; then
+  KEYFILEOPT="-k$KEYFILE"
+fi
+
+exec $JAVA $JAVA_OPTS $GET_CHECKSUMS -s$CONFDIR $KEYFILEOPT $* 

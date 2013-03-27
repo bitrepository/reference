@@ -25,4 +25,8 @@
 source init.sh
 PUT_FILE="org.bitrepository.commandline.PutFile"
 
-exec $JAVA $JAVA_OPTS $PUT_FILE -s$CONFDIR -k$KEYFILE $* 
+if [ -r $KEYFILE ]; then
+  KEYFILEOPT="-k$KEYFILE"
+fi
+
+exec $JAVA $JAVA_OPTS $PUT_FILE -s$CONFDIR $KEYFILEOPT $* 

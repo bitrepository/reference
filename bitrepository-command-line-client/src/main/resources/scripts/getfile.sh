@@ -25,4 +25,8 @@
 source init.sh
 GET_FILE="org.bitrepository.commandline.GetFile"
 
-exec $JAVA $JAVA_OPTS $GET_FILE -s$CONFDIR -k$KEYFILE $* 
+if [ -r $KEYFILE ]; then
+  KEYFILEOPT="-k$KEYFILE"
+fi
+
+exec $JAVA $JAVA_OPTS $GET_FILE -s$CONFDIR $KEYFILEOPT $* 
