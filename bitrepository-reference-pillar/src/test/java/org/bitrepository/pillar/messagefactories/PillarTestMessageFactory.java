@@ -28,10 +28,13 @@ import org.bitrepository.protocol.message.ComponentTestMessageFactory;
 public abstract class PillarTestMessageFactory {
     private final ComponentTestMessageFactory componentTestMessageFactory;
     private final String pillarDestinationID;
+    protected final String pillarID;
 
-    protected PillarTestMessageFactory(String collectionID, Settings testerSettings, String pillarDestinationID) {
+    protected PillarTestMessageFactory(
+            String collectionID, Settings testerSettings, String pillarID, String pillarDestinationID) {
         componentTestMessageFactory = new ComponentTestMessageFactory(collectionID, testerSettings);
         this.pillarDestinationID = pillarDestinationID;
+        this.pillarID = pillarID;
     }
 
     protected void initializeIdentifyRequest(MessageRequest request) {

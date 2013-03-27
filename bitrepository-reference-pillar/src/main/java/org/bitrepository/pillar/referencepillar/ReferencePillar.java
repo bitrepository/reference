@@ -74,7 +74,7 @@ public class ReferencePillar implements Pillar {
 
         this.messageBus = messageBus;
 
-        log.info("Starting the reference pillar!");
+        log.info("Starting the ReferencePillar");
         archiveManager = new CollectionArchiveManager(settings);
         csStore = new ChecksumDAO(settings);
         PillarAlarmDispatcher alarmDispatcher = new PillarAlarmDispatcher(settings, messageBus);
@@ -103,6 +103,7 @@ public class ReferencePillar implements Pillar {
             mediator.close();
             messageBus.close();
             archiveManager.close();
+            log.info("ReferencePillar stopped!");
         } catch (JMSException e) {
             log.warn("Could not close the messagebus.", e);
         }

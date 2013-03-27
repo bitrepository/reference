@@ -21,6 +21,10 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
+import java.math.BigInteger;
+import java.util.Date;
+
+import javax.xml.datatype.XMLGregorianCalendar;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -34,10 +38,6 @@ import org.bitrepository.pillar.messagefactories.GetAuditTrailsMessageFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-import java.math.BigInteger;
-import java.util.Date;
 
 public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
     GetAuditTrailsMessageFactory msgFactory;
@@ -123,9 +123,6 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
         GetAuditTrailsProgressResponse progressResponse = clientReceiver.waitForMessage(GetAuditTrailsProgressResponse.class);
-        Assert.assertEquals(progressResponse, msgFactory.createGetAuditTrailsProgressResponse(getComponentID(),
-                request.getCorrelationID(), pillarDestinationId, progressResponse.getResponseInfo(), 
-                null, clientDestinationId));
         Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         

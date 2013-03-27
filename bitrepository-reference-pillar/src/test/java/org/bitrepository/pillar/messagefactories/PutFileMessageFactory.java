@@ -48,12 +48,10 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.settings.Settings;
 
 public class PutFileMessageFactory extends PillarTestMessageFactory {
-    private final String pillarID;
     
-    public PutFileMessageFactory(String collectionID, Settings clientSettings, String pillarID,
-                                 String pillarDestination) {
-        super(collectionID, clientSettings, pillarDestination);
-        this.pillarID = pillarID;
+    public PutFileMessageFactory(
+            String collectionID, Settings clientSettings, String pillarID, String pillarDestination) {
+        super(collectionID, clientSettings, pillarID, pillarDestination);
     }
     
     public IdentifyPillarsForPutFileRequest createIdentifyPillarsForPutFileRequest(String fileId, Long fileSize) {

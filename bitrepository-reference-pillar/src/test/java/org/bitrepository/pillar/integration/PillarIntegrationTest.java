@@ -21,12 +21,15 @@
  */
 package org.bitrepository.pillar.integration;
 
+import java.util.Arrays;
+
 import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.client.conversation.mediator.ConversationMediatorManager;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.pillar.PillarSettingsProvider;
+import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.model.PillarFileManager;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
@@ -39,6 +42,9 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.testng.ITestContext;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 
@@ -58,7 +64,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             "testprops");
     public static final String TEST_CONFIGURATION_FILE_NAME = "pillar-integration-test.properties";
     protected static PillarIntegrationTestConfiguration testConfiguration;
-    private EmbeddedReferencePillar embeddedPillar;
+    private EmbeddedPillar embeddedPillar;
 
     protected CollectionTestHelper collectionHelper;
     protected PillarFileManager pillarFileManager;
@@ -78,11 +84,11 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
     @BeforeSuite(alwaysRun = true)
     @Override
-    public void initializeSuite() {
+    public void initializeSuite(ITestContext testContext) {
         testConfiguration =
                 new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
-        super.initializeSuite();
-        startEmbeddedReferencePillar();
+        super.initializeSuite(testContext);
+        startEmbeddedPillar(testContext);
         MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
         reloadMessageBus();
         clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
@@ -97,9 +103,24 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         super.shutdownSuite();
     }
 
-    protected void startEmbeddedReferencePillar() {
+    @AfterMethod(alwaysRun = true)
+    public void addFailureContextInfo(ITestResult result) {
+    }
+
+    /**
+     * Will start an embedded reference pillar if specified in the <code>pillar-integration-test.properties</code>.<p>
+     * The type of pillar (full or checksum) is baed on the test group used, eg. if the group is
+     * <code>checksumPillarTest</code> a checksum pillar is started, else a normal 'full' reference pillar is started.
+     * </p>
+     * @param testContext
+     */
+    protected void startEmbeddedPillar(ITestContext testContext) {
         if (testConfiguration.useEmbeddedPillar()) {
-            embeddedPillar = new EmbeddedReferencePillar(settingsForCUT);
+            if (Arrays.asList(testContext.getIncludedGroups()).contains(PillarTestGroups.CHECKSUM_PILLAR_TEST)) {
+                embeddedPillar = EmbeddedPillar.createChecksumPillar(settingsForCUT);
+            } else {
+                embeddedPillar = EmbeddedPillar.createReferencePillar(settingsForCUT);
+            }
         }
     }
 

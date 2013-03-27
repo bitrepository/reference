@@ -23,21 +23,20 @@ package org.bitrepository.pillar.integration;
 
 
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.pillar.Pillar;
+import org.bitrepository.pillar.cache.ChecksumDAO;
+import org.bitrepository.pillar.checksumpillar.ChecksumPillar;
 import org.bitrepository.pillar.referencepillar.ReferencePillar;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.service.LifeCycledService;
 
-public class EmbeddedReferencePillar implements LifeCycledService {
-    private final ReferencePillar pillar;
+public class EmbeddedPillar implements LifeCycledService {
+    private final Pillar pillar;
 
-    public EmbeddedReferencePillar(Settings pillarSettings) {
-        ReferencePillarDerbyDBTestUtils dbUtils = new ReferencePillarDerbyDBTestUtils(pillarSettings);
-        dbUtils.createEmptyDatabases();
-        MessageBus messageBus =
-                ProtocolComponentFactory.getInstance().getMessageBus(pillarSettings, new DummySecurityManager());
-        pillar = new ReferencePillar(messageBus, pillarSettings);
+    private EmbeddedPillar(Pillar pillar) {
+        this.pillar = pillar;
     }
 
     @Override
@@ -46,5 +45,22 @@ public class EmbeddedReferencePillar implements LifeCycledService {
     @Override
     public void shutdown() {
         pillar.close();
+    }
+
+    public static EmbeddedPillar createReferencePillar(Settings pillarSettings) {
+        MessageBus messageBus = initialize(pillarSettings);
+        return new EmbeddedPillar(new ReferencePillar(messageBus, pillarSettings));
+    }
+
+    public static EmbeddedPillar createChecksumPillar(Settings pillarSettings) {
+        MessageBus messageBus = initialize(pillarSettings);
+        return new EmbeddedPillar(new ChecksumPillar(messageBus, pillarSettings,
+                new ChecksumDAO(pillarSettings)));
+    }
+
+    private static MessageBus initialize(Settings pillarSettings) {
+        ReferencePillarDerbyDBTestUtils dbUtils = new ReferencePillarDerbyDBTestUtils(pillarSettings);
+        dbUtils.createEmptyDatabases();
+        return ProtocolComponentFactory.getInstance().getMessageBus(pillarSettings, new DummySecurityManager());
     }
 }

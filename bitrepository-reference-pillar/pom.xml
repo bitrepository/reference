@@ -125,7 +125,8 @@
         <version>2.13</version>
         <configuration>
           <suiteXmlFiles>
-            <suiteXmlFile>src/test/resources/testprops/pillar-test.xml</suiteXmlFile>
+            <suiteXmlFile>src/test/resources/testprops/full-pillar-test.xml</suiteXmlFile>
+            <!--<suiteXmlFile>src/test/resources/testprops/checksum-pillar-test.xml</suiteXmlFile>-->
           </suiteXmlFiles>
         </configuration>
         <executions>

@@ -55,6 +55,7 @@ public class ResponseDispatcher extends MessageDispatcher {
         response.setCollectionID(request.getCollectionID());
         response.setReplyTo(settings.getContributorDestinationID());
         response.setDestination(request.getReplyTo());
+        response.setTo(request.getFrom());
         dispatchMessage(response);
     }
 }

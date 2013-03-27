@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The checksum pillar. 
+ * The checksum pillar.
  */
 public class ChecksumPillar implements Pillar {
     /** The log.*/
@@ -64,7 +64,7 @@ public class ChecksumPillar implements Pillar {
         this.messageBus = messageBus;
         this.cache = refCache;
         
-        log.info("Starting the checksum pillar!");
+        log.info("Starting the ChecksumPillar");
         MessageHandlerContext context = new MessageHandlerContext(settings,
                 SettingsHelper.getPillarCollections(settings.getComponentID(), settings.getCollections()),
             new ResponseDispatcher(settings, messageBus),
@@ -73,7 +73,7 @@ public class ChecksumPillar implements Pillar {
                 settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase())));
         mediator = new ChecksumPillarMediator(messageBus, context, cache);
         mediator.start();
-        log.info("ReferencePillar started!");
+        log.info("ChecksumPillar started!");
     }
     
     /**
@@ -83,6 +83,7 @@ public class ChecksumPillar implements Pillar {
         try {
             mediator.close();
             messageBus.close();
+            log.info("ChecksumPillar stopped");
         } catch (JMSException e) {
             log.warn("Could not close the message bus properly.", e);
         }

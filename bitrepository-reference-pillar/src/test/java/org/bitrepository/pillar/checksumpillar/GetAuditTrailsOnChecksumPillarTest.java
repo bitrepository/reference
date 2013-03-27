@@ -152,17 +152,11 @@ public class GetAuditTrailsOnChecksumPillarTest extends ChecksumPillarTest {
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
         progressResponse = clientReceiver.waitForMessage(GetAuditTrailsProgressResponse.class);
-        Assert.assertEquals(progressResponse, msgFactory.createGetAuditTrailsProgressResponse(getComponentID(), 
-                request.getCorrelationID(), pillarDestinationId, progressResponse.getResponseInfo(), 
-                null, clientDestinationId));
         Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
         finalResponse = clientReceiver.waitForMessage(GetAuditTrailsFinalResponse.class);
-        Assert.assertEquals(finalResponse, msgFactory.createGetAuditTrailsFinalResponse(getComponentID(), 
-                request.getCorrelationID(), pillarDestinationId, finalResponse.getResponseInfo(), 
-                finalResponse.getResultingAuditTrails(), clientDestinationId));
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().size(), 2);
         Assert.assertFalse(finalResponse.isPartialResult());
