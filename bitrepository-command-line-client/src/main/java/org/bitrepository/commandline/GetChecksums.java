@@ -32,15 +32,12 @@ import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.client.eventhandler.OperationEvent;
-import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.clients.PagingGetChecksumsClient;
 import org.bitrepository.commandline.output.DefaultOutputHandler;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.outputformatter.GetChecksumsInfoFormatter;
 import org.bitrepository.commandline.outputformatter.GetChecksumsOutputFormatter;
 import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
-import org.bitrepository.commandline.utils.CompleteEventAwaiter;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.ChecksumUtils;
@@ -208,8 +205,9 @@ public class GetChecksums {
         if(cmdHandler.hasOption(Constants.PILLAR_ARG)) {
             return Arrays.asList(cmdHandler.getOptionValue(Constants.PILLAR_ARG));
         }
-        
-        return new ArrayList<String>(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+        int collectionIDIndex = settings.getRepositorySettings().getCollections().getCollection().indexOf(getCollectionID());
+        return new ArrayList<String>(settings.getRepositorySettings().getCollections().getCollection()
+                .get(collectionIDIndex).getPillarIDs().getPillarID());
     }
     
     private long getTimeout() {

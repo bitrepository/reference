@@ -159,8 +159,9 @@ public class GetFileIDs {
         if(cmdHandler.hasOption(Constants.PILLAR_ARG)) {
             return Arrays.asList(cmdHandler.getOptionValue(Constants.PILLAR_ARG));
         }
-        
-        return new ArrayList<String>(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+        int collectionIDIndex = settings.getRepositorySettings().getCollections().getCollection().indexOf(getCollectionID());
+        return new ArrayList<String>(settings.getRepositorySettings().getCollections().getCollection()
+                .get(collectionIDIndex).getPillarIDs().getPillarID());
     }
     
     private long getTimeout() {
