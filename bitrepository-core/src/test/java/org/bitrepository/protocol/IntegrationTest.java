@@ -42,6 +42,7 @@ import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
 import org.bitrepository.protocol.fileexchange.HttpServerConnector;
 import org.bitrepository.protocol.http.EmbeddedHttpServer;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
@@ -258,8 +259,10 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * Shutdown the message bus.
      */
     private void teardownMessageBus() {
+        MessageBusManager.clear();
         try {
             messageBus.close();
+            messageBus = null;
         } catch (JMSException e) {
             throw new RuntimeException(e);
         }
@@ -267,6 +270,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         if(broker != null) {
             try {
                 broker.stop();
+                broker = null;
             } catch (Exception e) {
                 // No reason to pollute the test output with this
             }

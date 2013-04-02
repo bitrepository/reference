@@ -26,7 +26,7 @@ LOGBACK="-Dlogback.configurationFile=testprops/logback.xml" #configuration direc
 CONFDIR="conf"
 KEYFILE="conf/client-01.pem" #key file
 JAVA="java"
-TEST_FILE="testprops/pillar-test.xml"
+TEST_FILE="testprops/full-pillar-test.xml"
 JAVA_OPTS="-classpath ..:testprops/::lib/* org.testng.TestNG"
 #DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=11111"
 

@@ -84,4 +84,11 @@ public final class MessageBusManager {
     public static void injectCustomMessageBus(String name, MessageBus messageBus) {
         messageBusMap.put(name, messageBus);
     }
+
+    /**
+     * Can be used to clear the current messagebuses, eg. new messagebuses will be created on access.
+     */
+    public static void clear() {
+        messageBusMap.clear();
+    }
 }
