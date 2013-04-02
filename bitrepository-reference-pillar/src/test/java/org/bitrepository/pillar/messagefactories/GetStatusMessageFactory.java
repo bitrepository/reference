@@ -24,98 +24,25 @@
  */
 package org.bitrepository.pillar.messagefactories;
 
-import java.util.UUID;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositoryelements.ResultingStatus;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
-public class GetStatusMessageFactory extends ClientTestMessageFactory {
-    private final Settings settingsForTestClient;
+public class GetStatusMessageFactory extends PillarTestMessageFactory {
 
-    public GetStatusMessageFactory(Settings settingsForTestClient) {
-        super(settingsForTestClient.getComponentID());
-        this.settingsForTestClient = settingsForTestClient;
+    public GetStatusMessageFactory(
+            String collectionID, Settings clientSettings, String pillarID, String pillarDestination) {
+        super(collectionID, clientSettings, pillarID, pillarDestination);
     }
-    
-    public IdentifyContributorsForGetStatusRequest createIdentifyContributorsForGetStatusRequest( 
-            String auditTrail, String from, String replyTo) {
+    public  IdentifyContributorsForGetStatusRequest createIdentifyContributorsForGetStatusRequest() {
         IdentifyContributorsForGetStatusRequest res = new IdentifyContributorsForGetStatusRequest();
-        initializeMessageDetails(res);
-        res.setAuditTrailInformation(auditTrail);
-        res.setCorrelationID(getNewCorrelationID());
-        res.setFrom(from);
-        res.setReplyTo(replyTo);
-        res.setDestination(settingsForTestClient.getCollectionDestination());
+        initializeIdentifyRequest(res);
         return res;
     }
 
-    public IdentifyContributorsForGetStatusResponse createIdentifyContributorsForGetStatusResponse(
-            String contributorId, String correlationId, String replyTo, ResponseInfo responseInfo, 
-            TimeMeasureTYPE timeToDeliver, String toTopic) {
-        IdentifyContributorsForGetStatusResponse res = new IdentifyContributorsForGetStatusResponse();
-        initializeMessageDetails(res);
-        res.setContributor(contributorId);
-        res.setCorrelationID(correlationId);
-        res.setFrom(contributorId);
-        res.setReplyTo(replyTo);
-        res.setResponseInfo(responseInfo);
-        res.setTimeToDeliver(timeToDeliver);
-        res.setDestination(toTopic);
-        return res;
-    }
-    
-    public GetStatusRequest createGetStatusRequest(String auditTrail, String contributorId, String correlationId, 
-            String from, String replyTo, String toTopic) {
+    public GetStatusRequest createGetStatusRequest() {
         GetStatusRequest res = new GetStatusRequest();
-        initializeMessageDetails(res);
-        res.setAuditTrailInformation(auditTrail);
-        res.setContributor(contributorId);
-        res.setCorrelationID(correlationId);
-        res.setFrom(from);
-        res.setReplyTo(replyTo);
-        res.setDestination(toTopic);
+        initializeOperationRequest(res);
         return res;
-    }
-
-    public GetStatusProgressResponse createGetStatusProgressResponse(String contributorId, String correlationId, 
-            String replyTo, ResponseInfo responseInfo, String toTopic) {
-        GetStatusProgressResponse res = new GetStatusProgressResponse();
-        initializeMessageDetails(res);
-        res.setContributor(contributorId);
-        res.setCorrelationID(correlationId);
-        res.setFrom(contributorId);
-        res.setReplyTo(replyTo);
-        res.setResponseInfo(responseInfo);
-        res.setDestination(toTopic);
-        return res;
-    }
-
-    public GetStatusFinalResponse createGetStatusFinalResponse(String contributorId, String correlationId, 
-            String replyTo, ResponseInfo responseInfo, ResultingStatus status, String toTopic) {
-        GetStatusFinalResponse res = new GetStatusFinalResponse();
-        initializeMessageDetails(res);
-        res.setContributor(contributorId);
-        res.setCorrelationID(correlationId);
-        res.setFrom(contributorId);
-        res.setReplyTo(replyTo);
-        res.setResponseInfo(responseInfo);
-        res.setResultingStatus(status);
-        res.setDestination(toTopic);
-        return res;
-    }
-    
-    /**
-     * Method for generating new correlation IDs.
-     * @return A unique correlation id.
-     */
-    public String getNewCorrelationID() {
-        return UUID.randomUUID().toString();
     }
 }

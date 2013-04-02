@@ -31,12 +31,9 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsReq
 import org.bitrepository.common.settings.Settings;
 
 public class GetChecksumsMessageFactory extends PillarTestMessageFactory {
-    private final String pillarID;
-
     public GetChecksumsMessageFactory(String collectionID, Settings clientSettings, String pillarID,
                                       String pillarDestination) {
-        super(collectionID, clientSettings, pillarDestination);
-        this.pillarID = pillarID;
+        super(collectionID, clientSettings, pillarID, pillarDestination);
     }
 
     public IdentifyPillarsForGetChecksumsRequest createIdentifyPillarsForGetChecksumsRequest(ChecksumSpecTYPE csSpec, 

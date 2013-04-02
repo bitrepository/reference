@@ -39,8 +39,8 @@ public class GetChecksumTest extends PillarFunctionTest {
         //ToDo
     }
 
-    @Test ( groups = {"pillar-integration-test"} )
-    public void testMD5ChecksumsForAllFiles() throws NegativeResponseException {
+    @Test ( groups = {"fullPillarTest", "checksumPillarTest"} )
+    public void md5ChecksumsForAllFilesTest() throws NegativeResponseException {
         addDescription("Test the pillar support for MD5 type checksums");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
@@ -57,8 +57,8 @@ public class GetChecksumTest extends PillarFunctionTest {
         // ToDo implement this
     }
     
-    @Test ( groups = {"pillar-integration-test", "exclude-checksum-pillar"} )
-    public void testSHA1ChecksumsForAllFiles() throws NegativeResponseException {
+    @Test ( groups = {"fullPillarTest"} )
+    public void sha1ChecksumsForAllFilesTest() throws NegativeResponseException {
         addDescription("Test the pillar support for SHA1 type checksums");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
@@ -74,8 +74,8 @@ public class GetChecksumTest extends PillarFunctionTest {
         // ToDo implement this
     }
 
-    @Test ( groups = {"pillar-integration-test", "exclude-checksum-pillar"} )
-    public void testMD5SaltChecksumsForAllFiles() throws NegativeResponseException {
+    @Test ( groups = {"fullPillarTest"} )
+    public void md5SaltChecksumsForAllFilesTest() throws NegativeResponseException {
         addDescription("Test the pillar support for MD5 type checksums with a salt");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
@@ -92,8 +92,8 @@ public class GetChecksumTest extends PillarFunctionTest {
         // ToDo implement this
     }
     
-    @Test ( groups = {"pillar-integration-test", "exclude-checksum-pillar"} )
-    public void testSHA1SaltChecksumsForAllFiles() throws NegativeResponseException {
+    @Test ( groups = {"fullPillarTest"} )
+    public void sha1SaltChecksumsForAllFilesTest() throws NegativeResponseException {
         addDescription("Test the pillar support for SHA1 type checksums with a salt");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 

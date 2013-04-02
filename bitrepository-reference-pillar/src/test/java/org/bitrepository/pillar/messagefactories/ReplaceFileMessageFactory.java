@@ -48,12 +48,9 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.settings.Settings;
 
 public class ReplaceFileMessageFactory extends PillarTestMessageFactory {
-    private final String pillarID;
-    
     public ReplaceFileMessageFactory(String collectionID, Settings clientSettings, String pillarID,
                                      String pillarDestination) {
-        super(collectionID, clientSettings, pillarDestination);
-        this.pillarID = pillarID;
+        super(collectionID, clientSettings, pillarID, pillarDestination);
     }
     
     public IdentifyPillarsForReplaceFileRequest createIdentifyPillarsForReplaceFileRequest( 

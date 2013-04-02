@@ -21,14 +21,13 @@
  */
 package org.bitrepository.pillar.integration.func.putfile;
 
-import junit.framework.Assert;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.common.utils.TestFileHelper;
+import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.testng.annotations.BeforeMethod;
@@ -42,7 +41,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
         msgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
     }
 
-    @Test( groups = {"pillar-integration-test"})
+    @Test( groups = {"fullPillarTest"})
     public void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for putFile identification");
         addStep("Sending a putFile identification.",
@@ -64,14 +63,14 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
         Assert.assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
     }
 
-    @Test( groups = {"pillar-integration-test"})
-    public void fileExistsTest() {
-        addDescription("Verifies the exists of a file with the same ID is handled correctly");
-        addStep("Sending a putFile identification for a file already in the pillar.",
-                "The pillar under test should send a DUPLICATE_FILE_FAILURE response with the (default type) checksum " +
-                        "of the existing file.");
+    @Test( groups = {"checksumPillarTest"})
+    public void identificationTestForChecksumPillar() {
+        addDescription("Verifies the normal behaviour for putFile identification for a checksum pillar");
+        addStep("Sending a putFile identification.",
+                "The pillar under test should make a response with the correct elements. The only different from a " +
+                "full pillar is that the checksum pillar will respond with the default checksum spec.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
-                DEFAULT_FILE_ID, 0L);
+                NON_DEFAULT_FILE_ID, 0L);
         messageBus.sendMessage(identifyRequest);
 
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
@@ -79,13 +78,29 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
         Assert.assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID());
         Assert.assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID());
         Assert.assertEquals(receivedIdentifyResponse.getFrom(), getPillarID());
-        Assert.assertTrue(ChecksumUtils.areEqual(TestFileHelper.getDefaultFileChecksum(),
-                receivedIdentifyResponse.getChecksumDataForExistingFile()));
-        Assert.assertNull(receivedIdentifyResponse.getPillarChecksumSpec());
+        Assert.assertNull(receivedIdentifyResponse.getChecksumDataForExistingFile());
+        Assert.assertEquals(receivedIdentifyResponse.getPillarChecksumSpec().getChecksumType(),
+                ChecksumUtils.getDefault(settingsForCUT).getChecksumType());
         Assert.assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.DUPLICATE_FILE_FAILURE);
+                ResponseCode.IDENTIFICATION_POSITIVE);
         Assert.assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
+    }
+
+    @Test( groups = {"fullPillarTest", "checksumPillarTest"})
+    public void fileExistsTest() {
+        addDescription("Verifies the exists of a file with the same ID is handled correctly");
+        addStep("Sending a putFile identification for a file already in the pillar.",
+                "The pillar under test should send a DUPLICATE_FILE_FAILURE response with the (default type) CHECKSUM " +
+                        "of the existing file.");
+        IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
+                DEFAULT_FILE_ID, 0L);
+        messageBus.sendMessage(identifyRequest);
+
+        IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
+                IdentifyPillarsForPutFileResponse.class);
+        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+                ResponseCode.DUPLICATE_FILE_FAILURE);
     }
 
     @Override

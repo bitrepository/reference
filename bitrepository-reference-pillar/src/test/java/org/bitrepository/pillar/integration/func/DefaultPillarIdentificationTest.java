@@ -30,7 +30,7 @@ import org.testng.annotations.Test;
 public abstract class DefaultPillarIdentificationTest extends DefaultPillarMessagingTest {
 
     @Test( groups = {"pillar-integration-test"})
-    public void irrelevantCollection() {
+    public void irrelevantCollectionTest() {
         addDescription("Verifies identification works correctly for a collection not defined for the pillar");
         addStep("Sending a putFile identification with a irrelevant collectionID. eg. the " +
                 " pillar is not part of the collection",

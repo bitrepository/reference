@@ -91,7 +91,7 @@ public class CommandLineArgumentsHandler {
         
         Option privateKeyOption = new Option(Constants.PRIVATE_KEY_ARG, true, "The path to the file containing "
                 + "the private key.");
-        privateKeyOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);        
+        privateKeyOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);        
         options.addOption(privateKeyOption);
     }
     
@@ -160,7 +160,7 @@ public class CommandLineArgumentsHandler {
     public BasicSecurityManager loadSecurityManager(Settings settings) {
         ArgumentValidator.checkNotNull(settings, "Settings settings");
         ensureThatCmdHasBeenInitialised();
-        String privateKeyFile = cmd.getOptionValue(Constants.PRIVATE_KEY_ARG);
+        String privateKeyFile = cmd.getOptionValue(Constants.PRIVATE_KEY_ARG, "");
         
         PermissionStore permissionStore = new PermissionStore();
         MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);

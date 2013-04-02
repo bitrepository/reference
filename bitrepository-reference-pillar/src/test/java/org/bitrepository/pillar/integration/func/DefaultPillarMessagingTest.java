@@ -35,7 +35,7 @@ import org.testng.annotations.Test;
 public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
 
     @Test( groups = {"pillar-integration-test"})
-    public void missingCollectionID() {
+    public void missingCollectionIDTest() {
         addDescription("Verifies the a missing collectionID in the IdentifyRequest is rejected");
         addStep("Sending a IdentifyRequest without a collectionID.",
                 "The pillar should send a REQUEST_NOT_UNDERSTOOD_FAILURE Response.");
@@ -49,9 +49,9 @@ public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
     }
 
     @Test( groups = {"pillar-integration-test"})
-    public void otherCollection() {
-        addDescription("Verifies identification works correctly for a second collection defined at the pillar");
-        addStep("Sending a putFile identification with a non default collectionID (not the first collection) where " +
+    public void otherCollectionTest() {
+        addDescription("Verifies identification works correctly for a second collection defined for pillar");
+        addStep("Sending a identify request with a non-default collectionID (not the first collection) where " +
                 "the pillar is part of",
                 "The pillar under test should make a positive response");
         MessageRequest request = createRequest();

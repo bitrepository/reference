@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitrepository Reference Pillar
+ * Bitrepository Integrity Service
  * %%
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -19,11 +19,10 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 package org.bitrepository.pillar;
 
-public interface Pillar {
-    /**
-     * Shutdown the Pillar.
-     */
-    public void close();
+public class PillarTestGroups {
+    public static final String CHECKSUM_PILLAR_TEST = "checksumPillarTest";
+    public static final String FULL_PILLAR_TEST = "fullPillarTest";
 }

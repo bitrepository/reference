@@ -24,6 +24,7 @@ package org.bitrepository.pillar.integration.perf;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.pillar.integration.CollectionTestHelper;
@@ -33,6 +34,7 @@ import org.bitrepository.pillar.integration.perf.metrics.MetricAppender;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
+import org.testng.ITestContext;
 import org.testng.annotations.BeforeSuite;
 
 public class PillarPerformanceTest extends PillarIntegrationTest {
@@ -41,8 +43,8 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
 
     @BeforeSuite
     @Override
-    public void initializeSuite() {
-        super.initializeSuite();
+    public void initializeSuite(ITestContext testContext) {
+        super.initializeSuite(testContext);
         defineMetricAppenders();
         initializeCollectionHelper();
     }

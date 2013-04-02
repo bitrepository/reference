@@ -49,6 +49,7 @@ import org.jaccept.gui.ComponentTestFrame;
 import org.jaccept.structure.ExtendedTestCase;
 import org.jaccept.testreport.ReportGenerator;
 import org.slf4j.LoggerFactory;
+import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
@@ -90,7 +91,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected String testMethodName;
 
     @BeforeSuite(alwaysRun = true)
-    public void initializeSuite() {
+    public void initializeSuite(ITestContext testContext) {
         settingsForCUT = loadSettings(getComponentID());
         settingsForTestClient = loadSettings("TestSuiteInitialiser");
         makeUserSpecificSettings(settingsForCUT);
@@ -165,6 +166,13 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      */
     protected void afterMethodVerification() {
         receiverManager.checkNoMessagesRemainInReceivers();
+    }
+
+    /**
+     * Purges all messages from the receivers.
+     */
+    protected void clearReceivers() {
+        receiverManager.clearMessagesInReceivers();
     }
     /**
      *  May be overridden by concrete tests wishing to do stuff. Remember to call super if this is overridden.
@@ -277,11 +285,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
             server = new EmbeddedHttpServer();
             server.start();
         }
-        // The commented line below is meant to separate different test runs into separate folders on the server. 
-        // The current challenge is how to do this programatically. MSS tried Apache JackRabbit, but this involved a 
-        // lot of additional dependencies which caused inconsistencies in the dependency model (usage of incompatible 
-        // SLJ4J API 1.5 and 1.6)
-        //config.setHttpServerPath("/dav/" + System.getProperty("user.name") + "/");
         httpServer = new HttpServerConnector(httpServerConfiguration, testEventManager);
         httpServer.clearFiles();
     }

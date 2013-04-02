@@ -63,7 +63,7 @@ public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
                 DEFAULT_AUDITINFORMATION, DEFAULT_FILE_ID, getPillarID(), clientDestinationId);
         messageBus.sendMessage(identifyRequest);
         
-        addStep("Retrieve and validate the response from the checksum pillar.", 
+        addStep("Retrieve and validate the response from the checksum pillar.",
                 "The checksum pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
@@ -85,14 +85,10 @@ public class GetFileOnChecksumPillarTest extends ChecksumPillarTest {
                 pillarDestinationId);
         messageBus.sendMessage(getRequest);
         
-        addStep("Retrieve and validate the final response from the checksum pillar.", 
+        addStep("Retrieve and validate the final response from the checksum pillar.",
                 "The checksum pillar should reject the operation.");
         GetFileFinalResponse receivedFinalResponse = clientReceiver.waitForMessage(
                 GetFileFinalResponse.class);
-        Assert.assertEquals(receivedFinalResponse, 
-                msgFactory.createGetFileFinalResponse(getRequest.getCorrelationID(), 
-                        receivedFinalResponse.getFileAddress(), DEFAULT_FILE_ID, filePart, getPillarID(), pillarDestinationId,
-                        receivedFinalResponse.getResponseInfo(), clientDestinationId));
         Assert.assertEquals(receivedFinalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.REQUEST_NOT_SUPPORTED);
         alarmReceiver.waitForMessage(AlarmMessage.class);

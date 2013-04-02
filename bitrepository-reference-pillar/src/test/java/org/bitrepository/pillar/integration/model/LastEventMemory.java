@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitrepository Reference Pillar
+ * Bitrepository Integrity Service
  * %%
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -19,11 +19,17 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar;
 
-public interface Pillar {
-    /**
-     * Shutdown the Pillar.
-     */
-    public void close();
+package org.bitrepository.pillar.integration.model;
+
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.OperationEvent;
+
+public class LastEventMemory implements EventHandler {
+    private OperationEvent lastEvent;
+
+    @Override
+    public void handleEvent(OperationEvent event) {
+        lastEvent = event;
+    }
 }

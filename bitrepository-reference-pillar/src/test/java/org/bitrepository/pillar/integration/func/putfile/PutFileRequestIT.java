@@ -52,32 +52,16 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
         msgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
     }
 
-    @Test( groups = {"pillar-integration-test"})
-    public void normalPutFile() {
+    @Test( groups = {"fullPillarTest", "checksumPillarTest"})
+    public void normalPutFileTest() {
         addDescription("Tests a normal PutFile sequence");
-        addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID(), "");
+        addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID(),
+                "The pillar should generate a OPERATION_ACCEPTED_PROGRESS progress response followed by a " +
+                "OPERATION_COMPLETED final response");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(
                 TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_DOWNLOAD_FILE_ADDRESS, testSpecificFileID, DEFAULT_FILE_SIZE);
         messageBus.sendMessage(putRequest);
 
-        addStep("Await the FinalResponse", "Check all the parameteres are correct.");
-        PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
-        Assert.assertNotNull(finalResponse);
-        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-        Assert.assertEquals(finalResponse.getCorrelationID(), putRequest.getCorrelationID());
-        Assert.assertEquals(finalResponse.getFrom(), getPillarID());
-        Assert.assertEquals(finalResponse.getPillarID(), getPillarID());
-    }
-
-    @Test( groups = {"pillar-integration-test"})
-    public void operationAcceptedProgressResponse() {
-        addDescription("Tests that a pillar sends a progress response after receiving a request");
-        addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID(), "");
-        PutFileRequest putRequest = msgFactory.createPutFileRequest(
-                TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_DOWNLOAD_FILE_ADDRESS, testSpecificFileID, DEFAULT_FILE_SIZE);
-        messageBus.sendMessage(putRequest);
-
-        addStep("Await the ProgressResponse", "Check all the parameteres are correct.");
         PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class);
         Assert.assertNotNull(progressResponse);
         Assert.assertEquals(progressResponse.getCorrelationID(), putRequest.getCorrelationID());
@@ -86,9 +70,12 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
         Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.OPERATION_ACCEPTED_PROGRESS);
 
-        addStep("Await the FinalResponse", "");
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         Assert.assertNotNull(finalResponse);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        Assert.assertEquals(finalResponse.getCorrelationID(), putRequest.getCorrelationID());
+        Assert.assertEquals(finalResponse.getFrom(), getPillarID());
+        Assert.assertEquals(finalResponse.getPillarID(), getPillarID());
     }
 
     @Override

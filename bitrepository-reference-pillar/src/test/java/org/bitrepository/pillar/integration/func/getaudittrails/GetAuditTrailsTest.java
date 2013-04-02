@@ -39,9 +39,9 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         settingsForTestClient.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().add(getPillarID());
     }
     
-    @Test ( groups = {"pillar-integration-test"} )
+    @Test ( groups = {"fullPillarTest", "checksumPillarTest"} )
     public void eventSortingTest() throws NegativeResponseException{
-        addDescription("Test whether the checksum result is sorted oldest to newest.");
+        addDescription("Test whether the CHECKSUM result is sorted oldest to newest.");
         addFixtureSetup("Ensure at least two files are present on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
@@ -58,7 +58,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         }
     }
 
-    @Test ( groups = {"pillar-integration-test"} )
+    @Test ( groups = {"fullPillarTest", "checksumPillarTest"} )
     public void maxNumberOfResultTest() {
         addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter.");
         addFixtureSetup("Ensure at least two files are present on the pillar");
@@ -78,7 +78,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
                 "The returned event wasn't equal to the first event");
     }
     
-    @Test ( groups = {"pillar-integration-test"} )
+    @Test ( groups = {"fullPillarTest", "checksumPillarTest"} )
     public void minSequenceNumberTest() {
         addDescription("Test the pillar support for only retrieving events with sequence number higher than the " +
                 "provided MinSequenceNumber" +
@@ -93,7 +93,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
                 "The size of the returned list is only " + originalAuditTrailEventList.size() + ", " +
                         "should be at least 2");
         
-        addStep("Request audit events with MinSequenceNumber set to the SequenceNumber of the first event checksum",
+        addStep("Request audit events with MinSequenceNumber set to the SequenceNumber of the first event CHECKSUM",
                 "The full list of audit events should be returned.");
         int smallestSequenceNumber = originalAuditTrailEventList.get(0).getSequenceNumber().intValue();
         AuditTrailQuery firstSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
@@ -124,7 +124,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
                 "Non-empty event list returned with laterThanLastSequenceNumberQuery: " + limitedEventList);
     }
     
-    @Test ( groups = {"pillar-integration-test"} )
+    @Test ( groups = {"fullPillarTest", "checksumPillarTest"} )
     public void maxSequenceNumberTest() {
         addDescription("Test the pillar support for only retrieving audit event with SequenceNumbers lower than " +
                 "MaxSequenceNumber.");
@@ -137,7 +137,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
                 "The size of the returned list is only " + originalAuditTrailEventList.size() + ", " +
                         "should be at least 2");
 
-        addStep("Request audit events with MaxSequenceNumber set to the SequenceNumber of the last event checksum",
+        addStep("Request audit events with MaxSequenceNumber set to the SequenceNumber of the last event CHECKSUM",
                 "The full list of audit events should be returned.");
         int largestSequenceNumber = originalAuditTrailEventList.get(originalAuditTrailEventList.size()-1)
                 .getSequenceNumber().intValue();

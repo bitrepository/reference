@@ -23,10 +23,12 @@ package org.bitrepository.pillar.integration.func;
 
 import java.util.Arrays;
 import java.util.Collection;
+
 import org.bitrepository.common.exceptions.OperationFailedException;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.protocol.bus.MessageReceiver;
+import org.testng.ITestContext;
 import org.testng.annotations.BeforeSuite;
 
 /**
@@ -39,8 +41,8 @@ public abstract class PillarFunctionTest extends PillarIntegrationTest {
 
     @BeforeSuite(alwaysRun = true)
     @Override
-    public void initializeSuite() {
-        super.initializeSuite();
+    public void initializeSuite(ITestContext testContext) {
+        super.initializeSuite(testContext);
         putDefaultFile();
     }
 

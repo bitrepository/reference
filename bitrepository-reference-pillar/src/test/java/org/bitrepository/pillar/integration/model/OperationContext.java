@@ -1,6 +1,6 @@
 /*
  * #%L
- * Bitrepository Reference Pillar
+ * Bitrepository Integrity Service
  * %%
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -19,11 +19,30 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar;
 
-public interface Pillar {
-    /**
-     * Shutdown the Pillar.
-     */
-    public void close();
+package org.bitrepository.pillar.integration.model;
+
+import org.bitrepository.protocol.OperationType;
+
+public class OperationContext  {
+    private OperationType operationType;
+
+    private String conversationID;
+
+    public OperationType getOperationType() {
+        return operationType;
+    }
+
+    public void setOperationType(OperationType operationType) {
+        this.operationType = operationType;
+    }
+
+
+    public String getConversationID() {
+        return conversationID;
+    }
+
+    public void setConversationID(String conversationID) {
+        this.conversationID = conversationID;
+    }
 }

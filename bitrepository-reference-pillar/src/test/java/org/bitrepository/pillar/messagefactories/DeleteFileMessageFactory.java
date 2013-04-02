@@ -31,12 +31,9 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileReque
 import org.bitrepository.common.settings.Settings;
 
 public class DeleteFileMessageFactory extends PillarTestMessageFactory {
-    private final String pillarID;
-    
-    public DeleteFileMessageFactory(String collectionID, Settings clientSettings, String pillarID,
-                                    String pillarDestination) {
-        super(collectionID, clientSettings, pillarDestination);
-        this.pillarID = pillarID;
+    public DeleteFileMessageFactory(
+            String collectionID, Settings clientSettings, String pillarID, String pillarDestination) {
+        super(collectionID, clientSettings, pillarID, pillarDestination);
     }
 
     public IdentifyPillarsForDeleteFileRequest createIdentifyPillarsForDeleteFileRequest(String fileId) {
