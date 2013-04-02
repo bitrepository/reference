@@ -22,16 +22,15 @@
 <configuration scan="true">
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
     <file>log/logfile.log</file>
-    <append>true</append>
     <encoder>
-      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36}GetChecksumsFinalResponse  - %msg%n</pattern>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36}  - %msg%n</pattern>
     </encoder>
   </appender>
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <layout class="ch.qos.logback.classic.PatternLayout">
+    <encoder>
       <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
-    </layout>
+    </encoder>
   </appender>
 
   <root level="DEBUG">
