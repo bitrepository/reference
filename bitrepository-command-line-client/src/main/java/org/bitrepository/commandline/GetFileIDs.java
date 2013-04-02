@@ -85,9 +85,8 @@ public class GetFileIDs {
         output.debug("Instantiating the GetFileIDsClient");
         GetFileIDsClient client = AccessComponentFactory.getInstance().createGetFileIDsClient(settings, 
                 securityManager, COMPONENT_ID);
-        OutputHandler outputHandler = new DefaultOutputHandler(getClass());
-        GetFileIDsOutputFormatter outputFormatter = new GetFileIDsInfoFormatter(outputHandler);
-        pagingClient = new PagingGetFileIDsClient(client, getTimeout(), outputFormatter, outputHandler); 
+        GetFileIDsOutputFormatter outputFormatter = new GetFileIDsInfoFormatter(output);
+        pagingClient = new PagingGetFileIDsClient(client, getTimeout(), outputFormatter, output); 
     }
     
     /**

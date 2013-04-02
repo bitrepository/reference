@@ -21,7 +21,10 @@
  */
 package org.bitrepository.commandline;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.cli.Option;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.ContributorQuery;
@@ -31,8 +34,11 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.commandline.clients.PagingGetChecksumsClient;
 import org.bitrepository.commandline.output.DefaultOutputHandler;
 import org.bitrepository.commandline.output.OutputHandler;
+import org.bitrepository.commandline.outputformatter.GetChecksumsInfoFormatter;
+import org.bitrepository.commandline.outputformatter.GetChecksumsOutputFormatter;
 import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
 import org.bitrepository.commandline.utils.CompleteEventAwaiter;
 import org.bitrepository.common.settings.Settings;
@@ -63,7 +69,7 @@ public class GetChecksums {
     /** The security manager.*/
     private final SecurityManager securityManager;
     /** The client for performing the GetChecksums operation.*/
-    private final GetChecksumsClient client;
+    private final PagingGetChecksumsClient pagingClient;
     /** The handler for the command line arguments.*/
     private final CommandLineArgumentsHandler cmdHandler;
     
@@ -86,9 +92,10 @@ public class GetChecksums {
         securityManager = cmdHandler.loadSecurityManager(settings);
         
         output.debug("Instantiating the GetChecksumsClient");
-        client = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, 
-                COMPONENT_ID);
-
+        GetChecksumsClient client = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, 
+                securityManager, COMPONENT_ID);
+        GetChecksumsOutputFormatter outputFormatter = new GetChecksumsInfoFormatter(output);
+        pagingClient = new PagingGetChecksumsClient(client, getTimeout(), outputFormatter, output); 
     }
     
     /**
@@ -130,32 +137,13 @@ public class GetChecksums {
      */
     public void performOperation() {
         output.debug("Performing the GetChecksums operation.");
-        OperationEvent finalEvent = performConversation();
-        output.debug("Results of the GetChecksums operation: " + finalEvent);
-        if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
+        Boolean success = pagingClient.getChecksums(getCollectionID(), getFileIDs(), 
+                getPillarIDs(), getRequestChecksumSpec());
+        if(success) {
             System.exit(Constants.EXIT_SUCCESS);
         } else {
             System.exit(Constants.EXIT_OPERATION_FAILURE);
         }
-    }
-    
-    /**
-     * Initiates the operation and waits for the results.
-     * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
-     */
-    private OperationEvent performConversation() {
-        String fileid = getFileIDs();
-        ContributorQuery[] contributorQuerys = getContributorQuerys();
-        CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings, output);
-        
-        output.debug("Initiating the GetChecksums conversation");
-        ChecksumSpecTYPE checksumtype = getRequestChecksumSpec();
-        
-        client.getChecksums(getCollectionID(), contributorQuerys, fileid, checksumtype, null, eventHandler,
-                "Retrieving the checksum for '"
-                + fileid + "' from pillars '" + contributorQuerys + "'.");
-        
-        return eventHandler.getFinish();
     }
     
     /**
@@ -209,5 +197,23 @@ public class GetChecksums {
             res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
         }
         return res;
+    }
+    
+    /**
+     * Extract the pillar ids. If a specific pillar is given as argument, then it will be returned, but if no such
+     * argument has been given, then the list of all pillar ids are given.
+     * @return The list of pillars to request for the file ids.
+     */
+    private List<String> getPillarIDs() {
+        if(cmdHandler.hasOption(Constants.PILLAR_ARG)) {
+            return Arrays.asList(cmdHandler.getOptionValue(Constants.PILLAR_ARG));
+        }
+        
+        return new ArrayList<String>(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+    }
+    
+    private long getTimeout() {
+        return settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
+                + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
     }
 }
