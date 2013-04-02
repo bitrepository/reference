@@ -42,7 +42,6 @@ import org.bitrepository.alarm.AlarmService;
 import org.bitrepository.alarm.AlarmServiceFactory;
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
-import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.TimeUtils;
 import org.json.JSONArray;
@@ -101,7 +100,6 @@ public class RestAlarmService {
             @DefaultValue("10") @FormParam("maxAlarms") Integer maxAlarms,
             @DefaultValue("true") @FormParam ("oldestAlarmFirst") boolean oldestAlarmFirst) {
         JSONArray array = new JSONArray();
-        List<Alarm> alarmList = new ArrayList<Alarm>();
         Date from = makeDateObject(fromDate);
         Date to = makeDateObject(toDate);
         
