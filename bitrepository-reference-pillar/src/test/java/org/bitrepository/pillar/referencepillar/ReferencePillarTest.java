@@ -74,7 +74,6 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
         if(fileDir.exists()) {
             FileUtils.delete(fileDir);
         }
-        System.out.println("Creating pillar with: " + settingsForCUT.getRepositorySettings());
         createReferencePillar();
     }
 
