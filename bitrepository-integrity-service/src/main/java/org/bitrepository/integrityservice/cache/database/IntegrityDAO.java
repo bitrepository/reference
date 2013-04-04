@@ -353,13 +353,13 @@ public class IntegrityDAO {
             return;
         }
         
-        log.info("Removing the file id '" + fileId + "' from the files table.");
-        String removeFileIDSql = "DELETE FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ?";
-        DatabaseUtils.executeStatement(dbConnector, removeFileIDSql, fileId);
-        
         log.info("Removing the entries for the file with id '" + fileId + "' from the file info table.");
         String removeFileInfoEntrySql = "DELETE FROM " + FILE_INFO_TABLE + " WHERE " + FI_FILE_GUID + " = ?";
         DatabaseUtils.executeStatement(dbConnector, removeFileInfoEntrySql, guid);
+        
+        log.info("Removing the file id '" + fileId + "' from the files table.");
+        String removeFileIDSql = "DELETE FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ?";
+        DatabaseUtils.executeStatement(dbConnector, removeFileIDSql, fileId);
     }
     
     /**

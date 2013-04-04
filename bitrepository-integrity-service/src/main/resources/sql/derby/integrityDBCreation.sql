@@ -45,33 +45,6 @@ insert into tableversions ( tablename, version )
             values ( 'pillar', 1);
 
 --*************************************************************************--
--- Name:     fileinfo
--- Descr.:   The main table for containing the information about the files
---           on the different pillars.
--- Purpose:  Keeps track of the information connected to a specific file id
---           on a specific pillar.
--- Expected entry count: Very, very many.
---*************************************************************************--
-create table fileinfo (
-    guid bigint not null generated always as identity primary key,
-                                 -- The unique id for a specific file on a specific pillar.
-    file_guid bigint not null,   -- The guid for the file.
-    pillar_guid bigint not null, -- The guid for the pillar.
-    checksum varchar(100),       -- The checksum for the given file on the given pillar.
-    last_file_update timestamp,  -- The last time a 'GetFileIDs' for the fileinfo has been answered.
-    last_checksum_update timestamp,
-                                 -- The date for the latest checksum calculation.
-    file_state int,              -- The state of the file. 0 For EXISTING, 1 for MISSING, 
-                                 -- and everything else for UNKNOWN.
-    checksum_state int           -- Checksum integrity state. Either 0 for VALID, 1 for INCONSISTENT,
-                                 -- and everything else for UNKNOWN.
-);
-
-create index fileguidindex on fileinfo ( file_guid );
-create index filepillarindex on fileinfo ( file_guid, pillar_guid );
-create index checksumdateindex on fileinfo ( last_checksum_update );
-
---*************************************************************************--
 -- Name:     file
 -- Descr.:   Contains the information about the file.
 -- Purpose:  Keeps track of the names of the files within the system.
@@ -104,3 +77,36 @@ create table pillar (
 );
 
 create index pillarindex on pillar ( pillar_id );
+
+--*************************************************************************--
+-- Name:     fileinfo
+-- Descr.:   The main table for containing the information about the files
+--           on the different pillars.
+-- Purpose:  Keeps track of the information connected to a specific file id
+--           on a specific pillar.
+-- Expected entry count: Very, very many.
+--*************************************************************************--
+create table fileinfo (
+    guid bigint not null generated always as identity primary key,
+                                 -- The unique id for a specific file on a specific pillar.
+    file_guid bigint not null,   -- The guid for the file.
+    pillar_guid bigint not null, -- The guid for the pillar.
+    checksum varchar(100),       -- The checksum for the given file on the given pillar.
+    last_file_update timestamp,  -- The last time a 'GetFileIDs' for the fileinfo has been answered.
+    last_checksum_update timestamp,
+                                 -- The date for the latest checksum calculation.
+    file_state int,              -- The state of the file. 0 For EXISTING, 1 for MISSING, 
+                                 -- and everything else for UNKNOWN.
+    checksum_state int,           -- Checksum integrity state. Either 0 for VALID, 1 for INCONSISTENT,
+                                 -- and everything else for UNKNOWN.
+    FOREIGN KEY (file_guid) REFERENCES files(file_guid),
+                                 -- Foreign key constraint on file_guid, enforcing the presence of the referred id
+    FOREIGN KEY (pillar_guid) REFERENCES pillar(pillar_guid),
+                                 -- Foreign key constraint on pillar_guid, enforcing the presence of the referred id
+    UNIQUE (file_guid, pillar_guid)
+                                 -- Enforce that a file only can exist once on a pillar
+);
+
+create index fileguidindex on fileinfo ( file_guid );
+create index filepillarindex on fileinfo ( file_guid, pillar_guid );
+create index checksumdateindex on fileinfo ( last_checksum_update );
