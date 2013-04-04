@@ -60,7 +60,7 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
                 "A GetFileIDsProgressResponse should be sent to the client with correct attributes follow by " +
                 "a GetFileIDsFinalResponse.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
-                FileIDsUtils.getAllFileIDs(), DEFAULT_UPLOAD_FILE_ADDRESS);
+                FileIDsUtils.getAllFileIDs(), null);
         messageBus.sendMessage(getFileIDsRequest);
 
         addStep("Retrieve the ProgressResponse for the GetFileIDs request",
@@ -85,7 +85,7 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         Assert.assertEquals(finalResponse.getFrom(), getPillarID());
         Assert.assertEquals(finalResponse.getPillarID(), getPillarID());
         Assert.assertEquals(finalResponse.getReplyTo(), pillarDestination);
-        Assert.assertEquals(finalResponse.getResultingFileIDs().getResultAddress(), DEFAULT_UPLOAD_FILE_ADDRESS);
+        Assert.assertNull(finalResponse.getResultingFileIDs().getResultAddress());
     }
 
     @Test( groups = {"fullPillarTest", "checksumPillarTest"})
@@ -116,17 +116,16 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
     }
 
     @Test( groups = {"fullPillarTest", "checksumPillarTest"})
-    public void pillarGetFileIDsTestDeliveryThroughMessage() throws Exception {
+    public void pillarGetFileIDsTestDeliveryThroughUpload() throws Exception {
         addDescription("Test the case when the results should be delivered through the message .");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
-                FileIDsUtils.getAllFileIDs(), null);
+                FileIDsUtils.getAllFileIDs(), DEFAULT_UPLOAD_FILE_ADDRESS);
         messageBus.sendMessage(getFileIDsRequest);
 
         GetFileIDsFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileIDsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.OPERATION_COMPLETED);
-        Assert.assertNull(finalResponse.getResultingFileIDs().getResultAddress());
-        Assert.assertNotNull(finalResponse.getResultingFileIDs().getFileIDsData());
+        Assert.assertEquals(finalResponse.getResultingFileIDs().getResultAddress(), DEFAULT_UPLOAD_FILE_ADDRESS);
     }
 
     @Override
