@@ -6,7 +6,7 @@ import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.resultmodel.FileIDsResult;
 
 /**
- * Class to format client output. 
+ * Class to format GetFileIDs client output. 
  * Output format 'style' is 'info' i.e.
  * Tab separated columns with the columns: 
  * Count Size FileID 

@@ -5,6 +5,12 @@ import java.util.Collection;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.resultmodel.ChecksumResult;
 
+/**
+ * Class to format GetChecksums client output. 
+ * Output format 'style' is 'info' i.e.
+ * Tab separated columns with the columns: 
+ * Count Checksum FileID 
+ */
 public class GetChecksumsInfoFormatter implements GetChecksumsOutputFormatter {
 
     private final OutputHandler outputHandler;
