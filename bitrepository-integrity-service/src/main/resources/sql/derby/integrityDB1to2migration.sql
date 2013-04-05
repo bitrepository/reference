@@ -16,7 +16,7 @@ ALTER TABLE fileinfo (
 -- Add collections table. 
 CREATE TABLE collections (
     collection_guid BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    collection_id VARCHAR(255) NOT NULL,
+    collection_id VARCHAR(255) NOT NULL
 );
 
 CREATE INDEX collectionindex ON collections (collection_id);
