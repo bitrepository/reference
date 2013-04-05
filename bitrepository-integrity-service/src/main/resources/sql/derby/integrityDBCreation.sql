@@ -38,8 +38,8 @@ CREATE TABLE tableversions (
 );
 
 INSERT INTO tableversions (tablename, version) VALUES ('fileinfo', 2);
-INSERT INTO tableversions (tablename, version) VALUES ('files', 1);
-INSERT INTO tableversions (tablename, version) VALUES ('pillar', 1);
+INSERT INTO tableversions (tablename, version) VALUES ('files', 2);
+INSERT INTO tableversions (tablename, version) VALUES ('pillar', 2);
 INSERT INTO tableversions (tablename, version) VALUES ('collections' ,1);
 INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 2);
 
@@ -52,8 +52,9 @@ INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 2);
 CREATE TABLE collections (
     collection_guid BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
                                  -- The guid for a given file.
-    collection_id VARCHAR(255) NOT NULL
+    collection_id VARCHAR(255) NOT NULL,
                                  -- The id for the file.
+    UNIQUE (collection_id)
 );
 
 CREATE INDEX collectionindex ON collections (collection_id);
@@ -69,13 +70,14 @@ CREATE TABLE files (
                                  -- The guid for a given file.
     file_id VARCHAR(255) NOT NULL,
                                  -- The id for the file.
-    creation_date TIMESTAMP      -- The date for the creation of the file.
+    creation_date TIMESTAMP,      -- The date for the creation of the file.
                                  -- Or the time where it was first seen by
                                  -- the integrity client.
+    UNIQUE (file_id)
 );
 
-CREATE INDEX fileindex ON files ( file_id );
-CREATE INDEX filedateindex ON files ( file_id, creation_date );
+CREATE INDEX fileindex ON files (file_id);
+CREATE INDEX filedateindex ON files (file_id, creation_date);
 
 --*************************************************************************--
 -- Name:     pillar
@@ -86,11 +88,12 @@ CREATE INDEX filedateindex ON files ( file_id, creation_date );
 CREATE TABLE pillar (
     pillar_guid BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
                                  -- The GUID for the pillar.
-    pillar_id VARCHAR(100) NOT NULL
+    pillar_id VARCHAR(100) NOT NULL,
                                  -- The id of the pillar.
+    UNIQUE (pillar_id)
 );
 
-CREATE INDEX pillarindex ON pillar ( pillar_id );
+CREATE INDEX pillarindex ON pillar (pillar_id);
 
 --*************************************************************************--
 -- Name:     fileinfo
@@ -121,6 +124,6 @@ CREATE TABLE fileinfo (
                                  -- Enforce that a file only can exist once on a pillar
 );
 
-CREATE INDEX fileguidindex ON fileinfo ( file_guid );
-CREATE INDEX filepillarindex ON fileinfo ( file_guid, pillar_guid );
-CREATE INDEX checksumdateindex ON fileinfo ( last_checksum_update );
+CREATE INDEX fileguidindex ON fileinfo (file_guid);
+CREATE INDEX filepillarindex ON fileinfo (file_guid, pillar_guid);
+CREATE INDEX checksumdateindex ON fileinfo (last_checksum_update);
