@@ -42,7 +42,7 @@ public abstract class PagingEventHandler implements EventHandler {
     
     /**
      * Retrieves the final event when the operation finishes. The final event is awaited for 'timeout' amount 
-     * of milliseconds. If no final events has occurred, then an InterruptedException is thrown.
+     * of milliseconds. If no final events has occurred, then an IllegalStateException is thrown.
      * @return The final event.
      */
     public OperationEvent getFinish() {
