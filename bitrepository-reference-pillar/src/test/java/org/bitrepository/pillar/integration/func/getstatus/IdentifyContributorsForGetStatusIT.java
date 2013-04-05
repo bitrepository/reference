@@ -27,6 +27,7 @@ import java.lang.reflect.Method;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
+import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
 import org.testng.Assert;
@@ -41,7 +42,7 @@ public class IdentifyContributorsForGetStatusIT extends PillarFunctionTest {
         msgFactory = new GetStatusMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
     }
 
-    @Test( groups = {"fullPillarTest", "checksumPillarTest"})
+    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void normalGetStatusTest() {
         addDescription("Tests the GetStatus functionality of a pillar for the successful scenario.");
 

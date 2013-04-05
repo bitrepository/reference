@@ -27,6 +27,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.ChecksumUtils;
+import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
@@ -41,7 +42,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
         msgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
     }
 
-    @Test( groups = {"fullPillarTest"})
+    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST})
     public void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for putFile identification");
         addStep("Sending a putFile identification.",
@@ -63,7 +64,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
         Assert.assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
     }
 
-    @Test( groups = {"checksumPillarTest"})
+    @Test( groups = {PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void identificationTestForChecksumPillar() {
         addDescription("Verifies the normal behaviour for putFile identification for a checksum pillar");
         addStep("Sending a putFile identification.",
@@ -87,11 +88,11 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
         Assert.assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
     }
 
-    @Test( groups = {"fullPillarTest", "checksumPillarTest"})
+    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void fileExistsTest() {
         addDescription("Verifies the exists of a file with the same ID is handled correctly");
         addStep("Sending a putFile identification for a file already in the pillar.",
-                "The pillar under test should send a DUPLICATE_FILE_FAILURE response with the (default type) CHECKSUM " +
+                "The pillar under test should send a DUPLICATE_FILE_FAILURE response with the (default type) checksum " +
                         "of the existing file.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
                 DEFAULT_FILE_ID, 0L);

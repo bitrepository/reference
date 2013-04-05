@@ -20,17 +20,13 @@
  * #L%
  */
 
-package getstatus;
+package org.bitrepository.pillar.integration.func.getstatus;
 
 import java.lang.reflect.Method;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
+import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
@@ -44,12 +40,12 @@ public class GetStatusRequestIT extends PillarFunctionTest {
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest(Method method) throws Exception {
-        msgFactory = new GetStatusMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
+        msgFactory = new GetStatusMessageFactory(null, settingsForTestClient, getPillarID(), null);
         pillarDestination = lookupPillarDestination();
-        msgFactory = new GetStatusMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
+        msgFactory = new GetStatusMessageFactory(null, settingsForTestClient, getPillarID(), pillarDestination);
     }
 
-    @Test( groups = {"fullPillarTest", "checksumPillarTest"})
+    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void normalGetStatusTest() {
         addDescription("Tests the GetStatus functionality of a pillar for the successful scenario.");
 
@@ -95,6 +91,6 @@ public class GetStatusRequestIT extends PillarFunctionTest {
     public String lookupPillarDestination() {
         IdentifyContributorsForGetStatusRequest identifyRequest = msgFactory.createIdentifyContributorsForGetStatusRequest();
         messageBus.sendMessage(identifyRequest);
-        return clientReceiver.waitForMessage(IdentifyContributorsForGetStatusRequest.class).getReplyTo();
+        return clientReceiver.waitForMessage(IdentifyContributorsForGetStatusResponse.class).getReplyTo();
     }
 }

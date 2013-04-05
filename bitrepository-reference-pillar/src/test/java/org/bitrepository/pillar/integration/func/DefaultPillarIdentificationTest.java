@@ -25,11 +25,12 @@ package org.bitrepository.pillar.integration.func;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.pillar.PillarTestGroups;
 import org.testng.annotations.Test;
 
 public abstract class DefaultPillarIdentificationTest extends DefaultPillarMessagingTest {
 
-    @Test( groups = {"pillar-integration-test"})
+    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void irrelevantCollectionTest() {
         addDescription("Verifies identification works correctly for a collection not defined for the pillar");
         addStep("Sending a putFile identification with a irrelevant collectionID. eg. the " +

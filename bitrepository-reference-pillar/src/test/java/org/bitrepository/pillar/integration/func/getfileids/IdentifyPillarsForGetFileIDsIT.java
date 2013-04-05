@@ -28,6 +28,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRespo
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.FileIDsUtils;
+import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
 import org.bitrepository.pillar.messagefactories.GetFileIDsMessageFactory;
 import org.testng.Assert;
@@ -44,7 +45,7 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
         clearReceivers();
     }
 
-    @Test( groups = {"fullPillarTest", "checksumPillarTest"})
+    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for getFileIDs identification");
         addStep("Sending a identify request.",
@@ -70,7 +71,7 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
                 ResponseCode.IDENTIFICATION_POSITIVE);
     }
 
-    @Test( groups = {"fullPillarTest", "checksumPillarTest"})
+    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void nonExistingFileTest() {
         addDescription("Tests that the ChecksumPillar is able to reject a GetFileIDs requests for a file, which it " +
                        "does not have during the identification phase.");

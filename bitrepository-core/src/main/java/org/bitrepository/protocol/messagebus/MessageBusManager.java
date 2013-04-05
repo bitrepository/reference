@@ -26,16 +26,22 @@ package org.bitrepository.protocol.messagebus;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.jms.JMSException;
+
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The place to get message buses. Only one message bus is created for each collection ID.
  */
 public final class MessageBusManager {
     public static final String DEFAULT_MESSAGE_BUS = "Default message bus";
+    private static Logger log = LoggerFactory.getLogger(MessageBusManager.class);
 
     /**
      * Map of the loaded mediators for the different collectionsIDs.
@@ -87,8 +93,17 @@ public final class MessageBusManager {
 
     /**
      * Can be used to clear the current messagebuses, eg. new messagebuses will be created on access.
+     *
+     * All messagebusses will be closed.
      */
     public static void clear() {
         messageBusMap.clear();
+        for (MessageBus bus:messageBusMap.values()) {
+            try {
+                bus.close();
+            } catch (JMSException e) {
+                log.warn("Failed to close messagebus " + bus + " during clear()");
+            }
+        }
     }
 }

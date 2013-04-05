@@ -124,7 +124,8 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
         cache.addFileIDs(fileidsData1, TEST_PILLAR_1);
         cache.setFileMissing(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1));
         
-        addStep("Check whether all pillars have all the file ids", "Only one should contain the fileids, so it should return false");
+        addStep("Check whether all pillars have all the file ids",
+                "Only one should contain the fileids, so it should return false");
         MissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs());
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getMissingFiles().size(), 0);

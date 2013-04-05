@@ -25,13 +25,9 @@ import java.lang.reflect.Method;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
-import org.bitrepository.bitrepositorymessages.MessageRequest;
-import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.common.utils.FileIDsUtils;
+import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarOperationTest;
 import org.bitrepository.pillar.messagefactories.GetFileIDsMessageFactory;
 import org.testng.Assert;
@@ -52,7 +48,7 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         clearReceivers();
     }
 
-    @Test( groups = {"fullPillarTest", "checksumPillarTest"})
+    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void pillarGetFileIDsTestSuccessCase() throws Exception {
         addDescription("Tests the GetFileIDs functionality of the pillar for the successful scenario.");
 
@@ -88,7 +84,7 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         Assert.assertNull(finalResponse.getResultingFileIDs().getResultAddress());
     }
 
-    @Test( groups = {"fullPillarTest", "checksumPillarTest"})
+    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void pillarGetFileIDsTestFailedNoSuchFileInOperation() throws Exception {
         addDescription("Tests that the pillar is able to handle requests for a non existing file correctly during " +
                        "the operation phase.");
@@ -102,7 +98,7 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
     }
 
-    @Test( groups = {"fullPillarTest", "checksumPillarTest"})
+    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void pillarGetFileIDsTestBadDeliveryURL() throws Exception {
         addDescription("Test the case when the delivery URL is unaccessible.");
         String badURL = "http://localhost:61616/¾";
@@ -115,7 +111,7 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
                 ResponseCode.FILE_TRANSFER_FAILURE);
     }
 
-    @Test( groups = {"fullPillarTest", "checksumPillarTest"})
+    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void pillarGetFileIDsTestDeliveryThroughUpload() throws Exception {
         addDescription("Test the case when the results should be delivered through the message .");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(

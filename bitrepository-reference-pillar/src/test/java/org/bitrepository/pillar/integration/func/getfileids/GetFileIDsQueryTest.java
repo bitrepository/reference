@@ -23,17 +23,20 @@ package org.bitrepository.pillar.integration.func.getfileids;
 
 import java.util.GregorianCalendar;
 import java.util.List;
+
 import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.testng.annotations.Test;
 
 public class GetFileIDsQueryTest extends PillarFunctionTest {
 
-    @Test ( groups = {"fullPillarTest", "checksumPillarTest"} )
+    @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
     public void fileidsSortingTest() {
         addDescription("Test whether the file id result is sorted oldest to newest.");
         addFixtureSetup("Ensure at least two files are present on the pillar");
@@ -54,7 +57,7 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
         }
     }
 
-    @Test ( groups = {"fullPillarTest", "checksumPillarTest"} )
+    @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
     public void maxNumberOfResultTest() {
         addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter.");
         addFixtureSetup("Ensure at least two files are present on the pillar");
@@ -75,8 +78,8 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
                 "The returned file id wasn't equal to the oldest file id");
     }
 
-    @Test ( groups = {"fullPillarTest"} )
-    //ChecksumPillarTest Fails for the current checksum pillar, see BITMAG-.
+    @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST} )
+    //ChecksumPillarTest Fails for the current checksum pillar, see BITMAG-856.
     public void minTimeStampTest() {
         addDescription("Test the pillar support for only retrieving file ids newer that a given time. " +
                 "Note that this test assumes there is at least 2 file ids with different timestamps.");
@@ -107,7 +110,7 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
                 newestTimestamp.toGregorianCalendar().getTime(), null, null);
         limitedFileIDsList = pillarFileManager.getFileIDs(query);
         Assert.assertTrue(!limitedFileIDsList.isEmpty(),
-                "Empty list returned when when minTimestamp is set to newest calculated CHECKSUM timestamp");
+                "Empty list returned when when minTimestamp is set to newest calculated checksum timestamp");
         Assert.assertTrue(limitedFileIDsList.get(0).getLastModificationTime().compare(newestTimestamp) == 0,
                 "Different timestamps in the set of newest file ids." + limitedFileIDsList);
 
@@ -121,7 +124,7 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
                 CalendarUtils.getXmlGregorianCalendar(newerThanNewestTimestamp) + ") query");
     }
 
-    @Test ( groups = {"fullPillarTest", "checksumPillarTest"} )
+    @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
     public void maxTimeStampTest() {
         addDescription("Test the pillar support for only retrieving file ids older that a given time. " +
                 "Note that this test assumes there is at least 2 file ids with different timestamps.");
