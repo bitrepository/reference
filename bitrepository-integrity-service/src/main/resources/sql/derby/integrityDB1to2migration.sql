@@ -1,9 +1,10 @@
 -- Integrity DB migration from version 1 to 2
 
-connect 'jdbc:derby:integritydb;create=true';
+connect 'jdbc:derby:integritydb';
 
 -- Update table versions.
 UPDATE tableversions SET version=2 WHERE tablename='fileinfo';
+INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 2);
 
 -- Add constraints to fileinfo table.
 ALTER TABLE fileinfo (
