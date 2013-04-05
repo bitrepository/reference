@@ -38,7 +38,7 @@ CREATE TABLE tableversions (
 );
 
 INSERT INTO tableversions ( tablename, version )
-            VALUES ( 'fileinfo', 1);
+            VALUES ( 'fileinfo', 2);
 INSERT INTO tableversions ( tablename, version )
             VALUES ( 'files', 1);
 INSERT INTO tableversions ( tablename, version )
@@ -86,7 +86,7 @@ CREATE INDEX pillarindex ON pillar ( pillar_id );
 --           on a specific pillar.
 -- Expected entry count: Very, very many.
 --*************************************************************************--
-create table fileinfo (
+CREATE TABLE fileinfo (
     guid BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
                                  -- The unique id for a specific file on a specific pillar.
     file_guid BIGINT NOT NULL,   -- The guid for the file.
