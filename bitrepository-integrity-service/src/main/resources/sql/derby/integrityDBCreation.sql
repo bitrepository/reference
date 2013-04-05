@@ -45,8 +45,23 @@ INSERT INTO tableversions ( tablename, version )
             VALUES ( 'pillar', 1);
 
 --*************************************************************************--
--- Name:     file
--- Descr.:   Contains the information about the file.
+-- Name:     collections
+-- Descr.:   Contains the information about the collections.
+-- Purpose:  Keeps track of the names of the files within the system.
+-- Expected entry count: Few
+--*************************************************************************--
+CREATE TABLE collections (
+    collection_guid BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                 -- The guid for a given file.
+    collection_id VARCHAR(255) NOT NULL,
+                                 -- The id for the file.
+);
+
+CREATE INDEX collectionindex ON collections (collection_id);
+
+--*************************************************************************--
+-- Name:     files
+-- Descr.:   Contains the information about the files.
 -- Purpose:  Keeps track of the names of the files within the system.
 -- Expected entry count: Very, very many.
 --*************************************************************************--
