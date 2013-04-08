@@ -36,11 +36,11 @@ public final class DatabaseConstants {
     /** The name of the File Info table.*/
     public static final String FILE_INFO_TABLE = "fileinfo";
     /** The guid of an entry in the File Info table. Primary automatically generated key. A long/bigint value. */
-    public static final String FI_GUID = "guid";
+    public static final String FI_KEY = "fileinfo_key";
     /** The guid of the file for an entry in the File Info table. A long/bigint value.*/
-    public static final String FI_FILE_GUID = "file_guid";
+    public static final String FI_FILE_KEY = "file_key";
     /** The guid of the pillar for an entry in the File Info table. A long/bigint value.*/
-    public static final String FI_PILLAR_GUID = "pillar_guid";
+    public static final String FI_PILLAR_KEY = "pillar_key";
     /** The checksum value of an entry in the File Info table. A String value, which may be null.*/
     public static final  String FI_CHECKSUM = "checksum";
     /** The timestamp for the file creation or latest modification. A date/timestamp value, may be null.*/
@@ -56,7 +56,7 @@ public final class DatabaseConstants {
     /** The name of the Files table.*/
     public static final  String FILES_TABLE = "files";
     /** The guid of an entry in the files table. Primary automatically generated key. A long/bigint value.*/
-    public static final  String FILES_GUID = "file_guid";
+    public static final  String FILES_KEY = "file_key";
     /** The id of the file. String value.*/
     public static final  String FILES_ID = "file_id";
     /** The date, when the file has been entered into the database. A date/timestamp value.*/
@@ -66,7 +66,15 @@ public final class DatabaseConstants {
     /** The name of the pillar table.*/
     public static final  String PILLAR_TABLE = "pillar";
     /** The guid of an entry in the pillar table. Primary automatically generated key. A long/bigint value.*/
-    public static final  String PILLAR_GUID = "pillar_guid";
+    public static final  String PILLAR_KEY = "pillar_key";
     /** The id of the pillar. String value.*/
     public static final  String PILLAR_ID = "pillar_id";
+    
+    // THE COLLECTIONS TABLE
+    /** The name of the collections table. */
+    public static final String COLLECTIONS_TABLE = "collections";
+    /** The guid of an entry in the collections table. Primary automatically generated key. A long/bigint value */
+    public static final String COLLECTION_KEY = "collection_key";
+    /** The id of the collection. String value. */
+    public static final String COLLECTION_ID = "collection_id";
 }

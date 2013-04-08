@@ -50,8 +50,8 @@ INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 2);
 -- Expected entry count: Few
 --*************************************************************************--
 CREATE TABLE collections (
-    collection_guid BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-                                 -- The guid for a given file.
+    collection_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                 -- The key for a given file.
     collection_id VARCHAR(255) NOT NULL,
                                  -- The id for the file.
     UNIQUE (collection_id)
@@ -66,8 +66,8 @@ CREATE INDEX collectionindex ON collections (collection_id);
 -- Expected entry count: Very, very many.
 --*************************************************************************--
 CREATE TABLE files (
-    file_guid BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-                                 -- The guid for a given file.
+    file_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                 -- The key for a given file.
     file_id VARCHAR(255) NOT NULL,
                                  -- The id for the file.
     creation_date TIMESTAMP,      -- The date for the creation of the file.
@@ -86,8 +86,8 @@ CREATE INDEX filedateindex ON files (file_id, creation_date);
 -- Expected entry count: Few
 --*************************************************************************--
 CREATE TABLE pillar (
-    pillar_guid BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-                                 -- The GUID for the pillar.
+    pillar_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                 -- The key for the pillar.
     pillar_id VARCHAR(100) NOT NULL,
                                  -- The id of the pillar.
     UNIQUE (pillar_id)
@@ -104,10 +104,10 @@ CREATE INDEX pillarindex ON pillar (pillar_id);
 -- Expected entry count: Very, very many.
 --*************************************************************************--
 CREATE TABLE fileinfo (
-    guid BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    fileinfo_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
                                  -- The unique id for a specific file on a specific pillar.
-    file_guid BIGINT NOT NULL,   -- The guid for the file.
-    pillar_guid BIGINT NOT NULL, -- The guid for the pillar.
+    file_key BIGINT NOT NULL,    -- The key for the file.
+    pillar_key BIGINT NOT NULL,  -- The key for the pillar.
     checksum VARCHAR(100),       -- The checksum for the given file on the given pillar.
     last_file_update TIMESTAMP,  -- The last time a 'GetFileIDs' for the fileinfo has been answered.
     last_checksum_update TIMESTAMP,
@@ -116,14 +116,14 @@ CREATE TABLE fileinfo (
                                  -- and everything else for UNKNOWN.
     checksum_state INT,           -- Checksum integrity state. Either 0 for VALID, 1 for INCONSISTENT,
                                  -- and everything else for UNKNOWN.
-    FOREIGN KEY (file_guid) REFERENCES files(file_guid),
-                                 -- Foreign key constraint on file_guid, enforcing the presence of the referred id
-    FOREIGN KEY (pillar_guid) REFERENCES pillar(pillar_guid),
-                                 -- Foreign key constraint on pillar_guid, enforcing the presence of the referred id
-    UNIQUE (file_guid, pillar_guid)
+    FOREIGN KEY (file_key) REFERENCES files(file_key),
+                                 -- Foreign key constraint on file_key, enforcing the presence of the referred id
+    FOREIGN KEY (pillar_key) REFERENCES pillar(pillar_key),
+                                 -- Foreign key constraint on pillar_key, enforcing the presence of the referred id
+    UNIQUE (file_key, pillar_key)
                                  -- Enforce that a file only can exist once on a pillar
 );
 
-CREATE INDEX fileguidindex ON fileinfo (file_guid);
-CREATE INDEX filepillarindex ON fileinfo (file_guid, pillar_guid);
+CREATE INDEX filekeyindex ON fileinfo (file_key);
+CREATE INDEX filepillarindex ON fileinfo (file_key, pillar_key);
 CREATE INDEX checksumdateindex ON fileinfo (last_checksum_update);

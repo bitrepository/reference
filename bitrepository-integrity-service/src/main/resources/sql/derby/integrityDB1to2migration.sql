@@ -8,16 +8,9 @@ UPDATE tableversions SET version=2 WHERE tablename='pillar';
 UPDATE tableversions SET version=2 WHERE tablename='files';
 INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 2);
 
--- Add constraints to fileinfo table.
-ALTER TABLE fileinfo (
-    ADD FOREIGN KEY (file_guid) REFERENCES files(file_guid),
-    ADD FOREIGN KEY (pillar_guid) REFERENCES pillar(pillar_guid),
-    ADD UNIQUE (file_guid, pillar_guid) 
-);
-
 -- Add collections table. 
 CREATE TABLE collections (
-    collection_guid BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    collection_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     collection_id VARCHAR(255) NOT NULL,
     UNIQUE (collection_id)
 );
@@ -32,9 +25,25 @@ ALTER TABLE files (
     ADD UNIQUE (file_id)
 );
 
+RENAME COLUMN files.files_guid TO files_key;
+
 -- Add constraints to files table.
 ALTER TABLE pillar (
     ADD UNIQUE (pillar_id)
 );
+
+RENAME COLUMN pillar.pillar_guid TO pillar_key;
+
+
+-- Add constraints to fileinfo table.
+ALTER TABLE fileinfo (
+    ADD FOREIGN KEY (file_key) REFERENCES files(file_key),
+    ADD FOREIGN KEY (pillar_key) REFERENCES pillar(pillar_key),
+    ADD UNIQUE (file_key, pillar_key) 
+);
+
+RENAME COLUMN fileinfo.guid TO fileinfo_key;
+
+CREATE INDEX filekeyindex ON fileinfo (file_key);
 
 
