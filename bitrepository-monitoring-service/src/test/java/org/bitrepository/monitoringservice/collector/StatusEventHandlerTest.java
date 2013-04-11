@@ -75,7 +75,7 @@ public class StatusEventHandlerTest extends ExtendedTestCase {
         Assert.assertEquals(alerter.getCallsForCheckStatuses(), 2);
         
         addStep("Test the component complete status", "Should attempt to update the store");
-        event = new StatusCompleteContributorEvent("ContributorID", null);
+        event = new StatusCompleteContributorEvent("ContributorID", "dummy-collection", null);
         eventHandler.handleEvent(event);
         Assert.assertEquals(store.getCallsForGetStatusMap(), 0);
         Assert.assertEquals(store.getCallsForUpdateReplayCounts(), 0);
