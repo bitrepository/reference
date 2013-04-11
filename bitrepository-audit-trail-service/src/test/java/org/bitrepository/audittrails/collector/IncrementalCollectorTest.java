@@ -38,6 +38,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class IncrementalCollectorTest extends ExtendedTestCase{
+    
+    public static final String TEST_COLLECTION = "dummy-collection";
+    
     @Test(groups = {"regressiontest"})
     public void singleIncrementTest() throws InterruptedException {
         addDescription("Verifies the behaviour in the simplest case with just one result set ");
@@ -46,7 +49,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
 
         addStep("Start a collection with two contributors", "A call should be made to the store to find out which " +
             "sequence number to continue from");
-        IncrementalCollector collector = new IncrementalCollector("dummy-collection", "Client1", client, store,
+        IncrementalCollector collector = new IncrementalCollector(TEST_COLLECTION, "Client1", client, store,
                 BigInteger.ONE);
         Collection<String> contributors = Arrays.asList("Contributor1", "Contributors2");
         CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
@@ -62,10 +65,10 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
 
         addStep("Send a audit trail result from contributor 1", "A AddAuditTrails call should be made to the store");
         EventHandler eventHandler = client.getLatestEventHandler();
-        eventHandler.handleEvent(new AuditTrailResult("Contributor1", new ResultingAuditTrails(), false));
+        eventHandler.handleEvent(new AuditTrailResult("Contributor1", TEST_COLLECTION, new ResultingAuditTrails(), false));
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 1,
             "Should have been just one call to store after the first result.");
-        eventHandler.handleEvent(new AuditTrailResult("Contributor2", new ResultingAuditTrails(), false));
+        eventHandler.handleEvent(new AuditTrailResult("Contributor2", TEST_COLLECTION, new ResultingAuditTrails(), false));
         addStep("Send a audit trail result from contributor 2", "A AddAuditTrails call should be made to the " +
             "store, and the collector should finish");
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 2,
@@ -101,9 +104,9 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         EventHandler eventHandler = client.getLatestEventHandler();
         addStep("Send a audit trail result from contributor 1 and 2 with the PartialResults boolean set to true",
             "Two AddAuditTrails calls should be made, but the collector should not have finished");
-        eventHandler.handleEvent(new AuditTrailResult("Contributor1", new ResultingAuditTrails(), true));
+        eventHandler.handleEvent(new AuditTrailResult("Contributor1", TEST_COLLECTION, new ResultingAuditTrails(), true));
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 1);
-        eventHandler.handleEvent(new AuditTrailResult("Contributor2", new ResultingAuditTrails(), true));
+        eventHandler.handleEvent(new AuditTrailResult("Contributor2", TEST_COLLECTION, new ResultingAuditTrails(), true));
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 2);
         eventHandler.handleEvent(new CompleteEvent(null));
         Thread.sleep(100);
@@ -114,10 +117,10 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
             "Two more AddAuditTrails calls should be made and the collector should finished");
         eventHandler = client.getLatestEventHandler();
         Assert.assertEquals(store.getCallsToLargestSequenceNumber(), 4);
-        eventHandler.handleEvent(new AuditTrailResult("Contributor1", new ResultingAuditTrails(), false));
+        eventHandler.handleEvent(new AuditTrailResult("Contributor1", TEST_COLLECTION, new ResultingAuditTrails(), false));
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 3,
             "Should have been three calls to store after the second increments, first result.");
-        eventHandler.handleEvent(new AuditTrailResult("Contributor2", new ResultingAuditTrails(), false));
+        eventHandler.handleEvent(new AuditTrailResult("Contributor2", TEST_COLLECTION, new ResultingAuditTrails(), false));
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 4,
             "Should have been four calls to store after the second increments, second result.");
         eventHandler.handleEvent(new CompleteEvent(null));
@@ -154,9 +157,9 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
             "and a failed event from contributor 2",
             "Only one AddAuditTrails calls should be made, and the collector should not have finished");
         EventHandler eventHandler = client.getLatestEventHandler();
-        eventHandler.handleEvent(new ContributorFailedEvent("Contributor1", ResponseCode.REQUEST_NOT_SUPPORTED));
+        eventHandler.handleEvent(new ContributorFailedEvent("Contributor1", TEST_COLLECTION, ResponseCode.REQUEST_NOT_SUPPORTED));
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
-        eventHandler.handleEvent(new AuditTrailResult("Contributor2", new ResultingAuditTrails(), true));
+        eventHandler.handleEvent(new AuditTrailResult("Contributor2", TEST_COLLECTION, new ResultingAuditTrails(), true));
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 1);
         eventHandler.handleEvent(new OperationFailedEvent("", null));
         Thread.sleep(100);
@@ -167,7 +170,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
             "One more AddAuditTrails calls should be made and the collector should finished");
         eventHandler = client.getLatestEventHandler();
         Assert.assertEquals(store.getCallsToLargestSequenceNumber(), 3);
-        eventHandler.handleEvent(new AuditTrailResult("Contributor1", new ResultingAuditTrails(), false));
+        eventHandler.handleEvent(new AuditTrailResult("Contributor1", TEST_COLLECTION, new ResultingAuditTrails(), false));
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 2,
             "Should have been three calls to store after the second increments.");
         eventHandler.handleEvent(new CompleteEvent(null));

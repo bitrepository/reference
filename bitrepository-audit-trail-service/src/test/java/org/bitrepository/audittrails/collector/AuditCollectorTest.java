@@ -38,6 +38,8 @@ public class AuditCollectorTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
     
+    public static final String TEST_COLLECTION = "dummy-collection";
+    
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("AuditCollectorUnderTest");
@@ -53,16 +55,16 @@ public class AuditCollectorTest extends ExtendedTestCase {
         
         MockAuditClient client = new MockAuditClient();
         MockAuditStore store = new MockAuditStore();
-        AuditTrailCollector collector = new AuditTrailCollector("dummy-collection", settings, client, store);
+        AuditTrailCollector collector = new AuditTrailCollector(TEST_COLLECTION, settings, client, store);
         Assert.assertEquals(client.getCallsToGetAuditTrails(), 0);
         Thread.sleep(1000);
         EventHandler eventHandler = client.getLatestEventHandler();
-        eventHandler.handleEvent(new AuditTrailResult("Contributor1", new ResultingAuditTrails(), false));
+        eventHandler.handleEvent(new AuditTrailResult("Contributor1", TEST_COLLECTION, new ResultingAuditTrails(), false));
         eventHandler.handleEvent(new CompleteEvent(null));
         Assert.assertEquals(client.getCallsToGetAuditTrails(), 1);
         Thread.sleep(1000);
         eventHandler = client.getLatestEventHandler();
-        eventHandler.handleEvent(new AuditTrailResult("Contributor1", new ResultingAuditTrails(), false));
+        eventHandler.handleEvent(new AuditTrailResult("Contributor1", TEST_COLLECTION, new ResultingAuditTrails(), false));
         eventHandler.handleEvent(new CompleteEvent(null));
         Assert.assertEquals(client.getCallsToGetAuditTrails(), 2);
         collector.close();

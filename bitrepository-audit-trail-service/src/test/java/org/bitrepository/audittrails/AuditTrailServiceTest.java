@@ -39,6 +39,9 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
     
+    public static final String TEST_COLLECTION = "dummy-collection";
+ 
+    
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("AuditTrailServiceUnderTest");
@@ -53,7 +56,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         MockAuditStore store = new MockAuditStore();
         MockAuditClient client = new MockAuditClient();
         MockAuditPreserver preserver = new MockAuditPreserver();
-        AuditTrailCollector collector = new AuditTrailCollector("dummy-collection", settings, client, store);
+        AuditTrailCollector collector = new AuditTrailCollector(TEST_COLLECTION, settings, client, store);
         ContributorMediator mediator = new MockContributorMediator();
         
         addStep("Instantiate the service.", "Should work.");
@@ -67,7 +70,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         t.start();
         Thread.sleep(100);
         EventHandler eventHandler = client.getLatestEventHandler();
-        eventHandler.handleEvent(new AuditTrailResult("Contributor1", new ResultingAuditTrails(), false));
+        eventHandler.handleEvent(new AuditTrailResult("Contributor1", TEST_COLLECTION, new ResultingAuditTrails(), false));
         eventHandler.handleEvent(new CompleteEvent(null));
         Assert.assertEquals(client.getCallsToGetAuditTrails(), 1);
         
