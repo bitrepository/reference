@@ -38,8 +38,8 @@ public class AuditTrailResult extends ContributorCompleteEvent {
      * only returned a subset of results is returned. See {@link org.bitrepository.access.ContributorQuery} for
      * details.
      */
-    public AuditTrailResult(String pillarID, ResultingAuditTrails auditTrailEvents, boolean isPartialResult) {
-        super(pillarID);
+    public AuditTrailResult(String pillarID, String collectionID, ResultingAuditTrails auditTrailEvents, boolean isPartialResult) {
+        super(pillarID, collectionID);
         this.auditTrailEvents = auditTrailEvents;
         this.isPartialResult = isPartialResult;
     }

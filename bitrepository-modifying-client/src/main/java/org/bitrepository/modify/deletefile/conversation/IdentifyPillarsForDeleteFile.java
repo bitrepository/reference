@@ -63,10 +63,11 @@ public class IdentifyPillarsForDeleteFile extends IdentifyingState {
             //Idempotent
             getContext().getMonitor().contributorIdentified(response);
             getContext().getMonitor().contributorComplete(new DeleteFileCompletePillarEvent(
-                    response.getFrom(), null ));
+                    response.getFrom(), response.getCollectionID(), null ));
         } else {
             getContext().getMonitor().contributorFailed(
-                    msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+                    msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getCollectionID(), 
+                    msg.getResponseInfo().getResponseCode());
             throw new UnableToFinishException("Can not continue with delete operation, as " + msg.getFrom() +
                     " is unable to perform the deletion.");
         }

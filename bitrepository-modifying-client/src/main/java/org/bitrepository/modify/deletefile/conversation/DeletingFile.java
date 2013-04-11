@@ -58,12 +58,13 @@ public class DeletingFile extends PerformingOperationState {
     protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
         DeleteFileFinalResponse response = (DeleteFileFinalResponse) msg;
         getContext().getMonitor().contributorComplete(new DeleteFileCompletePillarEvent(
-                response.getPillarID(), response.getChecksumDataForExistingFile()));
+                response.getPillarID(), response.getCollectionID(), response.getChecksumDataForExistingFile()));
     }
 
     @Override
     protected void sendRequest() {
-        context.getMonitor().requestSent("Sending request for deleting file", activeContributors.keySet().toString());
+        context.getMonitor().requestSent("Sending request for deleting file", activeContributors.keySet().toString(), 
+                context.getCollectionID());
         for(String pillar : activeContributors.keySet()) {
             DeleteFileRequest msg = createRequest(pillar);
             if (context.getChecksumRequestForValidation() != null) {

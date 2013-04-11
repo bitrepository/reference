@@ -59,7 +59,8 @@ public class GettingFileIDs extends PerformingOperationState {
 
     @Override
     protected void sendRequest() {
-        context.getMonitor().requestSent("Sending request for get fileIDs", activeContributors.keySet().toString());
+        context.getMonitor().requestSent("Sending request for get fileIDs", activeContributors.keySet().toString(), 
+                context.getCollectionID());
         for(ContributorQuery query : context.getContributorQueries()) {
             if (activeContributors.containsKey(query.getComponentID())) {
                 GetFileIDsRequest msg = new GetFileIDsRequest();
@@ -89,7 +90,7 @@ public class GettingFileIDs extends PerformingOperationState {
         GetFileIDsFinalResponse response = (GetFileIDsFinalResponse)msg;
         boolean isPartialResult = response.isPartialResult() == null ? false : response.isPartialResult();
         getContext().getMonitor().contributorComplete(new FileIDsCompletePillarEvent(
-            response.getFrom(), response.getResultingFileIDs(), isPartialResult));
+            response.getFrom(), response.getCollectionID(), response.getResultingFileIDs(), isPartialResult));
     }
 
     @Override

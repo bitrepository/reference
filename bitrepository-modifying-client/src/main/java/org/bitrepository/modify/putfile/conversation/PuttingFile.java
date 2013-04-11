@@ -62,7 +62,7 @@ public class PuttingFile extends PerformingOperationState {
         if (msg instanceof PutFileFinalResponse) {
             PutFileFinalResponse response = (PutFileFinalResponse) msg;
             getContext().getMonitor().contributorComplete(
-                    new PutFileCompletePillarEvent(response.getPillarID(), response.getChecksumDataForNewFile()));
+                    new PutFileCompletePillarEvent(response.getPillarID(), response.getCollectionID(), response.getChecksumDataForNewFile()));
         } else {
             throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
                     " while waiting for Put file response.");
@@ -74,7 +74,8 @@ public class PuttingFile extends PerformingOperationState {
      */
     @Override
     protected void sendRequest() {
-        context.getMonitor().requestSent("Sending request for put file", activeContributors.keySet().toString());
+        context.getMonitor().requestSent("Sending request for put file", activeContributors.keySet().toString(),
+                context.getCollectionID());
         for(String pillar : activeContributors.keySet()) {
             sendPillarRequest(pillar);
             componentRequestCount.put(pillar, 1);
@@ -136,31 +137,31 @@ public class PuttingFile extends PerformingOperationState {
                     sendPillarRequest(pillarID);
                     componentRequestCount.put(pillarID, componentRequestCount.get(pillarID)+1);
                     context.getMonitor().retry("Retrying putfile (attempt number " + componentRequestCount.get(pillarID) + ")",
-                            pillarID);
+                            pillarID, context.getCollectionID());
                 } else {
                     getContext().getMonitor().contributorFailed(
-                            msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+                            msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getCollectionID(), msg.getResponseInfo().getResponseCode());
                 }
                 break;
             case DUPLICATE_FILE_FAILURE:
                 if(ChecksumUtils.areEqual(
                         response.getChecksumDataForExistingFile(), context.getChecksumForValidationAtPillar())) {
                     PutFileCompletePillarEvent event = new PutFileCompletePillarEvent(
-                            response.getPillarID(), response.getChecksumDataForExistingFile());
+                            response.getPillarID(), response.getCollectionID(), response.getChecksumDataForExistingFile());
                     event.setInfo("File already existed on " + response.getPillarID());
                     getContext().getMonitor().contributorComplete(event);
                 } else {
                     getContext().getMonitor().contributorFailed(
                             "Received negative response from component " + response.getFrom() +
                                     ":  " + response.getResponseInfo() + " (existing file checksum does not match)",
-                            response.getFrom(), response.getResponseInfo().getResponseCode());
+                            response.getFrom(), response.getCollectionID(), response.getResponseInfo().getResponseCode());
                     throw new UnableToFinishException("Can not put file " + context.getFileID() +
                             ", as an different file already exists on pillar " + response.getPillarID());
                 }
                 break;
             default:
                 getContext().getMonitor().contributorFailed(
-                        msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+                        msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getCollectionID(), msg.getResponseInfo().getResponseCode());
             }
         }
         return isFinalResponse;

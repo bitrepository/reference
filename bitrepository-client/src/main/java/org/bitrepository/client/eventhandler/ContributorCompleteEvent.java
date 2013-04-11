@@ -25,8 +25,8 @@ package org.bitrepository.client.eventhandler;
  * The parent class for all the concrete operation specific contributors complete events
  */
 public class ContributorCompleteEvent extends ContributorEvent {
-    public ContributorCompleteEvent(String contributorID) {
-        super(contributorID);
+    public ContributorCompleteEvent(String contributorID, String collectionID) {
+        super(contributorID, collectionID);
         setEventType(OperationEventType.COMPONENT_COMPLETE);
     }
 }

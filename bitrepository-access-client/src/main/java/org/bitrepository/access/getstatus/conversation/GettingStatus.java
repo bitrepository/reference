@@ -46,7 +46,7 @@ public class GettingStatus extends PerformingOperationState {
     protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
         GetStatusFinalResponse response = (GetStatusFinalResponse) msg;
         getContext().getMonitor().contributorComplete(
-                new StatusCompleteContributorEvent(msg.getFrom(), response.getResultingStatus()));
+                new StatusCompleteContributorEvent(msg.getFrom(), response.getCollectionID(), response.getResultingStatus()));
     }
 
     @Override
@@ -54,7 +54,8 @@ public class GettingStatus extends PerformingOperationState {
         GetStatusRequest request = new GetStatusRequest();
         initializeMessage(request);
 
-        context.getMonitor().requestSent("Sending GetStatusRequest", activeContributors.keySet().toString());
+        context.getMonitor().requestSent("Sending GetStatusRequest", activeContributors.keySet().toString(), 
+                context.getCollectionID());
         for(String ID : activeContributors.keySet()) {
             request.setContributor(ID);
             request.setDestination(activeContributors.get(ID));

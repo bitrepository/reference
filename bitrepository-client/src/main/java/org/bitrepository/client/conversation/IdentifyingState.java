@@ -108,7 +108,8 @@ public abstract class IdentifyingState extends GeneralConversationState {
      */
     protected void handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
         getContext().getMonitor().contributorFailed(
-                msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+                msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getCollectionID(), 
+                msg.getResponseInfo().getResponseCode());
     }
 
     private void generateContributorsSelectedEvent(Collection<SelectedComponentInfo> selectedComponentInfo) {
