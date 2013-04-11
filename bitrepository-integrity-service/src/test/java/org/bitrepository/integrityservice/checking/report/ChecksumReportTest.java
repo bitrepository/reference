@@ -34,11 +34,12 @@ public class ChecksumReportTest extends ExtendedTestCase {
     
     public static final String TEST_FILE_1 = "test-file-1";
 
+    public static final String TEST_COLLECTION = "collection1";
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testEmptyChecksumReport() {
         addDescription("Tests the empty checksum report.");
-        ChecksumReportModel report = new ChecksumReportModel();
+        ChecksumReportModel report = new ChecksumReportModel(TEST_COLLECTION);
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
         Assert.assertEquals(report.getFilesWithIssues().size(), 0);
     }
@@ -46,7 +47,7 @@ public class ChecksumReportTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest", "integritytest"})
     public void testChecksumReportWithoutChecksumAgreement() {
         addDescription("Tests the checksum report when there is not checksum agreement.");
-        ChecksumReportModel report = new ChecksumReportModel();
+        ChecksumReportModel report = new ChecksumReportModel(TEST_COLLECTION);
         
         report.reportChecksumIssue(TEST_FILE_1, TEST_PILLAR_1, "checksum1");
         report.reportChecksumIssue(TEST_FILE_1, TEST_PILLAR_2, "checksum2");

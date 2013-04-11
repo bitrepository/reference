@@ -41,7 +41,7 @@ public class FileExistenceValidator {
     /** The cache for the integrity data.*/
     private final IntegrityModel cache;
     /** The collection which this FileExistenceValidator belongs to.*/
-    private final Collection collection;
+    private final List<Collection> collections;
     /** The audit trail manager.*/
     private final AuditTrailManager auditManager;
     
@@ -51,9 +51,9 @@ public class FileExistenceValidator {
      * @param cache The cache with the integrity model.
      * @param auditManager the audit trail manager.
      */
-    public FileExistenceValidator(Collection collection, IntegrityModel cache, AuditTrailManager auditManager) {
+    public FileExistenceValidator(List<Collection> collections, IntegrityModel cache, AuditTrailManager auditManager) {
         this.cache = cache;
-        this.collection = collection;
+        this.collections = collections;
         this.auditManager = auditManager;
     }
     
@@ -67,21 +67,21 @@ public class FileExistenceValidator {
      * @param requestedFileIDs The list of files to validate.
      * @return The report for the existence state of the given files.
      */
-    public MissingFileReportModel generateReport(java.util.Collection<String> requestedFileIDs) {
-        MissingFileReportModel report = new MissingFileReportModel();
+    public MissingFileReportModel generateReport(java.util.Collection<String> requestedFileIDs, String collectionId) {
+        MissingFileReportModel report = new MissingFileReportModel(collectionId);
         for(String fileId : requestedFileIDs) {
-            List<String> pillarIds = cache.getPillarsMissingFile(fileId);
+            List<String> pillarIds = cache.getPillarsMissingFile(fileId, collectionId);
 
             if(pillarIds.isEmpty()) {
                 log.trace("No one is missing the file '{}'", fileId);
                 continue;
             }
             
-            auditManager.addAuditEvent(collection.getID(), fileId, "IntegrityService", "The file '" + fileId +"' does not exist at "
+            auditManager.addAuditEvent(collectionId, fileId, "IntegrityService", "The file '" + fileId +"' does not exist at "
                     + "the pillars '" + pillarIds + "'", "IntegrityService checking files.", 
                     FileAction.INCONSISTENCY);
             
-            if(isAllPillars(pillarIds)) {
+            if(isAllPillars(pillarIds, collectionId)) {
                 report.reportDeletableFile(fileId);
             } else {
                 report.reportMissingFile(fileId, pillarIds);
@@ -96,14 +96,20 @@ public class FileExistenceValidator {
      * @param pillarIds The list of pillar ids.
      * @return Whether the list of pillar ids is equivalent to list in settings. 
      */
-    private boolean isAllPillars(List<String> pillarIds) {
-        List<String> knownPillars = new ArrayList<String>(
-                collection.getPillarIDs().getPillarID());
-        
+    private boolean isAllPillars(List<String> pillarIds, String collectionId) {
+        Collection collection = null;
+        for(Collection c : collections) {
+            if(c.getID().equals(collectionId)) {
+                collection = c;
+                break;
+            }
+        }
+        List<String> knownPillars = new ArrayList<String>(collection.getPillarIDs().getPillarID());
+                
         for(String pillarId : pillarIds) {
             knownPillars.remove(pillarId);
         }
-        
-        return knownPillars.isEmpty();
+                
+        return knownPillars.isEmpty();        
     }
 }

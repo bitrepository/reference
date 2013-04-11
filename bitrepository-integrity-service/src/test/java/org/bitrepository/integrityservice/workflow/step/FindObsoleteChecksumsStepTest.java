@@ -39,6 +39,8 @@ public class FindObsoleteChecksumsStepTest extends ExtendedTestCase {
     public static final String TEST_FILE_1 = "test-file-1";
     protected Settings settings;
 
+    public static final String TEST_COLLECTION = "collection1";
+    
     @BeforeMethod(alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("FindObsoleteChecksumsStepTest");
@@ -49,7 +51,7 @@ public class FindObsoleteChecksumsStepTest extends ExtendedTestCase {
         addDescription("Test the step for finding obsolete checksum when the report is positive.");
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
         MockChecker checker = new MockChecker();
-        FindObsoleteChecksumsStep step = new FindObsoleteChecksumsStep(settings, checker, alerter);
+        FindObsoleteChecksumsStep step = new FindObsoleteChecksumsStep(settings, checker, alerter, TEST_COLLECTION);
         
         step.performStep();
         Assert.assertEquals(alerter.getCallsForIntegrityFailed(), 0);
@@ -66,13 +68,13 @@ public class FindObsoleteChecksumsStepTest extends ExtendedTestCase {
         MockChecker checker = new MockChecker() {
             @Override
             public ObsoleteChecksumReportModel checkObsoleteChecksums(
-                MaxChecksumAgeProvider maxChecksumAgeProvider, Collection<String> pillarIDs) {
-                ObsoleteChecksumReportModel res = super.checkObsoleteChecksums(maxChecksumAgeProvider, pillarIDs);
+                MaxChecksumAgeProvider maxChecksumAgeProvider, Collection<String> pillarIDs, String collectionId) {
+                ObsoleteChecksumReportModel res = super.checkObsoleteChecksums(maxChecksumAgeProvider, pillarIDs, collectionId);
                 res.reportObsoleteChecksum(TEST_FILE_1, TEST_PILLAR_1, CalendarUtils.getEpoch());
                 return res;
             }
         };
-        FindObsoleteChecksumsStep step = new FindObsoleteChecksumsStep(settings, checker, alerter);
+        FindObsoleteChecksumsStep step = new FindObsoleteChecksumsStep(settings, checker, alerter, TEST_COLLECTION);
         
         step.performStep();
         Assert.assertEquals(alerter.getCallsForIntegrityFailed(), 1);

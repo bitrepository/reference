@@ -147,7 +147,7 @@ public class RestIntegrityService {
     public String getIntegrityStatus(@QueryParam("collectionID") String collectionID) {
         JSONArray array = new JSONArray();
         for(String pillar : service.getPillarList()) {
-            array.put(makeIntegrityStatusObj(pillar));
+            array.put(makeIntegrityStatusObj(pillar, collectionID));
         }
         return array.toString();
     }
@@ -211,13 +211,13 @@ public class RestIntegrityService {
         return "No workflow named '" + workflowID + "' was found!";
     }
 
-    private JSONObject makeIntegrityStatusObj(String pillarID) {
+    private JSONObject makeIntegrityStatusObj(String pillarID, String collectionID) {
         JSONObject obj = new JSONObject();
         try {
             obj.put("pillarID", pillarID);
-            obj.put("totalFileCount", service.getNumberOfFiles(pillarID));
-            obj.put("missingFilesCount",service.getNumberOfMissingFiles(pillarID));
-            obj.put("checksumErrorCount", service.getNumberOfChecksumErrors(pillarID));
+            obj.put("totalFileCount", service.getNumberOfFiles(pillarID, collectionID));
+            obj.put("missingFilesCount",service.getNumberOfMissingFiles(pillarID, collectionID));
+            obj.put("checksumErrorCount", service.getNumberOfChecksumErrors(pillarID, collectionID));
             return obj;
         } catch (JSONException e) {
             return (JSONObject) JSONObject.NULL;

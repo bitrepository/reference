@@ -39,10 +39,13 @@ public class FindMissingChecksumsStep extends AbstractWorkFlowStep {
     private final IntegrityChecker checker;
     /** The dispatcher of alarms.*/
     private final IntegrityAlerter dispatcher;
-
-    public FindMissingChecksumsStep(IntegrityChecker checker, IntegrityAlerter alarmDispatcher) {
+    /** The collectionID */
+    private final String collectionId;
+    
+    public FindMissingChecksumsStep(IntegrityChecker checker, IntegrityAlerter alarmDispatcher, String collectionId) {
         this.checker = checker;
         this.dispatcher = alarmDispatcher;
+        this.collectionId = collectionId;
     }
     
     @Override
@@ -56,7 +59,7 @@ public class FindMissingChecksumsStep extends AbstractWorkFlowStep {
      */
     @Override
     public synchronized void performStep() {
-        IntegrityReportModel report = checker.checkMissingChecksums();
+        IntegrityReportModel report = checker.checkMissingChecksums(collectionId);
         
         if(!report.hasIntegrityIssues()) {
             log.debug("No checksum are missing from any pillar.");

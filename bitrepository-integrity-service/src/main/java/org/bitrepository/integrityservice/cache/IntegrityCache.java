@@ -59,92 +59,92 @@ public class IntegrityCache implements IntegrityModel {
     }
 
     @Override
-    public void addFileIDs(FileIDsData data, String pillarId) {
-        integrityModel.addFileIDs(data, pillarId);
-        markPillarsDirty(filesCache, Arrays.asList(new String[]{pillarId}));
+    public void addFileIDs(FileIDsData data, String pillarId, String collectionId) {
+        integrityModel.addFileIDs(data, pillarId, collectionId);
+        markPillarsDirty(filesCache, Arrays.asList(new String[]{pillarId}), collectionId);
     }
 
     @Override
-    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarId) {
-        integrityModel.addChecksums(data, pillarId);
+    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarId, String collectionId) {
+        integrityModel.addChecksums(data, pillarId, collectionId);
     }
 
     @Override
-    public Collection<FileInfo> getFileInfos(String fileId) {
-        return integrityModel.getFileInfos(fileId);
+    public Collection<FileInfo> getFileInfos(String fileId, String collectionId) {
+        return integrityModel.getFileInfos(fileId, collectionId);
     }
 
     @Override
-    public Collection<String> getAllFileIDs() {
-        return integrityModel.getAllFileIDs();
+    public Collection<String> getAllFileIDs(String collectionId) {
+        return integrityModel.getAllFileIDs(collectionId);
     }
 
     @Override
-    public long getNumberOfFiles(String pillarId) {
-        Long numberOfFiles = (Long)filesCache.get(getCacheID(pillarId));
+    public long getNumberOfFiles(String pillarId, String collectionId) {
+        Long numberOfFiles = (Long)filesCache.get(getCacheID(pillarId, collectionId));
         if (numberOfFiles == null) {
-            numberOfFiles = integrityModel.getNumberOfFiles(getCacheID(pillarId));
-            updateCache(filesCache, pillarId, Long.valueOf(numberOfFiles));
+            numberOfFiles = integrityModel.getNumberOfFiles(pillarId, collectionId);
+            updateCache(filesCache, getCacheID(pillarId, collectionId), Long.valueOf(numberOfFiles));
         }
         return numberOfFiles.longValue();
     }
 
     @Override
-    public List<String> getFilesOnPillar(String pillarId, long minId, long maxId) {
-        return integrityModel.getFilesOnPillar(pillarId, minId, maxId);
+    public List<String> getFilesOnPillar(String pillarId, long minId, long maxId, String collectionId) {
+        return integrityModel.getFilesOnPillar(pillarId, minId, maxId, collectionId);
     }
 
     @Override
-    public long getNumberOfMissingFiles(String pillarId) {
-        Long numberOfMissingFiles = (Long)missingFilesCache.get(getCacheID(pillarId));
+    public long getNumberOfMissingFiles(String pillarId, String collectionId) {
+        Long numberOfMissingFiles = (Long)missingFilesCache.get(getCacheID(pillarId, collectionId));
         if (numberOfMissingFiles == null) {
-            numberOfMissingFiles = integrityModel.getNumberOfMissingFiles(getCacheID(pillarId));
-            updateCache(missingFilesCache, pillarId, Long.valueOf(numberOfMissingFiles));
+            numberOfMissingFiles = integrityModel.getNumberOfMissingFiles(pillarId, collectionId);
+            updateCache(missingFilesCache, getCacheID(pillarId, collectionId), Long.valueOf(numberOfMissingFiles));
         }
         return numberOfMissingFiles.longValue();
     }
 
     @Override
-    public List<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId) {
-        return integrityModel.getMissingFilesAtPillar(pillarId, minId, maxId);
+    public List<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId, String collectionId) {
+        return integrityModel.getMissingFilesAtPillar(pillarId, minId, maxId, collectionId);
     }
 
     @Override
-    public long getNumberOfChecksumErrors(String pillarId) {
-        Long numberOfCorruptFiles = (Long)corruptFilesCache.get(getCacheID(pillarId));
+    public long getNumberOfChecksumErrors(String pillarId, String collectionId) {
+        Long numberOfCorruptFiles = (Long)corruptFilesCache.get(getCacheID(pillarId, collectionId));
         if (numberOfCorruptFiles == null) {
-            numberOfCorruptFiles = integrityModel.getNumberOfChecksumErrors(getCacheID(pillarId));
-            updateCache(corruptFilesCache, pillarId, Long.valueOf(numberOfCorruptFiles));
+            numberOfCorruptFiles = integrityModel.getNumberOfChecksumErrors(pillarId, collectionId);
+            updateCache(corruptFilesCache, getCacheID(pillarId, collectionId), Long.valueOf(numberOfCorruptFiles));
         }
         return numberOfCorruptFiles.longValue();
     }
 
     @Override
-    public List<String> getFilesWithChecksumErrorsAtPillar(String pillarId, long minId, long maxId) {
-        return integrityModel.getFilesWithChecksumErrorsAtPillar(pillarId, minId, maxId);
+    public List<String> getFilesWithChecksumErrorsAtPillar(String pillarId, long minId, long maxId, String collectionId) {
+        return integrityModel.getFilesWithChecksumErrorsAtPillar(pillarId, minId, maxId, collectionId);
     }
 
     @Override
-    public void setFileMissing(String fileId, Collection<String> pillarIds) {
-        integrityModel.setFileMissing(fileId, pillarIds);
-        markPillarsDirty(missingFilesCache, pillarIds);
-        markPillarsDirty(filesCache, pillarIds);
+    public void setFileMissing(String fileId, Collection<String> pillarIds, String collectionId) {
+        integrityModel.setFileMissing(fileId, pillarIds, collectionId);
+        markPillarsDirty(missingFilesCache, pillarIds, collectionId);
+        markPillarsDirty(filesCache, pillarIds, collectionId);
     }
 
     @Override
-    public void setChecksumError(String fileId, Collection<String> pillarIds) {
-        integrityModel.setChecksumError(fileId, pillarIds);
-        markPillarsDirty(corruptFilesCache, pillarIds);
+    public void setChecksumError(String fileId, Collection<String> pillarIds, String collectionId) {
+        integrityModel.setChecksumError(fileId, pillarIds, collectionId);
+        markPillarsDirty(corruptFilesCache, pillarIds, collectionId);
     }
 
     @Override
-    public void setChecksumAgreement(String fileId, Collection<String> pillarIds) {
-        integrityModel.setChecksumAgreement(fileId, pillarIds);
-        markPillarsDirty(corruptFilesCache, pillarIds);
+    public void setChecksumAgreement(String fileId, Collection<String> pillarIds, String collectionId) {
+        integrityModel.setChecksumAgreement(fileId, pillarIds, collectionId);
+        markPillarsDirty(corruptFilesCache, pillarIds, collectionId);
     }
 
     @Override
-    public void deleteFileIdEntry(String fileId) {
+    public void deleteFileIdEntry(String fileId, String collectionId) {
         try {
             missingFilesCache.clear();
             filesCache.clear();
@@ -152,67 +152,67 @@ public class IntegrityCache implements IntegrityModel {
         } catch (CacheException ce) {
             log.warn("Failed to clear cache.", ce);
         }
-        integrityModel.deleteFileIdEntry(fileId);
+        integrityModel.deleteFileIdEntry(fileId, collectionId);
     }
 
     @Override
-    public List<String> findMissingChecksums() {
-        return integrityModel.findMissingChecksums();
+    public List<String> findMissingChecksums(String collectionId) {
+        return integrityModel.findMissingChecksums(collectionId);
     }
 
     @Override
-    public Collection<String> findChecksumsOlderThan(Date date, String pillarID) {
-        return integrityModel.findChecksumsOlderThan(date, pillarID);
+    public Collection<String> findChecksumsOlderThan(Date date, String pillarID, String collectionId) {
+        return integrityModel.findChecksumsOlderThan(date, pillarID, collectionId);
     }
 
     @Override
-    public List<String> findMissingFiles() {
-        return integrityModel.findMissingFiles();
+    public List<String> findMissingFiles(String collectionId) {
+        return integrityModel.findMissingFiles(collectionId);
     }
 
     @Override
-    public List<String> getPillarsMissingFile(String fileId) {
-        return integrityModel.getPillarsMissingFile(fileId);
+    public List<String> getPillarsMissingFile(String fileId, String collectionId) {
+        return integrityModel.getPillarsMissingFile(fileId, collectionId);
     }
 
     @Override
-    public List<String> getFilesWithInconsistentChecksums() {
-        return integrityModel.getFilesWithInconsistentChecksums();
+    public List<String> getFilesWithInconsistentChecksums(String collectionId) {
+        return integrityModel.getFilesWithInconsistentChecksums(collectionId);
     }
 
     @Override
-    public void setFilesWithConsistentChecksumToValid() {
+    public void setFilesWithConsistentChecksumToValid(String collectionId) {
         try {
             corruptFilesCache.clear();
         } catch (CacheException ce) {
             log.warn("Failed to clear cache.", ce);
         }
-        integrityModel.setFilesWithConsistentChecksumToValid();
+        integrityModel.setFilesWithConsistentChecksumToValid(collectionId);
     }
 
     @Override
-    public void setAllFilesToUnknownFileState() {
-        integrityModel.setAllFilesToUnknownFileState();
+    public void setAllFilesToUnknownFileState(String collectionId) {
+        integrityModel.setAllFilesToUnknownFileState(collectionId);
     }
 
     @Override
-    public void setOldUnknownFilesToMissing() {
+    public void setOldUnknownFilesToMissing(String collectionId) {
         try {
             missingFilesCache.clear();
         } catch (CacheException ce) {
             log.warn("Failed to update cache.", ce);
         }
-        integrityModel.setOldUnknownFilesToMissing();
+        integrityModel.setOldUnknownFilesToMissing(collectionId);
     }
 
     @Override
-    public Date getDateForNewestFileEntryForPillar(String pillarId) {
-        return integrityModel.getDateForNewestFileEntryForPillar(pillarId);
+    public Date getDateForNewestFileEntryForPillar(String pillarId, String collectionId) {
+        return integrityModel.getDateForNewestFileEntryForPillar(pillarId, collectionId);
     }
 
     @Override
-    public Date getDateForNewestChecksumEntryForPillar(String pillarId) {
-        return integrityModel.getDateForNewestChecksumEntryForPillar(pillarId);
+    public Date getDateForNewestChecksumEntryForPillar(String pillarId, String collectionId) {
+        return integrityModel.getDateForNewestChecksumEntryForPillar(pillarId, collectionId);
     }
 
     @Override
@@ -227,10 +227,11 @@ public class IntegrityCache implements IntegrityModel {
      * @param cache The cache to use.
      * @param pillarIds The pillars to mark dirty
      */
-    private void markPillarsDirty(JCS cache, Collection<String> pillarIds) {
+    private void markPillarsDirty(JCS cache, Collection<String> pillarIds, String collectionId) {
         for (String pillarID:pillarIds) {
             try {
-                cache.getElementAttributes(getCacheID(pillarID)).setMaxLifeSeconds(refreshPeriodAfterDirtyMark);
+                cache.getElementAttributes(getCacheID(pillarID, collectionId))
+                        .setMaxLifeSeconds(refreshPeriodAfterDirtyMark);
             } catch (CacheException ce) {
                 log.warn("Failed to read cache.", ce);
             }
@@ -240,9 +241,9 @@ public class IntegrityCache implements IntegrityModel {
     /**
      * Updates the cache with the given value.
      */
-    private void updateCache(JCS cache, String pillarID, Object value) {
+    private void updateCache(JCS cache, String cacheID, Object value) {
         try {
-            cache.put(getCacheID(pillarID), value);
+            cache.put(cacheID, value);
         } catch (CacheException ce) {
             log.warn("Failed to update cache.", ce);
         }
@@ -253,7 +254,7 @@ public class IntegrityCache implements IntegrityModel {
      *
      * Note that the current implementations is trivial but will evolve.
      */
-    private String getCacheID(String pillarID) {
-        return pillarID;
+    private String getCacheID(String pillarID, String collectionID) {
+        return pillarID + "-" + collectionID;
     }
 }

@@ -70,21 +70,24 @@ public interface IntegrityService extends LifeCycledService {
     
     /**
      * @param pillarId The pillar which has the files.
+     * @param collectionId The ID of the collection
      * @return The number of files on the given pillar.
      */
-    long getNumberOfFiles(String pillarId);
+    long getNumberOfFiles(String pillarId, String collectionId);
     
     /**
      * @param pillarId The pillar which might be missing some files.
+     * @param collectionId The ID of the collection
      * @return The number of files missing for the given pillar.
      */
-    long getNumberOfMissingFiles(String pillarId);
+    long getNumberOfMissingFiles(String pillarId, String collectionId);
     
     /**
      * @param pillarId The pillar which might contain files with checksum error.
+     * @param collectionId The ID of the collection
      * @return The number of files with checksum error at the given pillar.
      */
-    long getNumberOfChecksumErrors(String pillarId);
+    long getNumberOfChecksumErrors(String pillarId, String collectionId);
 
     /**
      * Initiates the scheduling of a workflow.

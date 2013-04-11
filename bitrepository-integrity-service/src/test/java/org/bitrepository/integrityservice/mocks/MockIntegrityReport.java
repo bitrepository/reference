@@ -26,6 +26,12 @@ import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
 public class MockIntegrityReport implements IntegrityReportModel {
 
     private boolean state = true; 
+    private final String collectionID;
+    
+    public MockIntegrityReport(String collectionID) {
+        this.collectionID = collectionID;
+    }
+    
     public void setIntegrityIssues(boolean state) {
         this.state = state;
     }
@@ -42,5 +48,9 @@ public class MockIntegrityReport implements IntegrityReportModel {
     @Override
     public String generateSummaryOfReport() {
         return "Integrity summary: " + state;
+    }
+    @Override
+    public String getCollectionID() {
+        return collectionID;
     }
 }

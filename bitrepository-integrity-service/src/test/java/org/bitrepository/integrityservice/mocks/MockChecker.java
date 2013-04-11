@@ -56,27 +56,27 @@ public class MockChecker implements IntegrityChecker {
     }
 
     @Override
-    public MissingFileReportModel checkFileIDs(FileIDs fileIDs) {
+    public MissingFileReportModel checkFileIDs(FileIDs fileIDs, String collectionId) {
         callsForCheckFileIDs++;
-        return new MissingFileReportModel();
+        return new MissingFileReportModel(collectionId);
     }
     
     @Override
-    public ChecksumReportModel checkChecksum() {
+    public ChecksumReportModel checkChecksum(String collectionId) {
         callsForCheckChecksums++;
-        return new ChecksumReportModel();
+        return new ChecksumReportModel(collectionId);
     }
 
     @Override
-    public MissingChecksumReportModel checkMissingChecksums() {
+    public MissingChecksumReportModel checkMissingChecksums(String collectionId) {
         callsForCheckMissingChecksums++;
-        return new MissingChecksumReportModel();
+        return new MissingChecksumReportModel(collectionId);
     }
 
     @Override
     public ObsoleteChecksumReportModel checkObsoleteChecksums(
-        MaxChecksumAgeProvider maxChecksumAgeProvider, Collection<String> pillarIDs) {
+        MaxChecksumAgeProvider maxChecksumAgeProvider, Collection<String> pillarIDs, String collectionId) {
         callsForCheckObsoleteChecksums++;
-        return new ObsoleteChecksumReportModel();
+        return new ObsoleteChecksumReportModel(collectionId);
     }
 }

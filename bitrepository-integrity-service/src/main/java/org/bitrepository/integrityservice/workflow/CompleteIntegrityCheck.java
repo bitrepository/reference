@@ -57,7 +57,8 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
     private final IntegrityAlerter alerter;
     /** The audit trail manager.*/
     private final AuditTrailManager auditManager;
-    
+    /** The collection to check */
+    private final String collectionId;
     /**
      * @param settings The settings.
      * @param collector The collector for collecting the file ids and the checksums.
@@ -67,13 +68,15 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
      * @param auditManager The audit trial manager.
      */
     public CompleteIntegrityCheck(Settings settings, IntegrityInformationCollector collector, IntegrityModel store,
-                                  IntegrityChecker checker, IntegrityAlerter alerter, AuditTrailManager auditManager) {
+                                  IntegrityChecker checker, IntegrityAlerter alerter, AuditTrailManager auditManager, 
+                                  String collectionId) {
         this.settings = settings;
         this.collector = collector;
         this.store = store;
         this.checker = checker;
         this.alerter = alerter;
         this.auditManager = auditManager;
+        this.collectionId = collectionId;
     }
     
     @Override
@@ -81,17 +84,19 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
         super.start();
         try {
             UpdateFileIDsStep updateFileIDsStep = new UpdateFileIDsStep(collector, store, alerter,
-                    settings);
+                    settings, collectionId);
             performStep(updateFileIDsStep);
             
             UpdateChecksumsStep updateChecksumStep = new UpdateChecksumsStep(collector, store, alerter,
-                    ChecksumUtils.getDefault(settings), settings);
+                    ChecksumUtils.getDefault(settings), settings, collectionId);
             performStep(updateChecksumStep);
 
-            SetOldUnknownFilesToMissingStep setUnknownFilesToMissingStep = new SetOldUnknownFilesToMissingStep(store);
+            SetOldUnknownFilesToMissingStep setUnknownFilesToMissingStep 
+                    = new SetOldUnknownFilesToMissingStep(store, collectionId);
             performStep(setUnknownFilesToMissingStep);
             
-            IntegrityValidationFileIDsStep validateFileidsStep = new IntegrityValidationFileIDsStep(checker, alerter);
+            IntegrityValidationFileIDsStep validateFileidsStep = new IntegrityValidationFileIDsStep(checker, alerter, 
+                    collectionId);
             performStep(validateFileidsStep);
             
             RemoveDeletableFileIDsFromDatabaseStep removeDeletableFileIDsFromDatabaseStep 
@@ -100,13 +105,14 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
             performStep(removeDeletableFileIDsFromDatabaseStep);
             
             IntegrityValidationChecksumStep validateChecksumStep = new IntegrityValidationChecksumStep(checker, 
-                    alerter);
+                    alerter, collectionId);
             performStep(validateChecksumStep);
             
-            FindMissingChecksumsStep findMissingChecksums = new FindMissingChecksumsStep(checker, alerter);
+            FindMissingChecksumsStep findMissingChecksums = new FindMissingChecksumsStep(checker, alerter, collectionId);
             performStep(findMissingChecksums);
             
-            FindObsoleteChecksumsStep findObsoleteChecksums = new FindObsoleteChecksumsStep(settings, checker, alerter);
+            FindObsoleteChecksumsStep findObsoleteChecksums 
+                    = new FindObsoleteChecksumsStep(settings, checker, alerter, collectionId);
             performStep(findObsoleteChecksums);
         } finally {
             finish();

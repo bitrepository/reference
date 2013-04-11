@@ -36,6 +36,16 @@ public class MissingFileReportModel implements IntegrityReportModel {
     private final List<MissingFile> missingFiles = new ArrayList<MissingFile>();
     /** The list of files, which can be deleted.*/
     private final List<String> deleteableFiles = new ArrayList<String>();
+    /** The ID of the collection that the report is about. */
+    private final String collectionID;
+    
+    public MissingFileReportModel(String collectionID) {
+        this.collectionID = collectionID;
+    }
+    
+    public String getCollectionID() {
+        return collectionID;
+    }
     
     /**
      * Report missing files.

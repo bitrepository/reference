@@ -58,11 +58,14 @@ public class UpdateFileIDsStepTest extends ExtendedTestCase {
     
     protected Settings settings;
     
+    String TEST_COLLECTIONID;
+    
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().addAll(PILLAR_IDS);
+        TEST_COLLECTIONID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
@@ -78,7 +81,7 @@ public class UpdateFileIDsStepTest extends ExtendedTestCase {
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, store, alerter, settings);
+        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, store, alerter, settings, TEST_COLLECTIONID);
         
         step.performStep();
         Assert.assertEquals(store.getCallsForAddFileIDs(), 0);
@@ -99,7 +102,7 @@ public class UpdateFileIDsStepTest extends ExtendedTestCase {
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, store, alerter, settings);
+        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, store, alerter, settings, TEST_COLLECTIONID);
         
         step.performStep();
         Assert.assertEquals(store.getCallsForAddFileIDs(), 0);
@@ -117,7 +120,7 @@ public class UpdateFileIDsStepTest extends ExtendedTestCase {
                 super.getFileIDs(pillarIDs, auditTrailInformation, queries, eventHandler);
                 eventHandler.handleEvent(new IdentificationCompleteEvent(Arrays.asList(TEST_PILLAR_1)));
                 FileIDsCompletePillarEvent event = new FileIDsCompletePillarEvent(
-                        TEST_PILLAR_1, createResultingFileIDs(TEST_FILE_1), false);
+                        TEST_PILLAR_1, TEST_COLLECTIONID, createResultingFileIDs(TEST_FILE_1), false);
                 eventHandler.handleEvent(event);
                 
                 eventHandler.handleEvent(new CompleteEvent(null));
@@ -125,7 +128,7 @@ public class UpdateFileIDsStepTest extends ExtendedTestCase {
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, store, alerter, settings);
+        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, store, alerter, settings, TEST_COLLECTIONID);
         
         step.performStep();
         Assert.assertEquals(store.getCallsForAddFileIDs(), 1);
@@ -146,10 +149,10 @@ public class UpdateFileIDsStepTest extends ExtendedTestCase {
                 eventHandler.handleEvent(new IdentificationCompleteEvent(Arrays.asList(TEST_PILLAR_1)));
                 FileIDsCompletePillarEvent event;
                 if(numberOfPartialResultsLeft > 0) {
-                    event = new FileIDsCompletePillarEvent(TEST_PILLAR_1, createResultingFileIDs(TEST_FILE_1), true);
+                    event = new FileIDsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTIONID, createResultingFileIDs(TEST_FILE_1), true);
                     numberOfPartialResultsLeft--;
                 } else {
-                    event = new FileIDsCompletePillarEvent(TEST_PILLAR_1, createResultingFileIDs(TEST_FILE_1), false);
+                    event = new FileIDsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTIONID, createResultingFileIDs(TEST_FILE_1), false);
                 }
                 eventHandler.handleEvent(event);
                 eventHandler.handleEvent(new CompleteEvent(null));
@@ -157,7 +160,7 @@ public class UpdateFileIDsStepTest extends ExtendedTestCase {
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, store, alerter, settings);
+        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, store, alerter, settings, TEST_COLLECTIONID);
         
         step.performStep();
         Assert.assertEquals(store.getCallsForAddFileIDs(), NUMBER_OF_PARTIAL_RESULTS + 1);

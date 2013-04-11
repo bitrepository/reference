@@ -32,19 +32,25 @@ public interface IntegrityReportModel {
      * @return Whether the integrity check gave a positive result. E.g. returns false, if any integrity problems 
      * occurred (whether any files were missing, any disagreements about checksum, etc.).
      */
-    public abstract boolean hasIntegrityIssues();
+    boolean hasIntegrityIssues();
     
     /** 
      * Creates the human readable report for the entire integrity issue.
      * This involves all the specifics, e.g. at single file-level.
      * @return The entire report.
      */
-    public abstract String generateReport();
+    String generateReport();
     
     /**
      * Create a human readable summary of the integrity issue.
      * Should only contain the overall issue description, not specifics.
      * @return The summary of the integrity issue.
      */
-    public abstract String generateSummaryOfReport();
+    String generateSummaryOfReport();
+    
+    /**
+     * Return the ID of the collection that the report is about. 
+     * @return The collectionID
+     */
+    String getCollectionID();
 }

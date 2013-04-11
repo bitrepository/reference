@@ -68,25 +68,25 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
     public SimpleIntegrityChecker(Settings settings, IntegrityModel cache, AuditTrailManager auditManager) {
         this.cache = cache;
         
-        this.fileIdChecker = new FileExistenceValidator(settings.getCollections().get(0), cache, auditManager);
+        this.fileIdChecker = new FileExistenceValidator(settings.getCollections(), cache, auditManager);
         this.obsoleteChecksumFinder = new ObsoleteChecksumFinder(cache);
-        this.checksumValidator = new ChecksumIntegrityValidator(cache, auditManager, settings.getCollections().get(0));
+        this.checksumValidator = new ChecksumIntegrityValidator(cache, auditManager, settings.getCollections());
     }
     
     @Override
-    public MissingFileReportModel checkFileIDs(FileIDs fileIDs) {
-        log.info("Validating the files: '" + fileIDs + "'");
+    public MissingFileReportModel checkFileIDs(FileIDs fileIDs, String collectionId) {
+        log.info("Validating the files: '" + fileIDs + "' in collection: '" + collectionId + "'");
         // TODO could perhaps be optimised by using the method 'getMissingFileIDs' from the database ??
-        Collection<String> requestedFileIDs = getRequestedFileIDs(fileIDs);
+        Collection<String> requestedFileIDs = getRequestedFileIDs(fileIDs, collectionId);
         
-        MissingFileReportModel report = fileIdChecker.generateReport(requestedFileIDs);
+        MissingFileReportModel report = fileIdChecker.generateReport(requestedFileIDs, collectionId);
             
         if(report.hasIntegrityIssues()) {
             log.warn("Found errors in the integrity check: " + report.generateReport());
             
             for(String deleteableFileId : report.getDeleteableFiles()) {
                 log.info("The file '{}' is deleteable and will be removed from the cache.", deleteableFileId);
-                cache.deleteFileIdEntry(deleteableFileId);
+                cache.deleteFileIdEntry(deleteableFileId, collectionId);
             }
         }
         
@@ -94,21 +94,21 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
     }
     
     @Override
-    public ChecksumReportModel checkChecksum() {
-        log.info("Validating the checksum for all the files.");
-        return checksumValidator.generateReport();
+    public ChecksumReportModel checkChecksum(String collectionId) {
+        log.info("Validating the checksum for all the files in collection '" + collectionId + "'.");
+        return checksumValidator.generateReport(collectionId);
     }
     
     @Override
-    public MissingChecksumReportModel checkMissingChecksums() {
-        MissingChecksumReportModel report = new MissingChecksumReportModel();
+    public MissingChecksumReportModel checkMissingChecksums(String collectionId) {
+        MissingChecksumReportModel report = new MissingChecksumReportModel(collectionId);
         
-        HashSet<String> filesWithMissingChecksum = new HashSet<String>(cache.findMissingChecksums());
+        HashSet<String> filesWithMissingChecksum = new HashSet<String>(cache.findMissingChecksums(collectionId));
         for(String fileId : filesWithMissingChecksum) {
             List<String> pillarIds = new ArrayList<String>();
             
             // TODO make a better method for this! Perhaps directly in the database.
-            for(FileInfo fileinfo : cache.getFileInfos(fileId)) {
+            for(FileInfo fileinfo : cache.getFileInfos(fileId, collectionId)) {
                 if(fileinfo.getFileState() == FileState.EXISTING 
                         && fileinfo.getChecksumState() == ChecksumState.UNKNOWN) {
                     pillarIds.add(fileinfo.getPillarId());
@@ -123,8 +123,8 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
 
     @Override
     public ObsoleteChecksumReportModel checkObsoleteChecksums(
-        MaxChecksumAgeProvider maxChecksumAgeProvider, Collection<String> pillarIDs) {
-        return obsoleteChecksumFinder.generateReport(maxChecksumAgeProvider, pillarIDs);
+        MaxChecksumAgeProvider maxChecksumAgeProvider, Collection<String> pillarIDs, String collectionId) {
+        return obsoleteChecksumFinder.generateReport(maxChecksumAgeProvider, pillarIDs, collectionId);
     }
     
     /**
@@ -132,9 +132,9 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
      * @param fileIDs The file ids requested.
      * @return The collection of requested file ids.
      */
-    private Collection<String> getRequestedFileIDs(FileIDs fileIDs) {
+    private Collection<String> getRequestedFileIDs(FileIDs fileIDs, String collectionId) {
         if(fileIDs.getAllFileIDs() != null) {
-            return cache.getAllFileIDs();
+            return cache.getAllFileIDs(collectionId);
         } 
         return Arrays.asList(fileIDs.getFileID());
     }

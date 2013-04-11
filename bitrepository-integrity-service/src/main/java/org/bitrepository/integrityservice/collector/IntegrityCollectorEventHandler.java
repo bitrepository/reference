@@ -109,13 +109,15 @@ public class IntegrityCollectorEventHandler implements EventHandler {
     private void handleResult(OperationEvent event) {
         if(event instanceof ChecksumsCompletePillarEvent) {
             ChecksumsCompletePillarEvent checksumEvent = (ChecksumsCompletePillarEvent) event;
-            store.addChecksums(checksumEvent.getChecksums().getChecksumDataItems(), checksumEvent.getContributorID());
+            store.addChecksums(checksumEvent.getChecksums().getChecksumDataItems(), checksumEvent.getContributorID(), 
+                    checksumEvent.getCollectionID());
             if(checksumEvent.isPartialResult()) {
                 contributorsWithPartialResults.add(checksumEvent.getContributorID());
             }
         } else if(event instanceof FileIDsCompletePillarEvent) {
             FileIDsCompletePillarEvent fileidEvent = (FileIDsCompletePillarEvent) event;
-            store.addFileIDs(fileidEvent.getFileIDs().getFileIDsData(), fileidEvent.getContributorID());
+            store.addFileIDs(fileidEvent.getFileIDs().getFileIDsData(), fileidEvent.getContributorID(),
+                    fileidEvent.getCollectionID());
             if(fileidEvent.isPartialResult()) {
                 contributorsWithPartialResults.add(fileidEvent.getContributorID());
             }

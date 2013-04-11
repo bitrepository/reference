@@ -34,6 +34,7 @@ import org.testng.annotations.BeforeMethod;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILE_INFO_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTIONS_TABLE;
 
 public abstract class IntegrityDatabaseTestCase extends ExtendedTestCase {
     protected Settings settings;
@@ -41,7 +42,7 @@ public abstract class IntegrityDatabaseTestCase extends ExtendedTestCase {
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
-
+        customizeSettings();
         DerbyDatabaseDestroyer.deleteDatabase(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
 
@@ -55,5 +56,12 @@ public abstract class IntegrityDatabaseTestCase extends ExtendedTestCase {
         DatabaseUtils.executeStatement(connector, "DELETE FROM " + FILE_INFO_TABLE, new Object[0]);
         DatabaseUtils.executeStatement(connector, "DELETE FROM " + FILES_TABLE, new Object[0]);
         DatabaseUtils.executeStatement(connector, "DELETE FROM " + PILLAR_TABLE, new Object[0]);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM " + COLLECTIONS_TABLE, new Object[0]);
     }
+    
+    /**
+     * Method to modify the by constructor loaded settings. 
+     * Default implementation does nothing, so override to change behavior. 
+     */
+    protected void customizeSettings() { }
 }

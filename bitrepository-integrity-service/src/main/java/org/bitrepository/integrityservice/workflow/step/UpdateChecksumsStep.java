@@ -51,12 +51,13 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
     private final ChecksumSpecTYPE checksumType;
     /** The integrity alerter.*/
     private final IntegrityAlerter alerter;
-    /** The pillar ids.*/
-    private final List<String> pillarIds;
     /** The timeout for waiting for the results of the GetChecksums operation.*/
     private final Long timeout;
     /** The maximum number of results for each conversation.*/
     private final Integer maxNumberOfResultsPerConversation;
+    /** The collectionID */
+    private final String collectionId;
+    private final Settings settings;
     
     /** The default value for the maximum number of results for each conversation. Is case the setting is missing.*/
     private final Integer DEFAULT_MAX_RESULTS = 10000;
@@ -69,12 +70,13 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
      * @param checksumType The type of checksum to collect.
      */
     public UpdateChecksumsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
-            ChecksumSpecTYPE checksumType, Settings settings) {
+            ChecksumSpecTYPE checksumType, Settings settings, String collectionId) {
         this.collector = collector;
         this.store = store;
         this.checksumType = checksumType;
         this.alerter = alerter;
-        this.pillarIds = settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID();
+        this.settings = settings;
+        this.collectionId = collectionId;
         this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
                 + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
         if(settings.getReferenceSettings().getIntegrityServiceSettings().getMaximumNumberOfResultsPerConversation() 
@@ -94,7 +96,7 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
     @Override
     public synchronized void performStep() {
         try {
-            List<String> pillarsToCollectFrom = new ArrayList<String>(pillarIds);
+            List<String> pillarsToCollectFrom = new ArrayList<String>(getPillarIDs(collectionId));
             while (!pillarsToCollectFrom.isEmpty()) {
                 IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
@@ -117,7 +119,7 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
     private ContributorQuery[] getQueries(List<String> pillars) {
         List<ContributorQuery> res = new ArrayList<ContributorQuery>();
         for(String pillar : pillars) {
-            Date latestChecksumEntry = store.getDateForNewestChecksumEntryForPillar(pillar);
+            Date latestChecksumEntry = store.getDateForNewestChecksumEntryForPillar(pillar, collectionId);
             res.add(new ContributorQuery(pillar, latestChecksumEntry, null, maxNumberOfResultsPerConversation));
         }
         
@@ -126,5 +128,16 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
 
     public static String getDescription() {
         return "Contacts all pillar to retrieve the full list of checksums for the pillar";
+    }
+    
+    private List<String> getPillarIDs(String collectionId) {
+        List<String> pillars = null;
+        for(org.bitrepository.settings.repositorysettings.Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
+            if(c.getID().equals(collectionId)) {
+                pillars = c.getPillarIDs().getPillarID();
+                break;
+            }
+        }
+        return pillars;
     }
 }

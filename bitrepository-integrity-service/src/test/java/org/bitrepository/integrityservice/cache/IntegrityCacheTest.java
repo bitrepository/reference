@@ -36,8 +36,11 @@ public class IntegrityCacheTest extends ExtendedTestCase {
     private IntegrityModel mockedDB;
     private static final String PILLAR1 = "pillar1";
     private static final String PILLAR2 = "pillar2";
+    private static final String COLLECTION1 = "collection1";
 
-
+    private static final String DUMMY_FILE_ID = "";
+    private static final String DUMMY_COLLECTION_ID = "";
+    
     @BeforeMethod(alwaysRun = true)
     public void setup() throws Exception {
         mockedDB = mock(IntegrityModel.class);
@@ -49,51 +52,51 @@ public class IntegrityCacheTest extends ExtendedTestCase {
         IntegrityCache cache = new IntegrityCache(mockedDB);
         addStep("Call getNumberOfMissingFiles the first time",
                 "The the db should be used.");
-        cache.getNumberOfMissingFiles(PILLAR1);
-        verify(mockedDB, times(1)).getNumberOfMissingFiles(PILLAR1);
+        cache.getNumberOfMissingFiles(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfMissingFiles(PILLAR1, COLLECTION1);
 
         addStep("Call getNumberOfMissingFiles again",
                 "The cache value should be used, eg. the db should not be used.");
-        cache.getNumberOfMissingFiles(PILLAR1);
-        verify(mockedDB, times(1)).getNumberOfMissingFiles(PILLAR1);
+        cache.getNumberOfMissingFiles(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfMissingFiles(PILLAR1, COLLECTION1);
 
         addStep("Called setFileMissing followed by a getNumberOfMissingFiles call",
                 "The cache value should still be used as the refreshPeriodAfterDirtyMark hasn't been exceeded.");
-        cache.setFileMissing("SomeFile", Arrays.asList(new String[]{PILLAR1}));
-        cache.getNumberOfMissingFiles(PILLAR1);
-        verify(mockedDB, times(1)).getNumberOfMissingFiles(PILLAR1);
+        cache.setFileMissing("SomeFile", Arrays.asList(new String[]{PILLAR1}), COLLECTION1);
+        cache.getNumberOfMissingFiles(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfMissingFiles(PILLAR1, COLLECTION1);
 
         addStep("Set refreshPeriodAfterDirtyMark to 1 second, called setFileMissing followed by a " +
                 "getNumberOfMissingFiles call",
                 "The db value should be reread");
         cache.refreshPeriodAfterDirtyMark = 1;
-        cache.setFileMissing("SomeFile", Arrays.asList(new String[]{PILLAR1}));
+        cache.setFileMissing("SomeFile", Arrays.asList(new String[]{PILLAR1}), COLLECTION1);
         Thread.sleep(1001);
-        cache.getNumberOfMissingFiles(PILLAR1);
-        verify(mockedDB, times(2)).getNumberOfMissingFiles(PILLAR1);
+        cache.getNumberOfMissingFiles(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(2)).getNumberOfMissingFiles(PILLAR1, COLLECTION1);
 
         addStep("Call getNumberOfMissingFiles again",
                 "The cache value should be used, eg. the db should not be used.");
-        cache.getNumberOfMissingFiles(PILLAR1);
-        verify(mockedDB, times(2)).getNumberOfMissingFiles(PILLAR1);
+        cache.getNumberOfMissingFiles(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(2)).getNumberOfMissingFiles(PILLAR1, COLLECTION1);
 
         addStep("Call setOldUnknownFilesToMissing and call getNumberOfMissingFiles again",
                 "The db should be read for all pillars as the setOldUnknownFilesToMissing invalidates the .");
         reset(mockedDB);
-        cache.setOldUnknownFilesToMissing();
-        cache.getNumberOfMissingFiles(PILLAR1);
-        cache.getNumberOfMissingFiles(PILLAR2);
-        verify(mockedDB, times(1)).getNumberOfMissingFiles(PILLAR1);
-        verify(mockedDB, times(1)).getNumberOfMissingFiles(PILLAR2);
+        cache.setOldUnknownFilesToMissing(COLLECTION1);
+        cache.getNumberOfMissingFiles(PILLAR1, COLLECTION1);
+        cache.getNumberOfMissingFiles(PILLAR2, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfMissingFiles(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfMissingFiles(PILLAR2, COLLECTION1);
 
         addStep("Call deleteFileIdEntry and call getNumberOfMissingFiles again",
                 "The db should be read for all pillars as the deleteFileIdEntry invalidates the .");
         reset(mockedDB);
-        cache.deleteFileIdEntry("");
-        cache.getNumberOfMissingFiles(PILLAR1);
-        cache.getNumberOfMissingFiles(PILLAR2);
-        verify(mockedDB, times(1)).getNumberOfMissingFiles(PILLAR1);
-        verify(mockedDB, times(1)).getNumberOfMissingFiles(PILLAR2);
+        cache.deleteFileIdEntry(DUMMY_FILE_ID, DUMMY_COLLECTION_ID);
+        cache.getNumberOfMissingFiles(PILLAR1, COLLECTION1);
+        cache.getNumberOfMissingFiles(PILLAR2, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfMissingFiles(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfMissingFiles(PILLAR2, COLLECTION1);
     }
 
     @Test(groups = {"regressiontest"})
@@ -102,42 +105,42 @@ public class IntegrityCacheTest extends ExtendedTestCase {
         IntegrityCache cache = new IntegrityCache(mockedDB);
         addStep("Call getNumberOfFiles the first time",
                 "The the db should be used.");
-        cache.getNumberOfFiles(PILLAR1);
-        verify(mockedDB, times(1)).getNumberOfFiles(PILLAR1);
+        cache.getNumberOfFiles(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfFiles(PILLAR1, COLLECTION1);
 
         addStep("Call getNumberOfFiles again",
                 "The cache value should be used, eg. the db should not be used.");
-        cache.getNumberOfFiles(PILLAR1);
-        verify(mockedDB, times(1)).getNumberOfFiles(PILLAR1);
+        cache.getNumberOfFiles(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfFiles(PILLAR1, COLLECTION1);
 
         addStep("Called setFile followed by a getNumberOfFiles call",
                 "The cache value should still be used as the refreshPeriodAfterDirtyMark hasn't been exceeded.");
-        cache.addFileIDs(null, PILLAR1);
-        cache.getNumberOfFiles(PILLAR1);
-        verify(mockedDB, times(1)).getNumberOfFiles(PILLAR1);
+        cache.addFileIDs(null, PILLAR1, COLLECTION1);
+        cache.getNumberOfFiles(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfFiles(PILLAR1, COLLECTION1);
 
         addStep("Set refreshPeriodAfterDirtyMark to 1 second, called setFile followed by a " +
                 "getNumberOfFiles call",
                 "The db value should be reread");
         cache.refreshPeriodAfterDirtyMark = 1;
-        cache.addFileIDs(null, PILLAR1);
+        cache.addFileIDs(null, PILLAR1, COLLECTION1);
         Thread.sleep(1001);
-        cache.getNumberOfFiles(PILLAR1);
-        verify(mockedDB, times(2)).getNumberOfFiles(PILLAR1);
+        cache.getNumberOfFiles(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(2)).getNumberOfFiles(PILLAR1, COLLECTION1);
 
         addStep("Call getNumberOfFiles again",
                 "The cache value should be used, eg. the db should not be used.");
-        cache.getNumberOfFiles(PILLAR1);
-        verify(mockedDB, times(2)).getNumberOfFiles(PILLAR1);
+        cache.getNumberOfFiles(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(2)).getNumberOfFiles(PILLAR1, COLLECTION1);
 
         addStep("Call deleteFileIdEntry and call getNumberOfFiles again",
                 "The db should be read for all pillars as the deleteFileIdEntry invalidates the .");
         reset(mockedDB);
-        cache.deleteFileIdEntry("");
-        cache.getNumberOfFiles(PILLAR1);
-        cache.getNumberOfFiles(PILLAR2);
-        verify(mockedDB, times(1)).getNumberOfFiles(PILLAR1);
-        verify(mockedDB, times(1)).getNumberOfFiles(PILLAR2);
+        cache.deleteFileIdEntry(DUMMY_FILE_ID, COLLECTION1);
+        cache.getNumberOfFiles(PILLAR1, COLLECTION1);
+        cache.getNumberOfFiles(PILLAR2, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfFiles(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfFiles(PILLAR2, COLLECTION1);
     }
 
 
@@ -147,67 +150,67 @@ public class IntegrityCacheTest extends ExtendedTestCase {
         IntegrityCache cache = new IntegrityCache(mockedDB);
         addStep("Call getNumberOfMissingFiles the first time",
                 "The the db should be used.");
-        cache.getNumberOfChecksumErrors(PILLAR1);
-        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR1);
+        cache.getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
 
         addStep("Call getNumberOfChecksumErrors again",
                 "The cache value should be used, eg. the db should not be used.");
-        cache.getNumberOfChecksumErrors(PILLAR1);
-        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR1);
+        cache.getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
 
         addStep("Called setFileMissing followed by a getNumberOfChecksumErrors call",
                 "The cache value should still be used as the refreshPeriodAfterDirtyMark hasn't been exceeded.");
-        cache.setChecksumError("SomeFile", Arrays.asList(new String[]{PILLAR1}));
-        cache.getNumberOfChecksumErrors(PILLAR1);
-        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR1);
+        cache.setChecksumError("SomeFile", Arrays.asList(new String[]{PILLAR1}), COLLECTION1);
+        cache.getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
 
         addStep("Set refreshPeriodAfterDirtyMark to 1 second, called setChecksumError followed by a " +
                 "getNumberOfChecksumErrors call",
                 "The db value should be reread");
         cache.refreshPeriodAfterDirtyMark = 1;
-        cache.setChecksumError("SomeFile", Arrays.asList(new String[]{PILLAR1}));
+        cache.setChecksumError("SomeFile", Arrays.asList(new String[]{PILLAR1}), COLLECTION1);
         Thread.sleep(1001);
-        cache.getNumberOfChecksumErrors(PILLAR1);
-        verify(mockedDB, times(2)).getNumberOfChecksumErrors(PILLAR1);
+        cache.getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(2)).getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
 
         addStep("Called setChecksumAgreement followed by a getNumberOfChecksumErrors call",
                 "The db value should be reread");
-        cache.setChecksumAgreement("SomeFile", Arrays.asList(new String[]{PILLAR1}));
+        cache.setChecksumAgreement("SomeFile", Arrays.asList(new String[]{PILLAR1}), COLLECTION1);
         Thread.sleep(1001);
-        cache.getNumberOfChecksumErrors(PILLAR1);
-        verify(mockedDB, times(3)).getNumberOfChecksumErrors(PILLAR1);
+        cache.getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(3)).getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
 
         addStep("Call getNumberOfChecksumErrors again",
                 "The cache value should be used, eg. the db should not be used.");
-        cache.getNumberOfChecksumErrors(PILLAR1);
-        verify(mockedDB, times(3)).getNumberOfChecksumErrors(PILLAR1);
+        cache.getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(3)).getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
 
         addStep("Call setFilesWithConsistentChecksumToValid and call getNumberOfChecksumErrors again",
                 "The db should be read for all pillars as the setOldUnknownFilesToMissing invalidates the .");
         reset(mockedDB);
-        cache.setFilesWithConsistentChecksumToValid();
-        cache.getNumberOfChecksumErrors(PILLAR1);
-        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR1);
-        cache.getNumberOfChecksumErrors(PILLAR2);
-        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR2);
+        cache.setFilesWithConsistentChecksumToValid(COLLECTION1);
+        cache.getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
+        cache.getNumberOfChecksumErrors(PILLAR2, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR2, COLLECTION1);
 
         addStep("Call setFilesWithConsistentChecksumToValid and call getNumberOfChecksumErrors again",
                 "The db should be read for all pillars as the setOldUnknownFilesToMissing invalidates the .");
         reset(mockedDB);
-        cache.setFilesWithConsistentChecksumToValid();
-        cache.getNumberOfChecksumErrors(PILLAR1);
-        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR1);
-        cache.getNumberOfChecksumErrors(PILLAR2);
-        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR2);
+        cache.setFilesWithConsistentChecksumToValid(COLLECTION1);
+        cache.getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
+        cache.getNumberOfChecksumErrors(PILLAR2, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR2, COLLECTION1);
 
         addStep("Call deleteFileIdEntry and call getNumberOfChecksumErrors again",
                 "The db should be read for all pillars as the deleteFileIdEntry invalidates the .");
         reset(mockedDB);
-        cache.deleteFileIdEntry("");
-        cache.getNumberOfChecksumErrors(PILLAR1);
-        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR1);
-        cache.getNumberOfChecksumErrors(PILLAR2);
-        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR2);
+        cache.deleteFileIdEntry(DUMMY_FILE_ID, DUMMY_COLLECTION_ID);
+        cache.getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR1, COLLECTION1);
+        cache.getNumberOfChecksumErrors(PILLAR2, COLLECTION1);
+        verify(mockedDB, times(1)).getNumberOfChecksumErrors(PILLAR2, COLLECTION1);
     }
 
 }

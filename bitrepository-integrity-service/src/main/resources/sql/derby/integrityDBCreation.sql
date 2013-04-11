@@ -70,10 +70,16 @@ CREATE TABLE files (
                                  -- The key for a given file.
     file_id VARCHAR(255) NOT NULL,
                                  -- The id for the file.
-    creation_date TIMESTAMP,      -- The date for the creation of the file.
+    creation_date TIMESTAMP,     -- The date for the creation of the file.
                                  -- Or the time where it was first seen by
                                  -- the integrity client.
-    UNIQUE (file_id)
+    collection_key BIGINT NOT NULL,
+                                 -- The key of the collection that the file belongs to. 
+    FOREIGN KEY (collection_key) REFERENCES collections(collection_key),
+                                 -- Foreign key constraint on collection_key, enforcing the presence of the reffered id
+    UNIQUE (file_id, collection_key)
+                                 -- Enforce that a file can only exist once in a collection
+    
 );
 
 CREATE INDEX fileindex ON files (file_id);

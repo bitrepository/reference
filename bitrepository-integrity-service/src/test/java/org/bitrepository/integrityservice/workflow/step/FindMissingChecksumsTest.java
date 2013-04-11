@@ -33,13 +33,14 @@ import org.testng.annotations.Test;
 public class FindMissingChecksumsTest extends ExtendedTestCase {
     public static final String TEST_PILLAR_1 = "test-pillar-1";
     public static final String TEST_FILE_1 = "test-file-1";
+    public static final String TEST_COLLECTION = "collection1";
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testGoodCase() {
         addDescription("Test the step for finding missing checksum when the report is positive.");
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
         MockChecker checker = new MockChecker();
-        FindMissingChecksumsStep step = new FindMissingChecksumsStep(checker, alerter);
+        FindMissingChecksumsStep step = new FindMissingChecksumsStep(checker, alerter, TEST_COLLECTION);
         
         step.performStep();
         Assert.assertEquals(alerter.getCallsForIntegrityFailed(), 0);
@@ -55,13 +56,13 @@ public class FindMissingChecksumsTest extends ExtendedTestCase {
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
         MockChecker checker = new MockChecker() {
             @Override
-            public MissingChecksumReportModel checkMissingChecksums() {
-                MissingChecksumReportModel res = super.checkMissingChecksums();
+            public MissingChecksumReportModel checkMissingChecksums(String collectionId) {
+                MissingChecksumReportModel res = super.checkMissingChecksums(collectionId);
                 res.reportMissingChecksum(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1));
                 return res;
             }
         };
-        FindMissingChecksumsStep step = new FindMissingChecksumsStep(checker, alerter);
+        FindMissingChecksumsStep step = new FindMissingChecksumsStep(checker, alerter, TEST_COLLECTION);
         
         step.performStep();
         Assert.assertEquals(alerter.getCallsForIntegrityFailed(), 1);

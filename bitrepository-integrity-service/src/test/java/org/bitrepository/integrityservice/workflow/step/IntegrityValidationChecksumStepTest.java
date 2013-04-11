@@ -32,13 +32,14 @@ public class IntegrityValidationChecksumStepTest extends ExtendedTestCase {
     public static final String TEST_PILLAR_1 = "test-pillar-1";
     public static final String TEST_FILE_1 = "test-file-1";
     public static final String DEFAULT_CHECKSUM = "0123456789";
+    public static final String TEST_COLLECTION = "collection1";
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testGoodCase() {
         addDescription("Test the step for integrity validation of checksum when the report is positive.");
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
         MockChecker checker = new MockChecker();
-        IntegrityValidationChecksumStep step = new IntegrityValidationChecksumStep(checker, alerter);
+        IntegrityValidationChecksumStep step = new IntegrityValidationChecksumStep(checker, alerter, TEST_COLLECTION);
         
         step.performStep();
         Assert.assertEquals(alerter.getCallsForIntegrityFailed(), 0);
@@ -54,13 +55,13 @@ public class IntegrityValidationChecksumStepTest extends ExtendedTestCase {
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
         MockChecker checker = new MockChecker() {
             @Override
-            public ChecksumReportModel checkChecksum() {
-                ChecksumReportModel res = super.checkChecksum();
+            public ChecksumReportModel checkChecksum(String collectionId) {
+                ChecksumReportModel res = super.checkChecksum(collectionId);
                 res.reportChecksumIssue(TEST_FILE_1, TEST_PILLAR_1, DEFAULT_CHECKSUM);
                 return res;
             }
         };
-        IntegrityValidationChecksumStep step = new IntegrityValidationChecksumStep(checker, alerter);
+        IntegrityValidationChecksumStep step = new IntegrityValidationChecksumStep(checker, alerter, TEST_COLLECTION);
         
         step.performStep();
         Assert.assertEquals(alerter.getCallsForIntegrityFailed(), 1);

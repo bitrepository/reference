@@ -80,7 +80,7 @@ public class RemoveDeletableFileIDsFromDatabaseStep extends AbstractWorkFlowStep
             auditManager.addAuditEvent("test-collection", fileId, settings.getComponentID(),
                     "Deleting entry in database.", "The file has been reported missing at all pillars, and will thus "
                     + "be removed from integrity checking", FileAction.DELETE_FILE);
-            cache.deleteFileIdEntry(fileId);
+            cache.deleteFileIdEntry(fileId, report.getCollectionID());
         }
     }
 

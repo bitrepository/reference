@@ -71,6 +71,8 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
     public static final String DEFAULT_CHECKSUM = "0123456789";
 
     public static final Long DEFAULT_TIMEOUT = 60000L;
+    
+    String TEST_COLLECTION;
 
     @BeforeClass (alwaysRun = true)
     public void setup() {
@@ -78,6 +80,7 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_1);
         settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0L);
+        TEST_COLLECTION = settings.getRepositorySettings().getCollections().getCollection().get(0).getID(); 
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
@@ -98,10 +101,12 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
             }
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
-        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()));
+        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()));
         MockChecker checker = new MockChecker();
         MockAuditManager auditManager = new MockAuditManager();
-        CompleteIntegrityCheck workflow = new CompleteIntegrityCheck(settings, collector, store, checker, alerter, auditManager);
+        CompleteIntegrityCheck workflow = new CompleteIntegrityCheck(settings, 
+                collector, store, checker, alerter, auditManager, TEST_COLLECTION);
 
         workflow.start();
 
@@ -135,39 +140,40 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
             }
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
-        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()));
+        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()));
         MockAuditManager auditManager = new MockAuditManager();
         MockChecker checker = new MockChecker() {
             @Override
             public ObsoleteChecksumReportModel checkObsoleteChecksums(
-                MaxChecksumAgeProvider maxChecksumAgeProvider, Collection<String> pillarIDs) {
+                MaxChecksumAgeProvider maxChecksumAgeProvider, Collection<String> pillarIDs, String collectionId) {
                 ObsoleteChecksumReportModel res = super.checkObsoleteChecksums(
-                    maxChecksumAgeProvider, pillarIDs);
+                    maxChecksumAgeProvider, pillarIDs, collectionId);
                 res.reportObsoleteChecksum(TEST_FILE_1, TEST_PILLAR_1, CalendarUtils.getEpoch());
                 return res;
             }
             @Override
-            public MissingChecksumReportModel checkMissingChecksums() {
-                MissingChecksumReportModel res = super.checkMissingChecksums();
+            public MissingChecksumReportModel checkMissingChecksums(String collectionId) {
+                MissingChecksumReportModel res = super.checkMissingChecksums(collectionId);
                 res.reportMissingChecksum(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1));
                 return res;
             }
             @Override
-            public ChecksumReportModel checkChecksum() {
-                ChecksumReportModel res = super.checkChecksum();
+            public ChecksumReportModel checkChecksum(String collectionId) {
+                ChecksumReportModel res = super.checkChecksum(collectionId);
                 res.reportChecksumIssue(TEST_FILE_1, TEST_PILLAR_1, DEFAULT_CHECKSUM);
                 return res;
             }
             @Override
-            public MissingFileReportModel checkFileIDs(FileIDs fileIDs) {
-                MissingFileReportModel res = super.checkFileIDs(fileIDs);
+            public MissingFileReportModel checkFileIDs(FileIDs fileIDs, String collectionId) {
+                MissingFileReportModel res = super.checkFileIDs(fileIDs, collectionId);
                 res.reportMissingFile(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1));
                 return res;
             }
         };
 
         CompleteIntegrityCheck workflow = new CompleteIntegrityCheck(settings, collector, store, checker, alerter, 
-                auditManager);
+                auditManager, TEST_COLLECTION);
 
         workflow.start();
 
@@ -192,7 +198,7 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
                     ContributorQuery[] queries, EventHandler eventHandler) {
                 super.getChecksums(pillarIDs, checksumType, auditTrailInformation, queries, eventHandler);
                 ChecksumsCompletePillarEvent event = new ChecksumsCompletePillarEvent(
-                        TEST_PILLAR_1, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
+                        TEST_PILLAR_1, TEST_COLLECTION, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
                         createChecksumSpecTYPE(), false);
                 eventHandler.handleEvent(event);
                 eventHandler.handleEvent(new CompleteEvent(null));
@@ -202,17 +208,19 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
                     EventHandler eventHandler) {
                 super.getFileIDs(pillarIDs, auditTrailInformation, queries, eventHandler);
                 FileIDsCompletePillarEvent event = new FileIDsCompletePillarEvent(
-                        TEST_PILLAR_1, createResultingFileIDs(TEST_FILE_1), false);
+                        TEST_PILLAR_1, TEST_COLLECTION, createResultingFileIDs(TEST_FILE_1), false);
                 eventHandler.handleEvent(event);
 
                 eventHandler.handleEvent(new CompleteEvent(null));
             }
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
-        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()));
+        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()));
         MockChecker checker = new MockChecker();
         MockAuditManager auditManager = new MockAuditManager();
-        CompleteIntegrityCheck workflow = new CompleteIntegrityCheck(settings, collector, store, checker, alerter, auditManager);
+        CompleteIntegrityCheck workflow = new CompleteIntegrityCheck(
+                settings, collector, store, checker, alerter, auditManager, TEST_COLLECTION);
 
         workflow.start();
 
