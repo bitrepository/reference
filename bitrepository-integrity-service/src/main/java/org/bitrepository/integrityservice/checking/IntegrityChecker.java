@@ -39,31 +39,35 @@ public interface IntegrityChecker {
      * Validates that the pillars contain the requested fileIDs. 
      * 
      * @param fileIDs The ids of the files to validate (e.g. a list of files or all files).
+     * @param collectionId The collection to validate the files from
      * @return Whether the given file ids where validated.
      */
-    MissingFileReportModel checkFileIDs(FileIDs fileIDs);
+    MissingFileReportModel checkFileIDs(FileIDs fileIDs, String collectionId);
     
     /**
      * Validates the checksum of all the files for all the pillars.
-     * 
+     * @param collectionId The collection to validate the checksums in
      * @return Whether the checksums of the given file ids where validated.
      */
-    IntegrityReportModel checkChecksum();
+    IntegrityReportModel checkChecksum(String collectionId);
     
     /**
      * Validates whether any checksums are missing from any pillar, even though the pillar contains 
      * the file.
      * 
+     * @param collectionId The collection to check for missing checksums
      * @return The report containing the information about any missing checksums
      */
-    IntegrityReportModel checkMissingChecksums();
+    IntegrityReportModel checkMissingChecksums(String collectionId);
     
     /**
      * Validates whether any files are older than a given interval.
      * 
      * @param maxChecksumAgeProvider Defines when to mark checksums as obsolete.
+     * @param pillarIDs the collection of pillars to check for obsolete checksums
+     * @param collectionId the collection which to check for obsolete checksums
      * @return The report for the check.
      */
     IntegrityReportModel checkObsoleteChecksums(MaxChecksumAgeProvider maxChecksumAgeProvider,
-        Collection<String> pillarIDs);
+        Collection<String> pillarIDs, String collectionId);
 }

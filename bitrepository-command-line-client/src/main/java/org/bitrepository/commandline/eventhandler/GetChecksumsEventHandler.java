@@ -5,6 +5,9 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.resultmodel.GetChecksumsResultModel;
 
+/**
+ * Event handler for paging through GetChecksums results 
+ */
 public class GetChecksumsEventHandler extends PagingEventHandler {
 
     private GetChecksumsResultModel model;

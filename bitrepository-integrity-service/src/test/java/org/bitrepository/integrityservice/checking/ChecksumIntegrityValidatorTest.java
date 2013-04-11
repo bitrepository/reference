@@ -56,6 +56,8 @@ public class ChecksumIntegrityValidatorTest extends ExtendedTestCase {
     
     public static final String FILE_1 = "test-file-1";
     
+    String TEST_COLLECTION;
+    
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
@@ -64,6 +66,7 @@ public class ChecksumIntegrityValidatorTest extends ExtendedTestCase {
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_2);
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_3);
         settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0L);
+        TEST_COLLECTION = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();        
         auditManager = new MockAuditManager();
     }
     
@@ -72,10 +75,10 @@ public class ChecksumIntegrityValidatorTest extends ExtendedTestCase {
         addDescription("Test the checksum integrity validator without any data in the cache.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getCollections().get(0));
+                settings.getCollections());
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        ChecksumReportModel report = validator.generateReport();
+        ChecksumReportModel report = validator.generateReport(TEST_COLLECTION);
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
     }
     
@@ -84,18 +87,18 @@ public class ChecksumIntegrityValidatorTest extends ExtendedTestCase {
         addDescription("Test the checksum integrity validator when all pillars have similar data.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getCollections().get(0));
+                settings.getCollections());
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csData, TEST_PILLAR_1);
-        cache.addChecksums(csData, TEST_PILLAR_2);
-        cache.addChecksums(csData, TEST_PILLAR_3);
+        cache.addChecksums(csData, TEST_PILLAR_1, TEST_COLLECTION);
+        cache.addChecksums(csData, TEST_PILLAR_2, TEST_COLLECTION);
+        cache.addChecksums(csData, TEST_PILLAR_3, TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        ChecksumReportModel report = validator.generateReport();
+        ChecksumReportModel report = validator.generateReport(TEST_COLLECTION);
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
-        for(FileInfo fi : cache.getFileInfos(FILE_1)) {
+        for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
             Assert.assertEquals(fi.getChecksum(), "1234cccc4321");
             Assert.assertEquals(fi.getChecksumState(), ChecksumState.VALID);
             Assert.assertEquals(fi.getFileState(), FileState.EXISTING);
@@ -107,15 +110,15 @@ public class ChecksumIntegrityValidatorTest extends ExtendedTestCase {
         addDescription("Test the checksum integrity validator when one pillar is missing the data.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getCollections().get(0));
+                settings.getCollections());
         
         addStep("Update the cache with identitical data for both pillars.", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csData, TEST_PILLAR_1);
-        cache.addChecksums(csData, TEST_PILLAR_2);
+        cache.addChecksums(csData, TEST_PILLAR_1, TEST_COLLECTION);
+        cache.addChecksums(csData, TEST_PILLAR_2, TEST_COLLECTION);
         
         addStep("Validate the file ids", "No integrity issues.");
-        ChecksumReportModel report = validator.generateReport();
+        ChecksumReportModel report = validator.generateReport(TEST_COLLECTION);
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
         Assert.assertEquals(report.getFilesWithIssues().size(), 0);
     }
@@ -125,23 +128,23 @@ public class ChecksumIntegrityValidatorTest extends ExtendedTestCase {
         addDescription("Test the checksum integrity validator when only two pillar has data, but it it different.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getCollections().get(0));
+                settings.getCollections());
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData1 = createChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csData1, TEST_PILLAR_1);
+        cache.addChecksums(csData1, TEST_PILLAR_1, TEST_COLLECTION);
         List<ChecksumDataForChecksumSpecTYPE> csData2 = createChecksumData("1c2c3c44c3c2c1", FILE_1);
-        cache.addChecksums(csData2, TEST_PILLAR_2);
+        cache.addChecksums(csData2, TEST_PILLAR_2, TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should have integrity issues. No entry should be valid.");
-        ChecksumReportModel report = validator.generateReport();
+        ChecksumReportModel report = validator.generateReport(TEST_COLLECTION);
         Assert.assertTrue(report.hasIntegrityIssues(), report.generateReport());
         Assert.assertEquals(report.getFilesWithIssues().size(), 1);
         Assert.assertNotNull(report.getFilesWithIssues().get(FILE_1));
         Assert.assertEquals(report.getFilesWithIssues().get(FILE_1).getFileId(), FILE_1);
         Assert.assertEquals(report.getFilesWithIssues().get(FILE_1).getPillarChecksumMap().size(), 
                 settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().size());
-        for(FileInfo fi : cache.getFileInfos(FILE_1)) {
+        for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
             Assert.assertTrue(fi.getChecksumState() != ChecksumState.VALID);
         }
     }
@@ -151,18 +154,18 @@ public class ChecksumIntegrityValidatorTest extends ExtendedTestCase {
         addDescription("Test the checksum integrity validator when all pillars have different checksums.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getCollections().get(0));
+                settings.getCollections());
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData1 = createChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csData1, TEST_PILLAR_1);
+        cache.addChecksums(csData1, TEST_PILLAR_1, TEST_COLLECTION);
         List<ChecksumDataForChecksumSpecTYPE> csData2 = createChecksumData("cccc12344321cccc", FILE_1);
-        cache.addChecksums(csData2, TEST_PILLAR_2);
+        cache.addChecksums(csData2, TEST_PILLAR_2, TEST_COLLECTION);
         List<ChecksumDataForChecksumSpecTYPE> csData3 = createChecksumData("1c2c3c44c3c2c1", FILE_1);
-        cache.addChecksums(csData3, TEST_PILLAR_3);
+        cache.addChecksums(csData3, TEST_PILLAR_3, TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should have integrity issues.");
-        ChecksumReportModel report = validator.generateReport();
+        ChecksumReportModel report = validator.generateReport(TEST_COLLECTION);
         Assert.assertTrue(report.hasIntegrityIssues(), report.generateReport());
         Assert.assertEquals(report.getFilesWithIssues().size(), 1);
         Assert.assertNotNull(report.getFilesWithIssues().get(FILE_1));
@@ -175,26 +178,26 @@ public class ChecksumIntegrityValidatorTest extends ExtendedTestCase {
         addDescription("Test the checksum integrity validator when two pillars agreee about the checksum, but the third does not.");
         IntegrityModel cache = getIntegrityModel();
         ChecksumIntegrityValidator validator = new ChecksumIntegrityValidator(cache, auditManager,
-                settings.getCollections().get(0));
+                settings.getCollections());
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csData, TEST_PILLAR_1);
-        cache.addChecksums(csData, TEST_PILLAR_2);
-        cache.addChecksums(csData, TEST_PILLAR_3);
+        cache.addChecksums(csData, TEST_PILLAR_1, TEST_COLLECTION);
+        cache.addChecksums(csData, TEST_PILLAR_2, TEST_COLLECTION);
+        cache.addChecksums(csData, TEST_PILLAR_3, TEST_COLLECTION);
         
         addStep("Validate the file ids", "No integrity issues and all should be valid");
-        ChecksumReportModel report = validator.generateReport();
+        ChecksumReportModel report = validator.generateReport(TEST_COLLECTION);
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
-        for(FileInfo fi : cache.getFileInfos(FILE_1)) {
+        for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
             Assert.assertEquals(fi.getChecksumState(), ChecksumState.VALID);
         }
         
         addStep("Add new fileids for one pillar", "The given pillar should have ChecksumState 'UNKNOWN', the others 'VALID'");
         FileIDsData fileidData = createFileIdData(FILE_1);
-        cache.addFileIDs(fileidData, TEST_PILLAR_3);
+        cache.addFileIDs(fileidData, TEST_PILLAR_3, TEST_COLLECTION);
         
-        for(FileInfo fi : cache.getFileInfos(FILE_1)) {
+        for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
             if(fi.getPillarId().equals(TEST_PILLAR_3)) {
                 Assert.assertEquals(fi.getChecksumState(), ChecksumState.UNKNOWN);
             } else {

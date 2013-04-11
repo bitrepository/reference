@@ -63,7 +63,7 @@ public class GettingChecksums extends PerformingOperationState {
             GetChecksumsFinalResponse response = (GetChecksumsFinalResponse) msg;
             boolean isPartialResult = response.isPartialResult() == null ? false : response.isPartialResult();
             getContext().getMonitor().contributorComplete(new ChecksumsCompletePillarEvent(
-                    response.getFrom(), response.getResultingChecksums(),
+                    response.getFrom(), response.getCollectionID(), response.getResultingChecksums(),
                     response.getChecksumRequestForExistingFile(), isPartialResult
                     ));
         } else {
@@ -74,7 +74,8 @@ public class GettingChecksums extends PerformingOperationState {
 
     @Override
     protected void sendRequest() {
-        context.getMonitor().requestSent("Sending GetFileIDsRequest's", activeContributors.keySet().toString());
+        context.getMonitor().requestSent("Sending GetFileIDsRequest's", activeContributors.keySet().toString(), 
+                context.getCollectionID());
         for(ContributorQuery query : context.getContributorQueries()) {
             if (activeContributors.containsKey(query.getComponentID())) {
                 GetChecksumsRequest msg = new GetChecksumsRequest();

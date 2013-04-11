@@ -12,6 +12,9 @@ import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.outputformatter.GetFileIDsOutputFormatter;
 import org.bitrepository.commandline.resultmodel.GetFileIDsResultModel;
 
+/**
+ * Wrapper class for GetFileIDsClient to handle paging through large result sets 
+ */
 public class PagingGetFileIDsClient {
 
     private final GetFileIDsClient client;

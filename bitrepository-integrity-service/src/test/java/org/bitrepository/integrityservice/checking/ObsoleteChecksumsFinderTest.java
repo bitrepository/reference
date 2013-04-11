@@ -53,6 +53,8 @@ public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
     
     public static final Long DEFAULT_TIMEOUT = 60000L;
     
+    String TEST_COLLECTIONID;
+    
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
@@ -60,6 +62,7 @@ public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_1);
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_2);
         settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0L);
+        TEST_COLLECTIONID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
         auditManager = new MockAuditManager();
     }
     
@@ -71,7 +74,7 @@ public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
         
         addStep("Validate the file ids", "Should not have integrity issues.");
         ObsoleteChecksumReportModel report = finder.generateReport(
-            new MaxChecksumAgeProvider(DEFAULT_TIMEOUT, null), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2));
+            new MaxChecksumAgeProvider(DEFAULT_TIMEOUT, null), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2), TEST_COLLECTIONID);
         Assert.assertFalse(report.hasIntegrityIssues());
     }
     
@@ -83,11 +86,11 @@ public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createNewChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csData, TEST_PILLAR_1);
+        cache.addChecksums(csData, TEST_PILLAR_1, TEST_COLLECTIONID);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
         ObsoleteChecksumReportModel report = finder.generateReport(
-            new MaxChecksumAgeProvider(DEFAULT_TIMEOUT, null), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2));
+            new MaxChecksumAgeProvider(DEFAULT_TIMEOUT, null), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2), TEST_COLLECTIONID);
         Assert.assertFalse(report.hasIntegrityIssues());
     }
 
@@ -99,11 +102,11 @@ public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createOldChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csData, TEST_PILLAR_1);
+        cache.addChecksums(csData, TEST_PILLAR_1, TEST_COLLECTIONID);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
         ObsoleteChecksumReportModel report = finder.generateReport(
-            new MaxChecksumAgeProvider(DEFAULT_TIMEOUT, null), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2));
+            new MaxChecksumAgeProvider(DEFAULT_TIMEOUT, null), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2), TEST_COLLECTIONID);
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getObsoleteChecksum().size(), 1);
         Assert.assertNotNull(report.getObsoleteChecksum().get(FILE_1));
@@ -120,13 +123,13 @@ public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csOldData = createOldChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csOldData, TEST_PILLAR_1);
+        cache.addChecksums(csOldData, TEST_PILLAR_1, TEST_COLLECTIONID);
         List<ChecksumDataForChecksumSpecTYPE> csNewData = createNewChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csNewData, TEST_PILLAR_2);
+        cache.addChecksums(csNewData, TEST_PILLAR_2, TEST_COLLECTIONID);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
         ObsoleteChecksumReportModel report = finder.generateReport(
-            new MaxChecksumAgeProvider(DEFAULT_TIMEOUT, null), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2));
+            new MaxChecksumAgeProvider(DEFAULT_TIMEOUT, null), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2), TEST_COLLECTIONID);
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getObsoleteChecksum().size(), 1);
         Assert.assertNotNull(report.getObsoleteChecksum().get(FILE_1));
@@ -145,15 +148,15 @@ public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
 
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csYearData = createWeekOldChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csYearData, TEST_PILLAR_1);
-        cache.addChecksums(csYearData, TEST_PILLAR_2);
+        cache.addChecksums(csYearData, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.addChecksums(csYearData, TEST_PILLAR_2, TEST_COLLECTIONID);
         ObsoleteChecksumSettings obsoleteChecksumSettings = new ObsoleteChecksumSettings();
         obsoleteChecksumSettings.getMaxChecksumAgeForPillar().add(MaxChecksumAgeProvider.createMaxChecksumAgeForPillar(
             TEST_PILLAR_1, TimeUtils.MS_PER_YEAR*2));
 
         addStep("Validate the file ids", "Should not have integrity issues.");
         ObsoleteChecksumReportModel report = finder.generateReport( new MaxChecksumAgeProvider(
-                DEFAULT_TIMEOUT, obsoleteChecksumSettings), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2));
+                DEFAULT_TIMEOUT, obsoleteChecksumSettings), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2), TEST_COLLECTIONID);
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getObsoleteChecksum().size(), 1);
         Assert.assertNotNull(report.getObsoleteChecksum().get(FILE_1));
@@ -169,12 +172,12 @@ public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createOldChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csData, TEST_PILLAR_1);
-        cache.setFileMissing(FILE_1, Arrays.asList(TEST_PILLAR_1));
+        cache.addChecksums(csData, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.setFileMissing(FILE_1, Arrays.asList(TEST_PILLAR_1), TEST_COLLECTIONID);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
         ObsoleteChecksumReportModel report = finder.generateReport(
-            new MaxChecksumAgeProvider(DEFAULT_TIMEOUT, null), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2));
+            new MaxChecksumAgeProvider(DEFAULT_TIMEOUT, null), Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2), TEST_COLLECTIONID);
         Assert.assertFalse(report.hasIntegrityIssues());
     }
     

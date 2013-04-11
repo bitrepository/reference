@@ -39,8 +39,8 @@ public class FileIDsCompletePillarEvent extends ContributorCompleteEvent {
      * @param result The result returned by the pillar.
      * @param pillarID The pillar which generated the result
      */
-    public FileIDsCompletePillarEvent(String pillarID, ResultingFileIDs result, boolean isPartialResult) {
-        super(pillarID);
+    public FileIDsCompletePillarEvent(String pillarID, String collectionID, ResultingFileIDs result, boolean isPartialResult) {
+        super(pillarID, collectionID);
         this.result = result;
         this.isPartialResult = isPartialResult;
     }

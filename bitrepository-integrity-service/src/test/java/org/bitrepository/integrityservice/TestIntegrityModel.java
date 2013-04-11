@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -66,6 +67,10 @@ public class TestIntegrityModel implements IntegrityModel {
     private Map<String, CollectionFileIDInfo> cache = Collections.synchronizedMap(new HashMap<String,
         CollectionFileIDInfo>());
 
+    private String makeCacheKey(String fileId, String collectionId) {
+        return fileId + "-" + collectionId;
+    }
+    
     /**
      * Constructor.
      */
@@ -74,13 +79,15 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public void addFileIDs(FileIDsData data, String pillarId) {
+    public void addFileIDs(FileIDsData data, String pillarId, String collectionId) {
         for(FileIDsDataItem fileId : data.getFileIDsDataItems().getFileIDsDataItem()) {
-            log.debug("Adding/updating fileId '" + fileId.getFileID() + "' for the pillar '" + pillarId + "'");
-            if(!cache.containsKey(fileId.getFileID())) {
-                instantiateFileInfoListForFileId(fileId.getFileID());
+            log.debug("Adding/updating fileId '" + fileId.getFileID() + "' for the pillar '" + pillarId + "'" +
+            		" in collection '" + collectionId + "'");
+            String cacheKey = makeCacheKey(fileId.getFileID(), collectionId);
+            if(!cache.containsKey(cacheKey)) {
+                instantiateFileInfoListForFileId(fileId.getFileID(), collectionId);
             }
-            updateFileId(fileId, pillarId);
+            updateFileId(fileId, pillarId, collectionId);
         }
     }
 
@@ -89,26 +96,27 @@ public class TestIntegrityModel implements IntegrityModel {
      * @param fileIdData The file id data to update with.
      * @param pillarId The id of pillar who delivered these file id data.
      */
-    private void updateFileId(FileIDsDataItem fileIdData, String pillarId) {
-        CollectionFileIDInfo fileInfos = cache.get(fileIdData.getFileID());
+    private void updateFileId(FileIDsDataItem fileIdData, String pillarId, String collectionId) {
+        String cacheKey = makeCacheKey(fileIdData.getFileID(), collectionId);
+        CollectionFileIDInfo fileInfos = cache.get(cacheKey);
         if(fileInfos == null) {
             fileInfos = new CollectionFileIDInfo(fileIdData.getFileID());
         }
 
         fileInfos.updateFileIDs(fileIdData, pillarId);
-        cache.put(fileIdData.getFileID(), fileInfos);
+        cache.put(cacheKey, fileInfos);
     }
 
     @Override
-    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarId) {
+    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarId, String collectionId) {
         for(ChecksumDataForChecksumSpecTYPE checksumResult : data) {
             log.debug("Adding/updating checksums for file '" + checksumResult.getFileID() + "' for pillar '"
-                + pillarId + "'");
-
-            if(!cache.containsKey(checksumResult.getFileID())) {
-                instantiateFileInfoListForFileId(checksumResult.getFileID());
+                + pillarId + "' in collection '" + collectionId + "'");
+            String cacheKey = makeCacheKey(checksumResult.getFileID(), collectionId);
+            if(!cache.containsKey(cacheKey)) {
+                instantiateFileInfoListForFileId(checksumResult.getFileID(), collectionId);
             }
-            updateChecksum(checksumResult, pillarId);
+            updateChecksum(checksumResult, pillarId, collectionId);
         }
     }
 
@@ -117,38 +125,47 @@ public class TestIntegrityModel implements IntegrityModel {
      * @param checksumData The results of a checksum calculation.
      * @param pillarId The id of the pillar, where it has been calculated.
      */
-    private void updateChecksum(ChecksumDataForChecksumSpecTYPE checksumData, String pillarId) {
-        CollectionFileIDInfo fileInfos = cache.get(checksumData.getFileID());
+    private void updateChecksum(ChecksumDataForChecksumSpecTYPE checksumData, String pillarId, String collectionId) {
+        String cacheKey = makeCacheKey(checksumData.getFileID(), collectionId);
+        CollectionFileIDInfo fileInfos = cache.get(cacheKey);
 
         fileInfos.updateChecksums(checksumData, pillarId);
-        cache.put(checksumData.getFileID(), fileInfos);
+        cache.put(cacheKey, fileInfos);
     }
 
     /**
      * Instantiates a new List for the file id infos for a given file id.
      * @param fileId The id of the file to be inserted into the cache. 
      */
-    private synchronized void instantiateFileInfoListForFileId(String fileId) {
-        if(cache.containsKey(fileId)) {
+    private synchronized void instantiateFileInfoListForFileId(String fileId, String collectionId) {
+        String cacheKey = makeCacheKey(fileId, collectionId);
+        if(cache.containsKey(cacheKey)) {
             log.warn("Attempt to instantiate file, which already exists, averted");
             return;
         }
         CollectionFileIDInfo fileIdInfo = new CollectionFileIDInfo(fileId);
-        cache.put(fileId, fileIdInfo);
+        cache.put(cacheKey, fileIdInfo);
     }
 
     @Override
-    public List<FileInfo> getFileInfos(String fileId) {
-        if(cache.containsKey(fileId)) {
-            return cache.get(fileId).getFileIDInfos();
+    public List<FileInfo> getFileInfos(String fileId, String collectionId) {
+        String cacheKey = makeCacheKey(fileId, collectionId);
+        if(cache.containsKey(cacheKey)) {
+            return cache.get(cacheKey).getFileIDInfos();
         } else {
             return new ArrayList<FileInfo>();
         }
     }
 
     @Override
-    public Collection<String> getAllFileIDs() {
-        return cache.keySet();
+    public Collection<String> getAllFileIDs(String collectionId) {
+        Set<String> files = new HashSet<String>();
+        for(String file : cache.keySet()) {
+            if(file.endsWith("-" + collectionId)) {
+                files.add(cache.get(file).getFileIDInfos().get(0).getFileId());
+            }
+        }
+        return files;
     }
 
     /**
@@ -262,12 +279,15 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public long getNumberOfFiles(String pillarId) {
+    public long getNumberOfFiles(String pillarId, String collectionID) {
         long res = 0L;
-        for(CollectionFileIDInfo fileinfos : cache.values()) {
-            for(FileInfo fi : fileinfos.fileIDInfos) {
-                if((fi.getPillarId() == pillarId) && (fi.getFileState() == FileState.EXISTING)) {
-                    res++;
+        for(String key : cache.keySet()) {
+            if(key.endsWith("-" + collectionID)) {
+                CollectionFileIDInfo fileinfos = cache.get(key);
+                for(FileInfo fi : fileinfos.fileIDInfos) {
+                    if((fi.getPillarId() == pillarId) && (fi.getFileState() == FileState.EXISTING)) {
+                        res++;
+                    }
                 }
             }
         }
@@ -275,12 +295,31 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public long getNumberOfMissingFiles(String pillarId) {
+    public long getNumberOfMissingFiles(String pillarId, String collectionID) {
         long res = 0L;
-        for(CollectionFileIDInfo fileinfos : cache.values()) {
-            for(FileInfo fi : fileinfos.fileIDInfos) {
-                if((fi.getPillarId() == pillarId) && (fi.getFileState() == FileState.MISSING)) {
-                    res++;
+        for(String key : cache.keySet()) {
+            if(key.endsWith("-" + collectionID)) {
+                CollectionFileIDInfo fileinfos = cache.get(key);
+                for(FileInfo fi : fileinfos.fileIDInfos) {
+                    if((fi.getPillarId() == pillarId) && (fi.getFileState() == FileState.MISSING)) {
+                        res++;
+                    }
+                }    
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public long getNumberOfChecksumErrors(String pillarId, String collectionID) {
+        long res = 0L;
+        for(String key : cache.keySet()) {
+            if(key.endsWith("-" + collectionID)) {
+                CollectionFileIDInfo fileinfos = cache.get(key);
+                for(FileInfo fi : fileinfos.fileIDInfos) {
+                    if((fi.getPillarId() == pillarId) && (fi.getChecksumState() == ChecksumState.ERROR)) {
+                        res++;
+                    }
                 }
             }
         }
@@ -288,92 +327,54 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public long getNumberOfChecksumErrors(String pillarId) {
-        long res = 0L;
-        for(CollectionFileIDInfo fileinfos : cache.values()) {
-            for(FileInfo fi : fileinfos.fileIDInfos) {
-                if((fi.getPillarId() == pillarId) && (fi.getChecksumState() == ChecksumState.ERROR)) {
-                    res++;
-                }
-            }
-        }
-        return res;
-    }
-
-    @Override
-    public void setFileMissing(String fileId, Collection<String> pillarIds) {
-        CollectionFileIDInfo fileinfos = cache.get(fileId);
+    public void setFileMissing(String fileId, Collection<String> pillarIds, String collectionId) {
+        String cacheKey = makeCacheKey(fileId, collectionId);
+        CollectionFileIDInfo fileinfos = cache.get(cacheKey);
         for(FileInfo fi : fileinfos.fileIDInfos)  {
             if(pillarIds.contains(fi.getPillarId())) {
                 fi.setFileState(FileState.MISSING);
             }
         }
-        cache.put(fileId, fileinfos);
+        cache.put(cacheKey, fileinfos);
     }
 
     @Override
-    public void setChecksumError(String fileId, Collection<String> pillarIds) {
-        CollectionFileIDInfo fileinfos = cache.get(fileId);
+    public void setChecksumError(String fileId, Collection<String> pillarIds, String collectionId) {
+        String cacheKey = makeCacheKey(fileId, collectionId);
+        CollectionFileIDInfo fileinfos = cache.get(cacheKey);
         for(FileInfo fi : fileinfos.fileIDInfos)  {
             if(pillarIds.contains(fi.getPillarId())) {
                 fi.setChecksumState(ChecksumState.ERROR);
             }
         }
-        cache.put(fileId, fileinfos);
+        cache.put(cacheKey, fileinfos);
     }
 
     @Override
-    public void setChecksumAgreement(String fileId, Collection<String> pillarIds) {
-        CollectionFileIDInfo fileinfos = cache.get(fileId);
+    public void setChecksumAgreement(String fileId, Collection<String> pillarIds, String collectionId) {
+        String cacheKey = makeCacheKey(fileId, collectionId);
+        CollectionFileIDInfo fileinfos = cache.get(cacheKey);
         for(FileInfo fi : fileinfos.fileIDInfos)  {
             if(pillarIds.contains(fi.getPillarId())) {
                 fi.setChecksumState(ChecksumState.VALID);
             }
         }
-        cache.put(fileId, fileinfos);
+        cache.put(cacheKey, fileinfos);
     }
 
     @Override
-    public void deleteFileIdEntry(String fileId) {
-        cache.remove(fileId);
+    public void deleteFileIdEntry(String fileId, String collectionId) {
+        cache.remove(makeCacheKey(fileId, collectionId));
     }
 
     @Override
-    public List<String> findMissingChecksums() {
+    public List<String> findMissingChecksums(String collectionId) {
         List<String> res = new ArrayList<String>();
-        for(CollectionFileIDInfo fileinfos : cache.values()) {
-            for(FileInfo fi : fileinfos.fileIDInfos) {
-                if((fi.getFileState() == FileState.EXISTING) && (fi.getChecksumState() == ChecksumState.UNKNOWN)) {
-                    res.add(fi.getFileId());
-                    break;
-                }
-            }
-        }
-        return res;
-    }
-
-    @Override
-    public List<String> findMissingFiles() {
-        List<String> res = new ArrayList<String>();
-        for(CollectionFileIDInfo fileinfos : cache.values()) {
-            for(FileInfo fi : fileinfos.fileIDInfos) {
-                if(fi.getFileState() == FileState.MISSING) {
-                    res.add(fi.getFileId());
-                    break;
-                }
-            }
-        }
-        return res;
-    }
-
-    @Override
-    public Collection<String> findChecksumsOlderThan(Date date, String pillarID) {
-        List<String> res = new ArrayList<String>();
-        for(CollectionFileIDInfo fileinfos : cache.values()) {
-            for(FileInfo fi : fileinfos.fileIDInfos) {
-                if (pillarID.equals(fi.getPillarId())) {
-                    if(CalendarUtils.convertFromXMLGregorianCalendar(fi.getDateForLastChecksumCheck()).getTime()
-                        < date.getTime()) {
+        for(String key : cache.keySet()) {
+            if(key.endsWith("-" + collectionId)) {
+                CollectionFileIDInfo fileinfos = cache.get(key);
+                for(FileInfo fi : fileinfos.fileIDInfos) {
+                    if((fi.getFileState() == FileState.EXISTING) && (fi.getChecksumState() == ChecksumState.UNKNOWN)) {
                         res.add(fi.getFileId());
                         break;
                     }
@@ -384,13 +385,51 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public List<String> getPillarsMissingFile(String fileId) {
-        if(!cache.containsKey(fileId))  {
+    public List<String> findMissingFiles(String collectionId) {
+        List<String> res = new ArrayList<String>();
+        for(String key : cache.keySet()) {
+            if(key.endsWith("-" + collectionId)) {
+                CollectionFileIDInfo fileinfos = cache.get(key);
+                for(FileInfo fi : fileinfos.fileIDInfos) {
+                    if(fi.getFileState() == FileState.MISSING) {
+                        res.add(fi.getFileId());
+                        break;
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public Collection<String> findChecksumsOlderThan(Date date, String pillarID, String collectionId) {
+        List<String> res = new ArrayList<String>();
+        for(String key : cache.keySet()) {
+            if(key.endsWith("-" + collectionId)) {
+                CollectionFileIDInfo fileinfos = cache.get(key);
+                for(FileInfo fi : fileinfos.fileIDInfos) {
+                    if (pillarID.equals(fi.getPillarId())) {
+                        if(CalendarUtils.convertFromXMLGregorianCalendar(fi.getDateForLastChecksumCheck()).getTime()
+                            < date.getTime()) {
+                            res.add(fi.getFileId());
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public List<String> getPillarsMissingFile(String fileId, String collectionId) {
+        String cacheKey = makeCacheKey(fileId, collectionId);
+        if(!cache.containsKey(cacheKey))  {
             return new ArrayList<String>();
         }
 
         List<String> res = new ArrayList<String>(pillarIds);
-        CollectionFileIDInfo fileinfos = cache.get(fileId);
+        CollectionFileIDInfo fileinfos = cache.get(cacheKey);
         for(FileInfo fi : fileinfos.fileIDInfos)  {
             if(fi.getFileState() == FileState.EXISTING) {
                 res.remove(fi.getPillarId());
@@ -400,37 +439,41 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public List<String> getFilesWithInconsistentChecksums() {
+    public List<String> getFilesWithInconsistentChecksums(String collectionId) {
         List<String> res = new ArrayList<String>();
         for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
-            HashSet<String> checksums = new HashSet<String>();
-            for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
-                if(fileinfo.getChecksum() != null && fileinfo.getFileState() != FileState.MISSING) {
-                    checksums.add(fileinfo.getChecksum());
+            if(collectionInfo.getKey().endsWith("-" + collectionId)) {
+                HashSet<String> checksums = new HashSet<String>();
+                for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
+                    if(fileinfo.getChecksum() != null && fileinfo.getFileState() != FileState.MISSING) {
+                        checksums.add(fileinfo.getChecksum());
+                    }
                 }
-            }
-            // more than 1 checksum, means disagreements.
-            if(checksums.size() > 1) {
-                res.add(collectionInfo.getKey());
+                // more than 1 checksum, means disagreements.
+                if(checksums.size() > 1) {
+                    res.add(collectionInfo.getValue().getFileIDInfos().get(0).getFileId());
+                }
             }
         }
         return res;
     }
 
     @Override
-    public void setFilesWithConsistentChecksumToValid() {
+    public void setFilesWithConsistentChecksumToValid(String collectionId) {
         for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
-            HashSet<String> checksums = new HashSet<String>();
-            for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
-                if(fileinfo.getChecksum() != null && fileinfo.getFileState() != FileState.MISSING) {
-                    checksums.add(fileinfo.getChecksum());
-                }
-            }
-            // 1 checksum means unanimous checksum.
-            if(checksums.size() == 1) {
+            if(collectionInfo.getKey().endsWith("-" + collectionId)) {
+                HashSet<String> checksums = new HashSet<String>();
                 for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
                     if(fileinfo.getChecksum() != null && fileinfo.getFileState() != FileState.MISSING) {
-                        fileinfo.setChecksumState(ChecksumState.VALID);
+                        checksums.add(fileinfo.getChecksum());
+                    }
+                }
+                // 1 checksum means unanimous checksum.
+                if(checksums.size() == 1) {
+                    for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
+                        if(fileinfo.getChecksum() != null && fileinfo.getFileState() != FileState.MISSING) {
+                            fileinfo.setChecksumState(ChecksumState.VALID);
+                        }
                     }
                 }
             }
@@ -438,13 +481,16 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public Date getDateForNewestFileEntryForPillar(String pillarId) {
+    public Date getDateForNewestFileEntryForPillar(String pillarId, String collectionId) {
         XMLGregorianCalendar res = CalendarUtils.getEpoch();
-        for(CollectionFileIDInfo collectionInfo : cache.values()) {
-            for(FileInfo fileInfo : collectionInfo.getFileIDInfos()) {
-                if(fileInfo.getPillarId().equals(pillarId)) {
-                    if(fileInfo.getDateForLastFileIDCheck().compare(res) == DatatypeConstants.GREATER) {
-                        res = fileInfo.getDateForLastFileIDCheck();
+        for(String key : cache.keySet()) {
+            if(key.endsWith("-" + collectionId)) {
+                CollectionFileIDInfo collectionInfo = cache.get(key);
+                for(FileInfo fileInfo : collectionInfo.getFileIDInfos()) {
+                    if(fileInfo.getPillarId().equals(pillarId)) {
+                        if(fileInfo.getDateForLastFileIDCheck().compare(res) == DatatypeConstants.GREATER) {
+                            res = fileInfo.getDateForLastFileIDCheck();
+                        }
                     }
                 }
             }
@@ -453,15 +499,18 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public Date getDateForNewestChecksumEntryForPillar(String pillarId) {
+    public Date getDateForNewestChecksumEntryForPillar(String pillarId, String collectionId) {
         XMLGregorianCalendar res = CalendarUtils.getEpoch();
-        for(CollectionFileIDInfo collectionInfo : cache.values()) {
-            for(FileInfo fileInfo : collectionInfo.getFileIDInfos()) {
-                if(fileInfo.getPillarId().equals(pillarId)) {
-                    if(fileInfo.getDateForLastChecksumCheck().compare(res) == DatatypeConstants.GREATER) {
-                        res = fileInfo.getDateForLastChecksumCheck();
+        for(String key : cache.keySet()) {
+            if(key.endsWith("-" + collectionId)) {
+                CollectionFileIDInfo collectionInfo = cache.get(key);
+                for(FileInfo fileInfo : collectionInfo.getFileIDInfos()) {
+                    if(fileInfo.getPillarId().equals(pillarId)) {
+                        if(fileInfo.getDateForLastChecksumCheck().compare(res) == DatatypeConstants.GREATER) {
+                            res = fileInfo.getDateForLastChecksumCheck();
+                        }
                     }
-                }
+                }    
             }
         }
         return CalendarUtils.convertFromXMLGregorianCalendar(res);
@@ -473,50 +522,42 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public void setAllFilesToUnknownFileState() {
+    public void setAllFilesToUnknownFileState(String collectionId) {
         for(String s : cache.keySet()) {
-            CollectionFileIDInfo collectionInfo = cache.get(s);
-            CollectionFileIDInfo info = new CollectionFileIDInfo(s);            
-            for(FileInfo fileinfo : collectionInfo.getFileIDInfos()) {
-                fileinfo.setFileState(FileState.UNKNOWN);
-                info.insertFileInfo(fileinfo, fileinfo.getPillarId());
+            if(s.endsWith("-" + collectionId)) {
+                CollectionFileIDInfo collectionInfo = cache.get(s);
+                CollectionFileIDInfo info = new CollectionFileIDInfo(s);            
+                for(FileInfo fileinfo : collectionInfo.getFileIDInfos()) {
+                    fileinfo.setFileState(FileState.UNKNOWN);
+                    info.insertFileInfo(fileinfo, fileinfo.getPillarId());
+                }
+                cache.put(s, info);
             }
-            cache.put(s, info);
         }
     }
 
     @Override
-    public void setOldUnknownFilesToMissing() {
+    public void setOldUnknownFilesToMissing(String collectionId) {
         for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
-            for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
-                if(fileinfo.getFileState() == FileState.UNKNOWN) {
-                    fileinfo.setFileState(FileState.MISSING);
+            if(collectionInfo.getKey().endsWith("-" + collectionId)) {
+                for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
+                    if(fileinfo.getFileState() == FileState.UNKNOWN) {
+                        fileinfo.setFileState(FileState.MISSING);
+                    }
                 }
             }
         }
     }
 
     @Override
-    public List<String> getFilesOnPillar(String pillarId, long minId, long maxId) {
+    public List<String> getFilesOnPillar(String pillarId, long minId, long maxId, String collectionId) {
         ArrayList<String> res = new ArrayList<String>();
         for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
-            for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
-                if(fileinfo.getPillarId().equals(pillarId) && fileinfo.getFileState() == FileState.EXISTING) {
-                    res.add(collectionInfo.getKey());
-                }
-            }
-        }
-        
-        return res.subList((int) minId, (int) maxId);
-    }
-
-    @Override
-    public List<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId) {
-        ArrayList<String> res = new ArrayList<String>();
-        for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
-            for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
-                if(fileinfo.getPillarId().equals(pillarId) && fileinfo.getFileState() == FileState.MISSING) {
-                    res.add(collectionInfo.getKey());
+            if(collectionInfo.getKey().endsWith("-" + collectionId)) {
+                for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
+                    if(fileinfo.getPillarId().equals(pillarId) && fileinfo.getFileState() == FileState.EXISTING) {
+                        res.add(collectionInfo.getKey());
+                    }
                 }
             }
         }
@@ -525,12 +566,30 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public List<String> getFilesWithChecksumErrorsAtPillar(String pillarId, long minId, long maxId) {
+    public List<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId, String collectionId) {
         ArrayList<String> res = new ArrayList<String>();
         for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
-            for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
-                if(fileinfo.getPillarId().equals(pillarId) && fileinfo.getChecksumState() == ChecksumState.ERROR) {
-                    res.add(collectionInfo.getKey());
+            if(collectionInfo.getKey().endsWith("-" + collectionId)) {
+                for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
+                    if(fileinfo.getPillarId().equals(pillarId) && fileinfo.getFileState() == FileState.MISSING) {
+                        res.add(collectionInfo.getKey());
+                    }
+                }
+            }
+        }
+        
+        return res.subList((int) minId, (int) maxId);
+    }
+
+    @Override
+    public List<String> getFilesWithChecksumErrorsAtPillar(String pillarId, long minId, long maxId, String collectionId) {
+        ArrayList<String> res = new ArrayList<String>();
+        for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
+            if(collectionInfo.getKey().endsWith("-" + collectionId)) {
+                for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
+                    if(fileinfo.getPillarId().equals(pillarId) && fileinfo.getChecksumState() == ChecksumState.ERROR) {
+                        res.add(collectionInfo.getKey());
+                    }
                 }
             }
         }

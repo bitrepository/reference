@@ -4,6 +4,9 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class for temporary storage of FileIDs result information 
+ */
 public class FileIDsResult {
 
     /** FileID */
@@ -23,12 +26,12 @@ public class FileIDsResult {
     /**
      * Updates the filesize of the file, if the filesize does not match, mark it as a unknown  
      */
-    public void updateSize(BigInteger size) {
-        if(size != null) {
-            if(this.size == null) {
-                this.size = size; 
-            } else if(!size.equals(this.size)) {
-                this.size = new BigInteger("-1");
+    public void updateSize(BigInteger updateSize) {
+        if(updateSize != null) {
+            if(size == null) {
+                size = updateSize; 
+            } else if(!updateSize.equals(size)) {
+                size = new BigInteger("-1");
             }    
         } 
     }

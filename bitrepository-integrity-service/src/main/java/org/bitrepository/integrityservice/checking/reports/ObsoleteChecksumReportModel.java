@@ -32,6 +32,16 @@ import javax.xml.datatype.XMLGregorianCalendar;
 public class ObsoleteChecksumReportModel implements IntegrityReportModel {
     /** The mapping between a file id and its respective obsolete checksums data.*/
     private final Map<String, ObsoleteChecksumData> obsoleteChecksum = new HashMap<String, ObsoleteChecksumData>();
+    /** The ID of the collection that the report is about */
+    private final String collectionID;
+    
+    public ObsoleteChecksumReportModel(String collectionID) {
+        this.collectionID = collectionID;
+    }
+    
+    public String getCollectionID() {
+        return collectionID;
+    }
     
     /**
      * Report obsolete checksum at a given pillar.

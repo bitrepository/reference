@@ -40,6 +40,8 @@ public class IntegrityAlerterTest extends ExtendedTestCase {
     Settings settings;
     MessageBus messageBus;
     
+    public static final String TEST_COLLECTION = "collection1";
+    
     @BeforeClass (alwaysRun = true)
     public void setup() {
         settings = TestSettingsProvider.reloadSettings("IntegrityAlerterUnderTest");
@@ -64,7 +66,7 @@ public class IntegrityAlerterTest extends ExtendedTestCase {
         };
         
         addStep("Call the function for integrity failure.", "Should attempt to make a call for 'error'.");
-        alerter.integrityFailed(new MockIntegrityReport());
+        alerter.integrityFailed(new MockIntegrityReport(TEST_COLLECTION));
         Assert.assertEquals(callsForError, 1);
     }
     

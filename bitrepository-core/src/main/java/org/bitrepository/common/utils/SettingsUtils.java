@@ -28,6 +28,18 @@ public class SettingsUtils {
     }
     
     /**
+     * Finds the complete list of collections in the repository.
+     * @param settings The settings for the repository. 
+     */
+    public static List<String> getAllCollectionsIDs(Settings settings) {
+        List<String> res = new ArrayList<String>();
+        for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
+            res.add(c.getID());
+        }       
+        return res;
+    }
+    
+    /**
      * Retrieves all the different pillar ids defined across all collections (without duplicates).
      * @param settings The settings.
      * @return The list of pillar ids. 

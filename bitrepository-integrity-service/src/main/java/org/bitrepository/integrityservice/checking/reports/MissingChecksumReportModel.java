@@ -30,6 +30,16 @@ import java.util.List;
 public class MissingChecksumReportModel implements IntegrityReportModel {
     /** The list of missing checksums.*/
     private final List<MissingChecksum> missingChecksum = new ArrayList<MissingChecksum>();
+    /** The ID of the collection that the report is about */
+    private final String collectionID;
+    
+    public MissingChecksumReportModel(String collectionID) {
+        this.collectionID = collectionID;
+    }
+    
+    public String getCollectionID() {
+        return collectionID;
+    }
     
     /**
      * Report missing checksum.

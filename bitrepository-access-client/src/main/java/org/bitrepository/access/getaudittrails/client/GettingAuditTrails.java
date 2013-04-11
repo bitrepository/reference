@@ -46,7 +46,8 @@ public class GettingAuditTrails extends PerformingOperationState {
 
     @Override
     protected void sendRequest() {
-        context.getMonitor().requestSent("Sending request for audit trails", activeContributors.keySet().toString());
+        context.getMonitor().requestSent("Sending request for audit trails", activeContributors.keySet().toString(), 
+                context.getCollectionID());
         for(AuditTrailQuery query : context.getComponentQueries()) {
             if (activeContributors.containsKey(query.getComponentID())) {
                 GetAuditTrailsRequest msg = new GetAuditTrailsRequest();
@@ -75,7 +76,8 @@ public class GettingAuditTrails extends PerformingOperationState {
         GetAuditTrailsFinalResponse response = (GetAuditTrailsFinalResponse)msg;
         boolean isPartialResult = response.isPartialResult() == null ? false : response.isPartialResult();
         getContext().getMonitor().contributorComplete(
-                new AuditTrailResult(response.getFrom(), response.getResultingAuditTrails(), isPartialResult));
+                new AuditTrailResult(response.getFrom(), response.getCollectionID(), response.getResultingAuditTrails(), 
+                        isPartialResult));
     }
 
     @Override

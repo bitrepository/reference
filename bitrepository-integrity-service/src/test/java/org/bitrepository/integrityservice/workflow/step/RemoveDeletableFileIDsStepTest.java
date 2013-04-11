@@ -48,6 +48,7 @@ public class RemoveDeletableFileIDsStepTest extends ExtendedTestCase {
     
     public static final Integer NUMBER_OF_PARTIAL_RESULTS = 3;
     
+    String TEST_COLLECTION;
     protected Settings settings;
     
     @BeforeMethod (alwaysRun = true)
@@ -55,13 +56,14 @@ public class RemoveDeletableFileIDsStepTest extends ExtendedTestCase {
         settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().addAll(PILLAR_IDS);
+        TEST_COLLECTION = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testNoFilesToDelete() {
         addDescription("Testing the case, when no files should be deleted from the database.");
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        MissingFileReportModel report = new MissingFileReportModel();
+        MissingFileReportModel report = new MissingFileReportModel(TEST_COLLECTION);
         MockAuditManager auditManager = new MockAuditManager();
         WorkflowStep step = new RemoveDeletableFileIDsFromDatabaseStep(store, report, auditManager, settings);
         Assert.assertEquals(store.getCallsForDeleteFileIdEntry(), 0);
@@ -76,8 +78,8 @@ public class RemoveDeletableFileIDsStepTest extends ExtendedTestCase {
     public void testFileToDelete() {
         addDescription("Testing the case, when one file should be deleted from the database.");
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        store.addChecksums(createChecksumData(DEFAULT_CHECKSUM, TEST_FILE_1), TEST_PILLAR_1);
-        MissingFileReportModel report = new MissingFileReportModel();
+        store.addChecksums(createChecksumData(DEFAULT_CHECKSUM, TEST_FILE_1), TEST_PILLAR_1, TEST_COLLECTION);
+        MissingFileReportModel report = new MissingFileReportModel(TEST_COLLECTION);
         report.reportDeletableFile(TEST_FILE_1);
         MockAuditManager auditManager = new MockAuditManager();
         WorkflowStep step = new RemoveDeletableFileIDsFromDatabaseStep(store, report, auditManager, settings);
@@ -93,13 +95,13 @@ public class RemoveDeletableFileIDsStepTest extends ExtendedTestCase {
     public void testManyFilesToDelete() {
         addDescription("Testing the case, when 10 files should be deleted from the database.");
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        MissingFileReportModel report = new MissingFileReportModel();
+        MissingFileReportModel report = new MissingFileReportModel(TEST_COLLECTION);
         
         addStep("Populate the store and report with files.", "");
         int numberOfFiles = 10;
         for(int i = 0; i < numberOfFiles; i++) {
             String fileId = TEST_FILE_1 + "_" + i;
-            store.addChecksums(createChecksumData(DEFAULT_CHECKSUM, fileId), TEST_PILLAR_1);
+            store.addChecksums(createChecksumData(DEFAULT_CHECKSUM, fileId), TEST_PILLAR_1, TEST_COLLECTION);
             report.reportDeletableFile(fileId);
         }
         MockAuditManager auditManager = new MockAuditManager();

@@ -60,11 +60,14 @@ public class UpdateChecksumsStepTest extends ExtendedTestCase {
     
     protected Settings settings;
     
+    String TEST_COLLECTIONID;
+    
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().addAll(PILLAR_IDS);
+        TEST_COLLECTIONID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
@@ -80,7 +83,8 @@ public class UpdateChecksumsStepTest extends ExtendedTestCase {
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, store, alerter, createChecksumSpecTYPE(), settings);
+        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, store, alerter, createChecksumSpecTYPE(),
+                settings, TEST_COLLECTIONID);
         
         step.performStep();
         Assert.assertEquals(store.getCallsForAddChecksums(), 0);
@@ -101,7 +105,8 @@ public class UpdateChecksumsStepTest extends ExtendedTestCase {
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, store, alerter, createChecksumSpecTYPE(), settings);
+        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, store, alerter, createChecksumSpecTYPE(),
+                settings, TEST_COLLECTIONID);
         
         step.performStep();
         Assert.assertEquals(store.getCallsForAddChecksums(), 0);
@@ -119,7 +124,7 @@ public class UpdateChecksumsStepTest extends ExtendedTestCase {
                 super.getChecksums(pillarIDs, checksumType, auditTrailInformation, queries, eventHandler);
                 eventHandler.handleEvent(new IdentificationCompleteEvent(Arrays.asList(TEST_PILLAR_1)));
                 ChecksumsCompletePillarEvent event = new ChecksumsCompletePillarEvent(
-                        TEST_PILLAR_1, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
+                        TEST_PILLAR_1, TEST_COLLECTIONID, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
                         createChecksumSpecTYPE(), false);
                 eventHandler.handleEvent(event);
                 
@@ -128,7 +133,8 @@ public class UpdateChecksumsStepTest extends ExtendedTestCase {
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, store, alerter, createChecksumSpecTYPE(), settings);
+        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, store, alerter, createChecksumSpecTYPE(),
+                settings, TEST_COLLECTIONID);
         
         step.performStep();
         Assert.assertEquals(store.getCallsForAddChecksums(), 1);
@@ -149,7 +155,8 @@ public class UpdateChecksumsStepTest extends ExtendedTestCase {
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, store, alerter, createChecksumSpecTYPE(), settings);
+        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, store, alerter, createChecksumSpecTYPE(),
+                settings, TEST_COLLECTIONID);
         
         step.performStep();
         Assert.assertEquals(store.getCallsForAddChecksums(), 1);
@@ -172,7 +179,8 @@ public class UpdateChecksumsStepTest extends ExtendedTestCase {
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
         MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, store, alerter, createChecksumSpecTYPE(), settings);
+        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, store, alerter, createChecksumSpecTYPE(),
+                settings, TEST_COLLECTIONID);
         
         step.performStep();
         Assert.assertEquals(store.getCallsForAddChecksums(), NUMBER_OF_PARTIAL_RESULTS + 1);
@@ -195,16 +203,16 @@ public class UpdateChecksumsStepTest extends ExtendedTestCase {
                 ChecksumsCompletePillarEvent event;
                 if(partialsLeft > 0) {
                     event = new ChecksumsCompletePillarEvent(
-                        TEST_PILLAR_1, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
+                        TEST_PILLAR_1, TEST_COLLECTIONID, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
                         createChecksumSpecTYPE(), true);
                 } else {
                     event = new ChecksumsCompletePillarEvent(
-                            TEST_PILLAR_1, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
+                            TEST_PILLAR_1, TEST_COLLECTIONID, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
                             createChecksumSpecTYPE(), false);                    
                 }
                 eventHandler.handleEvent(event);
                 
-                eventHandler.handleEvent(new ContributorEvent(TEST_PILLAR_1));
+                eventHandler.handleEvent(new ContributorEvent(TEST_PILLAR_1, TEST_COLLECTIONID));
             }
             eventHandler.handleEvent(new CompleteEvent(null));
         }

@@ -5,6 +5,9 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.resultmodel.GetFileIDsResultModel;
 
+/**
+ * Event handler for paging through GetFileIDs results 
+ */
 public class GetFileIDsEventHandler extends PagingEventHandler {
     private GetFileIDsResultModel model;
     

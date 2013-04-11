@@ -48,10 +48,19 @@ public class IntegrityServiceTest extends ExtendedTestCase {
     SecurityManager securityManager;
 
     public static final String TEST_PILLAR_1 = "test-pillar-1";
+    public static final String TEST_COLLECTION = "collection1";
     
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
+        org.bitrepository.settings.repositorysettings.Collection c0 = 
+                settings.getRepositorySettings().getCollections().getCollection().get(0);
+        c0.getPillarIDs().getPillarID().clear();
+        c0.getPillarIDs().getPillarID().add(TEST_PILLAR_1);
+        c0.setID(TEST_COLLECTION);
+        settings.getRepositorySettings().getCollections().getCollection().clear();
+        settings.getRepositorySettings().getCollections().getCollection().add(c0);
+        
         securityManager = new DummySecurityManager();
         messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
     }
@@ -70,9 +79,9 @@ public class IntegrityServiceTest extends ExtendedTestCase {
         
         addStep("Test the initial state", "");
         Assert.assertEquals(integrityService.getAllWorkflows().size(), 1, "Should initially have one workflow");
-        Assert.assertEquals(integrityService.getNumberOfChecksumErrors(TEST_PILLAR_1), 0);
-        Assert.assertEquals(integrityService.getNumberOfFiles(TEST_PILLAR_1), 0);
-        Assert.assertEquals(integrityService.getNumberOfMissingFiles(TEST_PILLAR_1), 0);
+        Assert.assertEquals(integrityService.getNumberOfChecksumErrors(TEST_PILLAR_1, TEST_COLLECTION), 0);
+        Assert.assertEquals(integrityService.getNumberOfFiles(TEST_PILLAR_1, TEST_COLLECTION), 0);
+        Assert.assertEquals(integrityService.getNumberOfMissingFiles(TEST_PILLAR_1, TEST_COLLECTION), 0);
         Assert.assertEquals(integrityService.getScheduledWorkflows().size(), 0);
         
         addStep("Try to schedule a new workflow.", "Should added both to the scheduled and the list of workflows.");
@@ -89,9 +98,9 @@ public class IntegrityServiceTest extends ExtendedTestCase {
         addStep("Test 'start'.", "Should not do anything.");
         integrityService.start();
         Assert.assertEquals(integrityService.getAllWorkflows().size(), 2);
-        Assert.assertEquals(integrityService.getNumberOfChecksumErrors(TEST_PILLAR_1), 0);
-        Assert.assertEquals(integrityService.getNumberOfFiles(TEST_PILLAR_1), 0);
-        Assert.assertEquals(integrityService.getNumberOfMissingFiles(TEST_PILLAR_1), 0);
+        Assert.assertEquals(integrityService.getNumberOfChecksumErrors(TEST_PILLAR_1, TEST_COLLECTION), 0);
+        Assert.assertEquals(integrityService.getNumberOfFiles(TEST_PILLAR_1, TEST_COLLECTION), 0);
+        Assert.assertEquals(integrityService.getNumberOfMissingFiles(TEST_PILLAR_1, TEST_COLLECTION), 0);
         Assert.assertEquals(integrityService.getScheduledWorkflows().size(), 1);
     }
 }

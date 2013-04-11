@@ -32,7 +32,8 @@ import org.testng.annotations.Test;
 
 public class AuditPreservationEventHandlerTest extends ExtendedTestCase {
     String PILLARID = "pillarId";
-    
+    public static final String TEST_COLLECTION = "dummy-collection";
+
     @Test(groups = {"regressiontest"})
     public void auditPreservationEventHandlerTest() throws Exception {
         addDescription("Test the handling of the audit trail event handler.");
@@ -45,11 +46,11 @@ public class AuditPreservationEventHandlerTest extends ExtendedTestCase {
         Assert.assertEquals(store.getCallsToSetPreservationSequenceNumber(), 0);
 
         addStep("Test the handling of a complete event.", "Should make call");
-        eventHandler.handleEvent(new ContributorCompleteEvent(PILLARID));
+        eventHandler.handleEvent(new ContributorCompleteEvent(PILLARID, TEST_COLLECTION));
         Assert.assertEquals(store.getCallsToSetPreservationSequenceNumber(), 1);
         
         addStep("Test the handling of another complete event.", "Should not make another call");
-        eventHandler.handleEvent(new ContributorEvent(PILLARID));
+        eventHandler.handleEvent(new ContributorEvent(PILLARID, TEST_COLLECTION));
         Assert.assertEquals(store.getCallsToSetPreservationSequenceNumber(), 1);
     }
 }

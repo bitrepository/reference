@@ -13,8 +13,9 @@ import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.outputformatter.GetChecksumsOutputFormatter;
 import org.bitrepository.commandline.resultmodel.GetChecksumsResultModel;
 
-
-
+/**
+ * Wrapper class for GetChecksumClient to handle paging through large result sets 
+ */
 public class PagingGetChecksumsClient {
 
     private final GetChecksumsClient client;

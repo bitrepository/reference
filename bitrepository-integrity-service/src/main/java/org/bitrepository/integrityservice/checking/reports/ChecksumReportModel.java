@@ -30,6 +30,16 @@ import java.util.Map;
 public class ChecksumReportModel implements IntegrityReportModel {
     /** The map between the ids of the files with issues and their respective checksum issue.*/
     private final Map<String, ChecksumIssue> filesWithIssues = new HashMap<String, ChecksumIssue>();
+    /** The ID of the collection that the report belongs to */
+    private final String collectionID;
+    
+    public ChecksumReportModel(String collectionID) {
+        this.collectionID = collectionID;
+    }
+    
+    public String getCollectionID() {
+        return collectionID;
+    }
     
     /**
      * Handle the report about a pillar which does not agree upon the common checksum for the given file.

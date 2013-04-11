@@ -58,7 +58,7 @@ public class IdentifyPillarsForReplaceFile extends IdentifyingState {
         //ToDo implement idempotent behaviour, BITMAG-659.
         IdentifyPillarsForReplaceFileResponse response = (IdentifyPillarsForReplaceFileResponse) msg;
         getContext().getMonitor().contributorFailed(
-                msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+                msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getCollectionID(), msg.getResponseInfo().getResponseCode());
         throw new UnableToFinishException("Can not continue with replace operation, as " + msg.getFrom() +
                 " is unable to perform the deletion.");
     }

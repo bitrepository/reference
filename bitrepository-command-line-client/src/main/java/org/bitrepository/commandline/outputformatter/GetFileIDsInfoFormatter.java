@@ -5,6 +5,12 @@ import java.util.Collection;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.resultmodel.FileIDsResult;
 
+/**
+ * Class to format GetFileIDs client output. 
+ * Output format 'style' is 'info' i.e.
+ * Tab separated columns with the columns: 
+ * Count Size FileID 
+ */
 public class GetFileIDsInfoFormatter implements GetFileIDsOutputFormatter {
 
     private final OutputHandler outputHandler;

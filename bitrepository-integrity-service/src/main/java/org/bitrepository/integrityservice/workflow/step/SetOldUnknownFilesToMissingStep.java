@@ -30,13 +30,15 @@ import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 public class SetOldUnknownFilesToMissingStep extends AbstractWorkFlowStep {
     /** The model where the integrity data is stored.*/
     private final IntegrityModel store;
+    private final String collectionId;
     
     /**
      * Constructor.
      * @param store The storage for the integrity data.
      */
-    public SetOldUnknownFilesToMissingStep(IntegrityModel store) {
+    public SetOldUnknownFilesToMissingStep(IntegrityModel store, String collectionId) {
         this.store = store;
+        this.collectionId = collectionId;
     }
     
     @Override
@@ -46,7 +48,7 @@ public class SetOldUnknownFilesToMissingStep extends AbstractWorkFlowStep {
 
     @Override
     public synchronized void performStep() {
-        store.setOldUnknownFilesToMissing();
+        store.setOldUnknownFilesToMissing(collectionId);
     }
 
     public static String getDescription() {

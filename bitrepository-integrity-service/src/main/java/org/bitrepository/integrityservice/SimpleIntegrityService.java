@@ -116,34 +116,34 @@ public class SimpleIntegrityService implements IntegrityService {
     @Override
     public List<String> getChecksumErrors(String collectionID, String pillarID,
             int firstID, int lastID) {
-        return cache.getFilesWithChecksumErrorsAtPillar(pillarID, firstID, lastID);
+        return cache.getFilesWithChecksumErrorsAtPillar(pillarID, firstID, lastID, collectionID);
     }
 
     @Override
     public List<String> getMissingFiles(String collectionID, String pillarID,
             int firstID, int lastID) {
-        return cache.getMissingFilesAtPillar(pillarID, firstID, lastID);
+        return cache.getMissingFilesAtPillar(pillarID, firstID, lastID, collectionID);
     }
 
     @Override
     public List<String> getAllFileIDs(String collectionID, String pillarID,
             int firstID, int lastID) {
-        return cache.getFilesOnPillar(pillarID, firstID, lastID);
+        return cache.getFilesOnPillar(pillarID, firstID, lastID, collectionID);
     }
     
     @Override
-    public long getNumberOfFiles(String pillarId) {
-        return cache.getNumberOfFiles(pillarId);
+    public long getNumberOfFiles(String pillarId, String collectionId) {
+        return cache.getNumberOfFiles(pillarId, collectionId);
     }
     
     @Override
-    public long getNumberOfMissingFiles(String pillarId) {
-        return cache.getNumberOfMissingFiles(pillarId);
+    public long getNumberOfMissingFiles(String pillarId, String collectionId) {
+        return cache.getNumberOfMissingFiles(pillarId, collectionId);
     }
     
     @Override
-    public long getNumberOfChecksumErrors(String pillarId) {
-        return cache.getNumberOfChecksumErrors(pillarId);
+    public long getNumberOfChecksumErrors(String pillarId, String collectionId) {
+        return cache.getNumberOfChecksumErrors(pillarId, collectionId);
     }
 
     @Override
@@ -173,8 +173,11 @@ public class SimpleIntegrityService implements IntegrityService {
      * Initialises the workflows.
      */
     private void initialiseWorkflows() {
-        Workflow w1 = new CompleteIntegrityCheck(settings, collector, cache, checker, alerter, auditManager);
-        workflows.add(w1);
+        for(org.bitrepository.settings.repositorysettings.Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
+            Workflow w1 = new CompleteIntegrityCheck(settings, collector, cache, checker, alerter, auditManager, c.getID());
+            workflows.add(w1);
+        }
+        
     }
 
     @Override

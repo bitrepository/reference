@@ -96,7 +96,7 @@ public class ConversationEventMonitor {
      * @param response The identify response.
      */
     public void contributorIdentified(MessageResponse response) {
-        notifyEventListerners(createContributorEvent(COMPONENT_IDENTIFIED, null, response.getFrom()));
+        notifyEventListerners(createContributorEvent(COMPONENT_IDENTIFIED, null, response.getFrom(), response.getCollectionID()));
     }
 
     /**
@@ -129,8 +129,8 @@ public class ConversationEventMonitor {
      * @param info Description of the context.
      * @param contributorID The receiving pillar.
      */
-    public void requestSent(String info, String contributorID) {
-        notifyEventListerners(createContributorEvent(REQUEST_SENT, info, contributorID));
+    public void requestSent(String info, String contributorID, String collectionID) {
+        notifyEventListerners(createContributorEvent(REQUEST_SENT, info, contributorID, collectionID));
     }
 
     /**
@@ -146,8 +146,8 @@ public class ConversationEventMonitor {
      * New information regarding the progress of the operation has been received
      * @param progressInfo Contains information regarding the progress
      */
-    public void progress(String progressInfo, String contributorID) {
-        notifyEventListerners(createContributorEvent(PROGRESS, progressInfo, contributorID));
+    public void progress(String progressInfo, String contributorID, String collectionID) {
+        notifyEventListerners(createContributorEvent(PROGRESS, progressInfo, contributorID, collectionID));
     }
     
     /**
@@ -155,8 +155,8 @@ public class ConversationEventMonitor {
      * @param info Information regarding the retry attempt
      * @param contributorID the contributor that is retried.  
      */
-    public void retry(String info, String contributorID) {
-        notifyEventListerners(createContributorEvent(WARNING, info, contributorID));
+    public void retry(String info, String contributorID, String collectionID) {
+        notifyEventListerners(createContributorEvent(WARNING, info, contributorID, collectionID));
     }
 
     /**
@@ -174,8 +174,8 @@ public class ConversationEventMonitor {
      * A pillar has failed to handle a request successfully.
      * @param info Cause information
      */
-    public void contributorFailed(String info, String contributor, ResponseCode responseCode) {
-        ContributorFailedEvent failedEvent = createContributorFailedEvent(info, contributor, responseCode);
+    public void contributorFailed(String info, String contributor, String collectionID, ResponseCode responseCode) {
+        ContributorFailedEvent failedEvent = createContributorFailedEvent(info, contributor, collectionID, responseCode);
         contributorFailedEvents.add(failedEvent);
         notifyEventListerners(failedEvent);
     }
@@ -217,7 +217,7 @@ public class ConversationEventMonitor {
     public void invalidMessage(Message message, Exception e) {
         log.warn("Received invalid " + message.getClass().getSimpleName() + " from " + message.getFrom() +
                 "\nMessage: " + message, e);
-        notifyEventListerners((createContributorEvent(WARNING, e.getMessage(), message.getFrom())));
+        notifyEventListerners((createContributorEvent(WARNING, e.getMessage(), message.getFrom(), message.getCollectionID())));
     }
 
     /**
@@ -280,15 +280,16 @@ public class ConversationEventMonitor {
         return event;
     }
     private ContributorEvent createContributorEvent(
-            OperationEvent.OperationEventType eventType, String info, String contributorID) {
-        ContributorEvent event = new ContributorEvent(contributorID);
+            OperationEvent.OperationEventType eventType, String info, String contributorID, String collectionID) {
+        ContributorEvent event = new ContributorEvent(contributorID, collectionID);
         event.setEventType(eventType);
         event.setInfo(info);
         addContextInfo(event);
         return event;
     }
-    private ContributorFailedEvent createContributorFailedEvent(String info, String contributorID, ResponseCode responseCode) {
-        ContributorFailedEvent event = new ContributorFailedEvent(contributorID, responseCode);
+    private ContributorFailedEvent createContributorFailedEvent(String info, String contributorID, String collectionID,
+            ResponseCode responseCode) {
+        ContributorFailedEvent event = new ContributorFailedEvent(contributorID, collectionID, responseCode);
         event.setInfo(info);
         addContextInfo(event);
         return event;

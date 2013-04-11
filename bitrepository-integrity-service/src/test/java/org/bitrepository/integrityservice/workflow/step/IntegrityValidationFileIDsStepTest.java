@@ -34,13 +34,14 @@ import org.testng.annotations.Test;
 public class IntegrityValidationFileIDsStepTest extends ExtendedTestCase {
     public static final String TEST_PILLAR_1 = "test-pillar-1";
     public static final String TEST_FILE_1 = "test-file-1";
+    public static final String TEST_COLLECTION = "collection1";
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testGoodCase() {
         addDescription("Test the step for integrity validation of fileids when the report is positive.");
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
         MockChecker checker = new MockChecker();
-        IntegrityValidationFileIDsStep step = new IntegrityValidationFileIDsStep(checker, alerter);
+        IntegrityValidationFileIDsStep step = new IntegrityValidationFileIDsStep(checker, alerter, TEST_COLLECTION);
         
         step.performStep();
         Assert.assertEquals(alerter.getCallsForIntegrityFailed(), 0);
@@ -56,13 +57,13 @@ public class IntegrityValidationFileIDsStepTest extends ExtendedTestCase {
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
         MockChecker checker = new MockChecker() {
             @Override
-            public MissingFileReportModel checkFileIDs(FileIDs fileIDs) {
-                MissingFileReportModel res = super.checkFileIDs(fileIDs);
+            public MissingFileReportModel checkFileIDs(FileIDs fileIDs, String collectionId) {
+                MissingFileReportModel res = super.checkFileIDs(fileIDs, collectionId);
                 res.reportMissingFile(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1));
                 return res;
             }
         };
-        IntegrityValidationFileIDsStep step = new IntegrityValidationFileIDsStep(checker, alerter);
+        IntegrityValidationFileIDsStep step = new IntegrityValidationFileIDsStep(checker, alerter, TEST_COLLECTION);
         
         step.performStep();
         Assert.assertEquals(alerter.getCallsForIntegrityFailed(), 1);

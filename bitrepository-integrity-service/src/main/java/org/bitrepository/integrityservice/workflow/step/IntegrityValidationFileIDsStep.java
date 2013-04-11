@@ -43,15 +43,18 @@ public class IntegrityValidationFileIDsStep extends AbstractWorkFlowStep {
     
     /** The final report for this check.*/
     private MissingFileReportModel report = null; 
+    /** The ID of the collection to check */
+    private final String collectionId;
     
     /**
      * Constructor.
      * @param checker The checker for performing the integrity checks.
      * @param alarmDispatcher The dispatcher of alarms.
      */
-    public IntegrityValidationFileIDsStep(IntegrityChecker checker, IntegrityAlerter alarmDispatcher) {
+    public IntegrityValidationFileIDsStep(IntegrityChecker checker, IntegrityAlerter alarmDispatcher, String collectionId) {
         this.checker = checker;
         this.dispatcher = alarmDispatcher;
+        this.collectionId = collectionId;
     }
     
     @Override
@@ -61,7 +64,7 @@ public class IntegrityValidationFileIDsStep extends AbstractWorkFlowStep {
 
     @Override
     public void performStep() {
-        report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs());
+        report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs(), collectionId);
         
         if(!report.hasIntegrityIssues()) {
             log.debug("no files are missing at any pillar.");

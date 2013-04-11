@@ -47,25 +47,35 @@ public class FileExistenceValidatorVersusDatabaseTest extends IntegrityDatabaseT
     
     public static final String FILE_1 = "test-file-1";
     
+    String TEST_COLLECTION;
     @BeforeMethod (alwaysRun = true)
     @Override
     public void setup() throws Exception {
         super.setup();
-        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
-        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_1);
-        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_2);
-        settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0L);
+        TEST_COLLECTION = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
         auditManager = new MockAuditManager();
+    }
+    
+    @Override 
+    protected void customizeSettings() {
+        org.bitrepository.settings.repositorysettings.Collection c0 = 
+                settings.getRepositorySettings().getCollections().getCollection().get(0);
+        c0.getPillarIDs().getPillarID().clear();
+        c0.getPillarIDs().getPillarID().add(TEST_PILLAR_1);
+        c0.getPillarIDs().getPillarID().add(TEST_PILLAR_2);
+        settings.getRepositorySettings().getCollections().getCollection().clear();
+        settings.getRepositorySettings().getCollections().getCollection().add(c0);
+        settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0L);
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testNoData() {
         addDescription("Test the file existence validator without any data in the cache.");
         IntegrityModel cache = getIntegrityModel();
-        FileExistenceValidator validator = new FileExistenceValidator(settings.getCollections().get(0), cache, auditManager);
+        FileExistenceValidator validator = new FileExistenceValidator(settings.getCollections(), cache, auditManager);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs());
+        MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs(TEST_COLLECTION), TEST_COLLECTION);
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
     }
     
@@ -73,29 +83,29 @@ public class FileExistenceValidatorVersusDatabaseTest extends IntegrityDatabaseT
     public void testSimilarData() {
         addDescription("Test the file existence validator when both pillars have similar data.");
         IntegrityModel cache = getIntegrityModel();
-        FileExistenceValidator validator = new FileExistenceValidator(settings.getCollections().get(0), cache, auditManager);
+        FileExistenceValidator validator = new FileExistenceValidator(settings.getCollections(), cache, auditManager);
         
         addStep("Add data to the cache", "");
         FileIDsData fileidData = createFileIdData(FILE_1);
-        cache.addFileIDs(fileidData, TEST_PILLAR_1);
-        cache.addFileIDs(fileidData, TEST_PILLAR_2);
+        cache.addFileIDs(fileidData, TEST_PILLAR_1, TEST_COLLECTION);
+        cache.addFileIDs(fileidData, TEST_PILLAR_2, TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        Assert.assertFalse(validator.generateReport(cache.getAllFileIDs()).hasIntegrityIssues());
+        Assert.assertFalse(validator.generateReport(cache.getAllFileIDs(TEST_COLLECTION), TEST_COLLECTION).hasIntegrityIssues());
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testMissingDataAtOnePillar() {
         addDescription("Test the file existence validator when the pillars data differ.");
         IntegrityModel cache = getIntegrityModel();
-        FileExistenceValidator validator = new FileExistenceValidator(settings.getCollections().get(0), cache, auditManager);
+        FileExistenceValidator validator = new FileExistenceValidator(settings.getCollections(), cache, auditManager);
         
         addStep("Add data to the cache for only one pillar", "");
         FileIDsData fileidData = createFileIdData(FILE_1);
-        cache.addFileIDs(fileidData, TEST_PILLAR_1);
+        cache.addFileIDs(fileidData, TEST_PILLAR_1, TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should be missing at pillar 2.");
-        MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs());
+        MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs(TEST_COLLECTION), TEST_COLLECTION);
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getDeleteableFiles().size(), 0);
         Assert.assertEquals(report.getMissingFiles().size(), 1);
@@ -107,16 +117,16 @@ public class FileExistenceValidatorVersusDatabaseTest extends IntegrityDatabaseT
     public void testDataSatToMissing() {
         addDescription("Test the file existence validator when the filestate is set to missing at one pillar.");
         IntegrityModel cache = getIntegrityModel();
-        FileExistenceValidator validator = new FileExistenceValidator(settings.getCollections().get(0), cache, auditManager);
+        FileExistenceValidator validator = new FileExistenceValidator(settings.getCollections(), cache, auditManager);
         
         addStep("Add data to the cache for only one pillar", "");
         FileIDsData fileidData = createFileIdData(FILE_1);
-        cache.addFileIDs(fileidData, TEST_PILLAR_1);
-        cache.addFileIDs(fileidData, TEST_PILLAR_2);
-        cache.setFileMissing(FILE_1, Arrays.asList(TEST_PILLAR_1));
+        cache.addFileIDs(fileidData, TEST_PILLAR_1, TEST_COLLECTION);
+        cache.addFileIDs(fileidData, TEST_PILLAR_2, TEST_COLLECTION);
+        cache.setFileMissing(FILE_1, Arrays.asList(TEST_PILLAR_1), TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should be missing at pillar 1.");
-        MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs());
+        MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs(TEST_COLLECTION), TEST_COLLECTION);
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getDeleteableFiles().size(), 0);
         Assert.assertEquals(report.getMissingFiles().size(), 1);
@@ -128,15 +138,15 @@ public class FileExistenceValidatorVersusDatabaseTest extends IntegrityDatabaseT
     public void testDataMissingAtBothPillars() {
         addDescription("Test the file existence validator when the file is missing at both pillars.");
         IntegrityModel cache = getIntegrityModel();
-        FileExistenceValidator validator = new FileExistenceValidator(settings.getCollections().get(0), cache, auditManager);
+        FileExistenceValidator validator = new FileExistenceValidator(settings.getCollections(), cache, auditManager);
         
         addStep("Add data to the cache for only one pillar", "");
         FileIDsData fileidData = createFileIdData(FILE_1);
-        cache.addFileIDs(fileidData, TEST_PILLAR_1);
-        cache.setFileMissing(FILE_1, Arrays.asList(TEST_PILLAR_1));
+        cache.addFileIDs(fileidData, TEST_PILLAR_1, TEST_COLLECTION);
+        cache.setFileMissing(FILE_1, Arrays.asList(TEST_PILLAR_1), TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should be missing at pillar 1.");
-        MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs());
+        MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs(TEST_COLLECTION), TEST_COLLECTION);
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getDeleteableFiles().size(), 1);
         Assert.assertEquals(report.getDeleteableFiles(), Arrays.asList(FILE_1));

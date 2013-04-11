@@ -51,8 +51,8 @@ public class ObsoleteChecksumFinder {
      * @return The report for the obsolete checksums check.
      */
     public ObsoleteChecksumReportModel generateReport(
-        MaxChecksumAgeProvider maxChecksumAgeProvider, Collection<String> pillarIDs) {
-        ObsoleteChecksumReportModel report = new ObsoleteChecksumReportModel();
+        MaxChecksumAgeProvider maxChecksumAgeProvider, Collection<String> pillarIDs, String collectionID) {
+        ObsoleteChecksumReportModel report = new ObsoleteChecksumReportModel(collectionID);
         for (String pillarID: pillarIDs) {
             Date outDated = new Date(System.currentTimeMillis() - maxChecksumAgeProvider.getMaxChecksumAge(pillarID));
 
@@ -60,9 +60,9 @@ public class ObsoleteChecksumFinder {
             // See BITMAG 776:
 
             HashSet<String> filesWithOldChecksum =
-                new HashSet<String>(cache.findChecksumsOlderThan(outDated, pillarID));
+                new HashSet<String>(cache.findChecksumsOlderThan(outDated, pillarID, collectionID));
             for(String fileId : filesWithOldChecksum) {
-                for(FileInfo fileinfo : cache.getFileInfos(fileId)) {
+                for(FileInfo fileinfo : cache.getFileInfos(fileId, collectionID)) {
                     if(!fileinfo.getPillarId().equals(pillarID)) {
                         continue;
                     }

@@ -31,6 +31,7 @@ import java.util.List;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlarmDispatcher;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.audittrail.IntegrityAuditTrailDatabaseCreator;
@@ -126,7 +127,8 @@ public class ComponentFactoryTest extends IntegrationTest {
             List<String> wrongPillars = Arrays.asList("Wrong pillar " + new Date().getTime(), "Another wrong pillar " + new Date().getTime());
             IntegrityDAO dao = new IntegrityDAO(new DBConnector(
                     settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
-                    wrongPillars);
+                    wrongPillars,
+                    SettingsUtils.getAllCollectionsIDs(settingsForCUT));
             
             addStep("Start the database through the component factory with different set of pillars.", 
                     "Through an exception and sends an alarm.");

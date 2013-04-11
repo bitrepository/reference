@@ -17,6 +17,7 @@ import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityDatabaseCreator;
@@ -69,10 +70,11 @@ public class DatabaseStressTests extends ExtendedTestCase {
             items.getFileIDsDataItem().add(item);
         }
         data.setFileIDsDataItems(items);
-        cache.updateFileIDs(data, PILLAR_1);
-        cache.updateFileIDs(data, PILLAR_2);
-        cache.updateFileIDs(data, PILLAR_3);
-        cache.updateFileIDs(data, PILLAR_4);
+        String collectionID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
+        cache.updateFileIDs(data, PILLAR_1, collectionID);
+        cache.updateFileIDs(data, PILLAR_2, collectionID);
+        cache.updateFileIDs(data, PILLAR_3, collectionID);
+        cache.updateFileIDs(data, PILLAR_4, collectionID);
     }
     
     @AfterMethod (alwaysRun = true)
@@ -94,26 +96,27 @@ public class DatabaseStressTests extends ExtendedTestCase {
         System.err.println("Time to ingest '" + NUMBER_OF_FILES + "' files: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
         
         startTime = System.currentTimeMillis();
-        cache.setAllFileStatesToUnknown();
+        cache.setAllFileStatesToUnknown(settings.getRepositorySettings().getCollections().getCollection().get(0).getID());
         System.err.println("Time to set all files to unknown: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
         
         startTime = System.currentTimeMillis();
-        cache.setOldUnknownFilesToMissing(new Date());
+        cache.setOldUnknownFilesToMissing(new Date(), settings.getRepositorySettings().getCollections().getCollection().get(0).getID());
         System.err.println("Time to set all files to missing: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
         
         startTime = System.currentTimeMillis();
-        cache.findMissingFiles();
+        cache.findMissingFiles(settings.getRepositorySettings().getCollections().getCollection().get(0).getID());
         System.err.println("Time to find missing files: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
 
         startTime = System.currentTimeMillis();
-        cache.findMissingChecksums();
+        cache.findMissingChecksums(settings.getRepositorySettings().getCollections().getCollection().get(0).getID());
         System.err.println("Time to find missing checksums: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
     }
     
     private IntegrityDAO createDAO() {
         return new IntegrityDAO(new DBConnector(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
-                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+                SettingsUtils.getAllPillarIDs(settings),
+                SettingsUtils.getAllCollectionsIDs(settings));
     }
 
 }

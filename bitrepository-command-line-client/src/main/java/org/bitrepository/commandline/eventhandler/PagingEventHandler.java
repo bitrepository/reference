@@ -11,6 +11,9 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.output.OutputHandler;
 
+/**
+ * Event handler for operations that need paging functionality. 
+ */
 public abstract class PagingEventHandler implements EventHandler {
 
     /** The amount of milliseconds before the results are required.*/
@@ -20,7 +23,7 @@ public abstract class PagingEventHandler implements EventHandler {
     
     protected List<String> pillarsWithPartialResults = new ArrayList<String>();
     
-    private OutputHandler outputHandler;
+    private final OutputHandler outputHandler;
 
     public PagingEventHandler(Long timeout, OutputHandler outputHandler) {
         this.timeout = timeout;
@@ -42,7 +45,7 @@ public abstract class PagingEventHandler implements EventHandler {
     
     /**
      * Retrieves the final event when the operation finishes. The final event is awaited for 'timeout' amount 
-     * of milliseconds. If no final events has occurred, then an InterruptedException is thrown.
+     * of milliseconds. If no final events has occurred, then an IllegalStateException is thrown.
      * @return The final event.
      */
     public OperationEvent getFinish() {

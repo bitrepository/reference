@@ -60,7 +60,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
         boolean isFinalResponse = true;
         if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS) ||
                 msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_PROGRESS)) {
-            getContext().getMonitor().progress(msg.getResponseInfo().getResponseText(), msg.getFrom());
+            getContext().getMonitor().progress(msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getCollectionID());
         } else {
             try {
                 if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_COMPLETED)) {
@@ -116,7 +116,8 @@ public abstract class PerformingOperationState extends GeneralConversationState 
      */
     protected boolean handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
         getContext().getMonitor().contributorFailed(
-                msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+                msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getCollectionID(), 
+                msg.getResponseInfo().getResponseCode());
         return true;
     }
 }

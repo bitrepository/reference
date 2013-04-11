@@ -29,12 +29,14 @@ package org.bitrepository.client.eventhandler;
  */
 public class ContributorEvent extends AbstractOperationEvent {
     private final String contributorID;
-
+    private final String collectionID;
+    
     /**
      * @param contributorID The contributorID for which this event concerns.
      */
-    public ContributorEvent(String contributorID) {
+    public ContributorEvent(String contributorID, String collectionID) {
         this.contributorID = contributorID;
+        this.collectionID = collectionID;
     }
 
     /**
@@ -42,6 +44,10 @@ public class ContributorEvent extends AbstractOperationEvent {
      */
     public String getContributorID() {
         return contributorID;
+    }
+    
+    public String getCollectionID() {
+        return collectionID;
     }
 
     @Override

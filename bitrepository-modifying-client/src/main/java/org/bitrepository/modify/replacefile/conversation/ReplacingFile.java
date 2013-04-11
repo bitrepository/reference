@@ -59,6 +59,7 @@ public class ReplacingFile extends PerformingOperationState {
         ReplaceFileFinalResponse response = (ReplaceFileFinalResponse) msg;
         getContext().getMonitor().contributorComplete(new ReplaceFileCompletePillarEvent(
                 response.getPillarID(),
+                response.getCollectionID(),
                 response.getChecksumDataForExistingFile(),
                 response.getChecksumDataForNewFile()
                 ));
@@ -66,7 +67,8 @@ public class ReplacingFile extends PerformingOperationState {
 
     @Override
     protected void sendRequest() {
-        context.getMonitor().requestSent("Sending request for replace file", activeContributors.keySet().toString());
+        context.getMonitor().requestSent("Sending request for replace file", activeContributors.keySet().toString(),
+                context.getCollectionID());
         for(String pillar : activeContributors.keySet()) {
             ReplaceFileRequest msg = createRequest(pillar);
             if (context.getChecksumRequestsForNewFile() != null) {

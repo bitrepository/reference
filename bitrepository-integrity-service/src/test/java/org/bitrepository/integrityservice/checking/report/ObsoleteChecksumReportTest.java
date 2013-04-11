@@ -34,10 +34,11 @@ public class ObsoleteChecksumReportTest extends ExtendedTestCase {
     
     public static final String TEST_FILE_1 = "test-file-1";
     
+    public static final String TEST_COLLECTION = "collection1";
     @Test(groups = {"regressiontest", "integritytest"})
     public void testEmptyObsoleteChecksumReport() {
         addDescription("Tests the empty obsolete checksum report.");
-        ObsoleteChecksumReportModel report = new ObsoleteChecksumReportModel();
+        ObsoleteChecksumReportModel report = new ObsoleteChecksumReportModel(TEST_COLLECTION);
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
         Assert.assertEquals(report.getObsoleteChecksum().size(), 0);
     }
@@ -45,7 +46,7 @@ public class ObsoleteChecksumReportTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest", "integritytest"})
     public void testObsoleteChecksum() {
         addDescription("Tests obsolete checksum report when the file is obsolete at the pillar.");
-        ObsoleteChecksumReportModel report = new ObsoleteChecksumReportModel();
+        ObsoleteChecksumReportModel report = new ObsoleteChecksumReportModel(TEST_COLLECTION);
         report.reportObsoleteChecksum(TEST_FILE_1, TEST_PILLAR_1, CalendarUtils.getEpoch());
         
         Assert.assertTrue(report.hasIntegrityIssues(), report.generateReport());
@@ -58,7 +59,7 @@ public class ObsoleteChecksumReportTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest", "integritytest"})
     public void testTwoPillarsWithObsoleteChecksum() {
         addDescription("Tests obsolete checksum when two different pillars report the checksum to be obsolete.");
-        ObsoleteChecksumReportModel report = new ObsoleteChecksumReportModel();
+        ObsoleteChecksumReportModel report = new ObsoleteChecksumReportModel(TEST_COLLECTION);
         report.reportObsoleteChecksum(TEST_FILE_1, TEST_PILLAR_1, CalendarUtils.getEpoch());
         report.reportObsoleteChecksum(TEST_FILE_1, TEST_PILLAR_2, CalendarUtils.getNow());
         

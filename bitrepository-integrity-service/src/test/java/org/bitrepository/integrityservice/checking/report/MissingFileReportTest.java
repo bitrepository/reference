@@ -34,11 +34,12 @@ public class MissingFileReportTest extends ExtendedTestCase {
     
     public static final String TEST_FILE_1 = "test-file-1";
 
+    public static final String TEST_COLLECTION = "collection1";
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testEmptyMissingFileReport() {
         addDescription("Tests the empty missing file report.");
-        MissingFileReportModel report = new MissingFileReportModel();
+        MissingFileReportModel report = new MissingFileReportModel(TEST_COLLECTION);
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
         Assert.assertEquals(report.getDeleteableFiles().size(), 0);
         Assert.assertEquals(report.getMissingFiles().size(), 0);
@@ -47,7 +48,7 @@ public class MissingFileReportTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest", "integritytest"})
     public void testMissingFile() {
         addDescription("Tests missing file report when the file is missing at the pillar.");
-        MissingFileReportModel report = new MissingFileReportModel();
+        MissingFileReportModel report = new MissingFileReportModel(TEST_COLLECTION);
         report.reportMissingFile(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1));
         
         Assert.assertTrue(report.hasIntegrityIssues(), report.generateReport());
@@ -60,7 +61,7 @@ public class MissingFileReportTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest", "integritytest"})
     public void testDeletableFile() {
         addDescription("Tests missing file report when the file is marked as deletable.");
-        MissingFileReportModel report = new MissingFileReportModel();
+        MissingFileReportModel report = new MissingFileReportModel(TEST_COLLECTION);
         report.reportDeletableFile(TEST_FILE_1);
         
         Assert.assertTrue(report.hasIntegrityIssues(), report.generateReport());

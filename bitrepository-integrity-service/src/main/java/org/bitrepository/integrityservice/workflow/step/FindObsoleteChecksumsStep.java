@@ -21,6 +21,9 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
@@ -43,6 +46,8 @@ public class FindObsoleteChecksumsStep extends AbstractWorkFlowStep {
     /** The dispatcher of alarms.*/
     private final IntegrityAlerter dispatcher;
     private final Settings settings;
+    /** The id of the collection to find obsolete checksums in */
+    private final String collectionId;
     /** A year */
     public static final long DEFAULT_MAX_CHECKSUM_AGE = TimeUtils.MS_PER_YEAR;
     
@@ -51,10 +56,12 @@ public class FindObsoleteChecksumsStep extends AbstractWorkFlowStep {
      * @param checker The concrete checker to use for finding the obsolete checksums.
      * @param alarmDispatcher Used for alarm dispatching.
      */
-    public FindObsoleteChecksumsStep(Settings settings, IntegrityChecker checker, IntegrityAlerter alarmDispatcher) {
+    public FindObsoleteChecksumsStep(Settings settings, IntegrityChecker checker, IntegrityAlerter alarmDispatcher,
+            String collectionId) {
         this.checker = checker;
         this.settings = settings;
         this.dispatcher = alarmDispatcher;
+        this.collectionId = collectionId;
     }
     
     @Override
@@ -73,7 +80,7 @@ public class FindObsoleteChecksumsStep extends AbstractWorkFlowStep {
             settings.getReferenceSettings().getIntegrityServiceSettings().getObsoleteChecksumSettings());
         IntegrityReportModel report = checker.checkObsoleteChecksums(
             maxChecksumAgeProvider,
-            settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+            getPillarIDs(collectionId), collectionId);
         
         if(!report.hasIntegrityIssues()) {
             log.debug("No checksum are missing from any pillar.");
@@ -85,5 +92,16 @@ public class FindObsoleteChecksumsStep extends AbstractWorkFlowStep {
 
     public static String getDescription() {
         return "Finds all the checksum with timestamp older that the configured 'MaxChecksumAge'";
+    }
+    
+    private List<String> getPillarIDs(String collectionId) {
+        List<String> pillars = null;
+        for(org.bitrepository.settings.repositorysettings.Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
+            if(c.getID().equals(collectionId)) {
+                pillars = c.getPillarIDs().getPillarID();
+                break;
+            }
+        }
+        return pillars;
     }
 }

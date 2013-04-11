@@ -39,15 +39,18 @@ public class IntegrityValidationChecksumStep extends AbstractWorkFlowStep {
     private final IntegrityChecker checker;
     /** The dispatcher of alarms.*/
     private final IntegrityAlerter dispatcher;
+    /** The collection id to check*/
+    private final String collectionId;
     
     /**
      * Constructor.
      * @param checker The checker for performing the integrity checks.
      * @param alarmDispatcher The dispatcher of alarms.
      */
-    public IntegrityValidationChecksumStep(IntegrityChecker checker, IntegrityAlerter alarmDispatcher) {
+    public IntegrityValidationChecksumStep(IntegrityChecker checker, IntegrityAlerter alarmDispatcher, String collectionId) {
         this.checker = checker;
         this.dispatcher = alarmDispatcher;
+        this.collectionId = collectionId;
     }
     
     @Override
@@ -57,7 +60,7 @@ public class IntegrityValidationChecksumStep extends AbstractWorkFlowStep {
 
     @Override
     public void performStep() {
-        IntegrityReportModel report = checker.checkChecksum();
+        IntegrityReportModel report = checker.checkChecksum(collectionId);
         
         if(!report.hasIntegrityIssues()) {
             log.debug("No checksum disagreements for any files.");

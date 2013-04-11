@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.checking;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -44,7 +45,7 @@ public class ChecksumIntegrityValidator {
     /** The audit trail manager.*/
     private final AuditTrailManager auditManager;
     /** The ids of the pillars in the collection.*/
-    private final Collection collection;
+    private final List<Collection> collections;
     
     /**
      * Constructor.
@@ -52,10 +53,10 @@ public class ChecksumIntegrityValidator {
      * @param auditManager the audit trail manager.
      * @param pillarIds This ids of the pillars in the collection.
      */
-    public ChecksumIntegrityValidator(IntegrityModel cache, AuditTrailManager auditManager, Collection collection) {
+    public ChecksumIntegrityValidator(IntegrityModel cache, AuditTrailManager auditManager, List<Collection> collections) {
         this.cache = cache;
         this.auditManager = auditManager;
-        this.collection = collection;
+        this.collections = collections;
     }
 
     /**
@@ -64,13 +65,13 @@ public class ChecksumIntegrityValidator {
      *
      * @return The report for the results of the validation.
      */
-    public ChecksumReportModel generateReport() {
-        ChecksumReportModel report = new ChecksumReportModel();
+    public ChecksumReportModel generateReport(String collectionId) {
+        ChecksumReportModel report = new ChecksumReportModel(collectionId);
         
-        for(String fileId : cache.getFilesWithInconsistentChecksums()) {
+        for(String fileId : cache.getFilesWithInconsistentChecksums(collectionId)) {
             handleChecksumIssue(fileId, report);
         }
-        cache.setFilesWithConsistentChecksumToValid();
+        cache.setFilesWithConsistentChecksumToValid(collectionId);
         
         return report;
     }
@@ -81,20 +82,20 @@ public class ChecksumIntegrityValidator {
      * @param report The report with the results of the validation.
      */
     private void handleChecksumIssue(String fileId, ChecksumReportModel report) {
-        java.util.Collection<FileInfo> fileinfos = cache.getFileInfos(fileId);
+        java.util.Collection<FileInfo> fileinfos = cache.getFileInfos(fileId, report.getCollectionID());
         java.util.Collection<String> uniqueChecksums = getDistinctChecksums(fileinfos);
         
         if(uniqueChecksums.size() > 1) {
-            auditManager.addAuditEvent(collection.getID(), fileId, "IntegrityService", "Checksum inconsistency for file '" + fileId + "'. "
+            auditManager.addAuditEvent(report.getCollectionID(), fileId, "IntegrityService", "Checksum inconsistency for file '" + fileId + "'. "
                     + "The pillar have more than one unique checksum.", "IntegrityService validating the checksums.", 
                     FileAction.INCONSISTENCY);
             
             for(FileInfo fi : fileinfos) {
                 report.reportChecksumIssue(fi.getFileId(), fi.getPillarId(), fi.getChecksum());
             }
-            cache.setChecksumError(fileId, collection.getPillarIDs().getPillarID());
+            cache.setChecksumError(fileId, getPillarIds(report.getCollectionID()), report.getCollectionID());
         } else {
-            cache.setChecksumAgreement(fileId, collection.getPillarIDs().getPillarID());
+            cache.setChecksumAgreement(fileId, getPillarIds(report.getCollectionID()), report.getCollectionID());
             log.debug("No checksum issues found for the file '" + fileId + "'.");
         }
     }
@@ -119,5 +120,16 @@ public class ChecksumIntegrityValidator {
         }
         
         return res;
+    }
+    
+    private List<String> getPillarIds(String collectionId) {
+        List<String> pillars = null;
+        for(Collection c : collections) { 
+            if(c.getID().equals(collectionId)) {
+                pillars = c.getPillarIDs().getPillarID();
+                break;
+            }
+        }
+        return pillars;
     }
 }
