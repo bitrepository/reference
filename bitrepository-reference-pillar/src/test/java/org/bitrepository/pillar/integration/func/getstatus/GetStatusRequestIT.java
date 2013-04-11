@@ -54,14 +54,6 @@ public class GetStatusRequestIT extends PillarFunctionTest {
         GetStatusRequest request = msgFactory.createGetStatusRequest();
         messageBus.sendMessage(request);
 
-        addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
-        GetStatusProgressResponse progressResponse = clientReceiver.waitForMessage(GetStatusProgressResponse.class);
-        Assert.assertNotNull(progressResponse);
-        Assert.assertEquals(progressResponse.getCorrelationID(), request.getCorrelationID());
-        Assert.assertEquals(progressResponse.getFrom(), getPillarID());
-        Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.OPERATION_ACCEPTED_PROGRESS);
-
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
         GetStatusFinalResponse finalResponse = clientReceiver.waitForMessage(GetStatusFinalResponse.class);
         Assert.assertNotNull(finalResponse);

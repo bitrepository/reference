@@ -39,7 +39,7 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
     protected static final String RESPONSE_FOR_POSITIVE_IDENTIFICATION = "Operation acknowledged and accepted.";
     
     /** The context for the message handler.*/
-    private final MessageHandlerContext context;
+    protected final MessageHandlerContext context;
     /** The file id validator for validating the file id.*/
     private final FileIDValidator fileIdValidator;
     

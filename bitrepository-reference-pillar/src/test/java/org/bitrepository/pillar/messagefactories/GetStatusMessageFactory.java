@@ -41,8 +41,9 @@ public class GetStatusMessageFactory extends PillarTestMessageFactory {
     }
 
     public GetStatusRequest createGetStatusRequest() {
-        GetStatusRequest res = new GetStatusRequest();
-        initializeOperationRequest(res);
-        return res;
+        GetStatusRequest request = new GetStatusRequest();
+        initializeOperationRequest(request);
+        request.setContributor(pillarID);
+        return request;
     }
 }

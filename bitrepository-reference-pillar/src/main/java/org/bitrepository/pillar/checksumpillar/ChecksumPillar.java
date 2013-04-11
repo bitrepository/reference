@@ -21,6 +21,8 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
+import java.util.Arrays;
+
 import javax.jms.JMSException;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
@@ -71,6 +73,7 @@ public class ChecksumPillar implements Pillar {
             new PillarAlarmDispatcher(settings, messageBus),
             new AuditTrailContributerDAO(settings, new DBConnector(
                 settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase())));
+        messageBus.getCollectionFilter().addAll(Arrays.asList(context.getPillarCollections()));
         mediator = new ChecksumPillarMediator(messageBus, context, cache);
         mediator.start();
         log.info("ChecksumPillar started!");

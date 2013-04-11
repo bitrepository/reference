@@ -24,6 +24,8 @@
  */
 package org.bitrepository.pillar.checksumpillar.messagehandler;
 
+import java.util.Arrays;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -65,6 +67,9 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
     @Override
     public void processRequest(IdentifyPillarsForPutFileRequest message) throws RequestHandlerException {
         validateCollectionID(message);
+        if (!Arrays.asList(context.getPillarCollections()).contains(message.getCollectionID())) {
+            return; // Irrelevant collection.
+        }
         if(checkThatTheFileDoesNotAlreadyExist(message)) {
             respondDuplicateFile(message);
         } else {
