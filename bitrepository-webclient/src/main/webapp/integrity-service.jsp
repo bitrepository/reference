@@ -197,7 +197,7 @@
         member = "checksumErrorCount";
         url += "getChecksumErrorFileIDs/";
       }
-      url += "?pillarID=" + id;
+      url += "?pillarID=" + id + "&collectionID=" + collectionID;
       if(element != null) {
         $(element).click(showModalPager(id, member, title, url));
       }      
