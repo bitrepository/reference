@@ -38,9 +38,9 @@
           </table>
         </div>
         <div class="span10"> 
-          <legend>Integrity status </legend>
-          <span>
-            Select collection: <select class="input" id="collectionChooser"></select>
+          <legend id="integrityLegend">Integrity status</legend>
+          <span class="pull-right"> 
+            Change collection: <select class="input" id="collectionChooser"></select>
           </span>
           <table class="table table-bordered table-striped">
             <thead>
@@ -260,7 +260,8 @@
         for(var i = 0; i < j.length; i++) {
            $("#collectionChooser").append('<option value="' + j[i] + '">' + j[i] + '</option>');
         }
-        
+
+        $("#integrityLegend").html("Integrity status for " + getCollectionID());
         getIntegrityStatus();
         clearInterval(update_page);
         update_page = setInterval(function() {
@@ -281,6 +282,7 @@
 
     function collectionChanged() {
         clearIntegrityStatusTable();
+        $("#integrityLegend").html("Integrity status for " + getCollectionID());  
         clearInterval(update_page);
         getIntegrityStatus();
         update_page = setInterval(function() {
