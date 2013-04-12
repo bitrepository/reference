@@ -38,7 +38,10 @@
           </table>
         </div>
         <div class="span10"> 
-          <h4>Integrity status </h4>
+          <legend>Integrity status </legend>
+          <span>
+            Select collection: <select class="input" id="collectionChooser"></select>
+          </span>
           <table class="table table-bordered table-striped">
             <thead>
               <tr>
@@ -80,7 +83,6 @@
     var workflows = new Object();
     var pager;
     var update_page;
-    var collectionID;
 
     function loadWorkflows() {
       $.getJSON('<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getWorkflowList/'
@@ -197,7 +199,7 @@
         member = "checksumErrorCount";
         url += "getChecksumErrorFileIDs/";
       }
-      url += "?pillarID=" + id + "&collectionID=" + collectionID;
+      url += "?pillarID=" + id + "&collectionID=" + getCollectionID();
       if(element != null) {
         $(element).click(showModalPager(id, member, title, url));
       }      
@@ -221,7 +223,7 @@
 
     function getIntegrityStatus() {
       var url = "<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getIntegrityStatus/?collectionID=" 
-            + collectionID;
+            + getCollectionID();
       $.getJSON(url, {}, function(j){
         var htmlTable;
         for (var i = 0; i < j.length; i++) {
@@ -253,11 +255,11 @@
     }
  
     //This needs to be rewritten when support for multiple collections is really implemented. 
-    function getCollectionID() {
+    function getCollectionIDs() {
       $.getJSON('repo/reposervice/getCollectionIDs/',
           {}, function(j){
-        if(j.length >= 1) {
-          collectionID = j[0];
+        for(var i = 0; i < j.length; i++) {
+           $("#collectionChooser").append('<option value="' + j[i] + '">' + j[i] + '</option>');
         }
         
         getIntegrityStatus();
@@ -269,13 +271,17 @@
       });
     }
 
+    function getCollectionID() {
+      return $("#collectionChooser").val();
+    }
+
 
     $(document).ready(function(){
       // Load page content
       makeMenu("integrity-service.jsp", "#pageMenu");
       loadWorkflows();
       getWorkflowStatuses();
-      getCollectionID();
+      getCollectionIDs();
     
       // Setup event / click handling
       $("#workflowStarter").click(function(event) { event.preventDefault(); startWorkflow(); });
