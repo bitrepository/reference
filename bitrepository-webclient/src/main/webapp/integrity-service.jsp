@@ -254,7 +254,6 @@
 
     }
  
-    //This needs to be rewritten when support for multiple collections is really implemented. 
     function getCollectionIDs() {
       $.getJSON('repo/reposervice/getCollectionIDs/',
           {}, function(j){
@@ -275,6 +274,21 @@
       return $("#collectionChooser").val();
     }
 
+    function clearIntegrityStatusTable() {
+      $("#integrity-status-table-body").empty();
+      pillars = new Object();
+    }
+
+    function collectionChanged() {
+        clearIntegrityStatusTable();
+        clearInterval(update_page);
+        getIntegrityStatus();
+        update_page = setInterval(function() {
+          getWorkflowStatuses(); 
+          getIntegrityStatus();
+        }, 2500);
+    }
+
 
     $(document).ready(function(){
       // Load page content
@@ -285,7 +299,8 @@
     
       // Setup event / click handling
       $("#workflowStarter").click(function(event) { event.preventDefault(); startWorkflow(); });
-      
+      $("#collectionChooser").change(function(event) {event.preventDefault(); collectionChanged();});      
+
       // Add page auto update
       update_page = setInterval(function() {
         getWorkflowStatuses(); 
