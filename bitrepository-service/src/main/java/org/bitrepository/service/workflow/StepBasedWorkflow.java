@@ -40,7 +40,7 @@ public abstract class StepBasedWorkflow implements Workflow {
     private WorkflowStatistic statistics;
 
     @Override
-    public void start() {
+    public synchronized void start() {
         statistics = new WorkflowStatistic(getClass().getSimpleName());
         statistics.start();
     }
@@ -85,7 +85,10 @@ public abstract class StepBasedWorkflow implements Workflow {
      * @return The statistics for this workflow.
      */
     @Override
-    public WorkflowStatistic getWorkflowStatistics() {
+    public synchronized WorkflowStatistic getWorkflowStatistics() {
+        if(statistics == null) {
+            statistics = new WorkflowStatistic(getClass().getSimpleName());
+        }
         return statistics;
     }
     
