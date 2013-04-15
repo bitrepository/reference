@@ -453,8 +453,8 @@ public class IntegrityDAO {
         DatabaseUtils.executeStatement(dbConnector, removeFileInfoEntrySql, key);
         
         log.info("Removing the file id '" + fileId + "' from the files table.");
-        String removeFileIDSql = "DELETE FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ?";
-        DatabaseUtils.executeStatement(dbConnector, removeFileIDSql, fileId);
+        String removeFileIDSql = "DELETE FROM " + FILES_TABLE + " WHERE " + FILES_KEY + " = ?";
+        DatabaseUtils.executeStatement(dbConnector, removeFileIDSql, key);
     }
     
     /**
