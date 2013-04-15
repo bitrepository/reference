@@ -115,8 +115,7 @@ public class DatabaseStressTests extends ExtendedTestCase {
     private IntegrityDAO createDAO() {
         return new IntegrityDAO(new DBConnector(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
-                SettingsUtils.getAllPillarIDs(settings),
-                SettingsUtils.getAllCollectionsIDs(settings));
+                settings.getRepositorySettings().getCollections());
     }
 
 }

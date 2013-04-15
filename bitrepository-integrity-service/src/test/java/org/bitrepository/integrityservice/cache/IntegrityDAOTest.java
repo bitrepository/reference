@@ -53,11 +53,13 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     MockAuditManager auditManager;
     String TEST_PILLAR_1 = "MY-TEST-PILLAR-1";
     String TEST_PILLAR_2 = "MY-TEST-PILLAR-2";
+    String EXTRA_PILLAR = "MY-EXTRA-PILLAR";
     
     String TEST_FILE_ID = "TEST-FILE-ID";
     String TEST_CHECKSUM = "1234cccc4321";
     
     String TEST_COLLECTIONID;
+    public static final String EXTRA_COLLECTION = "extra-collection";
 
     @BeforeMethod (alwaysRun = true)
     @Override
@@ -76,6 +78,17 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         c0.getPillarIDs().getPillarID().add(TEST_PILLAR_2);
         settings.getRepositorySettings().getCollections().getCollection().clear();
         settings.getRepositorySettings().getCollections().getCollection().add(c0);
+        
+        org.bitrepository.settings.repositorysettings.Collection extraCollection = 
+                new org.bitrepository.settings.repositorysettings.Collection();
+        extraCollection.setID(EXTRA_COLLECTION);
+        org.bitrepository.settings.repositorysettings.PillarIDs pids 
+            = new org.bitrepository.settings.repositorysettings.PillarIDs();
+        pids.getPillarID().add(TEST_PILLAR_1);
+        pids.getPillarID().add(EXTRA_PILLAR);
+        extraCollection.setPillarIDs(pids);
+        settings.getRepositorySettings().getCollections().getCollection().add(extraCollection);
+        
         
     }
 
@@ -124,8 +137,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         DBConnector connector = new DBConnector(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
                         
-        IntegrityDAO cache = new IntegrityDAO(connector, SettingsUtils.getAllPillarIDs(settings),
-                                    SettingsUtils.getAllCollectionsIDs(settings));
+        IntegrityDAO cache = new IntegrityDAO(connector, settings.getRepositorySettings().getCollections());
         Assert.assertNotNull(cache);
 
         addStep("Close the connection and create another one.", "Should not fail");
@@ -137,8 +149,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         
         DBConnector reconnector = new DBConnector(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        cache = new IntegrityDAO(reconnector, SettingsUtils.getAllPillarIDs(settings), 
-                        SettingsUtils.getAllCollectionsIDs(settings));
+        cache = new IntegrityDAO(reconnector, settings.getRepositorySettings().getCollections());
     }
 
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
@@ -187,6 +198,11 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Collection<String> pillarsMissingFile = cache.getMissingAtPillars(TEST_FILE_ID, TEST_COLLECTIONID);
         Assert.assertNotNull(pillarsMissingFile);
         Assert.assertEquals(pillarsMissingFile.size(), 0);
+        
+        addStep("Test that the database knows the extra collection", "should deliver an empty collection and no errors");
+        Collection<String> extraCollectionFileIDs = cache.getAllFileIDs(EXTRA_COLLECTION);
+        Assert.assertNotNull(extraCollectionFileIDs);
+        Assert.assertEquals(extraCollectionFileIDs.size(), 0);
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
@@ -239,13 +255,16 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     public void testDeletingEntry() throws Exception {
         addDescription("Tests the deletion of an FileID entry.");
         IntegrityDAO cache = createDAO();
+        Collection<FileInfo> fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
+        Assert.assertNotNull(fileinfos);
+        Assert.assertEquals(fileinfos.size(), 0);
 
         addStep("Create data", "Should be ingested into the database");
         FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
-        cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);       
         cache.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
         
-        Collection<FileInfo> fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
+        fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
         Assert.assertNotNull(fileinfos);
         Assert.assertEquals(fileinfos.size(), 2);
         
@@ -768,7 +787,6 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     private IntegrityDAO createDAO() {
         return new IntegrityDAO(new DBConnector(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
-                SettingsUtils.getAllPillarIDs(settings),
-                SettingsUtils.getAllCollectionsIDs(settings));
+                settings.getRepositorySettings().getCollections());
     }
 }

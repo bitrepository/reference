@@ -48,8 +48,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
@@ -60,6 +65,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
+import org.bitrepository.settings.repositorysettings.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,21 +77,21 @@ public class IntegrityDAO {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The connector to the database.*/
     private final DBConnector dbConnector;
-    /** The ids of the pillars.*/
-    private final List<String> pillarIds;
-    /** The list of collection ids */
-    private final List<String> collectionIds;
+    /** Mapping from collectionID to the list of pillars in it */
+    private final Map<String, List<String>> collectionPillarsMap;
     
     /** 
      * Constructor.
      * @param dbConnector The connector to the database, where the cache is stored.
      */
-    public IntegrityDAO(DBConnector dbConnector, List<String> pillarIds, List<String> collectionIds) {
+    public IntegrityDAO(DBConnector dbConnector, Collections collections) {
         ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
         
         this.dbConnector = dbConnector;
-        this.pillarIds = pillarIds;
-        this.collectionIds = collectionIds;
+        collectionPillarsMap = new HashMap<String, List<String>>();
+        for(org.bitrepository.settings.repositorysettings.Collection collection : collections.getCollection()) {
+            collectionPillarsMap.put(collection.getID(), new ArrayList<String>(collection.getPillarIDs().getPillarID()));
+        }
         initialisePillars();
         initializeCollections();
     }
@@ -106,7 +112,7 @@ public class IntegrityDAO {
     private synchronized void initializeCollections() {
         List<String> collectionsInDatabase = retrieveCollectionsInDatabase();
         if(collectionsInDatabase.isEmpty()) {
-            insertAllCollectionsIntoDatabase(collectionIds);
+            insertAllCollectionsIntoDatabase(collectionPillarsMap.keySet());
         } else {
             validateConsistencyBetweenCollectionsInDatabaseAndSettings(collectionsInDatabase);
         }
@@ -124,7 +130,11 @@ public class IntegrityDAO {
      * Inserts all pillar ids into the database.
      */
     private void insertAllPillarsIntoDatabase() {
-        for(String pillarId : pillarIds) {
+        Set<String> pillars = new HashSet<String>();
+        for(List<String> pillarList : collectionPillarsMap.values()) {
+            pillars.addAll(pillarList);
+        }
+        for(String pillarId : pillars) {
             String sql = "INSERT INTO " + PILLAR_TABLE +" ( " + PILLAR_ID + " ) VALUES ( ? )";
             DatabaseUtils.executeStatement(dbConnector, sql, pillarId);
         }
@@ -141,7 +151,7 @@ public class IntegrityDAO {
     /**
      * Insert all collection ids into the database 
      */
-    private void insertAllCollectionsIntoDatabase(List<String> collections) {
+    private void insertAllCollectionsIntoDatabase(Set<String> collections) {
         String sql = "INSERT INTO " + COLLECTIONS_TABLE + " ( " + COLLECTION_ID + " ) VALUES ( ? )";  
         for(String collection : collections) {
              DatabaseUtils.executeStatement(dbConnector, sql, collection);
@@ -155,13 +165,17 @@ public class IntegrityDAO {
      * @param pillarsFromDatabase The pillars extracted from the database.
      */
     private void validateConsistencyBetweenPillarsInDatabaseAndSettings(List<String> pillarsFromDatabase) {
+        Set<String> pillars = new HashSet<String>();
+        for(List<String> pillarList : collectionPillarsMap.values()) {
+            pillars.addAll(pillarList);
+        }
         List<String> uniquePillarsInDatabase = new ArrayList<String>(pillarsFromDatabase);
-        uniquePillarsInDatabase.removeAll(pillarIds);
-        List<String> uniquePillarsInSettings = new ArrayList<String>(pillarIds);
+        uniquePillarsInDatabase.removeAll(pillars);
+        List<String> uniquePillarsInSettings = new ArrayList<String>(pillars);
         uniquePillarsInSettings.removeAll(pillarsFromDatabase);
         if(!uniquePillarsInDatabase.isEmpty() || !uniquePillarsInSettings.isEmpty()) {
             throw new IllegalStateException("There is inkonsistency between the pillars in the database, '" 
-                    + pillarsFromDatabase + "', and the ones in the settings, '" + pillarIds + "'.");
+                    + pillarsFromDatabase + "', and the ones in the settings, '" + pillars + "'.");
         }
     }
     
@@ -173,12 +187,12 @@ public class IntegrityDAO {
      */
     private void validateConsistencyBetweenCollectionsInDatabaseAndSettings(List<String> collectionsFromDatabase) {
         List<String> uniqueCollectionsInDatabase = new ArrayList<String>(collectionsFromDatabase);
-        uniqueCollectionsInDatabase.removeAll(collectionIds);
-        List<String> uniqueCollectionsInSettings = new ArrayList<String>(collectionIds);
+        uniqueCollectionsInDatabase.removeAll(collectionPillarsMap.keySet());
+        List<String> uniqueCollectionsInSettings = new ArrayList<String>(collectionPillarsMap.keySet());
         uniqueCollectionsInSettings.removeAll(collectionsFromDatabase);
         if(!uniqueCollectionsInDatabase.isEmpty() || !uniqueCollectionsInSettings.isEmpty()) {
             throw new IllegalStateException("There is inkonsistency between the collections in the database, '" 
-                    + collectionsFromDatabase + "', and the ones in the settings, '" + collectionIds + "'.");
+                    + collectionsFromDatabase + "', and the ones in the settings, '" + collectionPillarsMap.keySet() + "'.");
         }
     }
     
@@ -245,7 +259,8 @@ public class IntegrityDAO {
         
         List<FileInfo> res = new ArrayList<FileInfo>();
         String sql = "SELECT " + FI_LAST_FILE_UPDATE + ", " + FI_CHECKSUM + ", " + FI_LAST_CHECKSUM_UPDATE + ", " 
-                + FI_PILLAR_KEY + ", " + FI_FILE_STATE + ", " + FI_CHECKSUM_STATE + " FROM " + FILE_INFO_TABLE 
+                + FI_PILLAR_KEY + ", " + FI_FILE_STATE + ", " + FI_CHECKSUM_STATE 
+                + " FROM " + FILE_INFO_TABLE 
                 + " WHERE " + FI_FILE_KEY + " = ?";
         
         try {
@@ -913,8 +928,9 @@ public class IntegrityDAO {
      */
     private void ensureFileIdExists(String fileId, String collectionId) {
         log.trace("Retrieving key for file '{}'.", fileId);
-        String sql = "SELECT " + FILES_KEY + " FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ? AND " 
-                + COLLECTION_KEY + " = ?";
+        String sql = "SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                + " WHERE " + FILES_ID + " = ? " 
+                + " AND " + COLLECTION_KEY + " = ?";
         if(DatabaseUtils.selectLongValue(dbConnector, sql, fileId, retrieveCollectionKey(collectionId)) == null) {
             insertNewFileID(fileId, collectionId);
         }
@@ -927,14 +943,16 @@ public class IntegrityDAO {
      */
     private Long retrieveFileKey(String fileId, Long collectionKey) {
         log.trace("Retrieving key for file '{}'.", fileId);
-        String sql = "SELECT " + FILES_KEY + " FROM " + FILES_TABLE + " WHERE " + FILES_ID + " = ? AND " + 
-                COLLECTION_KEY + " = ?";
+        String sql = "SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                + " WHERE " + FILES_ID + " = ?" 
+                + " AND " + COLLECTION_KEY + " = ?";
         return DatabaseUtils.selectLongValue(dbConnector, sql, fileId, collectionKey);
     }
     
     private Long retrieveCollectionKey(String collectionId) {
         log.trace("Retrieving key for collection '{}'.", collectionId);
-        String sql = "SELECT " + COLLECTION_KEY + " FROM " + COLLECTIONS_TABLE + " WHERE " + COLLECTION_ID + "= ?";
+        String sql = "SELECT " + COLLECTION_KEY + " FROM " + COLLECTIONS_TABLE 
+                + " WHERE " + COLLECTION_ID + "= ?";
         return DatabaseUtils.selectLongValue(dbConnector, sql, collectionId);
     }
     
@@ -946,17 +964,23 @@ public class IntegrityDAO {
     private synchronized void insertNewFileID(String fileId, String collectionId) {
         log.trace("Inserting the file '" + fileId + "' into the files table.");
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String fileSql = "INSERT INTO " + FILES_TABLE + " ( " + FILES_ID + ", " + FILES_CREATION_DATE 
-                + ", " + COLLECTION_KEY + " ) VALUES ( ?, ?, ?)";
+        String fileSql = "INSERT INTO " + FILES_TABLE + " ( " 
+                + FILES_ID + ", " + FILES_CREATION_DATE + ", " + COLLECTION_KEY + " )" 
+                + " VALUES ( ?, ?, ?)";
         DatabaseUtils.executeStatement(dbConnector, fileSql, fileId, new Date(), collectionKey);
         
         Date epoch = new Date(0);
-        for(String pillar : pillarIds)  {
-            String fileinfoSql = "INSERT INTO " + FILE_INFO_TABLE + " ( " + FI_FILE_KEY + ", " + FI_PILLAR_KEY + ", "
-                    + FI_CHECKSUM_STATE + ", " + FI_LAST_CHECKSUM_UPDATE + ", " + FI_FILE_STATE + ", " 
-                    + FI_LAST_FILE_UPDATE + " ) VALUES ( (SELECT " + FILES_KEY + " FROM " + FILES_TABLE + " WHERE " 
-                    + FILES_ID + " = ? AND " + COLLECTION_KEY + " = ? ), (SELECT " + PILLAR_KEY + " FROM " 
-                    + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ? ), ?, ?, ?, ? )";
+        for(String pillar : collectionPillarsMap.get(collectionId))  {
+            String fileinfoSql = "INSERT INTO " + FILE_INFO_TABLE 
+                    + " ( " + FI_FILE_KEY + ", " + FI_PILLAR_KEY + ", " + FI_CHECKSUM_STATE + ", " 
+                        + FI_LAST_CHECKSUM_UPDATE + ", " + FI_FILE_STATE + ", " + FI_LAST_FILE_UPDATE + " )" 
+                    + " VALUES ( "
+                        + "(SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                            + " WHERE " + FILES_ID + " = ?"
+                            + " AND " + COLLECTION_KEY + " = ? ), "
+                        + "(SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
+                            + " WHERE " + PILLAR_ID + " = ? )," 
+                        + " ?, ?, ?, ? )";
             DatabaseUtils.executeStatement(dbConnector, fileinfoSql, fileId, collectionKey, pillar, 
                     ChecksumState.UNKNOWN.ordinal(), epoch, FileState.UNKNOWN.ordinal(), epoch);
         }

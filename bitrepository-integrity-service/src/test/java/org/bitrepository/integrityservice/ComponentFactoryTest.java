@@ -51,6 +51,7 @@ import org.bitrepository.service.scheduler.ServiceScheduler;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
+import org.bitrepository.settings.repositorysettings.PillarIDs;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -121,17 +122,22 @@ public class ComponentFactoryTest extends IntegrationTest {
     @Test(groups = {"regressiontest", "integritytest"})
     public void verifyAlarmsFromCacheWhenInstantiationErrors() throws Exception {
         addDescription("Test that an alarm is send, if the the instantiation of the IntegrityModel from the component factory fails.");
-        addStep("Instantiate the database with a wrong list of pillars", "Is created.");
+        addStep("Instantiate the database with the correct list of pillars", "Is created.");
         cleanIntegrityDatabase();
         try {
-            List<String> wrongPillars = Arrays.asList("Wrong pillar " + new Date().getTime(), "Another wrong pillar " + new Date().getTime());
             IntegrityDAO dao = new IntegrityDAO(new DBConnector(
                     settingsForCUT.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
-                    wrongPillars,
-                    SettingsUtils.getAllCollectionsIDs(settingsForCUT));
+                    settingsForCUT.getRepositorySettings().getCollections());
             
-            addStep("Start the database through the component factory with different set of pillars.", 
+            addStep("Start the database through the component factory with different (wrong) set of pillars.", 
                     "Through an exception and sends an alarm.");
+
+            PillarIDs pillars = 
+                    settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs();
+            pillars.getPillarID().add("Wrong pillar " + new Date().getTime());
+            pillars.getPillarID().add("Another wrong pillar " + new Date().getTime());
+            settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).setPillarIDs(pillars);
+            
             IntegrityAlerter alarmDispatcher = new IntegrityAlarmDispatcher(settingsForCUT, messageBus, AlarmLevel.ERROR);
             try {
                 IntegrityModel integrityModel = IntegrityServiceComponentFactory.getInstance().getCachedIntegrityInformationStorage(
