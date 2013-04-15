@@ -102,7 +102,7 @@ public class SimpleIntegrityService implements IntegrityService {
 
     @Override
     public void scheduleWorkflow(Workflow workflow, long timeBetweenRuns) {
-        scheduler.scheduleWorkflow(workflow, workflow.getClass().getSimpleName(), timeBetweenRuns);
+        scheduler.scheduleWorkflow(workflow, workflow.getWorkflowID(), timeBetweenRuns);
         if(!workflows.contains(workflow)) {
             workflows.add(workflow);
         }

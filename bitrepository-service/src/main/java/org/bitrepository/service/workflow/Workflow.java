@@ -46,4 +46,9 @@ public interface Workflow {
      * @return Provides a human readable description of the workflow.
      */
     String getDescription();
+    
+    /**
+     *  @return Provides an ID to identify the workflow on
+     */
+    String getWorkflowID();
 }

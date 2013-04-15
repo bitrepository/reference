@@ -126,4 +126,9 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
                 //+ LINEFEED + getStepDescriptions()
                 ;
     }
+    
+    @Override 
+    public String getWorkflowID() {
+        return getClass().getSimpleName() + "-" + collectionId; 
+    }
 }

@@ -88,4 +88,8 @@ public abstract class StepBasedWorkflow implements Workflow {
     public WorkflowStatistic getWorkflowStatistics() {
         return statistics;
     }
+    
+    public String getWorkflowID() {
+        return getClass().getSimpleName();
+    }
 }

@@ -52,4 +52,8 @@ public class MockWorkflow implements Workflow {
     public String getDescription() {
         return null;
     }
+    
+    public String getWorkflowID() {
+        return getClass().getSimpleName();
+    }
 }
