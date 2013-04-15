@@ -34,6 +34,8 @@ ALTER TABLE pillar (
 
 RENAME COLUMN pillar.pillar_guid TO pillar_key;
 
+RENAME COLUMN fileinfo.file_guid TO file_key
+RENAME COLUMN fileinfo.pillar_guid TO pillar_key
 
 -- Add constraints to fileinfo table.
 ALTER TABLE fileinfo (
