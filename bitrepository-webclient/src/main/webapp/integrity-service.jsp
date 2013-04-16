@@ -15,8 +15,14 @@
     <div class="row-fluid">
       <div class="span10">
         <div class="span10" style="height:0px; min-height:0px"></div>
-        <div class="span10"><h2>Integrity service</h2></div>
+        <div class="span10">
+          <h2>Integrity service</h2>
+          <legend id="integrityLegend">Integrity information</legend>
+        </div>
         <div class="span10"> 
+          <span class="pull-right"> 
+            Change collection: <select class="input" id="collectionChooser"></select>
+          </span>
           <form class="form-inline">
             <select id="workflowSelector"></select>
             <button type="submit" class=btn" id="workflowStarter">Start</button>
@@ -38,10 +44,7 @@
           </table>
         </div>
         <div class="span10"> 
-          <legend id="integrityLegend">Integrity status</legend>
-          <span class="pull-right"> 
-            Change collection: <select class="input" id="collectionChooser"></select>
-          </span>
+          <legend>Integrity status</legend>
           <table class="table table-bordered table-striped">
             <thead>
               <tr>
@@ -261,7 +264,7 @@
            $("#collectionChooser").append('<option value="' + j[i] + '">' + j[i] + '</option>');
         }
 
-        $("#integrityLegend").html("Integrity status for " + getCollectionID());
+        $("#integrityLegend").html("Integrity information for collection " + getCollectionID());
         getIntegrityStatus();
         clearInterval(update_page);
         update_page = setInterval(function() {
@@ -282,7 +285,7 @@
 
     function collectionChanged() {
         clearIntegrityStatusTable();
-        $("#integrityLegend").html("Integrity status for " + getCollectionID());  
+        $("#integrityLegend").html("Integrity information for collection " + getCollectionID());  
         clearInterval(update_page);
         getIntegrityStatus();
         update_page = setInterval(function() {
