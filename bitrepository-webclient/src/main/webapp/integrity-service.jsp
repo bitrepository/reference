@@ -312,12 +312,10 @@
         loadWorkflows();
         getWorkflowStatuses();
         getIntegrityStatus();
-        if(update_page != null) {
-          update_page = setInterval(function() {
-            getWorkflowStatuses(); 
-            getIntegrityStatus();
-          }, 2500);
-        }
+        update_page = setInterval(function() {
+          getWorkflowStatuses(); 
+          getIntegrityStatus();
+        }, 2500);
     }
 
 
