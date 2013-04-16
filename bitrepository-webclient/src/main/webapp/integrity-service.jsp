@@ -258,32 +258,8 @@
 
     }
  
-    // depricated
-    function getCollectionIDs() {
-      $.getJSON('repo/reposervice/getCollectionIDs/',
-          {}, function(j){
-        for(var i = 0; i < j.length; i++) {
-           $("#collectionChooser").append('<option value="' + j[i] + '">' + j[i] + '</option>');
-        }
-
-        $("#integrityLegend").html("Integrity information for collection " + getCollectionID());
-        getIntegrityStatus();
-        clearInterval(update_page);
-        update_page = setInterval(function() {
-          getWorkflowStatuses(); 
-          getIntegrityStatus();
-        }, 2500);
-      });
-    }
-
     function getCollectionID() {
       return $("#collectionChooser").val();
-    }
-
-    // depricated
-    function clearIntegrityStatusTable() {
-      $("#integrity-status-table-body").empty();
-      pillars = new Object();
     }
 
     function clearContent() {
@@ -293,7 +269,6 @@
       pillars = new Object();
       workflows = new Object();
     }
-
 
     function initializePage() {
       $.getJSON('repo/reposervice/getCollectionIDs/', {}, function(j) {
@@ -318,24 +293,14 @@
         }, 2500);
     }
 
-
     $(document).ready(function(){
       // Load page content
       makeMenu("integrity-service.jsp", "#pageMenu");
       initializePage();
-
-      //loadWorkflows();
-      //getWorkflowStatuses();
-      //getCollectionIDs();
     
       // Setup event / click handling
       $("#workflowStarter").click(function(event) { event.preventDefault(); startWorkflow(); });
       $("#collectionChooser").change(function(event) {event.preventDefault(); collectionChanged();});      
-
-      // Add page auto update
-      //update_page = setInterval(function() {
-      //  getWorkflowStatuses(); 
-      //}, 2500);
     }); 
 
     </script>
