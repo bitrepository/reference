@@ -38,9 +38,10 @@ public class OperationFailedEvent extends AbstractOperationEvent {
      * @param componentResults The aggregated list of <code>COMPONENT_COMPLETE</code> events generated during
      *                         the operation.
      */
-    public OperationFailedEvent(String info, List<ContributorEvent> componentResults) {
+    public OperationFailedEvent(String collectionID, String info, List<ContributorEvent> componentResults) {
         setEventType(OperationEventType.FAILED);
         setInfo(info);
+        setCollectionID(collectionID);
         this.componentResults = componentResults;
     }
 
@@ -56,4 +57,5 @@ public class OperationFailedEvent extends AbstractOperationEvent {
     public String additionalInfo() {
         return "";
     }
+    
 }

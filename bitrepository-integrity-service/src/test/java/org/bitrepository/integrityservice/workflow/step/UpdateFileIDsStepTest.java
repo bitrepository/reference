@@ -76,7 +76,7 @@ public class UpdateFileIDsStepTest extends ExtendedTestCase {
             public void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
                     EventHandler eventHandler) {
                 super.getFileIDs(pillarIDs, auditTrailInformation, queries, eventHandler);
-                eventHandler.handleEvent(new CompleteEvent(null));
+                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTIONID, null));
             }
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
@@ -97,7 +97,7 @@ public class UpdateFileIDsStepTest extends ExtendedTestCase {
             public void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
                     EventHandler eventHandler) {
                 super.getFileIDs(pillarIDs, auditTrailInformation, queries, eventHandler);
-                eventHandler.handleEvent(new OperationFailedEvent("Operation failed", null));
+                eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTIONID, "Operation failed", null));
             }
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
@@ -118,12 +118,12 @@ public class UpdateFileIDsStepTest extends ExtendedTestCase {
             public void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
                     EventHandler eventHandler) {
                 super.getFileIDs(pillarIDs, auditTrailInformation, queries, eventHandler);
-                eventHandler.handleEvent(new IdentificationCompleteEvent(Arrays.asList(TEST_PILLAR_1)));
+                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTIONID, Arrays.asList(TEST_PILLAR_1)));
                 FileIDsCompletePillarEvent event = new FileIDsCompletePillarEvent(
                         TEST_PILLAR_1, TEST_COLLECTIONID, createResultingFileIDs(TEST_FILE_1), false);
                 eventHandler.handleEvent(event);
                 
-                eventHandler.handleEvent(new CompleteEvent(null));
+                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTIONID, null));
             }
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
@@ -146,7 +146,7 @@ public class UpdateFileIDsStepTest extends ExtendedTestCase {
             public void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
                     EventHandler eventHandler) {
                 super.getFileIDs(pillarIDs, auditTrailInformation, queries, eventHandler);
-                eventHandler.handleEvent(new IdentificationCompleteEvent(Arrays.asList(TEST_PILLAR_1)));
+                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTIONID, Arrays.asList(TEST_PILLAR_1)));
                 FileIDsCompletePillarEvent event;
                 if(numberOfPartialResultsLeft > 0) {
                     event = new FileIDsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTIONID, createResultingFileIDs(TEST_FILE_1), true);
@@ -155,7 +155,7 @@ public class UpdateFileIDsStepTest extends ExtendedTestCase {
                     event = new FileIDsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTIONID, createResultingFileIDs(TEST_FILE_1), false);
                 }
                 eventHandler.handleEvent(event);
-                eventHandler.handleEvent(new CompleteEvent(null));
+                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTIONID, null));
             }
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();

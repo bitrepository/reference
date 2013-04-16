@@ -63,8 +63,7 @@ public class DeletingFile extends PerformingOperationState {
 
     @Override
     protected void sendRequest() {
-        context.getMonitor().requestSent("Sending request for deleting file", activeContributors.keySet().toString(), 
-                context.getCollectionID());
+        context.getMonitor().requestSent("Sending request for deleting file", activeContributors.keySet().toString());
         for(String pillar : activeContributors.keySet()) {
             DeleteFileRequest msg = createRequest(pillar);
             if (context.getChecksumRequestForValidation() != null) {

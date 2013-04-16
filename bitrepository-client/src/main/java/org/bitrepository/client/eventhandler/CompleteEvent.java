@@ -38,7 +38,9 @@ public class CompleteEvent extends AbstractOperationEvent {
      * @param componentResults The aggregated list of <code>COMPONENT_COMPLETE</code> events generated during
      *                         the operation.
     */
-    public CompleteEvent(List<ContributorEvent> componentResults) {
+    public CompleteEvent(String collectionID, List<ContributorEvent> componentResults) {
+        super();
+        setCollectionID(collectionID);
         setEventType(OperationEventType.COMPLETE);
         this.componentResults = componentResults;
     }

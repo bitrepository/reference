@@ -78,7 +78,7 @@ public class UpdateChecksumsStepTest extends ExtendedTestCase {
             public void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation,
                     ContributorQuery[] queries, EventHandler eventHandler) {
                 super.getChecksums(pillarIDs, checksumType, auditTrailInformation, queries, eventHandler);
-                eventHandler.handleEvent(new CompleteEvent(null));
+                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTIONID, null));
             }
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
@@ -100,7 +100,7 @@ public class UpdateChecksumsStepTest extends ExtendedTestCase {
             public void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation,
                     ContributorQuery[] queries, EventHandler eventHandler) {
                 super.getChecksums(pillarIDs, checksumType, auditTrailInformation, queries, eventHandler);
-                eventHandler.handleEvent(new OperationFailedEvent("Problem encountered", null));
+                eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTIONID, "Problem encountered", null));
             }
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
@@ -122,13 +122,13 @@ public class UpdateChecksumsStepTest extends ExtendedTestCase {
             public void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation,
                     ContributorQuery[] queries, EventHandler eventHandler) {
                 super.getChecksums(pillarIDs, checksumType, auditTrailInformation, queries, eventHandler);
-                eventHandler.handleEvent(new IdentificationCompleteEvent(Arrays.asList(TEST_PILLAR_1)));
+                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTIONID, Arrays.asList(TEST_PILLAR_1)));
                 ChecksumsCompletePillarEvent event = new ChecksumsCompletePillarEvent(
                         TEST_PILLAR_1, TEST_COLLECTIONID, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
                         createChecksumSpecTYPE(), false);
                 eventHandler.handleEvent(event);
                 
-                eventHandler.handleEvent(new CompleteEvent(null));
+                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTIONID, null));
             }
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
@@ -198,7 +198,7 @@ public class UpdateChecksumsStepTest extends ExtendedTestCase {
         @Override
         public void run() {
             synchronized(this) {
-                eventHandler.handleEvent(new IdentificationCompleteEvent(Arrays.asList(TEST_PILLAR_1)));
+                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTIONID, Arrays.asList(TEST_PILLAR_1)));
                 
                 ChecksumsCompletePillarEvent event;
                 if(partialsLeft > 0) {
@@ -214,7 +214,7 @@ public class UpdateChecksumsStepTest extends ExtendedTestCase {
                 
                 eventHandler.handleEvent(new ContributorEvent(TEST_PILLAR_1, TEST_COLLECTIONID));
             }
-            eventHandler.handleEvent(new CompleteEvent(null));
+            eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTIONID, null));
         }
     }
 

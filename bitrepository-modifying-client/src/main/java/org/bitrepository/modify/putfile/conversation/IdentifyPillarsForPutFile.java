@@ -71,14 +71,14 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
                         getContext().getMonitor().contributorFailed(
                                 "Received negative response from component " + response.getFrom() +
                                         ":  " + response.getResponseInfo() + " (existing file checksum does not match)",
-                                response.getFrom(), response.getCollectionID(), response.getResponseInfo().getResponseCode());
+                                response.getFrom(), response.getResponseInfo().getResponseCode());
                         throw new UnableToFinishException("Can not put file " + context.getFileID() +
                                 ", as an different file already exists on pillar " + response.getPillarID());
                     }
                 } else {
                     getContext().getMonitor().contributorFailed(
                             "Received negative response from component " + response.getFrom() + ":  " +
-                                    response.getResponseInfo(), response.getFrom(), response.getCollectionID(), 
+                                    response.getResponseInfo(), response.getFrom(), 
                                     response.getResponseInfo().getResponseCode());
                     throw new UnableToFinishException("Can not put file " + context.getFileID() +
                             ", as an file already exists on pillar " + response.getPillarID());

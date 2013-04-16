@@ -74,8 +74,7 @@ public class PuttingFile extends PerformingOperationState {
      */
     @Override
     protected void sendRequest() {
-        context.getMonitor().requestSent("Sending request for put file", activeContributors.keySet().toString(),
-                context.getCollectionID());
+        context.getMonitor().requestSent("Sending request for put file", activeContributors.keySet().toString());
         for(String pillar : activeContributors.keySet()) {
             sendPillarRequest(pillar);
             componentRequestCount.put(pillar, 1);
@@ -137,10 +136,10 @@ public class PuttingFile extends PerformingOperationState {
                     sendPillarRequest(pillarID);
                     componentRequestCount.put(pillarID, componentRequestCount.get(pillarID)+1);
                     context.getMonitor().retry("Retrying putfile (attempt number " + componentRequestCount.get(pillarID) + ")",
-                            pillarID, context.getCollectionID());
+                            pillarID);
                 } else {
                     getContext().getMonitor().contributorFailed(
-                            msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getCollectionID(), msg.getResponseInfo().getResponseCode());
+                            msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
                 }
                 break;
             case DUPLICATE_FILE_FAILURE:
@@ -154,14 +153,14 @@ public class PuttingFile extends PerformingOperationState {
                     getContext().getMonitor().contributorFailed(
                             "Received negative response from component " + response.getFrom() +
                                     ":  " + response.getResponseInfo() + " (existing file checksum does not match)",
-                            response.getFrom(), response.getCollectionID(), response.getResponseInfo().getResponseCode());
+                            response.getFrom(), response.getResponseInfo().getResponseCode());
                     throw new UnableToFinishException("Can not put file " + context.getFileID() +
                             ", as an different file already exists on pillar " + response.getPillarID());
                 }
                 break;
             default:
                 getContext().getMonitor().contributorFailed(
-                        msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getCollectionID(), msg.getResponseInfo().getResponseCode());
+                        msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
             }
         }
         return isFinalResponse;

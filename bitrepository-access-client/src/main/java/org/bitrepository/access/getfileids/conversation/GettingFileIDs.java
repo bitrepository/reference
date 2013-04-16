@@ -59,8 +59,7 @@ public class GettingFileIDs extends PerformingOperationState {
 
     @Override
     protected void sendRequest() {
-        context.getMonitor().requestSent("Sending request for get fileIDs", activeContributors.keySet().toString(), 
-                context.getCollectionID());
+        context.getMonitor().requestSent("Sending request for get fileIDs", activeContributors.keySet().toString());
         for(ContributorQuery query : context.getContributorQueries()) {
             if (activeContributors.containsKey(query.getComponentID())) {
                 GetFileIDsRequest msg = new GetFileIDsRequest();

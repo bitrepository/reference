@@ -32,10 +32,7 @@ public class ContributorFailedEvent extends ContributorEvent {
      * @param responseCode The response code from any response indicating the failure. Might be null, if no relevant
      *                     response exists.
      */
-    public ContributorFailedEvent(
-            String contributorID,
-            String collectionID, 
-            ResponseCode responseCode) {
+    public ContributorFailedEvent(String contributorID, String collectionID, ResponseCode responseCode) {
         super(contributorID, collectionID);
         setEventType(COMPONENT_FAILED);
         this.responseCode = responseCode;

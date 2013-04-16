@@ -91,13 +91,13 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
             public void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation,
                     ContributorQuery[] queries, EventHandler eventHandler) {
                 super.getChecksums(pillarIDs, checksumType, auditTrailInformation, queries, eventHandler);
-                eventHandler.handleEvent(new CompleteEvent(null));
+                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             }
             @Override
             public void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
                     EventHandler eventHandler) {
                 super.getFileIDs(pillarIDs, auditTrailInformation, queries, eventHandler);
-                eventHandler.handleEvent(new CompleteEvent(null));
+                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             }
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
@@ -130,13 +130,13 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
             public void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation,
                     ContributorQuery[] queries, EventHandler eventHandler) {
                 super.getChecksums(pillarIDs, checksumType, auditTrailInformation, queries, eventHandler);
-                eventHandler.handleEvent(new OperationFailedEvent("Failed", null));
+                eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Failed", null));
             }
             @Override
             public void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
                     EventHandler eventHandler) {
                 super.getFileIDs(pillarIDs, auditTrailInformation, queries, eventHandler);
-                eventHandler.handleEvent(new OperationFailedEvent("Failed", null));
+                eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Failed", null));
             }
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();
@@ -201,7 +201,7 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
                         TEST_PILLAR_1, TEST_COLLECTION, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
                         createChecksumSpecTYPE(), false);
                 eventHandler.handleEvent(event);
-                eventHandler.handleEvent(new CompleteEvent(null));
+                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             }
             @Override
             public void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
@@ -211,7 +211,7 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
                         TEST_PILLAR_1, TEST_COLLECTION, createResultingFileIDs(TEST_FILE_1), false);
                 eventHandler.handleEvent(event);
 
-                eventHandler.handleEvent(new CompleteEvent(null));
+                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             }
         };
         MockIntegrityAlerter alerter = new MockIntegrityAlerter();

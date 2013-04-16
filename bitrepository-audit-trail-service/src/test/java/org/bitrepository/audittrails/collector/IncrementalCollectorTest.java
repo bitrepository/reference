@@ -73,7 +73,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
             "store, and the collector should finish");
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 2,
             "Should have been ecactly two calls to store after the second result.");
-        eventHandler.handleEvent(new CompleteEvent(null));
+        eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
         Thread.sleep(100);
         Assert.assertTrue(collectionRunner.finished, "The collector should have finished after the complete event, as " +
             "no partialResults where received");
@@ -108,7 +108,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 1);
         eventHandler.handleEvent(new AuditTrailResult("Contributor2", TEST_COLLECTION, new ResultingAuditTrails(), true));
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 2);
-        eventHandler.handleEvent(new CompleteEvent(null));
+        eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
         Thread.sleep(100);
         Assert.assertTrue(!collectionRunner.finished, "The collector should not have finished after the complete " +
             "event, as partialResults where received");
@@ -123,7 +123,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         eventHandler.handleEvent(new AuditTrailResult("Contributor2", TEST_COLLECTION, new ResultingAuditTrails(), false));
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 4,
             "Should have been four calls to store after the second increments, second result.");
-        eventHandler.handleEvent(new CompleteEvent(null));
+        eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
         Thread.sleep(100);
         Assert.assertTrue(collectionRunner.finished, "The collector should have finished after the complete event, as " +
             "no partialResults where received in the second increment.");
@@ -161,7 +161,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
         eventHandler.handleEvent(new AuditTrailResult("Contributor2", TEST_COLLECTION, new ResultingAuditTrails(), true));
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 1);
-        eventHandler.handleEvent(new OperationFailedEvent("", null));
+        eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "", null));
         Thread.sleep(100);
         Assert.assertTrue(!collectionRunner.finished, "The collector should not have finished after the complete " +
             "event, as partialResults where received");
@@ -173,7 +173,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         eventHandler.handleEvent(new AuditTrailResult("Contributor1", TEST_COLLECTION, new ResultingAuditTrails(), false));
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 2,
             "Should have been three calls to store after the second increments.");
-        eventHandler.handleEvent(new CompleteEvent(null));
+        eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
         Thread.sleep(100);
         Assert.assertTrue(collectionRunner.finished);
     }

@@ -71,7 +71,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         Thread.sleep(100);
         EventHandler eventHandler = client.getLatestEventHandler();
         eventHandler.handleEvent(new AuditTrailResult("Contributor1", TEST_COLLECTION, new ResultingAuditTrails(), false));
-        eventHandler.handleEvent(new CompleteEvent(null));
+        eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
         Assert.assertEquals(client.getCallsToGetAuditTrails(), 1);
         
         addStep("Retrieve audit trails with and without an action", "Should work.");

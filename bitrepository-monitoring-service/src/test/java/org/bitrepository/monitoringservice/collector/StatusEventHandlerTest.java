@@ -34,6 +34,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class StatusEventHandlerTest extends ExtendedTestCase {
+    
+    public static final String TEST_COLLECTION = "collection1";
+    
     @Test(groups = {"regressiontest"})
     public void testStatusEventHandler() throws Exception {
         addDescription("Test the GetStatusEventHandler handling of events");
@@ -49,7 +52,7 @@ public class StatusEventHandlerTest extends ExtendedTestCase {
         Assert.assertEquals(alerter.getCallsForCheckStatuses(), 0);
         
         addStep("Test an unhandled event.", "Should not make any calls.");
-        AbstractOperationEvent event = new DefaultEvent();
+        AbstractOperationEvent event = new DefaultEvent(TEST_COLLECTION);
         event.setEventType(OperationEventType.WARNING);
         eventHandler.handleEvent(event);
         
@@ -59,7 +62,7 @@ public class StatusEventHandlerTest extends ExtendedTestCase {
         Assert.assertEquals(alerter.getCallsForCheckStatuses(), 0);
         
         addStep("Test the Complete event", "Should make a call to the alerter");
-        event = new CompleteEvent(null);
+        event = new CompleteEvent(TEST_COLLECTION, null);
         eventHandler.handleEvent(event);
         Assert.assertEquals(store.getCallsForGetStatusMap(), 0);
         Assert.assertEquals(store.getCallsForUpdateReplayCounts(), 0);
@@ -67,7 +70,7 @@ public class StatusEventHandlerTest extends ExtendedTestCase {
         Assert.assertEquals(alerter.getCallsForCheckStatuses(), 1);
         
         addStep("Test the Failed event", "Should make another call to the alerter");
-        event = new OperationFailedEvent("info", null);
+        event = new OperationFailedEvent(null, "info", null);
         eventHandler.handleEvent(event);
         Assert.assertEquals(store.getCallsForGetStatusMap(), 0);
         Assert.assertEquals(store.getCallsForUpdateReplayCounts(), 0);

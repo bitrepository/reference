@@ -46,8 +46,7 @@ public class GettingAuditTrails extends PerformingOperationState {
 
     @Override
     protected void sendRequest() {
-        context.getMonitor().requestSent("Sending request for audit trails", activeContributors.keySet().toString(), 
-                context.getCollectionID());
+        context.getMonitor().requestSent("Sending request for audit trails", activeContributors.keySet().toString());
         for(AuditTrailQuery query : context.getComponentQueries()) {
             if (activeContributors.containsKey(query.getComponentID())) {
                 GetAuditTrailsRequest msg = new GetAuditTrailsRequest();

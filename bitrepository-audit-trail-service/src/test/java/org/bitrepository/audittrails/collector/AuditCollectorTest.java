@@ -60,12 +60,12 @@ public class AuditCollectorTest extends ExtendedTestCase {
         Thread.sleep(1000);
         EventHandler eventHandler = client.getLatestEventHandler();
         eventHandler.handleEvent(new AuditTrailResult("Contributor1", TEST_COLLECTION, new ResultingAuditTrails(), false));
-        eventHandler.handleEvent(new CompleteEvent(null));
+        eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
         Assert.assertEquals(client.getCallsToGetAuditTrails(), 1);
         Thread.sleep(1000);
         eventHandler = client.getLatestEventHandler();
         eventHandler.handleEvent(new AuditTrailResult("Contributor1", TEST_COLLECTION, new ResultingAuditTrails(), false));
-        eventHandler.handleEvent(new CompleteEvent(null));
+        eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
         Assert.assertEquals(client.getCallsToGetAuditTrails(), 2);
         collector.close();
     }

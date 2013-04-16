@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.testng.Assert;
@@ -212,6 +213,56 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent(5, TimeUnit.SECONDS).getEventType(),
                 OperationEventType.FAILED);
     }
+    
+    @Test(groups = {"regressiontest"})
+    public void collectionIDIncludedInEventsTest() throws Exception {
+        addDescription("Tests the the client provides collectionID in events.");
+
+        addStep("Set a 3 second operation timeout.", "");
+        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
+
+        addStep("Start the operation", "A IDENTIFY_REQUEST_SENT event should be received.");
+        startOperation(testEventHandler);
+        
+        OperationEvent event1 = testEventHandler.waitForEvent();
+        Assert.assertEquals(event1.getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        Assert.assertEquals(event1.getCollectionID(), collectionID);
+        MessageRequest identifyRequest = waitForIdentifyRequest();
+
+        addStep("Send positive responses from the pillar1 and a negative response from pillar2",
+                "A COMPONENT_IDENTIFIED + a " +
+                "event should be generated followed by a IDENTIFICATION_COMPLETE. <p>" +
+                "Finally a operation request should be sent to pillar1 and a REQUEST_SENT event be " +
+                "generated");
+        messageBus.sendMessage(createIdentifyResponse(identifyRequest, PILLAR1_ID, pillar1DestinationId));
+        
+        OperationEvent event2 = testEventHandler.waitForEvent();
+        Assert.assertEquals(event2.getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
+        Assert.assertEquals(event2.getCollectionID(), collectionID);
+        
+        MessageResponse identifyResponse2 = createIdentifyResponse(identifyRequest, PILLAR2_ID, pillar2DestinationId);
+        identifyResponse2.getResponseInfo().setResponseCode(ResponseCode.IDENTIFICATION_NEGATIVE);
+        messageBus.sendMessage(identifyResponse2);
+        
+        OperationEvent event3 = testEventHandler.waitForEvent();
+        Assert.assertEquals(event3.getEventType(), OperationEventType.COMPONENT_FAILED);
+        Assert.assertEquals(event3.getCollectionID(), collectionID);
+        
+        OperationEvent event4 = testEventHandler.waitForEvent();
+        Assert.assertEquals(event4.getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
+        Assert.assertEquals(event4.getCollectionID(), collectionID);
+        
+        MessageRequest request1 = waitForRequest(pillar1Receiver);
+        
+        OperationEvent event5 = testEventHandler.waitForEvent();
+        Assert.assertEquals(event5.getEventType(), OperationEventType.REQUEST_SENT);
+        Assert.assertEquals(event5.getCollectionID(), collectionID);
+
+        addStep("Wait for 5 seconds", "An FAILED event should be received");
+        OperationEvent event6 = testEventHandler.waitForEvent(5, TimeUnit.SECONDS);
+        Assert.assertEquals(event6.getEventType(), OperationEventType.FAILED);
+        Assert.assertEquals(event6.getCollectionID(), collectionID);
+    }    
 
     @Test(groups = {"regressiontest"})
     public void conversationTimeoutTest() throws Exception {

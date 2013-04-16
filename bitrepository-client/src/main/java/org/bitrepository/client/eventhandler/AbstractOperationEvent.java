@@ -35,7 +35,17 @@ public abstract class AbstractOperationEvent implements OperationEvent {
     private String fileID;
     private String info;
     private String conversationID;
+    private String collectionID;
 
+    @Override 
+    public String getCollectionID() {
+        return collectionID;
+    }
+    
+    public void setCollectionID(String collectionID) {
+        this.collectionID = collectionID;
+    }
+    
     @Override
     public String getInfo() {
         return info;

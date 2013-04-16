@@ -76,7 +76,7 @@ public class ConversationContext {
         this.clientID = clientID;
         this.fileID = fileID;
         this.contributors = contributors;
-        this.monitor = new ConversationEventMonitor(conversationID, operationType, fileID, eventHandler);
+        this.monitor = new ConversationEventMonitor(collectionID, conversationID, operationType, fileID, eventHandler);
         this.auditTrailInformation = auditTrailInformation;
     }
 

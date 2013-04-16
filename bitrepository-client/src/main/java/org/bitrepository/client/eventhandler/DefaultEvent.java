@@ -27,6 +27,11 @@ package org.bitrepository.client.eventhandler;
 /** A general type of <code>OperationEvent</code> only containing a descriptive info message. */
 public class DefaultEvent extends AbstractOperationEvent {
 
+    public DefaultEvent(String collectionID) {
+        super();
+        setCollectionID(collectionID);
+    }
+    
     @Override
     public String additionalInfo() {
         return "";

@@ -90,4 +90,9 @@ public interface OperationEvent {
      * Deliver the conversation ID of the event.
      */
     String getConversationID();
+    
+    /**
+     * The ID of the collection that the  
+     */
+    String getCollectionID();
 }

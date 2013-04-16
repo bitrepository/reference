@@ -66,14 +66,14 @@ class GettingFile extends PerformingOperationState {
         msg.setFilePart(context.getFilePart());
         msg.setPillarID(selectedPillar.getID());
         msg.setDestination(selectedPillar.getDestination());
-        context.getMonitor().requestSent("Sending GetFileRequest to ", selectedPillar.toString(), context.getCollectionID());
+        context.getMonitor().requestSent("Sending GetFileRequest to ", selectedPillar.toString());
         context.getMessageSender().sendMessage(msg);
     }
 
     @Override
     protected boolean handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
         getContext().getMonitor().contributorFailed(
-                msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getCollectionID(), msg.getResponseInfo().getResponseCode());
+                msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
         throw new UnableToFinishException("Failed to get file from " + msg.getFrom() +
                 ", " + msg.getResponseInfo());
     }

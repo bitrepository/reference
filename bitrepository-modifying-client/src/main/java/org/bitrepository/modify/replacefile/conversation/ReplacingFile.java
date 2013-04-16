@@ -67,8 +67,7 @@ public class ReplacingFile extends PerformingOperationState {
 
     @Override
     protected void sendRequest() {
-        context.getMonitor().requestSent("Sending request for replace file", activeContributors.keySet().toString(),
-                context.getCollectionID());
+        context.getMonitor().requestSent("Sending request for replace file", activeContributors.keySet().toString());
         for(String pillar : activeContributors.keySet()) {
             ReplaceFileRequest msg = createRequest(pillar);
             if (context.getChecksumRequestsForNewFile() != null) {
