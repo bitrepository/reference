@@ -185,7 +185,7 @@ public class RestIntegrityService {
             JSONObject obj;
             try {
                 obj = new JSONObject();
-                obj.put("workflowID", workflow.getName());
+                obj.put("workflowID", workflow.getWorkflowID().getWorkflowName());
             } catch (JSONException e) {
                 obj = (JSONObject) JSONObject.NULL;
             }
@@ -205,7 +205,7 @@ public class RestIntegrityService {
                                 @FormParam("collectionID") String collectionID) {
         Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows(collectionID);
         for(WorkflowTimerTask workflowTask : workflows) {
-            if(workflowTask.getName().equals(workflowID)) {
+            if(workflowTask.getWorkflowID().getWorkflowName().equals(workflowID)) {
                 return workflowTask.runWorkflow();
             }
         }
@@ -228,7 +228,7 @@ public class RestIntegrityService {
     private JSONObject makeWorkflowSetupObj(WorkflowTimerTask workflowTask) {
         JSONObject obj = new JSONObject();
         try {
-            obj.put("workflowID", workflowTask.getName());
+            obj.put("workflowID", workflowTask.getWorkflowID().getWorkflowName());
             obj.put("workflowDescription", workflowTask.getDescription());
             obj.put("nextRun", TimeUtils.shortDate(workflowTask.getNextRun()));
             if (workflowTask.getLastRunStatistics().getFinish() == null) {
