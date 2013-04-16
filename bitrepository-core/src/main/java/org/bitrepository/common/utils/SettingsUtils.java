@@ -55,4 +55,14 @@ public class SettingsUtils {
         }
         return res;
     }
+    
+    public static List<String> getPillarIDsForCollection(Settings settings, String collectionID) {
+        List<String> res = new ArrayList<String>();
+        for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
+            if(c.getID().equals(collectionID)) {
+                res.addAll(c.getPillarIDs().getPillarID());
+            }
+        }
+        return res;
+    }
 }

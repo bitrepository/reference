@@ -97,9 +97,11 @@ public interface IntegrityService extends LifeCycledService {
     void scheduleWorkflow(Workflow workflow, long intervalBetweenRuns);
 
     /**
+     * Method to get til list of pillars for a givin collection
+     * @param collectionID The ID of the collection to get the list of pillars from
      * @return The list of pillars.
      */
-    List<String> getPillarList();
+    List<String> getPillarList(String collectionID);
 
     /**
      * Shut down the integrity service.

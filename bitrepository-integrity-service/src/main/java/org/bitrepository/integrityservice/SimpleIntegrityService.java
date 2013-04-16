@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
@@ -181,7 +182,7 @@ public class SimpleIntegrityService implements IntegrityService {
     }
 
     @Override
-    public List<String> getPillarList() {
-        return settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID();
+    public List<String> getPillarList(String collectionID) {
+        return SettingsUtils.getPillarIDsForCollection(settings, collectionID);
     }
 }
