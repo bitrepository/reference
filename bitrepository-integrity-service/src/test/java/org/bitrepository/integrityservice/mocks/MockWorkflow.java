@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.mocks;
 
 import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.WorkflowID;
 import org.bitrepository.service.workflow.WorkflowStatistic;
 
 /**
@@ -30,6 +31,12 @@ import org.bitrepository.service.workflow.WorkflowStatistic;
 public class MockWorkflow implements Workflow {
 
     private int callsForStart = 0;
+    private final String collectionID;
+    
+    public MockWorkflow(String collectionID) {
+        this.collectionID = collectionID;
+    }
+    
     @Override
     public void start() {
         callsForStart++;
@@ -53,7 +60,7 @@ public class MockWorkflow implements Workflow {
         return null;
     }
     
-    public String getWorkflowID() {
-        return getClass().getSimpleName();
+    public WorkflowID getWorkflowID() {
+        return new WorkflowID(collectionID, getClass().getSimpleName());
     }
 }

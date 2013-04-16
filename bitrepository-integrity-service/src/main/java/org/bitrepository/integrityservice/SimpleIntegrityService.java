@@ -26,7 +26,9 @@ package org.bitrepository.integrityservice;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -71,7 +73,7 @@ public class SimpleIntegrityService implements IntegrityService {
     /** The messagebus for communication.*/
     private final MessageBus messageBus;
     /** The list of available workflows.*/
-    private final List<Workflow> workflows = new ArrayList<Workflow>();
+    private final Map<String, List<Workflow>> workflows = new HashMap<String, List<Workflow>>();
     
     /**
      * Constructor.
@@ -96,22 +98,29 @@ public class SimpleIntegrityService implements IntegrityService {
     }
     
     @Override
-    public Collection<Workflow> getAllWorkflows() {
-        List<Workflow> res = new ArrayList<Workflow>(workflows);
+    public Collection<Workflow> getAllWorkflows(String collectionID) {
+        List<Workflow> res = new ArrayList<Workflow>(workflows.get(collectionID));
         return res;
     }
 
     @Override
-    public void scheduleWorkflow(Workflow workflow, long timeBetweenRuns) {
-        scheduler.scheduleWorkflow(workflow, workflow.getWorkflowID(), timeBetweenRuns);
-        if(!workflows.contains(workflow)) {
-            workflows.add(workflow);
+    public void scheduleWorkflow(Workflow workflow, String collectionID, long timeBetweenRuns) {
+        scheduler.scheduleWorkflow(workflow, timeBetweenRuns);
+        if(!workflows.get(collectionID).contains(workflow)) {
+            workflows.get(collectionID).add(workflow);
         }
     }
     
     @Override
-    public Collection<WorkflowTimerTask> getScheduledWorkflows() {
-        return scheduler.getScheduledWorkflows();
+    public Collection<WorkflowTimerTask> getScheduledWorkflows(String collectionID) {
+        List<WorkflowTimerTask> res = new ArrayList<WorkflowTimerTask>();
+        for(WorkflowTimerTask task : scheduler.getScheduledWorkflows()) {
+            if(task.getWorkflowID().getCollectionID().equals(collectionID)) {
+                res.add(task);
+            }
+        }
+        
+        return res;
     }
     
     @Override
@@ -175,8 +184,10 @@ public class SimpleIntegrityService implements IntegrityService {
      */
     private void initialiseWorkflows() {
         for(org.bitrepository.settings.repositorysettings.Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
+            List<Workflow> workflowList = new ArrayList<Workflow>();
             Workflow w1 = new CompleteIntegrityCheck(settings, collector, cache, checker, alerter, auditManager, c.getID());
-            workflows.add(w1);
+            workflowList.add(w1);
+            workflows.put(c.getID(), workflowList);
         }
         
     }

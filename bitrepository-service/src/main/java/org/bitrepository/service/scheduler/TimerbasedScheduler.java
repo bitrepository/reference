@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Timer;
 
 import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.WorkflowID;
 import org.bitrepository.service.workflow.WorkflowTimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,7 @@ public class TimerbasedScheduler implements ServiceScheduler {
     /** The period between testing whether triggers have triggered. */
     private final long schedulerInterval;
     /** The map between the running timertasks and their names.*/
-    private Map<String, WorkflowTimerTask> intervalTasks = new HashMap<String, WorkflowTimerTask>();
+    private Map<WorkflowID, WorkflowTimerTask> intervalTasks = new HashMap<WorkflowID, WorkflowTimerTask>();
     
     /** The name of the timer.*/
     private static final String TIMER_NAME = "Service Scheduler";
@@ -66,21 +67,20 @@ public class TimerbasedScheduler implements ServiceScheduler {
     }
 
     @Override
-    public void scheduleWorkflow(Workflow workflow, String name, Long interval) {
-        
-        if(cancelWorkflow(name)) {
-            log.info("Recreated workflow named '" + name + "': " + workflow);
+    public void scheduleWorkflow(Workflow workflow, Long interval) {
+        if(cancelWorkflow(workflow.getWorkflowID())) {
+            log.info("Recreated workflow named '" + workflow.getWorkflowID() + "': " + workflow);
         } else {
-            log.debug("Created a workflow named '" + name + "': " + workflow);
+            log.debug("Created a workflow named '" + workflow.getWorkflowID() + "': " + workflow);
         }
-        WorkflowTimerTask task = new WorkflowTimerTask(interval, name, workflow);
+        WorkflowTimerTask task = new WorkflowTimerTask(interval, workflow);
         timer.scheduleAtFixedRate(task, NO_DELAY, schedulerInterval);
-        intervalTasks.put(name, task);
+        intervalTasks.put(workflow.getWorkflowID(), task);
     }
     
     @Override
-    public boolean cancelWorkflow(String name) {
-        WorkflowTimerTask task = intervalTasks.remove(name);
+    public boolean cancelWorkflow(WorkflowID workflowID) {
+        WorkflowTimerTask task = intervalTasks.remove(workflowID);
         if(task == null) {
             return false;
         }

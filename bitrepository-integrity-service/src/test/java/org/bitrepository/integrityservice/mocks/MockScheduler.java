@@ -27,17 +27,18 @@ import java.util.Map;
 
 import org.bitrepository.service.scheduler.ServiceScheduler;
 import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.WorkflowID;
 import org.bitrepository.service.workflow.WorkflowTimerTask;
 
 public class MockScheduler implements ServiceScheduler {
     
-    Map<String, WorkflowTimerTask> workflows = new HashMap<String, WorkflowTimerTask>();
+    Map<WorkflowID, WorkflowTimerTask> workflows = new HashMap<WorkflowID, WorkflowTimerTask>();
     
     private int callsForScheduleWorkflow = 0;
     @Override
-    public void scheduleWorkflow(Workflow workflow, String workflowId, Long interval) {
+    public void scheduleWorkflow(Workflow workflow, Long interval) {
         callsForScheduleWorkflow++;
-        workflows.put(workflowId, new WorkflowTimerTask(interval, workflowId, workflow));
+        workflows.put(workflow.getWorkflowID(), new WorkflowTimerTask(interval, workflow));
     }
     public int getCallsForScheduleWorkflow() {
         return callsForScheduleWorkflow;
@@ -45,7 +46,7 @@ public class MockScheduler implements ServiceScheduler {
     
     private int callsForCancelWorkflow = 0;
     @Override
-    public boolean cancelWorkflow(String workflowId) {
+    public boolean cancelWorkflow(WorkflowID workflowId) {
         callsForCancelWorkflow++;
         return workflows.remove(workflowId) != null;
     }

@@ -161,7 +161,7 @@ public class RestIntegrityService {
     public String getWorkflowSetup(@QueryParam("collectionID") String collectionID) {
         try {
             JSONArray array = new JSONArray();
-            Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows();
+            Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows(collectionID);
             for(WorkflowTimerTask workflow : workflows) {
                 array.put(makeWorkflowSetupObj(workflow));
             }
@@ -180,7 +180,7 @@ public class RestIntegrityService {
     @Produces(MediaType.APPLICATION_JSON)
     public String getWorkflowList(@QueryParam("collectionID") String collectionID) {
         JSONArray array = new JSONArray();
-        Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows();
+        Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows(collectionID);
         for(WorkflowTimerTask workflow : workflows) {
             JSONObject obj;
             try {
@@ -203,7 +203,7 @@ public class RestIntegrityService {
     @Produces("text/html")
     public String startWorkflow(@FormParam("workflowID") String workflowID,
                                 @FormParam("collectionID") String collectionID) {
-        Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows();
+        Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows(collectionID);
         for(WorkflowTimerTask workflowTask : workflows) {
             if(workflowTask.getName().equals(workflowID)) {
                 return workflowTask.runWorkflow();

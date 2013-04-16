@@ -31,15 +31,17 @@ import org.bitrepository.service.workflow.WorkflowTimerTask;
 public interface IntegrityService extends LifeCycledService {
     /**
      * Retrieves all the scheduled tasks in the system, which are running.
+     * @param collectionID The collection to get scheduled workflows from
      * @return The names of the tasks, which are scheduled by the system.
      */
-    Collection<WorkflowTimerTask> getScheduledWorkflows();
+    Collection<WorkflowTimerTask> getScheduledWorkflows(String collectionID);
     
     /**
      * Retrieves all the available workflows, even those which have not been scheduled.
+     * @param collectionID The collection for which to get workflows
      * @return All the available workflows. 
      */
-    Collection<Workflow> getAllWorkflows();
+    Collection<Workflow> getAllWorkflows(String collectionID);
     
     /**
      * Retrieves the list of fileIDs which have checksum errors on the pillar in a given collection
@@ -92,9 +94,10 @@ public interface IntegrityService extends LifeCycledService {
     /**
      * Initiates the scheduling of a workflow.
      * @param workflow The workflow to schedule.
+     * @param collectionID The collection for which the workflow should be scheduled
      * @param intervalBetweenRuns The time between running the workflow.
      */
-    void scheduleWorkflow(Workflow workflow, long intervalBetweenRuns);
+    void scheduleWorkflow(Workflow workflow, String collectionID, long intervalBetweenRuns);
 
     /**
      * Method to get til list of pillars for a givin collection

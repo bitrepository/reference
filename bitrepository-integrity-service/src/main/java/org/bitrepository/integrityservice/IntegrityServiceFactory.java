@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.Properties;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
 import org.bitrepository.protocol.security.BasicMessageSigner;
 import org.bitrepository.protocol.security.BasicOperationAuthorizor;
@@ -135,8 +136,10 @@ public final class IntegrityServiceFactory {
             simpleIntegrityService = IntegrityServiceComponentFactory.getInstance().createIntegrityService(settings, 
                     securityManager);
             // TODO make a settings for differentiating between the intervals of the workflows.
-            for(Workflow workflow : simpleIntegrityService.getAllWorkflows()) {
-                simpleIntegrityService.scheduleWorkflow(workflow, DEFAULT_MAX_TIME_SINCE_UPDATE);
+            for(String collection : SettingsUtils.getAllCollectionsIDs(settings)) {
+                for(Workflow workflow : simpleIntegrityService.getAllWorkflows(collection)) {
+                    simpleIntegrityService.scheduleWorkflow(workflow, collection, DEFAULT_MAX_TIME_SINCE_UPDATE);
+                }
             }
         }
         

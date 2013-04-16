@@ -78,29 +78,29 @@ public class IntegrityServiceTest extends ExtendedTestCase {
                 collector, auditManager, settings, messageBus);
         
         addStep("Test the initial state", "");
-        Assert.assertEquals(integrityService.getAllWorkflows().size(), 1, "Should initially have one workflow");
+        Assert.assertEquals(integrityService.getAllWorkflows(TEST_COLLECTION).size(), 1, "Should initially have one workflow");
         Assert.assertEquals(integrityService.getNumberOfChecksumErrors(TEST_PILLAR_1, TEST_COLLECTION), 0);
         Assert.assertEquals(integrityService.getNumberOfFiles(TEST_PILLAR_1, TEST_COLLECTION), 0);
         Assert.assertEquals(integrityService.getNumberOfMissingFiles(TEST_PILLAR_1, TEST_COLLECTION), 0);
-        Assert.assertEquals(integrityService.getScheduledWorkflows().size(), 0);
+        Assert.assertEquals(integrityService.getScheduledWorkflows(TEST_COLLECTION).size(), 0);
         
         addStep("Try to schedule a new workflow.", "Should added both to the scheduled and the list of workflows.");
-        Workflow workflow = new MockWorkflow();
-        integrityService.scheduleWorkflow(workflow, 0);
-        Assert.assertEquals(integrityService.getAllWorkflows().size(), 2);
-        Assert.assertEquals(integrityService.getScheduledWorkflows().size(), 1);
+        Workflow workflow = new MockWorkflow(TEST_COLLECTION);
+        integrityService.scheduleWorkflow(workflow, TEST_COLLECTION, 0);
+        Assert.assertEquals(integrityService.getAllWorkflows(TEST_COLLECTION).size(), 2);
+        Assert.assertEquals(integrityService.getScheduledWorkflows(TEST_COLLECTION).size(), 1);
         
         addStep("Try to add it again.", "Should not change anything.");
-        integrityService.scheduleWorkflow(workflow, 0);
-        Assert.assertEquals(integrityService.getAllWorkflows().size(), 2);
-        Assert.assertEquals(integrityService.getScheduledWorkflows().size(), 1);
+        integrityService.scheduleWorkflow(workflow, TEST_COLLECTION, 0);
+        Assert.assertEquals(integrityService.getAllWorkflows(TEST_COLLECTION).size(), 2);
+        Assert.assertEquals(integrityService.getScheduledWorkflows(TEST_COLLECTION).size(), 1);
         
         addStep("Test 'start'.", "Should not do anything.");
         integrityService.start();
-        Assert.assertEquals(integrityService.getAllWorkflows().size(), 2);
+        Assert.assertEquals(integrityService.getAllWorkflows(TEST_COLLECTION).size(), 2);
         Assert.assertEquals(integrityService.getNumberOfChecksumErrors(TEST_PILLAR_1, TEST_COLLECTION), 0);
         Assert.assertEquals(integrityService.getNumberOfFiles(TEST_PILLAR_1, TEST_COLLECTION), 0);
         Assert.assertEquals(integrityService.getNumberOfMissingFiles(TEST_PILLAR_1, TEST_COLLECTION), 0);
-        Assert.assertEquals(integrityService.getScheduledWorkflows().size(), 1);
+        Assert.assertEquals(integrityService.getScheduledWorkflows(TEST_COLLECTION).size(), 1);
     }
 }

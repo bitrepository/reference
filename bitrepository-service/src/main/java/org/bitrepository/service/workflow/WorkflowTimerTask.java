@@ -35,8 +35,6 @@ public class WorkflowTimerTask extends TimerTask {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The date for the next run of the workflow.*/
     private Date nextRun;
-    /** The name of the workflow.*/
-    private final String name;
     /** The interval between triggers. */
     private final long interval;
     private final Workflow workflow;
@@ -47,9 +45,8 @@ public class WorkflowTimerTask extends TimerTask {
      * @param interval The interval between triggering events in milliseconds.
      * @param name The name of this workflow.
      */
-    public WorkflowTimerTask(long interval, String name, Workflow workflow) {
+    public WorkflowTimerTask(long interval, Workflow workflow) {
         this.interval = interval;
-        this.name = name;
         this.workflow = workflow;
         nextRun = new Date();
         lastWorkflowStatistics = new WorkflowStatistic("Not run yet");
@@ -119,7 +116,11 @@ public class WorkflowTimerTask extends TimerTask {
      * @return The name of the workflow.
      */
     public String getName() {
-        return name;
+        return workflow.getWorkflowID().toString();
+    }
+    
+    public WorkflowID getWorkflowID() {
+        return workflow.getWorkflowID();
     }
 
     @Override
