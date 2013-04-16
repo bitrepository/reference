@@ -88,8 +88,8 @@
     var update_page;
 
     function loadWorkflows() {
-      $.getJSON('<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getWorkflowList/'
-          ,{}, function(j){
+      $.getJSON("<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getWorkflowList/?collectionID=" 
+            + getCollectionID(), {}, function(j) {
         for (var i = 0; i < j.length; i++) {
           $("#workflowSelector").append('<option value="' + j[i].workflowID + '">' + j[i].workflowID + '</option>');          
         }
@@ -140,8 +140,8 @@
     }
 
     function getWorkflowStatuses() {
-      $.getJSON('<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getWorkflowSetup/',
-          {}, function(j){
+      $.getJSON("<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getWorkflowSetup/?collectionID=" 
+        + getCollectionID(), {}, function(j) {
         var htmlTableBody;
         for (var i = 0; i < j.length; i++) {
           if(workflows[j[i].workflowID] == null) {
@@ -253,10 +253,12 @@
       var ID = $("#workflowSelector option:selected").val();
       $('#formStatus').load(
                 '<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/startWorkflow/',
-                {workflowID: ID}).show().fadeOut({duration: 5000});
+                {workflowID: ID,
+                 collectionID: getCollectionID() }).show().fadeOut({duration: 5000});
 
     }
  
+    // depricated
     function getCollectionIDs() {
       $.getJSON('repo/reposervice/getCollectionIDs/',
           {}, function(j){
@@ -278,38 +280,64 @@
       return $("#collectionChooser").val();
     }
 
+    // depricated
     function clearIntegrityStatusTable() {
       $("#integrity-status-table-body").empty();
       pillars = new Object();
     }
 
+    function clearContent() {
+      $("#integrity-status-table-body").empty();
+      $("#workflow-status-table-body").empty();
+      $("#workflowSelector").empty();      
+      pillars = new Object();
+      workflows = new Object();
+    }
+
+
+    function initializePage() {
+      $.getJSON('repo/reposervice/getCollectionIDs/', {}, function(j) {
+        for(var i = 0; i < j.length; i++) {
+           $("#collectionChooser").append('<option value="' + j[i] + '">' + j[i] + '</option>');
+        }
+        
+        collectionChanged();        
+      });
+    }
+
     function collectionChanged() {
-        clearIntegrityStatusTable();
+        clearContent();
         $("#integrityLegend").html("Integrity information for collection " + getCollectionID());  
         clearInterval(update_page);
+        loadWorkflows();
+        getWorkflowStatuses();
         getIntegrityStatus();
-        update_page = setInterval(function() {
-          getWorkflowStatuses(); 
-          getIntegrityStatus();
-        }, 2500);
+        if(update_page != null) {
+          update_page = setInterval(function() {
+            getWorkflowStatuses(); 
+            getIntegrityStatus();
+          }, 2500);
+        }
     }
 
 
     $(document).ready(function(){
       // Load page content
       makeMenu("integrity-service.jsp", "#pageMenu");
-      loadWorkflows();
-      getWorkflowStatuses();
-      getCollectionIDs();
+      initializePage();
+
+      //loadWorkflows();
+      //getWorkflowStatuses();
+      //getCollectionIDs();
     
       // Setup event / click handling
       $("#workflowStarter").click(function(event) { event.preventDefault(); startWorkflow(); });
       $("#collectionChooser").change(function(event) {event.preventDefault(); collectionChanged();});      
 
       // Add page auto update
-      update_page = setInterval(function() {
-        getWorkflowStatuses(); 
-      }, 2500);
+      //update_page = setInterval(function() {
+      //  getWorkflowStatuses(); 
+      //}, 2500);
     }); 
 
     </script>
