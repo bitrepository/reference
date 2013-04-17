@@ -243,7 +243,7 @@ public class TestIntegrityModel implements IntegrityModel {
             if(currentInfo == null) {
                 // create a new file info
                 currentInfo = new FileInfo(checksumData.getFileID(), CalendarUtils.getEpoch(),
-                    Base16Utils.decodeBase16(checksumData.getChecksumValue()),
+                    Base16Utils.decodeBase16(checksumData.getChecksumValue()), null,
                     checksumData.getCalculationTimestamp(), pillarId, FileState.EXISTING, ChecksumState.UNKNOWN);
             } else {
                 // Update the existing file info

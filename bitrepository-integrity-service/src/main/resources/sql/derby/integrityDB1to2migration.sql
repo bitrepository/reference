@@ -22,7 +22,7 @@ INSERT INTO tableversions ( tablename, version ) VALUES ( 'collections', 1);
 
 -- Add constraints to files table.
 ALTER TABLE files (
-    ADD UNIQUE (file_id)
+    ADD UNIQUE (file_id),
 );
 
 RENAME COLUMN files.files_guid TO files_key;
@@ -39,6 +39,7 @@ RENAME COLUMN fileinfo.pillar_guid TO pillar_key
 
 -- Add constraints to fileinfo table.
 ALTER TABLE fileinfo (
+    ADD COLUMN file_size BIGINT
     ADD FOREIGN KEY (file_key) REFERENCES files(file_key),
     ADD FOREIGN KEY (pillar_key) REFERENCES pillar(pillar_key),
     ADD UNIQUE (file_key, pillar_key) 
