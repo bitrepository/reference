@@ -285,7 +285,8 @@
     function clearContent() {
       $("#integrity-status-table-body").empty();
       $("#workflow-status-table-body").empty();
-      $("#workflowSelector").empty();      
+      $("#workflowSelector").empty();
+      $("#collectionInfoDiv").empty();  
       pillars = new Object();
       workflows = new Object();
     }
@@ -311,6 +312,7 @@
         update_page = setInterval(function() {
           getWorkflowStatuses(); 
           getIntegrityStatus();
+          getCollectionInformation();
         }, 2500);
     }
 
