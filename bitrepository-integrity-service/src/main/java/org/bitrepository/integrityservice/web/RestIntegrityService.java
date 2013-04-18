@@ -212,6 +212,24 @@ public class RestIntegrityService {
         return "No workflow named '" + workflowID + "' was found!";
     }
 
+    /**
+     * Start a named workflow.  
+     */
+    @GET
+    @Path("/getCollectionInformation/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getCollectionInformation(@QueryParam("collectionID") String collectionID) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("lastIngest", "23.01.2013 8:15");
+            obj.put("collectionSize", "10GB");
+            obj.put("numberOfFiles", 1000);
+        } catch (JSONException e) {
+            obj = (JSONObject) JSONObject.NULL;
+        }
+        return obj.toString();
+    }
+ 
     private JSONObject makeIntegrityStatusObj(String pillarID, String collectionID) {
         JSONObject obj = new JSONObject();
         try {

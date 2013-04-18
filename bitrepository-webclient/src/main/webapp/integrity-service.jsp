@@ -28,14 +28,9 @@
             </span>
           </legend>
         </div>
+        <div class="span10" id="collectionInfoDiv"></div>
         <div class="span10"> 
-          <form class="form-inline">
-            <select id="workflowSelector"></select>
-            <button type="submit" class=btn" id="workflowStarter">Start</button>
-            <div id="formStatus"></div>          
-          </form>
-        </div>
-        <div class="span10"> 
+          <legend>Workflows status</legend>
           <table class="table table-bordered">
             <thead>
               <tr>
@@ -48,6 +43,13 @@
             </thead>
             <tbody id="workflow-status-table-body"></tbody>
           </table>
+        </div>
+        <div class="span10"> 
+          <form class="form-inline">
+            <select id="workflowSelector"></select>
+            <button type="submit" class=btn" id="workflowStarter">Start</button>
+            <div id="formStatus"></div>          
+          </form>
         </div>
         <div class="span10"> 
           <legend>Integrity status</legend>
@@ -264,6 +266,18 @@
 
     }
  
+    function getCollectionInformation() {
+      var url = "<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getCollectionInformation/?collectionID=" + getCollectionID();
+      $.getJSON(url, {}, function(j) {
+        var infoHtml = "<span><b> Latest ingest: " + j.lastIngest + " &nbsp; &nbsp; ";
+        infoHtml += " Size: " + j.collectionSize + " &nbsp; &nbsp; ";
+        infoHtml += " Number of files: " + j.numberOfFiles + "</b></span>";
+      
+        $("#collectionInfoDiv").html(infoHtml);
+      });
+      
+    }
+
     function getCollectionID() {
       return $("#collectionChooser").val();
     }
@@ -291,6 +305,7 @@
         $("#integrityLegend").html("Integrity information for collection " + getCollectionID());  
         clearInterval(update_page);
         loadWorkflows();
+        getCollectionInformation();
         getWorkflowStatuses();
         getIntegrityStatus();
         update_page = setInterval(function() {
