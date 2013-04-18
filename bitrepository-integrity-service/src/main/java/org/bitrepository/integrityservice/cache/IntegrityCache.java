@@ -44,7 +44,8 @@ public class IntegrityCache implements IntegrityModel {
     private JCS missingFilesCache;
     private JCS filesCache;
     private JCS corruptFilesCache;
-    private JCS collectionSize;
+    private JCS collectionSizeCache;
+    private JCS collectionTotalFilesCache;
     /** Seconds to wait from a cache elements has been updated to the elements is reloaded from the model **/
     protected int refreshPeriodAfterDirtyMark = 5;
 
@@ -54,7 +55,8 @@ public class IntegrityCache implements IntegrityModel {
             missingFilesCache = JCS.getInstance("MissingFilesCache");
             filesCache = JCS.getInstance("FilesCache");
             corruptFilesCache = JCS.getInstance("CorruptFilesCache");
-            collectionSize = JCS.getInstance("collectionSizeCache");
+            collectionSizeCache = JCS.getInstance("collectionSizeCache");
+            collectionTotalFilesCache = JCS.getInstance("collectionTotalFilesCache");
         } catch (CacheException ce) {
             throw new IllegalStateException("Failed to initialise caches", ce);
         }
@@ -64,7 +66,8 @@ public class IntegrityCache implements IntegrityModel {
     public void addFileIDs(FileIDsData data, String pillarId, String collectionId) {
         integrityModel.addFileIDs(data, pillarId, collectionId);
         markPillarsDirty(filesCache, Arrays.asList(new String[]{pillarId}), collectionId);
-        markDirty(collectionSize, collectionId);
+        markDirty(collectionSizeCache, collectionId);
+        markDirty(collectionTotalFilesCache, collectionId);
     }
 
     @Override
@@ -84,8 +87,12 @@ public class IntegrityCache implements IntegrityModel {
     
     @Override
     public long getNumberOfFilesInCollection(String collectionId) {
-        //TODO add cache...
-        return integrityModel.getNumberOfFilesInCollection(collectionId);
+        Long numberOfFilesInCollection = (Long) collectionTotalFilesCache.get(collectionId);
+        if(numberOfFilesInCollection == null) {
+            numberOfFilesInCollection = integrityModel.getNumberOfFilesInCollection(collectionId);
+            updateCache(collectionTotalFilesCache, collectionId, numberOfFilesInCollection);
+        }
+        return numberOfFilesInCollection;
     }
 
     @Override
@@ -105,10 +112,10 @@ public class IntegrityCache implements IntegrityModel {
     
     @Override
     public Long getCollectionFileSize(String collectionId) {
-        Long collectionSizeVal = (Long) collectionSize.get(collectionId); 
+        Long collectionSizeVal = (Long) collectionSizeCache.get(collectionId); 
         if(collectionSizeVal == null) {
             collectionSizeVal = integrityModel.getCollectionFileSize(collectionId);
-            updateCache(collectionSize, collectionId, collectionSizeVal);
+            updateCache(collectionSizeCache, collectionId, collectionSizeVal);
         }
         return collectionSizeVal;
     }
@@ -148,7 +155,8 @@ public class IntegrityCache implements IntegrityModel {
         integrityModel.setFileMissing(fileId, pillarIds, collectionId);
         markPillarsDirty(missingFilesCache, pillarIds, collectionId);
         markPillarsDirty(filesCache, pillarIds, collectionId);
-        markDirty(collectionSize, collectionId);
+        markDirty(collectionSizeCache, collectionId);
+        markDirty(collectionTotalFilesCache, collectionId);
     }
 
     @Override
@@ -169,7 +177,8 @@ public class IntegrityCache implements IntegrityModel {
             missingFilesCache.clear();
             filesCache.clear();
             corruptFilesCache.clear();
-            collectionSize.clear();
+            collectionSizeCache.clear();
+            collectionTotalFilesCache.clear();
         } catch (CacheException ce) {
             log.warn("Failed to clear cache.", ce);
         }
@@ -220,7 +229,8 @@ public class IntegrityCache implements IntegrityModel {
     public void setOldUnknownFilesToMissing(String collectionId) {
         try {
             missingFilesCache.clear();
-            collectionSize.clear();
+            collectionSizeCache.clear();
+            collectionTotalFilesCache.clear();
         } catch (CacheException ce) {
             log.warn("Failed to update cache.", ce);
         }
