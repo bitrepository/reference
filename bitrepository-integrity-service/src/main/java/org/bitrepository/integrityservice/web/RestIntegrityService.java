@@ -40,6 +40,7 @@ import javax.ws.rs.core.MediaType;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.IntegrityService;
 import org.bitrepository.integrityservice.IntegrityServiceFactory;
+import org.bitrepository.integrityservice.utils.FileSizeUtils;
 import org.bitrepository.service.workflow.WorkflowTimerTask;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -222,7 +223,7 @@ public class RestIntegrityService {
         JSONObject obj = new JSONObject();
         try {
             obj.put("lastIngest", TimeUtils.shortDate(service.getDateForNewestFileInCollection(collectionID)));
-            obj.put("collectionSize", service.getCollectionSize(collectionID));
+            obj.put("collectionSize", FileSizeUtils.toHumanShort(service.getCollectionSize(collectionID)));
             obj.put("numberOfFiles", service.getNumberOfFilesInCollection(collectionID));
         } catch (JSONException e) {
             obj = (JSONObject) JSONObject.NULL;
