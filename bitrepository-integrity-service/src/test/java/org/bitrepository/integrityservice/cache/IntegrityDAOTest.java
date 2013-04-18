@@ -225,6 +225,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
             Assert.assertEquals(fi.getFileState(), FileState.EXISTING);
             Assert.assertEquals(fi.getDateForLastChecksumCheck(), CalendarUtils.getEpoch());
             Assert.assertEquals(fi.getDateForLastFileIDCheck(), data1.getFileIDsDataItems().getFileIDsDataItem().get(0).getLastModificationTime());
+            Assert.assertEquals(fi.getFileSize(), new Long(data1.getFileIDsDataItems().getFileIDsDataItem().get(0).getFileSize().longValue()));
         }
         
         addStep("Check that the extra collection is untouched by the ingest", "should deliver an empty collection and no errors");
@@ -887,6 +888,70 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         addStep("Extract with a minimum of 1 and maximum of 0", "No files.");
         fileIds = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_1, 1, 0, TEST_COLLECTIONID);
         Assert.assertTrue(fileIds.isEmpty());
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testExtractCollectionFileSize() throws Exception {
+        addDescription("Tests that the accumulated size of the collection can be extracted");
+        IntegrityDAO cache = createDAO();
+        
+        addStep("Insert test data into database", "Data is ingested");
+        String file2 = TEST_FILE_ID + "-2";
+        String file3 = TEST_FILE_ID + "-3";
+        Long size1 = new Long(100);
+        Long size2 = new Long(200);
+        Long size3 = new Long(300);
+        FileIDsData data1 = makeFileIDsDataWithGivenFileSize(TEST_FILE_ID, size1);
+        FileIDsData data2 = makeFileIDsDataWithGivenFileSize(file2, size2);
+        FileIDsData data3 = makeFileIDsDataWithGivenFileSize(file3, size3);
+        cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileIDs(data2, TEST_PILLAR_1, TEST_COLLECTIONID);      
+        cache.updateFileIDs(data2, TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileIDs(data3, TEST_PILLAR_2, TEST_COLLECTIONID);
+        
+        addStep("Check that the data has been properly ingested into the database", "The data has been ingested");
+        List<String> pillar1Files = cache.getFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        Assert.assertEquals(pillar1Files.size(), 2);
+        Assert.assertTrue(pillar1Files.contains(TEST_FILE_ID));
+        Assert.assertTrue(pillar1Files.contains(file2));
+        Assert.assertFalse(pillar1Files.contains(file3));
+        
+        List<String> pillar2Files = cache.getFilesOnPillar(TEST_PILLAR_2, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        Assert.assertEquals(pillar2Files.size(), 2);
+        Assert.assertFalse(pillar2Files.contains(TEST_FILE_ID));
+        Assert.assertTrue(pillar2Files.contains(file2));
+        Assert.assertTrue(pillar2Files.contains(file3));
+        
+        List<String> collectionFiles = cache.getAllFileIDs(TEST_COLLECTIONID);
+        Assert.assertEquals(collectionFiles.size(), 3);
+        Assert.assertTrue(collectionFiles.contains(TEST_FILE_ID));
+        Assert.assertTrue(collectionFiles.contains(file2));
+        Assert.assertTrue(collectionFiles.contains(file3));
+        
+        Long pillar1Size = size1 + size2;
+        Long pillar2Size = size2 + size3;
+        Long collectionSize = size1 + size2 + size3;
+        
+        addStep("Check the reported size of the first pillar in the collection", "The reported size matches the precalculated");
+        Assert.assertEquals(cache.getCollectionFileSizeAtPillar(TEST_COLLECTIONID, TEST_PILLAR_1), pillar1Size);
+        addStep("Check the reported size of the second pillar in the collection", "The reported size matches the precalculated");
+        Assert.assertEquals(cache.getCollectionFileSizeAtPillar(TEST_COLLECTIONID, TEST_PILLAR_2), pillar2Size);
+        addStep("Check the reported size of the whole collection", "The reported size matches the precalculated");
+        Assert.assertEquals(cache.getCollectionFileSize(TEST_COLLECTIONID), collectionSize);
+        
+        
+    }
+    
+    private FileIDsData makeFileIDsDataWithGivenFileSize(String fileID, Long size) {
+        FileIDsData res = new FileIDsData();
+        FileIDsDataItems items = new FileIDsDataItems();
+        FileIDsDataItem dataItem = new FileIDsDataItem();
+        dataItem.setFileID(fileID);
+        dataItem.setFileSize(BigInteger.valueOf(size));
+        dataItem.setLastModificationTime(CalendarUtils.getNow());
+        items.getFileIDsDataItem().add(dataItem);
+        res.setFileIDsDataItems(items);
+        return res;
     }
     
     private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileId, String checksum) {

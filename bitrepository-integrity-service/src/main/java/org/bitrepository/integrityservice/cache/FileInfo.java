@@ -49,6 +49,8 @@ public class FileInfo {
     private FileState fileState;
     /** The state of the checksum.*/
     private ChecksumState checksumState;
+    /** The size of the file */
+    private Long fileSize;
     
     /**
      * Constructor for all data.
@@ -60,13 +62,14 @@ public class FileInfo {
      * @param fileState The state for the file.
      * @param checksumState The state for the checksum.
      */
-    public FileInfo(String fileId, XMLGregorianCalendar fileLastCheck, String checksum, 
+    public FileInfo(String fileId, XMLGregorianCalendar fileLastCheck, String checksum, Long fileSize, 
             XMLGregorianCalendar checksumLastCheck, String pillarId, FileState fileState, ChecksumState checksumState) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileID");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         this.fileId = fileId;
         this.fileCreationTimestamp = fileLastCheck;
         this.checksum = checksum;
+        this.fileSize = fileSize;
         this.checksumLastCheck = checksumLastCheck;
         this.pillarId = pillarId;
         this.fileState = fileState;
@@ -89,7 +92,7 @@ public class FileInfo {
      * @param pillarId The id of the pillar.
      */
     public FileInfo(String fileId, String pillarId) {
-        this(fileId, null, null, null, pillarId, FileState.UNKNOWN, ChecksumState.UNKNOWN);
+        this(fileId, null, null, null, null, pillarId, FileState.UNKNOWN, ChecksumState.UNKNOWN);
     }
     
     /**
@@ -174,6 +177,13 @@ public class FileInfo {
      */
     public String getPillarId() {
         return pillarId;
+    }
+    
+    /**
+     * @return The size of the file
+     */
+    public Long getFileSize() {
+        return fileSize;
     }
     
     @Override

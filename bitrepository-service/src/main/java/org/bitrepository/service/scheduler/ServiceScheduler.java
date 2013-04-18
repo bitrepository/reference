@@ -26,6 +26,7 @@ package org.bitrepository.service.scheduler;
 
 import java.util.Collection;
 import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.WorkflowID;
 import org.bitrepository.service.workflow.WorkflowTimerTask;
 
 /**
@@ -35,18 +36,18 @@ public interface ServiceScheduler {
     /**
      * Adds a workflow for the scheduler to schedule. 
      * @param workflow The workflow to schedule.
-     * @param workflowId The name of the workflow.
+     * @param workflowId The ID of the workflow.
      * @param interval The interval for how often the workflow should be triggered.
      */
-    void scheduleWorkflow(Workflow workflow, String workflowId, Long interval);
+    void scheduleWorkflow(Workflow workflow, Long interval);
     
     /**
      * Cancels the workflow with the given name.
      * 
-     * @param workflowId The name of the workflow to cancel.
+     * @param workflowId The ID of the workflow to cancel.
      * @return Whether the workflow was successfully found and removed. 
      */
-    boolean cancelWorkflow(String workflowId);
+    boolean cancelWorkflow(WorkflowID workflowId);
     
     /**
      * @return The list of all workflows currently scheduled by the scheduler.

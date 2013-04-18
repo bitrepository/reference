@@ -32,6 +32,7 @@ import static org.bitrepository.integrityservice.cache.database.DatabaseConstant
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_CHECKSUM;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_CHECKSUM_STATE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_SIZE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_STATE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_LAST_CHECKSUM_UPDATE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_LAST_FILE_UPDATE;
@@ -212,6 +213,7 @@ public class IntegrityDAO {
             Date modifyDate = CalendarUtils.convertFromXMLGregorianCalendar(dataItem.getLastModificationTime());
             
             updateFileInfoLastFileUpdateTimestamp(pillarId, dataItem.getFileID(), modifyDate, collectionId);
+            updateFileInfoFileSize(pillarId, dataItem.getFileID(), collectionId, dataItem.getFileSize().longValue());
         }
     }
     
@@ -248,6 +250,7 @@ public class IntegrityDAO {
         final int indexPillarKey = 4;
         final int indexFileState = 5;
         final int indexChecksumState = 6;
+        final int indexFileSize = 7;
         
         Long collectionKey = retrieveCollectionKey(collectionId);
         Long fileKey = retrieveFileKey(fileId, collectionKey);
@@ -259,7 +262,7 @@ public class IntegrityDAO {
         
         List<FileInfo> res = new ArrayList<FileInfo>();
         String sql = "SELECT " + FI_LAST_FILE_UPDATE + ", " + FI_CHECKSUM + ", " + FI_LAST_CHECKSUM_UPDATE + ", " 
-                + FI_PILLAR_KEY + ", " + FI_FILE_STATE + ", " + FI_CHECKSUM_STATE 
+                + FI_PILLAR_KEY + ", " + FI_FILE_STATE + ", " + FI_CHECKSUM_STATE + ", " + FI_FILE_SIZE
                 + " FROM " + FILE_INFO_TABLE 
                 + " WHERE " + FI_FILE_KEY + " = ?";
         
@@ -277,14 +280,15 @@ public class IntegrityDAO {
                     String checksum = dbResult.getString(indexChecksum);
                     Date lastChecksumCheck = dbResult.getTimestamp(indexLastChecksumCheck);
                     long pillarKey = dbResult.getLong(indexPillarKey);
-                    
+                    Long fileSize = dbResult.getLong(indexFileSize);
                     String pillarId = retrievePillarIDFromKey(pillarKey);
                     
                     FileState fileState = FileState.fromOrdinal(dbResult.getInt(indexFileState));
                     ChecksumState checksumState = ChecksumState.fromOrdinal(dbResult.getInt(indexChecksumState));
                     
+                    // TODO insert filesize once extracted from database
                     FileInfo f = new FileInfo(fileId, CalendarUtils.getXmlGregorianCalendar(lastFileCheck), checksum, 
-                            CalendarUtils.getXmlGregorianCalendar(lastChecksumCheck), pillarId,
+                            fileSize, CalendarUtils.getXmlGregorianCalendar(lastChecksumCheck), pillarId,
                             fileState, checksumState);
                     res.add(f);
                 }
@@ -314,6 +318,18 @@ public class IntegrityDAO {
         Long collectionKey = retrieveCollectionKey(collectionId);
         String sql = "SELECT " + FILES_ID + " FROM " + FILES_TABLE + " WHERE " + COLLECTION_KEY + " = ?";
         return DatabaseUtils.selectStringList(dbConnector, sql, collectionKey);
+    }
+    
+    /**
+     * Get the number of files in a given collection
+     * @param collectionId The ID of the collection
+     * @return the number of files in a collection 
+     */
+    public long getNumberOfFilesInCollection(String collectionId) {
+        log.trace("Retrieving the number of fileIds in collection '" + collectionId + "'.");
+        Long collectionKey = retrieveCollectionKey(collectionId);
+        String sql = "SELECT COUNT(" + FILES_ID + ") FROM " + FILES_TABLE + " WHERE " + COLLECTION_KEY + " = ?";
+        return DatabaseUtils.selectLongValue(dbConnector, sql, collectionKey);
     }
     
     /**
@@ -590,31 +606,58 @@ public class IntegrityDAO {
         Long collectionKey = retrieveCollectionKey(collectionId);       
         log.trace("Localizing the file ids where the checksums are consistent and setting them to the checksum state '"
                 + ChecksumState.VALID + "'.");
-        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_CHECKSUM_STATE + " = ? WHERE "
-                + FI_CHECKSUM_STATE + " <> ? AND EXISTS (SELECT 1 FROM " + FILE_INFO_TABLE + " AS inner_fi WHERE "
-                + "inner_fi." + FI_FILE_STATE + " <> ? AND inner_fi." + FI_CHECKSUM + " IS NOT NULL AND inner_fi."
-                + FI_FILE_KEY + " = " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " GROUP BY inner_fi." + FI_FILE_KEY
-                + " HAVING COUNT(DISTINCT checksum) = 1) AND EXISTS( SELECT 1 FROM " + FILES_TABLE + " WHERE " 
-                + FILES_TABLE + "." + FILES_KEY + " = " + FILE_INFO_TABLE + "." + FILES_KEY + " AND " + FILES_TABLE 
-                + "." + COLLECTION_KEY + " = ? )";
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_CHECKSUM_STATE + " = ?" 
+                + " WHERE " + FI_CHECKSUM_STATE + " <> ?"
+                + " AND EXISTS ("
+                    + " SELECT 1 FROM " + FILE_INFO_TABLE + " AS inner_fi"
+                    + " WHERE " + "inner_fi." + FI_FILE_STATE + " <> ?"
+                    + " AND inner_fi." + FI_CHECKSUM + " IS NOT NULL"
+                    + " AND inner_fi." + FI_FILE_KEY + " = " + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                    + " GROUP BY inner_fi." + FI_FILE_KEY 
+                    + " HAVING COUNT(DISTINCT " + FI_CHECKSUM + ") = 1)"
+                + " AND EXISTS (" 
+                    + " SELECT 1 FROM " + FILES_TABLE 
+                    + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " + FILE_INFO_TABLE + "." + FILES_KEY 
+                    + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
         DatabaseUtils.executeStatement(dbConnector, updateSql, ChecksumState.VALID.ordinal(), 
                 ChecksumState.VALID.ordinal(), FileState.MISSING.ordinal(), collectionKey);
         log.debug("Marked consistent files in " + (System.currentTimeMillis() - startTime) + "ms");
+    }
+
+    /**
+     * Retrieves the date for the latest file entry for a given collection.
+     * E.g. the date for the latest file which has been positively identified as existing.  
+     * @param collectionId The pillar whose latest file entry is requested.
+     * @return The requested date.
+     */
+    public Date getDateForNewestFileEntryForCollection(String collectionId) {
+        Long collectionKey = retrieveCollectionKey(collectionId);
+        String retrieveSql = "SELECT " + FI_LAST_FILE_UPDATE + " FROM " + FILE_INFO_TABLE 
+                + " JOIN " + FILES_TABLE + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?" 
+                + " AND " + FI_FILE_STATE + " = ?" 
+                + " ORDER BY " + FI_LAST_FILE_UPDATE + " DESC ";
+        return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionKey, 
+                FileState.EXISTING.ordinal());
     }
     
     /**
      * Retrieves the date for the latest file entry for a given pillar.
      * E.g. the date for the latest file which has been positively identified as existing on the given pillar.  
      * @param pillarId The pillar whose latest file entry is requested.
+     * @param collectionId The ID of the collection 
      * @return The requested date.
      */
     public Date getDateForNewestFileEntryForPillar(String pillarId, String collectionId) {
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String retrieveSql = "SELECT " + FI_LAST_FILE_UPDATE + " FROM " + FILE_INFO_TABLE + " JOIN " 
-                + FILES_TABLE + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
-                + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ? AND " + FI_FILE_STATE 
-                + " = ? AND " + FI_PILLAR_KEY + " = ( SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE + " WHERE " 
-                + PILLAR_ID + " = ? ) ORDER BY " + FI_LAST_FILE_UPDATE + " DESC ";
+        String retrieveSql = "SELECT " + FI_LAST_FILE_UPDATE + " FROM " + FILE_INFO_TABLE 
+                + " JOIN " + FILES_TABLE + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?" 
+                + " AND " + FI_FILE_STATE + " = ?" 
+                + " AND " + FI_PILLAR_KEY + " = (" 
+                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
+                    + " WHERE " + PILLAR_ID + " = ? )" 
+                + " ORDER BY " + FI_LAST_FILE_UPDATE + " DESC ";
         return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionKey, 
                 FileState.EXISTING.ordinal(), pillarId);
     }
@@ -840,6 +883,81 @@ public class IntegrityDAO {
     }
     
     /**
+     * Gets the summarized size of the files in the given collection
+     * @param collectionId The ID of the collection
+     * @return The accumulated size of the files in the collection 
+     */
+    public Long getCollectionFileSize(String collectionId) {
+        long startTime = System.currentTimeMillis();
+        Long collectionKey = retrieveCollectionKey(collectionId);
+        log.trace("Summarizing the filesizes for the files in collection '" + collectionId + "'.");
+
+        String summarizeSql = "SELECT SUM (" + FI_FILE_SIZE + ") FROM"
+                + " ( SELECT DISTINCT " + FI_FILE_KEY + ", " + FI_FILE_SIZE 
+                    + " FROM " + FILE_INFO_TABLE + " ) AS distinctKeys"
+                + " JOIN " + FILES_TABLE 
+                    + " ON " + "distinctKeys." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?";
+
+        Long result = DatabaseUtils.selectLongValue(dbConnector, summarizeSql, collectionKey);        
+        log.debug("Summarized the filesizes in " + (System.currentTimeMillis() - startTime) + "ms");
+        return result;
+
+    }
+    
+    /**
+     * Gets the summarized size of the files on the given pillar in the given collection
+     * @param collectionId The ID of the collection
+     * @param pillarId The ID of the pillar
+     * @return The accumulated size of the files on the pillar in the collection. 
+     */
+    public Long getCollectionFileSizeAtPillar(String collectionId, String pillarId) {
+        long startTime = System.currentTimeMillis();
+        Long collectionKey = retrieveCollectionKey(collectionId);
+        log.trace("Summarizing the filesizes for the files in collection '" + collectionId + "' on pillar '" + pillarId + "'.");
+        
+        String summarizeSql = "SELECT SUM (" + FI_FILE_SIZE + ") FROM " + FILE_INFO_TABLE
+                + " JOIN " + FILES_TABLE 
+                    + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                + " JOIN " + PILLAR_TABLE 
+                    + " ON " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = " + PILLAR_TABLE + "." + PILLAR_KEY
+                + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?"
+                + " AND " + PILLAR_TABLE + "." + PILLAR_ID + "= ?";
+
+        Long result = DatabaseUtils.selectLongValue(dbConnector, summarizeSql, collectionKey, pillarId);        
+        log.debug("Summarized the filesizes in " + (System.currentTimeMillis() - startTime) + "ms");
+        return result;
+    } 
+    
+    /**
+     * Updates the file info for the given file at the given pillar.
+     * It is always set to 'EXISTING' and updates the filesize to the provided 
+     * @param pillarId The id for the pillar.
+     * @param fileId The id for the file.
+     * @param collectionId The id of the collection
+     * @param fileSize The size of the file. 
+     */
+    private void updateFileInfoFileSize(String pillarId, String fileId, String collectionId, Long fileSize) {
+        long startTime = System.currentTimeMillis();
+        Long collectionKey = retrieveCollectionKey(collectionId);
+        log.trace("Set file_size to '" + fileSize + "' for file '" + fileId + "' at pillar '" + pillarId 
+                + "' in collection '" + collectionId + "'.");
+        setFileExisting(fileId, pillarId, collectionId);
+        
+        String updateFileSizeSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_SIZE + " = ?" 
+                + " WHERE " + FI_FILE_KEY + " = ("
+                    + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE
+                    + " WHERE " + FILES_ID + " = ?"
+                    + " AND " + COLLECTION_KEY + " = ? )"
+                + " AND " + FI_PILLAR_KEY + " = (" 
+                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE
+                    + " WHERE " + PILLAR_ID + " = ? )";
+        
+        DatabaseUtils.executeStatement(dbConnector, updateFileSizeSql, fileSize, fileId, collectionKey, pillarId);
+        log.debug("Updated fileInfo filesize in " + (System.currentTimeMillis() - startTime) + "ms");
+    }
+    
+    /**
      * Updates the file info for the given file at the given pillar.
      * It is always set to 'EXISTING' and if the timestamp is new, then it is also updated along with setting the 
      * checksum state to 'UNKNOWN'.
@@ -859,12 +977,12 @@ public class IntegrityDAO {
         String updateTimestampSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_FILE_UPDATE + " = ?, " 
                 + FI_CHECKSUM_STATE + " = ? " 
                 + " WHERE " + FI_FILE_KEY + " = ("
-                		+ " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
-                		+ " WHERE " + FILES_ID + " = ? "
-                		+ " AND " + COLLECTION_KEY + " = ? )" 
+                    + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                    + " WHERE " + FILES_ID + " = ? "
+                    + " AND " + COLLECTION_KEY + " = ? )" 
                 + " AND " + FI_PILLAR_KEY + " = ("
-                		+ " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
-                		+ " WHERE " + PILLAR_ID + " = ? ) " 
+                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
+                    + " WHERE " + PILLAR_ID + " = ? ) " 
                 + "AND " + FI_LAST_FILE_UPDATE + " < ?";
         DatabaseUtils.executeStatement(dbConnector, updateTimestampSql, filelistTimestamp, 
                 ChecksumState.UNKNOWN.ordinal(), fileId, collectionKey, pillarId, filelistTimestamp);

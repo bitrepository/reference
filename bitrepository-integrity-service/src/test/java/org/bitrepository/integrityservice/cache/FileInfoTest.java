@@ -40,12 +40,13 @@ public class FileInfoTest extends ExtendedTestCase {
     private static final long LAST_CHECKSUM_CHECK_MILLIS = 2000000;
     private static final XMLGregorianCalendar LAST_CHECKSUM_CHECK = CalendarUtils.getFromMillis(LAST_CHECKSUM_CHECK_MILLIS);
     private static final String PILLAR_ID = "test-pillar";
+    private static final Long FILE_SIZE = new Long(12345);
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testFileInfo() {
         addDescription("Tests the FileInfo element. Adds all data and extracts it again.");
         addStep("Setup the file info.", "Should be possible to extract all the data again.");
-        FileInfo fi = new FileInfo(FILE_ID, LAST_FILE_CHECK, CHECKSUM, LAST_CHECKSUM_CHECK, PILLAR_ID,
+        FileInfo fi = new FileInfo(FILE_ID, LAST_FILE_CHECK, CHECKSUM, FILE_SIZE, LAST_CHECKSUM_CHECK, PILLAR_ID,
                 FileState.UNKNOWN, ChecksumState.UNKNOWN);
         
         Assert.assertEquals(fi.getFileId(), FILE_ID);
@@ -53,6 +54,7 @@ public class FileInfoTest extends ExtendedTestCase {
         Assert.assertEquals(fi.getChecksum(), CHECKSUM);
         Assert.assertEquals(fi.getDateForLastChecksumCheck().toGregorianCalendar().getTimeInMillis(), LAST_CHECKSUM_CHECK_MILLIS);
         Assert.assertEquals(fi.getPillarId(), PILLAR_ID);
+        Assert.assertEquals(fi.getFileSize(), FILE_SIZE);
         
         addStep("Change the checksum", "Should be possible to extract it again.");
         String newChecksum = "NEW-CHECKSUM";

@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.workflow;
 
 import org.bitrepository.service.workflow.StepBasedWorkflow;
+import org.bitrepository.service.workflow.WorkflowID;
 import org.bitrepository.service.workflow.WorkflowStep;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -58,6 +59,10 @@ public class StepBasedWorkflowTest extends ExtendedTestCase {
             @Override
             public String getDescription() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+            
+            public WorkflowID getWorkflowID() {
+                return null;
             }
         };
         

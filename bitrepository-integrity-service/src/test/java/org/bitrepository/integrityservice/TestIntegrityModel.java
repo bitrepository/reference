@@ -156,6 +156,19 @@ public class TestIntegrityModel implements IntegrityModel {
             return new ArrayList<FileInfo>();
         }
     }
+    
+
+    @Override
+    public long getNumberOfFilesInCollection(String collectionId) {
+        long numberOfFiles = 0;
+        for(String file : cache.keySet()) {
+            if(file.endsWith("-" + collectionId)) {
+                numberOfFiles++;
+            }
+        }
+        
+        return numberOfFiles;
+    }
 
     @Override
     public Collection<String> getAllFileIDs(String collectionId) {
@@ -243,7 +256,7 @@ public class TestIntegrityModel implements IntegrityModel {
             if(currentInfo == null) {
                 // create a new file info
                 currentInfo = new FileInfo(checksumData.getFileID(), CalendarUtils.getEpoch(),
-                    Base16Utils.decodeBase16(checksumData.getChecksumValue()),
+                    Base16Utils.decodeBase16(checksumData.getChecksumValue()), null,
                     checksumData.getCalculationTimestamp(), pillarId, FileState.EXISTING, ChecksumState.UNKNOWN);
             } else {
                 // Update the existing file info
@@ -481,6 +494,22 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
+    public Date getDateForNewestFileEntryForCollection(String collectionId) {
+        XMLGregorianCalendar res = CalendarUtils.getEpoch();
+        for(String key : cache.keySet()) {
+            if(key.endsWith("-" + collectionId)) {
+                CollectionFileIDInfo collectionInfo = cache.get(key);
+                for(FileInfo fileInfo : collectionInfo.getFileIDInfos()) {
+                    if(fileInfo.getDateForLastFileIDCheck().compare(res) == DatatypeConstants.GREATER) {
+                        res = fileInfo.getDateForLastFileIDCheck();
+                    }
+                }
+            }
+        }
+        return CalendarUtils.convertFromXMLGregorianCalendar(res);
+    }
+    
+    @Override
     public Date getDateForNewestFileEntryForPillar(String pillarId, String collectionId) {
         XMLGregorianCalendar res = CalendarUtils.getEpoch();
         for(String key : cache.keySet()) {
@@ -595,5 +624,18 @@ public class TestIntegrityModel implements IntegrityModel {
         }
         
         return res.subList((int) minId, (int) maxId);
+    }
+
+
+    @Override
+    public Long getCollectionFileSize(String collectionId) {
+        long summedSize = 0;
+        for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
+            if(collectionInfo.getKey().endsWith("-" + collectionId)) {
+                FileInfo fileinfo = collectionInfo.getValue().getFileIDInfos().get(0);
+                summedSize += fileinfo.getFileSize();
+            }
+        }
+        return summedSize;
     }
 }

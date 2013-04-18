@@ -40,6 +40,7 @@ import javax.ws.rs.core.MediaType;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.IntegrityService;
 import org.bitrepository.integrityservice.IntegrityServiceFactory;
+import org.bitrepository.integrityservice.utils.FileSizeUtils;
 import org.bitrepository.service.workflow.WorkflowTimerTask;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -161,7 +162,7 @@ public class RestIntegrityService {
     public String getWorkflowSetup(@QueryParam("collectionID") String collectionID) {
         try {
             JSONArray array = new JSONArray();
-            Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows();
+            Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows(collectionID);
             for(WorkflowTimerTask workflow : workflows) {
                 array.put(makeWorkflowSetupObj(workflow));
             }
@@ -180,12 +181,12 @@ public class RestIntegrityService {
     @Produces(MediaType.APPLICATION_JSON)
     public String getWorkflowList(@QueryParam("collectionID") String collectionID) {
         JSONArray array = new JSONArray();
-        Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows();
+        Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows(collectionID);
         for(WorkflowTimerTask workflow : workflows) {
             JSONObject obj;
             try {
                 obj = new JSONObject();
-                obj.put("workflowID", workflow.getName());
+                obj.put("workflowID", workflow.getWorkflowID().getWorkflowName());
             } catch (JSONException e) {
                 obj = (JSONObject) JSONObject.NULL;
             }
@@ -203,15 +204,33 @@ public class RestIntegrityService {
     @Produces("text/html")
     public String startWorkflow(@FormParam("workflowID") String workflowID,
                                 @FormParam("collectionID") String collectionID) {
-        Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows();
+        Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows(collectionID);
         for(WorkflowTimerTask workflowTask : workflows) {
-            if(workflowTask.getName().equals(workflowID)) {
+            if(workflowTask.getWorkflowID().getWorkflowName().equals(workflowID)) {
                 return workflowTask.runWorkflow();
             }
         }
         return "No workflow named '" + workflowID + "' was found!";
     }
 
+    /**
+     * Start a named workflow.  
+     */
+    @GET
+    @Path("/getCollectionInformation/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getCollectionInformation(@QueryParam("collectionID") String collectionID) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("lastIngest", TimeUtils.shortDate(service.getDateForNewestFileInCollection(collectionID)));
+            obj.put("collectionSize", FileSizeUtils.toHumanShort(service.getCollectionSize(collectionID)));
+            obj.put("numberOfFiles", service.getNumberOfFilesInCollection(collectionID));
+        } catch (JSONException e) {
+            obj = (JSONObject) JSONObject.NULL;
+        }
+        return obj.toString();
+    }
+ 
     private JSONObject makeIntegrityStatusObj(String pillarID, String collectionID) {
         JSONObject obj = new JSONObject();
         try {
@@ -228,7 +247,7 @@ public class RestIntegrityService {
     private JSONObject makeWorkflowSetupObj(WorkflowTimerTask workflowTask) {
         JSONObject obj = new JSONObject();
         try {
-            obj.put("workflowID", workflowTask.getName());
+            obj.put("workflowID", workflowTask.getWorkflowID().getWorkflowName());
             obj.put("workflowDescription", workflowTask.getDescription());
             obj.put("nextRun", TimeUtils.shortDate(workflowTask.getNextRun()));
             if (workflowTask.getLastRunStatistics().getFinish() == null) {

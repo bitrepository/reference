@@ -51,6 +51,8 @@ public final class DatabaseConstants {
     public static final  String FI_FILE_STATE = "file_state";
     /** The state of the checksum. An integer value for the ChecksumState enumerator. @see ChecksumState.*/
     public static final  String FI_CHECKSUM_STATE = "checksum_state";
+    /** The size of the file. An integer value, may be null */
+    public static final String FI_FILE_SIZE = "file_size";
     
     // THE FILES TABLE.
     /** The name of the Files table.*/

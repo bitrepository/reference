@@ -115,6 +115,7 @@ CREATE TABLE fileinfo (
     file_key BIGINT NOT NULL,    -- The key for the file.
     pillar_key BIGINT NOT NULL,  -- The key for the pillar.
     checksum VARCHAR(100),       -- The checksum for the given file on the given pillar.
+    file_size BIGINT,            -- The size of the file. 
     last_file_update TIMESTAMP,  -- The last time a 'GetFileIDs' for the fileinfo has been answered.
     last_checksum_update TIMESTAMP,
                                  -- The date for the latest checksum calculation.

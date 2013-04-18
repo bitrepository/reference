@@ -13,23 +13,24 @@
   <div id="pageMenu"></div>
   <div class="container-fluid">
     <div class="row-fluid">
-      <div class="span10">
-        <div class="span10" style="height:0px; min-height:0px"></div>
-        <div class="span10">
+      <div class="span12">
+        <div class="span12" style="height:0px; min-height:0px"></div>
+        <div class="span12">
           <h2>Integrity service</h2>
-          <legend id="integrityLegend">Integrity information</legend>
+          <legend>
+            <span>
+              <span id="integrityLegend">
+                Integrity information
+              </span>
+              <span class="pull-right"> 
+                Change collection: <select class="input" id="collectionChooser"></select>
+              </span>
+            </span>
+          </legend>
         </div>
-        <div class="span10"> 
-          <span class="pull-right"> 
-            Change collection: <select class="input" id="collectionChooser"></select>
-          </span>
-          <form class="form-inline">
-            <select id="workflowSelector"></select>
-            <button type="submit" class=btn" id="workflowStarter">Start</button>
-            <div id="formStatus"></div>          
-          </form>
-        </div>
-        <div class="span10"> 
+        <div class="span12" id="collectionInfoDiv"></div>
+        <div class="span12"> 
+          <legend>Workflows status</legend>
           <table class="table table-bordered">
             <thead>
               <tr>
@@ -43,7 +44,14 @@
             <tbody id="workflow-status-table-body"></tbody>
           </table>
         </div>
-        <div class="span10"> 
+        <div class="span12"> 
+          <form class="form-inline">
+            <select id="workflowSelector"></select>
+            <button type="submit" class=btn" id="workflowStarter">Start</button>
+            <div id="formStatus"></div>          
+          </form>
+        </div>
+        <div class="span12"> 
           <legend>Integrity status</legend>
           <table class="table table-bordered table-striped">
             <thead>
@@ -258,42 +266,30 @@
 
     }
  
-    // depricated
-    function getCollectionIDs() {
-      $.getJSON('repo/reposervice/getCollectionIDs/',
-          {}, function(j){
-        for(var i = 0; i < j.length; i++) {
-           $("#collectionChooser").append('<option value="' + j[i] + '">' + j[i] + '</option>');
-        }
-
-        $("#integrityLegend").html("Integrity information for collection " + getCollectionID());
-        getIntegrityStatus();
-        clearInterval(update_page);
-        update_page = setInterval(function() {
-          getWorkflowStatuses(); 
-          getIntegrityStatus();
-        }, 2500);
+    function getCollectionInformation() {
+      var url = "<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getCollectionInformation/?collectionID=" + getCollectionID();
+      $.getJSON(url, {}, function(j) {
+        var infoHtml = "<span><b> Latest ingest: " + j.lastIngest + " &nbsp; &nbsp; ";
+        infoHtml += " Size: " + j.collectionSize + " &nbsp; &nbsp; ";
+        infoHtml += " Number of files: " + j.numberOfFiles + "</b></span>";
+      
+        $("#collectionInfoDiv").html(infoHtml);
       });
+      
     }
 
     function getCollectionID() {
       return $("#collectionChooser").val();
     }
 
-    // depricated
-    function clearIntegrityStatusTable() {
-      $("#integrity-status-table-body").empty();
-      pillars = new Object();
-    }
-
     function clearContent() {
       $("#integrity-status-table-body").empty();
       $("#workflow-status-table-body").empty();
-      $("#workflowSelector").empty();      
+      $("#workflowSelector").empty();
+      $("#collectionInfoDiv").empty();  
       pillars = new Object();
       workflows = new Object();
     }
-
 
     function initializePage() {
       $.getJSON('repo/reposervice/getCollectionIDs/', {}, function(j) {
@@ -310,34 +306,24 @@
         $("#integrityLegend").html("Integrity information for collection " + getCollectionID());  
         clearInterval(update_page);
         loadWorkflows();
+        getCollectionInformation();
         getWorkflowStatuses();
         getIntegrityStatus();
-        if(update_page != null) {
-          update_page = setInterval(function() {
-            getWorkflowStatuses(); 
-            getIntegrityStatus();
-          }, 2500);
-        }
+        update_page = setInterval(function() {
+          getWorkflowStatuses(); 
+          getIntegrityStatus();
+          getCollectionInformation();
+        }, 2500);
     }
-
 
     $(document).ready(function(){
       // Load page content
       makeMenu("integrity-service.jsp", "#pageMenu");
       initializePage();
-
-      //loadWorkflows();
-      //getWorkflowStatuses();
-      //getCollectionIDs();
     
       // Setup event / click handling
       $("#workflowStarter").click(function(event) { event.preventDefault(); startWorkflow(); });
       $("#collectionChooser").change(function(event) {event.preventDefault(); collectionChanged();});      
-
-      // Add page auto update
-      //update_page = setInterval(function() {
-      //  getWorkflowStatuses(); 
-      //}, 2500);
     }); 
 
     </script>

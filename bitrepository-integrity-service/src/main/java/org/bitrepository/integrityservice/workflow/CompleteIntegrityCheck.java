@@ -37,6 +37,7 @@ import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.StepBasedWorkflow;
+import org.bitrepository.service.workflow.WorkflowID;
 
 /**
  * Simple workflow for performing integrity checks of the system. 
@@ -59,6 +60,8 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
     private final AuditTrailManager auditManager;
     /** The collection to check */
     private final String collectionId;
+    /** The workflowID */
+    private final WorkflowID workflowID;
     /**
      * @param settings The settings.
      * @param collector The collector for collecting the file ids and the checksums.
@@ -77,6 +80,7 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
         this.alerter = alerter;
         this.auditManager = auditManager;
         this.collectionId = collectionId;
+        workflowID = new WorkflowID(collectionId, getClass().getSimpleName());
     }
     
     @Override
@@ -128,7 +132,7 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
     }
     
     @Override 
-    public String getWorkflowID() {
-        return getClass().getSimpleName() + "-" + collectionId; 
+    public WorkflowID getWorkflowID() {
+        return workflowID; 
     }
 }

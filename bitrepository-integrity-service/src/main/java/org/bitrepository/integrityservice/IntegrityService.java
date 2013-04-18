@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.service.LifeCycledService;
@@ -31,15 +32,17 @@ import org.bitrepository.service.workflow.WorkflowTimerTask;
 public interface IntegrityService extends LifeCycledService {
     /**
      * Retrieves all the scheduled tasks in the system, which are running.
+     * @param collectionID The collection to get scheduled workflows from
      * @return The names of the tasks, which are scheduled by the system.
      */
-    Collection<WorkflowTimerTask> getScheduledWorkflows();
+    Collection<WorkflowTimerTask> getScheduledWorkflows(String collectionID);
     
     /**
      * Retrieves all the available workflows, even those which have not been scheduled.
+     * @param collectionID The collection for which to get workflows
      * @return All the available workflows. 
      */
-    Collection<Workflow> getAllWorkflows();
+    Collection<Workflow> getAllWorkflows(String collectionID);
     
     /**
      * Retrieves the list of fileIDs which have checksum errors on the pillar in a given collection
@@ -92,17 +95,40 @@ public interface IntegrityService extends LifeCycledService {
     /**
      * Initiates the scheduling of a workflow.
      * @param workflow The workflow to schedule.
+     * @param collectionID The collection for which the workflow should be scheduled
      * @param intervalBetweenRuns The time between running the workflow.
      */
-    void scheduleWorkflow(Workflow workflow, long intervalBetweenRuns);
+    void scheduleWorkflow(Workflow workflow, String collectionID, long intervalBetweenRuns);
 
     /**
-     * Method to get til list of pillars for a givin collection
+     * Method to get the list of pillars for a given collection
      * @param collectionID The ID of the collection to get the list of pillars from
      * @return The list of pillars.
      */
     List<String> getPillarList(String collectionID);
 
+    /**
+     * Method to get the date of the latest file in a collection
+     * @param collectionID The ID of the collection
+     * @return Date the date of the newest file in the collection
+     */
+    Date getDateForNewestFileInCollection(String collectionID);
+    
+    /**
+     *  Method to get the size of the data in a given collection
+     *  @param collectionID the ID of the collection
+     *  @return The size of the data in the collection
+     */
+    Long getCollectionSize(String collectionID);
+    
+    /**
+     * Method to get the number of files in a collection 
+     * @param collectionID the ID of the collection
+     * @return The number of files in the collection
+     */
+    Long getNumberOfFilesInCollection(String collection);
+    
+    
     /**
      * Shut down the integrity service.
      */

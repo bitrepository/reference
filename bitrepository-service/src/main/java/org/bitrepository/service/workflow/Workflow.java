@@ -50,5 +50,5 @@ public interface Workflow {
     /**
      *  @return Provides an ID to identify the workflow on
      */
-    String getWorkflowID();
+    WorkflowID getWorkflowID();
 }

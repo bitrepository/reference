@@ -80,6 +80,11 @@ public class IntegrityDatabase implements IntegrityModel {
     public Collection<String> getAllFileIDs(String collectionId) {
         return store.getAllFileIDs(collectionId);
     }
+    
+    @Override 
+    public long getNumberOfFilesInCollection(String collectionId) {
+        return store.getNumberOfFilesInCollection(collectionId);
+    }
 
     @Override
     public long getNumberOfFiles(String pillarId, String collectionId) {
@@ -167,6 +172,11 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
+    public Date getDateForNewestFileEntryForCollection(String collectionId) {
+        return store.getDateForNewestFileEntryForCollection(collectionId);
+    }
+    
+    @Override
     public Date getDateForNewestFileEntryForPillar(String pillarId, String collectionId) {
         return store.getDateForNewestFileEntryForPillar(pillarId, collectionId);
     }
@@ -206,6 +216,11 @@ public class IntegrityDatabase implements IntegrityModel {
     @Override
     public List<String> getFilesWithChecksumErrorsAtPillar(String pillarId, long minId, long maxId, String collectionId) {
         return store.getFilesWithChecksumErrorsOnPillar(pillarId, minId, maxId, collectionId);
+    }
+    
+    @Override
+    public Long getCollectionFileSize(String collectionId) {
+        return store.getCollectionFileSize(collectionId);
     }
 
 }
