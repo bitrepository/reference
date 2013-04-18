@@ -46,6 +46,7 @@ public class IntegrityCache implements IntegrityModel {
     private JCS corruptFilesCache;
     private JCS collectionSizeCache;
     private JCS collectionTotalFilesCache;
+    private JCS collectionLatestFileDateCache;
     /** Seconds to wait from a cache elements has been updated to the elements is reloaded from the model **/
     protected int refreshPeriodAfterDirtyMark = 5;
 
@@ -57,6 +58,7 @@ public class IntegrityCache implements IntegrityModel {
             corruptFilesCache = JCS.getInstance("CorruptFilesCache");
             collectionSizeCache = JCS.getInstance("collectionSizeCache");
             collectionTotalFilesCache = JCS.getInstance("collectionTotalFilesCache");
+            collectionLatestFileDateCache = JCS.getInstance("collectionLatestFileDateCache");
         } catch (CacheException ce) {
             throw new IllegalStateException("Failed to initialise caches", ce);
         }
@@ -68,6 +70,7 @@ public class IntegrityCache implements IntegrityModel {
         markPillarsDirty(filesCache, Arrays.asList(new String[]{pillarId}), collectionId);
         markDirty(collectionSizeCache, collectionId);
         markDirty(collectionTotalFilesCache, collectionId);
+        markDirty(collectionLatestFileDateCache, collectionId);
     }
 
     @Override
@@ -157,6 +160,7 @@ public class IntegrityCache implements IntegrityModel {
         markPillarsDirty(filesCache, pillarIds, collectionId);
         markDirty(collectionSizeCache, collectionId);
         markDirty(collectionTotalFilesCache, collectionId);
+        markDirty(collectionLatestFileDateCache, collectionId);
     }
 
     @Override
@@ -179,6 +183,7 @@ public class IntegrityCache implements IntegrityModel {
             corruptFilesCache.clear();
             collectionSizeCache.clear();
             collectionTotalFilesCache.clear();
+            collectionLatestFileDateCache.clear();
         } catch (CacheException ce) {
             log.warn("Failed to clear cache.", ce);
         }
@@ -231,6 +236,7 @@ public class IntegrityCache implements IntegrityModel {
             missingFilesCache.clear();
             collectionSizeCache.clear();
             collectionTotalFilesCache.clear();
+            collectionLatestFileDateCache.clear();
         } catch (CacheException ce) {
             log.warn("Failed to update cache.", ce);
         }
@@ -239,7 +245,12 @@ public class IntegrityCache implements IntegrityModel {
 
     @Override 
     public Date getDateForNewestFileEntryForCollection(String collectionId) {
-        return integrityModel.getDateForNewestFileEntryForCollection(collectionId);
+        Date latestDate = (Date) collectionLatestFileDateCache.get(collectionId);
+        if(latestDate == null) {
+            latestDate = integrityModel.getDateForNewestFileEntryForCollection(collectionId); 
+            updateCache(collectionLatestFileDateCache, collectionId, latestDate);
+        }
+        return latestDate;
     }
     
     @Override
