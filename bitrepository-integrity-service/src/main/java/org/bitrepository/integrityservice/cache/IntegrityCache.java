@@ -44,6 +44,7 @@ public class IntegrityCache implements IntegrityModel {
     private JCS missingFilesCache;
     private JCS filesCache;
     private JCS corruptFilesCache;
+    private JCS collectionSize;
     /** Seconds to wait from a cache elements has been updated to the elements is reloaded from the model **/
     protected int refreshPeriodAfterDirtyMark = 5;
 
@@ -53,6 +54,7 @@ public class IntegrityCache implements IntegrityModel {
             missingFilesCache = JCS.getInstance("MissingFilesCache");
             filesCache = JCS.getInstance("FilesCache");
             corruptFilesCache = JCS.getInstance("CorruptFilesCache");
+            collectionSize = JCS.getInstance("collectionSizeCache");
         } catch (CacheException ce) {
             throw new IllegalStateException("Failed to initialise caches", ce);
         }
@@ -62,6 +64,7 @@ public class IntegrityCache implements IntegrityModel {
     public void addFileIDs(FileIDsData data, String pillarId, String collectionId) {
         integrityModel.addFileIDs(data, pillarId, collectionId);
         markPillarsDirty(filesCache, Arrays.asList(new String[]{pillarId}), collectionId);
+        markDirty(collectionSize, collectionId);
     }
 
     @Override
@@ -102,9 +105,12 @@ public class IntegrityCache implements IntegrityModel {
     
     @Override
     public Long getCollectionFileSize(String collectionId) {
-        //TODO add cache...
-        Long collectionSize = integrityModel.getCollectionFileSize(collectionId);
-        return collectionSize;
+        Long collectionSizeVal = (Long) collectionSize.get(collectionId); 
+        if(collectionSizeVal == null) {
+            collectionSizeVal = integrityModel.getCollectionFileSize(collectionId);
+            updateCache(collectionSize, collectionId, collectionSizeVal);
+        }
+        return collectionSizeVal;
     }
 
     @Override
@@ -142,6 +148,7 @@ public class IntegrityCache implements IntegrityModel {
         integrityModel.setFileMissing(fileId, pillarIds, collectionId);
         markPillarsDirty(missingFilesCache, pillarIds, collectionId);
         markPillarsDirty(filesCache, pillarIds, collectionId);
+        markDirty(collectionSize, collectionId);
     }
 
     @Override
@@ -162,6 +169,7 @@ public class IntegrityCache implements IntegrityModel {
             missingFilesCache.clear();
             filesCache.clear();
             corruptFilesCache.clear();
+            collectionSize.clear();
         } catch (CacheException ce) {
             log.warn("Failed to clear cache.", ce);
         }
@@ -212,6 +220,7 @@ public class IntegrityCache implements IntegrityModel {
     public void setOldUnknownFilesToMissing(String collectionId) {
         try {
             missingFilesCache.clear();
+            collectionSize.clear();
         } catch (CacheException ce) {
             log.warn("Failed to update cache.", ce);
         }
@@ -244,6 +253,7 @@ public class IntegrityCache implements IntegrityModel {
      *  each <code>refreshPeriodAfterDirtyMark</code> second.
      * @param cache The cache to use.
      * @param pillarIds The pillars to mark dirty
+     * @param collectionID The collection to mark dirty
      */
     private void markPillarsDirty(JCS cache, Collection<String> pillarIds, String collectionId) {
         for (String pillarID:pillarIds) {
@@ -253,6 +263,21 @@ public class IntegrityCache implements IntegrityModel {
             } catch (CacheException ce) {
                 log.warn("Failed to read cache.", ce);
             }
+        }
+    }
+    
+    /**
+     * Will cause the cache to return null after <code>refreshPeriodAfterDirtyMark</code> has passed, since
+     * the value was updated in the cache. This will ensure that the backend model isn't read more than
+     *  each <code>refreshPeriodAfterDirtyMark</code> second.
+     * @param cache The cache to use.
+     * @param collectionID The collection to mark dirty
+     */
+    private void markDirty(JCS cache, String collectionId) {
+        try {
+            cache.getElementAttributes(collectionId).setMaxLifeSeconds(refreshPeriodAfterDirtyMark);
+        } catch (CacheException ce) {
+            log.warn("Failed to read cache.", ce);
         }
     }
 
