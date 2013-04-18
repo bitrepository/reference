@@ -26,6 +26,7 @@ package org.bitrepository.integrityservice;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -195,5 +196,10 @@ public class SimpleIntegrityService implements IntegrityService {
     @Override
     public List<String> getPillarList(String collectionID) {
         return SettingsUtils.getPillarIDsForCollection(settings, collectionID);
+    }
+
+    @Override
+    public Date getDateForNewestFileInCollection(String collectionID) {
+        return cache.getDateForNewestFileEntryForCollection(collectionID);
     }
 }

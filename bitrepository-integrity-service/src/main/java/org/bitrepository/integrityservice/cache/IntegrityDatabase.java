@@ -167,6 +167,11 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
+    public Date getDateForNewestFileEntryForCollection(String collectionId) {
+        return store.getDateForNewestFileEntryForCollection(collectionId);
+    }
+    
+    @Override
     public Date getDateForNewestFileEntryForPillar(String pillarId, String collectionId) {
         return store.getDateForNewestFileEntryForPillar(pillarId, collectionId);
     }

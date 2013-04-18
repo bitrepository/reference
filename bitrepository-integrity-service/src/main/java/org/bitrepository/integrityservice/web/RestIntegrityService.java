@@ -221,7 +221,7 @@ public class RestIntegrityService {
     public String getCollectionInformation(@QueryParam("collectionID") String collectionID) {
         JSONObject obj = new JSONObject();
         try {
-            obj.put("lastIngest", "23.01.2013 8:15");
+            obj.put("lastIngest", TimeUtils.shortDate(service.getDateForNewestFileInCollection(collectionID)));
             obj.put("collectionSize", "10GB");
             obj.put("numberOfFiles", 1000);
         } catch (JSONException e) {

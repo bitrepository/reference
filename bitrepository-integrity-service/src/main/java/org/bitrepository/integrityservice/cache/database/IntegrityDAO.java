@@ -320,6 +320,7 @@ public class IntegrityDAO {
         return DatabaseUtils.selectStringList(dbConnector, sql, collectionKey);
     }
     
+    
     /**
      * Retrieves the number of files in the given pillar, which has the file state 'EXISTING'.
      * @param pillarId The id of the pillar.
@@ -611,20 +612,41 @@ public class IntegrityDAO {
                 ChecksumState.VALID.ordinal(), FileState.MISSING.ordinal(), collectionKey);
         log.debug("Marked consistent files in " + (System.currentTimeMillis() - startTime) + "ms");
     }
+
+    /**
+     * Retrieves the date for the latest file entry for a given collection.
+     * E.g. the date for the latest file which has been positively identified as existing.  
+     * @param collectionId The pillar whose latest file entry is requested.
+     * @return The requested date.
+     */
+    public Date getDateForNewestFileEntryForCollection(String collectionId) {
+        Long collectionKey = retrieveCollectionKey(collectionId);
+        String retrieveSql = "SELECT " + FI_LAST_FILE_UPDATE + " FROM " + FILE_INFO_TABLE 
+                + " JOIN " + FILES_TABLE + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?" 
+                + " AND " + FI_FILE_STATE + " = ?" 
+                + " ORDER BY " + FI_LAST_FILE_UPDATE + " DESC ";
+        return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionKey, 
+                FileState.EXISTING.ordinal());
+    }
     
     /**
      * Retrieves the date for the latest file entry for a given pillar.
      * E.g. the date for the latest file which has been positively identified as existing on the given pillar.  
      * @param pillarId The pillar whose latest file entry is requested.
+     * @param collectionId The ID of the collection 
      * @return The requested date.
      */
     public Date getDateForNewestFileEntryForPillar(String pillarId, String collectionId) {
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String retrieveSql = "SELECT " + FI_LAST_FILE_UPDATE + " FROM " + FILE_INFO_TABLE + " JOIN " 
-                + FILES_TABLE + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
-                + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ? AND " + FI_FILE_STATE 
-                + " = ? AND " + FI_PILLAR_KEY + " = ( SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE + " WHERE " 
-                + PILLAR_ID + " = ? ) ORDER BY " + FI_LAST_FILE_UPDATE + " DESC ";
+        String retrieveSql = "SELECT " + FI_LAST_FILE_UPDATE + " FROM " + FILE_INFO_TABLE 
+                + " JOIN " + FILES_TABLE + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?" 
+                + " AND " + FI_FILE_STATE + " = ?" 
+                + " AND " + FI_PILLAR_KEY + " = (" 
+                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
+                    + " WHERE " + PILLAR_ID + " = ? )" 
+                + " ORDER BY " + FI_LAST_FILE_UPDATE + " DESC ";
         return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionKey, 
                 FileState.EXISTING.ordinal(), pillarId);
     }

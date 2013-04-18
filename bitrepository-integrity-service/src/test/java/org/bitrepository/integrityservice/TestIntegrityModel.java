@@ -481,6 +481,22 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
+    public Date getDateForNewestFileEntryForCollection(String collectionId) {
+        XMLGregorianCalendar res = CalendarUtils.getEpoch();
+        for(String key : cache.keySet()) {
+            if(key.endsWith("-" + collectionId)) {
+                CollectionFileIDInfo collectionInfo = cache.get(key);
+                for(FileInfo fileInfo : collectionInfo.getFileIDInfos()) {
+                    if(fileInfo.getDateForLastFileIDCheck().compare(res) == DatatypeConstants.GREATER) {
+                        res = fileInfo.getDateForLastFileIDCheck();
+                    }
+                }
+            }
+        }
+        return CalendarUtils.convertFromXMLGregorianCalendar(res);
+    }
+    
+    @Override
     public Date getDateForNewestFileEntryForPillar(String pillarId, String collectionId) {
         XMLGregorianCalendar res = CalendarUtils.getEpoch();
         for(String key : cache.keySet()) {

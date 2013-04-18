@@ -206,6 +206,14 @@ public interface IntegrityModel {
     void setOldUnknownFilesToMissing(String collectionId);
 
     /**
+     * Retrieves the date for the latest file entry for a given collection.
+     * E.g. the date for the latest file which has been positively identified as existing in the collection.  
+     * @param collectionId The ID of the collection to look in
+     * @return The requested date.
+     */
+     Date getDateForNewestFileEntryForCollection(String collectionId);
+    
+    /**
      * Retrieves the date for the latest file entry for a given pillar.
      * E.g. the date for the latest file which has been positively identified as existing on the given pillar.  
      * @param pillarId The pillar whose latest file entry is requested.

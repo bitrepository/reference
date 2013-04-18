@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.service.LifeCycledService;
@@ -106,6 +107,13 @@ public interface IntegrityService extends LifeCycledService {
      */
     List<String> getPillarList(String collectionID);
 
+    /**
+     * Method to get the date of the latest file in a collection
+     * @param collectionID The ID of the collection
+     * @return Date the date of the newest file in the collection
+     */
+    Date getDateForNewestFileInCollection(String collectionID);
+    
     /**
      * Shut down the integrity service.
      */

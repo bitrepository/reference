@@ -205,6 +205,11 @@ public class IntegrityCache implements IntegrityModel {
         integrityModel.setOldUnknownFilesToMissing(collectionId);
     }
 
+    @Override 
+    public Date getDateForNewestFileEntryForCollection(String collectionId) {
+        return integrityModel.getDateForNewestFileEntryForCollection(collectionId);
+    }
+    
     @Override
     public Date getDateForNewestFileEntryForPillar(String pillarId, String collectionId) {
         return integrityModel.getDateForNewestFileEntryForPillar(pillarId, collectionId);
