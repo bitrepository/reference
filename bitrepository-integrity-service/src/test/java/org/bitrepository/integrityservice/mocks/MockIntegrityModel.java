@@ -83,7 +83,26 @@ public class MockIntegrityModel implements IntegrityModel {
     public int getCallsForGetAllFileIDs() {
         return callsForGetAllFileIDs;
     }
+    
+    private int callsForGetCollectionFileSize = 0;
+    public Long getCollectionFileSize(String collectionId) {
+        callsForGetCollectionFileSize++;
+        return integrityModel.getCollectionFileSize(collectionId);
+    }
+    public int getCallsForGetCollectionFileSize() {
+        return callsForGetCollectionFileSize;
+    }
 
+    private int callsForGetNumberOfFilesInCollection = 0;
+    @Override
+    public long getNumberOfFilesInCollection(String collectionId) {
+        callsForGetNumberOfFilesInCollection++;
+        return integrityModel.getNumberOfFilesInCollection(collectionId);
+    }
+    public int getCallsForGetNumberOfFilesInCollection() {
+        return callsForGetNumberOfFilesInCollection;
+    }
+    
     private int callsForGetNumberOfFiles = 0;
     @Override
     public long getNumberOfFiles(String pillarId, String collectionId) {

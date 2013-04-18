@@ -209,7 +209,7 @@ public class SimpleIntegrityService implements IntegrityService {
     }
 
     @Override
-    public Long getNumberOfFilesInCollection(String collection) {
-        return cache.getNumberOfFilesInCollection(collectionId);
+    public Long getNumberOfFilesInCollection(String collectionID) {
+        return cache.getNumberOfFilesInCollection(collectionID);
     }
 }

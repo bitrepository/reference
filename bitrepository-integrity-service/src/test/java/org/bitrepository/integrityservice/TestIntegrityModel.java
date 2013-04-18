@@ -156,6 +156,19 @@ public class TestIntegrityModel implements IntegrityModel {
             return new ArrayList<FileInfo>();
         }
     }
+    
+
+    @Override
+    public long getNumberOfFilesInCollection(String collectionId) {
+        long numberOfFiles = 0;
+        for(String file : cache.keySet()) {
+            if(file.endsWith("-" + collectionId)) {
+                numberOfFiles++;
+            }
+        }
+        
+        return numberOfFiles;
+    }
 
     @Override
     public Collection<String> getAllFileIDs(String collectionId) {
@@ -611,5 +624,18 @@ public class TestIntegrityModel implements IntegrityModel {
         }
         
         return res.subList((int) minId, (int) maxId);
+    }
+
+
+    @Override
+    public Long getCollectionFileSize(String collectionId) {
+        long summedSize = 0;
+        for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
+            if(collectionInfo.getKey().endsWith("-" + collectionId)) {
+                FileInfo fileinfo = collectionInfo.getValue().getFileIDInfos().get(0);
+                summedSize += fileinfo.getFileSize();
+            }
+        }
+        return summedSize;
     }
 }
