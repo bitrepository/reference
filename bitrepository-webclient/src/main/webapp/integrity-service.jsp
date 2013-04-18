@@ -13,9 +13,9 @@
   <div id="pageMenu"></div>
   <div class="container-fluid">
     <div class="row-fluid">
-      <div class="span10">
-        <div class="span10" style="height:0px; min-height:0px"></div>
-        <div class="span10">
+      <div class="span12">
+        <div class="span12" style="height:0px; min-height:0px"></div>
+        <div class="span12">
           <h2>Integrity service</h2>
           <legend>
             <span>
@@ -28,8 +28,8 @@
             </span>
           </legend>
         </div>
-        <div class="span10" id="collectionInfoDiv"></div>
-        <div class="span10"> 
+        <div class="span12" id="collectionInfoDiv"></div>
+        <div class="span12"> 
           <legend>Workflows status</legend>
           <table class="table table-bordered">
             <thead>
@@ -44,14 +44,14 @@
             <tbody id="workflow-status-table-body"></tbody>
           </table>
         </div>
-        <div class="span10"> 
+        <div class="span12"> 
           <form class="form-inline">
             <select id="workflowSelector"></select>
             <button type="submit" class=btn" id="workflowStarter">Start</button>
             <div id="formStatus"></div>          
           </form>
         </div>
-        <div class="span10"> 
+        <div class="span12"> 
           <legend>Integrity status</legend>
           <table class="table table-bordered table-striped">
             <thead>
