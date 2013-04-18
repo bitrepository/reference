@@ -17,12 +17,18 @@
         <div class="span10" style="height:0px; min-height:0px"></div>
         <div class="span10">
           <h2>Integrity service</h2>
-          <legend id="integrityLegend">Integrity information</legend>
+          <legend>
+            <span>
+              <span id="integrityLegend">
+                Integrity information
+              </span>
+              <span class="pull-right"> 
+                Change collection: <select class="input" id="collectionChooser"></select>
+              </span>
+            </span>
+          </legend>
         </div>
         <div class="span10"> 
-          <span class="pull-right"> 
-            Change collection: <select class="input" id="collectionChooser"></select>
-          </span>
           <form class="form-inline">
             <select id="workflowSelector"></select>
             <button type="submit" class=btn" id="workflowStarter">Start</button>
