@@ -320,6 +320,17 @@ public class IntegrityDAO {
         return DatabaseUtils.selectStringList(dbConnector, sql, collectionKey);
     }
     
+    /**
+     * Get the number of files in a given collection
+     * @param collectionId The ID of the collection
+     * @return the number of files in a collection 
+     */
+    public long getNumberOfFilesInCollection(String collectionId) {
+        log.trace("Retrieving the number of fileIds in collection '" + collectionId + "'.");
+        Long collectionKey = retrieveCollectionKey(collectionId);
+        String sql = "SELECT COUNT(" + FILES_ID + ") FROM " + FILES_TABLE + " WHERE " + COLLECTION_KEY + " = ?";
+        return DatabaseUtils.selectLongValue(dbConnector, sql, collectionKey);
+    }
     
     /**
      * Retrieves the number of files in the given pillar, which has the file state 'EXISTING'.

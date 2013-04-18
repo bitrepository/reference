@@ -202,4 +202,14 @@ public class SimpleIntegrityService implements IntegrityService {
     public Date getDateForNewestFileInCollection(String collectionID) {
         return cache.getDateForNewestFileEntryForCollection(collectionID);
     }
+
+    @Override
+    public Long getCollectionSize(String collectionID) {
+        return cache.getCollectionFileSize(collectionID);
+    }
+
+    @Override
+    public Long getNumberOfFilesInCollection(String collection) {
+        return cache.getNumberOfFilesInCollection(collectionId);
+    }
 }

@@ -101,7 +101,7 @@ public interface IntegrityService extends LifeCycledService {
     void scheduleWorkflow(Workflow workflow, String collectionID, long intervalBetweenRuns);
 
     /**
-     * Method to get til list of pillars for a givin collection
+     * Method to get the list of pillars for a given collection
      * @param collectionID The ID of the collection to get the list of pillars from
      * @return The list of pillars.
      */
@@ -113,6 +113,21 @@ public interface IntegrityService extends LifeCycledService {
      * @return Date the date of the newest file in the collection
      */
     Date getDateForNewestFileInCollection(String collectionID);
+    
+    /**
+     *  Method to get the size of the data in a given collection
+     *  @param collectionID the ID of the collection
+     *  @return The size of the data in the collection
+     */
+    Long getCollectionSize(String collectionID);
+    
+    /**
+     * Method to get the number of files in a collection 
+     * @param collectionID the ID of the collection
+     * @return The number of files in the collection
+     */
+    Long getNumberOfFilesInCollection(String collection);
+    
     
     /**
      * Shut down the integrity service.

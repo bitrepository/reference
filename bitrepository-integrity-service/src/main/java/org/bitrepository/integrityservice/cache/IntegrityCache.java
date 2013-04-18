@@ -78,6 +78,12 @@ public class IntegrityCache implements IntegrityModel {
     public Collection<String> getAllFileIDs(String collectionId) {
         return integrityModel.getAllFileIDs(collectionId);
     }
+    
+    @Override
+    public long getNumberOfFilesInCollection(String collectionId) {
+        //TODO add cache...
+        return integrityModel.getNumberOfFilesInCollection(collectionId);
+    }
 
     @Override
     public long getNumberOfFiles(String pillarId, String collectionId) {
@@ -92,6 +98,13 @@ public class IntegrityCache implements IntegrityModel {
     @Override
     public List<String> getFilesOnPillar(String pillarId, long minId, long maxId, String collectionId) {
         return integrityModel.getFilesOnPillar(pillarId, minId, maxId, collectionId);
+    }
+    
+    @Override
+    public Long getCollectionFileSize(String collectionId) {
+        //TODO add cache...
+        Long collectionSize = integrityModel.getCollectionFileSize(collectionId);
+        return collectionSize;
     }
 
     @Override
@@ -262,4 +275,6 @@ public class IntegrityCache implements IntegrityModel {
     private String getCacheID(String pillarID, String collectionID) {
         return pillarID + "-" + collectionID;
     }
+
+
 }

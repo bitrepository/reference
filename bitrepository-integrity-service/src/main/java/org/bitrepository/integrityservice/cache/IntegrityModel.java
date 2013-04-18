@@ -67,6 +67,14 @@ public interface IntegrityModel {
     Collection<String> getAllFileIDs(String collectionId);
     
     /**
+     * Retrieves the number of files in a collection
+     * @param collectionId The ID of the collection
+     * @return The number of files in the collection
+     */
+    long getNumberOfFilesInCollection(String collectionId);
+    
+    /**
+     * Retrieves the number of files on a pillar in a collection
      * @param pillarId The pillar.
      * @param collectionId The ID of the collection to get the number of files from
      * @return Retrieves the number of files in the state 'EXISTING' at a given pillar.
@@ -231,6 +239,13 @@ public interface IntegrityModel {
      */
     Date getDateForNewestChecksumEntryForPillar(String pillarId, String collectionId);
 
+    /**
+     * Retrieves the accumulated size of the files in the given collection
+     * @param collectionId The ID of the collection
+     * @return The accumulated size of the files in the collection.
+     */
+    Long getCollectionFileSize(String collectionId);
+    
     /**
      * Shutdown the model. This will typically consist of closing DB connections.
      */

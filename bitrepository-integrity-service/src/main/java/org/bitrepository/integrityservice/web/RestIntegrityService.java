@@ -222,8 +222,8 @@ public class RestIntegrityService {
         JSONObject obj = new JSONObject();
         try {
             obj.put("lastIngest", TimeUtils.shortDate(service.getDateForNewestFileInCollection(collectionID)));
-            obj.put("collectionSize", "10GB");
-            obj.put("numberOfFiles", 1000);
+            obj.put("collectionSize", service.getCollectionSize(collectionID));
+            obj.put("numberOfFiles", service.getNumberOfFilesInCollection(collectionID));
         } catch (JSONException e) {
             obj = (JSONObject) JSONObject.NULL;
         }
