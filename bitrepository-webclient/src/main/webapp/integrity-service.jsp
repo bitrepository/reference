@@ -5,66 +5,63 @@
   <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
   <head>
     <title>Bitrepository integrity service</title>
-    <!-- Bootstrap -->
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
   </head>
   <body>
   
   <div id="pageMenu"></div>
   <div class="container-fluid">
-    <div class="row-fluid">
-      <div class="span12">
-        <div class="span12" style="height:0px; min-height:0px"></div>
-        <div class="span12">
-          <h2>Integrity service</h2>
-          <legend>
-            <span>
-              <span id="integrityLegend">
-                Integrity information
-              </span>
-              <span class="pull-right"> 
-                Change collection: <select class="input" id="collectionChooser"></select>
-              </span>
+    <div class="row-fluid" style="margin-left:-20px">
+      <div class="span11" style="height:0px; min-height:0px"></div>
+      <div class="span11">
+        <h2>Integrity service</h2>
+        <legend>
+          <span>
+            <span id="integrityLegend">
+              Integrity information
             </span>
-          </legend>
-        </div>
-        <div class="span12" id="collectionInfoDiv"></div>
-        <div class="span12"> 
-          <legend>Workflows status</legend>
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th>Workflow name</th>
-                <th>Next run</th>
-                <th>Last run</th>
-                <th>Interval</th>
-                <th>Current state</th>
-              </tr>
-            </thead>
-            <tbody id="workflow-status-table-body"></tbody>
-          </table>
-        </div>
-        <div class="span12"> 
-          <form class="form-inline">
-            <select id="workflowSelector"></select>
-            <button type="submit" class=btn" id="workflowStarter">Start</button>
-            <div id="formStatus"></div>          
-          </form>
-        </div>
-        <div class="span12"> 
-          <legend>Integrity status</legend>
-          <table class="table table-bordered table-striped">
-            <thead>
-              <tr>
-                <th>Pillar ID</th>
-                <th>Total number of files</th>
-                <th>Number of missing files</th>
-                <th>Number of checksum errors</th>
-              </tr>
-            </thead>
-            <tbody id="integrity-status-table-body"></tbody>
-          </table>
-        </div>
+            <span class="pull-right"> 
+              Change collection: <select class="input" id="collectionChooser"></select>
+            </span>
+          </span>
+        </legend>
+      </div>
+      <div class="span11" id="collectionInfoDiv"></div>
+      <div class="span11"> 
+        <legend>Workflows status</legend>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Workflow name</th>
+              <th>Next run</th>
+              <th>Last run</th>
+              <th>Interval</th>
+              <th>Current state</th>
+            </tr>
+          </thead>
+          <tbody id="workflow-status-table-body"></tbody>
+        </table>
+      </div>
+      <div class="span11"> 
+        <form class="form-inline">
+          <select id="workflowSelector"></select>
+          <button type="submit" class=btn" id="workflowStarter">Start</button>
+          <div id="formStatus"></div>          
+        </form>
+      </div>
+      <div class="span11"> 
+        <legend>Integrity status</legend>
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>Pillar ID</th>
+              <th>Total number of files</th>
+              <th>Number of missing files</th>
+              <th>Number of checksum errors</th>
+            </tr>
+          </thead>
+          <tbody id="integrity-status-table-body"></tbody>
+        </table>
       </div>
     </div>
   </div>
