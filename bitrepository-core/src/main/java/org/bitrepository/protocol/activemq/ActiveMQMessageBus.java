@@ -36,8 +36,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.util.ByteArrayInputStream;
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
@@ -47,6 +45,9 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.common.JaxbHelper;
@@ -129,6 +130,8 @@ public class ActiveMQMessageBus implements MessageBus {
     private final BlockingQueue<Runnable> threadQueue;
     /** The executor for threading of the message handling.*/
     private final ExecutorService executor;
+    /** The single producer used to send all messages. The destination need to be sent on the messages. */
+    private final MessageProducer producer;
     
     /**
      * Use the {@link org.bitrepository.protocol.ProtocolComponentFactory} to get a handle on a instance of
@@ -154,6 +157,8 @@ public class ActiveMQMessageBus implements MessageBus {
 
             producerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
             consumerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
+            producer = producerSession.createProducer(null);
+            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 
             startListeningForMessages();
         } catch (JMSException e) {
@@ -269,8 +274,6 @@ public class ActiveMQMessageBus implements MessageBus {
             jaxbHelper.validate(new ByteArrayInputStream(xmlContent.getBytes()));
             log.trace("The following message is sent to the destination '" + destinationID + "'" + " on message-bus '"
                     + configuration.getName() + "': \n{}", xmlContent);
-            MessageProducer producer = addDestinationMessageProducer(destinationID);
-            producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
             javax.jms.Message msg = producerSession.createTextMessage(xmlContent);
             String stringData = ((TextMessage) msg).getText();
@@ -284,7 +287,7 @@ public class ActiveMQMessageBus implements MessageBus {
             msg.setJMSCorrelationID(correlationID);
             msg.setJMSReplyTo(getDestination(replyTo, producerSession));
 
-            producer.send(msg);
+            producer.send(getDestination(destinationID, producerSession), msg);
         } catch (SAXException e) {
             throw new CoordinationLayerException("Rejecting to send invalid message: " + xmlContent, e);
         } catch (Exception e) {
