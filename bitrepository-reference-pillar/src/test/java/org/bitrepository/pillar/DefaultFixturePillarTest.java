@@ -39,7 +39,6 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
     protected String clientDestinationId;
     protected MessageReceiver clientReceiver;
 
-
     /**
      * Replaces the pillarID references in the settings will test specific pillarIDs.
      */

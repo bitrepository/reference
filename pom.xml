@@ -170,12 +170,6 @@
       <artifactId>jaccept-gui</artifactId>
       <version>0.3</version>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.testng</groupId>
-          <artifactId>testng</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
 
