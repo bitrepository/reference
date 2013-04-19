@@ -41,25 +41,25 @@ public class TimeUtilsTest extends ExtendedTestCase {
                 "Pi days % minutes");
         long millis = 271433605;
         String millisInSec = TimeUtils.millisecondsToSeconds(millis % 60000);
-        String expectedSec = "53 seconds";
+        String expectedSec = "53s";
         Assert.assertTrue(millisInSec.startsWith(expectedSec));
         
         addStep("Test that milliseconds can be converted into human readable minutes.", 
                 "Pi days % hours");
         String millisInMin = TimeUtils.millisecondsToMinutes(millis % 3600000);
-        String expectedMin = "23 minutes";
+        String expectedMin = "23m";
         Assert.assertTrue(millisInMin.startsWith(expectedMin));
         
         addStep("Test that milliseconds can be converted into human readable hours.", 
                 "Pi days % days");
         String millisInHour = TimeUtils.millisecondsToHours(millis % (3600000*24));
-        String expectedHours = "3 hours";
+        String expectedHours = "3h";
         Assert.assertTrue(millisInHour.startsWith(expectedHours));
         
         addStep("Test that milliseconds can be converted into human readable minutes.", 
                 "Pi days");
         String millisInDay = TimeUtils.millisecondsToDays(millis);
-        String expectedDays = "3 days";
+        String expectedDays = "3d";
         Assert.assertTrue(millisInDay.startsWith(expectedDays));
         
         addStep("Test the human readable output.", "");
