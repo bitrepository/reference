@@ -60,7 +60,7 @@ public final class TimeUtils {
      */
     public static String millisecondsToSeconds(long ms) {
         int seconds = (int) (ms / MS_PER_S);
-        return seconds + " second" + (seconds == 1 ? "" : "s");
+        return seconds + "s";
     }
     
     /**
@@ -70,7 +70,7 @@ public final class TimeUtils {
      */
     public static String millisecondsToMinutes(long ms) {
         int minutes = (int) (ms / ( MS_PER_S * S_PER_M ));
-        return minutes + " minute" + (minutes == 1 ? "" : "s");
+        return minutes + "m";
     }
     
     /**
@@ -80,7 +80,7 @@ public final class TimeUtils {
      */
     public static String millisecondsToHours(long ms) {
         int hours = (int) (ms /( MS_PER_S * S_PER_M * M_PER_H ));
-        return hours + " hour" + (hours == 1 ? "" : "s");
+        return hours + "h";
     }
     
     /**
@@ -90,7 +90,7 @@ public final class TimeUtils {
      */
     public static String millisecondsToDays(long ms) {
         int days = (int) (ms /( MS_PER_S * S_PER_M * M_PER_H * H_PER_D));
-        return days + " day" + (days == 1 ? "" : "s");
+        return days + "d";
     }
     
     /**
