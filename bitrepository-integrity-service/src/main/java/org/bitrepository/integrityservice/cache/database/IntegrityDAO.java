@@ -343,7 +343,8 @@ public class IntegrityDAO {
         log.trace("Retrieving number of existing files at '{}'.", pillarId);
         Long pillarKey = retrievePillarKey(pillarId);
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String sql = "SELECT COUNT(*) FROM " + FILE_INFO_TABLE + " JOIN " + FILES_TABLE 
+        String sql = "SELECT COUNT(*) FROM " + FILE_INFO_TABLE 
+                + " JOIN " + FILES_TABLE 
                 + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY 
                 + " WHERE " + FI_PILLAR_KEY + " = ?" 
                 + " AND " + FI_FILE_STATE + " = ?"
@@ -363,8 +364,8 @@ public class IntegrityDAO {
         Long pillarKey = retrievePillarKey(pillarId);
         Long collectionKey = retrieveCollectionKey(collectionId);
         String sql = "SELECT COUNT(*) FROM " + FILE_INFO_TABLE  
-                + " JOIN " + FILES_TABLE + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " 
-                    + FILES_TABLE + "." + FILES_KEY 
+                + " JOIN " + FILES_TABLE 
+                + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY 
                 + " WHERE " + FI_PILLAR_KEY + " = ?" 
                 + " AND " + FI_FILE_STATE + " = ?"
                 + " AND " + COLLECTION_KEY + " = ?";
@@ -383,8 +384,8 @@ public class IntegrityDAO {
         Long pillarKey = retrievePillarKey(pillarId);
         Long collectionKey = retrieveCollectionKey(collectionId);
         String sql = "SELECT COUNT(*) FROM " + FILE_INFO_TABLE 
-                + " JOIN " + FILES_TABLE + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " 
-                    + FILES_TABLE + "." + FILES_KEY
+                + " JOIN " + FILES_TABLE 
+                + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY
                 + " WHERE " + FI_PILLAR_KEY + " = ?" 
                 + " AND " + FI_CHECKSUM_STATE + " = ?"
                 + " AND " + COLLECTION_KEY + " = ?";
@@ -402,10 +403,14 @@ public class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         log.debug("Set file-state missing for file '" + fileId + "' at pillar '" + pillarId + "' to be missing.");
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String sqlUpdate = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? , " + FI_CHECKSUM_STATE 
-                + " = ? WHERE " + FI_FILE_KEY + " = (SELECT " + FILES_KEY + " FROM " + FILES_TABLE + " WHERE " 
-                + FILES_ID + " = ? AND " + COLLECTION_KEY + " = ?) and " + FI_PILLAR_KEY + " = (SELECT " 
-                + PILLAR_KEY + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ?)";
+        String sqlUpdate = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? , " + FI_CHECKSUM_STATE + " = ?" 
+                + " WHERE " + FI_FILE_KEY + " = (" 
+                    + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                    + " WHERE " + FILES_ID + " = ?" 
+                    + " AND " + COLLECTION_KEY + " = ?)" 
+                + " AND " + FI_PILLAR_KEY + " = (" 
+                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
+                    + " WHERE " + PILLAR_ID + " = ?)";
         DatabaseUtils.executeStatement(dbConnector, sqlUpdate, FileState.MISSING.ordinal(), 
                 ChecksumState.UNKNOWN.ordinal(), fileId, collectionKey, pillarId);
     }
@@ -421,10 +426,14 @@ public class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         log.debug("Sets invalid checksum for file '" + fileId + "' at pillar '" + pillarId + "'");
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String sqlUpdate = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? , " + FI_CHECKSUM_STATE 
-                + " = ? WHERE " + FI_FILE_KEY + " = (SELECT " + FILES_KEY + " FROM " + FILES_TABLE + " WHERE "
-                + FILES_ID + " = ? AND " + COLLECTION_KEY + " = ?) AND " + FI_PILLAR_KEY + " = (SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE
-                + " WHERE " + PILLAR_ID + " = ?)";
+        String sqlUpdate = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? , " + FI_CHECKSUM_STATE + " = ?" 
+                + " WHERE " + FI_FILE_KEY + " = (" 
+                    + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                    + " WHERE " + FILES_ID + " = ?" 
+                    + " AND " + COLLECTION_KEY + " = ?)" 
+                + " AND " + FI_PILLAR_KEY + " = (" 
+                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE
+                    + " WHERE " + PILLAR_ID + " = ?)";
         DatabaseUtils.executeStatement(dbConnector, sqlUpdate, FileState.EXISTING.ordinal(), 
                 ChecksumState.ERROR.ordinal(), fileId, collectionKey, pillarId);
     }
@@ -441,10 +450,15 @@ public class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         log.debug("Sets valid checksum for file '" + fileId + "' for pillar '" + pillarId + "'");
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String sql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? , " + FI_CHECKSUM_STATE 
-                + " = ? WHERE " + FI_PILLAR_KEY + " = ( SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE + " WHERE " 
-                + PILLAR_ID + " = ? ) AND " + FI_FILE_KEY + " = ( SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
-                + " WHERE " + FILES_ID + " = ? AND " + COLLECTION_KEY + " = ?) AND " + FI_FILE_STATE + " != ?";
+        String sql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? , " + FI_CHECKSUM_STATE + " = ?"
+                + " WHERE " + FI_PILLAR_KEY + " = (" 
+                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
+                    + " WHERE " + PILLAR_ID + " = ? )" 
+                + " AND " + FI_FILE_KEY + " = (" 
+                    + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                    + " WHERE " + FILES_ID + " = ?" 
+                    + " AND " + COLLECTION_KEY + " = ?)"
+                + " AND " + FI_FILE_STATE + " != ?";
         DatabaseUtils.executeStatement(dbConnector, sql, FileState.EXISTING.ordinal(), 
                 ChecksumState.VALID.ordinal(), pillarId, fileId, collectionKey, FileState.MISSING.ordinal());
     }
@@ -482,8 +496,8 @@ public class IntegrityDAO {
         log.trace("Locating files which are missing the checksum at any pillar.");
         Long collectionKey = retrieveCollectionKey(collectionId);
         String requestSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
-                + " JOIN " + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_KEY + "=" 
-                    + FILE_INFO_TABLE + "." + FI_FILE_KEY
+                + " JOIN " + FILE_INFO_TABLE 
+                + " ON " + FILES_TABLE + "." + FILES_KEY + " = " + FILE_INFO_TABLE + "." + FI_FILE_KEY
                 + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ? " 
                 + " AND " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?" 
                 + " AND " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ?";
@@ -508,8 +522,8 @@ public class IntegrityDAO {
         Long collectionKey = retrieveCollectionKey(collectionId);
 
         String requestSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
-                + " JOIN " + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_KEY + " = " 
-                + FILE_INFO_TABLE + "." + FI_FILE_KEY
+                + " JOIN " + FILE_INFO_TABLE 
+                + " ON " + FILES_TABLE + "." + FILES_KEY + " = " + FILE_INFO_TABLE + "." + FI_FILE_KEY
                 + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ? "
                 + " AND " + FILE_INFO_TABLE + "." + FI_LAST_CHECKSUM_UPDATE + " < ?" 
                 + " AND " + FI_PILLAR_KEY + " = ?";
@@ -528,8 +542,8 @@ public class IntegrityDAO {
         Long collectionKey = retrieveCollectionKey(collectionId);
         log.trace("Locating files which are missing at any pillar.");
         String requestSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
-                +" JOIN " + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_KEY + "=" 
-                    + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                +" JOIN " + FILE_INFO_TABLE 
+                + " ON " + FILES_TABLE + "." + FILES_KEY + "=" + FILE_INFO_TABLE + "." + FI_FILE_KEY 
                 + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ? " 
                 + " AND " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " != ? ";
         return DatabaseUtils.selectStringList(dbConnector, requestSql, collectionKey, FileState.EXISTING.ordinal());
@@ -544,11 +558,14 @@ public class IntegrityDAO {
         long startTime = System.currentTimeMillis();
         log.trace("Locating the pillars where fileId '" + fileId + "' in collection' " + collectionId + "' is missing.");
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String requestSql = "SELECT " + PILLAR_TABLE + "." + PILLAR_ID + " FROM " + PILLAR_TABLE + " JOIN "
-                + FILE_INFO_TABLE + " ON " + PILLAR_TABLE + "." + PILLAR_KEY + "=" + FILE_INFO_TABLE + "."
-                + FI_PILLAR_KEY + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " != ? AND " + FILE_INFO_TABLE 
-                + "." + FI_FILE_KEY + " = ( SELECT " + FILES_KEY + " FROM " + FILES_TABLE + " WHERE " + FILES_ID 
-                + " = ? AND " + COLLECTION_KEY + " = ?)";
+        String requestSql = "SELECT " + PILLAR_TABLE + "." + PILLAR_ID + " FROM " + PILLAR_TABLE 
+                + " JOIN " + FILE_INFO_TABLE 
+                + " ON " + PILLAR_TABLE + "." + PILLAR_KEY + "=" + FILE_INFO_TABLE + "." + FI_PILLAR_KEY 
+                + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " != ?"
+                + " AND " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = ("
+                    + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                    + " WHERE " + FILES_ID + " = ?" 
+                    + " AND " + COLLECTION_KEY + " = ?)";
         List<String> result = DatabaseUtils.selectStringList(dbConnector, requestSql, FileState.EXISTING.ordinal(),
                 fileId, collectionKey);
         log.debug("Located " + result.size() + " checksums in " + (System.currentTimeMillis() -startTime) + "ms");
@@ -574,14 +591,15 @@ public class IntegrityDAO {
         Long collectionKey = retrieveCollectionKey(collectionId);       
         log.trace("Localizing the file ids where the checksums are not consistent.");
         String findUniqueSql = "SELECT " + FI_CHECKSUM + " , " + FI_FILE_KEY + " FROM " + FILE_INFO_TABLE
-                + " WHERE " + FI_FILE_STATE + " <> ? AND " + FI_CHECKSUM + " IS NOT NULL GROUP BY " + FI_CHECKSUM 
-                + " , " + FI_FILE_KEY;
+                + " WHERE " + FI_FILE_STATE + " <> ?"
+                + " AND " + FI_CHECKSUM + " IS NOT NULL"
+                + " GROUP BY " + FI_CHECKSUM + " , " + FI_FILE_KEY;
         String countSql = "SELECT " + FI_FILE_KEY + " , COUNT(*) AS num FROM ( " + findUniqueSql + " ) AS unique1 "
                 + " GROUP BY " + FI_FILE_KEY;
         String eliminateSql = "SELECT " + FI_FILE_KEY + " FROM ( " + countSql + " ) AS count1 WHERE count1.num > 1";
         String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
-                + " JOIN ( " + eliminateSql + " ) AS eliminate1 ON " + FILES_TABLE + "." + FILES_KEY + " = eliminate1." 
-                    + FI_FILE_KEY 
+                + " JOIN ( " + eliminateSql + " ) AS eliminate1"
+                + " ON " + FILES_TABLE + "." + FILES_KEY + " = eliminate1." + FI_FILE_KEY 
                 + " WHERE " + FILES_CREATION_DATE + " < ?"
                 + " AND " + COLLECTION_KEY + " = ? ";
         List<String> res = DatabaseUtils.selectStringList(dbConnector, selectSql,  
@@ -633,7 +651,8 @@ public class IntegrityDAO {
     public Date getDateForNewestFileEntryForCollection(String collectionId) {
         Long collectionKey = retrieveCollectionKey(collectionId);
         String retrieveSql = "SELECT " + FI_LAST_FILE_UPDATE + " FROM " + FILE_INFO_TABLE 
-                + " JOIN " + FILES_TABLE + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                + " JOIN " + FILES_TABLE 
+                + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
                 + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?" 
                 + " AND " + FI_FILE_STATE + " = ?" 
                 + " ORDER BY " + FI_LAST_FILE_UPDATE + " DESC ";
@@ -651,7 +670,8 @@ public class IntegrityDAO {
     public Date getDateForNewestFileEntryForPillar(String pillarId, String collectionId) {
         Long collectionKey = retrieveCollectionKey(collectionId);
         String retrieveSql = "SELECT " + FI_LAST_FILE_UPDATE + " FROM " + FILE_INFO_TABLE 
-                + " JOIN " + FILES_TABLE + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                + " JOIN " + FILES_TABLE 
+                + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
                 + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?" 
                 + " AND " + FI_FILE_STATE + " = ?" 
                 + " AND " + FI_PILLAR_KEY + " = (" 
@@ -670,11 +690,15 @@ public class IntegrityDAO {
      */
     public Date getDateForNewestChecksumEntryForPillar(String pillarId, String collectionId) {
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String retrieveSql = "SELECT " + FI_LAST_CHECKSUM_UPDATE + " FROM " + FILE_INFO_TABLE + " JOIN " 
-                + FILES_TABLE + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
-                + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ? AND " + FI_FILE_STATE 
-                + " = ? AND " + FI_FILE_STATE + " = ? AND " + FI_PILLAR_KEY + " = ( SELECT " + PILLAR_KEY + " FROM " 
-                + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ? ) ORDER BY " + FI_LAST_CHECKSUM_UPDATE + " DESC ";
+        String retrieveSql = "SELECT " + FI_LAST_CHECKSUM_UPDATE + " FROM " + FILE_INFO_TABLE 
+                + " JOIN " + FILES_TABLE 
+                + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?"
+                + " AND " + FI_FILE_STATE + " = ?"
+                + " AND " + FI_PILLAR_KEY + " = ("
+                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
+                    + " WHERE " + PILLAR_ID + " = ? )"
+                + " ORDER BY " + FI_LAST_CHECKSUM_UPDATE + " DESC ";
         return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionKey, 
                 FileState.EXISTING.ordinal(), pillarId);
     }
@@ -686,9 +710,11 @@ public class IntegrityDAO {
     public void setAllFileStatesToUnknown(String collectionId) {
         log.trace("Setting the file state for all files to '" + FileState.UNKNOWN + "'.");
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? WHERE EXISTS (" 
-                + "SELECT 1 FROM " + FILES_TABLE + " WHERE " + FILES_TABLE + "." + FILES_KEY 
-                + " = " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ?)";
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?"
+                + " WHERE EXISTS ("
+                    + "SELECT 1 FROM " + FILES_TABLE 
+                    + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                    + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ?)";
         DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.UNKNOWN.ordinal(), collectionKey);
     }
     
@@ -722,12 +748,15 @@ public class IntegrityDAO {
         log.trace("Locating all existing files for pillar '" + pillarId + "' from number " + min + " to " + max +
         		" in collection '" + collectionId + "'.");
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
-                + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_KEY + "=" + FILE_INFO_TABLE + "." 
-                + FI_FILE_KEY + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? AND "
-                + FILES_TABLE + "." + COLLECTION_KEY + "= ? AND " + FILE_INFO_TABLE 
-                + "." + FI_PILLAR_KEY + " = ( SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE + " WHERE " 
-                + PILLAR_ID + " = ?) ORDER BY " + FILES_TABLE + "." + FILES_KEY;
+        String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
+                + " JOIN " + FILE_INFO_TABLE 
+                + " ON " + FILES_TABLE + "." + FILES_KEY + "=" + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
+                + " AND " + FILES_TABLE + "." + COLLECTION_KEY + "= ?"
+                + " AND " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ("
+                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
+                    + " WHERE " + PILLAR_ID + " = ?)" 
+                + " ORDER BY " + FILES_TABLE + "." + FILES_KEY;
         
         try {
             ResultSet dbResult = null;
@@ -778,13 +807,15 @@ public class IntegrityDAO {
     public List<String> getMissingFilesOnPillar(String pillarId, long min, long max, String collectionId) {
         log.trace("Locating all existing files for pillar '" + pillarId + "' from number " + min + " to " + max + ".");
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
-                + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_KEY + "=" + FILE_INFO_TABLE + "." 
-                + FI_FILE_KEY + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? "
+        String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
+                + " JOIN " + FILE_INFO_TABLE 
+                + " ON " + FILES_TABLE + "." + FILES_KEY + "=" + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? "
                 + "AND "+ FILES_TABLE + "." + COLLECTION_KEY + "= ? " 
-                + "AND " + FILE_INFO_TABLE 
-                + "." + FI_PILLAR_KEY + " = ( SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE + " WHERE " 
-                + PILLAR_ID + " = ?) ORDER BY " + FILES_TABLE + "." + FILES_KEY;
+                + "AND " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ("
+                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
+                    + " WHERE " + PILLAR_ID + " = ?)"
+                + " ORDER BY " + FILES_TABLE + "." + FILES_KEY;
         
         try {
             ResultSet dbResult = null;
@@ -835,13 +866,15 @@ public class IntegrityDAO {
     public List<String> getFilesWithChecksumErrorsOnPillar(String pillarId, long min, long max, String collectionId) {
         log.trace("Locating all existing files for pillar '" + pillarId + "' from number " + min + " to " + max + ".");
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE + " JOIN " 
-                + FILE_INFO_TABLE + " ON " + FILES_TABLE + "." + FILES_KEY + "=" + FILE_INFO_TABLE + "." 
-                + FI_FILE_KEY + " WHERE " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ? "
-                + "AND "+ FILES_TABLE + "." + COLLECTION_KEY + "= ? "
-                + "AND " + FILE_INFO_TABLE 
-                + "." + FI_PILLAR_KEY + " = ( SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE + " WHERE " 
-                + PILLAR_ID + " = ?) ORDER BY " + FILES_TABLE + "." + FILES_KEY;
+        String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
+                + " JOIN " + FILE_INFO_TABLE 
+                + " ON " + FILES_TABLE + "." + FILES_KEY + "=" + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                + " WHERE " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ?"
+                + " AND "+ FILES_TABLE + "." + COLLECTION_KEY + "= ?"
+                + " AND " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = (" 
+                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
+                    + " WHERE " + PILLAR_ID + " = ?)" 
+                + " ORDER BY " + FILES_TABLE + "." + FILES_KEY;
         
         try {
             ResultSet dbResult = null;
@@ -892,11 +925,10 @@ public class IntegrityDAO {
         Long collectionKey = retrieveCollectionKey(collectionId);
         log.trace("Summarizing the filesizes for the files in collection '" + collectionId + "'.");
 
-        String summarizeSql = "SELECT SUM (" + FI_FILE_SIZE + ") FROM"
-                + " ( SELECT DISTINCT " + FI_FILE_KEY + ", " + FI_FILE_SIZE 
-                    + " FROM " + FILE_INFO_TABLE + " ) AS distinctKeys"
+        String summarizeSql = "SELECT SUM (" + FI_FILE_SIZE + ") FROM" + " ("
+                + " SELECT DISTINCT " + FI_FILE_KEY + ", " + FI_FILE_SIZE + " FROM " + FILE_INFO_TABLE + " ) AS distinctKeys"
                 + " JOIN " + FILES_TABLE 
-                    + " ON " + "distinctKeys." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                + " ON " + "distinctKeys." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY
                 + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?";
 
         Long result = DatabaseUtils.selectLongValue(dbConnector, summarizeSql, collectionKey);        
@@ -918,9 +950,9 @@ public class IntegrityDAO {
         
         String summarizeSql = "SELECT SUM (" + FI_FILE_SIZE + ") FROM " + FILE_INFO_TABLE
                 + " JOIN " + FILES_TABLE 
-                    + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY
                 + " JOIN " + PILLAR_TABLE 
-                    + " ON " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = " + PILLAR_TABLE + "." + PILLAR_KEY
+                + " ON " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = " + PILLAR_TABLE + "." + PILLAR_KEY
                 + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?"
                 + " AND " + PILLAR_TABLE + "." + PILLAR_ID + "= ?";
 
@@ -1005,14 +1037,15 @@ public class IntegrityDAO {
         Date csTimestamp = CalendarUtils.convertFromXMLGregorianCalendar(data.getCalculationTimestamp());
         String checksum = Base16Utils.decodeBase16(data.getChecksumValue());
         String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_CHECKSUM_UPDATE + " = ?, "
-                + FI_CHECKSUM_STATE + " = ? , " + FI_CHECKSUM + " = ? WHERE " + FI_FILE_KEY + " = (" 
-                + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
-                    + " WHERE " + FILES_ID + " = ?" 
-                    + "AND " + COLLECTION_KEY + " = ? )" 
+                + FI_CHECKSUM_STATE + " = ? , " + FI_CHECKSUM + " = ?"
+                + " WHERE " + FI_FILE_KEY + " = (" 
+                    + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                        + " WHERE " + FILES_ID + " = ?" 
+                        + " AND " + COLLECTION_KEY + " = ? )" 
                 + " AND " + FI_PILLAR_KEY  + " = (" 
                 + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
-                    + " WHERE " + PILLAR_ID + " = ? ) " 
-                    + "AND " + FI_LAST_CHECKSUM_UPDATE + " < ?";
+                    + " WHERE " + PILLAR_ID + " = ? )" 
+                    + " AND " + FI_LAST_CHECKSUM_UPDATE + " < ?";
         DatabaseUtils.executeStatement(dbConnector, updateSql, csTimestamp, 
                 ChecksumState.UNKNOWN.ordinal(), checksum, data.getFileID(), collectionKey, pillarId, 
                 csTimestamp);
