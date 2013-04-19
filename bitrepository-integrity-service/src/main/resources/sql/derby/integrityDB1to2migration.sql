@@ -26,6 +26,7 @@ ALTER TABLE files (
 );
 
 RENAME COLUMN files.files_guid TO files_key;
+CREATE INDEX collectionfileindex ON files (file_id, collection_key);
 
 -- Add constraints to files table.
 ALTER TABLE pillar (

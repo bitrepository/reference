@@ -80,6 +80,8 @@ public class IntegrityDAO {
     private final DBConnector dbConnector;
     /** Mapping from collectionID to the list of pillars in it */
     private final Map<String, List<String>> collectionPillarsMap;
+    /** Caching of CollectionKeys (mapping from ID to Key) */
+    private final Map<String, Long> collectionKeyCache;
     
     /** 
      * Constructor.
@@ -93,6 +95,7 @@ public class IntegrityDAO {
         for(org.bitrepository.settings.repositorysettings.Collection collection : collections.getCollection()) {
             collectionPillarsMap.put(collection.getID(), new ArrayList<String>(collection.getPillarIDs().getPillarID()));
         }
+        collectionKeyCache = new HashMap<String, Long>();
         initialisePillars();
         initializeCollections();
     }
@@ -1101,10 +1104,16 @@ public class IntegrityDAO {
     }
     
     private Long retrieveCollectionKey(String collectionId) {
-        log.trace("Retrieving key for collection '{}'.", collectionId);
-        String sql = "SELECT " + COLLECTION_KEY + " FROM " + COLLECTIONS_TABLE 
-                + " WHERE " + COLLECTION_ID + "= ?";
-        return DatabaseUtils.selectLongValue(dbConnector, sql, collectionId);
+        Long key = collectionKeyCache.get(collectionId);
+        if(key == null) {
+            log.trace("Retrieving key for collection '{}'.", collectionId);
+            String sql = "SELECT " + COLLECTION_KEY + " FROM " + COLLECTIONS_TABLE 
+                    + " WHERE " + COLLECTION_ID + "= ?";
+            key = DatabaseUtils.selectLongValue(dbConnector, sql, collectionId);
+            collectionKeyCache.put(collectionId, key);
+        }
+        return key;
+        
     }
     
     /**
