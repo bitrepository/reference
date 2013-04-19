@@ -84,6 +84,7 @@ CREATE TABLE files (
 
 CREATE INDEX fileindex ON files (file_id);
 CREATE INDEX filedateindex ON files (file_id, creation_date);
+CREATE INDEX collectionfileindex ON files (file_id, collection_key);
 
 --*************************************************************************--
 -- Name:     pillar
