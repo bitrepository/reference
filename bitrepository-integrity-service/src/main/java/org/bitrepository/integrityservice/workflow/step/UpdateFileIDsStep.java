@@ -95,6 +95,7 @@ public class UpdateFileIDsStep extends AbstractWorkFlowStep {
 
         try {
             List<String> pillarsToCollectFrom = getPillarIDs(collectionId);
+            log.debug("Collecting fileIDs from: " + pillarsToCollectFrom);
             while (!pillarsToCollectFrom.isEmpty()) {
                 IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
