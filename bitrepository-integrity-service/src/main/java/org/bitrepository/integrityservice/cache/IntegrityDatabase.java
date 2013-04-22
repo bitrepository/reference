@@ -56,6 +56,7 @@ public class IntegrityDatabase implements IntegrityModel {
      */
     public IntegrityDatabase(Settings settings) {
         this.settings = settings;
+        //System.setProperty("derby.language.logQueryPlan", "true");
         this.store = new IntegrityDAO(new DBConnector(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
                 settings.getRepositorySettings().getCollections());

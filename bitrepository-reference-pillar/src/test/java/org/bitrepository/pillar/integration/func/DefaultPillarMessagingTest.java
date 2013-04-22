@@ -25,6 +25,7 @@ package org.bitrepository.pillar.integration.func;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.pillar.PillarTestGroups;
 import org.testng.annotations.Test;
 
 /**
@@ -34,7 +35,7 @@ import org.testng.annotations.Test;
  */
 public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
 
-    @Test( groups = {"pillar-integration-test"})
+    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
     public void missingCollectionIDTest() {
         addDescription("Verifies the a missing collectionID in the IdentifyRequest is rejected");
         addStep("Sending a IdentifyRequest without a collectionID.",
@@ -48,7 +49,7 @@ public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
                 ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
     }
 
-    @Test( groups = {"pillar-integration-test"})
+    @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
     public void otherCollectionTest() {
         addDescription("Verifies identification works correctly for a second collection defined for pillar");
         addStep("Sending a identify request with a non-default collectionID (not the first collection) where " +
