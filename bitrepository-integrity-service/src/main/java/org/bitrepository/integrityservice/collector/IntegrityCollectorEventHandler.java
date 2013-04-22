@@ -72,6 +72,7 @@ public class IntegrityCollectorEventHandler implements EventHandler {
     @Override
     public void handleEvent(OperationEvent event) {
         if(event.getEventType() == OperationEventType.COMPONENT_COMPLETE) {
+            log.debug("Component complete: " + event.toString());
             handleResult(event);
         } else if(event.getEventType() == OperationEventType.COMPLETE) {
             log.debug("Complete: " + event.toString());
