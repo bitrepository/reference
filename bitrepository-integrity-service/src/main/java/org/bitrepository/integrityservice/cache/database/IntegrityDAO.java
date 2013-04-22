@@ -82,6 +82,8 @@ public class IntegrityDAO {
     private final Map<String, List<String>> collectionPillarsMap;
     /** Caching of CollectionKeys (mapping from ID to Key) */
     private final Map<String, Long> collectionKeyCache;
+    /** Caching of PillarKeys (mapping from ID to Key) */
+    private final Map<String, Long> pillarKeyCache;
     
     /** 
      * Constructor.
@@ -96,6 +98,7 @@ public class IntegrityDAO {
             collectionPillarsMap.put(collection.getID(), new ArrayList<String>(collection.getPillarIDs().getPillarID()));
         }
         collectionKeyCache = new HashMap<String, Long>();
+        pillarKeyCache = new HashMap<String, Long>();
         initialisePillars();
         initializeCollections();
     }
@@ -1063,7 +1066,27 @@ public class IntegrityDAO {
     private void setFileExisting(String fileId, String pillarId, String collectionId) {
         log.trace("Marked file " + fileId + " as existing on pillar " + pillarId);
         Long collectionKey = retrieveCollectionKey(collectionId);
+        Long pillarKey = retrievePillarKey(pillarId);
+        
+        String selectFilesKeySql = "SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                    + " WHERE " + FILES_ID + " = ?" 
+                    + " AND " + COLLECTION_KEY + " = ?";
+        
+        Long filesKey = DatabaseUtils.selectLongValue(dbConnector, selectFilesKeySql, fileId, collectionKey);
+        
         String updateExistenceSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?"
+                + " WHERE " + FI_FILE_KEY + " =  ?"
+                + " AND " + FI_PILLAR_KEY + " = ?";
+
+        /*
+         * The below sql is the 'original' query, but Derby makes a Table scan on FILE_INFO_TABLE, 
+         * even though it has indexes for FI_FILE_KEY and FI_PILLAR_KEY.
+         * This has the effect that the subquery for selecting the FILES_KEY is executed N times, 
+         * where N is the number of rows in FILE_INFO_TABLE.
+         * The above broken up sql is a simple attempt to try to fix it. 
+         */
+        
+        String updateExistenceSqlold = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?"
         		+ " WHERE " + FI_FILE_KEY + " = (" 
         				+ " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
         				+ " WHERE " + FILES_ID + " = ? " 
@@ -1072,7 +1095,7 @@ public class IntegrityDAO {
         				+ " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
         				+ " WHERE " + PILLAR_ID + " = ? )";
         DatabaseUtils.executeStatement(dbConnector, updateExistenceSql, FileState.EXISTING.ordinal(),
-                fileId, collectionKey, pillarId);
+                filesKey, pillarKey);
     }
     
     /**
@@ -1153,9 +1176,14 @@ public class IntegrityDAO {
      * Returns a null if the pillar id is not known by the database yet.
      */
     private Long retrievePillarKey(String pillarId) {
-        log.trace("Retrieving the key for pillar '{}'.", pillarId);
-        String sql = "SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ?";
-        return DatabaseUtils.selectLongValue(dbConnector, sql, pillarId);
+        Long key = pillarKeyCache.get(pillarId);
+        if(key == null) {
+            log.trace("Retrieving the key for pillar '{}'.", pillarId);
+            String sql = "SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_ID + " = ?";
+            key = DatabaseUtils.selectLongValue(dbConnector, sql, pillarId);    
+            pillarKeyCache.put(pillarId, key);
+        }
+        return key;
     }
     
     /**
