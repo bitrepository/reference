@@ -76,6 +76,7 @@ public class ContributorResponseStatus {
      * @return true all components have responded.
      */
     public final boolean haveAllComponentsResponded() {
+        log.debug("Expected contributors: " + componentsWhichShouldRespond + ", components that have not answered: " + componentsWithOutstandingResponse);
         return componentsWithOutstandingResponse.isEmpty();
     }
 

@@ -94,7 +94,7 @@ public class UpdateFileIDsStep extends AbstractWorkFlowStep {
         store.setAllFilesToUnknownFileState(collectionId);
 
         try {
-            List<String> pillarsToCollectFrom = getPillarIDs(collectionId);
+            List<String> pillarsToCollectFrom = new ArrayList<String>(getPillarIDs(collectionId));
             log.debug("Collecting fileIDs from: " + pillarsToCollectFrom);
             while (!pillarsToCollectFrom.isEmpty()) {
                 IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
