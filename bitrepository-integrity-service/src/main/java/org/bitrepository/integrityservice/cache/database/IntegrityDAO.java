@@ -982,7 +982,25 @@ public class IntegrityDAO {
                 + "' in collection '" + collectionId + "'.");
         setFileExisting(fileId, pillarId, collectionId);
         
+        Long pillarKey = retrievePillarKey(pillarId);
+        
+        String selectFilesKeySql = "SELECT " + FILES_KEY + " FROM " + FILES_TABLE
+                    + " WHERE " + FILES_ID + " = ?"
+                    + " AND " + COLLECTION_KEY + " = ?";
+        Long filesKey = DatabaseUtils.selectLongValue(dbConnector, selectFilesKeySql, fileId, collectionKey);
+        
         String updateFileSizeSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_SIZE + " = ?" 
+                + " WHERE " + FI_FILE_KEY + " = ?"
+                + " AND " + FI_PILLAR_KEY + " = ?";        
+        
+        /*
+         * The below sql is the 'original' query, but Derby makes a Table scan on FILE_INFO_TABLE, 
+         * even though it has indexes for FI_FILE_KEY and FI_PILLAR_KEY.
+         * This has the effect that the subquery for selecting the FILES_KEY is executed N times, 
+         * where N is the number of rows in FILE_INFO_TABLE.
+         * The above broken up sql is a simple attempt to try to fix it. 
+         */
+        String updateFileSizeSqlOld = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_SIZE + " = ?" 
                 + " WHERE " + FI_FILE_KEY + " = ("
                     + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE
                     + " WHERE " + FILES_ID + " = ?"
@@ -991,7 +1009,7 @@ public class IntegrityDAO {
                     + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE
                     + " WHERE " + PILLAR_ID + " = ? )";
         
-        DatabaseUtils.executeStatement(dbConnector, updateFileSizeSql, fileSize, fileId, collectionKey, pillarId);
+        DatabaseUtils.executeStatement(dbConnector, updateFileSizeSql, fileSize, filesKey, pillarKey);
         log.debug("Updated fileInfo filesize in " + (System.currentTimeMillis() - startTime) + "ms");
     }
     
@@ -1011,8 +1029,27 @@ public class IntegrityDAO {
                 + "' at pillar '" + pillarId + "'.");
         setFileExisting(fileId, pillarId, collectionId);
         
+        Long pillarKey = retrievePillarKey(pillarId);
+        
+        String selectFilesKeySql = "SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                    + " WHERE " + FILES_ID + " = ? "
+                    + " AND " + COLLECTION_KEY + " = ?";
+        Long filesKey = DatabaseUtils.selectLongValue(dbConnector, selectFilesKeySql, fileId, collectionKey);
         // If it is newer than current file_id_timestamp, then update it and set 'checksums' to unknown.
         String updateTimestampSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_FILE_UPDATE + " = ?, " 
+                + FI_CHECKSUM_STATE + " = ? " 
+                + " WHERE " + FI_FILE_KEY + " = ?"  
+                + " AND " + FI_PILLAR_KEY + " = ?"
+                + " AND " + FI_LAST_FILE_UPDATE + " < ?";
+        
+        /*
+         * The below sql is the 'original' query, but Derby makes a Table scan on FILE_INFO_TABLE, 
+         * even though it has indexes for FI_FILE_KEY and FI_PILLAR_KEY.
+         * This has the effect that the subquery for selecting the FILES_KEY is executed N times, 
+         * where N is the number of rows in FILE_INFO_TABLE.
+         * The above broken up sql is a simple attempt to try to fix it. 
+         */
+        String updateTimestampSqlOld = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_FILE_UPDATE + " = ?, " 
                 + FI_CHECKSUM_STATE + " = ? " 
                 + " WHERE " + FI_FILE_KEY + " = ("
                     + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
@@ -1023,7 +1060,7 @@ public class IntegrityDAO {
                     + " WHERE " + PILLAR_ID + " = ? ) " 
                 + "AND " + FI_LAST_FILE_UPDATE + " < ?";
         DatabaseUtils.executeStatement(dbConnector, updateTimestampSql, filelistTimestamp, 
-                ChecksumState.UNKNOWN.ordinal(), fileId, collectionKey, pillarId, filelistTimestamp);
+                ChecksumState.UNKNOWN.ordinal(), filesKey, pillarKey, filelistTimestamp);
         log.debug("Updated fileInfo timestamps in " + (System.currentTimeMillis() - startTime) + "ms");
     }
     
