@@ -995,22 +995,6 @@ public class IntegrityDAO {
                 + " WHERE " + FI_FILE_KEY + " = ?"
                 + " AND " + FI_PILLAR_KEY + " = ?";        
         
-        /*
-         * The below sql is the 'original' query, but Derby makes a Table scan on FILE_INFO_TABLE, 
-         * even though it has indexes for FI_FILE_KEY and FI_PILLAR_KEY.
-         * This has the effect that the subquery for selecting the FILES_KEY is executed N times, 
-         * where N is the number of rows in FILE_INFO_TABLE.
-         * The above broken up sql is a simple attempt to try to fix it. 
-         */
-        String updateFileSizeSqlOld = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_SIZE + " = ?" 
-                + " WHERE " + FI_FILE_KEY + " = ("
-                    + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE
-                    + " WHERE " + FILES_ID + " = ?"
-                    + " AND " + COLLECTION_KEY + " = ? )"
-                + " AND " + FI_PILLAR_KEY + " = (" 
-                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE
-                    + " WHERE " + PILLAR_ID + " = ? )";
-        
         DatabaseUtils.executeStatement(dbConnector, updateFileSizeSql, fileSize, filesKey, pillarKey);
         log.debug("Updated fileInfo filesize in " + (System.currentTimeMillis() - startTime) + "ms");
     }
@@ -1043,24 +1027,7 @@ public class IntegrityDAO {
                 + " WHERE " + FI_FILE_KEY + " = ?"  
                 + " AND " + FI_PILLAR_KEY + " = ?"
                 + " AND " + FI_LAST_FILE_UPDATE + " < ?";
-        
-        /*
-         * The below sql is the 'original' query, but Derby makes a Table scan on FILE_INFO_TABLE, 
-         * even though it has indexes for FI_FILE_KEY and FI_PILLAR_KEY.
-         * This has the effect that the subquery for selecting the FILES_KEY is executed N times, 
-         * where N is the number of rows in FILE_INFO_TABLE.
-         * The above broken up sql is a simple attempt to try to fix it. 
-         */
-        String updateTimestampSqlOld = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_FILE_UPDATE + " = ?, " 
-                + FI_CHECKSUM_STATE + " = ? " 
-                + " WHERE " + FI_FILE_KEY + " = ("
-                    + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
-                    + " WHERE " + FILES_ID + " = ? "
-                    + " AND " + COLLECTION_KEY + " = ? )" 
-                + " AND " + FI_PILLAR_KEY + " = ("
-                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
-                    + " WHERE " + PILLAR_ID + " = ? ) " 
-                + "AND " + FI_LAST_FILE_UPDATE + " < ?";
+
         DatabaseUtils.executeStatement(dbConnector, updateTimestampSql, filelistTimestamp, 
                 ChecksumState.UNKNOWN.ordinal(), filesKey, pillarKey, filelistTimestamp);
         log.debug("Updated fileInfo timestamps in " + (System.currentTimeMillis() - startTime) + "ms");
@@ -1095,24 +1062,6 @@ public class IntegrityDAO {
                 + " AND " + FI_PILLAR_KEY  + " = ?" 
                 + " AND " + FI_LAST_CHECKSUM_UPDATE + " < ?";
         
-        /*
-         * The below sql is the 'original' query, but Derby makes a Table scan on FILE_INFO_TABLE, 
-         * even though it has indexes for FI_FILE_KEY and FI_PILLAR_KEY.
-         * This has the effect that the subquery for selecting the FILES_KEY is executed N times, 
-         * where N is the number of rows in FILE_INFO_TABLE.
-         * The above broken up sql is a simple attempt to try to fix it. 
-         */
-        String updateSqlOld = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_CHECKSUM_UPDATE + " = ?, "
-                + FI_CHECKSUM_STATE + " = ? , " + FI_CHECKSUM + " = ?"
-                + " WHERE " + FI_FILE_KEY + " = (" 
-                    + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
-                        + " WHERE " + FILES_ID + " = ?" 
-                        + " AND " + COLLECTION_KEY + " = ? )" 
-                + " AND " + FI_PILLAR_KEY  + " = (" 
-                + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
-                    + " WHERE " + PILLAR_ID + " = ? )" 
-                + " AND " + FI_LAST_CHECKSUM_UPDATE + " < ?";
-        
         DatabaseUtils.executeStatement(dbConnector, updateSql, csTimestamp, 
                 ChecksumState.UNKNOWN.ordinal(), checksum, filesKey, pillarKey, csTimestamp);
         log.debug("Updated fileInfo checksums in " + (System.currentTimeMillis() - startTime) + "ms");
@@ -1137,23 +1086,7 @@ public class IntegrityDAO {
         String updateExistenceSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?"
                 + " WHERE " + FI_FILE_KEY + " =  ?"
                 + " AND " + FI_PILLAR_KEY + " = ?";
-
-        /*
-         * The below sql is the 'original' query, but Derby makes a Table scan on FILE_INFO_TABLE, 
-         * even though it has indexes for FI_FILE_KEY and FI_PILLAR_KEY.
-         * This has the effect that the subquery for selecting the FILES_KEY is executed N times, 
-         * where N is the number of rows in FILE_INFO_TABLE.
-         * The above broken up sql is a simple attempt to try to fix it. 
-         */
         
-        String updateExistenceSqlold = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?"
-        		+ " WHERE " + FI_FILE_KEY + " = (" 
-        				+ " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
-        				+ " WHERE " + FILES_ID + " = ? " 
-        				+ " AND " + COLLECTION_KEY + " = ? )"
-        		+ " AND " + FI_PILLAR_KEY + " = (" 
-        				+ " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
-        				+ " WHERE " + PILLAR_ID + " = ? )";
         DatabaseUtils.executeStatement(dbConnector, updateExistenceSql, FileState.EXISTING.ordinal(),
                 filesKey, pillarKey);
     }
