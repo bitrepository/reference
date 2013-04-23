@@ -215,27 +215,14 @@ public class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         log.trace("Updating the file ids '" + data + "' for pillar '" + pillarId + "'");
         
-        try {
-            try {
-                dbConnector.getConnection().setAutoCommit(false);
-
-                for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
-                    ensureFileIdExists(dataItem.getFileID(), collectionId);
-                    Date modifyDate = CalendarUtils.convertFromXMLGregorianCalendar(dataItem.getLastModificationTime());
-                    
-                    updateFileInfoLastFileUpdateTimestamp(pillarId, dataItem.getFileID(), modifyDate, collectionId);
-                    if(dataItem.isSetFileSize()) {
-                        updateFileInfoFileSize(pillarId, dataItem.getFileID(), collectionId, dataItem.getFileSize().longValue());
-                    }
-                    dbConnector.getConnection().commit();
-                }
-            } catch (IllegalStateException e) {
-    
-            } finally {
-                dbConnector.getConnection().setAutoCommit(true);
+        for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
+            ensureFileIdExists(dataItem.getFileID(), collectionId);
+            Date modifyDate = CalendarUtils.convertFromXMLGregorianCalendar(dataItem.getLastModificationTime());
+            
+            updateFileInfoLastFileUpdateTimestamp(pillarId, dataItem.getFileID(), modifyDate, collectionId);
+            if(dataItem.isSetFileSize()) {
+                updateFileInfoFileSize(pillarId, dataItem.getFileID(), collectionId, dataItem.getFileSize().longValue());
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
     
