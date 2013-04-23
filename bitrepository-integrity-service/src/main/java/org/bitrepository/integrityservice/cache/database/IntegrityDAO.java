@@ -207,6 +207,7 @@ public class IntegrityDAO {
      * Inserts the results of a GetFileIDs operation for a given pillar.
      * @param data The results of the GetFileIDs operation.
      * @param pillarId The pillar, where the GetFileIDsOperation has been performed.
+     * @throws SQLException 
      */
     public void updateFileIDs(FileIDsData data, String pillarId, String collectionId) {
         ArgumentValidator.checkNotNull(data, "FileIDsData data");
@@ -214,14 +215,27 @@ public class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         log.trace("Updating the file ids '" + data + "' for pillar '" + pillarId + "'");
         
-        for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
-            ensureFileIdExists(dataItem.getFileID(), collectionId);
-            Date modifyDate = CalendarUtils.convertFromXMLGregorianCalendar(dataItem.getLastModificationTime());
-            
-            updateFileInfoLastFileUpdateTimestamp(pillarId, dataItem.getFileID(), modifyDate, collectionId);
-            if(dataItem.isSetFileSize()) {
-                updateFileInfoFileSize(pillarId, dataItem.getFileID(), collectionId, dataItem.getFileSize().longValue());
+        try {
+            try {
+                dbConnector.getConnection().setAutoCommit(false);
+
+                for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
+                    ensureFileIdExists(dataItem.getFileID(), collectionId);
+                    Date modifyDate = CalendarUtils.convertFromXMLGregorianCalendar(dataItem.getLastModificationTime());
+                    
+                    updateFileInfoLastFileUpdateTimestamp(pillarId, dataItem.getFileID(), modifyDate, collectionId);
+                    if(dataItem.isSetFileSize()) {
+                        updateFileInfoFileSize(pillarId, dataItem.getFileID(), collectionId, dataItem.getFileSize().longValue());
+                    }
+                    dbConnector.getConnection().commit();
+                }
+            } catch (IllegalStateException e) {
+    
+            } finally {
+                dbConnector.getConnection().setAutoCommit(true);
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
     
