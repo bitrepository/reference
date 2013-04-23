@@ -56,6 +56,7 @@ public class ContributorResponseStatus {
     public final void responseReceived(MessageResponse response) throws UnexpectedResponseException {
         if (MessageUtils.isEndMessageForPrimitive(response)) {
             String componentID = response.getFrom();
+            log.debug("Revieved response from: " + componentID);
             if (componentsWithOutstandingResponse.contains(componentID)) {
                 componentsWithOutstandingResponse.remove(componentID);
             } else if (!componentsWithOutstandingResponse.contains(componentID) &&

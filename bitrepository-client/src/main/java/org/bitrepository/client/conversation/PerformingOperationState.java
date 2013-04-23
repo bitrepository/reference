@@ -61,6 +61,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
         if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS) ||
                 msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_PROGRESS)) {
             getContext().getMonitor().progress(msg.getResponseInfo().getResponseText(), msg.getFrom());
+            isFinalResponse = false;
         } else {
             try {
                 if (msg.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_COMPLETED)) {
