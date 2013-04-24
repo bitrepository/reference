@@ -118,20 +118,15 @@ public class RestAlarmService {
     @Path("/queryAlarms/")
     @Consumes("application/json")
     @Produces("application/json")
-    public String queryAlarms(AlarmServiceInput input) {
-        JSONArray array = new JSONArray();
+    public List<Alarm> queryAlarms(AlarmServiceInput input) {
         Date from = makeDateObject(input.getFromDate());
         Date to = makeDateObject(input.getToDate());
        
         Collection<Alarm> alarms = alarmService.extractAlarms(contentOrNull(input.getReportingComponent()), makeAlarmCode(input.getAlarmCode()),
                 from, to, contentOrNull(input.getFileID()), makeCollectionID(input.getCollectionID()), input.getMaxAlarms(), input.isOldestAlarmsFirst());
        
-        if(alarms != null) {
-            for(Alarm alarm : alarms) {
-                array.put(makeJSONEntry(alarm));
-            }
-        }   
-        return array.toString();
+        return new ArrayList<Alarm>(alarms);
+        
     }
     
     private Date makeDateObject(String dateStr) {
