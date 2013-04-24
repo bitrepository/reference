@@ -1,5 +1,8 @@
 package org.bitrepository.alarm.alarmservice;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class AlarmServiceInput {
 	private String alarmCode;
 	private String collectionID;
@@ -10,6 +13,7 @@ public class AlarmServiceInput {
 	private int maxAlarms;
 	private boolean oldestAlarmsFirst;
 
+	
 	public AlarmServiceInput(){
 	}
 
