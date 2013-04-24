@@ -45,7 +45,8 @@ public class RestStatisticsService {
             for(String date : mockDates) {
                 JSONObject obj = new JSONObject();
                 obj.put("date", date);
-                obj.put("dataSize", (Long) size * 1.23 + 24);
+                size = (long) (size * 1.23 + 24);
+                obj.put("dataSize", size);
                 array.put(obj);
             }
         } catch (JSONException e) {
