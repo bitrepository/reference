@@ -42,6 +42,9 @@ INSERT INTO tableversions (tablename, version) VALUES ('files', 2);
 INSERT INTO tableversions (tablename, version) VALUES ('pillar', 2);
 INSERT INTO tableversions (tablename, version) VALUES ('collections' ,1);
 INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 2);
+INSERT INTO tableversions (tablename, version) VALUES ('stats', 1);
+INSERT INTO tableversions (tablename, version) VALUES ('collectionstats', 1);
+INSERT INTO tableversions (tablename, version) VALUES ('pillarstats', 1);
 
 --*************************************************************************--
 -- Name:     collections
@@ -135,3 +138,66 @@ CREATE TABLE fileinfo (
 CREATE INDEX filekeyindex ON fileinfo (file_key);
 CREATE INDEX filepillarindex ON fileinfo (file_key, pillar_key);
 CREATE INDEX checksumdateindex ON fileinfo (last_checksum_update);
+
+--*************************************************************************--
+-- Name:     statistics 
+-- Descr.:   Contains the information collected statistics.
+-- Purpose:  Keeps track of the collected statistics.
+-- Expected entry count: Many (over time)
+--*************************************************************************--
+CREATE TABLE stats (
+    stat_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                 -- The key for a set of statistics.
+    starttime TIMESTAMP,         -- The time the statistics entry were made.
+    last_update TIMESTAMP       -- The last time the statistics were updated
+);
+
+--*************************************************************************--
+-- Name:     collectionstats
+-- Descr.:   Contains the information about collection statistics.
+-- Purpose:  Keeps track of the statistics for a collection.
+-- Expected entry count: many (over time)
+--*************************************************************************--
+CREATE TABLE collectionstats (
+    collectionstat_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                 -- The key for the collectionstat.
+    stat_key BIGINT NOT NULL,
+                                 -- The key for the statistics entity.
+    collection_key BIGINT NOT NULL,
+                                 -- The key of the collection that the statistics belongs to 
+    file_count BIGINT,           -- The number of files that the collection contained when the stats were made
+    file_size BIGINT,            -- The total size of the files in the collection when the stats were made
+
+    UNIQUE (stat_key, collection_key), 
+                                 -- Enforce that there can only be one collectionstat for a statistics
+    FOREIGN KEY (stat_key) REFERENCES stats(stat_key),
+                                 -- Foreign key constraint on stat_key, enforcing the presence of the referred key
+    FOREIGN KEY (collection_key) REFERENCES collections(collection_key)
+                                 -- Foreign key constraint on collection_key, enforcing the presence of the referred key
+);
+
+--*************************************************************************--
+-- Name:     pillarstats
+-- Descr.:   Contains the information about pillar statistics.
+-- Purpose:  Keeps track of the statistics for a pillar.
+-- Expected entry count: many (over time)
+--*************************************************************************--
+CREATE TABLE pillarstats (
+    pillarstat_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                 -- The key for the pillarstat.
+    stat_key BIGINT NOT NULL,
+                                 -- The key for the statistics entity.
+    pillar_key BIGINT NOT NULL,
+                                 -- The key of the pillar that the statistics belongs to 
+    file_count BIGINT,           -- The number of files on the pillar when the stats were made
+    file_size BIGINT,            -- The total size of the files on the pillar when the stats were made
+    missing_files_count BIGINT,  -- The number of the missing files on the pillar when the stats were made
+    checksum_errors_count BIGINT, 
+                                 -- The number of checksum errors on the pillar when the stats were made
+    UNIQUE (stat_key, pillar_key), 
+                                 -- Enforce that there can only be one collectionstat for a statistics
+    FOREIGN KEY (stat_key) REFERENCES stats(stat_key),
+                                 -- Foreign key constraint on stat_key, enforcing the presence of the referred key
+    FOREIGN KEY (pillar_key) REFERENCES pillar(pillar_key)
+                                 -- Foreign key constraint on collection_key, enforcing the presence of the referred key
+);
