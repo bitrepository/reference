@@ -88,6 +88,7 @@ public class IntegrityDAO {
     /** 
      * Constructor.
      * @param dbConnector The connector to the database, where the cache is stored.
+     * @param collections The collections object from the settings, to define the set of pillars and collections
      */
     public IntegrityDAO(DBConnector dbConnector, Collections collections) {
         ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
@@ -207,6 +208,7 @@ public class IntegrityDAO {
      * Inserts the results of a GetFileIDs operation for a given pillar.
      * @param data The results of the GetFileIDs operation.
      * @param pillarId The pillar, where the GetFileIDsOperation has been performed.
+     * @param collectionId The id of the collection to update files in
      * @throws SQLException 
      */
     public void updateFileIDs(FileIDsData data, String pillarId, String collectionId) {
@@ -230,6 +232,7 @@ public class IntegrityDAO {
      * Handles the result of a GetChecksums operation on a given pillar.
      * @param data The result data from the GetChecksums operation on the given pillar.
      * @param pillarId The id of the pillar, where the GetChecksums operation has been performed.
+     * @param collectionId The ID of the collection to update checksums in
      */
     public void updateChecksumData(List<ChecksumDataForChecksumSpecTYPE> data, String pillarId, String collectionId) {
         ArgumentValidator.checkNotNull(data, "List<ChecksumDataForChecksumSpecTYPE> data");
@@ -246,6 +249,7 @@ public class IntegrityDAO {
     /**
      * Retrieves all the FileInfo information for a given file id.
      * @param fileId The id of the file.
+     * @param collectionId The ID of the collection to get FileInfo's from
      * @return The list of information about this file.
      */
     public List<FileInfo> getFileInfosForFile(String fileId, String collectionId) {
@@ -320,6 +324,7 @@ public class IntegrityDAO {
     }
     
     /**
+     * @param collectionId The ID of the collection to get fileIDs from
      * @return The list of all the file ids within the database.
      */
     public List<String> getAllFileIDs(String collectionId) {
@@ -344,6 +349,7 @@ public class IntegrityDAO {
     /**
      * Retrieves the number of files in the given pillar, which has the file state 'EXISTING'.
      * @param pillarId The id of the pillar.
+     * @param collectionId The ID of the collection to get the number of existing files from
      * @return The number of files with file state 'EXISTING' for the given pillar.
      */
     public int getNumberOfExistingFilesForAPillar(String pillarId, String collectionId) {
@@ -364,6 +370,7 @@ public class IntegrityDAO {
     /**
      * Retrieves the number of files in the given pillar, which has the file state 'MISSING'.
      * @param pillarId The id of the pillar.
+     * @param collectionId The ID of the collection to get the number of missing files from
      * @return The number of files with file state 'MISSING' for the given pillar.
      */
     public int getNumberOfMissingFilesForAPillar(String pillarId, String collectionId) {
@@ -384,6 +391,7 @@ public class IntegrityDAO {
     /**
      * Retrieves the number of files in the given pillar, which has the checksum state 'INCONSISTENT'.
      * @param pillarId The id of the pillar.
+     * @param collectionId The ID of the collection to get the number of checksum errors from
      * @return The number of files with checksum state 'INCONSISTENT' for the given pillar.
      */
     public int getNumberOfChecksumErrorsForAPillar(String pillarId, String collectionId) {
@@ -404,6 +412,7 @@ public class IntegrityDAO {
     /**
      * Sets a specific file to missing at a given pillar.
      * @param fileId The id of the file, which is missing at the pillar.
+     * @param collectionId The ID of the collection to set the file missing in
      * @param pillarId The id of the pillar which is missing the file.
      */
     public void setFileMissing(String fileId, String pillarId, String collectionId) {
@@ -428,6 +437,7 @@ public class IntegrityDAO {
      * Sets a specific file have checksum errors at a given pillar.
      * @param fileId The id of the file, which has checksum error at the pillar.
      * @param pillarId The id of the pillar which has checksum error on the file.
+     * @param collectionId The ID of the collection to set checksum error for the file in.
      */
     public void setChecksumError(String fileId, String pillarId, String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
@@ -452,6 +462,7 @@ public class IntegrityDAO {
      * Unless the given file is missing at the given pillar.
      * @param fileId The id of the file, which has checksum error at the pillar.
      * @param pillarId The id of the pillar which has checksum error on the file.
+     * @param collectionId The ID of the collection to set the checksum for the file valid in
      */
     public void setChecksumValid(String fileId, String pillarId, String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
@@ -475,6 +486,7 @@ public class IntegrityDAO {
     /**
      * Remove the given file id from the file table, and all the entries for this file in the file info table. 
      * @param fileId The id of the file to be removed.
+     * @param collectionId The ID of the collection to remove the file from
      */
     public void removeFileId(String fileId, String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
@@ -498,6 +510,7 @@ public class IntegrityDAO {
     
     /**
      * Finds the id of the files which at any pillar exists but is missing its checksum state.
+     * @param collectionId The ID of the collection to find missing checksums in
      */
     public List<String> findMissingChecksums(String collectionId) {
         long startTime = System.currentTimeMillis();
@@ -520,6 +533,7 @@ public class IntegrityDAO {
      * Finds the id of the files which have a checksum older than a given date.
      * @param date The date for the checksum to be older than.
      * @param pillarID The ID of the pillar to find obsolete checksum for.
+     * @param collectionId The ID of the collection to find files with obsolete checksums in
      * @return The list of ids for the files which have a checksum older than the given date.
      */
     public List<String> findFilesWithOldChecksum(Date date, String pillarID, String collectionId) {
@@ -561,6 +575,7 @@ public class IntegrityDAO {
     /**
      * Finds the ids of the pillars where the given file is missing.
      * @param fileId The id of the file which is missing.
+     * @param collectionId The ID of the collection to get missing files for the given pillar
      * @return The list of ids for the pillars where the file is missing (empty list of the file is not missing).
      */
     public List<String> getMissingAtPillars(String fileId, String collectionId) {
@@ -593,6 +608,7 @@ public class IntegrityDAO {
      * This is all combined into one single SQL statement for optimisation.
      * 
      * @param maxCreationDate The maximum date for the validation
+     * @param collectionId The ID of the collection to find inconsistent checksums in
      * @return The list of file ids for the files with inconsistent checksums.
      */
     public List<String> findFilesWithInconsistentChecksums(Date maxCreationDate, String collectionId) {
@@ -627,6 +643,7 @@ public class IntegrityDAO {
      * 3. Eliminate the files with a consistent checksum (select only those with the count of unique checksums of 1)
      * 4. Update the file infos for the respective files by settings their checksum state to valid.
      * This is all combined into one single SQL statement for optimisation.
+     * @param collectionId The ID of the collections
      */
     public void setFilesWithConsistentChecksumsToValid(String collectionId) {
         long startTime = System.currentTimeMillis();
@@ -695,6 +712,7 @@ public class IntegrityDAO {
      * Retrieves the date for the latest checksum entry for a given pillar.
      * E.g. the date for the latest checksum which has been positively identified as valid on the given pillar.  
      * @param pillarId The pillar whose latest checksum entry is requested.
+     * @param collectionId The ID of the collection to get the newest checksum from
      * @return The requested date.
      */
     public Date getDateForNewestChecksumEntryForPillar(String pillarId, String collectionId) {
@@ -730,6 +748,7 @@ public class IntegrityDAO {
     /**
      * Settings the file state of all the UNKNOWN files to MISSING.
      * @param minAge The date for the minimum age of the file. 
+     * @param collectionId The ID of the collection to set files to unknown in
      */
     public void setOldUnknownFilesToMissing(Date minAge, String collectionId) {
         log.trace("Setting the file state for all '" + FileState.UNKNOWN + "' files to '" + FileState.MISSING + "'.");
@@ -751,6 +770,7 @@ public class IntegrityDAO {
      * @param pillarId The id of the pillar.
      * @param min The minimum count.
      * @param max The maximum count.
+     * @param collectionId The ID of the collection to get file list from the pillar
      * @return The list of file ids between the two counts.
      */
     public List<String> getFilesOnPillar(String pillarId, long min, long max, String collectionId) {
@@ -811,6 +831,7 @@ public class IntegrityDAO {
      * @param pillarId The id of the pillar.
      * @param min The minimum count.
      * @param max The maximum count.
+     * @param collectionId The ID of the collection to get list of missing files from
      * @return The list of file ids between the two counts.
      */
     public List<String> getMissingFilesOnPillar(String pillarId, long min, long max, String collectionId) {
@@ -870,6 +891,7 @@ public class IntegrityDAO {
      * @param pillarId The id of the pillar.
      * @param min The minimum count.
      * @param max The maximum count.
+     * @param collectionId The ID of the collection to get list of checksum errors from
      * @return The list of file ids between the two counts.
      */
     public List<String> getFilesWithChecksumErrorsOnPillar(String pillarId, long min, long max, String collectionId) {
@@ -1007,6 +1029,7 @@ public class IntegrityDAO {
      * @param pillarId The id for the pillar.
      * @param fileId The id for the file.
      * @param filelistTimestamp The timestamp for when the file was latest modified.
+     * @param collectionId The ID of the collection to update the timestamp in
      */
     private void updateFileInfoLastFileUpdateTimestamp(String pillarId, String fileId, Date filelistTimestamp, 
             String collectionId) {
@@ -1040,6 +1063,7 @@ public class IntegrityDAO {
      * In that case the new checksum and its timestamp is inserted, and the checksum state is set to 'UNKNOWN'.
      * @param data The result of the GetChecksums operation.
      * @param pillarId The key of the pillar.
+     * @param collectionId The ID of the collection to update the checksum in
      */
     private void updateFileInfoWithChecksum(ChecksumDataForChecksumSpecTYPE data, String pillarId, String collectionId) {
         long startTime = System.currentTimeMillis();
@@ -1072,6 +1096,7 @@ public class IntegrityDAO {
      * Sets the file state to 'EXISTING' for a given file at a given pillar.
      * @param fileId The id of the file.
      * @param pillarId The id of the pillar.
+     * @param collectionId The ID of the collection
      */
     private void setFileExisting(String fileId, String pillarId, String collectionId) {
         log.trace("Marked file " + fileId + " as existing on pillar " + pillarId);
@@ -1096,6 +1121,7 @@ public class IntegrityDAO {
      * Ensures that the entries for the file with the given id exists (both in the 'files' table and 
      * the 'file_info' table)
      * @param fileId The id of the file to ensure the existence of.
+     * @param collectionId The ID of the collection
      */
     private void ensureFileIdExists(String fileId, String collectionId) {
         log.trace("Retrieving key for file '{}'.", fileId);
@@ -1110,6 +1136,7 @@ public class IntegrityDAO {
     /**
      * Retrieves the key corresponding to a given file id. If no such entry exists, then a null is returned.
      * @param fileId The id of the file to retrieve the key of.
+     * @param collectionKey the Key for the collection to retrieve the fileKey from
      * @return The key of the file with the given id, or null if the key does not exist.
      */
     private Long retrieveFileKey(String fileId, Long collectionKey) {
@@ -1120,6 +1147,10 @@ public class IntegrityDAO {
         return DatabaseUtils.selectLongValue(dbConnector, sql, fileId, collectionKey);
     }
     
+    /**
+     * Method to retrieve the database key for the given collectionId
+     * @param collectionId The ID of the collection 
+     */
     private Long retrieveCollectionKey(String collectionId) {
         Long key = collectionKeyCache.get(collectionId);
         if(key == null) {
@@ -1137,6 +1168,7 @@ public class IntegrityDAO {
      * Inserts a new file id into the 'files' table in the database.
      * Also creates an entry in the 'fileinfo' table for every pillar.
      * @param fileId The id of the file to insert.
+     * @param collectionId The ID of the collection
      */
     private synchronized void insertNewFileID(String fileId, String collectionId) {
         log.trace("Inserting the file '" + fileId + "' into the files table.");
