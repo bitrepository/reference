@@ -87,7 +87,6 @@ CREATE TABLE files (
 
 CREATE INDEX fileindex ON files (file_id);
 CREATE INDEX filedateindex ON files (file_id, creation_date);
-CREATE INDEX collectionfileindex ON files (file_id, collection_key);
 
 --*************************************************************************--
 -- Name:     pillar
@@ -135,8 +134,6 @@ CREATE TABLE fileinfo (
                                  -- Enforce that a file only can exist once on a pillar
 );
 
-CREATE INDEX filekeyindex ON fileinfo (file_key);
-CREATE INDEX filepillarindex ON fileinfo (file_key, pillar_key);
 CREATE INDEX checksumdateindex ON fileinfo (last_checksum_update);
 
 --*************************************************************************--
@@ -167,7 +164,8 @@ CREATE TABLE collectionstats (
                                  -- The key of the collection that the statistics belongs to 
     file_count BIGINT,           -- The number of files that the collection contained when the stats were made
     file_size BIGINT,            -- The total size of the files in the collection when the stats were made
-
+    checksum_errors_count BIGINT, 
+                                 -- The number of checksum errors in the collection when the stats were made
     UNIQUE (stat_key, collection_key), 
                                  -- Enforce that there can only be one collectionstat for a statistics
     FOREIGN KEY (stat_key) REFERENCES stats(stat_key),

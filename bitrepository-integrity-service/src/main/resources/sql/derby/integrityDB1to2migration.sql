@@ -7,6 +7,9 @@ UPDATE tableversions SET version=2 WHERE tablename='fileinfo';
 UPDATE tableversions SET version=2 WHERE tablename='pillar';
 UPDATE tableversions SET version=2 WHERE tablename='files';
 INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 2);
+INSERT INTO tableversions (tablename, version) VALUES ('stats', 1);
+INSERT INTO tableversions (tablename, version) VALUES ('collectionstats', 1);
+INSERT INTO tableversions (tablename, version) VALUES ('pillarstats', 1);
 
 -- Add collections table. 
 CREATE TABLE collections (
@@ -22,7 +25,9 @@ INSERT INTO tableversions ( tablename, version ) VALUES ( 'collections', 1);
 
 -- Add constraints to files table.
 ALTER TABLE files (
-    ADD UNIQUE (file_id),
+    ADD COLUMN collection_key BIGINT NOT NULL,
+    ADD FOREIGN KEY (collection_key) REFERENCES collections(collection_key),
+    ADD UNIQUE (file_id, collection_key)
 );
 
 RENAME COLUMN files.files_guid TO files_key;
@@ -48,6 +53,34 @@ ALTER TABLE fileinfo (
 
 RENAME COLUMN fileinfo.guid TO fileinfo_key;
 
-CREATE INDEX filekeyindex ON fileinfo (file_key);
 
+CREATE TABLE stats (
+    stat_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    starttime TIMESTAMP,         
+    last_update TIMESTAMP 
+);
 
+CREATE TABLE collectionstats (
+    collectionstat_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    stat_key BIGINT NOT NULL,
+    collection_key BIGINT NOT NULL,
+    file_count BIGINT,
+    file_size BIGINT, 
+    checksum_errors_count BIGINT, 
+    UNIQUE (stat_key, collection_key), 
+    FOREIGN KEY (stat_key) REFERENCES stats(stat_key),
+    FOREIGN KEY (collection_key) REFERENCES collections(collection_key)
+);
+
+CREATE TABLE pillarstats (
+    pillarstat_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    stat_key BIGINT NOT NULL,
+    pillar_key BIGINT NOT NULL,
+    file_count BIGINT, 
+    file_size BIGINT,  
+    missing_files_count BIGINT,
+    checksum_errors_count BIGINT, 
+    UNIQUE (stat_key, pillar_key), 
+    FOREIGN KEY (stat_key) REFERENCES stats(stat_key),
+    FOREIGN KEY (pillar_key) REFERENCES pillar(pillar_key)
+);
