@@ -96,7 +96,7 @@
       $.getJSON("<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getWorkflowList/?collectionID=" 
             + getCollectionID(), {}, function(j) {
         for (var i = 0; i < j.length; i++) {
-          $("#workflowSelector").append('<option value="' + j[i].workflowID + '">' + j[i].workflowID + '</option>');          
+          $("#workflowSelector").append('<option value="' + j[i] + '">' + j[i] + '</option>');          
         }
       });
     }

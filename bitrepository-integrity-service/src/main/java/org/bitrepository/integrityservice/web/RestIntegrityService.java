@@ -24,6 +24,7 @@
  */
 package org.bitrepository.integrityservice.web;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -166,20 +167,13 @@ public class RestIntegrityService {
     @GET
     @Path("/getWorkflowList/")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getWorkflowList(@QueryParam("collectionID") String collectionID) {
-        JSONArray array = new JSONArray();
+    public List<String> getWorkflowList(@QueryParam("collectionID") String collectionID) {
         Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows(collectionID);
+        List<String> workflowIDs = new ArrayList<String>();
         for(WorkflowTimerTask workflow : workflows) {
-            JSONObject obj;
-            try {
-                obj = new JSONObject();
-                obj.put("workflowID", workflow.getWorkflowID().getWorkflowName());
-            } catch (JSONException e) {
-                obj = (JSONObject) JSONObject.NULL;
-            }
-            array.put(obj);
+            workflowIDs.add(workflow.getWorkflowID().getWorkflowName());
         }
-        return array.toString();
+        return workflowIDs;
     }
 
     /**
