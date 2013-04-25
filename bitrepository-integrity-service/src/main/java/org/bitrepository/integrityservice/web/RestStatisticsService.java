@@ -9,6 +9,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.bitrepository.common.webobjects.StatisticsPillarSize;
 import org.bitrepository.integrityservice.IntegrityService;
 import org.bitrepository.integrityservice.IntegrityServiceFactory;
 import org.json.JSONArray;
@@ -59,7 +60,7 @@ public class RestStatisticsService {
     @GET
     @Path("/getLatestPillarDataSize/")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getLatestPillarDataSize() {
+    public List<StatisticsPillarSize> getLatestPillarDataSize() {
         List<String> mockPillarIDs = new ArrayList<String>();
         mockPillarIDs.add("pillarA");
         mockPillarIDs.add("pillarB");
@@ -67,19 +68,17 @@ public class RestStatisticsService {
         mockPillarIDs.add("pillar35");
         
         JSONArray array = new JSONArray();
-        try {
-            Long size =  145000L;
-            for(String pillar : mockPillarIDs) {
-                JSONObject obj = new JSONObject();
-                obj.put("pillarID", pillar);
-                obj.put("dataSize", (Long) size * 1.23 + 24);
-                array.put(obj);
-            }
-        } catch (JSONException e) {
-            log.debug(e.getMessage());
+        List<StatisticsPillarSize> mockData = new ArrayList<StatisticsPillarSize>();
+        
+        Long size =  145000L;
+        for(String pillar : mockPillarIDs) {
+            StatisticsPillarSize obj = new StatisticsPillarSize();
+            obj.setPillarID(pillar);
+            size = (long) (size * 1.23 + 24);
+            obj.setDataSize(size);
         }
         
-        return array.toString();
+        return mockData;
     }
     
     @GET
