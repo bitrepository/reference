@@ -76,6 +76,7 @@ public class RestStatisticsService {
             obj.setPillarID(pillar);
             size = (long) (size * 1.23 + 24);
             obj.setDataSize(size);
+            mockData.add(obj);
         }
         
         return mockData;
@@ -98,6 +99,7 @@ public class RestStatisticsService {
             obj.setCollectionID(collection);
             size = (long) (size * 1.23 + 24);
             obj.setDataSize(size);
+            mockData.add(obj);
         }
         
         return mockData;    
