@@ -1,6 +1,7 @@
 package org.bitrepository.integrityservice.web;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -9,7 +10,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.common.webobjects.StatisticsCollectionSize;
+import org.bitrepository.common.webobjects.StatisticsDataSize;
 import org.bitrepository.common.webobjects.StatisticsPillarSize;
 import org.bitrepository.integrityservice.IntegrityService;
 import org.bitrepository.integrityservice.IntegrityServiceFactory;
@@ -32,30 +35,36 @@ public class RestStatisticsService {
     @GET
     @Path("/getDataSizeHistory/")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getDataSizeHistory(@QueryParam("collectionID") String collectionID) {
-        List<String> mockDates = new ArrayList<String>();
-        mockDates.add("14.03.13 12:02");
-        mockDates.add("22.03.13 12:05");
-        mockDates.add("31.03.13 12:59");
-        mockDates.add("11.04.13 03:14");
-        mockDates.add("18.04.13 11:31");
-        mockDates.add("20.04.13 11:02");
-        mockDates.add("24.04.13 12:02");
-        JSONArray array = new JSONArray();
-        try {
-            Long size =  140000L;
-            for(String date : mockDates) {
-                JSONObject obj = new JSONObject();
-                obj.put("date", date);
-                size = (long) (size * 1.23 + 24);
-                obj.put("dataSize", size);
-                array.put(obj);
-            }
-        } catch (JSONException e) {
-            log.debug(e.getMessage());
+    public List<StatisticsDataSize> getDataSizeHistory(@QueryParam("collectionID") String collectionID) {
+        List<Date> mockDates = new ArrayList<Date>();
+        long startTime = 1360886243;
+        mockDates.add(new Date(startTime));
+        startTime += 12345;
+        mockDates.add(new Date(startTime));
+        startTime += 12345;
+        mockDates.add(new Date(startTime));
+        startTime += 12345;
+        mockDates.add(new Date(startTime));
+        startTime += 12345;
+        mockDates.add(new Date(startTime));
+        startTime += 12345;
+        mockDates.add(new Date(startTime));
+        startTime += 12345;
+        mockDates.add(new Date(startTime));
+               
+        List<StatisticsDataSize> mockData = new ArrayList<StatisticsDataSize>();
+        
+        Long size =  140000L;
+        for(Date date : mockDates) {
+            StatisticsDataSize obj = new StatisticsDataSize();
+            obj.setDate(date);
+            obj.setDateString(TimeUtils.shortDate(date));
+            size = (long) (size * 1.23 + 24);
+            obj.setDataSize(size);
+            mockData.add(obj);
         }
         
-        return array.toString();
+        return mockData;
     }
     
     @GET
