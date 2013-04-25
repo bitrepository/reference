@@ -33,6 +33,11 @@
       <param-name>com.sun.jersey.config.property.packages</param-name>
       <param-value>org.bitrepository.integrityservice.web</param-value>
     </init-param>
+    <init-param>
+        <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+        <param-value>true</param-value>
+        <load-on-startup>1</load-on-startup>
+    </init-param> 
   </servlet>
   <servlet-mapping>
     <servlet-name>Bitrepository-integrityservice</servlet-name>
