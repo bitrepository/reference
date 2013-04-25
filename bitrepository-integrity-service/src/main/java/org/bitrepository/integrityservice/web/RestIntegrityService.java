@@ -137,8 +137,25 @@ public class RestIntegrityService {
         for(String file : ids) {
             array.put(file);
         }
-        return array.toString();    }
-    
+        return array.toString();
+    }
+
+    @GET
+    @Path("/getAllFileIDs2/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<String> getAllFileIDs2(
+            @QueryParam("collectionID") String collectionID,
+            @QueryParam("pillarID") String pillarID,
+            @QueryParam("pageNumber") int pageNumber,
+            @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
+        
+        int firstID = (pageNumber - 1) * pageSize;
+        int lastID = (pageNumber * pageSize) - 1;
+        
+        List<String> ids = service.getAllFileIDs(collectionID, pillarID, firstID, lastID);
+        return ids;
+    }
+
     /**
      * Get the listing of integrity status as a JSON array
      */
