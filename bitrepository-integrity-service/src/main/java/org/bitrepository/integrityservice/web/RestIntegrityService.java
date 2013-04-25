@@ -67,7 +67,7 @@ public class RestIntegrityService {
     @GET
     @Path("/getChecksumErrorFileIDs/")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getChecksumErrors(
+    public List<String> getChecksumErrors(
             @QueryParam("collectionID") String collectionID,
             @QueryParam("pillarID") String pillarID,
             @QueryParam("pageNumber") int pageNumber,
@@ -77,12 +77,7 @@ public class RestIntegrityService {
         int lastID = (pageNumber * pageSize) - 1;
         
         List<String> ids = service.getChecksumErrors(collectionID, pillarID, firstID, lastID);
-        
-        JSONArray array = new JSONArray();
-        for(String file : ids) {
-            array.put(file);
-        }
-        return array.toString();
+        return ids;
     }
 
     /**
@@ -95,7 +90,7 @@ public class RestIntegrityService {
     @GET
     @Path("/getMissingFileIDs/")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getMissingFileIDs(
+    public List<String> getMissingFileIDs(
             @QueryParam("collectionID") String collectionID,
             @QueryParam("pillarID") String pillarID,
             @QueryParam("pageNumber") int pageNumber,
@@ -105,11 +100,7 @@ public class RestIntegrityService {
         int lastID = (pageNumber * pageSize) - 1;
         
         List<String> ids = service.getMissingFiles(collectionID, pillarID, firstID, lastID);
-        JSONArray array = new JSONArray();
-        for(String file : ids) {
-            array.put(file);
-        }
-        return array.toString();
+        return ids;
     }
     
     /**
@@ -122,28 +113,7 @@ public class RestIntegrityService {
     @GET
     @Path("/getAllFileIDs/")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getAllFileIDs(
-            @QueryParam("collectionID") String collectionID,
-            @QueryParam("pillarID") String pillarID,
-            @QueryParam("pageNumber") int pageNumber,
-            @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
-        
-        int firstID = (pageNumber - 1) * pageSize;
-        int lastID = (pageNumber * pageSize) - 1;
-        
-        List<String> ids = service.getAllFileIDs(collectionID, pillarID, firstID, lastID);
-        
-        JSONArray array = new JSONArray();
-        for(String file : ids) {
-            array.put(file);
-        }
-        return array.toString();
-    }
-
-    @GET
-    @Path("/getAllFileIDs2/")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getAllFileIDs2(
+    public List<String> getAllFileIDs(
             @QueryParam("collectionID") String collectionID,
             @QueryParam("pillarID") String pillarID,
             @QueryParam("pageNumber") int pageNumber,
