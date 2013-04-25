@@ -31,6 +31,7 @@ import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ResponseInfoUtils;
+import org.bitrepository.protocol.MessageVersionValidator;
 import org.bitrepository.service.contributor.ContributorContext;
 
 /**
@@ -125,7 +126,8 @@ public class GetStatusRequestHandler extends AbstractRequestHandler<GetStatusReq
         
         StatusInfo status = new StatusInfo();
         status.setStatusCode(StatusCode.OK);
-        status.setStatusText("Version: " + getClass().getPackage().getImplementationVersion());
+        status.setStatusText("Version: " + getClass().getPackage().getImplementationVersion() + 
+                " MessageXML version: " + MessageVersionValidator.getProtocolVersion());
         
         res.setStatusInfo(status);
         res.setStatusTimestamp(CalendarUtils.getNow());

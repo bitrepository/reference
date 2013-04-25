@@ -57,4 +57,8 @@ public class MessageVersionValidator {
                     protocolVersion.getMinVersion());
         }
     }
+    
+    public static String getProtocolVersion() {
+        return protocolVersion.getVersion().toString();
+    }
 }
