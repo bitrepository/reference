@@ -31,16 +31,29 @@ connect 'jdbc:derby:alarmservicedb;create=true';
 --              of the tables, especially when upgrading.
 -- Expected entry count: only those in this script.
 --**************************************************************************--
-create table tableversions (
-    tablename varchar(100) not null, -- Name of table
-    version int not null             -- version of table
+CREATE TABLE tableversions (
+    tablename VARCHAR(100) NOT NULL, -- Name of table
+    version INT NOT NULL             -- version of table
 );
 
-insert into tableversions ( tablename, version )
-            values ( 'alarm', 1);
-insert into tableversions ( tablename, version )
-            values ( 'component', 1);
+INSERT INTO tableversions ( tablename, version )
+            VALUES ( 'alarm', 2);
+INSERT INTO tableversions ( tablename, version )
+            VALUES ( 'component', 1);
 
+--*************************************************************************--
+-- Name:     component
+-- Descr.:   Container for the components ids and their guids.
+-- Purpose:  Keeps track of the different component ids. 
+-- Expected entry count: Few.
+--*************************************************************************--
+CREATE TABLE component (
+    component_guid BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                    -- The guid for the component id.
+    component_id VARCHAR(255)       -- The actual component id.
+);
+
+CREATE INDEX componentindex ON component ( component_id );
 
 --*************************************************************************--
 -- Name:     alarm
@@ -49,30 +62,22 @@ insert into tableversions ( tablename, version )
 -- Purpose:  Keeps track of the alarms.
 -- Expected entry count: Very, very many.
 --*************************************************************************--
-create table alarm (
-    guid bigint not null generated always as identity primary key,
+CREATE TABLE alarm (
+    guid BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
                                      -- The guid for the alarm.
-    component_guid bigint not null,  -- The guid for the component behind the alarm.
-    alarm_code varchar(50) not null, -- The code for the alarm.
-    alarm_text CLOB not null,        -- The text for the alarm.
-    alarm_date timestamp not null,   -- The date for the alarm.
-    file_id varchar(255)             -- The id for the file (allowed to be null).
+    component_guid BIGINT NOT NULL,  -- The guid for the component behind the alarm.
+    alarm_code VARCHAR(50) NOT NULL, -- The code for the alarm.
+    alarm_text CLOB NOT NULL,        -- The text for the alarm.
+    alarm_date TIMESTAMP NOT NULL,   -- The date for the alarm.
+    file_id VARCHAR(255),            -- The id for the file (allowed to be null).
+    collection_id VARCHAR(255),      -- The id of the collection that the alarm belongs to (allowed to be null)
+    FOREIGN KEY ( component_guid ) REFERENCES component ( component_guid )
+                                     -- Foreign key reference, to enforce database consistency
 );
 
-create index codeindex on alarm ( alarm_code );
-create index alarmdateindex on alarm ( alarm_date );
-create index fileidindex on alarm ( file_id );
+CREATE INDEX codeindex ON alarm ( alarm_code );
+CREATE INDEX alarmdateindex ON alarm ( alarm_date );
+CREATE INDEX fileidindex ON alarm ( file_id );
+CREATE INDEX collectionidindex ON alarm ( collection_id );
 
---*************************************************************************--
--- Name:     component
--- Descr.:   Container for the components ids and their guids.
--- Purpose:  Keeps track of the different component ids. 
--- Expected entry count: Few.
---*************************************************************************--
-create table component (
-    component_guid bigint not null generated always as identity primary key,
-                                    -- The guid for the component id.
-    component_id varchar(255)       -- The actual component id.
-);
 
-create index componentindex on component ( component_id );
