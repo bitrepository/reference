@@ -187,6 +187,8 @@ CREATE TABLE pillarstats (
                                  -- The key for the statistics entity.
     pillar_key BIGINT NOT NULL,
                                  -- The key of the pillar that the statistics belongs to 
+    collection_key BIGINT NOT NULL,
+                                 -- The key of the collection that the statistics belongs to 
     file_count BIGINT,           -- The number of files on the pillar when the stats were made
     file_size BIGINT,            -- The total size of the files on the pillar when the stats were made
     missing_files_count BIGINT,  -- The number of the missing files on the pillar when the stats were made
@@ -196,6 +198,8 @@ CREATE TABLE pillarstats (
                                  -- Enforce that there can only be one collectionstat for a statistics
     FOREIGN KEY (stat_key) REFERENCES stats(stat_key),
                                  -- Foreign key constraint on stat_key, enforcing the presence of the referred key
-    FOREIGN KEY (pillar_key) REFERENCES pillar(pillar_key)
+    FOREIGN KEY (pillar_key) REFERENCES pillar(pillar_key),
+                                 -- Foreign key constraint on collection_key, enforcing the presence of the referred key
+    FOREIGN KEY (collection_key) REFERENCES collections(collection_key)
                                  -- Foreign key constraint on collection_key, enforcing the presence of the referred key
 );
