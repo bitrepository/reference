@@ -88,15 +88,15 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
         addDescription("Test the good case, when every step goes well.");
         MockCollector collector = new MockCollector() {
             @Override
-            public void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation,
+            public void getChecksums(String collectionID, Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation,
                     ContributorQuery[] queries, EventHandler eventHandler) {
-                super.getChecksums(pillarIDs, checksumType, auditTrailInformation, queries, eventHandler);
+                super.getChecksums(collectionID, pillarIDs, checksumType, auditTrailInformation, queries, eventHandler);
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             }
             @Override
-            public void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
+            public void getFileIDs(String collectionID, Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
                     EventHandler eventHandler) {
-                super.getFileIDs(pillarIDs, auditTrailInformation, queries, eventHandler);
+                super.getFileIDs(collectionID, pillarIDs, auditTrailInformation, queries, eventHandler);
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             }
         };
@@ -127,15 +127,15 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
         addDescription("Test the bad case, when every step goes wrong.");
         MockCollector collector = new MockCollector() {
             @Override
-            public void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation,
+            public void getChecksums(String collectionID, Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation,
                     ContributorQuery[] queries, EventHandler eventHandler) {
-                super.getChecksums(pillarIDs, checksumType, auditTrailInformation, queries, eventHandler);
+                super.getChecksums(collectionID, pillarIDs, checksumType, auditTrailInformation, queries, eventHandler);
                 eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Failed", null));
             }
             @Override
-            public void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
+            public void getFileIDs(String collectionID, Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
                     EventHandler eventHandler) {
-                super.getFileIDs(pillarIDs, auditTrailInformation, queries, eventHandler);
+                super.getFileIDs(collectionID, pillarIDs, auditTrailInformation, queries, eventHandler);
                 eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Failed", null));
             }
         };
@@ -194,9 +194,9 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
         addDescription("Test the good case, when every step goes well.");
         MockCollector collector = new MockCollector() {
             @Override
-            public void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation,
+            public void getChecksums(String collectionID, Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation,
                     ContributorQuery[] queries, EventHandler eventHandler) {
-                super.getChecksums(pillarIDs, checksumType, auditTrailInformation, queries, eventHandler);
+                super.getChecksums(collectionID, pillarIDs, checksumType, auditTrailInformation, queries, eventHandler);
                 ChecksumsCompletePillarEvent event = new ChecksumsCompletePillarEvent(
                         TEST_PILLAR_1, TEST_COLLECTION, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
                         createChecksumSpecTYPE(), false);
@@ -204,9 +204,9 @@ public class CompleteIntegrityCheckTest extends ExtendedTestCase {
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             }
             @Override
-            public void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
+            public void getFileIDs(String collectionID, Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
                     EventHandler eventHandler) {
-                super.getFileIDs(pillarIDs, auditTrailInformation, queries, eventHandler);
+                super.getFileIDs(collectionID, pillarIDs, auditTrailInformation, queries, eventHandler);
                 FileIDsCompletePillarEvent event = new FileIDsCompletePillarEvent(
                         TEST_PILLAR_1, TEST_COLLECTION, createResultingFileIDs(TEST_FILE_1), false);
                 eventHandler.handleEvent(event);

@@ -106,7 +106,7 @@ public final class IntegrityServiceComponentFactory {
             GetFileIDsClient getFileIDsClient, GetChecksumsClient getChecksumsClient, AuditTrailManager auditManager) {
         if (integrityInformationCollector == null) {
             integrityInformationCollector = new DelegatingIntegrityInformationCollector(
-                    collectionID, getFileIDsClient, getChecksumsClient, auditManager);
+                    getFileIDsClient, getChecksumsClient, auditManager);
         }
         return integrityInformationCollector;
     }

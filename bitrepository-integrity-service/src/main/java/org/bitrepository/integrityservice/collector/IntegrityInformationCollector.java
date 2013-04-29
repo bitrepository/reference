@@ -43,18 +43,19 @@ public interface IntegrityInformationCollector {
     
     /**
      * Starts collection the given file ids from the given pillar ids.
-     * 
+     * @param collectionID The ID of the collection to collect fileIDs from
      * @param pillarIDs The collection of ids of the pillars to request for the file ids.
      * @param auditTrailInformation The audit trail information for the conversation.
      * @param queries The limiting contributor queries for the collection of file ids. 
      * @param eventHandler The eventhandler for the results of the checksum collection. 
      */
-    void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation,
+    void getFileIDs(String collectionID, Collection<String> pillarIDs, String auditTrailInformation,
                     ContributorQuery[] queries,
             EventHandler eventHandler);
 
     /**
      * Request the specified checksums for from the given the pillars.
+     * @param collectionID The ID of the collection to collect checksums from
      * @param pillarIDs The collection of ids of the pillars to request for the checksums.
      * @param checksumType The checksum algorithm (and salt) used for the calculation. 
      * May be null, in which case the collection default is used.
@@ -62,7 +63,7 @@ public interface IntegrityInformationCollector {
      * @param queries The limiting contributor queries for the collection of file ids. 
      * @param eventHandler The eventhandler for the results of the checksum collection. 
      */
-    void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType,
+    void getChecksums(String collectionID, Collection<String> pillarIDs, ChecksumSpecTYPE checksumType,
                       String auditTrailInformation,
             ContributorQuery[] queries, EventHandler eventHandler);
 }

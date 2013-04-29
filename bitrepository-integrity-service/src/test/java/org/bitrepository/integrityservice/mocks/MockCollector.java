@@ -36,13 +36,13 @@ public class MockCollector implements IntegrityInformationCollector {
     private int callsForGetChecksums = 0;
     
     @Override
-    public void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
+    public void getFileIDs(String collectionID, Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
             EventHandler eventHandler) {
         callsForGetFileIDs++;
     }
 
     @Override
-    public void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation,
+    public void getChecksums(String collectionID, Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation,
             ContributorQuery[] queries, EventHandler eventHandler) {
         callsForGetChecksums++;
     }

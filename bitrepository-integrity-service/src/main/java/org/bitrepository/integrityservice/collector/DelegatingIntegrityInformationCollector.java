@@ -44,7 +44,6 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    private final String collectionID;
     /** The client for retrieving file IDs. */
     private final GetFileIDsClient getFileIDsClient;
     /** The client for retrieving checksums. */
@@ -58,17 +57,15 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
      * @param getChecksumsClient The client for retrieving checksums
      */
     public DelegatingIntegrityInformationCollector(
-            String collectionID,
             GetFileIDsClient getFileIDsClient,
             GetChecksumsClient getChecksumsClient, AuditTrailManager auditManager) {
-        this.collectionID = collectionID;
         this.getFileIDsClient = getFileIDsClient;
         this.getChecksumsClient = getChecksumsClient;
         this.auditManager = auditManager;
     }
 
     @Override
-    public synchronized void getFileIDs(Collection<String> pillarIDs, String auditTrailInformation, 
+    public synchronized void getFileIDs(String collectionID, Collection<String> pillarIDs, String auditTrailInformation, 
             ContributorQuery[] queries, EventHandler eventHandler) {
         try {
             auditManager.addAuditEvent(collectionID, null, "IntegrityService", 
@@ -81,7 +78,7 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     }
 
     @Override
-    public synchronized void getChecksums(Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, 
+    public synchronized void getChecksums(String collectionID, Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, 
             String auditTrailInformation, ContributorQuery[] queries, EventHandler eventHandler) {
         try {
             // Is this really necessary to audit log. Better to auditlog on workflow exit.

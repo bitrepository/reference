@@ -42,6 +42,8 @@ import org.testng.annotations.Test;
 public class IntegrityInformationCollectorTest extends ExtendedTestCase {
     MockAuditManager auditManager;
 
+    public final static String collectionID = "dummy-collection";
+    
     @BeforeClass (alwaysRun = true)
     public void setup() {
         auditManager = new MockAuditManager();
@@ -57,19 +59,18 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         
         addStep("Setup a GetFileIDsClient for test purpose.", "Should be OK.");
         MockGetFileIDsClient getFileIDs = new MockGetFileIDsClient();
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector("dummy-collection",
-                getFileIDs, null, auditManager);
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(getFileIDs, null, auditManager);
         
         addStep("Call the getFileIDs on the collector.", "Should go directly to the GetFileIDsClient");
-        collector.getFileIDs(Arrays.asList(pillarId), auditTrailInformation, contributorQueries, null);
+        collector.getFileIDs(collectionID, Arrays.asList(pillarId), auditTrailInformation, contributorQueries, null);
         Assert.assertEquals(getFileIDs.getCallsForGetFileIDs(), 1);
         
         addStep("Call the getFileIDs on the collector four times more.", 
                 "The GetFileIDsClient should have been called 5 times.");
-        collector.getFileIDs(Arrays.asList(pillarId), auditTrailInformation, contributorQueries, null);
-        collector.getFileIDs(Arrays.asList(pillarId), auditTrailInformation, contributorQueries, null);
-        collector.getFileIDs(Arrays.asList(pillarId), auditTrailInformation, contributorQueries, null);
-        collector.getFileIDs(Arrays.asList(pillarId), auditTrailInformation, contributorQueries, null);
+        collector.getFileIDs(collectionID, Arrays.asList(pillarId), auditTrailInformation, contributorQueries, null);
+        collector.getFileIDs(collectionID, Arrays.asList(pillarId), auditTrailInformation, contributorQueries, null);
+        collector.getFileIDs(collectionID, Arrays.asList(pillarId), auditTrailInformation, contributorQueries, null);
+        collector.getFileIDs(collectionID, Arrays.asList(pillarId), auditTrailInformation, contributorQueries, null);
         Assert.assertEquals(getFileIDs.getCallsForGetFileIDs(), 5);
     }
 
@@ -86,19 +87,19 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         
         addStep("Setup a GetChecksumsClient for test purpose.", "Should be OK.");
         MockGetChecksumsClient getChecksumsClient = new MockGetChecksumsClient();
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector("dummy-collection",
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(
                 null, getChecksumsClient, auditManager);
         
         addStep("Call the getChecksumsClient on the collector.", "Should go directly to the GetChecksumsClient");
-        collector.getChecksums(Arrays.asList(pillarId), csType, auditTrailInformation, contributorQueries, null);
+        collector.getChecksums(collectionID, Arrays.asList(pillarId), csType, auditTrailInformation, contributorQueries, null);
         Assert.assertEquals(getChecksumsClient.getCallsForGetChecksums(), 1);
         
         addStep("Call the getChecksumsClient on the collector four times more.", 
                 "The GetChecksumsClient should have been called 5 times.");
-        collector.getChecksums(Arrays.asList(pillarId), csType, auditTrailInformation, contributorQueries, null);
-        collector.getChecksums(Arrays.asList(pillarId), csType, auditTrailInformation, contributorQueries, null);
-        collector.getChecksums(Arrays.asList(pillarId), csType, auditTrailInformation, contributorQueries, null);
-        collector.getChecksums(Arrays.asList(pillarId), csType, auditTrailInformation, contributorQueries, null);
+        collector.getChecksums(collectionID, Arrays.asList(pillarId), csType, auditTrailInformation, contributorQueries, null);
+        collector.getChecksums(collectionID, Arrays.asList(pillarId), csType, auditTrailInformation, contributorQueries, null);
+        collector.getChecksums(collectionID, Arrays.asList(pillarId), csType, auditTrailInformation, contributorQueries, null);
+        collector.getChecksums(collectionID, Arrays.asList(pillarId), csType, auditTrailInformation, contributorQueries, null);
         Assert.assertEquals(getChecksumsClient.getCallsForGetChecksums(), 5);
     }
     
@@ -142,12 +143,12 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
 
         addStep("Setup a FailingGetChecksumClient for test purpose.", "Should be OK.");
         DyingGetChecksumClient getDyingChecksumsClient = new DyingGetChecksumClient();
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector("dummy-collection",
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(
                 null, getDyingChecksumsClient, auditManager);
         
         addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
                 "Should not throw an unexpected exception");
-        collector.getChecksums(Arrays.asList(pillarId), csType, auditTrailInformation, contributorQueries, null);
+        collector.getChecksums(collectionID, Arrays.asList(pillarId), csType, auditTrailInformation, contributorQueries, null);
     }
 
     private class DyingGetChecksumClient implements GetChecksumsClient {
@@ -170,11 +171,11 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         addStep("Setup a FailingGetChecksumClient for test purpose.", "Should be OK.");
         DyingGetFileIDsClient getDyingFileIDsClient = new DyingGetFileIDsClient();
         IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(
-                "dummy-collection", getDyingFileIDsClient, null, auditManager);
+                getDyingFileIDsClient, null, auditManager);
         
         addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
                 "Should not throw an unexpected exception");
-        collector.getFileIDs(Arrays.asList(pillarId), auditTrailInformation, contributorQueries, null);
+        collector.getFileIDs(collectionID, Arrays.asList(pillarId), auditTrailInformation, contributorQueries, null);
     }
 
     private class DyingGetFileIDsClient implements GetFileIDsClient {

@@ -100,7 +100,7 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
             while (!pillarsToCollectFrom.isEmpty()) {
                 IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
-                collector.getChecksums(pillarsToCollectFrom, checksumType, "IntegrityService: " + getName(), queries, 
+                collector.getChecksums(collectionId, pillarsToCollectFrom, checksumType, "IntegrityService: " + getName(), queries, 
                         eventHandler);
                 OperationEvent event = eventHandler.getFinish();
                 log.debug("Collection of file ids had the final event: " + event);
