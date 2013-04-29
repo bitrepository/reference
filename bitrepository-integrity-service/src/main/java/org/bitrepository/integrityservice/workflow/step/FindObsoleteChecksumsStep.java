@@ -21,7 +21,6 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.bitrepository.common.settings.Settings;
@@ -83,9 +82,9 @@ public class FindObsoleteChecksumsStep extends AbstractWorkFlowStep {
             getPillarIDs(collectionId), collectionId);
         
         if(!report.hasIntegrityIssues()) {
-            log.debug("No checksum are missing from any pillar.");
+            log.debug("No osolete checksum found.");
         } else {
-            log.trace("Found the following integrity:\n" + report.generateReport());
+            log.trace("Found the following obsolete checksum issues:\n" + report.generateReport());
             dispatcher.integrityFailed(report);
         }
     }

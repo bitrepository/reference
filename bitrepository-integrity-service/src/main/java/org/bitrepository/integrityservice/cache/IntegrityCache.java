@@ -247,8 +247,14 @@ public class IntegrityCache implements IntegrityModel {
     public Date getDateForNewestFileEntryForCollection(String collectionId) {
         Date latestDate = (Date) collectionLatestFileDateCache.get(collectionId);
         if(latestDate == null) {
-            latestDate = integrityModel.getDateForNewestFileEntryForCollection(collectionId); 
-            updateCache(collectionLatestFileDateCache, collectionId, latestDate);
+            latestDate = integrityModel.getDateForNewestFileEntryForCollection(collectionId);
+            if (latestDate != null ) {
+                updateCache(collectionLatestFileDateCache, collectionId, latestDate);
+            } else {
+                updateCache(collectionLatestFileDateCache, collectionId, new Date(0));
+            }
+        } else if (latestDate.equals(new Date(0))) {
+            latestDate = null; // Using epoch to model 'undefined' in cache as null values aren't allowed.
         }
         return latestDate;
     }
@@ -276,10 +282,10 @@ public class IntegrityCache implements IntegrityModel {
      * @param pillarIds The pillars to mark dirty
      * @param collectionID The collection to mark dirty
      */
-    private void markPillarsDirty(JCS cache, Collection<String> pillarIds, String collectionId) {
+    private void markPillarsDirty(JCS cache, Collection<String> pillarIds, String collectionID) {
         for (String pillarID:pillarIds) {
             try {
-                cache.getElementAttributes(getCacheID(pillarID, collectionId))
+                cache.getElementAttributes(getCacheID(pillarID, collectionID))
                         .setMaxLifeSeconds(refreshPeriodAfterDirtyMark);
             } catch (CacheException ce) {
                 log.warn("Failed to read cache.", ce);
@@ -294,9 +300,9 @@ public class IntegrityCache implements IntegrityModel {
      * @param cache The cache to use.
      * @param collectionID The collection to mark dirty
      */
-    private void markDirty(JCS cache, String collectionId) {
+    private void markDirty(JCS cache, String collectionID) {
         try {
-            cache.getElementAttributes(collectionId).setMaxLifeSeconds(refreshPeriodAfterDirtyMark);
+            cache.getElementAttributes(collectionID).setMaxLifeSeconds(refreshPeriodAfterDirtyMark);
         } catch (CacheException ce) {
             log.warn("Failed to read cache.", ce);
         }
