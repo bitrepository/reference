@@ -206,8 +206,9 @@ public class RestIntegrityService {
         Date lastIngest = service.getDateForNewestFileInCollection(collectionID);
         Long collectionDataSize = service.getCollectionSize(collectionID);
         Long numberOfFiles = service.getNumberOfFilesInCollection(collectionID);
+        String lastIngestStr = lastIngest == null ? "No files ingested yet" : TimeUtils.shortDate(lastIngest);
         try {
-            obj.put("lastIngest", TimeUtils.shortDate(lastIngest == null ? new Date(0) : lastIngest));
+            obj.put("lastIngest", lastIngestStr);
             obj.put("collectionSize", FileSizeUtils.toHumanShort(collectionDataSize == null ? 0 : collectionDataSize));
             obj.put("numberOfFiles", numberOfFiles == null ? 0 : numberOfFiles);
         } catch (JSONException e) {
