@@ -26,6 +26,7 @@ package org.bitrepository.integrityservice.web;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -202,10 +203,13 @@ public class RestIntegrityService {
     @Produces(MediaType.APPLICATION_JSON)
     public String getCollectionInformation(@QueryParam("collectionID") String collectionID) {
         JSONObject obj = new JSONObject();
+        Date lastIngest = service.getDateForNewestFileInCollection(collectionID);
+        Long collectionDataSize = service.getCollectionSize(collectionID);
+        Long numberOfFiles = service.getNumberOfFilesInCollection(collectionID);
         try {
-            obj.put("lastIngest", TimeUtils.shortDate(service.getDateForNewestFileInCollection(collectionID)));
-            obj.put("collectionSize", FileSizeUtils.toHumanShort(service.getCollectionSize(collectionID)));
-            obj.put("numberOfFiles", service.getNumberOfFilesInCollection(collectionID));
+            obj.put("lastIngest", TimeUtils.shortDate(lastIngest == null ? new Date(0) : lastIngest));
+            obj.put("collectionSize", FileSizeUtils.toHumanShort(collectionDataSize == null ? 0 : collectionDataSize));
+            obj.put("numberOfFiles", numberOfFiles == null ? 0 : numberOfFiles);
         } catch (JSONException e) {
             obj = (JSONObject) JSONObject.NULL;
         }
