@@ -23,6 +23,7 @@ package org.bitrepository.alarm.handling.handlers;
 
 import org.bitrepository.alarm.handling.AlarmHandler;
 import org.bitrepository.alarm.store.AlarmStore;
+import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,9 @@ public class AlarmStorer implements AlarmHandler {
     @Override
     public void handleAlarm(AlarmMessage message) {
         log.debug("Adding alarm from message '{}'", message);
-        store.addAlarm(message.getAlarm());
+        Alarm alarm = message.getAlarm();
+        alarm.setCollectionID(message.getCollectionID());
+        store.addAlarm(alarm);
     }
     
     @Override
