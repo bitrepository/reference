@@ -43,9 +43,12 @@ public class AlarmDatabaseExtractionModel {
     private int maxCount;
     /** @see getAscending().*/
     private boolean ascending;
+    /** @see getCollectionID(). */
+    private String collectionID;
     
     /**
      * Constructor.
+     * @param collectionID The id of the collection, may be null.
      * @param componentId The id of the component.
      * @param alarmCode The alarm code.
      * @param startDate The earliest date to restrict the extraction.
@@ -53,8 +56,9 @@ public class AlarmDatabaseExtractionModel {
      * @param fileID The id of the file.
      * @param maxCount The maximum count of alarms to extract. If null, then set to maximum value for Integer.
      */
-    public AlarmDatabaseExtractionModel(String componentId, AlarmCode alarmCode, Date startDate, Date endDate, 
+    public AlarmDatabaseExtractionModel(String collectionID, String componentId, AlarmCode alarmCode, Date startDate, Date endDate, 
             String fileID, Integer maxCount, boolean ascending) {
+        this.collectionID = collectionID;
         this.componentId = componentId;
         this.alarmCode = alarmCode;
         this.startDate = startDate;
@@ -173,4 +177,19 @@ public class AlarmDatabaseExtractionModel {
     public void setAscending(boolean ascending) {
         this.ascending = ascending;
     }   
+    
+    /**
+     * @return The ID of the collection. 
+     */
+    public String getCollectionID() {
+        return collectionID;
+    }
+    
+    /**
+     * @See getCollectionID(); 
+     * @param collectionID The ID of the collection.
+     */
+    public void setCollectionID(String collectionID) {
+        this.collectionID = collectionID;
+    }
 }

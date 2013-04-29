@@ -50,6 +50,8 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
     String fileId = "TEST-FILE-ID-" + new Date().getTime();
     String component1 = "ACTOR-1";
     String component2 = "ACTOR-2";
+    String collection1 = "collection1";
+    String collection2 = "collection2";
     String DATABASE_NAME = "alarmservicedb";
     String DATABASE_DIRECTORY = "test-data";
     String DATABASE_URL = "jdbc:derby:" + DATABASE_DIRECTORY + "/" + DATABASE_NAME;
@@ -150,6 +152,13 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         Assert.assertEquals(extractedAlarms.get(0).getAlarmCode(), AlarmCode.CHECKSUM_ALARM);
         Assert.assertEquals(extractedAlarms.get(0).getFileID(), fileId);
         
+        addStep("Try to extract the alarms for the collection id.", "Should deliver one alarm.");
+        extractedAlarms = database.extractAlarms(null, null, null, null, null, collection1, null, false);
+        Assert.assertEquals(extractedAlarms.size(), 1);
+        Assert.assertEquals(extractedAlarms.get(0).getAlarmRaiser(), component1);
+        Assert.assertEquals(extractedAlarms.get(0).getCollectionID(), collection1);
+        Assert.assertEquals(extractedAlarms.get(0).getAlarmCode(), AlarmCode.COMPONENT_FAILURE);
+                
         addStep("Try to extract the oldest alarm from the database.", "Should deliver one alarm.");
         extractedAlarms = database.extractAlarms(null, null, null, null, null, null, 1, true);
         Assert.assertEquals(extractedAlarms.size(), 1);
@@ -203,6 +212,7 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         alarm1.setAlarmText("The first alarm: Component failure at epoch.");
         alarm1.setFileID(null);
         alarm1.setOrigDateTime(CalendarUtils.getEpoch());
+        alarm1.setCollectionID(collection1);
         res.add(alarm1);
 
         Alarm alarm2 = new Alarm();
@@ -211,6 +221,7 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         alarm2.setAlarmText("The second alarm: Current checksum alarm.");
         alarm2.setFileID(fileId);
         alarm2.setOrigDateTime(CalendarUtils.getNow());
+        alarm2.setCollectionID(collection2);
         res.add(alarm2);
 
         return res;

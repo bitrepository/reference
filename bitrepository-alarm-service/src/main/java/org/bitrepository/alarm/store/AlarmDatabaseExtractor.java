@@ -48,6 +48,7 @@ import static org.bitrepository.alarm.store.AlarmDatabaseConstants.*;
  * ALARM_TEXT, 
  * ALARM_DATE, 
  * ALARM_FILE_ID
+ * ALARM_COLLECTION_ID
  */
 public class AlarmDatabaseExtractor {
     /** The log.*/
@@ -63,6 +64,8 @@ public class AlarmDatabaseExtractor {
     private static final int POSITION_ALARM_DATE = 4;
     /** Position of the file id in the extraction.*/
     private static final int POSITION_FILE_ID = 5;
+    /** Position of the collection id in the extraction. */
+    private static final int POSITION_COLLECTION_ID = 6;
     
     /** The model containing the elements for the restriction.*/
     private final AlarmDatabaseExtractionModel model;
@@ -116,7 +119,7 @@ public class AlarmDatabaseExtractor {
                     conn.close();
                 }
             }
-            log.debug("Extracted the audit trails: {}", res);
+            log.debug("Extracted the alarms: {}", res);
             
             return res;
         } catch (Exception e) {
@@ -142,6 +145,7 @@ public class AlarmDatabaseExtractor {
         alarm.setAlarmText(resultSet.getString(POSITION_ALARM_TEXT));
         alarm.setFileID(resultSet.getString(POSITION_FILE_ID));
         alarm.setOrigDateTime(CalendarUtils.getFromMillis(resultSet.getTimestamp(POSITION_ALARM_DATE).getTime()));
+        alarm.setCollectionID(resultSet.getString(POSITION_COLLECTION_ID));
         
         return alarm;
     }
@@ -159,7 +163,8 @@ public class AlarmDatabaseExtractor {
         res.append(ALARM_CODE + ", ");
         res.append(ALARM_TEXT + ", ");
         res.append(ALARM_DATE + ", ");
-        res.append(ALARM_FILE_ID + " ");
+        res.append(ALARM_FILE_ID + ", ");
+        res.append(ALARM_COLLECTION_ID + " ");
         
         return res.toString();
     }
@@ -195,6 +200,11 @@ public class AlarmDatabaseExtractor {
         if(model.getFileID() != null) {
             nextArgument(res);
             res.append(ALARM_FILE_ID + " = ?");
+        }
+        
+        if(model.getCollectionID() != null) {
+            nextArgument(res);
+            res.append(ALARM_COLLECTION_ID + " = ?");
         }
         
         return res.toString();
@@ -238,6 +248,11 @@ public class AlarmDatabaseExtractor {
         if(model.getFileID() != null) {
             res.add(model.getFileID());
         }
+        
+        if(model.getCollectionID() != null) {
+            res.add(model.getCollectionID());
+        }
+            
         
         return res.toArray();
     }

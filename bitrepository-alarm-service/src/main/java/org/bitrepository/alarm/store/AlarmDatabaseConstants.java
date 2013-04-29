@@ -42,6 +42,8 @@ public class AlarmDatabaseConstants {
     public static final String ALARM_DATE = "alarm_date";
     /** The name of the file id field in the alarm table.*/
     public static final String ALARM_FILE_ID = "file_id";
+    /** The name of the collection id field in the alarm table */
+    public static final String ALARM_COLLECTION_ID = "collection_id";
     
     /** The name of the component table.*/
     public static final String COMPONENT_TABLE = "component";

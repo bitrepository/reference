@@ -27,6 +27,7 @@ import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_DATE;
 import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_FILE_ID;
 import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TABLE;
 import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TEXT;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_COLLECTION_ID;
 import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_GUID;
 import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_ID;
 import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_TABLE;
@@ -43,7 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles the ingestion of the Audit Events into the database.
+ * Handles the ingest of the Alarm messages into the database.
  * 
  * Ingested in the following order:
  * ALARM_COMPONENT_GUID
@@ -51,6 +52,7 @@ import org.slf4j.LoggerFactory;
  * ALARM_TEXT
  * ALARM_DATE
  * ALARM_FILE_ID
+ * ALARM_COLLECTION_ID
  */
 public class AlarmDatabaseIngestor {
     /** The log.*/
@@ -92,6 +94,7 @@ public class AlarmDatabaseIngestor {
         addElement(res, alarm.getAlarmText(), ALARM_TEXT);
         addElement(res, alarm.getOrigDateTime(), ALARM_DATE);
         addElement(res, alarm.getFileID(), ALARM_FILE_ID);
+        addElement(res, alarm.getCollectionID(), ALARM_COLLECTION_ID);
         
         return res.toString();
     }
@@ -128,6 +131,7 @@ public class AlarmDatabaseIngestor {
         addArgument(res, alarm.getAlarmText());
         addArgument(res, alarm.getOrigDateTime());
         addArgument(res, alarm.getFileID());
+        addArgument(res, alarm.getCollectionID());
         
         return res.toString();
     }
@@ -175,6 +179,10 @@ public class AlarmDatabaseIngestor {
         
         if(alarm.getFileID() != null) {
             res.add(alarm.getFileID());
+        }
+        
+        if(alarm.getCollectionID() != null) {
+            res.add(alarm.getCollectionID());
         }
         
         return res.toArray();

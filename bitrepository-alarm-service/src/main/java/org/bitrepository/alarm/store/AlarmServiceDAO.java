@@ -26,10 +26,8 @@ import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
-import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.common.settings.Settings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.bitrepository.service.database.DBConnector;
 
 /**
  * The interface to the database for storing the Alarms.
@@ -56,8 +54,8 @@ public class AlarmServiceDAO implements AlarmStore {
     @Override
     public List<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate,
             String fileID, String collectionID, Integer count, boolean ascending) {
-        AlarmDatabaseExtractionModel extractModel = new AlarmDatabaseExtractionModel(componentID, alarmCode, minDate, 
-                maxDate, fileID, count, ascending);
+        AlarmDatabaseExtractionModel extractModel = new AlarmDatabaseExtractionModel(collectionID, componentID, alarmCode, 
+                minDate, maxDate, fileID, count, ascending);
         
         AlarmDatabaseExtractor extractor = new AlarmDatabaseExtractor(extractModel, dbConnector);
         return extractor.extractAlarms();

@@ -36,13 +36,14 @@ public class AlarmDatabaseExtractionModelTest extends ExtendedTestCase {
         boolean ascending = true;
         
         addStep("Create an empty model", "Should be populated with nulls.");
-        AlarmDatabaseExtractionModel model = new AlarmDatabaseExtractionModel(null, null, null, null, null, null, ascending);
+        AlarmDatabaseExtractionModel model = new AlarmDatabaseExtractionModel(null, null, null, null, null, null, null, ascending);
         
         Assert.assertNull(model.getAlarmCode());
         Assert.assertNull(model.getComponentId());
         Assert.assertNull(model.getEndDate());
         Assert.assertNull(model.getFileID());
         Assert.assertNull(model.getStartDate());
+        Assert.assertNull(model.getCollectionID());
         Assert.assertEquals(model.getAscending(), ascending);
         Assert.assertEquals(model.getMaxCount().intValue(), Integer.MAX_VALUE);
         
@@ -80,5 +81,10 @@ public class AlarmDatabaseExtractionModelTest extends ExtendedTestCase {
         Date defaultStartDate = new Date(123456789);
         model.setStartDate(defaultStartDate);
         Assert.assertEquals(model.getStartDate(), defaultStartDate);
+        
+        addStep("Test the CollectionID", "Should be able to put a new one in and extract it again.");
+        String collectionID = "collection1";
+        model.setCollectionID(collectionID);
+        Assert.assertEquals(model.getCollectionID(), collectionID);
     }
 }
