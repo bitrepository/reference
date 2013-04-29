@@ -76,11 +76,13 @@ CREATE TABLE pillarstats (
     pillarstat_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     stat_key BIGINT NOT NULL,
     pillar_key BIGINT NOT NULL,
+    collection_key BIGINT NOT NULL,
     file_count BIGINT, 
     file_size BIGINT,  
     missing_files_count BIGINT,
     checksum_errors_count BIGINT, 
     UNIQUE (stat_key, pillar_key), 
     FOREIGN KEY (stat_key) REFERENCES stats(stat_key),
-    FOREIGN KEY (pillar_key) REFERENCES pillar(pillar_key)
+    FOREIGN KEY (pillar_key) REFERENCES pillar(pillar_key),
+    FOREIGN KEY (collection_key) REFERENCES collections(collection_key)
 );
