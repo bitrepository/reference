@@ -79,7 +79,7 @@ public class IntegrityCollectorEventHandler implements EventHandler {
             finalEventQueue.add(event);
         } else if(event.getEventType() == OperationEventType.FAILED) {
             log.warn("Failure: " + event.toString());
-            alerter.operationFailed("Failed integrity operation: " + event.toString());
+            alerter.operationFailed("Failed integrity operation: " + event.toString(), event.getCollectionID());
             finalEventQueue.add(event);
         } else {
             log.debug("Received event: " + event.toString());

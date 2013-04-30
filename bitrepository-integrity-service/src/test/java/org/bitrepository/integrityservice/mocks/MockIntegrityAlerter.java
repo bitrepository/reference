@@ -28,7 +28,7 @@ public class MockIntegrityAlerter implements IntegrityAlerter {
     
     private int callsForIntegrityFailed = 0;
     @Override
-    public void integrityFailed(IntegrityReportModel report) {
+    public void integrityFailed(IntegrityReportModel report, String collectionID) {
         callsForIntegrityFailed++;
     }
     public int getCallsForIntegrityFailed() {
@@ -37,7 +37,7 @@ public class MockIntegrityAlerter implements IntegrityAlerter {
     
     private int callsForOperationFailed = 0;
     @Override
-    public void operationFailed(String issue) {
+    public void operationFailed(String issue, String collectionID) {
         callsForOperationFailed++;
     }
     public int getCallsForOperationFailed() {

@@ -115,6 +115,7 @@ public class AlarmDispatcher extends MessageDispatcher {
         message.setCorrelationID(UUID.randomUUID().toString());
         message.setReplyTo(settings.getContributorDestinationID());
         message.setDestination(settings.getAlarmDestination());
+        message.setCollectionID(alarm.getCollectionID());
         
         log.warn("Sending alarm: " + alarm);
         dispatchMessage(message);

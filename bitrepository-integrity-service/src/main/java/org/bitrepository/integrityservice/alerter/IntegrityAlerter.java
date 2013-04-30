@@ -30,12 +30,14 @@ public interface IntegrityAlerter {
     /**
      * Sends an alarm based on an integrity report.
      * @param report The report to base the alarm upon.
+     * @param collectionID The ID of the collection that the alarm belongs to, may be null
      */
-    void integrityFailed(IntegrityReportModel report);
+    void integrityFailed(IntegrityReportModel report, String collectionID);
     
     /**
      * Send an alarm based on an exception.
      * @param issue The reason for the exception.
+     * @param collectionID The ID of the collection that the alarm belongs to, may be null
      */
-    void operationFailed(String issue);
+    void operationFailed(String issue, String collectionID);
 }

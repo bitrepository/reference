@@ -138,7 +138,7 @@ public final class IntegrityServiceComponentFactory {
                 cachedIntegrityInformationStorage = new IntegrityCache(new IntegrityDatabase(settings));
             } catch (RuntimeException e) {
                 String errMsg = "Could not instantiate the IntegrityInformationStorage: " + e.getMessage();
-                alarmDispatcher.operationFailed(errMsg);
+                alarmDispatcher.operationFailed(errMsg, null);
                 throw new IllegalStateException(errMsg, e);
             }
         }

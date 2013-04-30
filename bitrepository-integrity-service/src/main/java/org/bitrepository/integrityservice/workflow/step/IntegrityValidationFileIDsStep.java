@@ -70,7 +70,7 @@ public class IntegrityValidationFileIDsStep extends AbstractWorkFlowStep {
             log.debug("no files are missing at any pillar.");
         } else {
             log.warn("Found the following integrity:\n" + report.generateReport());
-            dispatcher.integrityFailed(report);
+            dispatcher.integrityFailed(report, collectionId);
         }
     }
 

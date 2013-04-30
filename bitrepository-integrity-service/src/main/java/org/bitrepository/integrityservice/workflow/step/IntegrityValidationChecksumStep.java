@@ -66,7 +66,7 @@ public class IntegrityValidationChecksumStep extends AbstractWorkFlowStep {
             log.debug("No checksum disagreements for any files.");
         } else {
             log.warn("Found the following integrity:\n" + report.generateReport());
-            dispatcher.integrityFailed(report);
+            dispatcher.integrityFailed(report, collectionId);
         }
     }
 
