@@ -13,10 +13,10 @@
   <div id="pageMenu"></div>
   <div class="container-fluid">
     <div class="row-fluid">
-      <div class="span10">
-        <div class="span10" style="height:0px; min-height:0px"></div>
-        <div class="span10"><h2>Alarm service</h2></div>
-        <div class="span10"> 
+      <div class="span11">
+        <div class="span11" style="height:0px; min-height:0px"></div>
+        <div class="span11"><h2>Alarm service</h2></div>
+        <div class="span11"> 
           <form class="form-inline">
             <legend>Alarm display filters</legend>
             <label> From date: <br>
@@ -78,13 +78,14 @@
             </label>
           </form>
         </div>
-        <div class="span10">  
+        <div class="span11">  
           <legend>Alarms</legend>
           <table class="table table-bordered table-striped">
             <thead>
               <tr>
                 <th>Date</th>
                 <th>Raiser</th>
+                <th>CollectionID</th>
                 <th>Alarm code</th>
                 <th>Description</th>
               </tr>
@@ -128,6 +129,7 @@
           for (var i = 0; i < j.length; i++) {
             htmlTableBody += "<tr><td>" + j[i].OrigDateTime + 
                              "</td><td>" + j[i].AlarmRaiser +
+                             "</td><td>" + j[i].CollectionID +
                              "</td> <td>" + j[i].AlarmCode + 
                              "</td> <td>" + j[i].AlarmText + 
                              "</td></tr>";
