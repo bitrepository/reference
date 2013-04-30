@@ -176,6 +176,7 @@ public class RestAlarmService {
             obj.put("AlarmRaiser", alarm.getAlarmRaiser());
             obj.put("AlarmCode", alarm.getAlarmCode());
             obj.put("AlarmText", alarm.getAlarmText());
+            obj.put("CollectionID", alarm.getCollectionID() == null ? "" : alarm.getCollectionID());
             return obj;
         } catch (JSONException e) {
             return (JSONObject) JSONObject.NULL;
