@@ -30,20 +30,22 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.commandline.output.DefaultOutputHandler;
-import org.bitrepository.commandline.output.OutputHandler;
-import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
 import org.bitrepository.commandline.utils.CompleteEventAwaiter;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.http.HttpFileExchange;
-import org.bitrepository.protocol.security.SecurityManager;
 
 /**
  * Perform the GetFile operation.
  */
-public class GetFile {
+public class GetFile extends CommandLineClient {
+    /** For handling the output.*/
+    private final static String COMPONENT_ID = "GetFileClient";
+    /** The client for performing the GetFile operation.*/
+    private final GetFileClient client;
+    /** The URL for where the file from the GetFile*/
+    private URL fileUrl = null;
+
     /**
      * @param args The arguments for performing the GetFile operation.
      */
@@ -51,70 +53,29 @@ public class GetFile {
         GetFile getfile = new GetFile(args);
         getfile.performOperation();
     }
-    
-    /** For handling the output.*/
-    private final OutputHandler output = new DefaultOutputHandler(getClass());
-    
-    /** The component id. */
-    private final static String COMPONENT_ID = "GetFileClient";
-    
-    /** The settings for the get file client.*/
-    private final Settings settings;
-    /** The security manager.*/
-    private final SecurityManager securityManager;
-    /** The client for performing the GetFile operation.*/
-    private final GetFileClient client;
-    /** The handler for the command line arguments.*/
-    private final CommandLineArgumentsHandler cmdHandler;
-    /** The URL for where the file from the GetFile*/
-    private URL fileUrl = null;
-    
+
     /**
-     * Constructor.
      * @param args The command line arguments for defining the operation.
      */
     private GetFile(String ... args) {
-        output.startupInfo("Initialising arguments for the GetFile operation.");
-        cmdHandler = new CommandLineArgumentsHandler();
-        try {
-            createOptionsForCmdArgumentHandler();
-            cmdHandler.parseArguments(args);
-        } catch (Exception e) {
-            output.error(cmdHandler.listArguments(), e);
-            System.exit(Constants.EXIT_ARGUMENT_FAILURE);
-        }
-        
-        settings = cmdHandler.loadSettings(COMPONENT_ID);
-        securityManager = cmdHandler.loadSecurityManager(settings);
-        
-        output.debug("Instantiating the GetFileClient");
+        super(args);
         client = AccessComponentFactory.getInstance().createGetFileClient(settings, securityManager, 
                 COMPONENT_ID);
+    }
 
+    @Override
+    protected String getComponentID() {
+        return COMPONENT_ID;
+    }
+
+    @Override
+    protected boolean isFileIDRequered() {
+        return true;
     }
     
-    /**
-     * Creates the options for the command line argument handler.
-     */
-    private void createOptionsForCmdArgumentHandler() {
-        cmdHandler.createDefaultOptions();
-
-        Option collectionOption = new Option(Constants.COLLECTION_ID_ARG, Constants.HAS_ARGUMENT,
-                "[OPTIONAL] The id for the collection to "
-                        + "retrieve the checksum for. If no argument, then first collection in the settings are used.");
-        collectionOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
-        cmdHandler.addOption(collectionOption);
-
-        Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT, "The id for the file to retrieve.");
-        fileOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
-        cmdHandler.addOption(fileOption);
-        
-        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, "[OPTIONAL] The id of the "
-                + "pillar where the file should be retrieved from. If no argument, then the file will be retrieved "
-                + "from the fastest pillars.");
-        pillarOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
-        cmdHandler.addOption(pillarOption);
-        
+    @Override
+    protected void createOptionsForCmdArgumentHandler() {
+        super.createOptionsForCmdArgumentHandler();
         Option checksumOption = new Option(Constants.LOCATION, Constants.HAS_ARGUMENT, 
                 "[OPTIONAL] The location where the file should be placed (either total path or directory). "
                 + "If no argument, then in the directory where the script is located.");
@@ -126,7 +87,7 @@ public class GetFile {
      * Perform the GetFile operation.
      */
     public void performOperation() {
-        output.debug("Performing the GetFile operation.");
+        output.startupInfo("Performing the GetFile operation.");
         OperationEvent finalEvent = performConversation();
         output.debug("Results of the GetFile operation for the file '"
                 + cmdHandler.getOptionValue(Constants.FILE_ARG) + "'" 
@@ -158,18 +119,6 @@ public class GetFile {
         }
         
         return eventHandler.getFinish();
-    }
-
-    /**
-     * @return The collection to use. If no collection has been idicated the first collection in the settings is used
-     * . .
-     */
-    public String getCollectionID() {
-        if(cmdHandler.hasOption(Constants.COLLECTION_ID_ARG)) {
-            return cmdHandler.getOptionValue(Constants.COLLECTION_ID_ARG);
-        } else {
-            return settings.getCollections().get(0).getID();
-        }
     }
 
     /**

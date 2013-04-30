@@ -35,7 +35,7 @@ public interface OutputHandler {
     
     /**
      * Handles the startup information for the commandline client.  
-     * @param The information to be handled.
+     * @param info The information to be handled.
      */
     public void startupInfo(String info);
     
@@ -53,6 +53,12 @@ public interface OutputHandler {
     public void warn(String warning);
     
     /** 
+     * Handles an error.
+     * @param error The message for the error.
+     */
+    public void error(String error);
+
+    /**
      * Handles an error.
      * @param error The message for the error.
      * @param e The throwable for the error.

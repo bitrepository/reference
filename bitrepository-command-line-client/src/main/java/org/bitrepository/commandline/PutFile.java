@@ -25,17 +25,12 @@ import java.io.File;
 import java.net.URL;
 
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.ParseException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.commandline.output.DefaultOutputHandler;
-import org.bitrepository.commandline.output.OutputHandler;
-import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
 import org.bitrepository.commandline.utils.CompleteEventAwaiter;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
@@ -43,12 +38,17 @@ import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.security.SecurityManager;
 
 /**
  * Putting a file to the collection.
  */
-public class PutFile {
+public class PutFile extends CommandLineClient {
+    /** The component id. */
+    private final static String COMPONENT_ID = "PutFileClient";
+
+    /** The client for performing the PutFile operation.*/
+    private final PutFileClient client;
+
     /**
      * @param args The arguments for performing the PutFile operation.
      */
@@ -56,49 +56,31 @@ public class PutFile {
         PutFile putfile = new PutFile(args);
         putfile.performOperation();
     }
-    
-    /** For handling the output.*/
-    private final OutputHandler output = new DefaultOutputHandler(getClass());
-    
-    /** The component id. */
-    private final static String COMPONENT_ID = "PutFileClient";
-    
-    /** The settings for the put file client.*/
-    private final Settings settings;
-    /** The security manager.*/
-    private final SecurityManager securityManager;
-    /** The client for performing the PutFile operation.*/
-    private final PutFileClient client;
-    /** The handler for the command line arguments.*/
-    private final CommandLineArgumentsHandler cmdHandler;
-    
+
     /**
      * 
      * @param args
      */
     private PutFile(String ... args) {
-        output.startupInfo("Initialising arguments for the PutFile operation");
-        cmdHandler = new CommandLineArgumentsHandler();
-        try {
-            createOptionsForCmdArgumentHandler();
-            cmdHandler.parseArguments(args);
-        } catch (ParseException e) {
-            output.error(cmdHandler.listArguments(), e);
-            System.exit(Constants.EXIT_ARGUMENT_FAILURE);
-        }
-        
-        settings = cmdHandler.loadSettings(COMPONENT_ID);
-        securityManager = cmdHandler.loadSecurityManager(settings);
-        
-        output.debug("Instantiating the PutFileClient");
+        super(args);
         client = ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager, COMPONENT_ID);
     }
-    
+
+    @Override
+    protected String getComponentID() {
+        return COMPONENT_ID;
+    }
+
+    @Override
+    protected boolean isFileIDRequered() {
+        return false;
+    }
+
     /**
      * Perform the PutFile operation.
      */
     public void performOperation() {
-        output.debug("Performing the PutFile operation.");
+        output.startupInfo("Performing the PutFile operation.");
         OperationEvent finalEvent = putTheFile();
         output.completeEvent("Results of the PutFile operation for the file '" + getFileIDForMessage(), finalEvent);
         if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
@@ -108,32 +90,20 @@ public class PutFile {
         }
     }
     
-    /**
-     * Creates the options for the command line argument handler.
-     */
-    private void createOptionsForCmdArgumentHandler() {
-        cmdHandler.createDefaultOptions();
+    @Override
+    protected void createOptionsForCmdArgumentHandler() {
+        super.createOptionsForCmdArgumentHandler();
 
-        Option collectionOption = new Option(Constants.COLLECTION_ID_ARG, Constants.HAS_ARGUMENT,
-                "[OPTIONAL] The id for the collection to "
-                        + "retrieve the checksum for. If no argument, then first collection in the settings are used.");
-        collectionOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
-        cmdHandler.addOption(collectionOption);
-
-        Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT, 
+        Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT,
                 "The path to the file, which is wanted to be put");
         fileOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
         cmdHandler.addOption(fileOption);
-        
-        Option checksumOption = new Option(Constants.FILE_ID_ARG, Constants.HAS_ARGUMENT, 
-                "[OPTIONAL] A id for the file (default is the name of the file).");
-        checksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
-        cmdHandler.addOption(checksumOption);
-        
+
         Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT, 
                 "[OPTIONAL] The algorithm of checksum to request in the response from the pillars.");
         checksumTypeOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumTypeOption);
+
         Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT, 
                 "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
         checksumSaltOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
@@ -177,19 +147,6 @@ public class PutFile {
         
         return file;
     }
-
-    /**
-     * @return The collection to use. If no collection has been idicated the first collection in the settings is used
-     * . .
-     */
-    public String getCollectionID() {
-        if(cmdHandler.hasOption(Constants.COLLECTION_ID_ARG)) {
-            return cmdHandler.getOptionValue(Constants.COLLECTION_ID_ARG);
-        } else {
-            return settings.getCollections().get(0).getID();
-        }
-    }
-
 
     /**
      * Extracts the id of the file to be put.

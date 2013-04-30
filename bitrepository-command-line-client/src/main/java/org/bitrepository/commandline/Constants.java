@@ -53,7 +53,7 @@ public class Constants {
     /** The pillar argument.*/
     public static final String PILLAR_ARG = "p";
     /** The checksum of the file.*/
-    public static final String CHECKSUM_ARG = "c";
+    public static final String CHECKSUM_ARG = "C";
     /** The argument for the type of checksum to request.*/
     public static final String REQUEST_CHECKSUM_TYPE_ARG = "R";
     /** The argument for the salt of the checksum to request.*/

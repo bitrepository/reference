@@ -27,22 +27,21 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.commandline.output.DefaultOutputHandler;
-import org.bitrepository.commandline.output.OutputHandler;
-import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
 import org.bitrepository.commandline.utils.CompleteEventAwaiter;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
-import org.bitrepository.protocol.security.SecurityManager;
 
 /**
  * Deleting a file from the collection.
  */
-public class DeleteFile {
+public class DeleteFile extends CommandLineClient {
+    private final static String COMPONENT_ID = "DeleteFileClient";
+    /** The client for performing the DeleteFile operation.*/
+    private final DeleteFileClient client;
+
     /**
      * @param args The arguments for performing the DeleteFile operation.
      */
@@ -51,63 +50,28 @@ public class DeleteFile {
         deletefile.performOperation();
     }
 
-    /** For handling the output.*/
-    private final OutputHandler output = new DefaultOutputHandler(getClass());
-    /** The component id. */
-    private final static String COMPONENT_ID = "DeleteFileClient";
-
-    /** The settings for the delete file client.*/
-    private final Settings settings;
-    /** The security manager.*/
-    private final SecurityManager securityManager;
-    /** The client for performing the DeleteFile operation.*/
-    private final DeleteFileClient client;
-    /** The handler for the command line arguments.*/
-    private final CommandLineArgumentsHandler cmdHandler;
-
     /**
-     * Constructor.
      * @param args The command line arguments for defining the operation.
      */
     private DeleteFile(String ... args) {
-        output.startupInfo("Initialising arguments for the DeleteFile operation");
-        cmdHandler = new CommandLineArgumentsHandler();
-
-        try {
-            createOptionsForCmdArgumentHandler();
-            cmdHandler.parseArguments(args);
-        } catch (Exception e) {
-            output.error(cmdHandler.listArguments(), e);
-            System.exit(Constants.EXIT_ARGUMENT_FAILURE);
-        }
-
-        settings = cmdHandler.loadSettings(COMPONENT_ID);
-        securityManager = cmdHandler.loadSecurityManager(settings);
-
-        output.debug("Instantiating the DeleteFileClient");
+        super(args);
         client = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, securityManager,
                 COMPONENT_ID);
     }
 
-    /**
-     * Creates the options for the command line argument handler.
-     */
-    private void createOptionsForCmdArgumentHandler() {
-        cmdHandler.createDefaultOptions();
+    @Override
+    protected String getComponentID() {
+        return COMPONENT_ID;
+    }
 
-        Option collectionOption = new Option(Constants.COLLECTION_ID_ARG, Constants.HAS_ARGUMENT,
-                "[OPTIONAL] The id for the collection to "
-                        + "retrieve the checksum for. If no argument, then first collection in the settings are used.");
-        collectionOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
-        cmdHandler.addOption(collectionOption);
+    @Override
+    protected boolean isFileIDRequered() {
+        return false;
+    }
 
-        Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT, "The id for the file to delete.");
-        fileOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
-        cmdHandler.addOption(fileOption);
-
-        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, "The id of the pillar"
-                + " where the file should be delete. If no argument, then the file will be deleted at all pillars.");
-        cmdHandler.addOption(pillarOption);
+    @Override
+    protected void createOptionsForCmdArgumentHandler() {
+        super.createOptionsForCmdArgumentHandler();
 
         Option checksumOption = new Option(Constants.CHECKSUM_ARG, Constants.HAS_ARGUMENT,
                 "[OPTIONAL] The checksum of the file to be delete.");
@@ -157,18 +121,6 @@ public class DeleteFile {
                 "Delete file from commandline for file '" + fileId + "' at pillar '" + pillarId + "'.");
 
         return eventHandler.getFinish();
-    }
-
-    /**
-     * @return The collection to use. If no collection has been idicated the first collection in the settings is used
-     * . .
-     */
-    public String getCollectionID() {
-        if(cmdHandler.hasOption(Constants.COLLECTION_ID_ARG)) {
-            return cmdHandler.getOptionValue(Constants.COLLECTION_ID_ARG);
-        } else {
-            return settings.getCollections().get(0).getID();
-        }
     }
 
     /**

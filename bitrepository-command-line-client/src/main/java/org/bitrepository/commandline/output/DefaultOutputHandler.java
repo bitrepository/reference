@@ -29,11 +29,9 @@ import org.slf4j.LoggerFactory;
  * The default handler of the output from the Commandline Client.
  */
 public class DefaultOutputHandler implements OutputHandler {
-    /** The log. */
     private final Logger log;
 
     /**
-     * Constructor.
      * @param c The class for whom to handle the output.
      */
     @SuppressWarnings("rawtypes")
@@ -62,6 +60,11 @@ public class DefaultOutputHandler implements OutputHandler {
         System.err.println(error);
         e.printStackTrace(System.err);
         log.error(error, e);
+    }
+
+    @Override
+    public void error(String error) {
+        System.err.println(error);
     }
 
     @Override
