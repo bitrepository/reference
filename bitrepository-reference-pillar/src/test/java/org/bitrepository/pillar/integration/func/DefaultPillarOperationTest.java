@@ -26,6 +26,7 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 
 public abstract class DefaultPillarOperationTest extends DefaultPillarMessagingTest {
+
     protected void assertPositivResponseIsReceived() {
         MessageResponse receivedResponse = receiveResponse();
         Assert.assertEquals(receivedResponse.getResponseInfo().getResponseCode(),

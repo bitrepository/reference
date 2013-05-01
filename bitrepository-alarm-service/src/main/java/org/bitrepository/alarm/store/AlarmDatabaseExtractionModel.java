@@ -43,7 +43,7 @@ public class AlarmDatabaseExtractionModel {
     private int maxCount;
     /** @see getAscending().*/
     private boolean ascending;
-    /** @see getCollectionID(). */
+    /** @see #getCollectionID(). */
     private String collectionID;
     
     /**

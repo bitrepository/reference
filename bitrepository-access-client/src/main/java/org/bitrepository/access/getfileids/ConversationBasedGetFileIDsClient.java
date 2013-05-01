@@ -56,8 +56,8 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
      * @see AbstractClient
      */
     public ConversationBasedGetFileIDsClient(MessageBus messageBus, ConversationMediator conversationMediator,
-                                             Settings settings, String clienID) {
-        super(settings, conversationMediator, messageBus, clienID);
+                                             Settings settings, String clientID) {
+        super(settings, conversationMediator, messageBus, clientID);
     }
 
     @Override

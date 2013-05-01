@@ -33,6 +33,8 @@ import org.bitrepository.modify.deletefile.BlockingDeleteFileClient;
 import org.bitrepository.modify.deletefile.DeleteFileClientTestWrapper;
 import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClientTestWrapper;
+import org.bitrepository.modify.replacefile.BlockingReplaceFileClient;
+import org.bitrepository.modify.replacefile.ReplaceFileClientTestWrapper;
 import org.jaccept.TestEventManager;
 
 /**
@@ -44,6 +46,7 @@ public class ClientProvider {
     private final TestEventManager eventManager;
 
     private BlockingPutFileClient putFileClient;
+    private BlockingReplaceFileClient replaceFileClient;
     private BlockingDeleteFileClient getDeleteFileClient;
     private BlockingGetChecksumsClient getChecksumsClient;
     private BlockingGetFileIDsClient getFileIDsClient;
@@ -75,6 +78,19 @@ public class ClientProvider {
             );
         }
         return putFileClient;
+    }
+
+    public synchronized BlockingReplaceFileClient getReplaceFileClient() {
+        if (replaceFileClient == null) {
+            replaceFileClient = new BlockingReplaceFileClient(
+                    new ReplaceFileClientTestWrapper(
+                            ModifyComponentFactory.getInstance().retrieveReplaceFileClient(
+                                    settings, securityManager, settings.getComponentID()
+                            ), eventManager
+                    )
+            );
+        }
+        return replaceFileClient;
     }
 
     public synchronized BlockingDeleteFileClient getDeleteFileClient() {
