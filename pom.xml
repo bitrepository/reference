@@ -315,6 +315,10 @@
           <version>2.6</version>
         </plugin>
         <plugin>
+          <artifactId>maven-remote-resources-plugin</artifactId>
+          <version>1.4</version>
+        </plugin>
+        <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>2.5</version>
         </plugin>

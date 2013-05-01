@@ -82,8 +82,8 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
 
     @Override
     public void processRequest(ReplaceFileRequest message) throws RequestHandlerException {
+        validateMessage(message);
         try {
-            validateMessage(message);
             sendProgressMessageDownloadNewFile(message);
             downloadTheNewFile(message);
             sendProgressMessageDeleteOldFile(message);

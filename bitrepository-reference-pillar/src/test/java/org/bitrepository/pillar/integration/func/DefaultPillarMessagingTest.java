@@ -37,8 +37,8 @@ public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
 
     @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
     public void missingCollectionIDTest() {
-        addDescription("Verifies the a missing collectionID in the IdentifyRequest is rejected");
-        addStep("Sending a IdentifyRequest without a collectionID.",
+        addDescription("Verifies the a missing collectionID in the request is rejected");
+        addStep("Sending a request without a collectionID.",
                 "The pillar should send a REQUEST_NOT_UNDERSTOOD_FAILURE Response.");
         MessageRequest request = createRequest();
         request.setCollectionID(null);

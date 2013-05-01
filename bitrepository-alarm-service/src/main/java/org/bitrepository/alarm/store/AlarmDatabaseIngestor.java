@@ -21,27 +21,27 @@
  */
 package org.bitrepository.alarm.store;
 
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_CODE;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_COMPONENT_GUID;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_DATE;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_FILE_ID;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TABLE;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TEXT;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_COLLECTION_ID;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_GUID;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_ID;
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_TABLE;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_CODE;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_COLLECTION_ID;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_COMPONENT_GUID;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_DATE;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_FILE_ID;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TABLE;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TEXT;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_GUID;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_ID;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_TABLE;
 
 /**
  * Handles the ingest of the Alarm messages into the database.
@@ -61,8 +61,7 @@ public class AlarmDatabaseIngestor {
     private final DBConnector dbConnector;
     
     /**
-     * Constructor.
-     * @param dbConnection The connector to the database, where the audit trails are to be ingested.
+     * @param dbConnector The connector to the database, where the audit trails are to be ingested.
      */
     public AlarmDatabaseIngestor(DBConnector dbConnector) {
         ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
@@ -192,7 +191,7 @@ public class AlarmDatabaseIngestor {
      * Retrieve the guid for a given component. If the component does not exist within the component table, 
      * then it is created.
      * 
-     * @param contributorId The name of the actor.
+     * @param componentId The name of the alarm producing component.
      * @return The guid of the component with the given name.
      */
     private synchronized long retrieveComponentGuid(String componentId) {

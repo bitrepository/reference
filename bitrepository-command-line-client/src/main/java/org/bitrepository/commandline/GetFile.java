@@ -87,13 +87,15 @@ public class GetFile extends CommandLineClient {
      * Perform the GetFile operation.
      */
     public void performOperation() {
-        output.startupInfo("Performing the GetFile operation.");
+        String fileArg = cmdHandler.getOptionValue(Constants.FILE_ARG);
+        output.startupInfo("Getting " + fileArg);
         OperationEvent finalEvent = performConversation();
         output.debug("Results of the GetFile operation for the file '"
                 + cmdHandler.getOptionValue(Constants.FILE_ARG) + "'" 
                 + ": " + finalEvent);
         if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
             downloadFile();
+            output.resultLine(fileArg + " retrieved");
             System.exit(Constants.EXIT_SUCCESS);
         } else {
             System.exit(Constants.EXIT_OPERATION_FAILURE);

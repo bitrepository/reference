@@ -329,7 +329,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
      * @return A new PutFileClient(Wrapper).
      */
     private ReplaceFileClient createReplaceFileClient() {
-        return new ReplaceClientTestWrapper(new ConversationBasedReplaceFileClient(
+        return new ReplaceFileClientTestWrapper(new ConversationBasedReplaceFileClient(
                 messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()),
                 testEventManager);
     }

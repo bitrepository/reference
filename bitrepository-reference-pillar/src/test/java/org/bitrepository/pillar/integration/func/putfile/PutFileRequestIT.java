@@ -36,14 +36,10 @@ import org.testng.annotations.Test;
 public class PutFileRequestIT extends DefaultPillarOperationTest {
     protected PutFileMessageFactory msgFactory;
     private String pillarDestination;
-    private String testSpecificFileID;
-    private static final Long DEFAULT_FILE_SIZE = 10L;
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest(Method method) throws Exception {
-        msgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
         pillarDestination = lookupPutFileDestination();
-        testSpecificFileID = method.getName() + "File-" + createDate();
         msgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
     }
 
@@ -54,7 +50,8 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
                 "The pillar should generate a OPERATION_ACCEPTED_PROGRESS progress response followed by a " +
                 "OPERATION_COMPLETED final response");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(
-                TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_DOWNLOAD_FILE_ADDRESS, testSpecificFileID, DEFAULT_FILE_SIZE);
+                TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_DOWNLOAD_FILE_ADDRESS, testSpecificFileID,
+                DEFAULT_FILE_SIZE);
         messageBus.sendMessage(putRequest);
 
         PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class);
@@ -70,13 +67,14 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getCorrelationID(), putRequest.getCorrelationID());
         Assert.assertEquals(finalResponse.getFrom(), getPillarID());
+        Assert.assertNull(finalResponse.getChecksumDataForExistingFile());
         Assert.assertEquals(finalResponse.getPillarID(), getPillarID());
     }
 
     @Override
     protected MessageRequest createRequest() {
         return msgFactory.createPutFileRequest(TestFileHelper.getDefaultFileChecksum(), null,
-                DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, DEFAULT_FILE_SIZE);
+                DEFAULT_DOWNLOAD_FILE_ADDRESS, NON_DEFAULT_FILE_ID, DEFAULT_FILE_SIZE);
     }
 
     @Override
@@ -89,7 +87,8 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
     }
 
     public String lookupPutFileDestination() {
-        IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
+        PutFileMessageFactory pillarLookupmMsgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
+        IdentifyPillarsForPutFileRequest identifyRequest = pillarLookupmMsgFactory.createIdentifyPillarsForPutFileRequest(
                 TestFileHelper.DEFAULT_FILE_ID, 0L);
         messageBus.sendMessage(identifyRequest);
         return clientReceiver.waitForMessage(IdentifyPillarsForPutFileResponse.class).getReplyTo();

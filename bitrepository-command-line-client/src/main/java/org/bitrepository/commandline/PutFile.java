@@ -80,7 +80,8 @@ public class PutFile extends CommandLineClient {
      * Perform the PutFile operation.
      */
     public void performOperation() {
-        output.startupInfo("Performing the PutFile operation.");
+        String fileId = retrieveTheName(findTheFile());
+        output.startupInfo("Putting .");
         OperationEvent finalEvent = putTheFile();
         output.completeEvent("Results of the PutFile operation for the file '" + getFileIDForMessage(), finalEvent);
         if(finalEvent.getEventType() == OperationEventType.COMPLETE) {

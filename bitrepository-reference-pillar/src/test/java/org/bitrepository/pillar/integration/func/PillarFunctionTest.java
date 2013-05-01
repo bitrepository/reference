@@ -21,14 +21,17 @@
  */
 package org.bitrepository.pillar.integration.func;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 
 import org.bitrepository.common.exceptions.OperationFailedException;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
+import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.testng.ITestContext;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 
 /**
@@ -36,14 +39,22 @@ import org.testng.annotations.BeforeSuite;
  * ignore responses from other pillars.
  */
 public abstract class PillarFunctionTest extends PillarIntegrationTest {
+    protected static final Long DEFAULT_FILE_SIZE = 10L;
     /** Used for receiving responses from the pillar */
     protected MessageReceiver clientReceiver;
+    protected PutFileMessageFactory msgFactory;
+    protected String testSpecificFileID;
 
     @BeforeSuite(alwaysRun = true)
     @Override
     public void initializeSuite(ITestContext testContext) {
         super.initializeSuite(testContext);
         putDefaultFile();
+    }
+
+    @BeforeMethod(alwaysRun=true)
+    public void generalMethodSetup(Method method) throws Exception {
+        testSpecificFileID = method.getName() + "File-" + createDate();
     }
 
     @Override
@@ -62,7 +73,9 @@ public abstract class PillarFunctionTest extends PillarIntegrationTest {
         try {
             clientProvider.getPutClient().putFile(
                     collectionID, DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
-                null, null, null);
+                null, null, null);clientProvider.getPutClient().putFile(
+            nonDefaultCollectionId, DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
+                    null, null, null);
         } catch (OperationFailedException e) {
             throw new RuntimeException(e);
         }

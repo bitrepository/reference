@@ -34,7 +34,7 @@ import org.jaccept.TestEventManager;
 /**
  * Wrapper class for a PutFileClient.
  */
-public class ReplaceClientTestWrapper implements ReplaceFileClient {
+public class ReplaceFileClientTestWrapper implements ReplaceFileClient {
     /** The PutClient to wrap. */
     private ReplaceFileClient wrappedReplaceClient;
     /** The manager to monitor the operations.*/
@@ -44,7 +44,7 @@ public class ReplaceClientTestWrapper implements ReplaceFileClient {
      * @param putClientInstance The instance to wrap and monitor.
      * @param eventManager The manager to monitor the operations.
      */
-    public ReplaceClientTestWrapper(ReplaceFileClient putClientInstance, TestEventManager eventManager) {
+    public ReplaceFileClientTestWrapper(ReplaceFileClient putClientInstance, TestEventManager eventManager) {
         this.wrappedReplaceClient = putClientInstance;
         this.testEventManager = eventManager;
     }
