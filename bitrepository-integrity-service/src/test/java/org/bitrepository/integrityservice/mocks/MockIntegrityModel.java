@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
+import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 
@@ -312,5 +313,14 @@ public class MockIntegrityModel implements IntegrityModel {
     }
     public int getFilesWithChecksumErrorsAtPillar() {
         return callsForFilesWithChecksumErrorsAtPillar;
+    }
+    private int callsGetLatestCollectionStat = 0;
+    @Override
+    public CollectionStat getLatestCollectionStat(String collectionID) {
+        callsGetLatestCollectionStat++;
+        return integrityModel.getLatestCollectionStat(collectionID);
+    }
+    public int getLatestCollectionStat() {
+        return callsGetLatestCollectionStat;
     }
 }

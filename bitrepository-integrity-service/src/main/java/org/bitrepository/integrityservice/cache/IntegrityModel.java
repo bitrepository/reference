@@ -247,6 +247,13 @@ public interface IntegrityModel {
     Long getCollectionFileSize(String collectionId);
     
     /**
+     *  Retrieves the latest collection statistics for the given collection
+     *  @param collectionID The ID of the collection
+     *  @return {@link CollectionStat} The latest collection statistics object for the collection
+     */
+    CollectionStat getLatestCollectionStat(String collectionID);
+    
+    /**
      * Shutdown the model. This will typically consist of closing DB connections.
      */
     void close();

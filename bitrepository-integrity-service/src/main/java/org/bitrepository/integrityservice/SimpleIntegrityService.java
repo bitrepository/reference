@@ -34,6 +34,7 @@ import java.util.Map;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
+import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
@@ -211,5 +212,18 @@ public class SimpleIntegrityService implements IntegrityService {
     @Override
     public Long getNumberOfFilesInCollection(String collectionID) {
         return cache.getNumberOfFilesInCollection(collectionID);
+    }
+
+    @Override
+    public List<CollectionStat> getLatestCollectionStatistics() {
+        List<CollectionStat> res = new ArrayList<CollectionStat>();
+        for(String collection : SettingsUtils.getAllCollectionsIDs(settings)) {
+            CollectionStat stat = cache.getLatestCollectionStat(collection);
+            if(stat != null) {
+                res.add(stat);
+            }
+        }
+        
+        return res;
     }
 }

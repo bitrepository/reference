@@ -40,6 +40,7 @@ import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.ChecksumState;
@@ -637,5 +638,11 @@ public class TestIntegrityModel implements IntegrityModel {
             }
         }
         return summedSize;
+    }
+
+    @Override
+    public CollectionStat getLatestCollectionStat(String collectionID) {
+        // TODO fix this...
+        return null;
     }
 }

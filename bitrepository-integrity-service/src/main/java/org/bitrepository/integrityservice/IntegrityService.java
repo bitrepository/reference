@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowTimerTask;
@@ -128,6 +129,11 @@ public interface IntegrityService extends LifeCycledService {
      */
     Long getNumberOfFilesInCollection(String collection);
     
+    /**
+     * Method to get the latest collection statistics
+     * @return List<CollectionStat> The list of latest collection statistics objects 
+     */
+    List<CollectionStat> getLatestCollectionStatistics();
     
     /**
      * Shut down the integrity service.

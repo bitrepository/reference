@@ -145,9 +145,17 @@ CREATE INDEX checksumdateindex ON fileinfo (last_checksum_update);
 CREATE TABLE stats (
     stat_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
                                  -- The key for a set of statistics.
-    starttime TIMESTAMP,         -- The time the statistics entry were made.
-    last_update TIMESTAMP       -- The last time the statistics were updated
+    stat_time TIMESTAMP NOT NULL, 
+                                 -- The time the statistics entry were made.
+    last_update TIMESTAMP NOT NULL,
+                                 -- The last time the statistics were updated
+    collection_key BIGINT NOT NULL,
+                                 -- The key of the collection that the statistics belongs to 
+    FOREIGN KEY (collection_key) REFERENCES collections(collection_key)
+                                 -- Foreign key constraint on collection_key, enforcing the presence of the referred key
 );
+
+CREATE INDEX lastupdatetimeindex ON stats (last_update);
 
 --*************************************************************************--
 -- Name:     collectionstats
@@ -160,18 +168,14 @@ CREATE TABLE collectionstats (
                                  -- The key for the collectionstat.
     stat_key BIGINT NOT NULL,
                                  -- The key for the statistics entity.
-    collection_key BIGINT NOT NULL,
-                                 -- The key of the collection that the statistics belongs to 
     file_count BIGINT,           -- The number of files that the collection contained when the stats were made
     file_size BIGINT,            -- The total size of the files in the collection when the stats were made
     checksum_errors_count BIGINT, 
                                  -- The number of checksum errors in the collection when the stats were made
-    UNIQUE (stat_key, collection_key), 
+    UNIQUE (stat_key), 
                                  -- Enforce that there can only be one collectionstat for a statistics
-    FOREIGN KEY (stat_key) REFERENCES stats(stat_key),
+    FOREIGN KEY (stat_key) REFERENCES stats(stat_key)
                                  -- Foreign key constraint on stat_key, enforcing the presence of the referred key
-    FOREIGN KEY (collection_key) REFERENCES collections(collection_key)
-                                 -- Foreign key constraint on collection_key, enforcing the presence of the referred key
 );
 
 --*************************************************************************--
@@ -187,8 +191,6 @@ CREATE TABLE pillarstats (
                                  -- The key for the statistics entity.
     pillar_key BIGINT NOT NULL,
                                  -- The key of the pillar that the statistics belongs to 
-    collection_key BIGINT NOT NULL,
-                                 -- The key of the collection that the statistics belongs to 
     file_count BIGINT,           -- The number of files on the pillar when the stats were made
     file_size BIGINT,            -- The total size of the files on the pillar when the stats were made
     missing_files_count BIGINT,  -- The number of the missing files on the pillar when the stats were made
@@ -198,8 +200,6 @@ CREATE TABLE pillarstats (
                                  -- Enforce that there can only be one collectionstat for a statistics
     FOREIGN KEY (stat_key) REFERENCES stats(stat_key),
                                  -- Foreign key constraint on stat_key, enforcing the presence of the referred key
-    FOREIGN KEY (pillar_key) REFERENCES pillar(pillar_key),
-                                 -- Foreign key constraint on collection_key, enforcing the presence of the referred key
-    FOREIGN KEY (collection_key) REFERENCES collections(collection_key)
+    FOREIGN KEY (pillar_key) REFERENCES pillar(pillar_key)
                                  -- Foreign key constraint on collection_key, enforcing the presence of the referred key
 );

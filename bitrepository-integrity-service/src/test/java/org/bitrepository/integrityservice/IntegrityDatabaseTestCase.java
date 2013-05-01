@@ -35,6 +35,9 @@ import static org.bitrepository.integrityservice.cache.database.DatabaseConstant
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILE_INFO_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTIONS_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_STATS_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_STATS_TABLE;
 
 public abstract class IntegrityDatabaseTestCase extends ExtendedTestCase {
     protected Settings settings;
@@ -54,6 +57,9 @@ public abstract class IntegrityDatabaseTestCase extends ExtendedTestCase {
     public void clearDatabase() throws Exception {
         DBConnector connector = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         DatabaseUtils.executeStatement(connector, "DELETE FROM " + FILE_INFO_TABLE, new Object[0]);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM " + PILLAR_STATS_TABLE, new Object[0]);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM " + COLLECTION_STATS_TABLE, new Object[0]);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM " + STATS_TABLE, new Object[0]);
         DatabaseUtils.executeStatement(connector, "DELETE FROM " + FILES_TABLE, new Object[0]);
         DatabaseUtils.executeStatement(connector, "DELETE FROM " + PILLAR_TABLE, new Object[0]);
         DatabaseUtils.executeStatement(connector, "DELETE FROM " + COLLECTIONS_TABLE, new Object[0]);

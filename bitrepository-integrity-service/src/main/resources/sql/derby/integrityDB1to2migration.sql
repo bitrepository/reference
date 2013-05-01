@@ -56,33 +56,32 @@ RENAME COLUMN fileinfo.guid TO fileinfo_key;
 
 CREATE TABLE stats (
     stat_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    starttime TIMESTAMP,         
-    last_update TIMESTAMP 
+    stat_time TIMESTAMP NOT NULL,         
+    last_update TIMESTAMP NOT NULL, 
+    collection_key BIGINT NOT NULL,
+    FOREIGN KEY (collection_key) REFERENCES collections(collection_key)
 );
+CREATE INDEX lastupdatetimeindex ON stats (last_update);
 
 CREATE TABLE collectionstats (
     collectionstat_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     stat_key BIGINT NOT NULL,
-    collection_key BIGINT NOT NULL,
     file_count BIGINT,
     file_size BIGINT, 
     checksum_errors_count BIGINT, 
     UNIQUE (stat_key, collection_key), 
-    FOREIGN KEY (stat_key) REFERENCES stats(stat_key),
-    FOREIGN KEY (collection_key) REFERENCES collections(collection_key)
+    FOREIGN KEY (stat_key) REFERENCES stats(stat_key)
 );
 
 CREATE TABLE pillarstats (
     pillarstat_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     stat_key BIGINT NOT NULL,
     pillar_key BIGINT NOT NULL,
-    collection_key BIGINT NOT NULL,
     file_count BIGINT, 
     file_size BIGINT,  
     missing_files_count BIGINT,
     checksum_errors_count BIGINT, 
     UNIQUE (stat_key, pillar_key), 
     FOREIGN KEY (stat_key) REFERENCES stats(stat_key),
-    FOREIGN KEY (pillar_key) REFERENCES pillar(pillar_key),
-    FOREIGN KEY (collection_key) REFERENCES collections(collection_key)
+    FOREIGN KEY (pillar_key) REFERENCES pillar(pillar_key)
 );

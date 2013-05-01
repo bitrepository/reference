@@ -1,24 +1,22 @@
 package org.bitrepository.common.webobjects;
 
-import java.util.Date;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class StatisticsDataSize {
 
-    private Date date;
+    private Long dateMillis; 
     private String dateString;
     private Long dataSize;
     
     public StatisticsDataSize() { }
 
-    public Date getDate() {
-        return date;
+    public Long getDateMillis() {
+        return dateMillis;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDateMillis(Long dateMillis) {
+        this.dateMillis = dateMillis;
     }
 
     public String getDateString() {

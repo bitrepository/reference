@@ -16,6 +16,7 @@ import org.bitrepository.common.webobjects.StatisticsDataSize;
 import org.bitrepository.common.webobjects.StatisticsPillarSize;
 import org.bitrepository.integrityservice.IntegrityService;
 import org.bitrepository.integrityservice.IntegrityServiceFactory;
+import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,19 +35,19 @@ public class RestStatisticsService {
     @Produces(MediaType.APPLICATION_JSON)
     public List<StatisticsDataSize> getDataSizeHistory(@QueryParam("collectionID") String collectionID) {
         List<Date> mockDates = new ArrayList<Date>();
-        long startTime = 1360886243;
+        long startTime = 1360886243*1000;
         mockDates.add(new Date(startTime));
-        startTime += 12345;
+        startTime += 12345*1000;
         mockDates.add(new Date(startTime));
-        startTime += 12345;
+        startTime += 12345*1000;
         mockDates.add(new Date(startTime));
-        startTime += 12345;
+        startTime += 12345*1000;
         mockDates.add(new Date(startTime));
-        startTime += 12345;
+        startTime += 12345*1000;
         mockDates.add(new Date(startTime));
-        startTime += 12345;
+        startTime += 12345*1000;
         mockDates.add(new Date(startTime));
-        startTime += 12345;
+        startTime += 12345*1000;
         mockDates.add(new Date(startTime));
                
         List<StatisticsDataSize> mockData = new ArrayList<StatisticsDataSize>();
@@ -54,7 +55,7 @@ public class RestStatisticsService {
         Long size =  140000L;
         for(Date date : mockDates) {
             StatisticsDataSize obj = new StatisticsDataSize();
-            obj.setDate(date);
+            obj.setDateMillis(date.getTime());
             obj.setDateString(TimeUtils.shortDate(date));
             size = (long) (size * 1.23 + 24);
             obj.setDataSize(size);
@@ -92,22 +93,14 @@ public class RestStatisticsService {
     @Path("/getLatestcollectionDataSize/")
     @Produces(MediaType.APPLICATION_JSON)
     public List<StatisticsCollectionSize> getLatestCollectionDataSize() {
-        List<String> mockCollectionIDs = new ArrayList<String>();
-        mockCollectionIDs.add("collectionA");
-        mockCollectionIDs.add("collectionB");
-        mockCollectionIDs.add("collectionC");
-        mockCollectionIDs.add("collection23");
-        
-        List<StatisticsCollectionSize> mockData = new ArrayList<StatisticsCollectionSize>();
-        Long size =  154000L;
-        for(String collection : mockCollectionIDs) {
+        List<StatisticsCollectionSize> data = new ArrayList<StatisticsCollectionSize>();
+        List<CollectionStat> stats = service.getLatestCollectionStatistics();
+        for(CollectionStat stat : stats) {
             StatisticsCollectionSize obj = new StatisticsCollectionSize();
-            obj.setCollectionID(collection);
-            size = (long) (size * 1.23 + 24);
-            obj.setDataSize(size);
-            mockData.add(obj);
+            obj.setCollectionID(stat.getCollectionID());
+            obj.setDataSize(stat.getDataSize());
+            data.add(obj);
         }
-        
-        return mockData;    
+        return data;    
     }
 }

@@ -79,4 +79,49 @@ public final class DatabaseConstants {
     public static final String COLLECTION_KEY = "collection_key";
     /** The id of the collection. String value. */
     public static final String COLLECTION_ID = "collection_id";
+    
+    // THE STATS TABLE
+    /** The name of the statistics table. A long/bigint value. */
+    public static final String STATS_TABLE = "stats";
+    /** The key for an entry in the statistics table. Primary automatically generated key. A long/bigint value */
+    public static final String STATS_KEY = "stat_key";
+    /** The time that the statistics were created. A date/timestamp*/
+    public static final String STATS_TIME = "stat_time";
+    /** The time the statistics were last updated. A date/timestamp, may be null*/
+    public static final String STATS_LAST_UPDATE = "last_update";
+    /** The key for the collection that the statistics belong to.  A long/bigint value.*/
+    public static final String STATS_COLLECTION_KEY = "collection_key";
+    
+    // THE COLLETION STATISTICS TABLE
+    /** The name of the collection statistics table */
+    public static final String COLLECTION_STATS_TABLE = "collectionstats";
+    /** The key for an entry in the collection statistics table. Primary automatically generated key. A long/bigint value */
+    public static final String CS_KEY = "collectionstat_key";
+    /** Foreign key for referring collection statistics entry to statistics entry. A long/bigint value */
+    public static final String CS_STAT_KEY = "stat_key";
+    /** The value of the total number of files in the collection. A long/bigint value. */
+    public static final String CS_FILECOUNT = "file_count";
+    /** The value of the summed size of the files in the collection. A long/bigint value. */
+    public static final String CS_FILESIZE = "file_size";
+    /** The number of checksum errors in the collection. A long/bigint value. */
+    public static final String CS_CHECKSUM_ERRORS = "checksum_errors_count";
+    
+    // THE PILLAR STATISTICS TABLE
+    /** The name of the pillar statistics table */
+    public static final String PILLAR_STATS_TABLE = "pillarstats";
+    /** The key for an entry in the pillar statistics table. Primary automatically generated key. A long/bigint value */
+    public static final String PS_KEY = "pillarstat_key";
+    /** Foreign key for referring pillar statistics entry to statistics entry. A long/bigint value */
+    public static final String PS_STAT_KEY = "stat_key"; 
+    /** Foreign key for referring pillar statistics entry to the pillar. A long/bigint value */
+    public static final String PS_PILLAR_KEY = "pillar_key";
+    /** The value of the total number of files on the pillar in the collection. A long/bigint value. */
+    public static final String PS_FILE_COUNT = "file_count";
+    /** The value of the summed size of the files on the pillar in the collection. A long/bigint value. */
+    public static final String PS_FILE_SIZE = "file_size";
+    /** The number of files missing on the pillar. A long/bigint value. */
+    public static final String PS_MISSING_FILES_COUNT = "missing_files_count";
+    /** The number of files with checksum errors on the pillar in the collection. A long/bigint value. */
+    public static final String PS_CHECKSUM_ERRORS = "checksum_errors_count";
 }
+

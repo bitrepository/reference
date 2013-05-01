@@ -268,6 +268,11 @@ public class IntegrityCache implements IntegrityModel {
     public Date getDateForNewestChecksumEntryForPillar(String pillarId, String collectionId) {
         return integrityModel.getDateForNewestChecksumEntryForPillar(pillarId, collectionId);
     }
+    
+    @Override
+    public CollectionStat getLatestCollectionStat(String collectionID) {
+        return integrityModel.getLatestCollectionStat(collectionID);
+    }
 
     @Override
     public void close() {
@@ -327,6 +332,8 @@ public class IntegrityCache implements IntegrityModel {
     private String getCacheID(String pillarID, String collectionID) {
         return pillarID + "-" + collectionID;
     }
+
+
 
 
 }

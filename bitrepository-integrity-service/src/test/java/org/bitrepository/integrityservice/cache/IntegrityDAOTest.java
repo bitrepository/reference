@@ -44,6 +44,7 @@ import org.bitrepository.integrityservice.cache.database.ChecksumState;
 import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.mocks.MockAuditManager;
+import org.bouncycastle.crypto.modes.SICBlockCipher;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -937,9 +938,119 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         addStep("Check the reported size of the second pillar in the collection", "The reported size matches the precalculated");
         Assert.assertEquals(cache.getCollectionFileSizeAtPillar(TEST_COLLECTIONID, TEST_PILLAR_2), pillar2Size);
         addStep("Check the reported size of the whole collection", "The reported size matches the precalculated");
-        Assert.assertEquals(cache.getCollectionFileSize(TEST_COLLECTIONID), collectionSize);
+        Assert.assertEquals(cache.getCollectionFileSize(TEST_COLLECTIONID), collectionSize);   
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testStatisticsGeneration() {
+        addDescription("Tests that statistics can be made and extracted.");
+        IntegrityDAO cache = createDAO();
         
+        addStep("Populate the database", "Data is ingested");
+        String file2 = TEST_FILE_ID + "-2";
+        String file3 = TEST_FILE_ID + "-3";
+        String file4 = TEST_FILE_ID + "-4";
+        String file5 = TEST_FILE_ID + "-5";
+        Long size1 = new Long(100);
+        Long size2 = new Long(200);
+        Long size3 = new Long(300);
+        Long size4 = new Long(400);
+        Long size5 = new Long(500);
+        String checksum1 = "abcd";
+        String checksum2 = "acbd";
+        String checksum3 = "aacc";
+        String checksum3bad = "baad";
+        String checksum4 = "ccaa";
+        String checksum5 = "ddaa";
+        FileIDsData data1 = makeFileIDsDataWithGivenFileSize(TEST_FILE_ID, size1);
+        FileIDsData data2 = makeFileIDsDataWithGivenFileSize(file2, size2);
+        FileIDsData data3 = makeFileIDsDataWithGivenFileSize(file3, size3);
+        FileIDsData data4 = makeFileIDsDataWithGivenFileSize(file4, size4);
+        FileIDsData data5 = makeFileIDsDataWithGivenFileSize(file5, size5);
+        List<ChecksumDataForChecksumSpecTYPE> csData1 = getChecksumResults(TEST_FILE_ID, checksum1);
+        List<ChecksumDataForChecksumSpecTYPE> csData2 = getChecksumResults(file2, checksum2);
+        List<ChecksumDataForChecksumSpecTYPE> csData3 = getChecksumResults(file3, checksum3);
+        List<ChecksumDataForChecksumSpecTYPE> csData3bad = getChecksumResults(file3, checksum3bad);
+        List<ChecksumDataForChecksumSpecTYPE> csData4 = getChecksumResults(file4, checksum4);
+        List<ChecksumDataForChecksumSpecTYPE> csData5 = getChecksumResults(file5, checksum5);
+
+        List<ChecksumDataForChecksumSpecTYPE> csDataPillar1 = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
+        csDataPillar1.addAll(csData1);
+        csDataPillar1.addAll(csData3bad);
+        csDataPillar1.addAll(csData4);
+        csDataPillar1.addAll(csData5);
+        List<ChecksumDataForChecksumSpecTYPE> csDataPillar2 = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
+        csDataPillar2.addAll(csData1);
+        csDataPillar2.addAll(csData2);
+        csDataPillar2.addAll(csData3);
+        csDataPillar2.addAll(csData4);
+        cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileIDs(data3, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileIDs(data4, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileIDs(data5, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileIDs(data2, TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileIDs(data3, TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileIDs(data4, TEST_PILLAR_2, TEST_COLLECTIONID);
+        Long pillar1Size = size1 + size3 + size4 + size5;
+        Long pillar2Size = size1 + size2 + size3 + size4;
+        Long collectionSize = size1 + size2 + size3 + size4 + size5;
+
+        cache.updateChecksumData(csDataPillar1, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateChecksumData(csDataPillar2, TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileIDs(data1, TEST_PILLAR_1, EXTRA_COLLECTION);
+        cache.updateFileIDs(data1, EXTRA_PILLAR, EXTRA_COLLECTION);
         
+        cache.setOldUnknownFilesToMissing(new Date(), TEST_COLLECTIONID);
+        cache.setFilesWithConsistentChecksumsToValid(TEST_COLLECTIONID);
+        cache.setChecksumError(file3, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.makeStatisticsEntry(TEST_COLLECTIONID);
+        
+        addStep("Check that the data is in the database", "The data is present");
+        Assert.assertEquals(cache.getNumberOfFilesInCollection(TEST_COLLECTIONID), 5);
+        Assert.assertEquals(cache.getNumberOfExistingFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 4);
+        Assert.assertEquals(cache.getNumberOfExistingFilesForAPillar(TEST_PILLAR_2, TEST_COLLECTIONID), 4);
+        Assert.assertEquals(cache.getNumberOfChecksumErrorsIncollection(TEST_COLLECTIONID), 1);
+        List<String> pillar1FileIDs = cache.getFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        Assert.assertEquals(pillar1FileIDs.size(), 4);
+        Assert.assertTrue(pillar1FileIDs.contains(TEST_FILE_ID));
+        Assert.assertTrue(pillar1FileIDs.contains(file3));
+        Assert.assertTrue(pillar1FileIDs.contains(file4));
+        Assert.assertTrue(pillar1FileIDs.contains(file5));
+        List<String> pillar2FileIDs = cache.getFilesOnPillar(TEST_PILLAR_2, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        Assert.assertEquals(pillar2FileIDs.size(), 4);
+        Assert.assertTrue(pillar2FileIDs.contains(TEST_FILE_ID));
+        Assert.assertTrue(pillar2FileIDs.contains(file2));
+        Assert.assertTrue(pillar2FileIDs.contains(file3));
+        Assert.assertTrue(pillar2FileIDs.contains(file4));
+        
+        addStep("Check that the pillar stats is as expected", "The stats are as expected");
+        List<PillarStat> pillarStats = cache.getLatestPillarStats(TEST_COLLECTIONID);
+        Assert.assertEquals(pillarStats.size(), 2);
+        for(PillarStat stat : pillarStats) {
+            Assert.assertEquals(stat.getCollectionID(), TEST_COLLECTIONID);
+            if(stat.getPillarID().equals(TEST_PILLAR_1)) {
+                Assert.assertEquals((long) stat.getChecksumErrors(), 1);
+                Assert.assertEquals((long) stat.getFileCount(), 4);
+                Assert.assertEquals(stat.getDataSize(), pillar1Size);
+                Assert.assertEquals((long) stat.getMissingFiles(), 1);
+            } else if(stat.getPillarID().equals(TEST_PILLAR_2)) {
+                Assert.assertEquals((long) stat.getChecksumErrors(), 0);
+                Assert.assertEquals((long) stat.getFileCount(), 4);
+                Assert.assertEquals(stat.getDataSize(), pillar2Size);
+                Assert.assertEquals((long) stat.getMissingFiles(), 1);
+            } else {
+                Assert.fail("PillarStat contained unexpected pillarID: " + stat.getPillarID());
+            }
+        }
+        
+        addStep("Check that the collection stats is as expected", "The stats are as expected.");
+        CollectionStat collectionStat = cache.getLatestCollectionStats(TEST_COLLECTIONID);
+        Assert.assertTrue(collectionStat != null);
+        Assert.assertEquals((long) collectionStat.getChecksumErrors(), 1);
+        Assert.assertEquals((long) collectionStat.getFileCount(), 5);
+        Assert.assertEquals(collectionStat.getDataSize(), collectionSize);
+        Assert.assertEquals(collectionStat.getCollectionID(), TEST_COLLECTIONID);
     }
     
     private FileIDsData makeFileIDsDataWithGivenFileSize(String fileID, Long size) {

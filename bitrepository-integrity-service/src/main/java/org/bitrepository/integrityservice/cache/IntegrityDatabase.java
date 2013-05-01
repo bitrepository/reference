@@ -224,4 +224,9 @@ public class IntegrityDatabase implements IntegrityModel {
         return store.getCollectionFileSize(collectionId);
     }
 
+    @Override
+    public CollectionStat getLatestCollectionStat(String collectionID) {
+        return store.getLatestCollectionStats(collectionID);
+    }
+
 }

@@ -24,9 +24,12 @@
  */
 package org.bitrepository.integrityservice.cache.database;
 
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTIONS_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_ID;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_KEY;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_CREATION_DATE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_KEY;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_ID;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_KEY;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILE_INFO_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_CHECKSUM;
@@ -37,12 +40,29 @@ import static org.bitrepository.integrityservice.cache.database.DatabaseConstant
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_LAST_CHECKSUM_UPDATE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_LAST_FILE_UPDATE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_PILLAR_KEY;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_KEY;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_ID;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_KEY;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTIONS_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_ID;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_COLLECTION_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_LAST_UPDATE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TIME;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_STATS_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.CS_CHECKSUM_ERRORS;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.CS_FILECOUNT;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.CS_FILESIZE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.CS_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.CS_STAT_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_CHECKSUM_ERRORS;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_FILE_COUNT;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_FILE_SIZE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_STAT_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_MISSING_FILES_COUNT;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_PILLAR_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_STATS_TABLE;
+
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -63,7 +83,9 @@ import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.FileInfo;
+import org.bitrepository.integrityservice.cache.PillarStat;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.settings.repositorysettings.Collections;
@@ -299,7 +321,6 @@ public class IntegrityDAO {
                     FileState fileState = FileState.fromOrdinal(dbResult.getInt(indexFileState));
                     ChecksumState checksumState = ChecksumState.fromOrdinal(dbResult.getInt(indexChecksumState));
                     
-                    // TODO insert filesize once extracted from database
                     FileInfo f = new FileInfo(fileId, CalendarUtils.getXmlGregorianCalendar(lastFileCheck), checksum, 
                             fileSize, CalendarUtils.getXmlGregorianCalendar(lastChecksumCheck), pillarId,
                             fileState, checksumState);
@@ -344,6 +365,17 @@ public class IntegrityDAO {
         Long collectionKey = retrieveCollectionKey(collectionId);
         String sql = "SELECT COUNT(" + FILES_ID + ") FROM " + FILES_TABLE + " WHERE " + COLLECTION_KEY + " = ?";
         return DatabaseUtils.selectLongValue(dbConnector, sql, collectionKey);
+    }
+    
+    public long getNumberOfChecksumErrorsIncollection(String collectionID) {
+        log.trace("Retrieving the number of files with checksumerrors in collection '" + collectionID + "'.");
+        Long collectionKey = retrieveCollectionKey(collectionID);
+        String sql = " SELECT COUNT (DISTINCT " + FILE_INFO_TABLE + "." + FI_FILE_KEY + ") FROM " + FILE_INFO_TABLE
+                    + " JOIN " + FILES_TABLE
+                    + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                    + " WHERE " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ?"
+                    + " AND " + FILES_TABLE + "." +COLLECTION_KEY + " = ?";
+        return DatabaseUtils.selectLongValue(dbConnector, sql, ChecksumState.ERROR.ordinal(), collectionKey);
     }
     
     /**
@@ -991,6 +1023,231 @@ public class IntegrityDAO {
         log.debug("Summarized the filesizes in " + (System.currentTimeMillis() - startTime) + "ms");
         return result;
     } 
+    
+    /**
+     * Creates and populates a new statistics entry in the database. 
+     * @param collectionID The ID of the collection to make the entry for.  
+     */
+    public void makeStatisticsEntry(String collectionID) {
+        Long collectionKey = retrieveCollectionKey(collectionID);
+        Long statsID = insertNewStatisticsEntry(collectionKey);
+        insertCollectionStatistics(statsID, collectionID);
+        for(String pillar : collectionPillarsMap.get(collectionID)) {
+            insertPillarStatistics(statsID, collectionID, pillar);
+        }
+    }
+    
+    /**
+     * Retrieves the latest set of statistics for pillars in a collection
+     * @param collectionID The ID of the collection 
+     * @return List<PillarStat> The list of PillarStat's for the collection
+     */
+    public List<PillarStat> getLatestPillarStats(String collectionID) {
+        final int indexPillarKey = 1;
+        final int indexFileCount = 2;
+        final int indexDataSize = 3;
+        final int indexMissingFiles = 4;
+        final int indexChecksumErrors = 5;
+        final int indexStatTime = 6;
+        final int indexUpdateTime = 7;
+        
+        Long statsKey = getLatestStatisticsKey(collectionID);
+        Long collectionKey = retrieveCollectionKey(collectionID);
+        if(statsKey == null) {
+            log.debug("Trying to retrieve pillar stats but none exists for collectionID: '" + collectionID + "'.");
+            return new ArrayList<PillarStat>();
+        }
+        List<PillarStat> res = new ArrayList<PillarStat>();
+        
+        String sql = "SELECT p." + PS_PILLAR_KEY + ", p." + PS_FILE_COUNT +  ", p." + PS_FILE_SIZE 
+                    +  ", p." + PS_MISSING_FILES_COUNT + ", p." + PS_CHECKSUM_ERRORS + ", s." + STATS_TIME
+                    + ", s." + STATS_LAST_UPDATE 
+                + " FROM " + PILLAR_STATS_TABLE + " p "
+                + " JOIN " + STATS_TABLE + " s" 
+                + " ON  p." + PS_STAT_KEY + " = s." + STATS_KEY
+                + " WHERE s." + STATS_COLLECTION_KEY + " = ?"
+                + " AND s." + STATS_KEY + " = ?";
+        
+        try {
+            ResultSet dbResult = null;
+            PreparedStatement ps = null;
+            Connection conn = null;
+            try {
+                conn = dbConnector.getConnection();
+                ps = DatabaseUtils.createPreparedStatement(conn, sql, collectionKey, statsKey);
+                dbResult = ps.executeQuery();
+                
+                while(dbResult.next()) {
+                    Long pillarKey = dbResult.getLong(indexPillarKey);
+                    Long fileCount = dbResult.getLong(indexFileCount);
+                    Long dataSize = dbResult.getLong(indexDataSize);
+                    Long missingFiles = dbResult.getLong(indexMissingFiles);
+                    Long checksumErrors = dbResult.getLong(indexChecksumErrors);
+                    Date statsTime = dbResult.getTimestamp(indexStatTime);
+                    Date updateTime = dbResult.getTimestamp(indexUpdateTime);
+                    String pillarID = retrievePillarIDFromKey(pillarKey);
+                    
+                    PillarStat p = new PillarStat(pillarID, collectionID, fileCount, dataSize, missingFiles, 
+                            checksumErrors, statsTime, updateTime);
+                    res.add(p);
+                }
+            } finally {
+                if(dbResult != null) {
+                    dbResult.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
+                if(conn != null) {
+                    conn.close();
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not retrieve the latest PillarStat's for '" + collectionID + "' " +
+            		"with the SQL '" + sql + "'.", e);
+        }
+        return res;   
+    }
+    
+    /**
+     * Retrieves the latest set of statistics for pillars in a collection
+     * @param collectionID The ID of the collection 
+     * @return List<PillarStat> The list of PillarStat's for the collection
+     */
+    public CollectionStat getLatestCollectionStats(String collectionID) {
+        final int indexFileCount = 1;
+        final int indexDataSize = 2;
+        final int indexChecksumErrors = 3;
+        final int indexStatTime = 4;
+        final int indexUpdateTime = 5;
+        
+        Long statsKey = getLatestStatisticsKey(collectionID);
+        Long collectionKey = retrieveCollectionKey(collectionID);
+        if(statsKey == null) {
+            log.debug("Trying to retrieve pillar stats but none exists for collectionID: '" + collectionID + "'.");
+            return null;
+        }
+        CollectionStat res;
+        
+        String sql = "SELECT c." + CS_FILECOUNT +  ", c." + CS_FILESIZE + ", c." + CS_CHECKSUM_ERRORS
+                    + ", s." + STATS_TIME + ", s." + STATS_LAST_UPDATE 
+                + " FROM " + COLLECTION_STATS_TABLE + " c "
+                + " JOIN " + STATS_TABLE + " s" 
+                + " ON  c." + CS_STAT_KEY + " = s." + STATS_KEY
+                + " WHERE s." + STATS_COLLECTION_KEY + " = ?"
+                + " AND s." + STATS_KEY + " = ?";
+        
+        try {
+            ResultSet dbResult = null;
+            PreparedStatement ps = null;
+            Connection conn = null;
+            try {
+                conn = dbConnector.getConnection();
+                ps = DatabaseUtils.createPreparedStatement(conn, sql, collectionKey, statsKey);
+                dbResult = ps.executeQuery();
+                
+                if (!dbResult.next()) {
+                    log.trace("Got an empty result set for statement '" + sql + "' with arguments '"
+                            + Arrays.asList(collectionKey, statsKey) + "' on database '" + conn + "'. Returning a null.");
+                    res = null;
+                } else {
+                    Long fileCount = dbResult.getLong(indexFileCount);
+                    Long dataSize = dbResult.getLong(indexDataSize);
+                    Long checksumErrors = dbResult.getLong(indexChecksumErrors);
+                    Date statsTime = dbResult.getTimestamp(indexStatTime);
+                    Date updateTime = dbResult.getTimestamp(indexUpdateTime);
+                    
+                    res = new CollectionStat(collectionID, fileCount, dataSize, checksumErrors, statsTime, updateTime);
+                }
+            } finally {
+                if(dbResult != null) {
+                    dbResult.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
+                if(conn != null) {
+                    conn.close();
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not retrieve the latest PillarStat's for '" + collectionID + "' " +
+                    "with the SQL '" + sql + "'.", e);
+        }
+        return res;   
+    }
+
+    
+    /**
+     * Retrieves the key for the latest statistics entry for a given collection
+     * @param collectionID The ID of the collection to get the latest statistics entry for.
+     * @return Long The key for the latest statistics entry for the collection 
+     */
+    private Long getLatestStatisticsKey(String collectionID) {
+        Long collectionKey = retrieveCollectionKey(collectionID);
+        String selectStatisticsIDSql = "SELECT " + STATS_KEY + " FROM " + STATS_TABLE
+                + " WHERE " + STATS_COLLECTION_KEY + " = ?"
+                + " ORDER BY " + STATS_KEY + " DESC"
+                + " FETCH FIRST ROW ONLY ";
+        Long statisticsID = DatabaseUtils.selectFirstLongValue(dbConnector, selectStatisticsIDSql, collectionKey);
+        return statisticsID;  
+    }
+
+    /**
+     * Method to insert a new entry into the stats table. 
+     * @param collectionKey The key of the collection to make the statistics for
+     * @return Long The key for the new statistics row. 
+     */
+    private synchronized Long insertNewStatisticsEntry(Long collectionKey) {
+        Date entryTime = new Date();
+        String newStatisticsSql = "INSERT INTO " + STATS_TABLE 
+                + " ( " + STATS_TIME + ", " + STATS_LAST_UPDATE + ", " + STATS_COLLECTION_KEY + " )" 
+                    + " VALUES ( ?, ?, ? )";
+        DatabaseUtils.executeStatement(dbConnector, newStatisticsSql, entryTime, entryTime, collectionKey);
+        
+        String selectStatisticsIDSql = "SELECT " + STATS_KEY + " FROM " + STATS_TABLE
+                + " ORDER BY " + STATS_KEY + " DESC"
+                + " FETCH FIRST ROW ONLY ";
+        Long statisticsID = DatabaseUtils.selectFirstLongValue(dbConnector, selectStatisticsIDSql,  new Object[0]);
+        return statisticsID;
+    }
+    
+    /**
+     * Method to insert a new row with collection statistics for given a statistics key
+     * @param statisticsKey The key for the statistics entry to link to. 
+     * @param collectionID The ID of the collection to make statistics for.
+     */
+    private void insertCollectionStatistics(Long statisticsKey, String collectionID) {
+        Long fileCount = getNumberOfFilesInCollection(collectionID);
+        Long dataSize = getCollectionFileSize(collectionID);
+        Long checksumErrors = getNumberOfChecksumErrorsIncollection(collectionID);
+        String newCollectionStatSql = "INSERT INTO " + COLLECTION_STATS_TABLE
+                + " ( " + CS_STAT_KEY + ", " + CS_FILECOUNT + ", " + CS_FILESIZE + ", " + CS_CHECKSUM_ERRORS + " )"
+                + " VALUES ( ?, ?, ?, ? )";
+        DatabaseUtils.executeStatement(dbConnector, newCollectionStatSql, statisticsKey, fileCount, dataSize, checksumErrors);
+    }
+    
+    /**
+     * Method to insert a new row with pillar statistics for a given statistics key
+     * @param statisticsKey The key for the statistics entry to link to.
+     * @param collectionID The ID of the collection that the statistics belong to.
+     * @param pillarID The ID of the pillar to insert the row for. 
+     */
+    private void insertPillarStatistics(Long statisticsKey, String collectionID, String pillarID) {
+        Long pillarKey = retrievePillarKey(pillarID);
+        Long fileCount = (long) getNumberOfExistingFilesForAPillar(pillarID, collectionID);
+        Long dataSize = getCollectionFileSizeAtPillar(collectionID, pillarID);
+        Long missingFiles = (long) getNumberOfMissingFilesForAPillar(pillarID, collectionID);
+        Long checksumErrors = (long) getNumberOfChecksumErrorsForAPillar(pillarID, collectionID);
+        
+        String newPillarStatSql = "INSERT INTO " + PILLAR_STATS_TABLE 
+                + " ( " + PS_STAT_KEY + ", " + PS_PILLAR_KEY + ", " + PS_FILE_COUNT + ", " + PS_FILE_SIZE 
+                    + ", " + PS_MISSING_FILES_COUNT + ", " + PS_CHECKSUM_ERRORS +" )"
+                + " VALUES ( ?, ?, ?, ?, ?, ? )";
+        DatabaseUtils.executeStatement(dbConnector, newPillarStatSql, statisticsKey, pillarKey, fileCount, dataSize, 
+                missingFiles, checksumErrors);
+    }
+    
     
     /**
      * Updates the file info for the given file at the given pillar.
