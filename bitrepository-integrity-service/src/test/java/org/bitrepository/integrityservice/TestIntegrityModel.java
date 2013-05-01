@@ -645,4 +645,9 @@ public class TestIntegrityModel implements IntegrityModel {
         // TODO fix this...
         return null;
     }
+
+    @Override
+    public void makeStatisticsForCollection(String collectionID) {
+        // TODO Fix this...
+    }
 }

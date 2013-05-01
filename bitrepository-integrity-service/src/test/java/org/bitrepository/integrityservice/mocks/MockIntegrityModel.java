@@ -311,7 +311,7 @@ public class MockIntegrityModel implements IntegrityModel {
         callsForFilesWithChecksumErrorsAtPillar++;
         return integrityModel.getFilesWithChecksumErrorsAtPillar(pillarId, minId, maxId, collectionId);
     }
-    public int getFilesWithChecksumErrorsAtPillar() {
+    public int getCallsForGetFilesWithChecksumErrorsAtPillar() {
         return callsForFilesWithChecksumErrorsAtPillar;
     }
     private int callsGetLatestCollectionStat = 0;
@@ -320,7 +320,16 @@ public class MockIntegrityModel implements IntegrityModel {
         callsGetLatestCollectionStat++;
         return integrityModel.getLatestCollectionStat(collectionID);
     }
-    public int getLatestCollectionStat() {
+    public int getCallsForGetLatestCollectionStat() {
         return callsGetLatestCollectionStat;
+    }
+    private int callsMakeStatisticsForCollection = 0;
+    @Override
+    public void makeStatisticsForCollection(String collectionID) {
+        callsMakeStatisticsForCollection++;
+        integrityModel.makeStatisticsForCollection(collectionID);
+    }
+    public int getCallsForMakeStatisticsForCollection() {
+        return callsMakeStatisticsForCollection;
     }
 }

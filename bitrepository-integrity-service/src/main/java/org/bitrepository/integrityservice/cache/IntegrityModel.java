@@ -253,6 +253,14 @@ public interface IntegrityModel {
      */
     CollectionStat getLatestCollectionStat(String collectionID);
     
+    
+    /**
+     * Method to create a new set of statistics entries for a given collection
+     * @param collectionID The ID of the collection
+     */
+    void makeStatisticsForCollection(String collectionID);
+    
+    
     /**
      * Shutdown the model. This will typically consist of closing DB connections.
      */

@@ -273,6 +273,12 @@ public class IntegrityCache implements IntegrityModel {
     public CollectionStat getLatestCollectionStat(String collectionID) {
         return integrityModel.getLatestCollectionStat(collectionID);
     }
+    
+    @Override
+    public void makeStatisticsForCollection(String collectionID) {
+        integrityModel.makeStatisticsForCollection(collectionID);
+        
+    }
 
     @Override
     public void close() {
@@ -332,6 +338,7 @@ public class IntegrityCache implements IntegrityModel {
     private String getCacheID(String pillarID, String collectionID) {
         return pillarID + "-" + collectionID;
     }
+
 
 
 

@@ -229,4 +229,10 @@ public class IntegrityDatabase implements IntegrityModel {
         return store.getLatestCollectionStats(collectionID);
     }
 
+    @Override
+    public void makeStatisticsForCollection(String collectionID) {
+        store.makeStatisticsEntry(collectionID);
+        
+    }
+
 }

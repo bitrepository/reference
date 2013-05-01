@@ -27,6 +27,7 @@ import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
+import org.bitrepository.integrityservice.workflow.step.CreateStatisticsEntryStep;
 import org.bitrepository.integrityservice.workflow.step.FindMissingChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.FindObsoleteChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.IntegrityValidationChecksumStep;
@@ -118,6 +119,8 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
             FindObsoleteChecksumsStep findObsoleteChecksums 
                     = new FindObsoleteChecksumsStep(settings, checker, alerter, collectionId);
             performStep(findObsoleteChecksums);
+            CreateStatisticsEntryStep createStatistics = new CreateStatisticsEntryStep(store, collectionId);
+            performStep(createStatistics);
         } finally {
             finish();
         }
