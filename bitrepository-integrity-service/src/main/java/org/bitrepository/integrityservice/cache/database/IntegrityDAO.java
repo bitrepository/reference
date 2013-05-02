@@ -1010,10 +1010,11 @@ public class IntegrityDAO {
         log.trace("Summarizing the data size for the files on pillar '" + pillarID + "'.");
 
         String summarizeSql = "SELECT SUM (" + FI_FILE_SIZE + ") FROM" + " ("
-                + " SELECT DISTINCT " + FI_FILE_KEY + ", " + FI_FILE_SIZE + " FROM " + FILE_INFO_TABLE + " ) AS distinctKeys"
-                + " JOIN " + FILES_TABLE 
-                + " ON " + "distinctKeys." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY
-                + " WHERE " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ?";
+                        + " SELECT DISTINCT " + FI_FILE_KEY + ", " + FI_FILE_SIZE + " FROM " + FILE_INFO_TABLE 
+                        + " WHERE " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ?"
+                        + " ) AS distinctKeys"
+                    + " JOIN " + FILES_TABLE 
+                    + " ON " + "distinctKeys." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY;
 
         Long result = DatabaseUtils.selectLongValue(dbConnector, summarizeSql, pillarKey);        
         log.debug("Summarized the data size in " + (System.currentTimeMillis() - startTime) + "ms");
