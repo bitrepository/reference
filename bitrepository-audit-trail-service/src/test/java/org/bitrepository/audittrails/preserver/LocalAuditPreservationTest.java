@@ -37,6 +37,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.settings.repositorysettings.Collection;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -49,9 +50,18 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
     String PILLARID = "pillarId";
     String ACTOR = "actor";
     
+    String collectionId;
+
+    
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("LocalAuditPreservationUnderßTest");
+        
+        Collection c = settings.getRepositorySettings().getCollections().getCollection().get(0);
+        settings.getRepositorySettings().getCollections().getCollection().clear();
+        settings.getRepositorySettings().getCollections().getCollection().add(c);
+        
+        collectionId = c.getID();
     }
 
 
@@ -92,39 +102,39 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         Assert.assertEquals(client.getCallsToPutFile(), 1);
     }
 
-//    @Test(groups = {"regressiontest"})
-//    public void auditPreservationIngestTest() throws Exception {
-//        addDescription("Tests the ingest of the audit trail preservation.");
-//        addStep("Setup variables and settings for the test", "");
-//        MockAuditStore store = new MockAuditStore();
-//        MockPutClient client = new MockPutClient();
-//        
-//        settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().clear();
-//        settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().add(PILLARID);
-//        
-//        addStep("Create the preserver and populate the store", "");
-//        store.addAuditTrails(createEvents());
-//        LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, client);
-//        Assert.assertEquals(store.getCallsToGetAuditTrails(), 0);
-//        Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 1);
-//        Assert.assertEquals(client.getCallsToPutFile(), 0);
-//        
-//        addStep("Call the preservation of audit trails now.", 
-//                "Should make calls to the store, upload the file and call the client");
-//        preserver.preserveAuditTrailsNow();
-//        
-//        Assert.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().size());
-//        Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 2);
-//        Assert.assertEquals(client.getCallsToPutFile(), 1);
-//        
-//        addStep("Check whether a file has been uploaded.", "");
-//        URL url = client.getUrl();
-//        FileExchange fileExchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
-//        InputStream is = fileExchange.downloadFromServer(url);
-//        
-//        Assert.assertTrue(is.read() != -1, "Should be able to read content from the URL.");
-//        is.close();
-//    }
+    @Test(groups = {"regressiontest"})
+    public void auditPreservationIngestTest() throws Exception {
+        addDescription("Tests the ingest of the audit trail preservation.");
+        addStep("Setup variables and settings for the test", "");
+        MockAuditStore store = new MockAuditStore();
+        MockPutClient client = new MockPutClient();
+        
+        settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().clear();
+        settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().add(PILLARID);
+        
+        addStep("Create the preserver and populate the store", "");
+        store.addAuditTrails(createEvents(), collectionId);
+        LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, client);
+        Assert.assertEquals(store.getCallsToGetAuditTrails(), 0);
+        Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 1);
+        Assert.assertEquals(client.getCallsToPutFile(), 0);
+        
+        addStep("Call the preservation of audit trails now.", 
+                "Should make calls to the store, upload the file and call the client");
+        preserver.preserveAuditTrailsNow();
+        
+        Assert.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().size());
+        Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 2);
+        Assert.assertEquals(client.getCallsToPutFile(), 1);
+        
+        addStep("Check whether a file has been uploaded.", "");
+        URL url = client.getUrl();
+        FileExchange fileExchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
+        InputStream is = fileExchange.downloadFromServer(url);
+        
+        Assert.assertTrue(is.read() != -1, "Should be able to read content from the URL.");
+        is.close();
+    }
     
     private AuditTrailEvents createEvents() {
         AuditTrailEvents res = new AuditTrailEvents();

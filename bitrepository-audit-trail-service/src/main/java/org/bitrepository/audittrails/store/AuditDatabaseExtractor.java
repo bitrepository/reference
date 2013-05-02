@@ -146,7 +146,8 @@ public class AuditDatabaseExtractor {
             
             return res;
         } catch (Exception e) {
-            throw new IllegalStateException("Could not retrieve the wanted data from the database.", e);
+            throw new IllegalStateException("Could not retrieve the wanted data from the database with the sql '" 
+                    + sql + "'", e);
         }
     }
     
@@ -190,14 +191,14 @@ public class AuditDatabaseExtractor {
         StringBuilder res = new StringBuilder();
         
         res.append("SELECT ");
-        res.append(AUDITTRAIL_FILE_KEY + ", ");
-        res.append(AUDITTRAIL_CONTRIBUTOR_KEY + ", ");
-        res.append(AUDITTRAIL_SEQUENCE_NUMBER + ", ");
-        res.append(AUDITTRAIL_ACTOR_KEY + ", ");
-        res.append(AUDITTRAIL_OPERATION + ", ");
-        res.append(AUDITTRAIL_OPERATION_DATE + ", ");
-        res.append(AUDITTRAIL_AUDIT + ", ");
-        res.append(AUDITTRAIL_INFORMATION + " ");
+        res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_FILE_KEY + ", ");
+        res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_CONTRIBUTOR_KEY + ", ");
+        res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_SEQUENCE_NUMBER + ", ");
+        res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_ACTOR_KEY + ", ");
+        res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_OPERATION + ", ");
+        res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_OPERATION_DATE + ", ");
+        res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_AUDIT + ", ");
+        res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_INFORMATION + " ");
         
         return res.toString();
     }
@@ -225,7 +226,7 @@ public class AuditDatabaseExtractor {
         
         if(model.getFileId() != null) {
             nextArgument(res);
-            res.append(FILE_TABLE + "."+ FILE_FILEID + " = ? )");
+            res.append(FILE_TABLE + "."+ FILE_FILEID + " = ? ");
         }
 
         if(model.getCollectionId() != null) {
