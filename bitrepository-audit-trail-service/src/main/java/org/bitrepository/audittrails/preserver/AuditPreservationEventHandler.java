@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
  * When the PutFile operation has completed, then the store will be updated with the results.
  * 
  * It is not necessary to wait until all the components are complete. Just the first.
+ * This eventhandler can only be used for handling the PutFile operation of a single AuditTrail package.
  */
 public class AuditPreservationEventHandler implements EventHandler {
     /** The log.*/
@@ -61,7 +62,7 @@ public class AuditPreservationEventHandler implements EventHandler {
     public void handleEvent(OperationEvent event) {
         if(event.getEventType() == OperationEventType.COMPLETE
                 || event.getEventType() == OperationEventType.COMPONENT_COMPLETE) {
-            updateStoreWithResults();
+            updateStoreWithResults(event.getCollectionID());
         } else {
             log.debug("Event for preservation of audit trails: " + event.toString());
         }
@@ -69,8 +70,9 @@ public class AuditPreservationEventHandler implements EventHandler {
     
     /**
      * Update the store with the results.
+     * @param collectionId The id of the collection.
      */
-    private void updateStoreWithResults() {
+    private void updateStoreWithResults(String collectionId) {
         if(updated) {
             log.debug("Have already updated the store with the new preservation sequence number.");
             return;
@@ -78,7 +80,7 @@ public class AuditPreservationEventHandler implements EventHandler {
         updated = true;
         
         for(Map.Entry<String, Long> entry : seqNumbers.entrySet()) {
-            store.setPreservationSequenceNumber(entry.getKey(), entry.getValue());
+            store.setPreservationSequenceNumber(collectionId, entry.getKey(), entry.getValue());
         }
     }
 }

@@ -81,7 +81,7 @@ public class IncrementalCollector {
         List<AuditTrailQuery> queries = new ArrayList<AuditTrailQuery>();
 
         for(String contributorId : contributors) {
-            int seq = store.largestSequenceNumber(contributorId);
+            int seq = store.largestSequenceNumber(contributorId, collectionID);
             queries.add(new AuditTrailQuery(contributorId, seq + 1, null, maxNumberOfResults));
         }
 
@@ -114,7 +114,7 @@ public class IncrementalCollector {
                 if (auditEvent.isPartialResult()) {
                     contributorsWithPartialResults.add(auditEvent.getContributorID());
                 }
-                store.addAuditTrails(auditEvent.getAuditTrailEvents().getAuditTrailEvents());
+                store.addAuditTrails(auditEvent.getAuditTrailEvents().getAuditTrailEvents(), collectionID);
                 if (auditEvent.getAuditTrailEvents().getAuditTrailEvents() != null &&
                     auditEvent.getAuditTrailEvents().getAuditTrailEvents().getAuditTrailEvent() != null) {
                     log.debug("Collected and stored " +

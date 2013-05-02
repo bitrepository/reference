@@ -26,7 +26,9 @@ package org.bitrepository.audittrails;
 
 import java.util.Collection;
 import java.util.Date;
+
 import javax.jms.JMSException;
+
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
 import org.bitrepository.audittrails.preserver.AuditTrailPreserver;
 import org.bitrepository.audittrails.store.AuditTrailStore;
@@ -55,8 +57,6 @@ public class AuditTrailService implements LifeCycledService {
     private final ContributorMediator mediator;
     /** The preserver of audit trails.*/
     private final AuditTrailPreserver preserver;
-    /** The AuditTrailService settings.*/
-    private final Settings settings;
 
     /**
      * Constructor.
@@ -81,7 +81,6 @@ public class AuditTrailService implements LifeCycledService {
         this.collector = collector;
         this.mediator = mediator;
         this.preserver = preserver;
-        this.settings = settings;
 
         mediator.start();
         preserver.start();

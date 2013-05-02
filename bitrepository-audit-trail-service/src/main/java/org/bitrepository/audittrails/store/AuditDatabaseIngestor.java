@@ -37,9 +37,9 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.*;
  * Handles the ingestion of the Audit Events into the database.
  * 
  * Ingested in the following order:
- *  AUDITTRAIL_ACTOR_GUID 
- *  AUDITTRAIL_FILE_GUID 
- *  AUDITTRAIL_CONTRIBUTOR_GUID
+ *  AUDITTRAIL_ACTOR_KEY 
+ *  AUDITTRAIL_FILE_KEY 
+ *  AUDITTRAIL_CONTRIBUTOR_KEY
  *  AUDITTRAIL_AUDIT 
  *  AUDITTRAIL_INFORMATION 
  *  AUDITTRAIL_OPERATION 
@@ -66,12 +66,12 @@ public class AuditDatabaseIngestor {
      * Ingests the given audit trails into the database.
      * @param event The auditTrail event to ingest into the database.
      */
-    public void ingestAuditEvents(AuditTrailEvent event) {
+    public void ingestAuditEvents(AuditTrailEvent event, String collectionId) {
         ArgumentValidator.checkNotNull(event, "AuditTrailEvent event");
         
         String sqlInsert = "INSERT INTO " + AUDITTRAIL_TABLE + " ( " + createIngestElementString(event) + " ) VALUES ( " 
                 + createIngestArgumentString(event) + " )";
-        DatabaseUtils.executeStatement(dbConnector, sqlInsert, extractArgumentsFromEvent(event));
+        DatabaseUtils.executeStatement(dbConnector, sqlInsert, extractArgumentsFromEvent(event, collectionId));
     }
 
     /**
@@ -81,9 +81,9 @@ public class AuditDatabaseIngestor {
     private String createIngestElementString(AuditTrailEvent event) {
         StringBuilder res = new StringBuilder();
         
-        addElement(res, event.getActorOnFile(), AUDITTRAIL_ACTOR_GUID);
-        addElement(res, event.getFileID(), AUDITTRAIL_FILE_GUID);
-        addElement(res, event.getReportingComponent(), AUDITTRAIL_CONTRIBUTOR_GUID);
+        addElement(res, event.getActorOnFile(), AUDITTRAIL_ACTOR_KEY);
+        addElement(res, event.getFileID(), AUDITTRAIL_FILE_KEY);
+        addElement(res, event.getReportingComponent(), AUDITTRAIL_CONTRIBUTOR_KEY);
         addElement(res, event.getAuditTrailInformation(), AUDITTRAIL_AUDIT);
         addElement(res, event.getInfo(), AUDITTRAIL_INFORMATION);
         addElement(res, event.getActionOnFile(), AUDITTRAIL_OPERATION);
@@ -151,23 +151,26 @@ public class AuditDatabaseIngestor {
 
     
     /**
+     * Extracts the arguments from the event.
+     * @param event The event for the audit trail.
+     * @param collectionId The id of the collection, where the audit event has taken place.
      * @return The list of elements in the model which are not null.
      */
-    private Object[] extractArgumentsFromEvent(AuditTrailEvent event) {
+    private Object[] extractArgumentsFromEvent(AuditTrailEvent event, String collectionId) {
         List<Object> res = new ArrayList<Object>();
 
         if(event.getActorOnFile() != null) {
-            Long actorGuid = retrieveActorGuid(event.getActorOnFile());
+            Long actorGuid = retrieveActorKey(event.getActorOnFile());
             res.add(actorGuid);
         }
         
         if(event.getFileID() != null) {
-            Long fileGuid = retrieveFileGuid(event.getFileID());
+            Long fileGuid = retrieveFileKey(event.getFileID(), collectionId);
             res.add(fileGuid);
         }
         
         if(event.getReportingComponent() != null) {
-            Long contributorGuid = retrieveContributorGuid(event.getReportingComponent());
+            Long contributorGuid = retrieveContributorKey(event.getReportingComponent());
             res.add(contributorGuid);
         }
         
@@ -195,14 +198,14 @@ public class AuditDatabaseIngestor {
     }
     
     /**
-     * Retrieve the guid for a given contributor. If the contributor does not exist within the contributor table, 
+     * Retrieve the key for a given contributor. If the contributor does not exist within the contributor table, 
      * then it is created.
      * 
-     * @param contributorId The name of the actor.
-     * @return The guid of the actor with the given name.
+     * @param contributorId The name of the contributor.
+     * @return The key for the contributor with the given id.
      */
-    private long retrieveContributorGuid(String contributorId) {
-        String sqlRetrieve = "SELECT " + CONTRIBUTOR_GUID + " FROM " + CONTRIBUTOR_TABLE + " WHERE " 
+    private long retrieveContributorKey(String contributorId) {
+        String sqlRetrieve = "SELECT " + CONTRIBUTOR_KEY + " FROM " + CONTRIBUTOR_TABLE + " WHERE " 
                 + CONTRIBUTOR_ID + " = ?";
         
         Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, contributorId);
@@ -219,35 +222,65 @@ public class AuditDatabaseIngestor {
     }
     
     /**
-     * Retrieve the guid for a given file. If the file does not exist within the file table, then it is created.
+     * Retrieve the key for a given file. If the file does not exist within the file table, then it is created.
      * 
      * @param fileId The id of the file.
-     * @return The guid of the file with the given id.
+     * @param collectionId The id of the collection for the 
+     * @return The key of the file with the given id.
      */
-    private synchronized long retrieveFileGuid(String fileId) {
+    private synchronized long retrieveFileKey(String fileId, String collectionId) {
         ArgumentValidator.checkNotNull(fileId, "fileId");
-        String sqlRetrieve = "SELECT " + FILE_GUID + " FROM " + FILE_TABLE + " WHERE " + FILE_FILEID + " = ?";
-        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId);
+        Long collectionKey = retrieveCollectionKey(collectionId);
+        
+        String sqlRetrieve = "SELECT " + FILE_KEY + " FROM " + FILE_TABLE + " WHERE " + FILE_FILEID + " = ? AND "
+                + FILE_COLLECTION_KEY + " = ?";
+        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId, collectionKey);
         
         if(guid == null) {
             log.debug("Inserting file '" + fileId + "' into the file table.");
-            String sqlInsert = "INSERT INTO " + FILE_TABLE + " ( " + FILE_FILEID + " ) VALUES ( ? )";
-            DatabaseUtils.executeStatement(dbConnector, sqlInsert, fileId);
+            String sqlInsert = "INSERT INTO " + FILE_TABLE + " ( " + FILE_FILEID + " , " + FILE_COLLECTION_KEY 
+                    + " ) VALUES ( ? , ? )";
+            DatabaseUtils.executeStatement(dbConnector, sqlInsert, fileId, collectionKey);
             
-            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId);
+            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId, collectionKey);
+        }
+        
+        return guid;
+    }
+
+    /**
+     * Retrieve the key for a given collection. 
+     * If the collection does not exist within the collection table, then it is created.
+     * 
+     * @param collectionId The id of the collection.
+     * @return The key for the collection with the given id.
+     */
+    private synchronized long retrieveCollectionKey(String collectionId) {
+        ArgumentValidator.checkNotNull(collectionId, "String collectionId");
+        
+        String sqlRetrieve = "SELECT " + COLLECTION_KEY + " FROM " + COLLECTION_TABLE + " WHERE " + COLLECTION_ID 
+                + " = ?";
+        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, collectionId);
+        
+        if(guid == null) {
+            log.debug("Inserting collection '" + collectionId + "' into the collection table.");
+            String sqlInsert = "INSERT INTO " + COLLECTION_TABLE + " ( " + COLLECTION_ID + " ) VALUES ( ? )";
+            DatabaseUtils.executeStatement(dbConnector, sqlInsert, collectionId);
+            
+            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, collectionId);
         }
         
         return guid;
     }
     
     /**
-     * Retrieve the guid for a given actor. If the actor does not exist within the actor, then it is created.
+     * Retrieve the key for a given actor. If the actor does not exist within the actor, then it is created.
      * 
      * @param actorName The name of the actor.
-     * @return The guid of the actor with the given name.
+     * @return The key for the actor with the given name.
      */
-    private synchronized long retrieveActorGuid(String actorName) {
-        String sqlRetrieve = "SELECT " + ACTOR_GUID + " FROM " + ACTOR_TABLE + " WHERE " + ACTOR_NAME + " = ?";
+    private synchronized long retrieveActorKey(String actorName) {
+        String sqlRetrieve = "SELECT " + ACTOR_KEY + " FROM " + ACTOR_TABLE + " WHERE " + ACTOR_NAME + " = ?";
         
         Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, actorName);
         

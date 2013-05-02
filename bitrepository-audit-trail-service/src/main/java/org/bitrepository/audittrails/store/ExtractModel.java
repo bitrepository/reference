@@ -31,6 +31,8 @@ import org.bitrepository.bitrepositoryelements.FileAction;
 class ExtractModel {
     /** @see #getFileId(). */
     private String fileId;
+    /** @see #getCollectionId(). */
+    private String collectionId;
     /** @see #getContributorId(). */
     private String contributorId;
     /** @see #getMinSeqNumber(). */
@@ -68,6 +70,21 @@ class ExtractModel {
      */
     public void setFileId(String fileId) {
         this.fileId = fileId;
+    }
+    
+    /**
+     * @return The collectionId;
+     */
+    public String getCollectionId() {
+        return collectionId;
+    }
+    
+    /**
+     * @See getCollectionId();
+     * @param collectionId The new collection id.
+     */
+    public void setCollectionId(String collectionId) {
+        this.collectionId = collectionId;
     }
     
     /**

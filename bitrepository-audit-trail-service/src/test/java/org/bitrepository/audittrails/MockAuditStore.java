@@ -47,7 +47,7 @@ public class MockAuditStore implements AuditTrailStore {
     
     private int callsToAddAuditTrails = 0;
     @Override
-    public void addAuditTrails(AuditTrailEvents newAuditTrails) {
+    public void addAuditTrails(AuditTrailEvents newAuditTrails, String collectionId) {
         callsToAddAuditTrails++;
         if(newAuditTrails != null) {
             events.addAll(newAuditTrails.getAuditTrailEvent());
@@ -60,7 +60,7 @@ public class MockAuditStore implements AuditTrailStore {
     private int callsToLargestSequenceNumber = 0;
     private int largestSequenceNumber = 0;
     @Override
-    public int largestSequenceNumber(String contributorId) {
+    public int largestSequenceNumber(String contributorId, String collectionId) {
         callsToLargestSequenceNumber++;
         return largestSequenceNumber;
     }
@@ -82,7 +82,7 @@ public class MockAuditStore implements AuditTrailStore {
     private long preservationSequenceNumber = 0;
     private int callsToGetPreservationSequenceNumber = 0;
     @Override
-    public long getPreservationSequenceNumber(String contributorId) {
+    public long getPreservationSequenceNumber(String contributorId, String collectionId) {
         callsToGetPreservationSequenceNumber++;
         return preservationSequenceNumber;
     }
@@ -92,7 +92,7 @@ public class MockAuditStore implements AuditTrailStore {
     
     private int callsToSetPreservationSequenceNumber = 0;
     @Override
-    public void setPreservationSequenceNumber(String contributorId, long seqNumber) {
+    public void setPreservationSequenceNumber(String contributorId, String collectionId, long seqNumber) {
         callsToSetPreservationSequenceNumber++;
         preservationSequenceNumber = seqNumber;
     }

@@ -55,33 +55,37 @@ public interface AuditTrailStore {
     /**
      * ingest audit trails into the store. 
      * @param newAuditTrails The audit trails to be ingested into the store.
+     * @param collectionID The id of the collection, where the audit trail events belong.
      */
-    public void addAuditTrails(AuditTrailEvents newAuditTrails);
+    public void addAuditTrails(AuditTrailEvents newAuditTrails, String collectionID);
     
     /**
      * Retrieves the largest sequence number for a given contributor.
      * 
      * @param contributorId The id of the contributor to retrieve the largest sequence number from.
+     * @param collectionId The id of the collection for the sequence number of the contributor.
      * @return The largest sequence number.
      */
-    public int largestSequenceNumber(String contributorId);
+    public int largestSequenceNumber(String contributorId, String collectionId);
     
     /**
      * Retrieves the preservation sequence number for the given contributor, which tells how far the preservation
      * of the audit trails has gotten.
      *  
      * @param contributorId The id of the contributor.
+     * @param collectionId The id of the collection for the sequence number of the contributor.
      * @return The preservation sequence number for the given contributor.
      */
-    public long getPreservationSequenceNumber(String contributorId);
+    public long getPreservationSequenceNumber(String contributorId, String collectionId);
     
     /**
      * Set the preservation sequence number for the given contributor.
      * 
      * @param contributorId The id of the contributor.
+     * @param collectionId The id of the collection for the sequence number of the contributor.
      * @param seqNumber The new preservation sequence number for the given contributor.
      */
-    public void setPreservationSequenceNumber(String contributorId, long seqNumber);
+    public void setPreservationSequenceNumber(String contributorId, String collectionId, long seqNumber);
 
     /**
      * Closes the store.

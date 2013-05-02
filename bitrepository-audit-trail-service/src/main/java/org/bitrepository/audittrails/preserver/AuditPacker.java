@@ -25,8 +25,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bitrepository.audittrails.store.AuditTrailStore;
@@ -42,8 +44,10 @@ import org.bitrepository.common.utils.FileUtils;
 public class AuditPacker {
     /** The audit trail store.*/
     private final AuditTrailStore store;
-    /** The settings.*/
-    private final Settings settings;
+    /** The id of the collection to pack audits for.*/
+    private final String collectionId;
+    /** The list of contributors for this collection. */
+    private final List<String> contributors = new ArrayList<String>();
     /** The directory where the temporary files are stored.*/
     private final File directory;
     /** Map between the contributor id and the reached preservation sequence number. */
@@ -56,11 +60,13 @@ public class AuditPacker {
      * Constructor.
      * @param store The audit trail store
      */
-    public AuditPacker(AuditTrailStore store, Settings settings) {
+    public AuditPacker(AuditTrailStore store, Settings settings, String collectionId) {
         this.store = store;
-        this.settings = settings;
+        this.collectionId = collectionId;
         this.directory = FileUtils.retrieveDirectory(settings.getReferenceSettings().getAuditTrailServiceSettings()
                 .getAuditTrailPreservationTemporaryDirectory());
+        // TODO potential issue with contributors in this list, which is not part of the collection...
+        this.contributors.addAll(settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs());
         
         initialiseReachedSequenceNumbers();
     }
@@ -77,8 +83,8 @@ public class AuditPacker {
      * Retrieves the preservation sequence number for each contributor and inserts it into the map.
      */
     private void initialiseReachedSequenceNumbers() {
-        for(String contributor : settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs()) {
-            Long seq = store.getPreservationSequenceNumber(contributor);
+        for(String contributor : contributors) {
+            Long seq = store.getPreservationSequenceNumber(contributor, collectionId);
             seqReached.put(contributor, seq);
         }
     }
@@ -90,7 +96,7 @@ public class AuditPacker {
      * @return A compressed file with all the audit trails. 
      */
     public synchronized File createNewPackage() {
-        File container = new File(directory, "audit-trails-" + System.currentTimeMillis());
+        File container = new File(directory, collectionId + "-audit-trails-" + System.currentTimeMillis());
         try {
             container.createNewFile();
             packContributors(container);
@@ -114,7 +120,7 @@ public class AuditPacker {
         PrintWriter writer = null;
         try {
             writer = new PrintWriter(new FileOutputStream(container, APPEND));
-            for(String contributor : settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs()) {
+            for(String contributor : contributors) {
                 Long seq = packContributor(contributor, writer);
                 seqReached.put(contributor, seq);
             }
@@ -133,7 +139,7 @@ public class AuditPacker {
      * @return The sequence number reached +1 (to tell which sequence number is next).
      */
     private Long packContributor(String contributorId, PrintWriter writer) {
-        long nextSeqNumber = store.getPreservationSequenceNumber(contributorId);
+        long nextSeqNumber = store.getPreservationSequenceNumber(contributorId, collectionId);
         long largestSeqNumber = -1;
         
         Collection<AuditTrailEvent> events = store.getAuditTrails(null, null, contributorId, nextSeqNumber, 
