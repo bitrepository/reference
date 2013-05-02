@@ -87,24 +87,7 @@ public class RestStatisticsService {
     @Path("/getLatestPillarDataSize/")
     @Produces(MediaType.APPLICATION_JSON)
     public List<StatisticsPillarSize> getLatestPillarDataSize() {
-        List<String> mockPillarIDs = new ArrayList<String>();
-        mockPillarIDs.add("pillarA");
-        mockPillarIDs.add("pillarB");
-        mockPillarIDs.add("pillarC");
-        mockPillarIDs.add("pillar35");
-        
-        List<StatisticsPillarSize> mockData = new ArrayList<StatisticsPillarSize>();
-        
-        Long size =  145000L;
-        for(String pillar : mockPillarIDs) {
-            StatisticsPillarSize obj = new StatisticsPillarSize();
-            obj.setPillarID(pillar);
-            size = (long) (size * 1.23 + 24);
-            obj.setDataSize(size);
-            mockData.add(obj);
-        }
-        
-        return mockData;
+        return service.getCurrentPillarsDataSize();
     }
     
     @GET

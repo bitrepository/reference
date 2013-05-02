@@ -941,6 +941,42 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertEquals(cache.getCollectionFileSize(TEST_COLLECTIONID), collectionSize);   
     }
     
+    public void testPillarDataSize() {
+        addDescription("Tests that the accumulated data size of a pillar can be extracted");
+        IntegrityDAO cache = createDAO();
+        
+        addStep("Insert test data into database", "Data is ingested");
+        String file2 = TEST_FILE_ID + "-2";
+        String file3 = TEST_FILE_ID + "-3";
+        Long size1 = new Long(100);
+        Long size2 = new Long(200);
+        Long size3 = new Long(300);
+        FileIDsData data1 = makeFileIDsDataWithGivenFileSize(TEST_FILE_ID, size1);
+        FileIDsData data2 = makeFileIDsDataWithGivenFileSize(file2, size2);
+        FileIDsData data3 = makeFileIDsDataWithGivenFileSize(file3, size3);
+        cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileIDs(data2, TEST_PILLAR_1, TEST_COLLECTIONID);      
+        cache.updateFileIDs(data3, TEST_PILLAR_1, EXTRA_COLLECTION);
+        
+        addStep("Check that the data has been properly ingested into the database", "The data has been ingested");
+        List<String> collection1Files = cache.getFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        Assert.assertEquals(collection1Files.size(), 2);
+        Assert.assertTrue(collection1Files.contains(TEST_FILE_ID));
+        Assert.assertTrue(collection1Files.contains(file2));
+        List<String> collection2Files = cache.getFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        Assert.assertEquals(collection1Files.size(), 1);
+        Assert.assertTrue(collection1Files.contains(file3));
+        
+        addStep("Check that there is differences in collection and pillar data sizes", "The reported sizes match the expected");
+        Long collection1DataSize = size1 + size2;
+        Long collection2DataSize = size3;
+        Long pillar1DataSize = collection1DataSize + collection2DataSize;
+        Assert.assertEquals(cache.getCollectionFileSize(TEST_COLLECTIONID), collection1DataSize);
+        Assert.assertEquals(cache.getCollectionFileSize(EXTRA_COLLECTION), collection1DataSize);
+        Assert.assertEquals(cache.getPillarDataSize(TEST_PILLAR_1), pillar1DataSize);
+        
+    }
+    
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void testStatisticsGeneration() {
         addDescription("Tests that statistics can be made and extracted.");

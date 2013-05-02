@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.common.webobjects.StatisticsPillarSize;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
@@ -231,4 +232,18 @@ public class SimpleIntegrityService implements IntegrityService {
     public List<CollectionStat> getCollectionStatisticsHistory(String collectionID, int count) {
         return cache.getLatestCollectionStat(collectionID, count);
     }
+    
+    @Override
+    public List<StatisticsPillarSize> getCurrentPillarsDataSize() {
+        List<StatisticsPillarSize> stats = new ArrayList<StatisticsPillarSize>();
+        for(String pillar : SettingsUtils.getAllPillarIDs(settings)) {
+            StatisticsPillarSize stat = new StatisticsPillarSize();
+            Long dataSize = cache.getPillarDataSize(pillar);
+            stat.setDataSize(dataSize);
+            stat.setPillarID(pillar);
+            stats.add(stat);
+        }
+        return stats;
+    }
+
 }

@@ -332,4 +332,14 @@ public class MockIntegrityModel implements IntegrityModel {
     public int getCallsForMakeStatisticsForCollection() {
         return callsMakeStatisticsForCollection;
     }
+    
+    private int callsGetPillarDataSize = 0;
+    @Override
+    public Long getPillarDataSize(String pillarID) {
+        callsMakeStatisticsForCollection++;
+        return integrityModel.getPillarDataSize(pillarID);
+    }
+    public int getCallsForGetPillarDataSize() {
+        return callsGetPillarDataSize;
+    }
 }

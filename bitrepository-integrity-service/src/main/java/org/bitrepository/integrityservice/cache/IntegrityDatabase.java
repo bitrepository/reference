@@ -223,6 +223,11 @@ public class IntegrityDatabase implements IntegrityModel {
     public Long getCollectionFileSize(String collectionId) {
         return store.getCollectionFileSize(collectionId);
     }
+    
+    @Override
+    public Long getPillarDataSize(String pillarID) {
+        return store.getPillarDataSize(pillarID);
+    }
 
     @Override
     public List<CollectionStat> getLatestCollectionStat(String collectionID, int count) {

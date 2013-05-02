@@ -247,6 +247,13 @@ public interface IntegrityModel {
     Long getCollectionFileSize(String collectionId);
     
     /**
+     * Retrieves the accumulated data size of the files on a given pillar
+     * @param pillarID The ID of the pillar
+     * @return The accumulated data size for the pillar
+     */
+    Long getPillarDataSize(String pillarID);
+    
+    /**
      *  Retrieves the latest collection statistics for the given collection
      *  @param collectionID The ID of the collection
      *  @return {@link CollectionStat} The latest collection statistics object for the collection

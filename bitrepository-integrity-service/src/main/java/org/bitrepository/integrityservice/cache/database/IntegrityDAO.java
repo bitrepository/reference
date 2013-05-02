@@ -997,8 +997,28 @@ public class IntegrityDAO {
         Long result = DatabaseUtils.selectLongValue(dbConnector, summarizeSql, collectionKey);        
         log.debug("Summarized the filesizes in " + (System.currentTimeMillis() - startTime) + "ms");
         return result;
-
     }
+    
+    /**
+     * Gets the summarized data size of the files on a given pillar
+     * @param pillarID The ID of the pillar
+     * @return The accumulated data size of the files on the pillar 
+     */
+    public Long getPillarDataSize(String pillarID) {
+        long startTime = System.currentTimeMillis();
+        Long pillarKey = retrievePillarKey(pillarID);
+        log.trace("Summarizing the data size for the files on pillar '" + pillarID + "'.");
+
+        String summarizeSql = "SELECT SUM (" + FI_FILE_SIZE + ") FROM" + " ("
+                + " SELECT DISTINCT " + FI_FILE_KEY + ", " + FI_FILE_SIZE + " FROM " + FILE_INFO_TABLE + " ) AS distinctKeys"
+                + " JOIN " + FILES_TABLE 
+                + " ON " + "distinctKeys." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                + " WHERE " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ?";
+
+        Long result = DatabaseUtils.selectLongValue(dbConnector, summarizeSql, pillarKey);        
+        log.debug("Summarized the data size in " + (System.currentTimeMillis() - startTime) + "ms");
+        return result;
+    }  
     
     /**
      * Gets the summarized size of the files on the given pillar in the given collection

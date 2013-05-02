@@ -650,4 +650,10 @@ public class TestIntegrityModel implements IntegrityModel {
     public void makeStatisticsForCollection(String collectionID) {
         // TODO Fix this...
     }
+
+    @Override
+    public Long getPillarDataSize(String pillarID) {
+        // TODO Fix this
+        return null;
+    }
 }

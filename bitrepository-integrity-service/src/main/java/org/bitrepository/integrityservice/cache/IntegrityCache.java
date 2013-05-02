@@ -122,6 +122,11 @@ public class IntegrityCache implements IntegrityModel {
         }
         return collectionSizeVal;
     }
+    
+    @Override
+    public Long getPillarDataSize(String pillarID) {
+        return integrityModel.getPillarDataSize(pillarID);
+    }
 
     @Override
     public long getNumberOfMissingFiles(String pillarId, String collectionId) {

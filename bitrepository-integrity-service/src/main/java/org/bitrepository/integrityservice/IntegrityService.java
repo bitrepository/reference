@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.bitrepository.common.webobjects.StatisticsPillarSize;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.workflow.Workflow;
@@ -142,6 +143,12 @@ public interface IntegrityService extends LifeCycledService {
      * @return List<CollectionStat> The list of latest collection statistics objects 
      */
     List<CollectionStat> getCollectionStatisticsHistory(String collectionID, int count);
+    
+    /**
+     * Method to get the current data size on the known pillars
+     * @return List<StatisticsPillarSize> The list of pillars data size
+     */
+    List<StatisticsPillarSize> getCurrentPillarsDataSize();
     
     /**
      * Shut down the integrity service.
