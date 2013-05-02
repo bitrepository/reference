@@ -134,6 +134,14 @@ public interface IntegrityService extends LifeCycledService {
      * @return List<CollectionStat> The list of latest collection statistics objects 
      */
     List<CollectionStat> getLatestCollectionStatistics();
+
+    /**
+     * Method to get the latest collection statistics
+     * @param collectionID The ID of the collection to get collection statistics from 
+     * @param count The maximum number of statistics to get
+     * @return List<CollectionStat> The list of latest collection statistics objects 
+     */
+    List<CollectionStat> getCollectionStatisticsHistory(String collectionID, int count);
     
     /**
      * Shut down the integrity service.

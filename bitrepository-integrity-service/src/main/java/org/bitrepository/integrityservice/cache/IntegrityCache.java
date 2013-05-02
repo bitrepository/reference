@@ -270,8 +270,8 @@ public class IntegrityCache implements IntegrityModel {
     }
     
     @Override
-    public CollectionStat getLatestCollectionStat(String collectionID) {
-        return integrityModel.getLatestCollectionStat(collectionID);
+    public List<CollectionStat> getLatestCollectionStat(String collectionID, int count) {
+        return integrityModel.getLatestCollectionStat(collectionID, count);
     }
     
     @Override

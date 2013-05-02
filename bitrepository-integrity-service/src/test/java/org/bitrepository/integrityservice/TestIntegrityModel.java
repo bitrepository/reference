@@ -641,7 +641,7 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public CollectionStat getLatestCollectionStat(String collectionID) {
+    public List<CollectionStat> getLatestCollectionStat(String collectionID, int count) {
         // TODO fix this...
         return null;
     }

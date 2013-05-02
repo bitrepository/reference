@@ -34,6 +34,24 @@ public class RestStatisticsService {
     @Path("/getDataSizeHistory/")
     @Produces(MediaType.APPLICATION_JSON)
     public List<StatisticsDataSize> getDataSizeHistory(@QueryParam("collectionID") String collectionID) {
+        List<CollectionStat> stats = service.getCollectionStatisticsHistory(collectionID, 10);
+        List<StatisticsDataSize> data = new ArrayList<StatisticsDataSize>();
+        for(CollectionStat stat : stats) {
+            StatisticsDataSize obj = new StatisticsDataSize();
+            Date statTime = stat.getStatsTime();
+            obj.setDateMillis(statTime.getTime());
+            obj.setDateString(TimeUtils.shortDate(statTime));
+            obj.setDataSize(stat.getDataSize());
+            data.add(obj);
+        }
+        
+        return data;
+    }
+    
+    @GET
+    @Path("/getDataSizeHistoryMocked/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<StatisticsDataSize> getDataSizeHistoryMock(@QueryParam("collectionID") String collectionID) {
         List<Date> mockDates = new ArrayList<Date>();
         long startTime = 1360886243*1000;
         mockDates.add(new Date(startTime));

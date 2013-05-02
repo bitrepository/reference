@@ -316,9 +316,9 @@ public class MockIntegrityModel implements IntegrityModel {
     }
     private int callsGetLatestCollectionStat = 0;
     @Override
-    public CollectionStat getLatestCollectionStat(String collectionID) {
+    public List<CollectionStat> getLatestCollectionStat(String collectionID, int count) {
         callsGetLatestCollectionStat++;
-        return integrityModel.getLatestCollectionStat(collectionID);
+        return integrityModel.getLatestCollectionStat(collectionID, count);
     }
     public int getCallsForGetLatestCollectionStat() {
         return callsGetLatestCollectionStat;

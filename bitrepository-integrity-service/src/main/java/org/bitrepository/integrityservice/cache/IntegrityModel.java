@@ -251,7 +251,7 @@ public interface IntegrityModel {
      *  @param collectionID The ID of the collection
      *  @return {@link CollectionStat} The latest collection statistics object for the collection
      */
-    CollectionStat getLatestCollectionStat(String collectionID);
+    List<CollectionStat> getLatestCollectionStat(String collectionID, int count);
     
     
     /**

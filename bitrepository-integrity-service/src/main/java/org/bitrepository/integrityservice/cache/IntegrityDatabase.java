@@ -225,8 +225,8 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public CollectionStat getLatestCollectionStat(String collectionID) {
-        return store.getLatestCollectionStats(collectionID);
+    public List<CollectionStat> getLatestCollectionStat(String collectionID, int count) {
+        return store.getLatestCollectionStats(collectionID, (long) count);
     }
 
     @Override

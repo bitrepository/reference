@@ -1114,50 +1114,46 @@ public class IntegrityDAO {
      * @param collectionID The ID of the collection 
      * @return List<PillarStat> The list of PillarStat's for the collection
      */
-    public CollectionStat getLatestCollectionStats(String collectionID) {
+    public List<CollectionStat> getLatestCollectionStats(String collectionID, Long count) {
         final int indexFileCount = 1;
         final int indexDataSize = 2;
         final int indexChecksumErrors = 3;
         final int indexStatTime = 4;
         final int indexUpdateTime = 5;
         
-        Long statsKey = getLatestStatisticsKey(collectionID);
+
         Long collectionKey = retrieveCollectionKey(collectionID);
-        if(statsKey == null) {
-            log.debug("Trying to retrieve pillar stats but none exists for collectionID: '" + collectionID + "'.");
-            return null;
-        }
-        CollectionStat res;
+
+        List<CollectionStat> res = new ArrayList<CollectionStat>();
         
         String sql = "SELECT c." + CS_FILECOUNT +  ", c." + CS_FILESIZE + ", c." + CS_CHECKSUM_ERRORS
-                    + ", s." + STATS_TIME + ", s." + STATS_LAST_UPDATE 
-                + " FROM " + COLLECTION_STATS_TABLE + " c "
-                + " JOIN " + STATS_TABLE + " s" 
-                + " ON  c." + CS_STAT_KEY + " = s." + STATS_KEY
-                + " WHERE s." + STATS_COLLECTION_KEY + " = ?"
-                + " AND s." + STATS_KEY + " = ?";
-        
+                            + ", s." + STATS_TIME + ", s." + STATS_LAST_UPDATE 
+                            + " FROM " + COLLECTION_STATS_TABLE + " c "
+                            + " JOIN " + STATS_TABLE + " s" 
+                            + " ON  c." + CS_STAT_KEY + " = s." + STATS_KEY
+                            + " WHERE s." + STATS_COLLECTION_KEY + " = ?"
+                            + " ORDER BY s." + STATS_TIME + " DESC "
+                            + " FETCH FIRST ? ROWS ONLY";
+ 
         try {
             ResultSet dbResult = null;
             PreparedStatement ps = null;
             Connection conn = null;
             try {
                 conn = dbConnector.getConnection();
-                ps = DatabaseUtils.createPreparedStatement(conn, sql, collectionKey, statsKey);
+                ps = DatabaseUtils.createPreparedStatement(conn, sql, collectionKey, count);
                 dbResult = ps.executeQuery();
                 
-                if (!dbResult.next()) {
-                    log.trace("Got an empty result set for statement '" + sql + "' with arguments '"
-                            + Arrays.asList(collectionKey, statsKey) + "' on database '" + conn + "'. Returning a null.");
-                    res = null;
-                } else {
+                while(dbResult.next()) {
                     Long fileCount = dbResult.getLong(indexFileCount);
                     Long dataSize = dbResult.getLong(indexDataSize);
                     Long checksumErrors = dbResult.getLong(indexChecksumErrors);
                     Date statsTime = dbResult.getTimestamp(indexStatTime);
                     Date updateTime = dbResult.getTimestamp(indexUpdateTime);
                     
-                    res = new CollectionStat(collectionID, fileCount, dataSize, checksumErrors, statsTime, updateTime);
+                    CollectionStat stat = new CollectionStat(collectionID, fileCount, dataSize, checksumErrors, 
+                            statsTime, updateTime);
+                    res.add(stat);
                 }
             } finally {
                 if(dbResult != null) {
@@ -1172,8 +1168,10 @@ public class IntegrityDAO {
             }
         } catch (SQLException e) {
             throw new IllegalStateException("Could not retrieve the latest PillarStat's for '" + collectionID + "' " +
-                    "with the SQL '" + sql + "'.", e);
+                    "with the SQL '" + sql + "' with arguments '"
+                            + Arrays.asList(collectionKey, count) + "'.", e);
         }
+        java.util.Collections.reverse(res);
         return res;   
     }
 

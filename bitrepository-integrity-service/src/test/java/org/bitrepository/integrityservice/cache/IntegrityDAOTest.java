@@ -1045,7 +1045,9 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         }
         
         addStep("Check that the collection stats is as expected", "The stats are as expected.");
-        CollectionStat collectionStat = cache.getLatestCollectionStats(TEST_COLLECTIONID);
+        List<CollectionStat> collectionStats = cache.getLatestCollectionStats(TEST_COLLECTIONID, 1L);
+        Assert.assertEquals(collectionStats.size(), 1);
+        CollectionStat collectionStat = collectionStats.get(0);
         Assert.assertTrue(collectionStat != null);
         Assert.assertEquals((long) collectionStat.getChecksumErrors(), 1);
         Assert.assertEquals((long) collectionStat.getFileCount(), 5);

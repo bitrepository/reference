@@ -218,12 +218,17 @@ public class SimpleIntegrityService implements IntegrityService {
     public List<CollectionStat> getLatestCollectionStatistics() {
         List<CollectionStat> res = new ArrayList<CollectionStat>();
         for(String collection : SettingsUtils.getAllCollectionsIDs(settings)) {
-            CollectionStat stat = cache.getLatestCollectionStat(collection);
-            if(stat != null) {
-                res.add(stat);
+            List<CollectionStat> stats = cache.getLatestCollectionStat(collection, 1);
+            if(!stats.isEmpty()) {
+                res.add(stats.get(0));   
             }
         }
         
         return res;
+    }
+    
+    @Override 
+    public List<CollectionStat> getCollectionStatisticsHistory(String collectionID, int count) {
+        return cache.getLatestCollectionStat(collectionID, count);
     }
 }
