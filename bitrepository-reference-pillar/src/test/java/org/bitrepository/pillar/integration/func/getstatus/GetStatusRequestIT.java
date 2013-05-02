@@ -20,7 +20,7 @@
  * #L%
  */
 
-package getstatus;
+package org.bitrepository.pillar.integration.func.getstatus;
 
 import java.lang.reflect.Method;
 

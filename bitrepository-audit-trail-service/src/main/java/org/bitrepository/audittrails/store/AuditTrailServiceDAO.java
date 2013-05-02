@@ -21,13 +21,24 @@
  */
 package org.bitrepository.audittrails.store;
 
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_CONTRIBUTOR_GUID;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_CONTRIBUTOR_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_FILE_KEY;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_SEQUENCE_NUMBER;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_TABLE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_GUID;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.COLLECTION_ID;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.COLLECTION_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.COLLECTION_TABLE;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_ID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_PRESERVATION_SEQ;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_KEY;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_TABLE;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_COLLECTION_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_TABLE;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.PRESERVATION_COLLECTION_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.PRESERVATION_CONTRIBUTOR_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.PRESERVATION_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.PRESERVATION_SEQ;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.PRESERVATION_TABLE;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -37,9 +48,9 @@ import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
-import org.bitrepository.common.settings.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,10 +75,12 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     }
     
     @Override
-    public List<AuditTrailEvent> getAuditTrails(String fileId, String collectionID, String contributorId, Long minSeqNumber, 
-            Long maxSeqNumber, String actorName, FileAction operation, Date startDate, Date endDate, Integer maxResults) {
+    public List<AuditTrailEvent> getAuditTrails(String fileId, String collectionID, String contributorId, 
+            Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation, Date startDate, 
+            Date endDate, Integer maxResults) {
         ExtractModel model = new ExtractModel();
         model.setFileId(fileId);
+        model.setCollectionId(collectionID);
         model.setContributorId(contributorId);
         model.setMinSeqNumber(minSeqNumber);
         model.setMaxSeqNumber(maxSeqNumber);
@@ -84,23 +97,31 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     }
     
     @Override
-    public void addAuditTrails(AuditTrailEvents newAuditTrails) {
+    public void addAuditTrails(AuditTrailEvents newAuditTrails, String collectionId) {
         ArgumentValidator.checkNotNull(newAuditTrails, "AuditTrailEvents newAuditTrails");
+        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         
         AuditDatabaseIngestor ingestor = new AuditDatabaseIngestor(dbConnector);
         for(AuditTrailEvent event : newAuditTrails.getAuditTrailEvent()) {
-            ingestor.ingestAuditEvents(event);
+            ingestor.ingestAuditEvents(event, collectionId);
         }
     }
     
     @Override
-    public int largestSequenceNumber(String contributorId) {
+    public int largestSequenceNumber(String contributorId, String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(contributorId, "String contributorId");
-        String sql = "SELECT " + AUDITTRAIL_SEQUENCE_NUMBER + " FROM " + AUDITTRAIL_TABLE + " WHERE " 
-                + AUDITTRAIL_CONTRIBUTOR_GUID + " = ( SELECT " + CONTRIBUTOR_GUID + " FROM " + CONTRIBUTOR_TABLE 
-                + " WHERE " + CONTRIBUTOR_ID + " = ? ) ORDER BY " + AUDITTRAIL_SEQUENCE_NUMBER + " DESC";
+        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         
-        Long seq = DatabaseUtils.selectFirstLongValue(dbConnector, sql, contributorId);
+        // Indirectly extracts contributor and collection keys, and joins with the file table where the query can be
+        // limited by collection
+        String sql = "SELECT " + AUDITTRAIL_SEQUENCE_NUMBER + " FROM " + AUDITTRAIL_TABLE + " JOIN " + FILE_TABLE 
+                + " ON " + AUDITTRAIL_TABLE + "." + AUDITTRAIL_FILE_KEY + " = " + FILE_TABLE + "." + FILE_KEY
+                + " WHERE "  + AUDITTRAIL_TABLE + "." + AUDITTRAIL_CONTRIBUTOR_KEY + " = ( SELECT " + CONTRIBUTOR_KEY 
+                + " FROM " + CONTRIBUTOR_TABLE + " WHERE " + CONTRIBUTOR_ID + " = ? ) AND " + FILE_TABLE + "." 
+                + FILE_COLLECTION_KEY + " = ( SELECT " + COLLECTION_KEY + " FROM " + COLLECTION_TABLE + " WHERE " 
+                + COLLECTION_ID + " = ? ) ORDER BY " + AUDITTRAIL_TABLE + "." + AUDITTRAIL_SEQUENCE_NUMBER + " DESC";
+        
+        Long seq = DatabaseUtils.selectFirstLongValue(dbConnector, sql, contributorId, collectionId);
         if(seq != null) {
             return seq.intValue();
         }
@@ -108,12 +129,16 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     }    
 
     @Override
-    public long getPreservationSequenceNumber(String contributorId) {
+    public long getPreservationSequenceNumber(String contributorId, String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(contributorId, "String contributorId");
-        String sql = "SELECT " + CONTRIBUTOR_PRESERVATION_SEQ + " FROM " + CONTRIBUTOR_TABLE + " WHERE " 
-                + CONTRIBUTOR_ID + " = ? ";
+        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         
-        Long seq = DatabaseUtils.selectLongValue(dbConnector, sql, contributorId);
+        String sql = "SELECT " + PRESERVATION_SEQ + " FROM " + PRESERVATION_TABLE + " WHERE " 
+                + PRESERVATION_CONTRIBUTOR_KEY + " = ( SELECT " + CONTRIBUTOR_KEY + " FROM " + CONTRIBUTOR_TABLE 
+                + " WHERE " + CONTRIBUTOR_ID + " = ? ) AND " + PRESERVATION_COLLECTION_KEY + " = ( SELECT "
+                + COLLECTION_KEY + " FROM " + COLLECTION_TABLE + " WHERE " + COLLECTION_ID + " = ? )";
+        
+        Long seq = DatabaseUtils.selectLongValue(dbConnector, sql, contributorId, collectionId);
         if(seq != null) {
             return seq.intValue();
         }
@@ -121,12 +146,43 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     }
 
     @Override
-    public void setPreservationSequenceNumber(String contributorId, long seqNumber) {
+    public void setPreservationSequenceNumber(String contributorId, String collectionId, long seqNumber) {
         ArgumentValidator.checkNotNullOrEmpty(contributorId, "String contributorId");
         ArgumentValidator.checkNotNegative(seqNumber, "int seqNumber");
-        String sqlUpdate = "UPDATE " + CONTRIBUTOR_TABLE + " SET " + CONTRIBUTOR_PRESERVATION_SEQ + " = ? WHERE " 
-                + CONTRIBUTOR_ID + " = ? ";
-        DatabaseUtils.executeStatement(dbConnector, sqlUpdate, seqNumber, contributorId);
+        long preservationKey = retrievePreservationKey(contributorId, collectionId);
+        
+        String sqlUpdate = "UPDATE " + PRESERVATION_TABLE + " SET " + PRESERVATION_SEQ + " = ? WHERE " 
+                + PRESERVATION_KEY + " = ? ";
+        DatabaseUtils.executeStatement(dbConnector, sqlUpdate, seqNumber, preservationKey);
+    }
+    
+    /**
+     * Retrieves the key of the preservation table entry for the given collection and contributor.
+     * 
+     * @param contributorId The contributor of the preservation table entry.
+     * @param collectionId The collection of the preservation table entry.
+     * @return The key of the entry in the preservation table.
+     */
+    private Long retrievePreservationKey(String contributorId, String collectionId) {
+        String sqlRetrieve = "SELECT " + PRESERVATION_KEY + " FROM " + PRESERVATION_TABLE + " WHERE " 
+                + PRESERVATION_CONTRIBUTOR_KEY + " = ( SELECT " + CONTRIBUTOR_KEY + " FROM " + CONTRIBUTOR_TABLE 
+                + " WHERE " + CONTRIBUTOR_ID + " = ? ) AND " + PRESERVATION_COLLECTION_KEY + " = ( SELECT "
+                + COLLECTION_KEY + " FROM " + COLLECTION_TABLE + " WHERE " + COLLECTION_ID + " = ? )";
+        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, contributorId, collectionId);
+        
+        if(guid == null) {
+            log.debug("Inserting preservation entry for contributor '" + contributorId + "' and collection '" 
+                    + collectionId + "' into the preservation table.");
+            String sqlInsert = "INSERT INTO " + PRESERVATION_TABLE + " ( " + PRESERVATION_CONTRIBUTOR_KEY + " , " 
+                    + PRESERVATION_COLLECTION_KEY + ") VALUES ( (SELECT " + CONTRIBUTOR_KEY + " FROM " 
+                    + CONTRIBUTOR_TABLE + " WHERE " + CONTRIBUTOR_ID + " = ?) , ( SELECT " + COLLECTION_KEY + " FROM "
+                    + COLLECTION_TABLE + " WHERE " + COLLECTION_ID + " = ? ) )";
+            DatabaseUtils.executeStatement(dbConnector, sqlInsert, contributorId, collectionId);
+            
+            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, contributorId, collectionId);
+        }
+        
+        return guid;
     }
 
     @Override

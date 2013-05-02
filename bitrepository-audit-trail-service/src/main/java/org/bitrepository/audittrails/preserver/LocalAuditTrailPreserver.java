@@ -26,6 +26,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -38,13 +40,13 @@ import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.settings.repositorysettings.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Handles the preservation of audit trails to the local collection.
- * 
- * 
+ * This means, that each set of audit trails will be preserved within its own collection.
  */
 public class LocalAuditTrailPreserver implements AuditTrailPreserver {
     /** The log.*/
@@ -58,8 +60,8 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
     private Timer timer;
     /** The timertask for preserving the audit trails.*/
     private AuditPreservationTimerTask auditTask = null;
-    /** The Audit trail packer for packing and compressing the audit trails.*/
-    private final AuditPacker auditPacker;
+    /** The mapping between collection and the Audit trail packer for packing and compressing the audit trails.*/
+    Map<String, AuditPacker> auditPackers = new HashMap<String, AuditPacker>();
     /** The settings for the local audit trail preserver.*/
     private final Settings settings;
     
@@ -77,7 +79,9 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         this.settings = settings;
         this.store = store;
         this.client = client;
-        this.auditPacker = new AuditPacker(store, settings);
+        for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
+            this.auditPackers.put(c.getID(), new AuditPacker(store, settings, c.getID()));
+        }
     }
     
     @Override
@@ -110,7 +114,9 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         } else {
             auditTask.resetTime();
         }
-        performAuditTrailPreservation();
+        for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
+            performAuditTrailPreservation(c.getID());
+        }
     }
     
     /**
@@ -119,15 +125,16 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
      * finally use the PutFileClient to ingest the package into the collection.
      * When the 'put' has completed the Store is updated with the newest preservation sequence numbers for the 
      * contributors.
+     * @param collectionId The id of the collection whose audit trails should be preserved.
      */
-    private synchronized void performAuditTrailPreservation() {
+    private synchronized void performAuditTrailPreservation(String collectionId) {
         try {
-            File auditPackage = auditPacker.createNewPackage();
+            File auditPackage = auditPackers.get(collectionId).createNewPackage();
             URL url = uploadFile(auditPackage);
             log.info("Uploaded the file '" + auditPackage + "' to '" + url.toExternalForm() + "'");
             
-            EventHandler eventHandler = new AuditPreservationEventHandler(auditPacker.getSequenceNumbersReached(), 
-                    store);
+            EventHandler eventHandler = new AuditPreservationEventHandler(
+                    auditPackers.get(collectionId).getSequenceNumbersReached(), store);
             client.putFile(settings.getReferenceSettings().getAuditTrailServiceSettings()
                     .getAuditTrailPreservationCollection(), url,
                     auditPackage.getName(), auditPackage.length(), null, null, eventHandler,
@@ -181,7 +188,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
             if(nextRun.getTime() < System.currentTimeMillis()) {
                 log.debug("Time to preserve the audit trails.");
                 resetTime();
-                performAuditTrailPreservation();
+                preserveAuditTrailsNow();
             }
         }
     }

@@ -157,6 +157,43 @@ public class ArchiveDirectoryTest extends ExtendedTestCase {
         Assert.assertTrue(directory.hasFile(FILE_ID));
         Assert.assertFalse(directory.hasFileInTempDir(FILE_ID));
     }
+
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void testArchiveDirectoryRemoveFile() throws Exception {
+        addDescription("Testing the error scenarios when removing files from the archive.");
+        addStep("Setup", "No file added to the directory.");
+        ArchiveDirectory directory = new ArchiveDirectory(DIR_NAME);
+        File retainDir = new File(DIR_NAME + "/retainDir");
+        
+        addStep("Remove nonexisting file from archive", "Exception since it does not exist");
+        try {
+            directory.removeFileFromArchive(FILE_ID);
+            Assert.fail("Should throw exception since the file does not exist.");
+        } catch (IllegalStateException e) {
+            // exptected
+        }
+
+        addStep("Remove nonexisting file from tmp", "Exception since it does not exist");
+        try {
+            directory.removeFileFromTmp(FILE_ID);
+            Assert.fail("Should throw exception since the file does not exist.");
+        } catch (IllegalStateException e) {
+            // exptected
+        }
+        
+        addStep("Create file in both tmp, archive and retain directories.", "");
+        createExistingFile();
+        File tmpFile = directory.getNewFileInTempDir(FILE_ID);
+        Assert.assertTrue(tmpFile.createNewFile());
+        File retainFile = new File(retainDir, FILE_ID);
+        Assert.assertTrue(retainFile.createNewFile());
+        Assert.assertEquals(retainDir.list().length, 1);
+
+        addStep("Remove the file from archive and tmp", "all 3 files in retain dir.");
+        directory.removeFileFromArchive(FILE_ID);
+        directory.removeFileFromTmp(FILE_ID);
+        Assert.assertEquals(retainDir.list().length, 3);
+    }
     
     private void createExistingFile() throws Exception {
         FileWriter fw = new FileWriter(new File(FILE_DIR_NAME, FILE_ID), false);
