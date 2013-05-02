@@ -84,7 +84,7 @@ public class ActiveMQMessageBus implements MessageBus {
     public static final String COLLECTION_ID_KEY = "org.bitrepository.messages.collectionid";
     /** The key for storing the message type in a string property in the message headers. */
     public static final String MESSAGE_SIGNATURE_KEY = "org.bitrepository.messages.signature";
-    public static final String MESSAGE_RECIPIENT_KEY = "org.bitrepository.messages.recipient";
+    public static final String MESSAGE_RECIPIENT_KEY = "org.bitrepository.messages.to";
     /** Default transacted. */
     public static final boolean TRANSACTED = false;
 
