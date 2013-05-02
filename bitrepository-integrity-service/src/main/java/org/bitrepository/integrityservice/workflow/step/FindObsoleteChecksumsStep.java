@@ -85,7 +85,7 @@ public class FindObsoleteChecksumsStep extends AbstractWorkFlowStep {
             log.debug("No osolete checksum found.");
         } else {
             log.trace("Found the following obsolete checksum issues:\n" + report.generateReport());
-            dispatcher.integrityFailed(report, collectionId);
+            dispatcher.integrityFailed(report);
         }
     }
 

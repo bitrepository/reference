@@ -48,11 +48,11 @@ public class IntegrityAlarmDispatcher extends AlarmDispatcher implements Integri
     }
     
     @Override
-    public void integrityFailed(IntegrityReportModel report, String collectionID) {
+    public void integrityFailed(IntegrityReportModel report) {
         Alarm ad = new Alarm();
         ad.setAlarmCode(AlarmCode.INTEGRITY_ISSUE);
         ad.setAlarmText(report.generateSummaryOfReport());
-        ad.setCollectionID(collectionID);
+        ad.setCollectionID(report.getCollectionID());
         error(ad);
     }
 
