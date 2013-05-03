@@ -56,15 +56,15 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         MockAuditStore store = new MockAuditStore();
         MockAuditClient client = new MockAuditClient();
         MockAuditPreserver preserver = new MockAuditPreserver();
-        AuditTrailCollector collector = new AuditTrailCollector(TEST_COLLECTION, settings, client, store);
         ContributorMediator mediator = new MockContributorMediator();
+        AuditTrailCollector collector = new AuditTrailCollector(TEST_COLLECTION, settings, client, store);
         
         addStep("Instantiate the service.", "Should work.");
         AuditTrailService service = new AuditTrailService(store, collector, mediator, preserver, settings);
+        Assert.assertEquals(client.getCallsToGetAuditTrails(), 0);
         service.start();
         
         addStep("Try to collect audit trails.", "Should make a call to the client.");
-        Assert.assertEquals(client.getCallsToGetAuditTrails(), 0);
         CollectionRunner collectionRunner = new CollectionRunner(service);
         Thread t = new Thread(collectionRunner);
         t.start();

@@ -117,7 +117,7 @@ public class AuditTrailCollector {
         private AuditTrailCollectionTimerTask(IncrementalCollector collector, long interval) {
             this.collector = collector;
             this.interval = interval;
-            nextRun = new Date(System.currentTimeMillis());
+            nextRun = new Date(System.currentTimeMillis() + interval);
             log.debug("Scheduled next collection of audit trails for " + nextRun);
         }
         
