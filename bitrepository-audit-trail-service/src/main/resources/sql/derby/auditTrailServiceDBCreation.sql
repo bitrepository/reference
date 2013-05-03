@@ -40,8 +40,95 @@ insert into tableversions ( tablename, version ) values ( 'audittrail', 2);
 insert into tableversions ( tablename, version ) values ( 'file', 2);
 insert into tableversions ( tablename, version ) values ( 'contributor', 2);
 insert into tableversions ( tablename, version ) values ( 'actor', 2);
-insert into tableversions ( tablename, version ) values ( 'collection', 2);
+insert into tableversions ( tablename, version ) values ( 'collection', 1);
 insert into tableversions ( tablename, version ) values ( 'auditservicedb', 2);
+
+--*************************************************************************--
+-- Name:     file
+-- Descr.:   Container for the files ids and their keys.
+-- Purpose:  Keeps track of the different file ids. 
+-- Expected entry count: A lot. Though not as many as 'audittrail'.
+--*************************************************************************--
+create table file (
+    file_key bigint not null generated always as identity primary key,
+                                    -- The key for the entry in the file table.
+    fileid varchar(255),            -- The actual file id.
+    collection_key bigint not null, -- The key for the collection for the file.
+    UNIQUE ( fileid )
+);
+
+--create index fileindex on file ( fileid );
+create index filecollectionindex on file ( fileid, collection_key );
+
+--*************************************************************************--
+-- Name:     collection
+-- Descr.:   Container for the collection ids and their keys.
+-- Purpose:  Keeps track of the different collection ids. 
+-- Expected entry count: very few. 
+--*************************************************************************--
+create table collection (
+    collection_key bigint not null generated always as identity primary key,
+                                    -- The key for the entry in the collection table.
+    collectionid varchar(255),      -- The actual id of the collection.
+    UNIQUE ( collectionid )
+);
+
+--create index collectionindex on collection ( collectionid );
+
+--*************************************************************************--
+-- Name:     contributor
+-- Descr.:   Container for the contributors ids and their guids.
+-- Purpose:  Keeps track of the different contributor ids. 
+-- Expected entry count: Few. Only the pillars and services for the 
+--                       collection are contributors of audit trails.
+--*************************************************************************--
+create table contributor (
+    contributor_key bigint not null generated always as identity primary key,
+                                    -- The key for the contributor id.
+    contributor_id varchar(255),    -- The actual id of the contributor.
+    UNIQUE ( contributor_id )
+);
+
+--create index contributorindex on contributor ( contributor_id );
+
+--*************************************************************************--
+-- Name:     actor
+-- Descr.:   Contains the name of an actor.
+-- Purpose:  Keeps track of the different actors.
+-- Expected entry count: Some, though not many.
+--*************************************************************************--
+create table actor (
+    actor_key bigint not null generated always as identity primary key,
+                                    -- The key for the actor.
+    actor_name varchar(255),         -- The name of the actor.
+    UNIQUE ( actor_name )
+);
+
+--create index actorindex on actor ( actor_name );
+
+--*************************************************************************--
+-- Name:     preservation
+-- Descr.:   Container for the preservation of audit trails based on 
+--           contributors per collection.
+-- Purpose:  Keeps track of the sequence number reached by the preservation
+--           for each contributor per collection. 
+-- Expected entry count: Few. Only the pillars and services for each 
+--                       collection are contributors of audit trails.
+--*************************************************************************--
+create table preservation (
+    preservation_key bigint not null generated always as identity primary key,
+                                    -- The key for the preservation id.
+    contributor_key bigint,         -- The key of the contributor.
+    collection_key bigint,          -- The key for the collection.
+    preserved_seq_number bigint,    -- The sequence number reached for the preservation
+                                    -- of the audit trails for the contributor.
+    FOREIGN KEY (contributor_key) REFERENCES contributor(contributor_key),
+                                    -- Foreign key constraint on pillar_key, enforcing the presence of the referred id
+    FOREIGN KEY (collection_key) REFERENCES collection(collection_key),
+                                    -- Foreign key constraint on pillar_key, enforcing the presence of the referred id
+    UNIQUE (collection_key, contributor_key)        
+                                    -- Enforce that each contributor only can exist once per collection.
+);
 
 --*************************************************************************--
 -- Name:     audittrail
@@ -64,86 +151,16 @@ create table audittrail (
     operation varchar(100),         -- The name of the action behind the audit.
     operation_date timestamp,       -- The date when the action was performed.
     audit varchar(255),             -- The audit trail delivered from the actor. 
-    information varchar(255)        -- The information about the audit.
+    information varchar(255),       -- The information about the audit.
+    
+    FOREIGN KEY (contributor_key) REFERENCES contributor(contributor_key),
+                                 -- Foreign key constraint on pillar_key, enforcing the presence of the referred id
+    FOREIGN KEY (file_key) REFERENCES file(file_key),
+                                 -- Foreign key constraint on file_key, enforcing the presence of the referred id                                 
+    FOREIGN KEY (actor_key) REFERENCES actor(actor_key)
+                                 -- Foreign key constraint on pillar_key, enforcing the presence of the referred id
+
 );
 
 create index dateindex on audittrail ( operation_date );
-
---*************************************************************************--
--- Name:     file
--- Descr.:   Container for the files ids and their keys.
--- Purpose:  Keeps track of the different file ids. 
--- Expected entry count: A lot. Though not as many as 'audittrail'.
---*************************************************************************--
-create table file (
-    file_key bigint not null generated always as identity primary key,
-                                    -- The key for the entry in the file table.
-    fileid varchar(255),            -- The actual file id.
-    collection_key bigint not null  -- The key for the collection for the file.
-);
-
-create index fileindex on file ( fileid );
-create index filecollectionindex on file ( file_key, collection_key );
-
---*************************************************************************--
--- Name:     collection
--- Descr.:   Container for the collection ids and their keys.
--- Purpose:  Keeps track of the different collection ids. 
--- Expected entry count: very few. 
---*************************************************************************--
-create table collection (
-    collection_key bigint not null generated always as identity primary key,
-                                    -- The key for the entry in the collection table.
-    collectionid varchar(255)       -- The actual id of the collection.
-);
-
-create index collectionindex on collection ( collectionid );
-
---*************************************************************************--
--- Name:     contributor
--- Descr.:   Container for the contributors ids and their guids.
--- Purpose:  Keeps track of the different contributor ids. 
--- Expected entry count: Few. Only the pillars and services for the 
---                       collection are contributors of audit trails.
---*************************************************************************--
-create table contributor (
-    contributor_key bigint not null generated always as identity primary key,
-                                    -- The key for the contributor id.
-    contributor_id varchar(255)     -- The actual id of the contributor.
-);
-
-create index contributorindex on contributor ( contributor_id );
-
---*************************************************************************--
--- Name:     preservation
--- Descr.:   Container for the preservation of audit trails based on 
---           contributors per collection.
--- Purpose:  Keeps track of the sequence number reached by the preservation
---           for each contributor per collection. 
--- Expected entry count: Few. Only the pillars and services for each 
---                       collection are contributors of audit trails.
---*************************************************************************--
-create table preservation (
-    preservation_key bigint not null generated always as identity primary key,
-                                    -- The key for the preservation id.
-    contributor_key bigint,         -- The key of the contributor.
-    collection_key bigint,          -- The key for the collection.
-    preserved_seq_number bigint     -- The sequence number reached for the preservation
-                                    -- of the audit trails for the contributor.
-);
-
-create index contributorindex on contributor ( contributor_id );
-
---*************************************************************************--
--- Name:     actor
--- Descr.:   Contains the name of an actor.
--- Purpose:  Keeps track of the different actors.
--- Expected entry count: Some, though not many.
---*************************************************************************--
-create table actor (
-    actor_key bigint not null generated always as identity primary key,
-                                    -- The key for the actor.
-    actor_name varchar(255)         -- The name of the actor.
-);
-
-create index actorindex on actor ( actor_name );
+create index auditindex on audittrail ( contributor_key, file_key, actor_key );
