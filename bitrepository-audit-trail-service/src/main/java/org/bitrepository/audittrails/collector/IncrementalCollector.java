@@ -31,9 +31,11 @@ import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getaudittrails.BlockingAuditTrailClient;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.audittrails.store.AuditTrailStore;
+import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.exceptions.NegativeResponseException;
+import org.bitrepository.common.utils.TimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,25 +112,28 @@ public class IncrementalCollector {
         @Override
         public void handleEvent(OperationEvent event) {
             if(event instanceof AuditTrailResult) {
-                AuditTrailResult auditEvent = (AuditTrailResult) event;
-                if (auditEvent.isPartialResult()) {
-                    contributorsWithPartialResults.add(auditEvent.getContributorID());
+                AuditTrailResult auditResult = (AuditTrailResult) event;
+                if (!auditResult.getCollectionID().equals(collectionID)) {
+                    log.warn("Received bad collection id! Expected '" + collectionID + "', but got '"
+                            + auditResult.getCollectionID() + "'.");
+                    return;
                 }
-                store.addAuditTrails(auditEvent.getAuditTrailEvents().getAuditTrailEvents(), collectionID);
-                if (auditEvent.getAuditTrailEvents().getAuditTrailEvents() != null &&
-                    auditEvent.getAuditTrailEvents().getAuditTrailEvents().getAuditTrailEvent() != null) {
-                    log.debug("Collected and stored " +
-                        auditEvent.getAuditTrailEvents().getAuditTrailEvents().getAuditTrailEvent().size() +
-                        " audit trail event from " + auditEvent.getContributorID() + " in " +
-                        (System.currentTimeMillis() - startTime)/1000 + " s (PartialResult=" +
-                        auditEvent.isPartialResult() + ".");
+                if (auditResult.isPartialResult()) {
+                    contributorsWithPartialResults.add(auditResult.getContributorID());
+                }
+                AuditTrailEvents events = auditResult.getAuditTrailEvents().getAuditTrailEvents();
+                store.addAuditTrails(events, collectionID);
+                if (events != null && events.getAuditTrailEvent() != null) {
+                    log.debug("Collected and stored " + events.getAuditTrailEvent().size() +
+                            " audit trail event from " + auditResult.getContributorID() + " in " +
+                            TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime) 
+                            + " (PartialResult=" + auditResult.isPartialResult() + ".");
                 }
             } else if (event.getEventType() == OperationEvent.OperationEventType.COMPONENT_FAILED ||
                 event.getEventType() == OperationEvent.OperationEventType.FAILED ||
                 event.getEventType() == OperationEvent.OperationEventType.IDENTIFY_TIMEOUT) {
                 log.warn("Event: " + event.toString());
-            }
-            else {
+            } else {
                 log.debug("Event:" + event.toString());
             }
         }

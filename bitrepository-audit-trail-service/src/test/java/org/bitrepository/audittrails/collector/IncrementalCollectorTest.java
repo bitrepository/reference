@@ -24,6 +24,8 @@ package org.bitrepository.audittrails.collector;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
+
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.audittrails.MockAuditClient;
 import org.bitrepository.audittrails.MockAuditStore;
@@ -130,7 +132,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
     }
 
     @Test(groups = {"regressiontest"})
-    public void ContributorFailureTest() throws Exception {
+    public void contributorFailureTest() throws Exception {
         addDescription("Tests that the collector is able to collect from the remaining contributors if a " +
             "contributor fails.");
 
@@ -163,7 +165,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 1);
         eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "", null));
         Thread.sleep(100);
-        Assert.assertTrue(!collectionRunner.finished, "The collector should not have finished after the complete " +
+        Assert.assertFalse(collectionRunner.finished, "The collector should not have finished after the complete " +
             "event, as partialResults where received");
 
         addStep("Send another audit trail result from contributor 1 with PartialResults set to false",
@@ -178,6 +180,38 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         Assert.assertTrue(collectionRunner.finished);
     }
 
+    @Test(groups = {"regressiontest"})
+    public void collectionIdFailureTest() throws Exception {
+        addDescription("Tests what happens when a wrong collection id is received.");
+        String FALSE_COLLECTION = "FalseCollection" + new Date().getTime();
+
+        addStep("", "");
+        MockAuditClient client = new MockAuditClient();
+        MockAuditStore store = new MockAuditStore();
+
+        addStep("Start a collection with two contributors", "A call should be made to the store to find out which " +
+            "sequence number to continue from");
+        IncrementalCollector collector = new IncrementalCollector(TEST_COLLECTION, "Client1", client, store,
+                BigInteger.ONE);
+        Collection<String> contributors = Arrays.asList("Contributor1", "Contributors2");
+        CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
+        Thread t = new Thread(collectionRunner);
+        t.start();
+        Thread.sleep(100);
+
+        Assert.assertEquals(client.getCallsToGetAuditTrails(), 1);
+        Assert.assertEquals(store.getCallsToLargestSequenceNumber(), 2,
+            "There should be one call for largest sequence number for each contributor for each call to the client.");
+        Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
+
+        addStep("Send an auditTrail result from contributor 1 with a wrong collection id.",
+                "It is not added to the audit store");
+        EventHandler eventHandler = client.getLatestEventHandler();
+        eventHandler.handleEvent(new AuditTrailResult("Contributor2", FALSE_COLLECTION, new ResultingAuditTrails(), 
+                true));
+        Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
+    }
+    
     public class CollectionRunner implements Runnable {
         private final IncrementalCollector collector;
         private final Collection<String> contributors;
