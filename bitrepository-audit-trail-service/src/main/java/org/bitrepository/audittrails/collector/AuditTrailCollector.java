@@ -25,12 +25,15 @@
 package org.bitrepository.audittrails.collector;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.settings.repositorysettings.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +43,8 @@ import org.slf4j.LoggerFactory;
 public class AuditTrailCollector {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The task for collecting the audits.*/
-    private final AuditTrailCollectionTimerTask collectorTask;
+    private final Map<String, AuditTrailCollectionTimerTask> collectorTasks = new HashMap<String, 
+            AuditTrailCollectionTimerTask>();
     /** The timer for keeping track of the collecting task.*/
     private Timer timer;
     private final Settings settings;
@@ -53,32 +57,35 @@ public class AuditTrailCollector {
      * @param client The client for handling the conversation for collecting the audit trails.
      * @param store The storage of the audit trails data.
      */
-    public AuditTrailCollector(String collectionID, Settings settings, AuditTrailClient client,
-                               AuditTrailStore store) {
+    public AuditTrailCollector(Settings settings, AuditTrailClient client, AuditTrailStore store) {
         ArgumentValidator.checkNotNull(settings, "settings");
         ArgumentValidator.checkNotNull(client, "AuditTrailClient client");
         ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
 
-        IncrementalCollector collector = new IncrementalCollector(collectionID,
-            settings.getReferenceSettings().getAuditTrailServiceSettings().getID(),
-            client, store,
-            settings.getReferenceSettings().getAuditTrailServiceSettings().getMaxNumberOfEventsInRequest());
         this.settings = settings;
         this.timer = new Timer(true);
-        collectorTask = new AuditTrailCollectionTimerTask(
-                collector,
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectAuditInterval());
         long collectionInterval = settings.getReferenceSettings().getAuditTrailServiceSettings().getTimerTaskCheckInterval();
-        log.debug("Will start collection of audit trail every  " + collectionInterval + " ms, " +
-            "after a grace period of " + getGracePeriod() + " ms");
-        timer.scheduleAtFixedRate(collectorTask, getGracePeriod(), collectionInterval);
+        
+        for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
+            IncrementalCollector collector = new IncrementalCollector(c.getID(),
+                    settings.getReferenceSettings().getAuditTrailServiceSettings().getID(),
+                    client, store,
+                    settings.getReferenceSettings().getAuditTrailServiceSettings().getMaxNumberOfEventsInRequest());
+            AuditTrailCollectionTimerTask collectorTask = new AuditTrailCollectionTimerTask( 
+                    collector, settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectAuditInterval());
+            log.debug("Will start collection of audit trail every  " + collectionInterval + " ms, " +
+                    "after a grace period of " + getGracePeriod() + " ms");
+            timer.scheduleAtFixedRate(collectorTask, getGracePeriod(), collectionInterval);
+            
+            collectorTasks.put(c.getID(), collectorTask);
+        }
     }
     
     /**
      * Instantiates a collection of all the newest audit trails.
      */
-    public void collectNewestAudits() {
-        collectorTask.runCollection();
+    public void collectNewestAudits(String collectionID) {
+        collectorTasks.get(collectionID).runCollection();
     }
 
     /**
@@ -97,7 +104,9 @@ public class AuditTrailCollector {
      * Closes the AuditTrailCollector.
      */
     public void close() {
-        collectorTask.cancel();
+        for(AuditTrailCollectionTimerTask atctt : collectorTasks.values()) {
+            atctt.cancel();
+        }
         timer.cancel();
     }
 
@@ -117,7 +126,7 @@ public class AuditTrailCollector {
         private AuditTrailCollectionTimerTask(IncrementalCollector collector, long interval) {
             this.collector = collector;
             this.interval = interval;
-            nextRun = new Date(System.currentTimeMillis() + interval);
+            nextRun = new Date(System.currentTimeMillis() + getGracePeriod());
             log.debug("Scheduled next collection of audit trails for " + nextRun);
         }
         

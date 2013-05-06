@@ -121,7 +121,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         
         addStep("Call the preservation of audit trails now.", 
                 "Should make calls to the store, upload the file and call the client");
-        preserver.preserveAuditTrailsNow();
+        preserver.preserveRepositoryAuditTrails();
         
         Assert.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().size());
         Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 2);

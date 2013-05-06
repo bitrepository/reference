@@ -34,7 +34,7 @@ public interface AuditTrailPreserver {
     /**
      * Method for performing the preservation of the unpreserved audit trails, around the scheduled preservation.
      */
-    void preserveAuditTrailsNow();
+    void preserveRepositoryAuditTrails();
     
     /**
      * Stop the preservation of audit trails.

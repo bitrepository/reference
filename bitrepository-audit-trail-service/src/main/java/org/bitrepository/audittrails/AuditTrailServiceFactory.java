@@ -123,7 +123,7 @@ public final class AuditTrailServiceFactory {
                         securityManager, settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
                 //Fixme Support for multiple collections.
                 String collectionID = settings.getCollections().get(0).getID();
-                AuditTrailCollector collector = new AuditTrailCollector(collectionID, settings, client, store);
+                AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
                 AuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, putClient);
                 
                 auditTrailService = new AuditTrailService(store, collector, mediator, preserver, settings);

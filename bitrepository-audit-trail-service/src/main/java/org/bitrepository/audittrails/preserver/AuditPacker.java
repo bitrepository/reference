@@ -37,7 +37,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileUtils;
 
 /**
- * Performs the extraction and packaging of audit trails for preservation.
+ * Performs the extraction and packaging of audit trails for preservation for a specific collection.
  * Only packs the audit trails with a larger sequence number than the reached sequence number for the given 
  * contributor.
  */

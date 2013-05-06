@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles the preservation of audit trails to the local collection.
+ * Handles the preservation of audit trails to a collection defined for the local repository.
  * This means, that each set of audit trails will be preserved within its own collection.
  */
 public class LocalAuditTrailPreserver implements AuditTrailPreserver {
@@ -108,7 +108,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
     }
 
     @Override
-    public void preserveAuditTrailsNow() {
+    public void preserveRepositoryAuditTrails() {
         if(auditTask == null) {
             log.info("preserving the audit trails ");
         } else {
@@ -188,7 +188,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
             if(nextRun.getTime() < System.currentTimeMillis()) {
                 log.debug("Time to preserve the audit trails.");
                 resetTime();
-                preserveAuditTrailsNow();
+                preserveRepositoryAuditTrails();
             }
         }
     }
