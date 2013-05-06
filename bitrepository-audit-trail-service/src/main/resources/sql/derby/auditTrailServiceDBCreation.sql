@@ -44,23 +44,6 @@ insert into tableversions ( tablename, version ) values ( 'collection', 1);
 insert into tableversions ( tablename, version ) values ( 'auditservicedb', 2);
 
 --*************************************************************************--
--- Name:     file
--- Descr.:   Container for the files ids and their keys.
--- Purpose:  Keeps track of the different file ids. 
--- Expected entry count: A lot. Though not as many as 'audittrail'.
---*************************************************************************--
-create table file (
-    file_key bigint not null generated always as identity primary key,
-                                    -- The key for the entry in the file table.
-    fileid varchar(255),            -- The actual file id.
-    collection_key bigint not null, -- The key for the collection for the file.
-    UNIQUE ( fileid )
-);
-
---create index fileindex on file ( fileid );
-create index filecollectionindex on file ( fileid, collection_key );
-
---*************************************************************************--
 -- Name:     collection
 -- Descr.:   Container for the collection ids and their keys.
 -- Purpose:  Keeps track of the different collection ids. 
@@ -71,6 +54,22 @@ create table collection (
                                     -- The key for the entry in the collection table.
     collectionid varchar(255),      -- The actual id of the collection.
     UNIQUE ( collectionid )
+);
+
+--*************************************************************************--
+-- Name:     file
+-- Descr.:   Container for the files ids and their keys.
+-- Purpose:  Keeps track of the different file ids. 
+-- Expected entry count: A lot. Though not as many as 'audittrail'.
+--*************************************************************************--
+create table file (
+    file_key bigint not null generated always as identity primary key,
+                                    -- The key for the entry in the file table.
+    fileid varchar(255),            -- The actual file id.
+    collection_key bigint not null, -- The key for the collection for the file.
+    UNIQUE ( fileid, collection_key ),
+    FOREIGN KEY (collection_key) REFERENCES collection(collection_key)
+                                 -- Foreign key constraint on collection_key, enforcing the presence of the referred key
 );
 
 --create index collectionindex on collection ( collectionid );
