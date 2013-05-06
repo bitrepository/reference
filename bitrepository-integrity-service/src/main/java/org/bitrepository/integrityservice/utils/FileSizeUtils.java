@@ -1,5 +1,8 @@
 package org.bitrepository.integrityservice.utils;
 
+/**
+ * Util class for handling formatting of datasizes. 
+ */
 public class FileSizeUtils {
 
     private static final int unitSize = 1024;
@@ -8,7 +11,9 @@ public class FileSizeUtils {
     private static final long gigaSize = megaSize * unitSize;
     private static final long teraSize = gigaSize * unitSize;
     private static final long petaSize = teraSize * unitSize;
-    private static final long zetaSize = petaSize * unitSize;
+    private static final long exaSize = teraSize * unitSize;
+    private static final long zettaSize = exaSize * unitSize;
+    private static final long yottaSize = zettaSize * unitSize;
     
     private static final String bytePostfix = "B";
     private static final String kiloPostfix = "KB";
@@ -16,12 +21,18 @@ public class FileSizeUtils {
     private static final String gigaPostfix = "GB";
     private static final String teraPostfix = "TB";
     private static final String petaPostfix = "PB";
-    private static final String zetaPostfix = "ZB";
+    private static final String exaPostfix = "EB";
+    private static final String zettaPostfix = "ZB";
+    private static final String yottaPostfix = "YB";
     
     
     public static String toHumanShort(long size) {
-        if(size >= zetaSize) {
-            return formatShortZeta(size);
+        if(size >= yottaSize) {
+            return formatShortYotta(size);
+        } else if(size >= zettaSize) {
+            return formatShortZetta(size);
+        } else if(size >= petaSize) {
+            return formatShortExa(size);
         } else if(size >= petaSize) {
             return formatShortPeta(size);
         } else if(size >= teraSize) {
@@ -37,9 +48,19 @@ public class FileSizeUtils {
         }
     }
     
-    private static String formatShortZeta(long size) {
-        int wholeZB = (int) (size / zetaSize);
-        return wholeZB + zetaPostfix;
+    private static String formatShortYotta(long size) {
+        int wholeZB = (int) (size / yottaSize);
+        return wholeZB + yottaPostfix;
+    }
+    
+    private static String formatShortZetta(long size) {
+        int wholeZB = (int) (size / zettaSize);
+        return wholeZB + zettaPostfix;
+    }
+
+    private static String formatShortExa(long size) {
+        int wholeEB = (int) (size / exaSize);
+        return wholeEB + exaPostfix;
     }
     
     private static String formatShortPeta(long size) {
