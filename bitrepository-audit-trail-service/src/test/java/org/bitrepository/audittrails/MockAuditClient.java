@@ -21,6 +21,8 @@
  */
 package org.bitrepository.audittrails;
 
+import java.util.Arrays;
+
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -35,8 +37,7 @@ public class MockAuditClient implements AuditTrailClient {
     private int callsToGetAuditTrails = 0;
     @Override
     public void getAuditTrails(String collectionID, AuditTrailQuery[] componentQueries, String fileID,
-                               String urlForResult,
-            EventHandler eventHandler, String auditTrailInformation) {
+                               String urlForResult, EventHandler eventHandler, String auditTrailInformation) {
         latestEventHandler = eventHandler;
         callsToGetAuditTrails++;
     }

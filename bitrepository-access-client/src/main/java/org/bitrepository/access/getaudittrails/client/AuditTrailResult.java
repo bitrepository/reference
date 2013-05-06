@@ -61,7 +61,8 @@ public class AuditTrailResult extends ContributorCompleteEvent {
     @Override
     public String additionalInfo() {
         StringBuilder infoSB = new StringBuilder(super.additionalInfo());
-        if (auditTrailEvents != null && auditTrailEvents.getAuditTrailEvents().getAuditTrailEvent() != null) {
+        if (auditTrailEvents != null && auditTrailEvents.getAuditTrailEvents() != null 
+                && auditTrailEvents.getAuditTrailEvents().getAuditTrailEvent() != null) {
             infoSB.append(", NumberOfAuditTrailEvents=" +
                     auditTrailEvents.getAuditTrailEvents().getAuditTrailEvent().size());
         }

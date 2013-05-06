@@ -30,6 +30,7 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.service.contributor.ContributorMediator;
+import org.bitrepository.settings.repositorysettings.Collection;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -40,19 +41,27 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
     Settings settings;
     
     public static final String TEST_COLLECTION = "dummy-collection";
+    public static final String DEFAULT_CONTRIBUTOR = "Contributor1";
  
     
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("AuditTrailServiceUnderTest");
+        Collection c = settings.getRepositorySettings().getCollections().getCollection().get(0);
+        settings.getRepositorySettings().getCollections().getCollection().clear();
+        c.setID(TEST_COLLECTION);
+        settings.getRepositorySettings().getCollections().getCollection().add(c);
     }
     
     @Test(groups = {"unstable"})
     public void auditTrailServiceTest() throws Exception {
         addDescription("Test the Audit Trail Service");
         settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().clear();
-        settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().add("Contributor1");
-        
+        settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().add(DEFAULT_CONTRIBUTOR);
+        settings.getReferenceSettings().getAuditTrailServiceSettings().setCollectAuditInterval(800);
+        settings.getReferenceSettings().getAuditTrailServiceSettings().setTimerTaskCheckInterval(100L);
+        settings.getReferenceSettings().getAuditTrailServiceSettings().setGracePeriod(800L);
+
         MockAuditStore store = new MockAuditStore();
         MockAuditClient client = new MockAuditClient();
         MockAuditPreserver preserver = new MockAuditPreserver();
@@ -68,11 +77,11 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         CollectionRunner collectionRunner = new CollectionRunner(service);
         Thread t = new Thread(collectionRunner);
         t.start();
-        Thread.sleep(100);
-        EventHandler eventHandler = client.getLatestEventHandler();
-        eventHandler.handleEvent(new AuditTrailResult("Contributor1", TEST_COLLECTION, new ResultingAuditTrails(), false));
-        eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+        Thread.sleep(1000);
         Assert.assertEquals(client.getCallsToGetAuditTrails(), 1);
+        EventHandler eventHandler = client.getLatestEventHandler();
+        eventHandler.handleEvent(new AuditTrailResult(DEFAULT_CONTRIBUTOR, TEST_COLLECTION, new ResultingAuditTrails(), false));
+        eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
         
         addStep("Retrieve audit trails with and without an action", "Should work.");
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 1);

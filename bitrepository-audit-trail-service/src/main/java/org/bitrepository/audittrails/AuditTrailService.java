@@ -122,7 +122,7 @@ public class AuditTrailService implements LifeCycledService {
      * Performs the preservation of audit trails.
      */
     public void preserveAuditTrailsNow() {
-        preserver.preserveAuditTrailsNow();
+        preserver.preserveRepositoryAuditTrails();
     }
 
     @Override

@@ -36,7 +36,7 @@ public class MockAuditPreserver implements AuditTrailPreserver {
     
     private int callsToPreserveAuditTrailsNow = 0;
     @Override
-    public void preserveAuditTrailsNow() {
+    public void preserveRepositoryAuditTrails() {
         callsToPreserveAuditTrailsNow++;
     }
     public int getCallsToPreserveAuditTrailsNow() {

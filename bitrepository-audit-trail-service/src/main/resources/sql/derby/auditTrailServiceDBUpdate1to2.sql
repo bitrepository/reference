@@ -23,7 +23,8 @@
 connect 'jdbc:derby:auditservicedb';
 
 -- TODO before running this script, please replace the placeholder(s):
--- TODO collection_id_placeholder
+TODO collection_id_placeholder
+EXIT
 
 -- Insert the version of the database
 insert into tableversions ( tablename, version ) values ( 'auditservicedb', 2);
