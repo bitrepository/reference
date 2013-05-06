@@ -57,6 +57,8 @@ public class AuditTrailService implements LifeCycledService {
     private final ContributorMediator mediator;
     /** The preserver of audit trails.*/
     private final AuditTrailPreserver preserver;
+    /** The settings.*/
+    private final Settings settings;
 
     /**
      * Constructor.
@@ -76,11 +78,13 @@ public class AuditTrailService implements LifeCycledService {
         ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
         ArgumentValidator.checkNotNull(mediator, "ContributorMediator mediator");
         ArgumentValidator.checkNotNull(preserver, "AuditTrailPreserver preserver");
+        ArgumentValidator.checkNotNull(settings, "Settings settings");
 
         this.store = store;
         this.collector = collector;
         this.mediator = mediator;
         this.preserver = preserver;
+        this.settings = settings;
 
         mediator.start();
         preserver.start();
@@ -103,10 +107,15 @@ public class AuditTrailService implements LifeCycledService {
     }
 
     /**
-     * Collects all the newest audit trails.
+     * Collects all the newest audit trails from the given collection.
+     * TODO this currently calls all collections. It should only call a specified collection, which should be given
+     * as argument.
      */
     public void collectAuditTrails() {
-        collector.collectNewestAudits();
+        for(org.bitrepository.settings.repositorysettings.Collection c 
+                : settings.getRepositorySettings().getCollections().getCollection()) {
+            collector.collectNewestAudits(c.getID());
+        }
     }
 
     /**
