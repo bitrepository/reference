@@ -119,12 +119,9 @@
   <!-- Specific settings for AuditTrails operations -->
   <GetAuditTrailSettings>
     <!-- 
-      List of components expected to deliver audit trail information. 
-      Only components listed here will be asked for audit trail information. 
+      List of components expected to deliver audit trail information, besides the pillars of each collection. 
     -->
-    <ContributorIDs>pillar1</ContributorIDs>
-    <ContributorIDs>pillar2</ContributorIDs>
-    <ContributorIDs>integrity-service</ContributorIDs>
+    <IDsOfNonPillarContributors>integrity-service</IDsOfNonPillarContributors>
   </GetAuditTrailSettings>
 
   <!-- 
