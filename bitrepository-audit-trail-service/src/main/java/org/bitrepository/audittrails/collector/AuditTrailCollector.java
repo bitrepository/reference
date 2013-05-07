@@ -24,8 +24,10 @@
  */
 package org.bitrepository.audittrails.collector;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -33,6 +35,7 @@ import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,7 +137,10 @@ public class AuditTrailCollector {
          * Run the operation and when finished set the date for the next collection.
          */
         public synchronized void runCollection() {
-            collector.performCollection(settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs());
+            List<String> contributors = new ArrayList<String>();
+            contributors.addAll(settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs());
+            contributors.addAll(SettingsUtils.getPillarIDsForCollection(settings, collector.getCollectionID()));
+            collector.performCollection(contributors);
             nextRun = new Date(System.currentTimeMillis() + interval);
         }
 
