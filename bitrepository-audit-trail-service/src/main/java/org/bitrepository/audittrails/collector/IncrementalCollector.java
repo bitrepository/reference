@@ -90,8 +90,7 @@ public class IncrementalCollector {
         AuditCollectorEventHandler handler = new AuditCollectorEventHandler();
         try {
             client.getAuditTrails(collectionID, queries.toArray(new AuditTrailQuery[queries.size()]), NO_FILE_ID,
-                    NO_DELIVERY_URL,
-                handler, clientID);
+                    NO_DELIVERY_URL, handler, clientID);
 
         } catch (NegativeResponseException e) {
             log.error("Problem in collecting audit trails, collection will not be complete", e);
