@@ -11,7 +11,7 @@ public class FileSizeUtils {
     private static final long gigaSize = megaSize * unitSize;
     private static final long teraSize = gigaSize * unitSize;
     private static final long petaSize = teraSize * unitSize;
-    private static final long exaSize = teraSize * unitSize;
+    private static final long exaSize = petaSize * unitSize;
     private static final long zettaSize = exaSize * unitSize;
     private static final long yottaSize = zettaSize * unitSize;
     
