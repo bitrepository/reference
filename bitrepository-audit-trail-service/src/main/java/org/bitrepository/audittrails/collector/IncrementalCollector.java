@@ -76,12 +76,20 @@ public class IncrementalCollector {
     }
 
     /**
+     * Method to get the ID of the collection to get audit trails from
+     * @return String The ID of the collection 
+     */
+    public String getCollectionID() {
+        return collectionID;
+    }
+    
+    /**
      * Setup and initiates the collection of audit trails through the client.
      * Adds one to the sequence number to request only newer audit trails.
      */
     public void performCollection(Collection<String> contributors) {
         List<AuditTrailQuery> queries = new ArrayList<AuditTrailQuery>();
-
+        
         for(String contributorId : contributors) {
             int seq = store.largestSequenceNumber(contributorId, collectionID);
             queries.add(new AuditTrailQuery(contributorId, seq + 1, null, maxNumberOfResults));

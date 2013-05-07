@@ -59,13 +59,18 @@ public class Reposervice {
         
         return array.toString();
     }
+    
+    @GET
+    @Path("getCollectionName")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getCollectionName(@QueryParam("collectionID") String collectionID) {
+        return client.getCollectionName(collectionID);
+    }
 
     @GET
     @Path("/getPillarList/")
     @Produces("text/json")
-    public String getPillarList(
-            @QueryParam("collectionID") String collectionID
-    ) {
+    public String getPillarList(@QueryParam("collectionID") String collectionID) {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         List<String> pillars = client.getPillarList();
