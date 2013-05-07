@@ -13,8 +13,7 @@ public class FileSizeUtils {
     private static final long petaSize = teraSize * unitSize;
     private static final long exaSize = petaSize * unitSize;
     private static final long zettaSize = exaSize * unitSize;
-    private static final long yottaSize = zettaSize * unitSize;
-    
+        
     private static final String bytePostfix = "B";
     private static final String kiloPostfix = "KB";
     private static final String megaPostfix = "MB";
@@ -23,13 +22,10 @@ public class FileSizeUtils {
     private static final String petaPostfix = "PB";
     private static final String exaPostfix = "EB";
     private static final String zettaPostfix = "ZB";
-    private static final String yottaPostfix = "YB";
-    
+        
     
     public static String toHumanShort(long size) {
-        if(size >= yottaSize) {
-            return formatShortYotta(size);
-        } else if(size >= zettaSize) {
+        if(size >= zettaSize) {
             return formatShortZetta(size);
         } else if(size >= petaSize) {
             return formatShortExa(size);
@@ -46,11 +42,6 @@ public class FileSizeUtils {
         } else {
             return formatShortByte(size);
         }
-    }
-    
-    private static String formatShortYotta(long size) {
-        int wholeZB = (int) (size / yottaSize);
-        return wholeZB + yottaPostfix;
     }
     
     private static String formatShortZetta(long size) {
