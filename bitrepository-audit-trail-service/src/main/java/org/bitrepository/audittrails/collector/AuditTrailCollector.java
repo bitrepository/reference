@@ -27,8 +27,10 @@ package org.bitrepository.audittrails.collector;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.bitrepository.access.getaudittrails.AuditTrailClient;
@@ -137,7 +139,7 @@ public class AuditTrailCollector {
          * Run the operation and when finished set the date for the next collection.
          */
         public synchronized void runCollection() {
-            List<String> contributors = new ArrayList<String>();
+            Set<String> contributors = new HashSet<String>();
             contributors.addAll(settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs());
             contributors.addAll(SettingsUtils.getPillarIDsForCollection(settings, collector.getCollectionID()));
             collector.performCollection(contributors);
