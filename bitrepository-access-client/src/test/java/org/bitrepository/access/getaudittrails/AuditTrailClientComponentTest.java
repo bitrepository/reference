@@ -465,7 +465,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         
         addStep("Tests when the contributor list is emptied", "Should also fail.");
         settingsForCUT.getRepositorySettings().setGetAuditTrailSettings(auditSettings);
-        settingsForCUT.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().clear();
+        settingsForCUT.getRepositorySettings().getGetAuditTrailSettings().getIDsOfNonPillarContributors().clear();
         AuditTrailClient client2 = createAuditTrailClient();
 
         try {

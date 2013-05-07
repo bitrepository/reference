@@ -139,10 +139,8 @@ public class AuditTrailCollector {
          * Run the operation and when finished set the date for the next collection.
          */
         public synchronized void runCollection() {
-            Set<String> contributors = new HashSet<String>();
-            contributors.addAll(settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs());
-            contributors.addAll(SettingsUtils.getPillarIDsForCollection(settings, collector.getCollectionID()));
-            collector.performCollection(contributors);
+            collector.performCollection(SettingsUtils.getAuditContributorsForCollection(settings, 
+                    collector.getCollectionID()));
             nextRun = new Date(System.currentTimeMillis() + interval);
         }
 

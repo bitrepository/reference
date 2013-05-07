@@ -35,6 +35,7 @@ import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.common.utils.SettingsUtils;
 
 /**
  * Performs the extraction and packaging of audit trails for preservation for a specific collection.
@@ -65,8 +66,7 @@ public class AuditPacker {
         this.collectionId = collectionId;
         this.directory = FileUtils.retrieveDirectory(settings.getReferenceSettings().getAuditTrailServiceSettings()
                 .getAuditTrailPreservationTemporaryDirectory());
-        // TODO potential issue with contributors in this list, which is not part of the collection...
-        this.contributors.addAll(settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs());
+        this.contributors.addAll(SettingsUtils.getAuditContributorsForCollection(settings, collectionId));
         
         initialiseReachedSequenceNumbers();
     }

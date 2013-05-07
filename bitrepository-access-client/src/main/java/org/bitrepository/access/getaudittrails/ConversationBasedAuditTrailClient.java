@@ -25,6 +25,7 @@
 package org.bitrepository.access.getaudittrails;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getaudittrails.client.AuditTrailConversationContext;
@@ -34,6 +35,7 @@ import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.protocol.messagebus.MessageBus;
 
 /**
@@ -56,7 +58,7 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "collectionID");
         validateFileID(fileID);
         if (componentQueries == null) {
-            componentQueries = createFullAuditTrailQuery();
+            componentQueries = createFullAuditTrailQuery(collectionID);
         }
         AuditTrailConversationContext context = new AuditTrailConversationContext(
                 collectionID, componentQueries, fileID, urlForResult,
@@ -69,15 +71,15 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
      * Used to create a <code>AuditTrailQuery[]</code> array in case no array is defined.
      * @return A <code>AuditTrailQuery[]</code> array requesting all audit trails from all the defined contributers.
      */
-    private AuditTrailQuery[] createFullAuditTrailQuery() {
+    private AuditTrailQuery[] createFullAuditTrailQuery(String collectionId) {
         if (settings.getRepositorySettings().getGetAuditTrailSettings() == null) {
             throw new IllegalStateException("Unable getAuditTrails both undefined GetAuditTrailSettings and undefined " +
                     "AuditTrailQuery[] in getAuditTrails call");
-        } else if (settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().isEmpty()) {
+        } else if (SettingsUtils.getAuditContributorsForCollection(settings, collectionId).isEmpty()) {
             throw new IllegalStateException("Running AuditTrailClient without any defined contributers and undefined " +
                     "AuditTrailQuery[] in getAuditTrails call.");
         }
-        List<String> contributers = settings.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs();
+        Collection<String> contributers = SettingsUtils.getAuditContributorsForCollection(settings, collectionId);
         List<AuditTrailQuery> componentQueryList = new ArrayList<AuditTrailQuery>(contributers.size());
         for (String contributer : contributers) {
             componentQueryList.add(new AuditTrailQuery(contributer, null, null, null));

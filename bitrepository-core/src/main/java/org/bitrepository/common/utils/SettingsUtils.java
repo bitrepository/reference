@@ -1,7 +1,9 @@
 package org.bitrepository.common.utils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.settings.repositorysettings.Collection;
@@ -64,5 +66,19 @@ public class SettingsUtils {
             }
         }
         return res;
+    }
+    
+    /**
+     * Retrieves the contributors for audittrail for a specific collection.
+     * @param settings The settings.
+     * @param collectionID The id of the collection.
+     * @return The list of ids for the contributors of audittrails for the collection
+     */
+    public static Set<String> getAuditContributorsForCollection(Settings settings, String collectionID) {
+        Set<String> contributors = new HashSet<String>();
+        contributors.addAll(
+                settings.getRepositorySettings().getGetAuditTrailSettings().getIDsOfNonPillarContributors());
+        contributors.addAll(SettingsUtils.getPillarIDsForCollection(settings, collectionID));
+        return contributors;
     }
 }
