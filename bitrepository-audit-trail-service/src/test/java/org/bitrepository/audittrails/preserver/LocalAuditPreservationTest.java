@@ -75,8 +75,8 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         
         settings.getReferenceSettings().getAuditTrailServiceSettings().setTimerTaskCheckInterval(100);
         settings.getReferenceSettings().getAuditTrailServiceSettings().setAuditTrailPreservationInterval(300);
-        settings.getRepositorySettings().getGetAuditTrailSettings().getIDsOfNonPillarContributors().clear();
-        settings.getRepositorySettings().getGetAuditTrailSettings().getIDsOfNonPillarContributors().add(PILLARID);
+        settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
+        settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(PILLARID);
         
         addStep("Create the preserver", "No calls to store or client");
         LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, client);
@@ -97,7 +97,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         
         addStep("stop the scheduling", "Should have made calls to the store and the client regarding the preservation");
         preserver.close();
-        Assert.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getIDsOfNonPillarContributors().size());
+        Assert.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().size());
         Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 2);
         Assert.assertEquals(client.getCallsToPutFile(), 1);
     }
@@ -109,8 +109,10 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         MockAuditStore store = new MockAuditStore();
         MockPutClient client = new MockPutClient();
         
-        settings.getRepositorySettings().getGetAuditTrailSettings().getIDsOfNonPillarContributors().clear();
-        settings.getRepositorySettings().getGetAuditTrailSettings().getIDsOfNonPillarContributors().add(PILLARID);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLARID);
+        settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
+        settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(PILLARID);
         
         addStep("Create the preserver and populate the store", "");
         store.addAuditTrails(createEvents(), collectionId);
@@ -123,7 +125,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
                 "Should make calls to the store, upload the file and call the client");
         preserver.preserveRepositoryAuditTrails();
         
-        Assert.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getIDsOfNonPillarContributors().size());
+        Assert.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().size());
         Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 2);
         Assert.assertEquals(client.getCallsToPutFile(), 1);
         

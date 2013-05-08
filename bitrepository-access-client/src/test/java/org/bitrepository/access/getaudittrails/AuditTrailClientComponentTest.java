@@ -43,6 +43,7 @@ import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.bus.MessageReceiver;
+import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.GetAuditTrailSettings;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -57,6 +58,17 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     @BeforeMethod(alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
         testMessageFactory = new GetAuditTrailsMessageFactory(settingsForTestClient.getComponentID());
+        
+        Collection c = settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0);
+        c.setID(collectionID);
+        c.getPillarIDs().getPillarID().clear();
+        c.getPillarIDs().getPillarID().add(PILLAR1_ID);
+        c.getPillarIDs().getPillarID().add(PILLAR2_ID);
+        
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().add(c);
+        
+        settingsForCUT.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
     }
 
     @Test(groups = {"regressiontest"})
@@ -71,7 +83,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     @Test(groups = {"regressiontest"})
     public void getAllAuditTrailsTest() throws InterruptedException {
         addDescription("Tests the simplest case of getting all audit trail event for all contributers.");
-
+        
         addStep("Create a AuditTrailClient.", "");
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         AuditTrailClient client = createAuditTrailClient();
@@ -350,7 +362,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         addStep("Send a general progress response from pillar 2",
         "A PROGRESS event should be generated with the audit trail results.");
         GetAuditTrailsProgressResponse progressResponse2 =
-            testMessageFactory.createGetAuditTrailsProgressResponse(requestPillar1,
+            testMessageFactory.createGetAuditTrailsProgressResponse(requestPillar2,
                     PILLAR2_ID, pillar2DestinationId);
         ResponseInfo progressInfo2 = new ResponseInfo();
         progressInfo2.setResponseText("Still progressing");
@@ -448,7 +460,9 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                 OperationEvent.OperationEventType.FAILED);
     }
 
-    @Test(groups = {"regressiontest"})
+    //@Test(groups = {"regressiontest"})
+    // @Test(groups = {"failing"})
+    // We do no longer require the GetAuditTrailSettings...
     public void badSettingsTest() throws Exception {
         addDescription("Tests that the Audit Trail can handle missing Settings.");
         addStep("Remove the GetAuditTrailSettings.", "Should fail.");
@@ -465,7 +479,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         
         addStep("Tests when the contributor list is emptied", "Should also fail.");
         settingsForCUT.getRepositorySettings().setGetAuditTrailSettings(auditSettings);
-        settingsForCUT.getRepositorySettings().getGetAuditTrailSettings().getIDsOfNonPillarContributors().clear();
+        settingsForCUT.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
         AuditTrailClient client2 = createAuditTrailClient();
 
         try {

@@ -58,7 +58,7 @@
   </ClientSettings>
 
   <GetAuditTrailSettings>
-    <IDsOfNonPillarContributors>integrity-service</IDsOfNonPillarContributors>
+    <NonPillarContributorIDs>integrity-service</NonPillarContributorIDs>
   </GetAuditTrailSettings>
 
   <GetStatusSettings>

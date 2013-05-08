@@ -56,8 +56,8 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
     @Test(groups = {"unstable"})
     public void auditTrailServiceTest() throws Exception {
         addDescription("Test the Audit Trail Service");
-        settings.getRepositorySettings().getGetAuditTrailSettings().getIDsOfNonPillarContributors().clear();
-        settings.getRepositorySettings().getGetAuditTrailSettings().getIDsOfNonPillarContributors().add(DEFAULT_CONTRIBUTOR);
+        settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
+        settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(DEFAULT_CONTRIBUTOR);
         settings.getReferenceSettings().getAuditTrailServiceSettings().setCollectAuditInterval(800);
         settings.getReferenceSettings().getAuditTrailServiceSettings().setTimerTaskCheckInterval(100L);
         settings.getReferenceSettings().getAuditTrailServiceSettings().setGracePeriod(800L);

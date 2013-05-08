@@ -77,7 +77,7 @@ public class SettingsUtils {
     public static Set<String> getAuditContributorsForCollection(Settings settings, String collectionID) {
         Set<String> contributors = new HashSet<String>();
         contributors.addAll(
-                settings.getRepositorySettings().getGetAuditTrailSettings().getIDsOfNonPillarContributors());
+                settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs());
         contributors.addAll(SettingsUtils.getPillarIDsForCollection(settings, collectionID));
         return contributors;
     }

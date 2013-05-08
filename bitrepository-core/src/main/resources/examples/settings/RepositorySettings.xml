@@ -121,7 +121,7 @@
     <!-- 
       List of components expected to deliver audit trail information, besides the pillars of each collection. 
     -->
-    <IDsOfNonPillarContributors>integrity-service</IDsOfNonPillarContributors>
+    <NonPillarContributorIDs>integrity-service</NonPillarContributorIDs>
   </GetAuditTrailSettings>
 
   <!-- 
