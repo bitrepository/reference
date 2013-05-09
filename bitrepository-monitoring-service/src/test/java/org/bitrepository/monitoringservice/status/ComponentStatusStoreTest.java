@@ -21,6 +21,10 @@
  */
 package org.bitrepository.monitoringservice.status;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.bitrepositoryelements.StatusCode;
 import org.bitrepository.bitrepositoryelements.StatusInfo;
@@ -31,9 +35,6 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.util.Arrays;
-import java.util.Map;
 
 public class ComponentStatusStoreTest extends ExtendedTestCase {
     Settings settings;
@@ -48,7 +49,9 @@ public class ComponentStatusStoreTest extends ExtendedTestCase {
         addDescription("Tests the compontent status");
         addStep("Setup", "");
         String componentId = "componentId";
-        ComponentStatusStore store = new ComponentStatusStore(Arrays.asList(componentId));
+        Set contributors = new HashSet();
+        contributors.add(componentId);
+        ComponentStatusStore store = new ComponentStatusStore(contributors);
         
         addStep("Validate the initial content", "Should be one component with a 'new and empty' component status.");
         Map<String, ComponentStatus> statuses = store.getStatusMap();

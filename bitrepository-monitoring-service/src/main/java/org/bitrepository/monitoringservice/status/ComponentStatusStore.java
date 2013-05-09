@@ -21,8 +21,8 @@
  */
 package org.bitrepository.monitoringservice.status;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -43,7 +43,7 @@ public class ComponentStatusStore implements StatusStore {
      * Constructor.
      * @param components The components whose status are to be stored in this store.
      */
-    public ComponentStatusStore(List<String> components) {
+    public ComponentStatusStore(Set<String> components) {
         statusMap = new ConcurrentHashMap<String, ComponentStatus>();
         for(String component : components) {
             statusMap.put(component, new ComponentStatus());

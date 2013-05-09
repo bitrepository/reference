@@ -26,6 +26,7 @@ import javax.jms.JMSException;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.monitoringservice.alarm.BasicMonitoringServiceAlerter;
 import org.bitrepository.monitoringservice.alarm.MonitorAlerter;
 import org.bitrepository.monitoringservice.collector.StatusCollector;
@@ -64,7 +65,7 @@ public class MonitoringService implements LifeCycledService {
     public MonitoringService(Settings settings, SecurityManager securityManager) {
         this.settings = settings;
         MessageBus messageBus = MessageBusManager.getMessageBus(settings, securityManager);
-        statusStore = new ComponentStatusStore(settings.getRepositorySettings().getGetStatusSettings().getNonPillarContributorIDs());
+        statusStore = new ComponentStatusStore(SettingsUtils.getStatusContributorsForCollection(settings));
         alerter = new BasicMonitoringServiceAlerter(settings, messageBus, AlarmLevel.ERROR, statusStore);
         getStatusClient = AccessComponentFactory.getInstance().createGetStatusClient(settings, securityManager,
                 settings.getReferenceSettings().getMonitoringServiceSettings().getID());

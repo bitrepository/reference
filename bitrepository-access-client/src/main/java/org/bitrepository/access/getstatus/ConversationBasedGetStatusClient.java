@@ -41,8 +41,6 @@ public class ConversationBasedGetStatusClient extends AbstractClient implements 
             ConversationMediator conversationMediator,
             Settings settings, String clientID) {
         super(settings, conversationMediator, messageBus, clientID);
-        ArgumentValidator.checkNotNullOrEmpty(settings.getRepositorySettings().getGetStatusSettings().getNonPillarContributorIDs(),
-                "ContributorIDs");
     }
 
     @Override
