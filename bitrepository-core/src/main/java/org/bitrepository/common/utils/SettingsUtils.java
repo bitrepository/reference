@@ -81,4 +81,17 @@ public class SettingsUtils {
         contributors.addAll(SettingsUtils.getPillarIDsForCollection(settings, collectionID));
         return contributors;
     }
+
+    /**
+     * Retrieves the contributors for status.
+     * @param settings The settings.
+     * @return The list of ids for the status contributors.
+     */
+    public static Set<String> getStatusContributorsForCollection(Settings settings) {
+        Set<String> contributors = new HashSet<String>();
+        contributors.addAll(
+                settings.getRepositorySettings().getGetStatusSettings().getNonPillarContributorIDs());
+        contributors.addAll(SettingsUtils.getAllPillarIDs(settings));
+        return contributors;
+    }
 }

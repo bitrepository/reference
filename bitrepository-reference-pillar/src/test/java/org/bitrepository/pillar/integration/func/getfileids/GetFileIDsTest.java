@@ -64,7 +64,7 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         GetFileIDsProgressResponse progressResponse = clientReceiver.waitForMessage(GetFileIDsProgressResponse.class);
         Assert.assertNotNull(progressResponse);
         Assert.assertEquals(progressResponse.getCorrelationID(), getFileIDsRequest.getCorrelationID());
-        Assert.assertEquals(progressResponse.getFileIDs(), FileIDsUtils.getAllFileIDs());
+        Assert.assertEquals(progressResponse.getFileIDs(), getFileIDsRequest.getFileIDs());
         Assert.assertEquals(progressResponse.getFrom(), getPillarID());
         Assert.assertEquals(progressResponse.getPillarID(), getPillarID());
         Assert.assertEquals(progressResponse.getReplyTo(), pillarDestination);

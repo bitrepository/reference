@@ -60,9 +60,4 @@
   <GetAuditTrailSettings>
     <NonPillarContributorIDs>integrity-service</NonPillarContributorIDs>
   </GetAuditTrailSettings>
-
-  <GetStatusSettings>
-    <ContributorIDs>Pillar1</ContributorIDs>
-    <ContributorIDs>Pillar2</ContributorIDs>
-  </GetStatusSettings>
 </RepositorySettings>

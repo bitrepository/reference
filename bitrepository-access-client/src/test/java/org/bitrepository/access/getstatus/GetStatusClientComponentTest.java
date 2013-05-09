@@ -53,7 +53,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
             if (settingsForCUT.getRepositorySettings().getGetStatusSettings() == null) {
                 settingsForCUT.getRepositorySettings().setGetStatusSettings(new GetStatusSettings());
             }
-            List<String> contributers = settingsForCUT.getRepositorySettings().getGetStatusSettings().getContributorIDs();
+            List<String> contributers = settingsForCUT.getRepositorySettings().getGetStatusSettings().getNonPillarContributorIDs();
             contributers.clear();
             contributers.add(PILLAR1_ID);
             contributers.add(PILLAR2_ID);

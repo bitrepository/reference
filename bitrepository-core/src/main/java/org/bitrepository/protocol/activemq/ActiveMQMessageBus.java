@@ -84,7 +84,7 @@ public class ActiveMQMessageBus implements MessageBus {
     public static final String COLLECTION_ID_KEY = "org.bitrepository.messages.collectionid";
     /** The key for storing the message type in a string property in the message headers. */
     public static final String MESSAGE_SIGNATURE_KEY = "org.bitrepository.messages.signature";
-    public static final String MESSAGE_RECIPIENT_KEY = "org.bitrepository.messages.to";
+    public static final String MESSAGE_TO_KEY = "org.bitrepository.messages.to";
     /** Default transacted. */
     public static final boolean TRANSACTED = false;
 
@@ -281,7 +281,7 @@ public class ActiveMQMessageBus implements MessageBus {
             msg.setStringProperty(MESSAGE_SIGNATURE_KEY, messageSignature);
             msg.setStringProperty(MESSAGE_TYPE_KEY, content.getClass().getSimpleName());
             if (recipient != null) {
-                msg.setStringProperty(MESSAGE_RECIPIENT_KEY, recipient);
+                msg.setStringProperty(MESSAGE_TO_KEY, recipient);
             }
             msg.setStringProperty(COLLECTION_ID_KEY, collectionID);
             msg.setJMSCorrelationID(correlationID);
@@ -428,7 +428,7 @@ public class ActiveMQMessageBus implements MessageBus {
             String type = null;
             String text = null;
             try {
-                String recipientID = jmsMessage.getStringProperty(MESSAGE_RECIPIENT_KEY);
+                String recipientID = jmsMessage.getStringProperty(MESSAGE_TO_KEY);
                 type = jmsMessage.getStringProperty(MESSAGE_TYPE_KEY);
                 if(!componentFilter.isEmpty()) {
                     if (recipientID != null && !componentFilter.contains(recipientID)) {

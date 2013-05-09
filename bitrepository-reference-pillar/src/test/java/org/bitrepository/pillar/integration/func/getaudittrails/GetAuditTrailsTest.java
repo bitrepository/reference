@@ -38,7 +38,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
     protected void initializeCUT() {
         super.initializeCUT();
         settingsForTestClient.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
-        //settingsForTestClient.getRepositorySettings().getGetAuditTrailSettings().getContributorIDs().add(getPillarID());
+        //settingsForTestClient.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(getPillarID());
     }
     
     @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )

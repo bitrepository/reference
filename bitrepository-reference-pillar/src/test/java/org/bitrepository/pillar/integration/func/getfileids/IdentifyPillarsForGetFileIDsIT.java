@@ -73,7 +73,7 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
 
     @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void nonExistingFileTest() {
-        addDescription("Tests that the ChecksumPillar is able to reject a GetFileIDs requests for a file, which it " +
+        addDescription("Tests that the pillar is able to reject a GetFileIDs requests for a file, which it " +
                        "does not have during the identification phase.");
         FileIDs fileids = FileIDsUtils.createFileIDs(NON_DEFAULT_FILE_ID);
 

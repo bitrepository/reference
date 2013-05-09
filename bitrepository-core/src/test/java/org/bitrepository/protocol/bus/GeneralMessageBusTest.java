@@ -115,7 +115,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
         addDescription("Test that message bus correct uses the 'to' header property to indicated that the message " +
                 "is meant for a specific component");
         addStep("Send a message with the 'Recipent' parameter set to at specific component",
-                "The MESSAGE_RECIPIENT_KEY ");
+                "The MESSAGE_TO_KEY ");
         String receiverID = "specificReceiver";
         final BlockingQueue<Message> messageList = new LinkedBlockingDeque<Message>();
         RawMessagebus rawMessagebus = new RawMessagebus(
@@ -133,13 +133,13 @@ public class GeneralMessageBusTest extends IntegrationTest {
         messageToSend.setTo(receiverID);
         messageBus.sendMessage(messageToSend);
         Message receivedMessage = messageList.poll(3, TimeUnit.SECONDS);
-        Assert.assertEquals(receivedMessage.getStringProperty(ActiveMQMessageBus.MESSAGE_RECIPIENT_KEY), receiverID);
+        Assert.assertEquals(receivedMessage.getStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY), receiverID);
     }
 
     @Test(groups = {"regressiontest"})
-    public final void recipientFilterTest() throws Exception {
+    public final void toFilterTest() throws Exception {
         addDescription("Test that message bus filters messages to other components, eg. ignores these.");
-        addStep("Send an message with a undefined 'Receiver' header property, " +
+        addStep("Send an message with a undefined 'To' header property, " +
                 "eg. this messages should be handled by all components.",
                 "Verify that the message bus accepts this message.");
         final BlockingQueue<Message> messageList = new LinkedBlockingDeque<Message>();
@@ -156,15 +156,15 @@ public class GeneralMessageBusTest extends IntegrationTest {
         rawMessagebus.sendMessage(settingsForTestClient.getAlarmDestination(), msg);
         alarmReceiver.waitForMessage(AlarmMessage.class);
 
-        addStep("Send an message with the 'Receiver' header property set to this component",
+        addStep("Send an message with the 'To' header property set to this component",
                 "Verify that the message bus accepts this message.");
-        msg.setStringProperty(ActiveMQMessageBus.MESSAGE_RECIPIENT_KEY, settingsForTestClient.getComponentID());
+        msg.setStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY, settingsForTestClient.getComponentID());
         rawMessagebus.sendMessage(settingsForTestClient.getAlarmDestination(), msg);
         alarmReceiver.waitForMessage(AlarmMessage.class);
 
-        addStep("Send an invalid message with the 'Receiver' header property set to another specific component",
+        addStep("Send an invalid message with the 'To' header property set to another specific component",
                 "Verify that the message bus ignores this before parsing the message.");
-        msg.setStringProperty(ActiveMQMessageBus.MESSAGE_RECIPIENT_KEY, "OtherComponent");
+        msg.setStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY, "OtherComponent");
         rawMessagebus.sendMessage(settingsForTestClient.getAlarmDestination(), msg);
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
     }

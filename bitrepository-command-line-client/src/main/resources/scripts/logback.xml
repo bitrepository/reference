@@ -21,15 +21,16 @@
   -->
 <configuration>
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <layout class="ch.qos.logback.classic.PatternLayout">
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
       <pattern>%-4relative [%thread] %-5level %class - %msg%n</pattern>
-    </layout>
+    </encoder>
   </appender>
 
-  <logger name="org.apache.http" level="ERROR"/>
+  <logger name="org.bitrepository" level="INFO"/>
 
-  <root level="INFO">
+  <root level="ERROR">
     <appender-ref ref="STDOUT" />
   </root>
+
 </configuration>
 

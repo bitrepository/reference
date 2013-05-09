@@ -148,11 +148,11 @@
         List of components expected to deliver status information 
         Only components listed here will be asked for status information. 
       -->
-      <ContributorIDs>pillar1</ContributorIDs>
-      <ContributorIDs>pillar2</ContributorIDs>
-      <ContributorIDs>alarm-service</ContributorIDs>
-      <ContributorIDs>integrity-service</ContributorIDs>
-      <ContributorIDs>audittrail-service</ContributorIDs>
+      <NonPillarContributorIDs>pillar1</NonPillarContributorIDs>
+      <NonPillarContributorIDs>pillar2</NonPillarContributorIDs>
+      <NonPillarContributorIDs>alarm-service</NonPillarContributorIDs>
+      <NonPillarContributorIDs>integrity-service</NonPillarContributorIDs>
+      <NonPillarContributorIDs>audittrail-service</NonPillarContributorIDs>
   </GetStatusSettings>
 
   <!-- 

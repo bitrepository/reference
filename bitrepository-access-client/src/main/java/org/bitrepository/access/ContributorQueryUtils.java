@@ -40,7 +40,7 @@ public class ContributorQueryUtils {
     }
 
     /**
-     * Extracts the collection of contributorIDs from the query object.
+     * Extracts the collection of nonPillarContributorIDs from the query object.
      */
     public static Collection<String> getContributors(ContributorQuery[] queries) {
         Collection<String> contributors = new HashSet<String>();

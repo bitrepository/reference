@@ -28,6 +28,7 @@ import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ public class ConversationBasedGetStatusClient extends AbstractClient implements 
             ConversationMediator conversationMediator,
             Settings settings, String clientID) {
         super(settings, conversationMediator, messageBus, clientID);
-        ArgumentValidator.checkNotNullOrEmpty(settings.getRepositorySettings().getGetStatusSettings().getContributorIDs(),
+        ArgumentValidator.checkNotNullOrEmpty(settings.getRepositorySettings().getGetStatusSettings().getNonPillarContributorIDs(),
                 "ContributorIDs");
     }
 
@@ -50,7 +51,7 @@ public class ConversationBasedGetStatusClient extends AbstractClient implements 
         log.info("Requesting status for collection of components.");
         GetStatusConversationContext context = new GetStatusConversationContext(
                 settings, messageBus, eventHandler, clientID,
-                settings.getRepositorySettings().getGetStatusSettings().getContributorIDs());
+                SettingsUtils.getStatusContributorsForCollection(settings));
         startConversation(context, new IdentifyingContributorsForGetStatus(context));
     }
 }
