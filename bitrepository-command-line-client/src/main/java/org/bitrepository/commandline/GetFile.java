@@ -69,7 +69,7 @@ public class GetFile extends CommandLineClient {
     }
 
     @Override
-    protected boolean isFileIDRequered() {
+    protected boolean isFileIDArgumentRequired() {
         return true;
     }
     

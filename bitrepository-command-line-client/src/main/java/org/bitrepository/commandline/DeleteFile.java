@@ -65,8 +65,8 @@ public class DeleteFile extends CommandLineClient {
     }
 
     @Override
-    protected boolean isFileIDRequered() {
-        return false;
+    protected boolean isFileIDArgumentRequired() {
+        return true;
     }
 
     @Override

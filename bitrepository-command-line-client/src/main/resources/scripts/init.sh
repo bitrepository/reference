@@ -31,6 +31,6 @@ if [ ! -e conf ]; then
 fi
 
 CONFDIR="conf"
-KEYFILE="client-16.pem"
+KEYFILE="somecertificate.pem"
 JAVA="/usr/bin/java"
 JAVA_OPTS="-classpath conf:lib/* -Dlogback.configurationFile=logback.xml"

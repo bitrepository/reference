@@ -78,8 +78,18 @@ public abstract class CommandLineClient {
         output.startupInfo("Creating client.");
     }
 
+    /**
+     * Defines the componentID of the concrete client. Must be specified by in the subclass.
+     * @return The componentID of the concrete client.
+     */
     protected abstract String getComponentID();
-    protected abstract boolean isFileIDRequered();
+
+    /**
+     * Used for determining whether the fileID Argument is required for the concrete operation.
+     * Must be specified by in the subclass.
+     * @return Indicates whether the -f
+     */
+    protected abstract boolean isFileIDArgumentRequired();
 
     /**
      * Creates the options for the command line argument handler. May be override.
@@ -92,9 +102,9 @@ public abstract class CommandLineClient {
         collectionOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
         cmdHandler.addOption(collectionOption);
 
-        Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT,
-                "The id for the file to retrieve.");
-        fileOption.setRequired(isFileIDRequered());
+        Option fileOption = new Option(Constants.FILE_ID_ARG, Constants.HAS_ARGUMENT,
+                "The id for the file to perform the operation on.");
+        fileOption.setRequired(isFileIDArgumentRequired());
         cmdHandler.addOption(fileOption);
 
         Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, "[OPTIONAL] The id of the "
@@ -160,6 +170,9 @@ public abstract class CommandLineClient {
         }
     }
 
+    /**
+     * @return The timeout to use for performing the full operation.
+     */
     protected long getTimeout() {
         return settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
                 + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();

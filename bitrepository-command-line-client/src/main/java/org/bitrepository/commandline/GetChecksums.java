@@ -65,7 +65,7 @@ public class GetChecksums extends CommandLineClient {
     }
 
     @Override
-    protected boolean isFileIDRequered() {
+    protected boolean isFileIDArgumentRequired() {
         return false;
     }
 
