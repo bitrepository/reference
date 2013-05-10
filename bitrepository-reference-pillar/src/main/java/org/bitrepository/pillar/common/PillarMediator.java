@@ -66,6 +66,7 @@ public abstract class PillarMediator extends AbstractContributorMediator {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
             responseInfo.setResponseText(e.getMessage());
+            log.trace("Stack trace for illegal argument", e);
             dispatchNegativeResponse(request, handler, responseInfo);
         } catch (RequestHandlerException e) {
             dispatchNegativeResponse(request, handler, e.getResponseInfo());
@@ -94,8 +95,7 @@ public abstract class PillarMediator extends AbstractContributorMediator {
     }
 
     private void dispatchNegativeResponse(MessageRequest request, RequestHandler handler, ResponseInfo info) {
-        log.warn("Cannot perform operation. Sending failed response. Cause: \n"
-                + info.getResponseText());
+        log.warn("Cannot perform operation. Sending failed response. Cause: " + info.getResponseText());
         MessageResponse response = handler.generateFailedResponse(request);
         response.setResponseInfo(info);
         context.getResponseDispatcher().dispatchResponse(response, request);
