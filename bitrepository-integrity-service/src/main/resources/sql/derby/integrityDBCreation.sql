@@ -135,6 +135,8 @@ CREATE TABLE fileinfo (
 );
 
 CREATE INDEX checksumdateindex ON fileinfo (last_checksum_update);
+CREATE INDEX filestateindex ON fileinfo (file_state);
+CREATE INDEX checksumstateindex ON fileinfo (checksum_state);
 
 --*************************************************************************--
 -- Name:     statistics 

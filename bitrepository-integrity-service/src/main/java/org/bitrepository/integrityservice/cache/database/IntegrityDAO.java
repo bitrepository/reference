@@ -1257,6 +1257,7 @@ public class IntegrityDAO {
         Long pillarKey = retrievePillarKey(pillarID);
         Long fileCount = (long) getNumberOfExistingFilesForAPillar(pillarID, collectionID);
         Long dataSize = getCollectionFileSizeAtPillar(collectionID, pillarID);
+        dataSize = dataSize == null ? 0 : dataSize;
         Long missingFiles = (long) getNumberOfMissingFilesForAPillar(pillarID, collectionID);
         Long checksumErrors = (long) getNumberOfChecksumErrorsForAPillar(pillarID, collectionID);
         
