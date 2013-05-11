@@ -95,7 +95,7 @@ public class DeleteFile extends CommandLineClient {
         output.debug("Performing the DeleteFile operation.");
         OperationEvent finalEvent = deleteTheFile();
         output.completeEvent("Results of the DeleteFile operation for the file '"
-                + cmdHandler.getOptionValue(Constants.FILE_ARG) + "'"
+                + cmdHandler.getOptionValue(Constants.FILE_ID_ARG) + "'"
                 + ": ", finalEvent);
         if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
             System.exit(Constants.EXIT_SUCCESS);

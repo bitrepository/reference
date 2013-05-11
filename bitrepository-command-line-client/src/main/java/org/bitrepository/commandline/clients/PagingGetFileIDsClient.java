@@ -53,7 +53,6 @@ public class PagingGetFileIDsClient {
         return true;
     }
     
-    
     private ContributorQuery[] makeQuery(List<String> pillars) {
         List<ContributorQuery> res = new ArrayList<ContributorQuery>();
         for(String pillar : pillars) {

@@ -102,10 +102,10 @@ public abstract class CommandLineClient {
         collectionOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
         cmdHandler.addOption(collectionOption);
 
-        Option fileOption = new Option(Constants.FILE_ID_ARG, Constants.HAS_ARGUMENT,
+        Option fileIDOption = new Option(Constants.FILE_ID_ARG, Constants.HAS_ARGUMENT,
                 "The id for the file to perform the operation on.");
-        fileOption.setRequired(isFileIDArgumentRequired());
-        cmdHandler.addOption(fileOption);
+        fileIDOption.setRequired(isFileIDArgumentRequired());
+        cmdHandler.addOption(fileIDOption);
 
         Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, "[OPTIONAL] The id of the "
                 + "pillar where the should be performed. If undefined the operations is performed on all pillars.");
@@ -117,8 +117,8 @@ public abstract class CommandLineClient {
      * @throws IllegalArgumentException One of the arguments wasn't valid.
      */
     protected void validateArguments() {
-        if(cmdHandler.hasOption(Constants.FILE_ARG)) {
-            fileIDValidator.checkFileID(cmdHandler.getOptionValue(Constants.FILE_ARG));
+        if(cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
+            fileIDValidator.checkFileID(cmdHandler.getOptionValue(Constants.FILE_ID_ARG));
         }
         if(cmdHandler.hasOption(Constants.COLLECTION_ID_ARG)) {
             List<String> collections = SettingsUtils.getAllCollectionsIDs(settings);
@@ -143,8 +143,8 @@ public abstract class CommandLineClient {
      * otherwise all file ids will be requested.
      */
     protected String getFileIDs() {
-        if(cmdHandler.hasOption(Constants.FILE_ARG)) {
-            return cmdHandler.getOptionValue(Constants.FILE_ARG);
+        if(cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
+            return cmdHandler.getOptionValue(Constants.FILE_ID_ARG);
         } else {
             return null;
         }

@@ -73,7 +73,8 @@ public abstract class PillarFunctionTest extends PillarIntegrationTest {
         try {
             clientProvider.getPutClient().putFile(
                     collectionID, DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
-                null, null, null);clientProvider.getPutClient().putFile(
+                null, null, null);
+            clientProvider.getPutClient().putFile(
             nonDefaultCollectionId, DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
                     null, null, null);
         } catch (OperationFailedException e) {
