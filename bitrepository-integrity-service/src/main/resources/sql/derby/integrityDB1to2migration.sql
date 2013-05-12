@@ -52,6 +52,8 @@ ALTER TABLE fileinfo (
 );
 
 RENAME COLUMN fileinfo.guid TO fileinfo_key;
+CREATE INDEX filestateindex ON fileinfo (file_state);
+CREATE INDEX checksumstateindex ON fileinfo (checksum_state);
 
 
 CREATE TABLE stats (
