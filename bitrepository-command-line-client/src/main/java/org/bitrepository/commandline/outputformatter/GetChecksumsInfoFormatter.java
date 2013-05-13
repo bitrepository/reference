@@ -27,11 +27,9 @@ public class GetChecksumsInfoFormatter implements GetChecksumsOutputFormatter {
     
     public void formatResult(Collection<ChecksumResult> results) {
         String firstContributor = null;
+        String checksum = null; 
         for(ChecksumResult result : results) {
-            if(firstContributor == null) {
-                firstContributor = result.getContributors().get(0);
-            }
-            String checksum;
+            firstContributor = result.getContributors().get(0);
             if(result.isDirty()) {
                 checksum = "disagreed";
             } else {
