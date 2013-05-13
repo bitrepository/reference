@@ -47,13 +47,13 @@ public class GetChecksumsResultModel {
             if(lastCompletedIDs.contains(item.getFileID())) {
                 continue;
             }
+            String checksum = Base16Utils.decodeBase16(item.getChecksumValue());
             ChecksumResult result;
             if(uncompleteResults.containsKey(item.getFileID())) {
                 result = uncompleteResults.get(item.getFileID());
-                result.addContributor(contributor, Base16Utils.decodeBase16(item.getChecksumValue()));
+                result.addContributor(contributor, checksum);
             } else {
-                result = new ChecksumResult(item.getFileID(), contributor, 
-                        Base16Utils.decodeBase16(item.getChecksumValue()));
+                result = new ChecksumResult(item.getFileID(), contributor, checksum);
             }
             
             Date resultDate = CalendarUtils.convertFromXMLGregorianCalendar(item.getCalculationTimestamp()); 

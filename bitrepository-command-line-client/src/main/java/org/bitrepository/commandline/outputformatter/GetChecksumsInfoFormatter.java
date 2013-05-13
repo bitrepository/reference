@@ -29,7 +29,7 @@ public class GetChecksumsInfoFormatter implements GetChecksumsOutputFormatter {
         String firstContributor = null;
         for(ChecksumResult result : results) {
             if(firstContributor == null) {
-                result.getContributors().get(0);
+                firstContributor = result.getContributors().get(0);
             }
             String checksum;
             if(result.isDirty()) {
