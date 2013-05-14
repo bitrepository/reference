@@ -117,6 +117,9 @@ clean_pillars() {
        if [ -d databases ]; then
          rm -r databases
        fi
+       if [ -d logs ]; then
+         rm -r logs
+       fi
        rm -f *.log
        rm -f *.out
        if [ -d archive ]; then

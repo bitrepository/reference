@@ -88,6 +88,14 @@ public class DeleteFile extends CommandLineClient {
         cmdHandler.addOption(checksumSaltOption);
     }
 
+    protected void validateArguments() {
+        super.validateArguments();
+        if(!cmdHandler.hasOption(Constants.PILLAR_ARG)) {
+            throw new IllegalArgumentException("The pillar argument -p must defined for the delete operation, " +
+                    "only single pillar deletes are allowed");
+        }
+    }
+
     /**
      * Perform the DeleteFile operation.
      */
@@ -109,7 +117,7 @@ public class DeleteFile extends CommandLineClient {
      * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
      */
     private OperationEvent deleteTheFile() {
-        String fileId = cmdHandler.getOptionValue(Constants.FILE_ARG);
+        String fileId = cmdHandler.getOptionValue(Constants.FILE_ID_ARG);
 
         ChecksumDataForFileTYPE validationChecksum = getValidationChecksum();
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpec();
