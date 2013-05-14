@@ -43,6 +43,12 @@
             <directoryMode>0740</directoryMode>
             <directory>src/main/resources/scripts</directory>
         </fileSet>
+      <fileSet>
+        <outputDirectory>conf</outputDirectory>
+        <fileMode>0740</fileMode>
+        <directoryMode>0740</directoryMode>
+        <directory>src/main/conf</directory>
+      </fileSet>
     </fileSets>
 </assembly>
 

@@ -33,4 +33,4 @@ fi
 CONFDIR="conf"
 KEYFILE="somecertificate.pem"
 JAVA="/usr/bin/java"
-JAVA_OPTS="-classpath conf:lib/* -Dlogback.configurationFile=logback.xml"
+JAVA_OPTS="-classpath  ${CONF}:lib/* -Dlogback.configurationFile=logback.xml"
