@@ -43,7 +43,7 @@
     <CollectAuditInterval>3600000</CollectAuditInterval> 
     <TimerTaskCheckInterval>2000</TimerTaskCheckInterval>
     <AuditTrailPreservationInterval>604800000</AuditTrailPreservationInterval>
-    <AuditTrailPreservationCollection>quick-start-collection</AuditTrailPreservationCollection>
+    <AuditTrailPreservationCollection>quick-start-collection1</AuditTrailPreservationCollection>
     <AuditTrailPreservationTemporaryDirectory>/tmp/</AuditTrailPreservationTemporaryDirectory>
   </AuditTrailServiceSettings>
 </ReferenceSettings>

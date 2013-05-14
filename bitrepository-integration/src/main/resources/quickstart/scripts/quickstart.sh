@@ -64,7 +64,7 @@ do
         cd "$directory"
         ln -sf ../RepositorySettings.xml .
         sed -i s%\<\!--foobarpattern--\>%$quickstartdir/% ReferenceSettings.xml > /dev/null
-        sed -i s%\{user.home\}%$quickstartdir% logback.xml 
+        sed -i s%\$\{user.home\}%$quickstartdir% logback.xml 
         cd $quickstartdir
 done
 
@@ -132,7 +132,7 @@ cd $quickstartdir
 if [ -d "tomcat" ]; then
 	rm -rf tomcat
 fi
-curl http://ftp.download-by.net/apache/tomcat/tomcat-6/v6.0.36/bin/apache-tomcat-6.0.36.tar.gz > tomcat.tar.gz
+curl http://ftp.download-by.net/apache/tomcat/tomcat-6/v6.0.37/bin/apache-tomcat-6.0.37.tar.gz > tomcat.tar.gz
 tar xfz tomcat.tar.gz
 mv apache-tomcat-* tomcat
 

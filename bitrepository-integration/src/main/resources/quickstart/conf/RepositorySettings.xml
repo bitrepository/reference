@@ -21,13 +21,22 @@
   #L%
   -->
 <RepositorySettings xmlns="http://bitrepository.org/settings/RepositorySettings.xsd">
-  <Name>quick-start-collection</Name>
+  <Name>quick-start-repository</Name>
   <Collections>
     <Collection>
-      <ID>quick-start-collection</ID>
+      <ID>quick-start-collection1</ID>
+      <Name>Quick start collection1</Name>
       <PillarIDs>
         <PillarID>checksum-pillar</PillarID>
         <PillarID>reference1-pillar</PillarID>
+        <PillarID>reference2-pillar</PillarID>
+      </PillarIDs>
+    </Collection>
+    <Collection>
+      <ID>quick-start-collection2</ID>
+      <Name>Quick start collection2</Name>
+      <PillarIDs>
+        <PillarID>checksum-pillar</PillarID>
         <PillarID>reference2-pillar</PillarID>
       </PillarIDs>
     </Collection>
@@ -53,10 +62,7 @@
   <PillarSettings/>
   <DeleteFileSettings/>
   <GetAuditTrailSettings>
-    <ContributorIDs>checksum-pillar</ContributorIDs>
-    <ContributorIDs>reference1-pillar</ContributorIDs>
-    <ContributorIDs>reference2-pillar</ContributorIDs>
-    <ContributorIDs>integrity-service</ContributorIDs>
+    <NonPillarContributorIDs>integrity-service</NonPillarContributorIDs>
   </GetAuditTrailSettings>
   <GetChecksumsSettings/>
   <GetFileSettings/>
