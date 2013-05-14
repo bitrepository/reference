@@ -94,6 +94,11 @@ public class DeleteFile extends CommandLineClient {
             throw new IllegalArgumentException("The pillar argument -p must defined for the delete operation, " +
                     "only single pillar deletes are allowed");
         }
+        if (!cmdHandler.hasOption(Constants.CHECKSUM_ARG) &&
+                settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
+            throw new IllegalArgumentException("Checksum argument (-C) are mandatory for delete and replace operations" +
+                    "as defined in RepositorySettings.");
+        }
     }
 
     /**
