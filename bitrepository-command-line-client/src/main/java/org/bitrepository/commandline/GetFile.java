@@ -59,7 +59,7 @@ public class GetFile extends CommandLineClient {
      */
     private GetFile(String ... args) {
         super(args);
-        client = AccessComponentFactory.getInstance().createGetFileClient(settings, securityManager, 
+        client = AccessComponentFactory.getInstance().createGetFileClient(settings, securityManager,
                 COMPONENT_ID);
     }
 
@@ -72,26 +72,26 @@ public class GetFile extends CommandLineClient {
     protected boolean isFileIDArgumentRequired() {
         return true;
     }
-    
+
     @Override
     protected void createOptionsForCmdArgumentHandler() {
         super.createOptionsForCmdArgumentHandler();
-        Option checksumOption = new Option(Constants.LOCATION, Constants.HAS_ARGUMENT, 
+        Option checksumOption = new Option(Constants.LOCATION, Constants.HAS_ARGUMENT,
                 "[OPTIONAL] The location where the file should be placed (either total path or directory). "
-                + "If no argument, then in the directory where the script is located.");
+                        + "If no argument, then in the directory where the script is located.");
         checksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumOption);
     }
-    
+
     /**
      * Perform the GetFile operation.
      */
     public void performOperation() {
-        String fileArg = cmdHandler.getOptionValue(Constants.FILE_ARG);
+        String fileArg = cmdHandler.getOptionValue(Constants.FILE_ID_ARG);
         output.startupInfo("Getting " + fileArg);
         OperationEvent finalEvent = performConversation();
         output.debug("Results of the GetFile operation for the file '"
-                + cmdHandler.getOptionValue(Constants.FILE_ARG) + "'" 
+                + cmdHandler.getOptionValue(Constants.FILE_ID_ARG) + "'"
                 + ": " + finalEvent);
         if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
             downloadFile();
@@ -101,25 +101,25 @@ public class GetFile extends CommandLineClient {
             System.exit(Constants.EXIT_OPERATION_FAILURE);
         }
     }
-    
+
     /**
      * Initiates the operation and waits for the results.
      * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
      */
     private OperationEvent performConversation() {
-        String fileId = cmdHandler.getOptionValue(Constants.FILE_ARG);
+        String fileId = cmdHandler.getOptionValue(Constants.FILE_ID_ARG);
         fileUrl = extractUrl(fileId);
-        
+
         CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings, output);
         output.debug("Initiating the GetFile conversation.");
-        
+
         if(cmdHandler.hasOption(Constants.PILLAR_ARG)) {
             String pillarId = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
             client.getFileFromSpecificPillar(getCollectionID(), fileId, null, fileUrl, pillarId, eventHandler, null);
         } else {
             client.getFileFromFastestPillar(getCollectionID(), fileId, null, fileUrl, eventHandler, null);
         }
-        
+
         return eventHandler.getFinish();
     }
 
@@ -132,17 +132,17 @@ public class GetFile extends CommandLineClient {
         if(cmdHandler.hasOption(Constants.LOCATION)) {
             File location = new File(cmdHandler.getOptionValue(Constants.LOCATION));
             if(location.isDirectory()) {
-                outputFile = new File(location, cmdHandler.getOptionValue(Constants.FILE_ARG));
+                outputFile = new File(location, cmdHandler.getOptionValue(Constants.FILE_ID_ARG));
             } else {
                 outputFile = location;
             }
         } else {
-            outputFile = new File(cmdHandler.getOptionValue(Constants.FILE_ARG));
+            outputFile = new File(cmdHandler.getOptionValue(Constants.FILE_ID_ARG));
         }
         FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
         fileexchange.downloadFromServer(outputFile, fileUrl.toExternalForm());
     }
-    
+
     /**
      * Extracts the URL for where the file should be delivered from the GetFile operation.
      * @param fileId The id of the file.
