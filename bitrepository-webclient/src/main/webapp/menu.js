@@ -1,6 +1,7 @@
 
 
-        var pages = [{page : "alarm-service.jsp", title : "Alarm"},
+        var pages = [{page : "dashboardServlet", title : "Dashboard"}, 
+                     {page : "alarm-service.jsp", title : "Alarm"},
                      {page : "integrity-service.jsp", title : "Integrity"}, 
                      {page : "audit-trail-service.jsp", title : "Audit trail"}, 
                      {page : "status-service.jsp", title : "Status"}];

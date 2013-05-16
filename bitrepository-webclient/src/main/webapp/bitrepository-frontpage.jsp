@@ -20,6 +20,7 @@
            Please move on the the specific service pages. <br>
            The services are: 
            <ul>
+             <li><a href="dashboardServlet">Dashboard</a></li>
              <li><a href="alarm-service.jsp">Alarm</a></li>
              <li><a href="integrity-service.jsp">Integrity</a></li>
              <li><a href="audit-trail-service.jsp">Audit trail</a></li>
