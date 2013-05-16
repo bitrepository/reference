@@ -30,7 +30,7 @@ public class IntegrityClient {
 	public static GetCollectionInformation getCollectionInformation(String collectionID) {
 		ServiceUrl su = ServiceUrlFactory.getInstance();
 		Client c = Client.create();
-		WebResource service = c.resource("http://"+su.getIntegrityServiceUrl());
+		WebResource service = c.resource(su.getWebserverUrl()+su.getIntegrityServiceUrl());
 		String jsonResponse  = service.path("integrity/IntegrityService/getCollectionInformation/")
 				.queryParam("collectionID", collectionID)				
 				.type("application/json").accept(MediaType.APPLICATION_JSON)	     
@@ -45,7 +45,7 @@ public class IntegrityClient {
 	public static ArrayList<GetWorkflowSetup> getWorkflowSetup(String collectionID) {
 		ServiceUrl su = ServiceUrlFactory.getInstance();
 		Client c = Client.create();
-		WebResource service = c.resource("http://"+su.getIntegrityServiceUrl());
+		WebResource service = c.resource(su.getWebserverUrl()+su.getIntegrityServiceUrl());
 		String jsonResponse  = service.path("integrity/IntegrityService/getWorkflowSetup/")
 				.queryParam("collectionID", collectionID)				
 				.type("application/json").accept(MediaType.APPLICATION_JSON)	     
@@ -61,7 +61,7 @@ public class IntegrityClient {
 	public static ArrayList<GetIntegrityStatus> getIntegrityStatus(String collectionID) {
 		ServiceUrl su = ServiceUrlFactory.getInstance();
 		Client c = Client.create();
-		WebResource service = c.resource("http://"+su.getIntegrityServiceUrl());
+		WebResource service = c.resource(su.getWebserverUrl()+su.getIntegrityServiceUrl());
 		String jsonResponse  = service.path("integrity/IntegrityService/getIntegrityStatus/")
 				.queryParam("collectionID", collectionID)				
 				.type("application/json").accept(MediaType.APPLICATION_JSON)	     
@@ -76,7 +76,7 @@ public class IntegrityClient {
 	public static ArrayList<StatisticsCollectionSize> getCollectionDataSize(){
 		ServiceUrl su = ServiceUrlFactory.getInstance();
 		Client c = Client.create();
-		WebResource service = c.resource("http://"+su.getIntegrityServiceUrl());
+		WebResource service = c.resource(su.getWebserverUrl()+su.getIntegrityServiceUrl());
 		String jsonResponse  = service.path("integrity/Statistics/getLatestcollectionDataSize/")		                
 		                .type("application/json").accept(MediaType.APPLICATION_JSON)		     
 		                .get(String.class);
@@ -95,7 +95,7 @@ public class IntegrityClient {
 	public static ArrayList<StatisticsPillarSize> getLatestPillarDataSize(){
 		ServiceUrl su = ServiceUrlFactory.getInstance();
 		Client c = Client.create();
-		WebResource service = c.resource("http://"+su.getIntegrityServiceUrl());
+		WebResource service = c.resource(su.getWebserverUrl()+su.getIntegrityServiceUrl());
 		String jsonResponse  = service.path("integrity/Statistics/getLatestPillarDataSize/")		                
 		                .type("application/json").accept(MediaType.APPLICATION_JSON)		     
 		                .get(String.class);
@@ -113,7 +113,7 @@ public class IntegrityClient {
 	public static ArrayList<StatisticsDataSize> getDataSizeHistory(String id){
 		ServiceUrl su = ServiceUrlFactory.getInstance();
 		Client c = Client.create();
-		WebResource service = c.resource("http://"+su.getIntegrityServiceUrl());
+		WebResource service = c.resource(su.getWebserverUrl()+su.getIntegrityServiceUrl());
 		String jsonResponse  = service.path("integrity/Statistics/getDataSizeHistory/")		                
 		                       .queryParam("collectionID", id)  
 				               .type("application/json").accept(MediaType.APPLICATION_JSON)		     
@@ -132,7 +132,7 @@ public class IntegrityClient {
 	public static ArrayList<String> getPillarIds(){
 		ServiceUrl su = ServiceUrlFactory.getInstance();
 		Client c = Client.create();
-		WebResource service = c.resource("http://"+su.getWebclientServiceUrl());
+		WebResource service = c.resource(su.getWebserverUrl()+su.getWebclientServiceUrl());
 		String jsonResponse  = service.path("repo/reposervice/getCollectionIDs")		                		
 				.type("application/json").accept(MediaType.APPLICATION_JSON)		     
 				.get(String.class);
@@ -147,7 +147,7 @@ public class IntegrityClient {
 	public static String getPillarName(String pillarId){
 		ServiceUrl su = ServiceUrlFactory.getInstance();
 		Client c = Client.create();
-		WebResource service = c.resource("http://"+su.getWebclientServiceUrl());
+		WebResource service = c.resource(su.getWebserverUrl()+su.getWebclientServiceUrl());
 		String jsonResponse  = service.path("repo/reposervice/getCollectionName")		                		
 				.queryParam("collectionID", pillarId) 
 				.type("application/json").accept(MediaType.APPLICATION_JSON)		     

@@ -168,7 +168,7 @@ var options = {
        grid:  {
                 hoverable: true,                 
                 //mouseActiveRadius: 30,
-              }
+                backgroundColor: { colors: ["#D1D1D1", "#7A7A7A"] }
             },            
        xaxis: { mode: "time",  localTimezone: true , zoomRange: [0.1, 10] , timeformat: "%y/%0m/%0d %0H:%0M"},
        yaxis: { min: 0 , axisLabel: '<%=byteUnitSuffix%>'},
