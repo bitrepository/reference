@@ -31,7 +31,6 @@ import java.util.List;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.service.database.DBConnector;
 import org.slf4j.Logger;
@@ -237,7 +236,5 @@ public class IntegrityDatabase implements IntegrityModel {
     @Override
     public void makeStatisticsForCollection(String collectionID) {
         store.makeStatisticsEntry(collectionID);
-        
     }
-
 }

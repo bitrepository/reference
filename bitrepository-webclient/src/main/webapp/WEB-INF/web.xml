@@ -22,45 +22,39 @@
   -->
 
 <web-app>
-   	<display-name>Bitrepository webservice</display-name>
-   
- 	<welcome-file-list>
-            <welcome-file>bitrepository-frontpage.jsp</welcome-file>
-	</welcome-file-list>
-	
-   	<servlet>
- 		<servlet-name>Bitrepository-webclient</servlet-name>
- 		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
-		<init-param>
- 			<param-name>com.sun.jersey.config.property.packages</param-name>
- 			<param-value>org.bitrepository.webservice</param-value>
- 		</init-param>
- 	</servlet>
- 	
- 	<servlet-mapping>
- 		<servlet-name>Bitrepository-webclient</servlet-name>
- 		<url-pattern>/repo/*</url-pattern>
- 	</servlet-mapping>
- 	
+  <display-name>Bitrepository webservice</display-name>
 
- 
-              <servlet>
-                          <servlet-name>dashboardServlet</servlet-name>
-                          <servlet-class>org.bitrepository.dashboard.DashboardServlet</servlet-class>
-              </servlet>
+  <welcome-file-list>
+    <welcome-file>bitrepository-frontpage.jsp</welcome-file>
+  </welcome-file-list>
 
-              <servlet-mapping>
-                          <servlet-name>dashboardServlet</servlet-name>
-                          <url-pattern>/dashboardServlet</url-pattern>
-              </servlet-mapping>
- 	
- 	<listener>
-		<listener-class>org.bitrepository.webservice.WebclientContextListener</listener-class>
-	</listener>
- 	
+  <servlet>
+    <servlet-name>Bitrepository-webclient</servlet-name>
+    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.packages</param-name>
+      <param-value>org.bitrepository.webservice</param-value>
+    </init-param>
+  </servlet>
 
+  <servlet-mapping>
+    <servlet-name>Bitrepository-webclient</servlet-name>
+    <url-pattern>/repo/*</url-pattern>
+  </servlet-mapping>
 
+  <servlet>
+    <servlet-name>dashboardServlet</servlet-name>
+    <servlet-class>org.bitrepository.dashboard.DashboardServlet</servlet-class>
+  </servlet>
 
+  <servlet-mapping>
+    <servlet-name>dashboardServlet</servlet-name>
+    <url-pattern>/dashboardServlet</url-pattern>
+  </servlet-mapping>
+
+  <listener>
+    <listener-class>org.bitrepository.webservice.WebclientContextListener</listener-class>
+  </listener>
 </web-app>
 
 
