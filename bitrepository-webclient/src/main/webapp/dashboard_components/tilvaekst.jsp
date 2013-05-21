@@ -2,20 +2,30 @@
 
 <%
   ArrayList<ArrayList<StatisticsDataSize>> allDataSizeList = (  ArrayList<ArrayList<StatisticsDataSize>> ) request.getAttribute(DashboardServlet.DATA_SIZE_HISTORY_ATTRIBUTE);
-  
   ArrayList<String> allDataSizeNamesList = (  ArrayList<String> ) request.getAttribute(DashboardServlet.DATA_SIZE_HISTORY_NAMES_ATTRIBUTE);
+  
+  String graphType = (String) request.getAttribute(DashboardServlet.GRAPH_TYPE_ATTRIBUTE);
+  
   if (allDataSizeList == null){
      allDataSizeList = new ArrayList<ArrayList<StatisticsDataSize>>();
   }
    if (allDataSizeNamesList == null){
      allDataSizeNamesList = new ArrayList<String>();
   }
-       
+   
   HashMap<String,String> collectionId2NameMap = DashboardDataCache.collectionId2NameMap;
   long maxByteSize=DashboardServlet.getMaximumByteSize(allDataSizeList);
   String byteUnitSuffix =FileSizeUtils.toHumanUnit(maxByteSize);
-  float byteUnit = FileSizeUtils.getByteSize(byteUnitSuffix);
-    
+  float byteUnit = FileSizeUtils.getByteSize(byteUnitSuffix);    
+
+  String y_axis_text=byteUnitSuffix;
+  if ("graph_tilvaekst".equals(graphType)){
+     y_axis_text = byteUnitSuffix;
+  }
+  else if ("graph_delta".equals(graphType)){   
+     y_axis_text = byteUnitSuffix+" pr. dag";
+  }
+
 
 %>
 
@@ -67,8 +77,15 @@ return y + "/" + m +"/"+d +" " +hour+":"+minutes;
 
 
 <form name="dashboardForm" class="well" action="dashboardServlet" method="POST">
-
-<center>
+<table>
+<tr>
+<td width="20%">
+<select name="graphType" class="span3" onchange="javascript:changeData();">          
+      <option <%if ("graph_tilvaekst".equals(graphType)){ out.println(" selected "); }%> value="graph_tilvaekst">Tilvækst</option>
+      <option <%if ("graph_delta".equals(graphType)){ out.println(" selected "); }%> value="graph_delta">Tilvækstændring</option>
+</select>
+</td>
+<td style="text-align: center;" width="80%">
 <%  
     for ( String id : collectionId2NameMap.keySet()){
     %>
@@ -76,7 +93,9 @@ return y + "/" + m +"/"+d +" " +hour+":"+minutes;
     <%              
     }
 %>
-</center>
+</td>
+</tr>
+</table>
 </form>
 
 <script>
@@ -94,12 +113,29 @@ for (int j = 0 ;j <dataSizeList.size();j++){
 ];
 
 <%}%>
+var options = {        
+       hoverable: true,
+     
+       grid:  {
+                hoverable: true,                 
+                //mouseActiveRadius: 30
+              
+            },            
+       xaxis: {  mode: "time",  localTimezone: true , zoomRange: [0.1, 10] , timeformat: "%y/%0m/%0d %0H:%0M"},
+       yaxis: {  axisLabel: '<%=y_axis_text%>'},
+       selection:{  mode: "xy" } ,     
+       points: { show: true } ,
+       lines: { show: true},        
+       zoom: { interactive: true},                   
+};
+
+
 var dataObj = [
 <% 
  for (int i = 0; i< allDataSizeNamesList.size();i++){
  %>
  
-        {label:'<%=allDataSizeNamesList.get(i)%> ( <%=byteUnitSuffix%>)', data: data_tilvaekst<%=i%>},  
+        {label:'<%=allDataSizeNamesList.get(i)%> ( <%=y_axis_text%>)', data: data_tilvaekst<%=i%>},  
 <%}%>
 ];
 
@@ -108,6 +144,7 @@ $.fn.UseRange = function (plot) {
                     // do the zooming
                     plot = $.plot($("#placeholder"), dataObj,
                     $.extend(true, {}, options, {   xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
+                    ,   yaxis: { min: ranges.yaxis.from, max: ranges.yaxis.to }
                     }));       
     });        
 };
@@ -127,7 +164,7 @@ $.fn.UseTooltip = function (plot) {
                 var formated_date = dateFormat(d);
  
                 showTooltip(item.pageX, item.pageY,
-                formated_date  + "<br/>" + "<strong>" + y + " <%=byteUnitSuffix%></strong>");
+                formated_date  + "<br/>" + "<strong>" + y + " <%=y_axis_text%></strong>");
    
             }
         }
@@ -138,7 +175,8 @@ $.fn.UseTooltip = function (plot) {
         
            var placeholder = $("#placeholder"); //Zoom out             
         $('<div class="button" style="right:600px;top:20px">zoom out</div>').appendTo(placeholder).click(function (e) {
-           e.preventDefault();
+           e.preventDefault();                 
+                             
          plot.setupGrid();
          plot.draw();                                         
          plot = $.plot("#placeholder", dataObj, options);
@@ -162,23 +200,6 @@ function showTooltip(x, y, contents) {
     }).appendTo("body").fadeIn(200);
 }
  
-var options = {        
-       hoverable: true,
-     
-       grid:  {
-                hoverable: true,                 
-                //mouseActiveRadius: 30
-              
-            },            
-       xaxis: { mode: "time",  localTimezone: true , zoomRange: [0.1, 10] , timeformat: "%y/%0m/%0d %0H:%0M"},
-       yaxis: { min: 0 , axisLabel: '<%=byteUnitSuffix%>'},
-       selection:{  mode: "x" } ,     
-       points: { show: true } ,
-       lines: { show: true},        
-       zoom: { interactive: true},             
-  
-    
-};
   
 $(function () {     
    var plot = $.plot("#placeholder", dataObj, options);
