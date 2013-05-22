@@ -68,8 +68,8 @@ public class PutFileStressIT extends PillarPerformanceTest {
     public void parallelPut() throws Exception {
         final int numberOfFiles = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfFiles");
         final int  partStatisticsInterval = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.partStatisticsInterval");
-        final int  numberOfParallelPuts = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut" +
-                ".numberOfParallelPuts");
+        final int  numberOfParallelPuts =
+                testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfParallelPuts");
         addDescription("Attempt to put " + numberOfFiles + " files into the pillar, " + numberOfParallelPuts + " at 'same' time.");
         String[] fileIDs = TestFileHelper.createFileIDs(numberOfFiles, "parallelPutTest");
         final Metrics metrics = new Metrics("put", numberOfFiles, partStatisticsInterval);

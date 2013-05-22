@@ -25,14 +25,10 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.bitrepository.common.exceptions.OperationFailedException;
-import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.testng.ITestContext;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
 
 /**
  * The parent class for pillar acceptance tests. The tests can be run in a multi pillar collection has the tests will
@@ -40,17 +36,10 @@ import org.testng.annotations.BeforeSuite;
  */
 public abstract class PillarFunctionTest extends PillarIntegrationTest {
     protected static final Long DEFAULT_FILE_SIZE = 10L;
-    /** Used for receiving responses from the pillar */
-    protected MessageReceiver clientReceiver;
     protected PutFileMessageFactory msgFactory;
     protected String testSpecificFileID;
-
-    @BeforeSuite(alwaysRun = true)
-    @Override
-    public void initializeSuite(ITestContext testContext) {
-        super.initializeSuite(testContext);
-        putDefaultFile();
-    }
+    /** Used for receiving responses from the pillar */
+    protected MessageReceiver clientReceiver;
 
     @BeforeMethod(alwaysRun=true)
     public void generalMethodSetup(Method method) throws Exception {
@@ -67,18 +56,5 @@ public abstract class PillarFunctionTest extends PillarIntegrationTest {
         Collection<String> pillarFilter = Arrays.asList(testConfiguration.getPillarUnderTestID());
         clientReceiver.setFromFilter(pillarFilter);
         alarmReceiver.setFromFilter(pillarFilter);
-    }
-
-    protected void putDefaultFile() {
-        try {
-            clientProvider.getPutClient().putFile(
-                    collectionID, DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
-                null, null, null);
-            clientProvider.getPutClient().putFile(
-            nonDefaultCollectionId, DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
-                    null, null, null);
-        } catch (OperationFailedException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

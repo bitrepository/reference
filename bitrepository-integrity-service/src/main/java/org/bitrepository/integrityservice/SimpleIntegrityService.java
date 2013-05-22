@@ -192,7 +192,6 @@ public class SimpleIntegrityService implements IntegrityService {
             workflowList.add(w1);
             workflows.put(c.getID(), workflowList);
         }
-        
     }
 
     @Override
@@ -224,7 +223,6 @@ public class SimpleIntegrityService implements IntegrityService {
                 res.add(stats.get(0));   
             }
         }
-        
         return res;
     }
     

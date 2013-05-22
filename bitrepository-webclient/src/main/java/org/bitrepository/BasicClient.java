@@ -38,7 +38,7 @@ public class BasicClient {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     public BasicClient(Settings settings) {
-        log.debug("---- Basic client instanciating ----");
+        log.debug("---- Basic client instantiating ----");
         this.settings = settings;
         log.debug("---- Basic client instantiated ----");
 
