@@ -31,6 +31,4 @@ public class GetCollectionInformation {
 		this.collectionSize = collectionSize;
 	}
 	
-	
-	
 }

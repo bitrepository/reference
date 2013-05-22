@@ -13,7 +13,7 @@
      allDataSizeNamesList = new ArrayList<String>();
   }
    
-  HashMap<String,String> collectionId2NameMap = DashboardDataCache.collectionId2NameMap;
+  HashMap<String,String> collectionId2NameMap = DashboardDataCache.getCollectionId2NameMap();
   long maxByteSize=DashboardServlet.getMaximumByteSize(allDataSizeList);
   String byteUnitSuffix =FileSizeUtils.toHumanUnit(maxByteSize);
   float byteUnit = FileSizeUtils.getByteSize(byteUnitSuffix);    

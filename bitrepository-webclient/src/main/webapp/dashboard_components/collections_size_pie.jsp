@@ -9,7 +9,7 @@ var data_samling = [
 <%
 for (int i = 0 ;i <collectionSizeList.size();i++){
   StatisticsCollectionSize current = collectionSizeList.get(i);%>
-  {label: "<%=DashboardDataCache.collectionId2NameMap.get(current.getCollectionID())%>" , data : <%=current.getDataSize()%>},
+  {label: "<%=DashboardDataCache.getCollectionId2NameMap().get(current.getCollectionID())%>" , data : <%=current.getDataSize()%>},
 <%}%>
 ];
 </script>
@@ -57,7 +57,7 @@ $(function () {
 for (int i = 0 ;i < collectionSizeList.size();i++){
   StatisticsCollectionSize current = collectionSizeList.get(i);%>
   <tr>
-    <td style="text-align: left;"><%=DashboardDataCache.collectionId2NameMap.get(current.getCollectionID())%>:</td> <td style="text-align: left;"><%=FileSizeUtils.toHumanShort(current.getDataSize())%></td>
+    <td style="text-align: left;"><%=DashboardDataCache.getCollectionId2NameMap().get(current.getCollectionID())%>:</td> <td style="text-align: left;"><%=FileSizeUtils.toHumanShort(current.getDataSize())%></td>
   </tr>  
 <%}%>
 </table>

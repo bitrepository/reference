@@ -1,6 +1,6 @@
 <%@page pageEncoding="UTF-8"%>
 <%
- HashMap<String,String>idMap = DashboardDataCache.collectionId2NameMap;
+ HashMap<String,String>idMap = DashboardDataCache.getCollectionId2NameMap();
  Iterator<String> ids_iterator= idMap.keySet().iterator();
 
 %>
@@ -20,9 +20,9 @@
  </thead>
  <% while (ids_iterator.hasNext()){
     String id = ids_iterator.next();
-    GetCollectionInformation collectionInfo= DashboardDataCache.getCollectionInformationMap.get(id);
-    ArrayList<GetWorkflowSetup> workFlowList = DashboardDataCache.getWorkflowSetupMap.get(id);
-    ArrayList<GetIntegrityStatus> integrityStatusList = DashboardDataCache.getIntegrityStatusMap.get(id); 
+    GetCollectionInformation collectionInfo= DashboardDataCache.getCollectionInformationMap().get(id);
+    ArrayList<GetWorkflowSetup> workFlowList = DashboardDataCache.getWorkflowSetupMap().get(id);
+    ArrayList<GetIntegrityStatus> integrityStatusList = DashboardDataCache.getIntegrityStatusMap().get(id); 
     int checkSumErrors = DashboardServlet.countCheckSumErrors(integrityStatusList);
     int missingFiles = DashboardServlet.countMissingFiles(integrityStatusList);
     

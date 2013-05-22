@@ -9,95 +9,135 @@ import org.bitrepository.common.webobjects.StatisticsPillarSize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/*
+ * Cache class for the JSP page dashboard.jsp.
+ * Change reload timer:  reloadTimer = 5*60*1000L; // 5min     
+ */
 public class DashboardDataCache {
 	private final static Logger log = LoggerFactory.getLogger(DashboardDataCache.class);
-	public static HashMap<String,String> collectionId2NameMap = new HashMap<String,String>();
-    public static HashMap<String, ArrayList<StatisticsDataSize>> statisticsIdDataSizeMap = new HashMap<String, ArrayList<StatisticsDataSize>>();
-    public static HashMap<String,GetCollectionInformation> getCollectionInformationMap = new HashMap<String,GetCollectionInformation>();
-    public static HashMap<String, ArrayList<StatisticsDataSize>> statisticsIdDataGrowthMap = new HashMap<String, ArrayList<StatisticsDataSize>>();
-	public static HashMap<String, ArrayList<GetWorkflowSetup>> getWorkflowSetupMap = new HashMap<String, ArrayList<GetWorkflowSetup>>();
-	public static HashMap<String, ArrayList<GetIntegrityStatus>> getIntegrityStatusMap = new HashMap<String, ArrayList<GetIntegrityStatus>>();
-	
+	private static HashMap<String, String> collectionId2NameMap;
+	private static HashMap<String, ArrayList<StatisticsDataSize>> statisticsIdDataSizeMap;
+	private static HashMap<String, GetCollectionInformation> getCollectionInformationMap;
+	private static HashMap<String, ArrayList<StatisticsDataSize>> statisticsIdDataGrowthMap;
+	private static HashMap<String, ArrayList<GetWorkflowSetup>> getWorkflowSetupMap;
+	private static HashMap<String, ArrayList<GetIntegrityStatus>> getIntegrityStatusMap;
 	private static ArrayList<StatisticsCollectionSize> collectionDataSize;
 	private static ArrayList<StatisticsPillarSize> latestPillarDataSize;
-    private static long lastReload = 0;
-	private static long reloadTimer = 5*60*1000L; // 5min    
-    private static long MILIS_PR_DAY = 86400*1000L;
-	
-	static{
-		try{
-			reload(); 
-		    
+	private static long lastReload = 0;
+	private static long reloadTimer = 5 * 60 * 1000L; // 5min
+	private static long MILIS_PR_DAY = 86400 * 1000L;
+
+	static {
+		try {
+			reload();
+		} catch (Exception e) {
+			log.error("Unable to load dashboard data", e);
+			e.printStackTrace();
 		}
-		catch(Exception e){
-		   log.error("Unable to load dashboard data",e);
-		   e.printStackTrace();
-		}	
 	}
-		
-	
-	public static void reload(){
-	    if ((System.currentTimeMillis() - lastReload) < reloadTimer){ //Dont reload
-	    	return;
-	    }
-	    lastReload=System.currentTimeMillis();
-	    
-		log.debug("reloading dashboard data cache");
-	    loadDataMaps();
-	    collectionDataSize = IntegrityClient.getCollectionDataSize();
-		latestPillarDataSize =IntegrityClient.getLatestPillarDataSize();
-	    		
+
+	public static HashMap<String, ArrayList<StatisticsDataSize>> getStatisticsIdDataSizeMap() {
+		reload();
+		return statisticsIdDataSizeMap;
+	}
+
+	public static HashMap<String, GetCollectionInformation> getCollectionInformationMap() {
+		reload();
+		return getCollectionInformationMap;
+	}
+
+	public static HashMap<String, ArrayList<StatisticsDataSize>> getStatisticsIdDataGrowthMap() {
+		reload();
+		return statisticsIdDataGrowthMap;
+	}
+
+	public static HashMap<String, ArrayList<GetWorkflowSetup>> getWorkflowSetupMap() {
+		reload();
+		return getWorkflowSetupMap;
+	}
+
+	public static HashMap<String, ArrayList<GetIntegrityStatus>> getIntegrityStatusMap() {
+		reload();
+		return getIntegrityStatusMap;
+	}
+
+	public static HashMap<String, String> getCollectionId2NameMap() {
+		reload();
+		return collectionId2NameMap;
 	}
 
 	public static ArrayList<StatisticsCollectionSize> getCollectionDataSize() {
-		reload(); 
+		reload();
 		return collectionDataSize;
 	}
-	
+
 	public static ArrayList<StatisticsPillarSize> getLatestPillarDataSize() {
-		reload(); 
+		reload();
 		return latestPillarDataSize;
 	}
-	
-	public  static void loadDataMaps(){ 
-		ArrayList<String> ids=  IntegrityClient.getPillarIds();
-		for (String current : ids){
-			 collectionId2NameMap.put(current, IntegrityClient.getPillarName(current));			 			 
-			 ArrayList<StatisticsDataSize> dataSizeHistory = IntegrityClient.getDataSizeHistory(current);
-			 statisticsIdDataSizeMap.put(current,dataSizeHistory);
-		     getCollectionInformationMap.put(current, IntegrityClient.getCollectionInformation(current));
-			 getWorkflowSetupMap.put(current, IntegrityClient.getWorkflowSetup(current));
-			 getIntegrityStatusMap.put(current, IntegrityClient.getIntegrityStatus(current));			 
-			 statisticsIdDataGrowthMap.put(current,  calculateGrowthRate(dataSizeHistory));
-			 
-		}			
-	}
 
-	private static ArrayList<StatisticsDataSize> calculateGrowthRate(ArrayList<StatisticsDataSize> data){
-		ArrayList<StatisticsDataSize> growth = new ArrayList<StatisticsDataSize>(); 
-		if (data.size() <= 1){
+	/*
+	 * Calculate the delta (data growth rate over time) of the StatisticsDataSize
+	 */
+	private static ArrayList<StatisticsDataSize> calculateGrowthRate(ArrayList<StatisticsDataSize> data) {
+		ArrayList<StatisticsDataSize> growth = new ArrayList<StatisticsDataSize>();
+		if (data.size() <= 1) {
 			return growth;
 		}
-	
-		//first set the dates;
-		for (int i =0;i<data.size();i++){
-			StatisticsDataSize currentDataSize= data.get(i);			
+
+		// first set the dates;
+		for (int i = 0; i < data.size(); i++) {
+			StatisticsDataSize currentDataSize = data.get(i);
 			StatisticsDataSize growthRate = new StatisticsDataSize();
 			growthRate.setDateMillis(currentDataSize.getDateMillis());
-			if (i == 0){
+			if (i == 0) {
 				growthRate.setDataSize(0L);
+			} else {
+				long deltaBytes = currentDataSize.getDataSize() - data.get(i - 1).getDataSize();
+				long deltaTime = currentDataSize.getDateMillis() - data.get(i - 1).getDateMillis();
+				float growthInBytesPrDay = 1f * MILIS_PR_DAY * deltaBytes / (deltaTime);
+				growthRate.setDataSize((long) growthInBytesPrDay);
 			}
-			else{
-				long deltaBytes= currentDataSize.getDataSize()- data.get(i-1).getDataSize();
-                long deltaTime = currentDataSize.getDateMillis()-data.get(i-1).getDateMillis();
-				float growthInBytesPrDay = 1f*MILIS_PR_DAY*deltaBytes/(deltaTime); 
-				growthRate.setDataSize((long)growthInBytesPrDay);				
-			}
-			
-			growth.add(growthRate);			
+
+			growth.add(growthRate);
 		}
-		
-	   return growth;
+
+		return growth;
 	}
-	
+
+	// only called from the reload() method. This method arrange all the data in nice organized Maps.
+	private static void loadDataMaps() {
+		ArrayList<String> ids = IntegrityClient.getPillarIds();
+		for (String current : ids) {
+			collectionId2NameMap.put(current, IntegrityClient.getPillarName(current));
+			ArrayList<StatisticsDataSize> dataSizeHistory = IntegrityClient.getDataSizeHistory(current);
+			statisticsIdDataSizeMap.put(current, dataSizeHistory);
+			getCollectionInformationMap.put(current, IntegrityClient.getCollectionInformation(current));
+			getWorkflowSetupMap.put(current, IntegrityClient.getWorkflowSetup(current));
+			getIntegrityStatusMap.put(current, IntegrityClient.getIntegrityStatus(current));
+			statisticsIdDataGrowthMap.put(current, calculateGrowthRate(dataSizeHistory));
+		}
+	}
+
+	/*
+	 * Make all WS-calls and create struktured data. The reloadTime variable determines how often this reload method is called.
+	 */
+	private static void reload() {
+		if ((System.currentTimeMillis() - lastReload) < reloadTimer) { // Dont reload
+			return;
+		}
+		lastReload = System.currentTimeMillis();
+
+		log.debug("reloading dashboard data cache");
+		collectionId2NameMap = new HashMap<String, String>();
+		statisticsIdDataSizeMap = new HashMap<String, ArrayList<StatisticsDataSize>>();
+		getCollectionInformationMap = new HashMap<String, GetCollectionInformation>();
+		statisticsIdDataGrowthMap = new HashMap<String, ArrayList<StatisticsDataSize>>();
+		getWorkflowSetupMap = new HashMap<String, ArrayList<GetWorkflowSetup>>();
+		getIntegrityStatusMap = new HashMap<String, ArrayList<GetIntegrityStatus>>();
+		loadDataMaps();
+		collectionDataSize = IntegrityClient.getCollectionDataSize();
+		latestPillarDataSize = IntegrityClient.getLatestPillarDataSize();
+	}
+
 }
