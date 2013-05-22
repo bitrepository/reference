@@ -42,7 +42,7 @@ import javax.ws.rs.core.MediaType;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.IntegrityService;
 import org.bitrepository.integrityservice.IntegrityServiceFactory;
-import org.bitrepository.integrityservice.utils.FileSizeUtils;
+import org.bitrepository.common.utils.FileSizeUtils;
 import org.bitrepository.service.workflow.WorkflowTimerTask;
 import org.json.JSONArray;
 import org.json.JSONException;
