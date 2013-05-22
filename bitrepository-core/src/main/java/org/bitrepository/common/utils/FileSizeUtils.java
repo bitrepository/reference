@@ -1,8 +1,7 @@
-package org.bitrepository.dashboard;
+package org.bitrepository.common.utils;
 
 /**
- * Util class for handling formatting of datasizes. This is almost identical(null pointer fixed) to the class in Integrite-service and this class should be
- * moved to a common/core/util module.
+ * Util class for handling formatting of datasizes. 
  */
 public class FileSizeUtils {
 
