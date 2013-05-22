@@ -1,5 +1,6 @@
 <%@page pageEncoding="UTF-8"%>
 <%@page import="java.util.*,
+        org.bitrepository.common.utils.FileSizeUtils,
         org.bitrepository.dashboard.*,
         org.bitrepository.common.webobjects.*" %>
 
