@@ -20,6 +20,7 @@ public class DashboardServlet extends HttpServlet {
 	private static SimpleDateFormat sdf = new SimpleDateFormat("MMM dd HH:mm:ss yyyy");
 	private static final long serialVersionUID = 1L;
 	private final Logger log = LoggerFactory.getLogger(getClass());
+	public static final String GRAPH_TYPE_ATTRIBUTE="GRAPH_TYPE_ATTRIBUTE";
 	public static final String DATA_SIZE_HISTORY_ATTRIBUTE="DATA_SIZE_HISTORY_ATTRIBUTE"; 
 	public static final String DATA_SIZE_HISTORY_NAMES_ATTRIBUTE="DATA_SIZE_HISTORY_NAMES_ATTRIBUTE";
 	
@@ -34,15 +35,18 @@ public class DashboardServlet extends HttpServlet {
 		try {  
 			ArrayList<String> collectionIdsSelected = new ArrayList<String>();
             ArrayList<ArrayList<StatisticsDataSize>> dataSet = new ArrayList<ArrayList<StatisticsDataSize>>();  
+            ArrayList<ArrayList<StatisticsDataSize>> deltaDataSet = new ArrayList<ArrayList<StatisticsDataSize>>();
             ArrayList<String> dataSetNames = new ArrayList<String>();
             for (String id : DashboardDataCache.collectionId2NameMap.keySet()){
 
 			  ArrayList<StatisticsDataSize> data = DashboardDataCache.statisticsIdDataSizeMap.get(id); 
+			  ArrayList<StatisticsDataSize> deltaData = DashboardDataCache.statisticsIdDataGrowthMap.get(id);
 			  dataSet.add(data);					  					  
+			  deltaDataSet.add(deltaData);
 			  dataSetNames.add(DashboardDataCache.collectionId2NameMap.get(id));
 			  collectionIdsSelected.add(id);
-		      request.setAttribute(id, "on"); 
-			}	        
+		      request.setAttribute(id, "on"); 		 
+            }	        
             request.setAttribute(DATA_SIZE_HISTORY_ATTRIBUTE, dataSet);
             request.setAttribute(DATA_SIZE_HISTORY_NAMES_ATTRIBUTE, dataSetNames);
 			returnFormPage(request, response);
@@ -66,17 +70,30 @@ public class DashboardServlet extends HttpServlet {
 		try {  
 			ArrayList<String> collectionIdsSelected = new ArrayList<String>();
             ArrayList<ArrayList<StatisticsDataSize>> dataSet = new ArrayList<ArrayList<StatisticsDataSize>>();  
+            ArrayList<ArrayList<StatisticsDataSize>> dataDeltaSet = new ArrayList<ArrayList<StatisticsDataSize>>();
             ArrayList<String> dataSetNames = new ArrayList<String>();
+            String graphType = request.getParameter("graphType");            
+            
+            
             for (String id : DashboardDataCache.collectionId2NameMap.keySet()){
 				if (request.getParameter(id) != null){
 					ArrayList<StatisticsDataSize> data = DashboardDataCache.statisticsIdDataSizeMap.get(id); 
-					dataSet.add(data);					  					  
+					ArrayList<StatisticsDataSize> dataDelta = DashboardDataCache.statisticsIdDataGrowthMap.get(id);
+					dataSet.add(data);
+					dataDeltaSet.add(dataDelta);
 					dataSetNames.add(DashboardDataCache.collectionId2NameMap.get(id));
 					collectionIdsSelected.add(id);
 					request.setAttribute(id, "on"); 					
 				}
 			}	        
-            request.setAttribute(DATA_SIZE_HISTORY_ATTRIBUTE, dataSet);
+            if ("graph_tilvaekst".equals(graphType)){
+            	request.setAttribute(DATA_SIZE_HISTORY_ATTRIBUTE, dataSet);
+            	request.setAttribute(GRAPH_TYPE_ATTRIBUTE, "graph_tilvaekst");            	
+            }
+            else{            	
+            	request.setAttribute(DATA_SIZE_HISTORY_ATTRIBUTE, dataDeltaSet);
+            	request.setAttribute(GRAPH_TYPE_ATTRIBUTE, "graph_delta");
+            }
             request.setAttribute(DATA_SIZE_HISTORY_NAMES_ATTRIBUTE, dataSetNames);
 			returnFormPage(request, response);
 			return;
