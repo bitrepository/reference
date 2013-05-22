@@ -25,9 +25,11 @@ import java.util.Arrays;
 
 import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.client.conversation.mediator.ConversationMediatorManager;
+import org.bitrepository.common.exceptions.OperationFailedException;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarSettingsProvider;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.model.PillarFileManager;
@@ -94,6 +96,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
         nonDefaultCollectionId = settingsForTestClient.getCollections().get(1).getID();
         irrelevantCollectionId = settingsForTestClient.getCollections().get(2).getID();
+        putDefaultFile();
     }
 
     @AfterSuite(alwaysRun = true)
@@ -189,5 +192,18 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected void afterMethodVerification() {
         // Do not run the normal verification of all messages been handled. Message receivers are only used for
         // logging purposes here.
+    }
+
+    protected void putDefaultFile() {
+        try {
+            clientProvider.getPutClient().putFile(
+                    collectionID, DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
+                null, null, null);
+            clientProvider.getPutClient().putFile(
+            nonDefaultCollectionId, DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
+                    null, null, null);
+        } catch (OperationFailedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

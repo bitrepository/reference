@@ -21,115 +21,114 @@ package org.bitrepository.pillar.integration.perf;
  * #L%
  */
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getfile.BlockingGetFileClient;
+import org.bitrepository.access.getfile.GetFileClient;
+import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.utils.TestFileHelper;
-import org.bitrepository.modify.ModifyComponentFactory;
-import org.bitrepository.modify.putfile.BlockingPutFileClient;
-import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
+import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
+import org.bitrepository.protocol.bus.MessageReceiver;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class GetFileStressIT extends PillarPerformanceTest {
-    protected PutFileClient putClient;
+    protected GetFileClient getFileClient;
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
-        putClient = ModifyComponentFactory.getInstance().retrievePutClient(
+        getFileClient = AccessComponentFactory.getInstance().createGetFileClient(
                 settingsForTestClient, createSecurityManager(), settingsForTestClient.getComponentID()
         );
     }
 
-    @Test( groups = {"pillar-stress-test", "stress-test-pillar-population"})
-    public void singleTreadedPut() throws Exception {
-        final int NUMBER_OF_FILES = 10;
-        final int PART_STATISTIC_INTERVAL = 2;
-        addDescription("Attempt to put " + NUMBER_OF_FILES + " files into the pillar, one at a time.");
-        BlockingPutFileClient blockingPutFileClient = new BlockingPutFileClient(putClient);
-        String[] fileIDs = TestFileHelper.createFileIDs(NUMBER_OF_FILES, "singleTreadedPutTest");
-        Metrics metrics = new Metrics("put", NUMBER_OF_FILES, PART_STATISTIC_INTERVAL);
+    @Test( groups = {"pillar-stress-test"})
+    public void singleGetFilePerformanceTest() throws Exception {
+        final int NUMBER_OF_FILES = 1000;
+        final int PART_STATISTIC_INTERVAL = 100;
+        addDescription("Attempt to get " + NUMBER_OF_FILES + " files from the pillar, one at a time.");
+        BlockingGetFileClient blockingGetFileClient = new BlockingGetFileClient(getFileClient);
+        String[] fileIDs = TestFileHelper.createFileIDs(NUMBER_OF_FILES, "singleTreadedGetTest");
+        Metrics metrics = new Metrics("get", NUMBER_OF_FILES, PART_STATISTIC_INTERVAL);
         metrics.addAppenders(metricAppenders);
         metrics.start();
-        addStep("Add " + NUMBER_OF_FILES + " files", "Not errors should occur");
+        addStep("Getting " + NUMBER_OF_FILES + " files", "Not errors should occur");
         for (String fileID:fileIDs) {
-            blockingPutFileClient.putFile(collectionID, httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID), fileID, 10L,
-                    TestFileHelper.getDefaultFileChecksum(), null, null, "singleTreadedPut stress test file");
+            blockingGetFileClient.getFileFromSpecificPillar(
+                    collectionID, DEFAULT_FILE_ID, null, httpServer.getURL(NON_DEFAULT_FILE_ID), getPillarID(), null,
+                    "performing singleGetFilePerformanceTest");
             metrics.mark(fileID);
         }
-
-        addStep("Check that the files are now present on the pillar(s)", "No missing files should be found.");
-        //ToDo assert that the files are present
     }
 
     @Test( groups = {"pillar-stress-test"})
-    public void parallelPut() throws Exception {
-        final int numberOfFiles = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfFiles");
-        final int  partStatisticsInterval = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.partStatisticsInterval");
-        final int  numberOfParallelPuts = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut" +
-                ".numberOfParallelPuts");
-        addDescription("Attempt to put " + numberOfFiles + " files into the pillar, " + numberOfParallelPuts + " at 'same' time.");
-        String[] fileIDs = TestFileHelper.createFileIDs(numberOfFiles, "parallelPutTest");
-        final Metrics metrics = new Metrics("put", numberOfFiles, partStatisticsInterval);
+    public void parallelGetFilePerformanceTest() throws Exception {
+        final int numberOfFiles = testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.numberOfFiles");
+        final int partStatisticsInterval = testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.partStatisticsInterval");
+        final int numberOfParallelGets =
+                testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.numberOfParallelGets");
+        addDescription("Attempt to get " + numberOfFiles + " files from " + getPillarID() + ", " + numberOfParallelGets +
+                " at the 'same' time.");
+        final Metrics metrics = new Metrics("get", numberOfFiles, partStatisticsInterval);
         metrics.addAppenders(metricAppenders);
         metrics.start();
-        addStep("Add " + numberOfFiles + " files", "Not errors should occur");
-        ParallelPutLimiter putLimiter = new ParallelPutLimiter(numberOfParallelPuts);
-        EventHandler eventHandler = new PutEventHandlerForMetrics(metrics, putLimiter);
-        for (String fileID:fileIDs) {
-            putLimiter.addJob(fileID);
-            putClient.putFile(collectionID, httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID), fileID, 10L,
-                    TestFileHelper.getDefaultFileChecksum(), null, eventHandler, "parallelPut stress test file");
+        addStep("Getting " + numberOfFiles + " files", "Not errors should occur");
+        ParallelOperationLimiter getLimiter = new ParallelOperationLimiter(numberOfParallelGets);
+        EventHandler eventHandler = new OperationEventHandlerForMetrics(metrics, getLimiter);
+        for (int i = 1; i <= numberOfFiles; i++) {
+            getLimiter.addJob(DEFAULT_FILE_ID);
+            getFileClient.getFileFromSpecificPillar(
+                    collectionID, DEFAULT_FILE_ID, null, httpServer.getURL(NON_DEFAULT_FILE_ID + "-" + i), getPillarID(),
+                    eventHandler,
+                    " performing parallelGetFilePerformance");
         }
 
         awaitAsynchronousCompletion(metrics, numberOfFiles);
-
-        addStep("Check that the files are now present on the pillar(s)", "No missing files should be found.");
-
-        //ToDo Actually assert that the files are present.
-
-        existingFiles = fileIDs;
     }
 
-    private class PutEventHandlerForMetrics implements EventHandler {
-        private final Metrics metrics;
-        private final ParallelPutLimiter putLimiter;
-        public PutEventHandlerForMetrics(Metrics metrics, ParallelPutLimiter putLimiter) {
-            this.metrics = metrics;
-            this.putLimiter = putLimiter;
+    @Test( groups = {"pillar-stress-test"})
+    public void noIdentfyGetFilePerformanceTest() throws Exception {
+        final int numberOfFiles = testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.numberOfFiles");
+        final int partStatisticsInterval = testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.partStatisticsInterval");
+        final int numberOfParallelGets =
+                testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.numberOfParallelGets");
+        addDescription("Attempt to get " + numberOfFiles + " files from " + getPillarID() + ", " + numberOfParallelGets +
+                " at the 'same' time without individual identifies.");
+        String pillarDestination = lookupGetFileDestination();
+        final Metrics metrics = new Metrics("get", numberOfFiles, partStatisticsInterval);
+        metrics.addAppenders(metricAppenders);
+        metrics.start();
+        addStep("Getting " + numberOfFiles + " files", "Not errors should occur");
+        ParallelOperationLimiter getLimiter = new ParallelOperationLimiter(numberOfParallelGets);
+        messageBus.addListener(settingsForTestClient.getReceiverDestinationID(), new MessageHandlerForMetrics(metrics, getLimiter));
+        GetFileMessageFactory msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient);
+        for (int i = 1; i <= numberOfFiles; i++) {
+            String correlationID = msgFactory.getNewCorrelationID();
+            getLimiter.addJob(correlationID);
+            GetFileRequest getRequest =
+                    msgFactory.createGetFileRequest("noIdentfyGetFilePerformanceTest", correlationID,
+                            httpServer.getURL(NON_DEFAULT_FILE_ID + "-" + i).toExternalForm(), DEFAULT_FILE_ID, null,
+                            getPillarID(), getPillarID(), settingsForTestClient.getReceiverDestinationID(),  pillarDestination);
+            messageBus.sendMessage(getRequest);
         }
 
-        @Override
-        public void handleEvent(OperationEvent event) {
-            if (event.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
-                this.metrics.mark("#" + metrics.getCount());
-                putLimiter.removeJob(event.getFileID());
-            } else if (event.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
-                this.metrics.registerError(event.getInfo());
-                putLimiter.removeJob(event.getFileID());
-            }
-        }
+        awaitAsynchronousCompletion(metrics, numberOfFiles);
     }
 
-    private class ParallelPutLimiter {
-        private final BlockingQueue<String> activePuts;
-
-        ParallelPutLimiter(int limit) {
-            activePuts = new LinkedBlockingQueue<String>(limit);
-        }
-
-        void addJob(String fileID) {
-            try {
-                activePuts.put(fileID);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        void removeJob(String fileID) {
-            activePuts.remove(fileID);
-        }
+    public String lookupGetFileDestination() {
+        MessageReceiver clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID(), testEventManager);
+        messageBus.addListener(clientReceiver.getDestination(), clientReceiver.getMessageListener());;
+        GetFileMessageFactory pillarLookupmMsgFactory =
+                new GetFileMessageFactory(collectionID, settingsForTestClient);
+        IdentifyPillarsForGetFileRequest identifyRequest =
+                pillarLookupmMsgFactory.createIdentifyPillarsForGetFileRequest("",
+                        DEFAULT_FILE_ID, getPillarID(), settingsForTestClient.getReceiverDestinationID());
+        messageBus.sendMessage(identifyRequest);
+        String pillarDestination = clientReceiver.waitForMessage(IdentifyPillarsForGetFileResponse.class).getReplyTo();
+        messageBus.removeListener(clientReceiver.getDestination(), clientReceiver.getMessageListener());
+        return pillarDestination;
     }
 }

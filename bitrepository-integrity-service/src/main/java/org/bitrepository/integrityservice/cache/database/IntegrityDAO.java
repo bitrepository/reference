@@ -1297,7 +1297,7 @@ public class IntegrityDAO {
                 + " AND " + FI_PILLAR_KEY + " = ?";        
         
         DatabaseUtils.executeStatement(dbConnector, updateFileSizeSql, fileSize, filesKey, pillarKey);
-        log.debug("Updated fileInfo filesize in " + (System.currentTimeMillis() - startTime) + "ms");
+        log.debug("Updated filesize to " + fileSize + " for file " + fileId + " on pillar " + pillarId + " in collection " + collectionId + " in " + (System.currentTimeMillis() - startTime) + "ms");
     }
     
     /**
@@ -1332,7 +1332,8 @@ public class IntegrityDAO {
 
         DatabaseUtils.executeStatement(dbConnector, updateTimestampSql, filelistTimestamp, 
                 ChecksumState.UNKNOWN.ordinal(), filesKey, pillarKey, filelistTimestamp);
-        log.debug("Updated fileInfo timestamps in " + (System.currentTimeMillis() - startTime) + "ms");
+        log.debug("Updated fileInfo timestamps for file " + fileId + " at pillar " + pillarId + " in " +
+                (System.currentTimeMillis() - startTime) + "ms");
     }
     
     /**

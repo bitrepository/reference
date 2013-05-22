@@ -60,6 +60,7 @@ public abstract class StepBasedWorkflow implements Workflow {
 
         } catch (Exception e) {
             log.error("Failure in step: '" + step.getName() + "'.", e);
+            throw new RuntimeException("Failed to run step " + step.getName(), e);
         }
     }
     

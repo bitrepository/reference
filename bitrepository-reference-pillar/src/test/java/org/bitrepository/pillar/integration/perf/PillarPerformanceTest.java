@@ -23,10 +23,15 @@ package org.bitrepository.pillar.integration.perf;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
+import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.pillar.integration.CollectionTestHelper;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.pillar.integration.perf.metrics.ConsoleMetricAppender;
@@ -34,10 +39,14 @@ import org.bitrepository.pillar.integration.perf.metrics.MetricAppender;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
+import org.bitrepository.protocol.messagebus.MessageListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.ITestContext;
 import org.testng.annotations.BeforeSuite;
 
 public class PillarPerformanceTest extends PillarIntegrationTest {
+    protected final Logger log = LoggerFactory.getLogger(getClass());
     protected List<MetricAppender> metricAppenders = new LinkedList<MetricAppender>();
     protected String[] existingFiles;
 
@@ -74,7 +83,7 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
 
     /**
      * Will block until <code>numberOfOperations</code> file event have been marked in the <code>metrics</code> object.
-      */
+     */
     protected void awaitAsynchronousCompletion(Metrics metrics, int numberOfOperations) {
         while(metrics.getCount() < numberOfOperations) {
             try {
@@ -84,7 +93,7 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
             }
             System.out.println("...waiting for the last " + (numberOfOperations - metrics.getCount()) +
                     " operations to finish " +
-                    "(" + asPrettyTime(metrics.getStartTime()) + ")");
+                    "(" + TimeUtils.millisecondsToHuman(metrics.getStartTime()) + ")");
         }
     }
 
@@ -106,41 +115,72 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
         }
     }
 
-    protected String asPrettyTime(long starttime) {
-        long millis = System.currentTimeMillis() - starttime;
+    protected class ParallelOperationLimiter {
+        private final BlockingQueue<String> activeOperationss;
 
-        long days = TimeUnit.MILLISECONDS.toDays(millis);
-        millis -= TimeUnit.DAYS.toMillis(days);
-        long hours = TimeUnit.MILLISECONDS.toHours(millis);
-        millis -= TimeUnit.HOURS.toMillis(hours);
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
-        millis -= TimeUnit.MINUTES.toMillis(minutes);
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
-
-        StringBuilder sb = new StringBuilder(64);
-        if (days > 0) {
-        sb.append(days);
-        sb.append("d ");
-        }
-        if (hours > 0) {
-        sb.append(hours);
-        sb.append("h ");
-        }
-        if (minutes > 0 && days < 0 ) {
-        sb.append(minutes);
-        sb.append("m ");
+        ParallelOperationLimiter(int limit) {
+            activeOperationss = new LinkedBlockingQueue<String>(limit);
         }
 
-        if (seconds > 0 && hours < 0 ) {
-        sb.append(seconds);
-        sb.append("s");
+        void addJob(String fileID) {
+            try {
+                activeOperationss.put(fileID);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
 
-        if (millis > 0 && minutes < 0 ) {
-            sb.append(millis);
-            sb.append("s");
+        void removeJob(String fileID) {
+            activeOperationss.remove(fileID);
+        }
+    }
+
+    protected class OperationEventHandlerForMetrics implements EventHandler {
+        private final Metrics metrics;
+        private final ParallelOperationLimiter operationLimiter;
+        public OperationEventHandlerForMetrics(Metrics metrics, ParallelOperationLimiter putLimiter) {
+            this.metrics = metrics;
+            this.operationLimiter = putLimiter;
         }
 
-        return(sb.toString());
+        @Override
+        public void handleEvent(OperationEvent event) {
+            if (event.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
+                log.debug("Received " + event.getOperationType() + " complete event for " + event.getFileID());
+                this.metrics.mark("#" + metrics.getCount());
+                operationLimiter.removeJob(event.getFileID());
+            } else if (event.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
+                log.debug("Received " + event.getOperationType() + " failed event for " + event.getFileID());
+                this.metrics.registerError(event.getInfo());
+                operationLimiter.removeJob(event.getFileID());
+            }
+        }
+    }
+
+    protected class MessageHandlerForMetrics implements MessageListener {
+        private final Metrics metrics;
+        private final ParallelOperationLimiter operationLimiter;
+        public MessageHandlerForMetrics(Metrics metrics, ParallelOperationLimiter putLimiter) {
+            this.metrics = metrics;
+            this.operationLimiter = putLimiter;
+        }
+
+        @Override
+        public void onMessage(Message message) {
+            if (message instanceof MessageResponse) {
+                MessageResponse response = (MessageResponse)message;
+                if (response.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_COMPLETED)) {
+                    log.debug("Received " + response.getClass().getSimpleName() +
+                            " complete message(" + response.getCorrelationID() + ")");
+                    this.metrics.mark("#" + metrics.getCount());
+                    operationLimiter.removeJob(response.getCorrelationID());
+                } else if (response.getResponseInfo().getResponseCode().equals(ResponseCode.FAILURE)) {
+                    log.debug("Received " + response.getClass().getSimpleName() +
+                            " failure message(" + response.getCorrelationID() + ")");
+                    this.metrics.registerError(response.getCorrelationID());
+                    operationLimiter.removeJob(response.getCorrelationID());
+                }
+            }
+        }
     }
 }

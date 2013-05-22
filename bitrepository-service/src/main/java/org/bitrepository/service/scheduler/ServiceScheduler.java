@@ -36,7 +36,6 @@ public interface ServiceScheduler {
     /**
      * Adds a workflow for the scheduler to schedule. 
      * @param workflow The workflow to schedule.
-     * @param workflowId The ID of the workflow.
      * @param interval The interval for how often the workflow should be triggered.
      */
     void scheduleWorkflow(Workflow workflow, Long interval);

@@ -21,15 +21,22 @@
  */
 package org.bitrepository.pillar.integration.func.multicollection;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.pillar.integration.func.Assert;
+import org.bitrepository.protocol.bus.MessageReceiver;
 import org.testng.annotations.Test;
 
 public class MultipleCollectionIT extends PillarIntegrationTest {
+    /** Used for receiving responses from the pillar */
+    protected MessageReceiver clientReceiver;
+
     @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void fileInOtherCollectionTest() throws Exception {
         addDescription("Tests that a file is put correctly to a second collection, and that the file can be access " +
@@ -53,5 +60,17 @@ public class MultipleCollectionIT extends PillarIntegrationTest {
         } catch (NegativeResponseException nre){
             //Expected
         }
+    }
+
+    @Override
+    protected void registerMessageReceivers() {
+        super.registerMessageReceivers();
+
+        clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID(), testEventManager);
+        addReceiver(clientReceiver);
+
+        Collection<String> pillarFilter = Arrays.asList(testConfiguration.getPillarUnderTestID());
+        clientReceiver.setFromFilter(pillarFilter);
+        alarmReceiver.setFromFilter(pillarFilter);
     }
 }

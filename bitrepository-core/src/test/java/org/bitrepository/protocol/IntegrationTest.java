@@ -28,10 +28,11 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.jms.JMSException;
+import javax.swing.JFrame;
+
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
-import javax.jms.JMSException;
-import javax.swing.*;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.TestFileHelper;
@@ -103,7 +104,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         setupMessageBus();
         setupHttpServer();
         startReportGenerator();
-        DEFAULT_FILE_ID = "DefaultFile-" + createDate();
+        DEFAULT_FILE_ID = "DefaultFile";
         try {
             DEFAULT_FILE_URL = httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID);
             DEFAULT_DOWNLOAD_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm();

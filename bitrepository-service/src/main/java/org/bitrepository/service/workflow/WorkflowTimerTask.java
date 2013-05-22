@@ -43,7 +43,7 @@ public class WorkflowTimerTask extends TimerTask {
     /**
      * Initialise trigger.
      * @param interval The interval between triggering events in milliseconds.
-     * @param name The name of this workflow.
+     * @param workflow:  The  workflow.
      */
     public WorkflowTimerTask(long interval, Workflow workflow) {
         this.interval = interval;
@@ -94,13 +94,12 @@ public class WorkflowTimerTask extends TimerTask {
      */
     public String runWorkflow() {
         try {
-            //FixMe Should be generalize to work with the general workflow interface.
             if (workflow.currentState().equals(StepBasedWorkflow.NOT_RUNNING)) {
                 log.info("Starting the workflow: " + getName());
-                nextRun = new Date(System.currentTimeMillis() + interval);
                 workflow.start();
+                nextRun = new Date(System.currentTimeMillis() + interval);
                 lastWorkflowStatistics = workflow.getWorkflowStatistics();
-                return "Workflow '" + workflow.getClass().getSimpleName() + "' started";
+                return "Workflow '" + workflow.getClass().getSimpleName() + "' finished";
 
             } else {
                 log.info("Ignoring start request for " + getName() + " the workflow is already running");

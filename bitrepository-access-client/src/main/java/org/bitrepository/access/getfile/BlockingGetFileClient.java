@@ -25,11 +25,9 @@
 package org.bitrepository.access.getfile;
 
 import java.net.URL;
-import java.util.List;
-import org.bitrepository.access.ContributorQuery;
-import org.bitrepository.access.getfileids.GetFileIDsClient;
+
+import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.client.eventhandler.BlockingEventHandler;
-import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.exceptions.NegativeResponseException;
@@ -39,27 +37,50 @@ import org.bitrepository.client.exceptions.NegativeResponseException;
  * has finished.
  */
 public class BlockingGetFileClient {
-    private final GetFileIDsClient client;
+    private final GetFileClient client;
 
-    public BlockingGetFileClient(GetFileIDsClient client) {
+    public BlockingGetFileClient(GetFileClient client) {
         this.client = client;
     }
 
     /**
-     * @see org.bitrepository.access.getfileids.GetFileIDsClient#getFileIDs
+     * @see org.bitrepository.access.getfile.GetFileClient#getFileFromFastestPillar
      */
-    public List<ContributorEvent> getGetFileIDs(
+    public void getFileFromFastestPillar(
             String collectionId,
-            ContributorQuery[] contributorQueries,
             String fileID,
-            URL addressForResult,
-            EventHandler eventHandler)
+            FilePart filePart,
+            URL uploadUrl,
+            EventHandler eventHandler,
+            String auditTrailInformation)
             throws NegativeResponseException {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
-        client.getFileIDs(collectionId, contributorQueries, fileID, addressForResult, blocker);
+        client.getFileFromFastestPillar(collectionId, fileID, filePart, uploadUrl, blocker, auditTrailInformation);
         OperationEvent finishEvent = blocker.awaitFinished();
         if(finishEvent.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
-            return blocker.getResults();
+            return;
+        } else if (finishEvent.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
+            throw new NegativeResponseException(finishEvent.getInfo(), null);
+        } else throw new RuntimeException("Received unexpected event type" + finishEvent);
+    }
+
+    /**
+     * @see org.bitrepository.access.getfile.GetFileClient#getFileFromFastestPillar
+     */
+    public void getFileFromSpecificPillar(
+            String collectionId,
+            String fileID,
+            FilePart filePart,
+            URL uploadUrl,
+            String pillarId,
+            EventHandler eventHandler,
+            String auditTrailInformation)
+            throws NegativeResponseException {
+        BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
+        client.getFileFromSpecificPillar(collectionId, fileID, filePart, uploadUrl, pillarId, blocker, auditTrailInformation);
+        OperationEvent finishEvent = blocker.awaitFinished();
+        if(finishEvent.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
+            return;
         } else if (finishEvent.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
             throw new NegativeResponseException(finishEvent.getInfo(), null);
         } else throw new RuntimeException("Received unexpected event type" + finishEvent);
