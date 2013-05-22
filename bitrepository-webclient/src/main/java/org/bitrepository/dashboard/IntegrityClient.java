@@ -172,8 +172,8 @@ public class IntegrityClient {
 		  } 
 		});		
 		*/
-
-        Gson converter = builder.create();
-        return converter;
-    }
+		Gson converter = builder.create();
+	    return converter;
+  }
+	
 }

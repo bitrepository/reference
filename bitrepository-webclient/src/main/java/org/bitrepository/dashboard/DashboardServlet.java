@@ -2,9 +2,7 @@ package org.bitrepository.dashboard;
 
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -17,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DashboardServlet extends HttpServlet {
-	private static SimpleDateFormat sdf = new SimpleDateFormat("MMM dd HH:mm:ss yyyy");
 	private static final long serialVersionUID = 1L;
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	public static final String GRAPH_TYPE_ATTRIBUTE="GRAPH_TYPE_ATTRIBUTE";
@@ -25,7 +22,8 @@ public class DashboardServlet extends HttpServlet {
 	public static final String DATA_SIZE_HISTORY_NAMES_ATTRIBUTE="DATA_SIZE_HISTORY_NAMES_ATTRIBUTE";
 	
 	
-	//Happens first time page is access, or when reloading
+    
+	//Called first time page is accessed.
 	public void doGet(HttpServletRequest request,
 			HttpServletResponse response)
 					throws ServletException, IOException {		
@@ -105,19 +103,7 @@ public class DashboardServlet extends HttpServlet {
 		}
 
 	}
-
-	public static String formatDate(long time){
-		return sdf.format(new Date(time));
-	}
 	
-	public static float bytes2TB(Long bytes){
-	  if (bytes == null){
- 		 return 0.0f;
-      }		
-	  float bytes_f= (float) bytes;
-	  return bytes_f/1099511627776f;		
-	}
-
 	private void returnFormPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("dashboard.jsp");
 		dispatcher.forward(request, response);
