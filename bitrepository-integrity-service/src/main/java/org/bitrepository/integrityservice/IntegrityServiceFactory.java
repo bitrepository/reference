@@ -57,7 +57,7 @@ public final class IntegrityServiceFactory {
     /** Property key to tell where to locate the path and filename to the private key file. */
     private static final String PRIVATE_KEY_FILE = "org.bitrepository.integrity-service.privateKeyFile";
     /** The time of one week.*/
-    private static final long DEFAULT_MAX_TIME_SINCE_UPDATE = 604800000;
+    private static final long DEFAULT_MAX_TIME_SINCE_UPDATE = 86400000;
     
     /** The settings. */
     private static Settings settings;
@@ -133,8 +133,8 @@ public final class IntegrityServiceFactory {
         if(simpleIntegrityService == null) {
             getSettings();
             getSecurityManager();
-            simpleIntegrityService = IntegrityServiceComponentFactory.getInstance().createIntegrityService(settings, 
-                    securityManager);
+            simpleIntegrityService = IntegrityServiceComponentFactory.getInstance().
+                    createIntegrityService(settings, securityManager);
             // TODO make a settings for differentiating between the intervals of the workflows.
             for(String collection : SettingsUtils.getAllCollectionsIDs(settings)) {
                 for(Workflow workflow : simpleIntegrityService.getAllWorkflows(collection)) {
