@@ -56,8 +56,8 @@ public final class IntegrityServiceFactory {
     private static final String CONFIGFILE = "integrity.properties";
     /** Property key to tell where to locate the path and filename to the private key file. */
     private static final String PRIVATE_KEY_FILE = "org.bitrepository.integrity-service.privateKeyFile";
-    /** The time of one week.*/
-    private static final long DEFAULT_MAX_TIME_SINCE_UPDATE = 604800000;
+    /** The time of one day.*/
+    private static final long DEFAULT_MAX_TIME_SINCE_UPDATE = 86400000;
     
     /** The settings. */
     private static Settings settings;
