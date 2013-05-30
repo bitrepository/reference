@@ -46,10 +46,10 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
-import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.filestore.FileInfo;
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -71,7 +71,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected GetFileIDsRequestHandler(MessageHandlerContext context, CollectionArchiveManager archivesManager, 
+    protected GetFileIDsRequestHandler(MessageHandlerContext context, FileStore archivesManager, 
             ReferenceChecksumManager csManager) {
         super(context, archivesManager, csManager);
     }
@@ -150,14 +150,12 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
      * 
      * @param message The requested for extracting the file ids.
      * @return The resulting collection of FileIDs found.
-     * file. 
      */
     private ExtractedFileIDsResultSet retrieveFileIDsData(GetFileIDsRequest message) {
         if(message.getFileIDs().isSetFileID()) {
             ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
-            long timestamp = getArchives().getFile(message.getFileIDs().getFileID(), 
-                    message.getCollectionID()).lastModified();
-            res.insertFileID(message.getFileIDs().getFileID(), CalendarUtils.getFromMillis(timestamp));
+            FileInfo fi = getArchives().getFileInfo(message.getFileIDs().getFileID(), message.getCollectionID());
+            res.insertFileInfo(fi);
             return res;
         } else {
             Long maxResults = null;

@@ -25,8 +25,6 @@
 package org.bitrepository.pillar.referencepillar.messagehandler;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -40,8 +38,9 @@ import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.common.filestore.FileInfo;
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -62,7 +61,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected GetFileRequestHandler(MessageHandlerContext context, CollectionArchiveManager archivesManager, 
+    protected GetFileRequestHandler(MessageHandlerContext context, FileStore archivesManager, 
             ReferenceChecksumManager csManager) {
         super(context, archivesManager, csManager);
     }
@@ -111,10 +110,10 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      * @param message The request for the GetFile operation.
      */
     protected void sendProgressMessage(GetFileRequest message) {
-        File requestedFile = getArchives().getFile(message.getFileID(), message.getCollectionID());
+        FileInfo requestedFi = getArchives().getFileInfo(message.getFileID(), message.getCollectionID());
         GetFileProgressResponse response = createGetFileProgressResponse(message);
 
-        response.setFileSize(BigInteger.valueOf(requestedFile.length()));
+        response.setFileSize(BigInteger.valueOf(requestedFi.getSize()));
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Started to retrieve data.");
@@ -128,17 +127,17 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      * @throws InvalidMessageException If the upload of the file fails.
      */
     protected void uploadToClient(GetFileRequest message) throws InvalidMessageException {
-        File requestedFile = getArchives().getFile(message.getFileID(), message.getCollectionID());
+        FileInfo requestedFile = getArchives().getFileInfo(message.getFileID(), message.getCollectionID());
 
         try {
             InputStream is;
             if(message.getFilePart() == null) {
-                is = new FileInputStream(requestedFile);
+                is = requestedFile.getInputstream();
             } else {
                 is = extractFilePart(requestedFile, message.getFilePart());
             }
 
-            log.info("Uploading file: " + requestedFile.getName() + " to " + message.getFileAddress());
+            log.info("Uploading file: " + requestedFile.getFileID() + " to " + message.getFileAddress());
             getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
                     "Failed identifying pillar.", message.getAuditTrailInformation(), FileAction.GET_FILE);
             FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
@@ -159,14 +158,14 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      * @return A InputStream with the requested file part.
      * @throws IOException If anything goes wrong.
      */
-    private InputStream extractFilePart(File requestedFile, FilePart filePart) throws IOException {
+    private InputStream extractFilePart(FileInfo fileInfo, FilePart filePart) throws IOException {
         int offset = filePart.getPartOffSet().intValue();
         int size = filePart.getPartLength().intValue();
         byte[] partOfFile = new byte[size];
-        FileInputStream fis  = null;
+        InputStream fis  = null;
         try {
-            log.debug("Extracting " + size + " bytes with offset " + offset + " from " + requestedFile.getName());
-            fis= new FileInputStream(requestedFile);
+            log.debug("Extracting " + size + " bytes with offset " + offset + " from " + fileInfo.getFileID());
+            fis = fileInfo.getInputstream();
             
             fis.read(new byte[offset]);
             fis.read(partOfFile);

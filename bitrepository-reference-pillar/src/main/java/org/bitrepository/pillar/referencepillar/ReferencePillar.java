@@ -24,11 +24,13 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 
 import javax.jms.JMSException;
 
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.Pillar;
@@ -40,6 +42,7 @@ import org.bitrepository.pillar.common.SettingsHelper;
 import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
+import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.audit.AuditTrailContributerDAO;
 import org.bitrepository.service.audit.AuditTrailManager;
@@ -59,7 +62,7 @@ public class ReferencePillar implements Pillar {
     /** The mediator for the messages.*/
     private final ReferencePillarMediator mediator;
     /** The archives for the data.*/
-    private final CollectionArchiveManager archiveManager;
+    private final FileStore archiveManager;
     /** The checksum store.*/
     private final ChecksumStore csStore;
 
@@ -75,7 +78,7 @@ public class ReferencePillar implements Pillar {
         this.messageBus = messageBus;
 
         log.info("Starting the ReferencePillar");
-        archiveManager = new CollectionArchiveManager(settings);
+        archiveManager = getFileStore(settings);
         csStore = new ChecksumDAO(settings);
         PillarAlarmDispatcher alarmDispatcher = new PillarAlarmDispatcher(settings, messageBus);
         ReferenceChecksumManager manager = new ReferenceChecksumManager(archiveManager, csStore, alarmDispatcher,
@@ -93,6 +96,26 @@ public class ReferencePillar implements Pillar {
         mediator = new ReferencePillarMediator(messageBus, context, archiveManager, manager);
         mediator.start();
         log.info("ReferencePillar started!");
+    }
+    
+    /**
+     * Retrieves the FileStore defined in the settings.
+     * @param settings The settings.
+     * @return The filestore from settings, or the CollectionArchiveManager, if the setting is missing.
+     */
+    private FileStore getFileStore(Settings settings) {
+        if(settings.getReferenceSettings().getPillarSettings().getFileStoreClass() == null) {
+            return new CollectionArchiveManager(settings);
+        }
+        
+        try {
+            Class<FileStore> fsClass = (Class<FileStore>) Class.forName(
+                    settings.getReferenceSettings().getPillarSettings().getFileStoreClass());
+            Constructor<FileStore> fsConstructor = fsClass.getConstructor(Settings.class);
+            return fsConstructor.newInstance(settings);
+        } catch (Exception e) {
+            throw new CoordinationLayerException("Could not instantiate the FileStore", e);
+        }
     }
 
     /**

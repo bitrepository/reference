@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
 
+import org.bitrepository.common.filestore.DefaultFileInfo;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
@@ -112,8 +113,8 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
                 csResults.getEntries().get(0).getCalculationTimestamp()).getTime() > initialDate.getTime());
         Assert.assertTrue(CalendarUtils.convertFromXMLGregorianCalendar(
                 csResults.getEntries().get(0).getCalculationTimestamp()).getTime() < beforeChange.getTime());
-        Assert.assertTrue(archives.getFile(TEST_FILE, collectionID).lastModified() >= initialDate.getTime()); 
-        Assert.assertTrue(archives.getFile(TEST_FILE, collectionID).lastModified() <= beforeChange.getTime());
+        Assert.assertTrue(archives.getFileInfo(TEST_FILE, collectionID).getMdate() >= initialDate.getTime()); 
+        Assert.assertTrue(archives.getFileInfo(TEST_FILE, collectionID).getMdate() <= beforeChange.getTime());
 
         synchronized(this) {
             addStep("The file system cannot handle timestamps in millis.", "One second wait, before changing the file.");
@@ -121,7 +122,8 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
         }
 
         addStep("Change the file", "Should be recalculated and thus have a newer timestamp");
-        FileOutputStream out = new FileOutputStream(archives.getFile(TEST_FILE, collectionID), true);
+        DefaultFileInfo dfi = (DefaultFileInfo) archives.getFileInfo(TEST_FILE, collectionID);
+        FileOutputStream out = new FileOutputStream(dfi.getFile(), true);
         out.write("\n".getBytes());
         out.write(TEST_ADDED_CONTENT.getBytes());
         out.flush();
@@ -138,9 +140,9 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
                 changedCsResults.getEntries().get(0).getCalculationTimestamp()).getTime() > beforeChange.getTime());
         Assert.assertTrue(CalendarUtils.convertFromXMLGregorianCalendar(
                 changedCsResults.getEntries().get(0).getCalculationTimestamp()).getTime() <= afterChange.getTime());
-        Assert.assertTrue(archives.getFile(TEST_FILE, collectionID).lastModified() >= initialDate.getTime());
-        Assert.assertTrue(archives.getFile(TEST_FILE, collectionID).lastModified() >= beforeChange.getTime());
-        Assert.assertTrue(archives.getFile(TEST_FILE, collectionID).lastModified() <= afterChange.getTime());
+        Assert.assertTrue(archives.getFileInfo(TEST_FILE, collectionID).getMdate() >= initialDate.getTime());
+        Assert.assertTrue(archives.getFileInfo(TEST_FILE, collectionID).getMdate() >= beforeChange.getTime());
+        Assert.assertTrue(archives.getFileInfo(TEST_FILE, collectionID).getMdate() <= afterChange.getTime());
         
         addStep("Test the checksum of before and after the change", "Not identical");
         String csBefore = Base16Utils.decodeBase16(csResults.getEntries().get(0).getChecksumValue());

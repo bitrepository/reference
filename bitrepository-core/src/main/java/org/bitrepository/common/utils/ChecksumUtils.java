@@ -38,6 +38,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.CoordinationLayerException;
 
@@ -70,6 +71,22 @@ public final class ChecksumUtils {
                     + file.getAbsolutePath() + "'.", e);
         }
     }
+    
+    /**
+     * Calculates the checksum for a file based on the given checksum algorithm, where the calculation is salted.
+     * 
+     * @param file The file to calculate the checksum for.
+     * @param csSpec The checksum specification for the calculation of the checksum. 
+     * @return The checksum of the file in hexadecimal.
+     */
+    public static String generateChecksum(FileInfo fileInfo, ChecksumSpecTYPE csSpec) {
+        try {
+            return generateChecksum(fileInfo.getInputstream(), csSpec);
+        } catch (IOException e) {
+            throw new CoordinationLayerException("Could not calculate the checksum for the file '"
+                    + fileInfo.getFileID() + "'.", e);
+        }
+    }
 
     /**
      * Wrapper method for the #generateChecksum(File,ChecksumSpecTYPE) method non-salted checksums.
@@ -78,6 +95,14 @@ public final class ChecksumUtils {
     public static String generateChecksum(File file, ChecksumType checksumType) {
         return generateChecksum(file, checksumType, null);
     }
+    
+    /**
+     * Calculates the checksum of a file based on algorithm and salt.
+     * @param file The file to calculate the checksum.
+     * @param checksumType The algorithm of checksum.
+     * @param salt The salt, if the checksum is salted.
+     * @return The checksum of the file.
+     */
     public static String generateChecksum(File file, ChecksumType checksumType, byte[] salt) {
         ChecksumSpecTYPE checksumSpecTYPE = new ChecksumSpecTYPE();
         checksumSpecTYPE.setChecksumSalt(salt);
@@ -86,7 +111,7 @@ public final class ChecksumUtils {
     }
 
     /**
-     * Calculates a checksum based on 
+     * Calculates a checksum of a inputstream based on a checksum-algorithm specification with optional salt.
      * 
      * @param content The inputstream for the data to calculate the checksum of.
      * @param csSpec The algorithm to use for calculation together wih a optional salt. If it is not prefixed with 'Hmac', then it is added.

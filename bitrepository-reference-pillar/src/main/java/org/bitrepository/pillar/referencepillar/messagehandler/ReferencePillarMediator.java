@@ -27,9 +27,9 @@ package org.bitrepository.pillar.referencepillar.messagehandler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarMediator;
-import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.contributor.handler.GetAuditTrailsRequestHandler;
@@ -49,7 +49,7 @@ public class ReferencePillarMediator extends PillarMediator {
     /**
      * The archive for this pillar mediator.
      */
-    private final CollectionArchiveManager archives;
+    private final FileStore archives;
     /** The manager of the checksums.*/
     private final ReferenceChecksumManager csManager;
     
@@ -61,7 +61,7 @@ public class ReferencePillarMediator extends PillarMediator {
      * @param manager The manager of checksums.
      */
     public ReferencePillarMediator(MessageBus messageBus, MessageHandlerContext context, 
-            CollectionArchiveManager archives, ReferenceChecksumManager manager) {
+            FileStore archives, ReferenceChecksumManager manager) {
         super(messageBus, context);
         this.archives = archives;
         this.csManager = manager;

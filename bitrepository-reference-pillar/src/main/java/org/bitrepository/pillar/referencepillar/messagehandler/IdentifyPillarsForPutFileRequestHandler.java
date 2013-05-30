@@ -31,10 +31,10 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -55,7 +55,7 @@ public class IdentifyPillarsForPutFileRequestHandler
      * @param csManager The checksum manager for the pillar.
      */
     protected IdentifyPillarsForPutFileRequestHandler(MessageHandlerContext context, 
-            CollectionArchiveManager archivesManager, ReferenceChecksumManager csManager) {
+            FileStore archivesManager, ReferenceChecksumManager csManager) {
         super(context, archivesManager, csManager);
     }
     

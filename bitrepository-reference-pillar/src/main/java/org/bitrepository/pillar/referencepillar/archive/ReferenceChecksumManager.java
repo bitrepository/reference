@@ -21,7 +21,6 @@
  */
 package org.bitrepository.pillar.referencepillar.archive;
 
-import java.io.File;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -33,6 +32,8 @@ import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.common.filestore.FileInfo;
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
@@ -55,7 +56,7 @@ public class ReferenceChecksumManager {
     /** The storage of checksums.*/
     private final ChecksumStore cache;
     /** The file archives for the different collections.*/
-    private final CollectionArchiveManager archives;
+    private final FileStore archives;
     /** The maximum age for a checksum. Measured in milliseconds.*/
     private final long maxAgeForChecksums;
     /** The default checksum specification.*/
@@ -71,7 +72,7 @@ public class ReferenceChecksumManager {
      * @param defaultChecksumSpec The default specifications for the checksums.
      * @param maxAgeForChecksum The maximum age for the checksums.
      */
-    public ReferenceChecksumManager(CollectionArchiveManager archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, 
+    public ReferenceChecksumManager(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, 
             ChecksumSpecTYPE defaultChecksumSpec, long maxAgeForChecksum) {
         this.cache = cache;
         this.archives = archives;
@@ -101,8 +102,8 @@ public class ReferenceChecksumManager {
             log.trace("Non-default checksum specification: {}. Recalculating the checksums.", csType);
             recalculateChecksum(fileId, collectionId);
             
-            File file = archives.getFile(fileId, collectionId);
-            String checksum = ChecksumUtils.generateChecksum(file, csType);
+            FileInfo fi = archives.getFileInfo(fileId, collectionId);
+            String checksum = ChecksumUtils.generateChecksum(fi, csType);
             return new ChecksumEntry(fileId, checksum, new Date());
         }
     }
@@ -126,8 +127,8 @@ public class ReferenceChecksumManager {
         } else {
             recalculateChecksum(fileId, collectionId);
             
-            File file = archives.getFile(fileId, collectionId);
-            return ChecksumUtils.generateChecksum(file, csType);
+            FileInfo fi = archives.getFileInfo(fileId, collectionId);
+            return ChecksumUtils.generateChecksum(fi, csType);
         }
     }
     
@@ -138,8 +139,8 @@ public class ReferenceChecksumManager {
      */
     public void recalculateChecksum(String fileId, String collectionId) {
         log.info("Recalculating the checksum of file '" + fileId + "'.");
-        File file = archives.getFile(fileId, collectionId);
-        String checksum = ChecksumUtils.generateChecksum(file, defaultChecksumSpec);
+        FileInfo fi = archives.getFileInfo(fileId, collectionId);
+        String checksum = ChecksumUtils.generateChecksum(fi, defaultChecksumSpec);
         cache.insertChecksumCalculation(fileId, collectionId, checksum, new Date());
     }
     
@@ -160,8 +161,8 @@ public class ReferenceChecksumManager {
      * @return The checksum of the given type for the file with the given id.
      */
     public String getChecksumForTempFile(String fileId, String collectionId, ChecksumSpecTYPE csType) {
-        File file = archives.getFileInTmpDir(fileId, collectionId);
-        return ChecksumUtils.generateChecksum(file, csType);
+        FileInfo fi = archives.getFileInTmpDir(fileId, collectionId);
+        return ChecksumUtils.generateChecksum(fi, csType);
     }
     
     /**
@@ -233,21 +234,21 @@ public class ReferenceChecksumManager {
             maxTime = CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp).getTime();
         }
         
-        // Map between lastModifiedDate and fileID.
-        ConcurrentSkipListMap<Long, String> sortedDateFileIDMap = new ConcurrentSkipListMap<Long, String>();
+        // Map between lastModifiedDate and fileInfo.
+        ConcurrentSkipListMap<Long, FileInfo> sortedDateFileIDMap = new ConcurrentSkipListMap<Long, FileInfo>();
         for(String fileId : archives.getAllFileIds(collectionId)) {
-            Long lastModified = archives.getFile(fileId, collectionId).lastModified();
-            if((minTimeStamp == null || minTime <= lastModified) &&
-                    (maxTimeStamp == null || maxTime >= lastModified)) {
-                sortedDateFileIDMap.put(lastModified, fileId);
+            FileInfo fi = archives.getFileInfo(fileId, collectionId);
+            if((minTimeStamp == null || minTime <= fi.getMdate()) &&
+                    (maxTimeStamp == null || maxTime >= fi.getMdate())) {
+                sortedDateFileIDMap.put(fi.getMdate(), fi);
             }
         }
         
         int i = 0;
-        Map.Entry<Long, String> entry;
+        Map.Entry<Long, FileInfo> entry;
         while((entry = sortedDateFileIDMap.pollFirstEntry()) != null && 
                 (maxNumberOfResults == null || i < maxNumberOfResults)) {
-            res.insertFileID(entry.getValue(), new Date(entry.getKey()));
+            res.insertFileInfo(entry.getValue());
             i++;
         }
         
@@ -310,10 +311,7 @@ public class ReferenceChecksumManager {
             if(checksumDate < minDateForChecksum) {
                 log.info("The checksum for the file '" + fileId + "' is too old. Recalculating.");                
                 recalculateChecksum(fileId, collectionId);
-                return;
-            } 
-            
-            if(checksumDate < archives.getFile(fileId, collectionId).lastModified()) {
+            } else if(checksumDate < archives.getFileInfo(fileId, collectionId).getMdate()) {
                 log.info("The last modified date for the file is newer than the latest checksum.");                
                 recalculateChecksum(fileId, collectionId);
             }

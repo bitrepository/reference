@@ -26,7 +26,6 @@ package org.bitrepository.protocol.fileexchange;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +34,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.bitrepository.common.FileStore;
+import org.bitrepository.common.filestore.DefaultFileInfo;
+import org.bitrepository.common.filestore.FileInfo;
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /** 
@@ -74,16 +75,7 @@ public class TestFileStore implements FileStore {
     }
 
     @Override
-    public FileInputStream getFileAsInputstream(String fileID, String collectionId) {
-        try {
-            return new FileInputStream(new File(storageDir, fileID));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } 
-    }
-
-    @Override
-    public File downloadFileForValidation(String fileID, String collectionId, InputStream inputStream) {
+    public FileInfo downloadFileForValidation(String fileID, String collectionId, InputStream inputStream) {
         File theFile = new File(fileID);
 
         // Check if a file exists.
@@ -114,7 +106,7 @@ public class TestFileStore implements FileStore {
             throw new RuntimeException("Could not download file for validation.", e);
         }
         
-        return theFile;
+        return new DefaultFileInfo(theFile);
     }
     
     @Override
@@ -125,12 +117,12 @@ public class TestFileStore implements FileStore {
 
     @Override
     public void deleteFile(String fileID, String collectionId) {
-        getFile(fileID, null).delete();
+        (new File(storageDir, fileID)).delete();
     }
 
     @Override
-    public File getFile(String fileID, String collectionId) {
-        return new File(storageDir, fileID);
+    public FileInfo getFileInfo(String fileID, String collectionId) {
+        return new DefaultFileInfo(new File(storageDir, fileID));
     }
 
     @Override
@@ -145,7 +137,7 @@ public class TestFileStore implements FileStore {
 
     @Override
     public boolean hasFile(String fileID, String collectionId) {
-        return (getFile(fileID, null)).isFile();
+        return (new File(storageDir, fileID)).isFile();
     }
 
     @Override
@@ -157,4 +149,25 @@ public class TestFileStore implements FileStore {
         downloadFileForValidation(fileID, null, in);
         moveToArchive(fileID, null);
     }
+
+    @Override
+    public void replaceFile(String fileID, String collectionId) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public long sizeLeftInArchive(String collectionId) {
+        return new File(storageDir).getFreeSpace();
+    }
+
+    @Override
+    public FileInfo getFileInTmpDir(String fileId, String collectionId) {
+        return getFileInfo(fileId, collectionId);
+    }
+
+    @Override
+    public void ensureFileNotInTmpDir(String fileId, String collectionId) { }
+
+    @Override
+    public void close() { }
 }

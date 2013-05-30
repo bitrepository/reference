@@ -34,6 +34,7 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
+import org.bitrepository.common.filestore.DefaultFileInfo;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.common.utils.FileUtils;
@@ -238,7 +239,8 @@ public class GetChecksumsOnReferencePillarTest extends ReferencePillarTest {
         
         addStep("Remove the file from beneath the pillar", 
                 "The file is not longer in the archive, but still in the database.");
-        FileUtils.delete(archives.getFile(DEFAULT_FILE_ID, collectionID));
+        DefaultFileInfo dfi = (DefaultFileInfo) archives.getFileInfo(DEFAULT_FILE_ID, collectionID);
+        FileUtils.delete(dfi.getFile());
         Assert.assertFalse(archives.hasFile(DEFAULT_FILE_ID, collectionID));
         Assert.assertTrue(csCache.hasFile(DEFAULT_FILE_ID, collectionID));
         

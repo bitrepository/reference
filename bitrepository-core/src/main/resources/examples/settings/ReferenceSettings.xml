@@ -161,6 +161,13 @@
       then file must be downloaded for calculating the checksum.
      -->
     <ChecksumPillarFileDownload>DOWNLOAD_WHEN_MISSING_FROM_MESSAGE</ChecksumPillarFileDownload>
+    
+    <!--
+      Classpath for the FileStore backend of the ReferencePillar.
+              Default value, when undefined is: 
+              'org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager'. 
+     -->
+    <FileStoreClass>org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager</FileStoreClass>
   </PillarSettings>
 
   <!-- 

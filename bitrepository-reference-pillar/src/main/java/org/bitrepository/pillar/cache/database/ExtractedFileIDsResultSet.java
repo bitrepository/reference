@@ -21,6 +21,7 @@
  */
 package org.bitrepository.pillar.cache.database;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -28,6 +29,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
+import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.common.utils.CalendarUtils;
 
 /**
@@ -50,21 +52,33 @@ public class ExtractedFileIDsResultSet {
     
     /**
      * Adds a file id to this result set. 
-     * @param fileID The id of the file to add.
-     * @param lastModified The last modified date for the file.
+     * @param fileInfo The fileinfo for the file to insert.
      */
-    public void insertFileID(String fileID, Date lastModified) {
-        insertFileID(fileID, CalendarUtils.getXmlGregorianCalendar(lastModified));
+    public void insertFileInfo(FileInfo fileInfo) {
+        insertFileID(fileInfo.getFileID(), BigInteger.valueOf(fileInfo.getSize()), 
+                CalendarUtils.getFromMillis(fileInfo.getMdate()));
+    }
+    
+    /**
+     * Inserts a file id with date, but without the size.
+     * Intended for the ChecksumPillar, which cannot deliver any size.
+     * @param fileId The id of the file.
+     * @param lastModified The last modified timestamp.
+     */
+    public void insertFileID(String fileId, Date lastModified) {
+        insertFileID(fileId, null, CalendarUtils.getXmlGregorianCalendar(lastModified));
     }
     
     /**
      * Adds a file id to this result set. 
      * @param fileID The id of the file to add.
+     * @param size The size of the file.
      * @param lastModified The last modified date for the file.
      */
-    public void insertFileID(String fileID, XMLGregorianCalendar lastModified) {
+    public void insertFileID(String fileID, BigInteger size, XMLGregorianCalendar lastModified) {
         FileIDsDataItem item = new FileIDsDataItem();
         item.setFileID(fileID);
+        item.setFileSize(size);
         item.setLastModificationTime(lastModified);
         results.getFileIDsDataItems().getFileIDsDataItem().add(item);
     }

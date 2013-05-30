@@ -28,9 +28,9 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMessageHandler;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -74,7 +74,7 @@ public class GeneralReferencePillarTest extends ReferencePillarTest {
     
     private class MockRequestHandler extends ReferencePillarMessageHandler<MessageRequest> {
 
-        protected MockRequestHandler(MessageHandlerContext context, CollectionArchiveManager archives,
+        protected MockRequestHandler(MessageHandlerContext context, FileStore archives,
                 ReferenceChecksumManager manager) {
             super(context, archives, manager);
         }
