@@ -33,9 +33,17 @@
 
   <IntegrityServiceSettings>
     <ID>integrity-service</ID>
-    <!-- Very large intervals, as workflows should only be triggered through ws calls. -->
-    <SchedulerInterval>10000000000</SchedulerInterval>
-    <GracePeriod>10000000000</GracePeriod>
+    <WorkflowSchedulerSettings>
+      <WorkflowSchedules>
+        <WorkflowSchedule>
+          <WorkflowClass>org.bitrepository.integrityservice.workflow.CompleteIntegrityCheck</WorkflowClass>
+          <WorkflowInterval>86400000</WorkflowInterval>
+          <Collections>
+
+          </Collections>
+        </WorkflowSchedule>
+      </WorkflowSchedules>
+    </WorkflowSchedulerSettings>
     <IntegrityDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->target/database/integritydb</DatabaseURL>

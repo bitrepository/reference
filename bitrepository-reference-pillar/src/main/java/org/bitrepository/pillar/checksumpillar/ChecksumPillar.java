@@ -26,6 +26,7 @@ import java.util.Arrays;
 import javax.jms.JMSException;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.pillar.Pillar;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
@@ -62,7 +63,8 @@ public class ChecksumPillar implements Pillar {
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
         ArgumentValidator.checkNotNull(refCache, "ChecksumCache refCache");
-        
+
+        SettingsUtils.initialize(settings);
         this.messageBus = messageBus;
         this.cache = refCache;
         

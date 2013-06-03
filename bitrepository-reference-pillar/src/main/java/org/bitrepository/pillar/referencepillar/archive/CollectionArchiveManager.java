@@ -53,7 +53,7 @@ public class CollectionArchiveManager implements FileStore {
     private void initiateDefaultDirs(Settings settings) {
         for(CollectionDirs cd : settings.getReferenceSettings().getPillarSettings().getCollectionDirs()){
             if(cd.getCollectionID().isEmpty()) {
-                initiateArchive(SettingsUtils.getCollectionIDsForPillar(settings, settings.getComponentID()), 
+                initiateArchive(SettingsUtils.getCollectionIDsForPillar(settings.getComponentID()),
                         cd.getFileDirs());
             }
         }        

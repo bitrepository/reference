@@ -267,7 +267,6 @@ public interface IntegrityModel {
      */
     void makeStatisticsForCollection(String collectionID);
     
-    
     /**
      * Shutdown the model. This will typically consist of closing DB connections.
      */

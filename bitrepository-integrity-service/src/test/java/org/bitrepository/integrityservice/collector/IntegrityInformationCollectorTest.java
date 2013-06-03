@@ -30,23 +30,25 @@ import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.integrityservice.mocks.MockAuditManager;
+import org.bitrepository.service.audit.AuditTrailManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import static org.mockito.Mockito.mock;
+
 /**
  * Test that collecting integrity information has the desired effect.
  */
 public class IntegrityInformationCollectorTest extends ExtendedTestCase {
-    MockAuditManager auditManager;
+    protected AuditTrailManager auditManager;
 
     public final static String collectionID = "dummy-collection";
     
     @BeforeClass (alwaysRun = true)
     public void setup() {
-        auditManager = new MockAuditManager();
+        auditManager = mock(AuditTrailManager.class);
     }
     
     @Test(groups = {"regressiontest", "integritytest"})

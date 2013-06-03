@@ -29,6 +29,7 @@ import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -51,14 +52,15 @@ public class AuditCollectorTest extends ExtendedTestCase {
     }
 
     @Test(groups = {"regressiontest"})
-    public void AuditCollectorIntervalTest() throws Exception {
+    public void auditCollectorIntervalTest() throws Exception {
         addDescription("Test that the collector calls the AuditClient at the correct intervals.");
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(DEFAULT_CONTRIBUTOR);
         settings.getReferenceSettings().getAuditTrailServiceSettings().setCollectAuditInterval(800);
         settings.getReferenceSettings().getAuditTrailServiceSettings().setTimerTaskCheckInterval(100L);
         settings.getReferenceSettings().getAuditTrailServiceSettings().setGracePeriod(800L);
-        
+
+        SettingsUtils.initialize(settings);
         MockAuditClient client = new MockAuditClient();
         MockAuditStore store = new MockAuditStore();
         AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);

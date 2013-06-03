@@ -35,23 +35,22 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
-import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
 import org.bitrepository.integrityservice.cache.database.ChecksumState;
 import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
-import org.bitrepository.integrityservice.mocks.MockAuditManager;
-import org.bouncycastle.crypto.modes.SICBlockCipher;
+import org.bitrepository.service.audit.AuditTrailManager;
+import org.bitrepository.service.database.DBConnector;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static org.mockito.Mockito.mock;
+
 public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
-    /** The settings for the tests. Should be instantiated in the setup.*/
-    MockAuditManager auditManager;
+    AuditTrailManager auditManager;
     String TEST_PILLAR_1 = "MY-TEST-PILLAR-1";
     String TEST_PILLAR_2 = "MY-TEST-PILLAR-2";
     String EXTRA_PILLAR = "MY-EXTRA-PILLAR";
@@ -67,7 +66,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     public void setup() throws Exception {
         super.setup();
         TEST_COLLECTIONID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-        auditManager = new MockAuditManager();
+        auditManager = mock(AuditTrailManager.class);
     }
     
     @Override 

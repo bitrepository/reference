@@ -308,13 +308,46 @@
   <IntegrityServiceSettings>
     <!-- ID of the service -->
     <ID>integrity-service</ID>
+      <!--
+      The listing of workflow schedules.
+      -->
+      <Workflows>
+        <!--
+        The definition for the CompleteIntegrityCheck workflow.
+        -->
+        <Workflow>
+          <!--
+          The class containing the CompleteIntegrityCheck implementation.
+          -->
+          <WorkflowClass>org.bitrepository.integrityservice.workflow.CompleteIntegrityCheck</WorkflowClass>
+          <!--
+          When should the workflow be run.
+          -->
+          <Schedules>
+            <!--
+            Run every day on the TwoPillarCollection collection.
+            -->
+            <Schedule>
+              <WorkflowInterval>86400000</WorkflowInterval>  <Collections>
+              <CollectionID>TwoPillarCollection</CollectionID>
+            </Collections>
+            </Schedule>
+            <!--
+            Run every hour on the TwoPillarCollection collection.
+            -->
+            <Schedule>
+              <WorkflowInterval>360000</WorkflowInterval>  <Collections>
+              <CollectionID>SinglePillarCollection</CollectionID>
+            </Collections>
+            </Schedule>
+          </Schedules>
+        </Workflow>
+      </Workflows>
 
-    <!-- 
-      Interval between checksums consistency check. 
-      Timeunit in milliseconds
+     <!--
+       Interval between the scheduler checks for workflows to run.
      -->
     <SchedulerInterval>2000</SchedulerInterval>
-
     <!-- 
       Database specification object for the cache of integrity service database.
     -->

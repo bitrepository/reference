@@ -10,31 +10,28 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.common.webobjects.StatisticsCollectionSize;
 import org.bitrepository.common.webobjects.StatisticsDataSize;
 import org.bitrepository.common.webobjects.StatisticsPillarSize;
-import org.bitrepository.integrityservice.IntegrityService;
-import org.bitrepository.integrityservice.IntegrityServiceFactory;
+import org.bitrepository.integrityservice.IntegrityServiceManager;
 import org.bitrepository.integrityservice.cache.CollectionStat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.bitrepository.integrityservice.cache.IntegrityModel;
 
 @Path("/Statistics")
 public class RestStatisticsService {
-
-    private final Logger log = LoggerFactory.getLogger(getClass());
-    private IntegrityService service;
+    private IntegrityModel model;
 
     public RestStatisticsService() {
-        this.service = IntegrityServiceFactory.getIntegrityService();
+        this.model = IntegrityServiceManager.getIntegrityModel();
     }
      
     @GET
     @Path("/getDataSizeHistory/")
     @Produces(MediaType.APPLICATION_JSON)
     public List<StatisticsDataSize> getDataSizeHistory(@QueryParam("collectionID") String collectionID) {
-        List<CollectionStat> stats = service.getCollectionStatisticsHistory(collectionID, 10);
+        List<CollectionStat> stats = model.getLatestCollectionStat(collectionID, 10);
         List<StatisticsDataSize> data = new ArrayList<StatisticsDataSize>();
         for(CollectionStat stat : stats) {
             StatisticsDataSize obj = new StatisticsDataSize();
@@ -87,7 +84,7 @@ public class RestStatisticsService {
     @Path("/getLatestPillarDataSize/")
     @Produces(MediaType.APPLICATION_JSON)
     public List<StatisticsPillarSize> getLatestPillarDataSize() {
-        return service.getCurrentPillarsDataSize();
+        return getCurrentPillarsDataSize();
     }
     
     @GET
@@ -95,7 +92,7 @@ public class RestStatisticsService {
     @Produces(MediaType.APPLICATION_JSON)
     public List<StatisticsCollectionSize> getLatestCollectionDataSize() {
         List<StatisticsCollectionSize> data = new ArrayList<StatisticsCollectionSize>();
-        List<CollectionStat> stats = service.getLatestCollectionStatistics();
+        List<CollectionStat> stats = getLatestCollectionStatistics();
         for(CollectionStat stat : stats) {
             StatisticsCollectionSize obj = new StatisticsCollectionSize();
             obj.setCollectionID(stat.getCollectionID());
@@ -103,5 +100,28 @@ public class RestStatisticsService {
             data.add(obj);
         }
         return data;    
+    }
+
+    public List<CollectionStat> getLatestCollectionStatistics() {
+        List<CollectionStat> res = new ArrayList<CollectionStat>();
+        for(String collection : SettingsUtils.getAllCollectionsIDs()) {
+            List<CollectionStat> stats = model.getLatestCollectionStat(collection, 1);
+            if(!stats.isEmpty()) {
+                res.add(stats.get(0));
+            }
+        }
+        return res;
+    }
+
+    public List<StatisticsPillarSize> getCurrentPillarsDataSize() {
+        List<StatisticsPillarSize> stats = new ArrayList<StatisticsPillarSize>();
+        for(String pillar : SettingsUtils.getAllPillarIDs()) {
+            StatisticsPillarSize stat = new StatisticsPillarSize();
+            Long dataSize = model.getPillarDataSize(pillar);
+            stat.setDataSize(dataSize);
+            stat.setPillarID(pillar);
+            stats.add(stat);
+        }
+        return stats;
     }
 }

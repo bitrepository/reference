@@ -21,108 +21,46 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.common.utils.Base16Utils;
-import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.integrityservice.TestIntegrityModel;
 import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
-import org.bitrepository.integrityservice.mocks.MockIntegrityModel;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.workflow.WorkflowStep;
-import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class RemoveDeletableFileIDsStepTest extends ExtendedTestCase {
-    public static final String TEST_PILLAR_1 = "test-pillar-1";
-    public static final List<String> PILLAR_IDS = Arrays.asList(TEST_PILLAR_1);
-    public static final String TEST_FILE_1 = "test-file-1";
-    public static final String DEFAULT_CHECKSUM = "0123456789";
-    
-    public static final Integer NUMBER_OF_PARTIAL_RESULTS = 3;
-    
-    String TEST_COLLECTION;
-    protected Settings settings;
-    
-    @BeforeMethod (alwaysRun = true)
-    public void setup() throws Exception {
-        settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
-        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
-        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().addAll(PILLAR_IDS);
-        TEST_COLLECTION = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-    }
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
+public class RemoveDeletableFileIDsStepTest extends WorkflowstepTest {
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testNoFilesToDelete() {
         addDescription("Testing the case, when no files should be deleted from the database.");
-        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
         MissingFileReportModel report = new MissingFileReportModel(TEST_COLLECTION);
-        MockAuditManager auditManager = new MockAuditManager();
-        WorkflowStep step = new RemoveDeletableFileIDsFromDatabaseStep(store, report, auditManager, settings);
-        Assert.assertEquals(store.getCallsForDeleteFileIdEntry(), 0);
+        WorkflowStep step = new RemoveDeletableFileIDsFromDatabaseStep(model, report, auditManager, settings);
+        verifyNoMoreInteractions(model);
         
         addStep("Perform the step of deleting file id entries based on the report.", 
                 "No calls for deleting entries in the IntegrityModel.");
         step.performStep();
-        Assert.assertEquals(store.getCallsForDeleteFileIdEntry(), 0);
+        verifyNoMoreInteractions(model);
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testFileToDelete() {
         addDescription("Testing the case, when one file should be deleted from the database.");
-        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        store.addChecksums(createChecksumData(DEFAULT_CHECKSUM, TEST_FILE_1), TEST_PILLAR_1, TEST_COLLECTION);
+        String TEST_FILE_1 = "test-file-1";
+        String TEST_FILE_2 = "test-file-2";
         MissingFileReportModel report = new MissingFileReportModel(TEST_COLLECTION);
         report.reportDeletableFile(TEST_FILE_1);
+        report.reportDeletableFile(TEST_FILE_2);
         MockAuditManager auditManager = new MockAuditManager();
-        WorkflowStep step = new RemoveDeletableFileIDsFromDatabaseStep(store, report, auditManager, settings);
-        Assert.assertEquals(store.getCallsForDeleteFileIdEntry(), 0);
+        WorkflowStep step = new RemoveDeletableFileIDsFromDatabaseStep(model, report, auditManager, settings);
+        verifyNoMoreInteractions(model);
         
         addStep("Perform the step of deleting file id entries based on the report.", 
                 "One calls for deleting the entry in the IntegrityModel.");
         step.performStep();
-        Assert.assertEquals(store.getCallsForDeleteFileIdEntry(), 1);
-    }
-
-    @Test(groups = {"regressiontest", "integritytest"})
-    public void testManyFilesToDelete() {
-        addDescription("Testing the case, when 10 files should be deleted from the database.");
-        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        MissingFileReportModel report = new MissingFileReportModel(TEST_COLLECTION);
-        
-        addStep("Populate the store and report with files.", "");
-        int numberOfFiles = 10;
-        for(int i = 0; i < numberOfFiles; i++) {
-            String fileId = TEST_FILE_1 + "_" + i;
-            store.addChecksums(createChecksumData(DEFAULT_CHECKSUM, fileId), TEST_PILLAR_1, TEST_COLLECTION);
-            report.reportDeletableFile(fileId);
-        }
-        MockAuditManager auditManager = new MockAuditManager();
-        WorkflowStep step = new RemoveDeletableFileIDsFromDatabaseStep(store, report, auditManager, settings);
-        Assert.assertEquals(store.getCallsForDeleteFileIdEntry(), 0);
-        
-        addStep("Perform the step of deleting file id entries based on the report.", 
-                "One call for deleting each of the files in the IntegrityModel.");
-        step.performStep();
-        Assert.assertEquals(store.getCallsForDeleteFileIdEntry(), numberOfFiles);
-    }
-
-    private List<ChecksumDataForChecksumSpecTYPE> createChecksumData(String checksum, String ... fileids) {
-        List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
-        for(String fileId : fileids) {
-            ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
-            csData.setCalculationTimestamp(CalendarUtils.getNow());
-            csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
-            csData.setFileID(fileId);
-            res.add(csData);
-        }
-        return res;
+        verify(model).deleteFileIdEntry(TEST_FILE_1, TEST_COLLECTION);
+        verify(model).deleteFileIdEntry(TEST_FILE_2, TEST_COLLECTION);
+        verifyNoMoreInteractions(model, alerter);
     }
 }

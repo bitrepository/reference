@@ -19,38 +19,19 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityservice.mocks;
 
-import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
+package org.bitrepository.integrityservice.workflow;
 
-public class MockIntegrityReport implements IntegrityReportModel {
+import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.WorkflowManager;
 
-    private boolean state = true; 
-    private final String collectionID;
-    
-    public MockIntegrityReport(String collectionID) {
-        this.collectionID = collectionID;
-    }
-    
-    public void setIntegrityIssues(boolean state) {
-        this.state = state;
-    }
-    @Override
-    public boolean hasIntegrityIssues() {
-        return state;
-    }
+public class IntegrityWorkflowManager extends WorkflowManager {
 
-    @Override
-    public String generateReport() {
-        return "Integrity issue: " + state;
-    }
-    
-    @Override
-    public String generateSummaryOfReport() {
-        return "Integrity summary: " + state;
-    }
-    @Override
-    public String getCollectionID() {
-        return collectionID;
+    private final IntegrityWorkflowContext context;
+    public IntegrityWorkflowManager(IntegrityWorkflowContext context) {
+        super(context,
+              context.getSettings().getReferenceSettings().getIntegrityServiceSettings().getWorkflows(),
+              context.getSettings().getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval());
+        this.context = context;
     }
 }

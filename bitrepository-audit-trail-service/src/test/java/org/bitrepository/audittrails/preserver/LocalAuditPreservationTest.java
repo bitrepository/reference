@@ -34,6 +34,7 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -113,7 +114,8 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLARID);
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(PILLARID);
-        
+        SettingsUtils.initialize(settings);
+
         addStep("Create the preserver and populate the store", "");
         store.addAuditTrails(createEvents(), collectionId);
         LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, client);

@@ -21,12 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow;
 
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
-import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.checking.IntegrityChecker;
-import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityservice.workflow.step.CreateStatisticsEntryStep;
 import org.bitrepository.integrityservice.workflow.step.FindMissingChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.FindObsoleteChecksumsStep;
@@ -36,8 +31,8 @@ import org.bitrepository.integrityservice.workflow.step.RemoveDeletableFileIDsFr
 import org.bitrepository.integrityservice.workflow.step.SetOldUnknownFilesToMissingStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
-import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.StepBasedWorkflow;
+import org.bitrepository.service.workflow.WorkflowContext;
 import org.bitrepository.service.workflow.WorkflowID;
 
 /**
@@ -47,79 +42,66 @@ import org.bitrepository.service.workflow.WorkflowID;
  * And finally it is verified whether any missing or obsolete checksums can be found.
  */
 public class CompleteIntegrityCheck extends StepBasedWorkflow {
-    /** The settings.*/
-    private final Settings settings;
-    /** The client for retrieving the checksums.*/
-    private final IntegrityInformationCollector collector;
-    /** The storage of integrity data.*/
-    private final IntegrityModel store;
-    /** The checker for finding integrity issues.*/
-    private final IntegrityChecker checker;
-    /** The alerter for dispatching alarms in the case of integrity issues.*/
-    private final IntegrityAlerter alerter;
-    /** The audit trail manager.*/
-    private final AuditTrailManager auditManager;
-    /** The collection to check */
-    private final String collectionId;
+    /** The context for the workflow.*/
+    private IntegrityWorkflowContext context;
     /** The workflowID */
-    private final WorkflowID workflowID;
+    private WorkflowID workflowID;
+    private String collectionID;
     /**
-     * @param settings The settings.
-     * @param collector The collector for collecting the file ids and the checksums.
-     * @param store The storage for the integrity data.
-     * @param checker The checker for validating the content of the database.
-     * @param alerter The integrity alerter for sending alarms, when necessary.
-     * @param auditManager The audit trial manager.
+     * Remember to call the initialise method needs to be called before the start method.
      */
-    public CompleteIntegrityCheck(Settings settings, IntegrityInformationCollector collector, IntegrityModel store,
-                                  IntegrityChecker checker, IntegrityAlerter alerter, AuditTrailManager auditManager, 
-                                  String collectionId) {
-        this.settings = settings;
-        this.collector = collector;
-        this.store = store;
-        this.checker = checker;
-        this.alerter = alerter;
-        this.auditManager = auditManager;
-        this.collectionId = collectionId;
-        workflowID = new WorkflowID(collectionId, getClass().getSimpleName());
+    public CompleteIntegrityCheck() {}
+
+    @Override
+    public void initialise(WorkflowContext context, String collectionID) {
+        this.context = (IntegrityWorkflowContext)context;
+        this.collectionID = collectionID;
+        workflowID = new WorkflowID(collectionID, getClass().getSimpleName());
     }
     
     @Override
     public void start() {
+        if (context == null) {
+            throw new IllegalStateException("The workflow can not be started before the initialise method has been " +
+                    "called.");
+        }
         super.start();
         try {
-            UpdateFileIDsStep updateFileIDsStep = new UpdateFileIDsStep(collector, store, alerter,
-                    settings, collectionId);
+            UpdateFileIDsStep updateFileIDsStep = new UpdateFileIDsStep(context.getCollector(), context.getStore(),
+                    context.getAlerter(), context.getSettings(), collectionID);
             performStep(updateFileIDsStep);
             
-            UpdateChecksumsStep updateChecksumStep = new UpdateChecksumsStep(collector, store, alerter,
-                    ChecksumUtils.getDefault(settings), settings, collectionId);
+            UpdateChecksumsStep updateChecksumStep = new UpdateChecksumsStep(
+                    context.getCollector(), context.getStore(), context.getAlerter(),
+                    ChecksumUtils.getDefault(context.getSettings()), context.getSettings(), collectionID);
             performStep(updateChecksumStep);
 
             SetOldUnknownFilesToMissingStep setUnknownFilesToMissingStep 
-                    = new SetOldUnknownFilesToMissingStep(store, collectionId);
+                    = new SetOldUnknownFilesToMissingStep(context.getStore(), collectionID);
             performStep(setUnknownFilesToMissingStep);
             
-            IntegrityValidationFileIDsStep validateFileidsStep = new IntegrityValidationFileIDsStep(checker, alerter, 
-                    collectionId);
+            IntegrityValidationFileIDsStep validateFileidsStep = new IntegrityValidationFileIDsStep(
+                    context.getChecker(), context.getAlerter(), collectionID);
             performStep(validateFileidsStep);
             
             RemoveDeletableFileIDsFromDatabaseStep removeDeletableFileIDsFromDatabaseStep 
-                    = new RemoveDeletableFileIDsFromDatabaseStep(store, validateFileidsStep.getReport(), 
-                            auditManager, settings);
+                    = new RemoveDeletableFileIDsFromDatabaseStep(context.getStore(), validateFileidsStep.getReport(),
+                            context.getAuditManager(), context.getSettings());
             performStep(removeDeletableFileIDsFromDatabaseStep);
             
-            IntegrityValidationChecksumStep validateChecksumStep = new IntegrityValidationChecksumStep(checker, 
-                    alerter, collectionId);
+            IntegrityValidationChecksumStep validateChecksumStep = new IntegrityValidationChecksumStep(
+                    context.getChecker(), context.getAlerter(), collectionID);
             performStep(validateChecksumStep);
             
-            FindMissingChecksumsStep findMissingChecksums = new FindMissingChecksumsStep(checker, alerter, collectionId);
+            FindMissingChecksumsStep findMissingChecksums = new FindMissingChecksumsStep(
+                    context.getChecker(), context.getAlerter(), collectionID);
             performStep(findMissingChecksums);
             
-            FindObsoleteChecksumsStep findObsoleteChecksums 
-                    = new FindObsoleteChecksumsStep(settings, checker, alerter, collectionId);
+            FindObsoleteChecksumsStep findObsoleteChecksums  = new FindObsoleteChecksumsStep(
+                    context.getSettings(), context.getChecker(), context.getAlerter(), collectionID);
             performStep(findObsoleteChecksums);
-            CreateStatisticsEntryStep createStatistics = new CreateStatisticsEntryStep(store, collectionId);
+            CreateStatisticsEntryStep createStatistics = new CreateStatisticsEntryStep(
+                    context.getStore(), collectionID);
             performStep(createStatistics);
         } finally {
             finish();

@@ -24,6 +24,7 @@ package org.bitrepository.integrityservice;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.integrityservice.cache.database.IntegrityDatabaseCreator;
+import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
@@ -38,8 +39,10 @@ import static org.bitrepository.integrityservice.cache.database.DatabaseConstant
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_STATS_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_STATS_TABLE;
+import static org.mockito.Mockito.mock;
 
 public abstract class IntegrityDatabaseTestCase extends ExtendedTestCase {
+    protected AuditTrailManager auditManager;
     protected Settings settings;
     
     @BeforeMethod (alwaysRun = true)
@@ -51,6 +54,7 @@ public abstract class IntegrityDatabaseTestCase extends ExtendedTestCase {
 
         IntegrityDatabaseCreator integrityDatabaseCreator = new IntegrityDatabaseCreator();
         integrityDatabaseCreator.createIntegrityDatabase(settings, null);
+        auditManager = mock(AuditTrailManager.class);
     }
     
     @AfterMethod (alwaysRun = true)

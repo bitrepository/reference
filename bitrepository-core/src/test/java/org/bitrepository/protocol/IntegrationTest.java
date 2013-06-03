@@ -35,6 +35,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.protocol.bus.LocalActiveMQBroker;
 import org.bitrepository.protocol.bus.MessageBusWrapper;
@@ -187,6 +188,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected void setupSettings() {
         settingsForCUT = loadSettings(getComponentID());
         makeUserSpecificSettings(settingsForCUT);
+        SettingsUtils.initialize(settingsForCUT);
 
         alarmDestinationID = settingsForCUT.getRepositorySettings().getProtocolSettings().getAlarmDestination();
 
@@ -196,7 +198,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     /** Can be overloaded by tests needing to load custom settings */
     protected Settings loadSettings(String componentID) {
-        return TestSettingsProvider.reloadSettings(componentID);
+        Settings settings = TestSettingsProvider.reloadSettings(componentID);
+        return settings;
     }
 
     private void makeUserSpecificSettings(Settings settings) {

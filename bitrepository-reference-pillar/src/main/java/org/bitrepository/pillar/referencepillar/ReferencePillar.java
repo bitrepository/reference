@@ -31,6 +31,7 @@ import javax.jms.JMSException;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.ChecksumUtils;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.pillar.Pillar;
 import org.bitrepository.pillar.cache.ChecksumDAO;
 import org.bitrepository.pillar.cache.ChecksumStore;
@@ -71,8 +72,8 @@ public class ReferencePillar implements Pillar {
     public ReferencePillar(MessageBus messageBus, Settings settings) {
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
-
         this.messageBus = messageBus;
+        SettingsUtils.initialize(settings);
 
         log.info("Starting the ReferencePillar");
         archiveManager = new CollectionArchiveManager(settings);

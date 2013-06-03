@@ -27,11 +27,10 @@ import java.util.List;
 
 import org.bitrepository.common.webobjects.StatisticsPillarSize;
 import org.bitrepository.integrityservice.cache.CollectionStat;
-import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowTimerTask;
 
-public interface IntegrityService extends LifeCycledService {
+public interface IntegrityService {
     /**
      * Retrieves all the scheduled tasks in the system, which are running.
      * @param collectionID The collection to get scheduled workflows from
@@ -128,7 +127,7 @@ public interface IntegrityService extends LifeCycledService {
      * @param collectionID the ID of the collection
      * @return The number of files in the collection
      */
-    Long getNumberOfFilesInCollection(String collection);
+    Long getNumberOfFilesInCollection(String collectionID);
     
     /**
      * Method to get the latest collection statistics
@@ -149,9 +148,5 @@ public interface IntegrityService extends LifeCycledService {
      * @return List<StatisticsPillarSize> The list of pillars data size
      */
     List<StatisticsPillarSize> getCurrentPillarsDataSize();
-    
-    /**
-     * Shut down the integrity service.
-     */
-    void shutdown();
+
 }

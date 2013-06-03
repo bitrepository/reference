@@ -45,14 +45,15 @@ import org.bitrepository.integrityservice.checking.reports.ChecksumReportModel;
 import org.bitrepository.integrityservice.checking.reports.MissingChecksumReportModel;
 import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
 import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReportModel;
-import org.bitrepository.integrityservice.mocks.MockAuditManager;
+import org.bitrepository.service.audit.AuditTrailManager;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import static org.mockito.Mockito.mock;
+
 public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCase {
-    /** The settings for the tests. Should be instantiated in the setup.*/
-    MockAuditManager auditManager;
+    AuditTrailManager auditManager;
     
     public static final String TEST_PILLAR_1 = "test-pillar-1";
     public static final String TEST_PILLAR_2 = "test-pillar-2";
@@ -68,7 +69,7 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
     public void setup() throws Exception {
         super.setup();
         TEST_COLLECTION = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-        auditManager = new MockAuditManager();
+        auditManager = mock(AuditTrailManager.class);
     }
     
     protected void customizeSettings() {
