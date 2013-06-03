@@ -102,7 +102,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
             ResponseInfo ri = new ResponseInfo();
             ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
             ri.setResponseText("Invalid contributor id.");
-            throw new InvalidMessageException(ri);
+            throw new InvalidMessageException(ri, message.getCollectionID());
         }
     }
     
@@ -160,21 +160,21 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
     
     /**
      * Handles the potential upload of the audit trails to a given URL.
-     * @param request The request for the audit trails, which includes the URL for where the audit trails should be 
+     * @param message The request for the audit trails, which includes the URL for where the audit trails should be 
      * uploaded
      * @param extractedAuditTrails The extracted audit trails.
      * @throws InvalidMessageException If the creation, serialization, validation or upload of the file fails.
      */
-    protected void handleUpload(GetAuditTrailsRequest request, AuditTrailDatabaseResults extractedAuditTrails) throws InvalidMessageException {
-        if(request.getResultAddress() == null || request.getResultAddress().isEmpty()) {
+    protected void handleUpload(GetAuditTrailsRequest message, AuditTrailDatabaseResults extractedAuditTrails) throws InvalidMessageException {
+        if(message.getResultAddress() == null || message.getResultAddress().isEmpty()) {
             log.trace("The audit trails are not uploaded.");
             return;
         }
         
         log.debug("Creating audit trail file and uploading it.");
         try {
-            File fileToUpload = createAuditTrailFile(request, extractedAuditTrails);
-            URL uploadUrl = new URL(request.getResultAddress());
+            File fileToUpload = createAuditTrailFile(message, extractedAuditTrails);
+            URL uploadUrl = new URL(message.getResultAddress());
             
             log.debug("Uploading file: " + fileToUpload.getName() + " to " + uploadUrl.toExternalForm());
             FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getContext().getSettings());
@@ -183,7 +183,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
             ResponseInfo ir = new ResponseInfo();
             ir.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
             ir.setResponseText("Could not handle the creation and upload of the results due to: " + e.getMessage());
-            throw new InvalidMessageException(ir, e);
+            throw new InvalidMessageException(ir, message.getCollectionID(), e);
         }
     }
     

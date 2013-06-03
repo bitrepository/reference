@@ -81,7 +81,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText("Could not find the requested file to delete.");
-            throw new IdentifyContributorException(irInfo);
+            throw new IdentifyContributorException(irInfo, message.getCollectionID());
         }
     }
 

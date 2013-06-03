@@ -119,7 +119,7 @@ public class IdentifyPillarsForPutFileRequestHandler
             irInfo.setResponseText("Not enough space left in this pillar. Requires '" 
                     + fileSize.longValue() + "' but has only '" + useableSizeLeft + "'");
             
-            throw new IdentifyContributorException(irInfo);
+            throw new IdentifyContributorException(irInfo, message.getCollectionID());
         }
     }
     

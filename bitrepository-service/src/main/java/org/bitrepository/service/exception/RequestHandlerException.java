@@ -30,24 +30,30 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 public abstract class RequestHandlerException extends Exception {
     /** The ResponseInfo wrapped by this exception. Tells the reason for the exception.*/
     private final ResponseInfo responseInfo;
+    /** The id of the collection, which this exception is relevant for, if any. */
+    private String collectionId;
     
     /**
      * Constructor.
      * @param rInfo The ResponseInfo for this class to wrap.
+     * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
      */
-    public RequestHandlerException(ResponseInfo rInfo) {
+    public RequestHandlerException(ResponseInfo rInfo, String collectionId) {
         super(rInfo.getResponseText());
-        responseInfo = rInfo;
+        this.responseInfo = rInfo;
+        this.collectionId = collectionId;
     }
     
     /**
      * Constructor.
      * @param rInfo The ResponseInfo for this class to wrap.
+     * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
      * @param e The exception to wrap into the StackTrace.
      */
-    public RequestHandlerException(ResponseInfo rInfo, Exception e) {
+    public RequestHandlerException(ResponseInfo rInfo, String collectionId, Exception e) {
         super(rInfo.getResponseText(), e);
-        responseInfo = rInfo;
+        this.responseInfo = rInfo;
+        this.collectionId = collectionId;
     }
     
     /**
@@ -55,6 +61,20 @@ public abstract class RequestHandlerException extends Exception {
      */
     public ResponseInfo getResponseInfo() {
         return responseInfo;
+    }
+    
+    /**
+     * @return The id of the collection regarding this exception.
+     */
+    public String getCollectionId() {
+        return collectionId;
+    }
+    
+    /**
+     * @param collectionId The id of the collection.
+     */
+    public void setCollectionId(String collectionId) {
+        this.collectionId = collectionId;
     }
     
     @Override

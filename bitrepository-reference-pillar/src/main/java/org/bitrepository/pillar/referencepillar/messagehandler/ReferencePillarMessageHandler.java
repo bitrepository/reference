@@ -80,8 +80,10 @@ public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHand
      * Validates a given checksum calculation.
      * Ignores if the checksum type is null.
      * @param checksumSpec The checksum specification to validate.
+     * @param collectionId The id of the collection which this is relevant for.
      */
-    protected void validateChecksumSpecification(ChecksumSpecTYPE checksumSpec) throws RequestHandlerException {
+    protected void validateChecksumSpecification(ChecksumSpecTYPE checksumSpec, String collectionId) 
+            throws RequestHandlerException {
         if(checksumSpec == null) {
             return;
         }
@@ -92,7 +94,7 @@ public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHand
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
             fri.setResponseText(e.toString());
-            throw new InvalidMessageException(fri, e);
+            throw new InvalidMessageException(fri, collectionId, e);
         }
     }
 }

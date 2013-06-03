@@ -93,15 +93,15 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         validateCollectionID(message);
         validatePillarId(message.getPillarID());
         if(message.getChecksumDataForNewFile() != null) {
-            validateChecksumSpec(message.getChecksumDataForNewFile().getChecksumSpec());
+            validateChecksumSpec(message.getChecksumDataForNewFile().getChecksumSpec(), message.getCollectionID());
         } else if(getSettings().getRepositorySettings()
                 .getProtocolSettings().isRequireChecksumForNewFileRequests()) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
             responseInfo.setResponseText("According to the contract a checksum for creating a new file is required.");
-            throw new IllegalOperationException(responseInfo);            
+            throw new IllegalOperationException(responseInfo, message.getCollectionID());            
         }
-        validateChecksumSpec(message.getChecksumRequestForNewFile());
+        validateChecksumSpec(message.getChecksumRequestForNewFile(), message.getCollectionID());
         validateFileID(message.getFileID());
         
         // verify, that we already have the file
@@ -112,7 +112,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
             fri.setResponseText("File is already within archive.");
-            throw new InvalidMessageException(fri);
+            throw new InvalidMessageException(fri, message.getCollectionID());
         }
     }
     
@@ -175,7 +175,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
             ResponseInfo fi = new ResponseInfo();
             fi.setResponseText("A PutFileRequest without the checksum cannot be handled.");
             fi.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
-            throw new InvalidMessageException(fi);
+            throw new InvalidMessageException(fi, message.getCollectionID());
         }
     }
     
@@ -202,7 +202,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
             ResponseInfo ri = new ResponseInfo();
             ri.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
             ri.setResponseText(errMsg);
-            throw new InvalidMessageException(ri);
+            throw new InvalidMessageException(ri, message.getCollectionID());
         }
         
         if(message.getChecksumDataForNewFile() != null) {
@@ -215,7 +215,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
                 ri.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
                 ri.setResponseText("Expected checksums '" + givenChecksum + "' but the checksum was '" 
                         + calculatedChecksum + "'.");
-                throw new IllegalOperationException(ri);
+                throw new IllegalOperationException(ri, message.getCollectionID());
             }
         } else {
             log.debug("No checksums for validating the retrieved file.");

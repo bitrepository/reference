@@ -77,7 +77,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
      * @param message The identify message to validate.
      */
     private void validateMessage(IdentifyPillarsForGetChecksumsRequest message) throws RequestHandlerException {
-        validateChecksumSpec(message.getChecksumRequestForExistingFile());        
+        validateChecksumSpec(message.getChecksumRequestForExistingFile(), message.getCollectionID());        
     }
     
     /**
@@ -102,7 +102,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             
-            throw new IdentifyContributorException(irInfo);
+            throw new IdentifyContributorException(irInfo, message.getCollectionID());
         }
     }
     

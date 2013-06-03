@@ -63,7 +63,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
     @Override
     public void processRequest(IdentifyPillarsForGetChecksumsRequest message) throws RequestHandlerException {
         validateCollectionID(message);
-        validateChecksumSpecification(message.getChecksumRequestForExistingFile());
+        validateChecksumSpecification(message.getChecksumRequestForExistingFile(), message.getCollectionID());
         checkThatAllRequestedFilesAreAvailable(message);
         respondSuccesfullIdentification(message);
     }
@@ -96,7 +96,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
             
-            throw new IdentifyContributorException(irInfo);
+            throw new IdentifyContributorException(irInfo, message.getCollectionID());
         }
     }
     

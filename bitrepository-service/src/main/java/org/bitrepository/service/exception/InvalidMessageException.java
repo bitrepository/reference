@@ -34,17 +34,19 @@ public class InvalidMessageException extends RequestHandlerException {
     /**
      * Constructor.
      * @param rInfo The ResponseInfo for this class to wrap.
+     * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
      */
-    public InvalidMessageException(ResponseInfo rInfo) {
-        super(rInfo);
+    public InvalidMessageException(ResponseInfo rInfo, String collectionId) {
+        super(rInfo, collectionId);
     }
     
     /**
      * Constructor.
      * @param rInfo The ResponseInfo for this class to wrap.
+     * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
      * @param e The exception to wrap into the StackTrace.
      */
-    public InvalidMessageException(ResponseInfo rInfo, Exception e) {
-        super(rInfo, e);
+    public InvalidMessageException(ResponseInfo rInfo, String collectionId, Exception e) {
+        super(rInfo, collectionId, e);
     }
 }

@@ -65,7 +65,7 @@ public class IdentifyPillarsForGetFileRequestHandler extends ChecksumPillarMessa
                 + getSettings().getReferenceSettings().getPillarSettings().getPillarID() + "' cannot handle a "
                 + "request for the actual file, since it only contains the checksum of the file.");
         
-        throw new InvalidMessageException(ri);
+        throw new InvalidMessageException(ri, message.getCollectionID());
     }
 
     @Override

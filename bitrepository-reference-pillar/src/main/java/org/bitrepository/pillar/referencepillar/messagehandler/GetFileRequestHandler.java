@@ -101,7 +101,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
             fri.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             fri.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
                     + "not have that file!");
-            throw new InvalidMessageException(fri);
+            throw new InvalidMessageException(fri, message.getCollectionID());
         }
     }
     
@@ -147,7 +147,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
             fri.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
             fri.setResponseText("The file '" + message.getFileID() + "' could not be uploaded at '" 
                     + message.getFileAddress() + "'");
-            throw new InvalidMessageException(fri, e);
+            throw new InvalidMessageException(fri, message.getCollectionID(), e);
         }
     }
     

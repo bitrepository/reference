@@ -93,7 +93,7 @@ public class GeneralReferencePillarTest extends ReferencePillarTest {
         }
         
         public void validateChecksum(ChecksumSpecTYPE csType) throws RequestHandlerException {
-            validateChecksumSpecification(csType);
+            validateChecksumSpecification(csType, null);
         }
         
         public void validatePillarID(String pillarId) throws RequestHandlerException {

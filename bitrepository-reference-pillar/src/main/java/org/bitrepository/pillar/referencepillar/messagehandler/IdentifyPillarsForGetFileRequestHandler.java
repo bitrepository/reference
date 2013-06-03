@@ -82,7 +82,7 @@ public class IdentifyPillarsForGetFileRequestHandler
             irInfo.setResponseText("The file '" + message.getFileID() 
                     + "' does not exist within the archive.");
             
-            throw new IdentifyContributorException(irInfo);
+            throw new IdentifyContributorException(irInfo, message.getCollectionID());
         }
     }
     
