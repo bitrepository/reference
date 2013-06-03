@@ -58,7 +58,7 @@ public class StepBasedWorkflowTest extends ExtendedTestCase {
 
             @Override
             public String getDescription() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
             
             public WorkflowID getWorkflowID() {

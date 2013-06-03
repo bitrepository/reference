@@ -95,8 +95,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
                 new ResponseDispatcher(settingsForCUT, messageBus),
                 new PillarAlarmDispatcher(settingsForCUT, messageBus),
                 audits);
-        csManager = new ReferenceChecksumManager(archives, csCache, alarmDispatcher,
-                ChecksumUtils.getDefault(context.getSettings()), 3600000L);
+        csManager = new ReferenceChecksumManager(archives, csCache, alarmDispatcher, settingsForCUT);
         mediator = new ReferencePillarMediator(messageBus, context, archives, csManager);
         mediator.start();
         

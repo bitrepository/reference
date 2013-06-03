@@ -154,6 +154,14 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element name="EnsureChecksumWorkflowInterval" type="xs:nonNegativeInteger" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>
+              The number of milliseconds between running the workflow for ensuring the checksums integrity.
+              Default is once per hour, or 3600000.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
         <xs:element name="AuditTrailContributerDatabase" type="DatabaseSpecifics">
           <xs:annotation>
             <xs:documentation xml:lang="en">

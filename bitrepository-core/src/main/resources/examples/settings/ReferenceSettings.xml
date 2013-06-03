@@ -103,6 +103,12 @@
       recalculate the checksum. 
      -->
     <MaxAgeForChecksums>3600000</MaxAgeForChecksums>
+    
+    <!-- 
+      The time between running the workflow for ensuring that the checksum are valid, 
+      regarding checksum age and the age of the last modified timestamp of the file.
+     -->
+    <EnsureChecksumWorkflowInterval>3600000</EnsureChecksumWorkflowInterval>
 
     <!-- 
       Database specification object for the data about the AuditTrailContributer database.

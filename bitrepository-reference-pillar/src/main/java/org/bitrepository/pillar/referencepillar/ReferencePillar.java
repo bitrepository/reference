@@ -32,7 +32,6 @@ import javax.jms.JMSException;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.Pillar;
 import org.bitrepository.pillar.cache.ChecksumDAO;
 import org.bitrepository.pillar.cache.ChecksumStore;
@@ -42,12 +41,17 @@ import org.bitrepository.pillar.common.SettingsHelper;
 import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
+import org.bitrepository.pillar.referencepillar.scheduler.RecalculateChecksumWorkflow;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.audit.AuditTrailContributerDAO;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.scheduler.ServiceScheduler;
+import org.bitrepository.service.scheduler.TimerbasedScheduler;
+import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.settings.repositorysettings.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,12 +63,23 @@ public class ReferencePillar implements Pillar {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The messagebus for the pillar.*/
     private final MessageBus messageBus;
+    /** The settings.*/
+    private final Settings settings;
     /** The mediator for the messages.*/
     private final ReferencePillarMediator mediator;
     /** The archives for the data.*/
     private final FileStore archiveManager;
     /** The checksum store.*/
     private final ChecksumStore csStore;
+    /** The scheduler for the recalculation workflows.*/
+    private final ServiceScheduler scheduler;
+    /** The manager of the checksums with regard to the archive.*/
+    private final ReferenceChecksumManager manager;
+    
+    /** How often the scheduler will check whether any workflow is ready for running.*/
+    private static final Long TIME_FOR_SCHEDULING = 1000L;
+    /** The default time for running the recalculation workflow, when the settings is not set.*/
+    private static final Long DEFAULT_RECALCULATION_WORKFLOW_TIME = 3600000L;
 
     /**
      * Constructor.
@@ -76,14 +91,13 @@ public class ReferencePillar implements Pillar {
         ArgumentValidator.checkNotNull(settings, "settings");
 
         this.messageBus = messageBus;
+        this.settings = settings;
 
         log.info("Starting the ReferencePillar");
         archiveManager = getFileStore(settings);
         csStore = new ChecksumDAO(settings);
         PillarAlarmDispatcher alarmDispatcher = new PillarAlarmDispatcher(settings, messageBus);
-        ReferenceChecksumManager manager = new ReferenceChecksumManager(archiveManager, csStore, alarmDispatcher,
-                ChecksumUtils.getDefault(settings),
-                settings.getReferenceSettings().getPillarSettings().getMaxAgeForChecksums().longValue());
+        manager = new ReferenceChecksumManager(archiveManager, csStore, alarmDispatcher, settings);
         AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector(
                 settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase()));
         MessageHandlerContext context = new MessageHandlerContext(
@@ -95,7 +109,25 @@ public class ReferencePillar implements Pillar {
         messageBus.getCollectionFilter().addAll(Arrays.asList(context.getPillarCollections()));
         mediator = new ReferencePillarMediator(messageBus, context, archiveManager, manager);
         mediator.start();
+        
+        this.scheduler = new TimerbasedScheduler(TIME_FOR_SCHEDULING);
+        initializeWorkflows();
         log.info("ReferencePillar started!");
+    }
+    
+    /**
+     * Initializes one RecalculateChecksums workflow for each collection.
+     */
+    private void initializeWorkflows() {
+        Long interval = DEFAULT_RECALCULATION_WORKFLOW_TIME;
+        if(settings.getReferenceSettings().getPillarSettings().getEnsureChecksumWorkflowInterval() != null) {
+            interval = settings.getReferenceSettings().getPillarSettings()
+                    .getEnsureChecksumWorkflowInterval().longValue();
+        }
+        for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
+            Workflow workflow = new RecalculateChecksumWorkflow(c.getID(), manager);
+            scheduler.scheduleWorkflow(workflow, interval);
+        }
     }
     
     /**

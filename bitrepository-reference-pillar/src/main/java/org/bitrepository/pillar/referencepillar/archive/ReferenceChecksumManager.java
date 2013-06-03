@@ -34,6 +34,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.common.filestore.FileStore;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
@@ -57,12 +58,12 @@ public class ReferenceChecksumManager {
     private final ChecksumStore cache;
     /** The file archives for the different collections.*/
     private final FileStore archives;
-    /** The maximum age for a checksum. Measured in milliseconds.*/
-    private final long maxAgeForChecksums;
     /** The default checksum specification.*/
     private final ChecksumSpecTYPE defaultChecksumSpec;
     /** The dispatcher of alarms.*/
     private final AlarmDispatcher alarmDispatcher;
+    /** The settings.*/
+    private final Settings settings;
     
     /**
      * Constructor.
@@ -73,12 +74,12 @@ public class ReferenceChecksumManager {
      * @param maxAgeForChecksum The maximum age for the checksums.
      */
     public ReferenceChecksumManager(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, 
-            ChecksumSpecTYPE defaultChecksumSpec, long maxAgeForChecksum) {
+            Settings settings) {
         this.cache = cache;
         this.archives = archives;
         this.alarmDispatcher = alarmDispatcher;
-        this.maxAgeForChecksums = maxAgeForChecksum;
-        this.defaultChecksumSpec = defaultChecksumSpec;
+        this.settings = settings;
+        this.defaultChecksumSpec = ChecksumUtils.getDefault(settings);
     }
     
     /**
@@ -264,7 +265,7 @@ public class ReferenceChecksumManager {
      * is also in the cache.
      * @param collectionId The id of the collection where the data should be ensured.
      */
-    private void ensureStateOfAllData(String collectionId) {
+    public void ensureStateOfAllData(String collectionId) {
         for(String fileId : cache.getAllFileIDs(collectionId)) {
             ensureFileState(fileId, collectionId);
         }
@@ -302,6 +303,8 @@ public class ReferenceChecksumManager {
      * @param collectionId The id of the collection of the file.
      */
     private void ensureChecksumState(String fileId, String collectionId) {
+        Long maxAgeForChecksums = settings.getReferenceSettings().getPillarSettings()
+                .getMaxAgeForChecksums().longValue();
         if(!cache.hasFile(fileId, collectionId)) {
             log.debug("No checksum cached for file '" + fileId + "'. Calculating the checksum.");
             recalculateChecksum(fileId, collectionId);
