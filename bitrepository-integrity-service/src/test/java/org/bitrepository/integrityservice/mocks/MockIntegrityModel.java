@@ -269,23 +269,23 @@ public class MockIntegrityModel implements IntegrityModel {
     public int getCallsForGetDateForNewestChecksumEntryForPillar() {
         return callsForGetDateForNewestChecksumEntryForPillar;
     }
-    private int callsForSetAllFilesToUnknownFileState = 0;
+    private int callsForSetExistingFilesToPreviouslySeenFileState = 0;
     @Override
-    public void setAllFilesToUnknownFileState(String collectionId) {
-        callsForSetAllFilesToUnknownFileState++;
-        integrityModel.setAllFilesToUnknownFileState(collectionId);
+    public void setExistingFilesToPreviouslySeenFileState(String collectionId) {
+        callsForSetExistingFilesToPreviouslySeenFileState++;
+        integrityModel.setExistingFilesToPreviouslySeenFileState(collectionId);
     }
-    public int getCallsForSetAllFilesToUnknownFileState() {
-        return callsForSetAllFilesToUnknownFileState;
+    public int getCallsForSetExistingFilesToPreviouslySeenFileState() {
+        return callsForSetExistingFilesToPreviouslySeenFileState;
     }
-    private int callsForSetUnknownFilesToMissing = 0;
+    private int callsForSetOldUnknownFilesToMissing = 0;
     @Override
     public void setOldUnknownFilesToMissing(String collectionId) {
-        callsForSetUnknownFilesToMissing++;
+        callsForSetOldUnknownFilesToMissing++;
         integrityModel.setOldUnknownFilesToMissing(collectionId);
     }
-    public int getCallsForSetUnknownFilesToMissing() {
-        return callsForSetUnknownFilesToMissing;
+    public int getCallsForSetOldUnknownFilesToMissing() {
+        return callsForSetOldUnknownFilesToMissing;
     }
     private int callsForGetFileOnPillar = 0;
     @Override
@@ -341,5 +341,25 @@ public class MockIntegrityModel implements IntegrityModel {
     }
     public int getCallsForGetPillarDataSize() {
         return callsGetPillarDataSize;
+    }
+    
+    private int callsForSetPreviouslySeenFilesToMissing = 0;
+    @Override
+    public void setPreviouslySeenFilesToMissing(String collectionId) {
+        callsForSetPreviouslySeenFilesToMissing++;
+        integrityModel.setPreviouslySeenFilesToMissing(collectionId);
+    }
+    public int getCallsForSetPreviouslySeenFilesToMissing() {
+        return callsForSetPreviouslySeenFilesToMissing;
+    }
+    
+    private int callsForSetPreviouslySeenToExisting = 0;
+    @Override
+    public void setPreviouslySeenToExisting(String collectionId, String pillarId) {
+        callsForSetPreviouslySeenToExisting++;
+        integrityModel.setPreviouslySeenToExisting(collectionId, pillarId);
+    }
+    public int getCallsForSetPreviouslySeenToExisting() {
+        return callsForSetPreviouslySeenToExisting;
     }
 }

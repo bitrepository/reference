@@ -33,6 +33,11 @@ public enum FileState {
     EXISTING,
     /** The state when the file was not found in the latest file list. */
     MISSING,
+    /** 
+     * The temporary state during the file list update, when the file was seen in the latest file list, 
+     * but not yet in the current one.
+     */
+    PREVIOUSLY_SEEN,
     /** The state when it is not known for the given file.*/
     UNKNOWN;
     
@@ -45,6 +50,7 @@ public enum FileState {
         switch (i) {
             case 0: return EXISTING;
             case 1: return MISSING;
+            case 2: return PREVIOUSLY_SEEN; 
             default: return UNKNOWN;
         }
     }

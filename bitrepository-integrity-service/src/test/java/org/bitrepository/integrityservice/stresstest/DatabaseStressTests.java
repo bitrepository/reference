@@ -117,7 +117,7 @@ public class DatabaseStressTests extends ExtendedTestCase {
         System.err.println("Time to ingest '" + NUMBER_OF_FILES + "' files: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
         
         startTime = System.currentTimeMillis();
-        cache.setAllFileStatesToUnknown(settings.getRepositorySettings().getCollections().getCollection().get(0).getID());
+        cache.setExistingFilesToPreviouslySeenFileState(settings.getRepositorySettings().getCollections().getCollection().get(0).getID());
         System.err.println("Time to set all files to unknown: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
         
         startTime = System.currentTimeMillis();

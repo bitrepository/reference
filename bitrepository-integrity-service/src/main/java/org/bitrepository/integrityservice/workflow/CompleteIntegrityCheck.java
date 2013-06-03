@@ -33,7 +33,6 @@ import org.bitrepository.integrityservice.workflow.step.FindObsoleteChecksumsSte
 import org.bitrepository.integrityservice.workflow.step.IntegrityValidationChecksumStep;
 import org.bitrepository.integrityservice.workflow.step.IntegrityValidationFileIDsStep;
 import org.bitrepository.integrityservice.workflow.step.RemoveDeletableFileIDsFromDatabaseStep;
-import org.bitrepository.integrityservice.workflow.step.SetOldUnknownFilesToMissingStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
 import org.bitrepository.service.audit.AuditTrailManager;
@@ -96,10 +95,6 @@ public class CompleteIntegrityCheck extends StepBasedWorkflow {
                     ChecksumUtils.getDefault(settings), settings, collectionId);
             performStep(updateChecksumStep);
 
-            SetOldUnknownFilesToMissingStep setUnknownFilesToMissingStep 
-                    = new SetOldUnknownFilesToMissingStep(store, collectionId);
-            performStep(setUnknownFilesToMissingStep);
-            
             IntegrityValidationFileIDsStep validateFileidsStep = new IntegrityValidationFileIDsStep(checker, alerter, 
                     collectionId);
             performStep(validateFileidsStep);

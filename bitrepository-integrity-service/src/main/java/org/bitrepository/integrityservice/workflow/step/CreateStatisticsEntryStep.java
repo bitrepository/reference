@@ -23,16 +23,12 @@ package org.bitrepository.integrityservice.workflow.step;
 
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A workflow step for finding missing checksums.
  * Uses the IntegrityChecker to perform the actual check.
  */
 public class CreateStatisticsEntryStep extends AbstractWorkFlowStep {
-    /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
     /** The Integrity Model. */
     private final IntegrityModel store;
     /** The collectionID */
