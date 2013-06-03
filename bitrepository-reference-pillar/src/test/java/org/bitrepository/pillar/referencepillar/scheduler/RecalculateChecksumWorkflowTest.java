@@ -38,6 +38,10 @@ public class RecalculateChecksumWorkflowTest extends ReferencePillarTest {
         Assert.assertEquals(archives.getAllFileIds(collectionID).size(), 1);
         settingsForCUT.getReferenceSettings().getPillarSettings().setMaxAgeForChecksums(BigInteger.ZERO);
         
+        synchronized(this) {
+            wait(100);
+        }
+        
         addStep("Create and run workflow", "The checksum");
         Workflow workflow = new RecalculateChecksumWorkflow(collectionID, csManager);
         workflow.start();
@@ -55,6 +59,10 @@ public class RecalculateChecksumWorkflowTest extends ReferencePillarTest {
         Assert.assertEquals(csCache.getAllFileIDs(collectionID).size(), 1);
         Assert.assertEquals(archives.getAllFileIds(collectionID).size(), 1);
         settingsForCUT.getReferenceSettings().getPillarSettings().setMaxAgeForChecksums(BigInteger.valueOf(Long.MAX_VALUE));
+        
+        synchronized(this) {
+            wait(100);
+        }
         
         addStep("Create and run workflow", "The checksum");
         Workflow workflow = new RecalculateChecksumWorkflow(collectionID, csManager);
