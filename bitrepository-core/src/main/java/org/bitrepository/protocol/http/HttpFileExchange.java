@@ -32,11 +32,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
@@ -246,5 +248,19 @@ public class HttpFileExchange implements FileExchange {
      */
     protected HttpClient getHttpClient() {
         return new DefaultHttpClient();
+    }
+
+    @Override
+    public void deleteFromServer(URL url) throws IOException, URISyntaxException {
+        HttpClient httpClient = null;
+        try {
+            httpClient = getHttpClient();
+            HttpDelete deleteOperation = new HttpDelete(url.toURI()); 
+            httpClient.execute(deleteOperation);
+        } finally {
+            if(httpClient != null) {
+                httpClient.getConnectionManager().shutdown();
+            }
+        }
     }
 }

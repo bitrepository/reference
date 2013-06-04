@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -113,4 +114,13 @@ public interface FileExchange {
      * a valid URL.
      */
     URL getURL(String filename) throws MalformedURLException;
+    
+    /**
+     * Removes a file from the given URL.
+     * 
+     * @param url The URL where the file should be removed from.
+     * @throws IOException If issues occurs while removing the file.
+     * @throws URISyntaxException If the URL is not valid.
+     */
+    void deleteFromServer(URL url) throws IOException, URISyntaxException;
 }
