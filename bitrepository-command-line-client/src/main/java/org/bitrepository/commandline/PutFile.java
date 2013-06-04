@@ -80,7 +80,6 @@ public class PutFile extends CommandLineClient {
      * Perform the PutFile operation.
      */
     public void performOperation() {
-        String fileId = retrieveTheName(findTheFile());
         output.startupInfo("Putting .");
         OperationEvent finalEvent = putTheFile();
         output.completeEvent("Results of the PutFile operation for the file '" + getFileIDForMessage(), finalEvent);
@@ -109,6 +108,12 @@ public class PutFile extends CommandLineClient {
                 "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
         checksumSaltOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
+
+        Option deleteOption = new Option(Constants.DELETE_FILE_ARG, Constants.HAS_ARGUMENT, 
+                "[OPTIONAL] Whether or not to delete the file at the server afterwards. "
+                + "Use 'true' or 'false'. Default is 'false'.");
+        deleteOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(deleteOption);
     }
     
     /**
@@ -129,6 +134,15 @@ public class PutFile extends CommandLineClient {
         CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings, output);
         client.putFile(getCollectionID(), url, fileId, f.length(), validationChecksum, requestChecksum, eventHandler,
                 "Putting the file '" + f + "' with the file id '" + fileId + "' from commandLine.");
+        
+        if(getWhetherToDeleteAfterwards()) {
+            try {
+                fileexchange.deleteFromServer(url);
+            } catch (Exception e) {
+                System.err.println("Issue regarding removing file from server: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
         
         return eventHandler.getFinish();
     }
@@ -193,6 +207,22 @@ public class PutFile extends CommandLineClient {
             res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
         }
         return res;
+    }
+    
+    /**
+     * @return Whether or not to delete the file afterwards, based on the commandline argument. 
+     */
+    private boolean getWhetherToDeleteAfterwards() {
+        if(!cmdHandler.hasOption(Constants.DELETE_FILE_ARG)) {
+            return false;
+        }
+        
+        String arg = cmdHandler.getOptionValue(Constants.DELETE_FILE_ARG);
+        if(arg.toLowerCase().equals("true")) {
+            return true;
+        } else {
+            return false;
+        }
     }
     
     /**
