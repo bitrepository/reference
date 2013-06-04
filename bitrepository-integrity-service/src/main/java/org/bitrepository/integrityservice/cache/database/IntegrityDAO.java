@@ -237,8 +237,8 @@ public class IntegrityDAO {
         log.trace("Updating the file ids '" + data + "' for pillar '" + pillarId + "'");
         
         for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
-            ensureFileIdExists(dataItem.getFileID(), collectionId);
             Date modifyDate = CalendarUtils.convertFromXMLGregorianCalendar(dataItem.getLastModificationTime());
+            ensureFileIdExists(dataItem.getFileID(), modifyDate, collectionId);
             
             updateFileInfoLastFileUpdateTimestamp(pillarId, dataItem.getFileID(), modifyDate, collectionId);
             if(dataItem.isSetFileSize()) {
@@ -260,7 +260,8 @@ public class IntegrityDAO {
         
         log.trace("Updating the checksum data '" + data + "' for pillar '" + pillarId + "' in collection " + collectionId + "'");
         for(ChecksumDataForChecksumSpecTYPE csData : data) {
-            ensureFileIdExists(csData.getFileID(), collectionId);
+            Date timestamp = CalendarUtils.convertFromXMLGregorianCalendar(csData.getCalculationTimestamp());
+            ensureFileIdExists(csData.getFileID(), timestamp, collectionId);
             updateFileInfoWithChecksum(csData, pillarId, collectionId);
         }
     }
@@ -1490,15 +1491,16 @@ public class IntegrityDAO {
      * Ensures that the entries for the file with the given id exists (both in the 'files' table and 
      * the 'file_info' table)
      * @param fileId The id of the file to ensure the existence of.
+     * @param fileDate The date for the file.
      * @param collectionId The ID of the collection
      */
-    private void ensureFileIdExists(String fileId, String collectionId) {
+    private void ensureFileIdExists(String fileId, Date fileDate, String collectionId) {
         log.trace("Retrieving key for file '{}'.", fileId);
         String sql = "SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
                 + " WHERE " + FILES_ID + " = ? " 
                 + " AND " + COLLECTION_KEY + " = ?";
         if(DatabaseUtils.selectLongValue(dbConnector, sql, fileId, retrieveCollectionKey(collectionId)) == null) {
-            insertNewFileID(fileId, collectionId);
+            insertNewFileID(fileId, fileDate, collectionId);
         }
     }
     
@@ -1537,15 +1539,16 @@ public class IntegrityDAO {
      * Inserts a new file id into the 'files' table in the database.
      * Also creates an entry in the 'fileinfo' table for every pillar.
      * @param fileId The id of the file to insert.
+     * @param fileDate The date for the file.
      * @param collectionId The ID of the collection
      */
-    private synchronized void insertNewFileID(String fileId, String collectionId) {
+    private synchronized void insertNewFileID(String fileId, Date fileDate, String collectionId) {
         log.trace("Inserting the file '" + fileId + "' into the files table.");
         Long collectionKey = retrieveCollectionKey(collectionId);
         String fileSql = "INSERT INTO " + FILES_TABLE + " ( " 
                 + FILES_ID + ", " + FILES_CREATION_DATE + ", " + COLLECTION_KEY + " )" 
                 + " VALUES ( ?, ?, ?)";
-        DatabaseUtils.executeStatement(dbConnector, fileSql, fileId, new Date(), collectionKey);
+        DatabaseUtils.executeStatement(dbConnector, fileSql, fileId, fileDate, collectionKey);
         
         Date epoch = new Date(0);
         for(String pillar : collectionPillarsMap.get(collectionId))  {
