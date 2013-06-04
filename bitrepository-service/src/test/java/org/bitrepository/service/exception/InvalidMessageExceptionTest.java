@@ -28,6 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class InvalidMessageExceptionTest extends ExtendedTestCase {
+    private final String TEST_COLLECTION_ID = "test-collection-id";
     
     @Test(groups = { "regressiontest" })
     public void testIdentifyContributor() throws Exception {
@@ -42,24 +43,26 @@ public class InvalidMessageExceptionTest extends ExtendedTestCase {
         
         addStep("Try to throw such an exception", "Should be able to be caught and validated");
         try {
-            throw new InvalidMessageException(ri);
+            throw new InvalidMessageException(ri, TEST_COLLECTION_ID);
         } catch(Exception e) {
             Assert.assertTrue(e instanceof InvalidMessageException);
             Assert.assertEquals(e.getMessage(), errMsg);
             Assert.assertEquals(((InvalidMessageException) e).getResponseInfo().getResponseCode(), errCode);
             Assert.assertEquals(((InvalidMessageException) e).getResponseInfo().getResponseText(), errMsg);
+            Assert.assertEquals(((InvalidMessageException) e).getCollectionId(), TEST_COLLECTION_ID);
             Assert.assertNull(e.getCause());
         }
         
         addStep("Throw the exception with an embedded exception", "The embedded exception should be the same.");
         try {
-            throw new InvalidMessageException(ri, new IllegalArgumentException(causeMsg));
+            throw new InvalidMessageException(ri, TEST_COLLECTION_ID, new IllegalArgumentException(causeMsg));
         } catch(Exception e) {
             Assert.assertTrue(e instanceof InvalidMessageException);
             Assert.assertTrue(e instanceof RequestHandlerException);
             Assert.assertEquals(e.getMessage(), errMsg);
             Assert.assertEquals(((InvalidMessageException) e).getResponseInfo().getResponseCode(), errCode);
             Assert.assertEquals(((InvalidMessageException) e).getResponseInfo().getResponseText(), errMsg);
+            Assert.assertEquals(((InvalidMessageException) e).getCollectionId(), TEST_COLLECTION_ID);
             Assert.assertNotNull(e.getCause());
             Assert.assertTrue(e.getCause() instanceof IllegalArgumentException);
             Assert.assertEquals(e.getCause().getMessage(), causeMsg);

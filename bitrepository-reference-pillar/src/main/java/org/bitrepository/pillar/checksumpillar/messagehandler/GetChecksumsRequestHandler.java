@@ -105,7 +105,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
     private void validateMessage(GetChecksumsRequest message) throws RequestHandlerException {
         validatePillarId(message.getPillarID());
         validateCollectionID(message);
-        validateChecksumSpec(message.getChecksumRequestForExistingFile());
+        validateChecksumSpec(message.getChecksumRequestForExistingFile(), message.getCollectionID());
         validateFileIDs(message);
         
         log.debug("Message '" + message.getCorrelationID() + "' validated and accepted.");
@@ -134,7 +134,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             fri.setResponseText(errText);
-            throw new InvalidMessageException(fri);
+            throw new InvalidMessageException(fri, message.getCollectionID());
         }
     }
     
@@ -215,7 +215,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
                 ResponseInfo ir = new ResponseInfo();
                 ir.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
                 ir.setResponseText("Could not handle the creation and upload of the results due to: " + e.getMessage());
-                throw new InvalidMessageException(ir, e);
+                throw new InvalidMessageException(ir, message.getCollectionID(), e);
             }
             
             res.setResultAddress(url);

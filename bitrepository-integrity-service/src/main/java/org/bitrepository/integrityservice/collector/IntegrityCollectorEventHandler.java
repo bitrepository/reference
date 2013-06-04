@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
+import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
@@ -81,6 +82,11 @@ public class IntegrityCollectorEventHandler implements EventHandler {
             log.warn("Failure: " + event.toString());
             alerter.operationFailed("Failed integrity operation: " + event.toString(), event.getCollectionID());
             finalEventQueue.add(event);
+        } else if(event.getEventType() == OperationEventType.COMPONENT_FAILED) {
+            ContributorFailedEvent cfe = (ContributorFailedEvent) event;
+            log.warn("Component failure for '" + cfe.getContributorID() 
+                    + "'. Settings previously seen files to existing.");
+            store.setPreviouslySeenToExisting(cfe.getCollectionID(), cfe.getContributorID());
         } else {
             log.debug("Received event: " + event.toString());
         }

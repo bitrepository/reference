@@ -39,11 +39,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.bitrepository.common.utils.FileSizeUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.IntegrityServiceManager;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.utils.FileSizeUtils;
 import org.bitrepository.service.workflow.WorkflowID;
 import org.bitrepository.service.workflow.WorkflowManager;
 import org.bitrepository.service.workflow.WorkflowTimerTask;

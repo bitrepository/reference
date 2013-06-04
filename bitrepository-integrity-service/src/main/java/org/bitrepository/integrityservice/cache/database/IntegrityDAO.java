@@ -376,12 +376,12 @@ public class IntegrityDAO {
     }
     
     /**
-     * Retrieves the number of files in the given pillar, which has the file state 'EXISTING'.
+     * Retrieves the number of files in the given pillar, which has the file state 'EXISTING' or 'PREVIOUSLY_SEEN'.
      * @param pillarId The id of the pillar.
      * @param collectionId The ID of the collection to get the number of existing files from
-     * @return The number of files with file state 'EXISTING' for the given pillar.
+     * @return The number of files with file state 'EXISTING' or 'PREVIOUSLY_SEEN' for the given pillar.
      */
-    public int getNumberOfExistingFilesForAPillar(String pillarId, String collectionId) {
+    public int getNumberOfFilesForAPillar(String pillarId, String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         log.trace("Retrieving number of existing files at '{}'.", pillarId);
@@ -391,9 +391,33 @@ public class IntegrityDAO {
                 + " JOIN " + FILES_TABLE 
                 + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY 
                 + " WHERE " + FI_PILLAR_KEY + " = ?" 
-                + " AND " + FI_FILE_STATE + " = ?"
-                + " AND " + COLLECTION_KEY + " = ?";
-        return DatabaseUtils.selectIntValue(dbConnector, sql, pillarKey, FileState.EXISTING.ordinal(), collectionKey);
+                + " AND " + COLLECTION_KEY + " = ?"
+                + " AND ( " + FI_FILE_STATE + " = ? OR " + FI_FILE_STATE + " = ? )";
+        return DatabaseUtils.selectIntValue(dbConnector, sql, pillarKey, collectionKey, FileState.EXISTING.ordinal(), 
+                FileState.PREVIOUSLY_SEEN.ordinal());
+    }
+    
+
+    /**
+     * Retrieves the number of files in the given pillar, which has the file state 'EXISTING' or 'PREVIOUSLY_SEEN'.
+     * @param pillarId The id of the pillar.
+     * @param collectionId The ID of the collection to get the number of existing files from
+     * @return The number of files with file state 'EXISTING' or 'PREVIOUSLY_SEEN' for the given pillar.
+     */
+    public int getNumberOfPreviouslySeenFilesForAPillar(String pillarId, String collectionId) {
+        ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
+        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
+        log.trace("Retrieving number of previously seen files at '{}'.", pillarId);
+        Long pillarKey = retrievePillarKey(pillarId);
+        Long collectionKey = retrieveCollectionKey(collectionId);
+        String sql = "SELECT COUNT(*) FROM " + FILE_INFO_TABLE 
+                + " JOIN " + FILES_TABLE 
+                + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY 
+                + " WHERE " + FI_PILLAR_KEY + " = ?" 
+                + " AND " + COLLECTION_KEY + " = ?"
+                + " AND " + FI_FILE_STATE + " = ?";
+        return DatabaseUtils.selectIntValue(dbConnector, sql, pillarKey, collectionKey,  
+                FileState.PREVIOUSLY_SEEN.ordinal());
     }
     
     /**
@@ -758,24 +782,47 @@ public class IntegrityDAO {
         return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionKey, 
                 FileState.EXISTING.ordinal(), pillarId);
     }
-
+    
     /**
-     * Settings the file state of all the files to UNKNOWN.
-     * @param collectionId The collection to work on
+     * Set all files to unknown for the given pillar at the given collection.
+     * @param collectionId The id of the collection.
+     * @param pillarId The id of the pillar.
      */
-    public void setAllFileStatesToUnknown(String collectionId) {
-        log.trace("Setting the file state for all files to '" + FileState.UNKNOWN + "'.");
+    public void setFilesToUnknown(String pillarId, String collectionId) {
+        log.trace("Setting the file state for all " + FileState.EXISTING + " files to '" + FileState.PREVIOUSLY_SEEN 
+                + "'.");
         Long collectionKey = retrieveCollectionKey(collectionId);
         String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?"
-                + " WHERE EXISTS ("
+                + " WHERE " + FI_FILE_STATE + " = ? AND "
+                + FI_PILLAR_KEY + " = ? AND "
+                + "EXISTS ("
                     + "SELECT 1 FROM " + FILES_TABLE 
                     + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " + FILE_INFO_TABLE + "." + FI_FILE_KEY 
                     + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ?)";
-        DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.UNKNOWN.ordinal(), collectionKey);
+        DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.UNKNOWN.ordinal(), 
+                FileState.EXISTING.ordinal(), pillarKeyCache.get(pillarId), collectionKey);
+    }
+
+    /**
+     * Settings the file state of all 'EXISTING' files to 'PREVIOUSLY_SEEN'.
+     * @param collectionId The collection to work on.
+     */
+    public void setExistingFilesToPreviouslySeenFileState(String collectionId) {
+        log.trace("Setting the file state for all " + FileState.EXISTING + " files to '" + FileState.PREVIOUSLY_SEEN 
+                + "'.");
+        Long collectionKey = retrieveCollectionKey(collectionId);
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?"
+                + " WHERE " + FI_FILE_STATE + " = ? AND "
+                + "EXISTS ("
+                    + "SELECT 1 FROM " + FILES_TABLE 
+                    + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                    + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ?)";
+        DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.PREVIOUSLY_SEEN.ordinal(), 
+                FileState.EXISTING.ordinal(), collectionKey);
     }
     
     /**
-     * Settings the file state of all the UNKNOWN files to MISSING.
+     * Setting the file state of all the UNKNOWN files older than a grace period to MISSING.
      * @param minAge The date for the minimum age of the file. 
      * @param collectionId The ID of the collection to set files to unknown in
      */
@@ -786,12 +833,55 @@ public class IntegrityDAO {
         		+ " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
         		+ " AND " + " EXISTS ( " 
         				+ "SELECT 1 FROM " + FILES_TABLE 
-        				+ " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+        				+ " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
+        				        + FILE_INFO_TABLE + "." + FI_FILE_KEY 
         				+ " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ?" 
         				+ " AND " + FILES_TABLE + "." + FILES_CREATION_DATE + " < ? )";
         
         DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.MISSING.ordinal(), 
                 FileState.UNKNOWN.ordinal(), collectionKey, minAge);
+    }
+    
+    /**
+     * Setting the file state of all 'PREVIOUSLY_SEEN' files to 'MISSING'.
+     * @param collectionId The id of the collection.
+     */
+    public void setPreviouslySeenFilesToMissing(String collectionId) {
+        log.trace("Setting the file state for all '" + FileState.PREVIOUSLY_SEEN + "' files to '" + FileState.MISSING 
+                + "'.");
+        Long collectionKey = retrieveCollectionKey(collectionId);
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?"
+                              + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
+                              + " AND " + " EXISTS ( " 
+                                                            + "SELECT 1 FROM " + FILES_TABLE 
+                                                            + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
+                                                                    + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                                                            + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
+        
+        DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.MISSING.ordinal(), 
+                FileState.PREVIOUSLY_SEEN.ordinal(), collectionKey);
+    }
+    
+    /**
+     * Setting the file state of all 'PREVIOUSLY_SEEN' files for a given pillar to 'EXISTING'.
+     * @param collectionId The id of the collection.
+     * @param pillarId The id of the pillar.
+     */
+    public void setPreviouslySeenFilesToExisting(String collectionId, String pillarId) {
+        log.trace("Setting the file state for all '" + FileState.PREVIOUSLY_SEEN + "' files to '" 
+                + FileState.EXISTING + "'.");
+        Long collectionKey = retrieveCollectionKey(collectionId);
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?"
+                              + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
+                              + " AND " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ? "
+                              + " AND " + " EXISTS ( " 
+                                                            + "SELECT 1 FROM " + FILES_TABLE 
+                                                            + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
+                                                                    + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                                                            + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
+        
+        DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.EXISTING.ordinal(), 
+                FileState.PREVIOUSLY_SEEN.ordinal(), pillarKeyCache.get(pillarId), collectionKey);
     }
     
     /**
@@ -1255,7 +1345,7 @@ public class IntegrityDAO {
      */
     private void insertPillarStatistics(Long statisticsKey, String collectionID, String pillarID) {
         Long pillarKey = retrievePillarKey(pillarID);
-        Long fileCount = (long) getNumberOfExistingFilesForAPillar(pillarID, collectionID);
+        Long fileCount = (long) getNumberOfFilesForAPillar(pillarID, collectionID);
         Long dataSize = getCollectionFileSizeAtPillar(collectionID, pillarID);
         dataSize = dataSize == null ? 0 : dataSize;
         Long missingFiles = (long) getNumberOfMissingFilesForAPillar(pillarID, collectionID);

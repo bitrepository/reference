@@ -30,10 +30,10 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarMessageHandler;
-import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -43,7 +43,7 @@ import org.bitrepository.service.exception.RequestHandlerException;
  */
 public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHandler<T> {
     /** The manager of the archives.*/
-    private final CollectionArchiveManager archiveManager;
+    private final FileStore archiveManager;
     /** The manager of checksums.*/
     private final ReferenceChecksumManager csManager;
     
@@ -52,7 +52,7 @@ public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHand
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected ReferencePillarMessageHandler(MessageHandlerContext context, CollectionArchiveManager archivesManager,
+    protected ReferencePillarMessageHandler(MessageHandlerContext context, FileStore archivesManager,
             ReferenceChecksumManager csManager) {
         super(context);
         ArgumentValidator.checkNotNull(archivesManager, "CollectionArchiveManager archivesManager");
@@ -65,7 +65,7 @@ public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHand
     /**
      * @return The cache for this message handler.
      */
-    protected CollectionArchiveManager getArchives() {
+    protected FileStore getArchives() {
         return archiveManager;
     }
     
@@ -80,8 +80,10 @@ public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHand
      * Validates a given checksum calculation.
      * Ignores if the checksum type is null.
      * @param checksumSpec The checksum specification to validate.
+     * @param collectionId The id of the collection which this is relevant for.
      */
-    protected void validateChecksumSpecification(ChecksumSpecTYPE checksumSpec) throws RequestHandlerException {
+    protected void validateChecksumSpecification(ChecksumSpecTYPE checksumSpec, String collectionId) 
+            throws RequestHandlerException {
         if(checksumSpec == null) {
             return;
         }
@@ -92,7 +94,7 @@ public abstract class ReferencePillarMessageHandler<T> extends PillarMessageHand
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
             fri.setResponseText(e.toString());
-            throw new InvalidMessageException(fri, e);
+            throw new InvalidMessageException(fri, collectionId, e);
         }
     }
 }

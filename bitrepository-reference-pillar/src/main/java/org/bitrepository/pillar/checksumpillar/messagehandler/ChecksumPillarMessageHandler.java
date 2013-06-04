@@ -74,10 +74,11 @@ public abstract class ChecksumPillarMessageHandler<T> extends PillarMessageHandl
     /**
      * Validates the checksum specification.
      * A null as checksum argument is ignored.
-     * @param csSpec The checksum specification to validate. 
+     * @param csSpec The checksum specification to validate.
+     * @param collectionId The id of the collection regarding this checksum.
      * @throws InvalidMessageException If the checksum does not validate.
      */
-    protected void validateChecksumSpec(ChecksumSpecTYPE csSpec) throws InvalidMessageException {
+    protected void validateChecksumSpec(ChecksumSpecTYPE csSpec, String collectionId) throws InvalidMessageException {
         if(csSpec == null) {
             return;
         }
@@ -87,7 +88,7 @@ public abstract class ChecksumPillarMessageHandler<T> extends PillarMessageHandl
             ri.setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);
             ri.setResponseText("Cannot handle the checksum specification '" + csSpec + "'."
                     + "This checksum pillar can only handle '" + checksumType + "'");
-            throw new InvalidMessageException(ri);
+            throw new InvalidMessageException(ri, collectionId);
         }
     }
     

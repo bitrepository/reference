@@ -36,9 +36,9 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -61,7 +61,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected PutFileRequestHandler(MessageHandlerContext context, CollectionArchiveManager archivesManager, 
+    protected PutFileRequestHandler(MessageHandlerContext context, FileStore archivesManager, 
             ReferenceChecksumManager csManager) {
         super(context, archivesManager, csManager);
     }
@@ -96,15 +96,16 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         validateCollectionID(message);
         validatePillarId(message.getPillarID());
         if(message.getChecksumDataForNewFile() != null) {
-            validateChecksumSpecification(message.getChecksumDataForNewFile().getChecksumSpec());
+            validateChecksumSpecification(message.getChecksumDataForNewFile().getChecksumSpec(), 
+                    message.getCollectionID());
         } else if(getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
             responseInfo.setResponseText("According to the contract a checksum for creating a new file is required.");
-            throw new IllegalOperationException(responseInfo);
+            throw new IllegalOperationException(responseInfo, message.getCollectionID());
         }
         
-        validateChecksumSpecification(message.getChecksumRequestForNewFile());
+        validateChecksumSpecification(message.getChecksumRequestForNewFile(), message.getCollectionID());
         validateFileID(message.getFileID());
         
         checkThatTheFileDoesNotAlreadyExist(message);
@@ -123,7 +124,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
             irInfo.setResponseText("The file '" + message.getFileID() 
                     + "' already exists within the archive.");
             
-            throw new InvalidMessageException(irInfo);
+            throw new InvalidMessageException(irInfo, message.getCollectionID());
         }
     }
     
@@ -149,7 +150,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
             irInfo.setResponseText("Not enough space left in this pillar. Requires '" 
                     + fileSize.longValue() + "' but has only '" + useableSizeLeft + "'");
             
-            throw new InvalidMessageException(irInfo);
+            throw new InvalidMessageException(irInfo, message.getCollectionID());
         }
     }
     
@@ -187,7 +188,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
             ResponseInfo ri = new ResponseInfo();
             ri.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
             ri.setResponseText(errMsg);
-            throw new InvalidMessageException(ri);
+            throw new InvalidMessageException(ri, message.getCollectionID());
         }
         
         if(message.getChecksumDataForNewFile() != null) {
@@ -204,7 +205,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
                 responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
                 responseInfo.setResponseText("Wrong checksum! Expected: [" + expectedChecksum 
                         + "], but calculated: [" + calculatedChecksum + "]");
-                throw new IllegalOperationException(responseInfo);
+                throw new IllegalOperationException(responseInfo, message.getCollectionID());
             }
         } else {
             // TODO is such a checksum required?

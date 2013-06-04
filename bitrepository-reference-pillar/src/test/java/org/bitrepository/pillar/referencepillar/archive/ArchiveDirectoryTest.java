@@ -1,4 +1,4 @@
-package org.bitrepository.pillar.referencepillar;
+package org.bitrepository.pillar.referencepillar.archive;
 /*
  * #%L
  * Bitrepository Reference Pillar

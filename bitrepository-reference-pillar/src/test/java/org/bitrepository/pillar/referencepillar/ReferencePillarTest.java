@@ -28,6 +28,7 @@ import java.util.Date;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
@@ -46,7 +47,7 @@ import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 
 public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
-    protected CollectionArchiveManager archives;
+    protected FileStore archives;
     protected ReferenceChecksumManager csManager;
     protected ReferencePillarMediator mediator;
     protected MockAuditManager audits;
@@ -94,8 +95,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
                 new ResponseDispatcher(settingsForCUT, messageBus),
                 new PillarAlarmDispatcher(settingsForCUT, messageBus),
                 audits);
-        csManager = new ReferenceChecksumManager(archives, csCache, alarmDispatcher,
-                ChecksumUtils.getDefault(context.getSettings()), 3600000L);
+        csManager = new ReferenceChecksumManager(archives, csCache, alarmDispatcher, settingsForCUT);
         mediator = new ReferencePillarMediator(messageBus, context, archives, csManager);
         mediator.start();
         

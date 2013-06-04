@@ -88,7 +88,7 @@ public class IntegrityDatabase implements IntegrityModel {
 
     @Override
     public long getNumberOfFiles(String pillarId, String collectionId) {
-        return store.getNumberOfExistingFilesForAPillar(pillarId, collectionId);
+        return store.getNumberOfFilesForAPillar(pillarId, collectionId);
     }
 
     @Override
@@ -187,8 +187,8 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public void setAllFilesToUnknownFileState(String collectionId) {
-        store.setAllFileStatesToUnknown(collectionId);
+    public void setExistingFilesToPreviouslySeenFileState(String collectionId) {
+        store.setExistingFilesToPreviouslySeenFileState(collectionId);
     }
 
     @Override
@@ -196,6 +196,16 @@ public class IntegrityDatabase implements IntegrityModel {
         Date minDate = new Date(System.currentTimeMillis() 
                 - settings.getReferenceSettings().getIntegrityServiceSettings().getTimeBeforeMissingFileCheck());
         store.setOldUnknownFilesToMissing(minDate, collectionId);
+    }
+    
+    @Override
+    public void setPreviouslySeenFilesToMissing(String collectionId) {
+        store.setPreviouslySeenFilesToMissing(collectionId);
+    }
+
+    @Override
+    public void setPreviouslySeenToExisting(String collectionId, String pillarId) {
+        store.setPreviouslySeenFilesToExisting(collectionId, pillarId);
     }
 
     @Override

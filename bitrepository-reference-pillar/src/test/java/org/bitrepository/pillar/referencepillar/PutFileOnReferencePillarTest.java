@@ -88,7 +88,7 @@ public class PutFileOnReferencePillarTest extends ReferencePillarTest {
         
         addStep("Validate the content of the cache", "Should contain the checksum of the file");
         Assert.assertTrue(archives.hasFile(DEFAULT_FILE_ID, collectionID));
-        Assert.assertEquals(archives.getFile(DEFAULT_FILE_ID, collectionID).length(), 0);        
+        Assert.assertEquals(archives.getFileInfo(DEFAULT_FILE_ID, collectionID).getSize(), 0);        
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

@@ -33,9 +33,9 @@ import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
@@ -55,7 +55,7 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected DeleteFileRequestHandler(MessageHandlerContext context, CollectionArchiveManager archivesManager, 
+    protected DeleteFileRequestHandler(MessageHandlerContext context, FileStore archivesManager, 
             ReferenceChecksumManager csManager) {
         super(context, archivesManager, csManager);
     }
@@ -87,16 +87,17 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
     protected void validateMessage(DeleteFileRequest message) throws RequestHandlerException {
         validateCollectionID(message);
         validatePillarId(message.getPillarID());
-        validateChecksumSpecification(message.getChecksumRequestForExistingFile());
+        validateChecksumSpecification(message.getChecksumRequestForExistingFile(), message.getCollectionID());
         if(message.getChecksumDataForExistingFile() != null) {
-            validateChecksumSpecification(message.getChecksumDataForExistingFile().getChecksumSpec());
+            validateChecksumSpecification(message.getChecksumDataForExistingFile().getChecksumSpec(), 
+                    message.getCollectionID());
         } else if(getSettings().getRepositorySettings().getProtocolSettings()
                 .isRequireChecksumForDestructiveRequests()) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
             responseInfo.setResponseText("No checksum was supplied for the file to delete, even though according to "
                     + "the contract a checksum for file to be deleted during the deleting operation is required.");
-            throw new IllegalOperationException(responseInfo);
+            throw new IllegalOperationException(responseInfo, message.getCollectionID());
         }
         
         validateFileID(message.getFileID());
@@ -107,7 +108,7 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
             responseInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             responseInfo.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
                     + "not have that file!");
-            throw new InvalidMessageException(responseInfo);
+            throw new InvalidMessageException(responseInfo, message.getCollectionID());
         }
         
         // calculate and validate the checksum of the file.
@@ -132,7 +133,7 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
                 ResponseInfo responseInfo = new ResponseInfo();
                 responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
                 responseInfo.setResponseText(errMsg);
-                throw new IllegalOperationException(responseInfo);
+                throw new IllegalOperationException(responseInfo, message.getCollectionID());
             }
         } else {
             log.debug("No checksum for validation of the existing file before delete the file '" + message.getFileID() 

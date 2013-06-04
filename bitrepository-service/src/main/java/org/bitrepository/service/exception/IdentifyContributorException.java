@@ -34,17 +34,19 @@ public class IdentifyContributorException extends RequestHandlerException {
     /**
      * Constructor.
      * @param irInfo The IdentifyResponseInfo for this class to wrap.
+     * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
      */
-    public IdentifyContributorException(ResponseInfo irInfo) {
-        super(irInfo);
+    public IdentifyContributorException(ResponseInfo irInfo, String collectionId) {
+        super(irInfo, collectionId);
     }
     
     /**
      * Constructor.
      * @param irInfo The IdentifyResponseInfo for this class to wrap.
+     * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
      * @param e The exception to wrap into the StackTrace.
      */
-    public IdentifyContributorException(ResponseInfo irInfo, Exception e) {
-        super(irInfo, e);
+    public IdentifyContributorException(ResponseInfo irInfo, String collectionId, Exception e) {
+        super(irInfo, collectionId, e);
     }
 }

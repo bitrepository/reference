@@ -231,8 +231,8 @@ public class IntegrityCache implements IntegrityModel {
     }
 
     @Override
-    public void setAllFilesToUnknownFileState(String collectionId) {
-        integrityModel.setAllFilesToUnknownFileState(collectionId);
+    public void setExistingFilesToPreviouslySeenFileState(String collectionId) {
+        integrityModel.setExistingFilesToPreviouslySeenFileState(collectionId);
     }
 
     @Override
@@ -344,8 +344,13 @@ public class IntegrityCache implements IntegrityModel {
         return pillarID + "-" + collectionID;
     }
 
+    @Override
+    public void setPreviouslySeenFilesToMissing(String collectionId) {
+        integrityModel.setPreviouslySeenFilesToMissing(collectionId);
+    }
 
-
-
-
+    @Override
+    public void setPreviouslySeenToExisting(String collectionId, String pillarId) {
+        integrityModel.setPreviouslySeenToExisting(collectionId, pillarId);
+    }
 }

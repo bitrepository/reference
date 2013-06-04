@@ -22,10 +22,8 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.common;
+package org.bitrepository.common.filestore;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -34,34 +32,26 @@ import java.util.Collection;
  * Interface for the file stores and the reference archive.
  */
 public interface FileStore {
-    /** 
-     * Retrieves the wanted file as a FileInputStream.
-     * @param fileID The id of the wanted file.
-     * @return A FileInputStream to the requested file.
-     * @throws Exception If a problem occurs during the retrieval of the file.
-     */
-    public FileInputStream getFileAsInputstream(String fileID, String collectionId) throws IOException;
-    
     /**
      * Retrieves the wanted file.
      * @param fileID The id of the wanted file.
      * @return The requested file.
      */
-    public File getFile(String fileID, String collectionId);
+    FileInfo getFileInfo(String fileID, String collectionId);
     
     /**
      * Method to check whether a file already exists.
      * @param fileID The id of the file.
      * @return Whether it already exists within the archive.
      */
-    public boolean hasFile(String fileID, String collectionId);
+    boolean hasFile(String fileID, String collectionId);
 
     /**
      * Retrieves id of all the files within the storage.
      * @return The collection of file ids in the storage.
      * @throws Exception If anything unexpected occurs.
      */
-    public Collection<String> getAllFileIds(String collectionId);
+    Collection<String> getAllFileIds(String collectionId);
 
     /**
      * Stores a file given through an InputStream. The file is only intended to be stored in a temporary zone until it 
@@ -72,7 +62,7 @@ public interface FileStore {
      * @throws IOException If anything unexpected occurs (e.g. file already exists, not enough space, etc.)
      * @see #moveToArchive(String,String)
      */
-    public File downloadFileForValidation(String fileID, String collectionId, InputStream inputStream) throws IOException;
+    FileInfo downloadFileForValidation(String fileID, String collectionId, InputStream inputStream) throws IOException;
     
     /**
      * Moves a file from the temporary file zone to the archive.
@@ -80,12 +70,45 @@ public interface FileStore {
      * @throws Exception If anything unexpected occurs (e.g. file already exists, not enough space, etc.)
      * @see #downloadFileForValidation(String, String, InputStream)
      */
-    public void moveToArchive(String fileID, String collectionId);
+    void moveToArchive(String fileID, String collectionId);
 
     /**
      * Removes a file from the storage area.
      * @param fileID The id of the file to remove.
      * @throws Exception If anything unexpected occurs (e.g. no such file).
      */
-    public void deleteFile(String fileID, String collectionId);
+    void deleteFile(String fileID, String collectionId);
+    
+    /**
+     * The replace operation atomically.
+     * Removes the archived file from its directory, and moves the tmpFile into the archive dir.
+     * 
+     * @param fileID The id of the file to perform the replace function upon.
+     */
+    void replaceFile(String fileID, String collectionId);
+    
+    /**
+     * For retrieval of the size left in this archive.
+     * @return The number of bytes left in the archive.
+     */
+    long sizeLeftInArchive(String collectionId);
+    
+    /**
+     * Retrieves the file within a tmpDir.
+     * @param fileId The id of the file to locate within the tmpDir.
+     * @return The file in the tmpDir.
+     */
+    FileInfo getFileInTmpDir(String fileId, String collectionId);
+    
+    /**
+     * Ensures that no such file exists within the tmp directory.
+     * 
+     * @param fileId The id of the file to clean up after.
+     */
+    void ensureFileNotInTmpDir(String fileId, String collectionId);
+    
+    /**
+     * Closes all the archives.
+     */
+    void close();
 }

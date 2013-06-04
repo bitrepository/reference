@@ -46,9 +46,9 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -71,7 +71,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected GetChecksumsRequestHandler(MessageHandlerContext context, CollectionArchiveManager archivesManager, 
+    protected GetChecksumsRequestHandler(MessageHandlerContext context, FileStore archivesManager, 
             ReferenceChecksumManager csManager) {
         super(context, archivesManager, csManager);
     }
@@ -104,7 +104,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
     private void validateMessage(GetChecksumsRequest message) throws RequestHandlerException {
         validateCollectionID(message);
         validatePillarId(message.getPillarID());
-        validateChecksumSpecification(message.getChecksumRequestForExistingFile());
+        validateChecksumSpecification(message.getChecksumRequestForExistingFile(), message.getCollectionID());
         validateFileIDs(message);
         
         log.debug(MessageUtils.createMessageIdentifier(message) + "' validated and accepted.");
@@ -137,7 +137,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
             ResponseInfo fri = new ResponseInfo();
             fri.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             fri.setResponseText(errText);
-            throw new InvalidMessageException(fri);
+            throw new InvalidMessageException(fri, message.getCollectionID());
         }
     }
     
@@ -203,7 +203,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
                 ResponseInfo ir = new ResponseInfo();
                 ir.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
                 ir.setResponseText("Could not handle the creation and upload of the results due to: " + e.getMessage());
-                throw new InvalidMessageException(ir, e);
+                throw new InvalidMessageException(ir, message.getCollectionID(), e);
             }
             
             res.setResultAddress(url);

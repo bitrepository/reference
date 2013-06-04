@@ -27,6 +27,7 @@ import java.util.List;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityCollectorEventHandler;
@@ -91,15 +92,17 @@ public class UpdateFileIDsStep extends AbstractWorkFlowStep {
 
     @Override
     public synchronized void performStep() {
-        store.setAllFilesToUnknownFileState(collectionId);
+        store.setExistingFilesToPreviouslySeenFileState(collectionId);
 
         try {
-            List<String> pillarsToCollectFrom = new ArrayList<String>(getPillarIDs(collectionId));
+            List<String> pillarsToCollectFrom =
+                    new ArrayList<String>(SettingsUtils.getPillarIDsForCollection(collectionId));
             log.debug("Collecting fileIDs from: " + pillarsToCollectFrom);
             while (!pillarsToCollectFrom.isEmpty()) {
                 IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
-                collector.getFileIDs(collectionId, pillarsToCollectFrom, "IntegrityService: " + getName(), queries, eventHandler);
+                collector.getFileIDs(collectionId, pillarsToCollectFrom,
+                        "IntegrityService: " + getName(), queries, eventHandler);
                 
                 OperationEvent event = eventHandler.getFinish();
                 log.debug("Collection of file ids had the final event: " + event);
@@ -108,6 +111,9 @@ public class UpdateFileIDsStep extends AbstractWorkFlowStep {
         } catch (InterruptedException e) {
             log.warn("Interrupted while collecting file ids.", e);
         }
+        log.debug("Settings old unknown and previously seen files to missing.");
+        store.setOldUnknownFilesToMissing(collectionId);
+        store.setPreviouslySeenFilesToMissing(collectionId);
     }
     
     /**
@@ -125,18 +131,10 @@ public class UpdateFileIDsStep extends AbstractWorkFlowStep {
         return res.toArray(new ContributorQuery[pillars.size()]);
     }
 
+    /**
+     * @return Description of this step.
+     */
     public static String getDescription() {
         return "Contacts all pillar to retrieve the full list of files from the pillars";
-    }
-    
-    private List<String> getPillarIDs(String collectionId) {
-        List<String> pillars = null;
-        for(org.bitrepository.settings.repositorysettings.Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
-            if(c.getID().equals(collectionId)) {
-                pillars = c.getPillarIDs().getPillarID();
-                break;
-            }
-        }
-        return pillars;
     }
 }

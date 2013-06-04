@@ -161,7 +161,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.FILE_NOT_FOUND_FAILURE);
 
         addStep("Validate the content of the cache", "Should not contain the checksum of the file");
-        Assert.assertEquals(archives.getFile(DEFAULT_FILE_ID, collectionID).length(), 0);
+        Assert.assertEquals(archives.getFileInfo(DEFAULT_FILE_ID, collectionID).getSize(), 0);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -174,7 +174,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
                 DEFAULT_DOWNLOAD_FILE_ADDRESS, "NoneExistingFile", FILE_SIZE));
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
-        Assert.assertEquals(archives.getFile(DEFAULT_FILE_ID, collectionID).length(), 0);
+        Assert.assertEquals(archives.getFileInfo(DEFAULT_FILE_ID, collectionID).getSize(), 0);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
@@ -204,7 +204,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-        Assert.assertEquals(archives.getFile(DEFAULT_FILE_ID, collectionID).length(), 0);
+        Assert.assertEquals(archives.getFileInfo(DEFAULT_FILE_ID, collectionID).getSize(), 0);
     }
 
     @Test( groups = {"regressiontest", "pillartest"})

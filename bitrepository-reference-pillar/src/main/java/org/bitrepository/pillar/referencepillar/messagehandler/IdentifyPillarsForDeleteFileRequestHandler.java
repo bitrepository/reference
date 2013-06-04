@@ -29,9 +29,9 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -47,7 +47,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
      * @param csManager The checksum manager for the pillar.
      */
     protected IdentifyPillarsForDeleteFileRequestHandler(MessageHandlerContext context, 
-            CollectionArchiveManager archivesManager, ReferenceChecksumManager csManager) {
+            FileStore archivesManager, ReferenceChecksumManager csManager) {
         super(context, archivesManager, csManager);
     }
 
@@ -81,7 +81,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText("Could not find the requested file to delete.");
-            throw new IdentifyContributorException(irInfo);
+            throw new IdentifyContributorException(irInfo, message.getCollectionID());
         }
     }
 

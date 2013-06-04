@@ -33,9 +33,9 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -51,7 +51,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
      * @param csManager The checksum manager for the pillar.
      */
     protected IdentifyPillarsForGetChecksumsRequestHandler(MessageHandlerContext context, 
-            CollectionArchiveManager archivesManager, ReferenceChecksumManager csManager) {
+            FileStore archivesManager, ReferenceChecksumManager csManager) {
         super(context, archivesManager, csManager);
     }
     
@@ -63,7 +63,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
     @Override
     public void processRequest(IdentifyPillarsForGetChecksumsRequest message) throws RequestHandlerException {
         validateCollectionID(message);
-        validateChecksumSpecification(message.getChecksumRequestForExistingFile());
+        validateChecksumSpecification(message.getChecksumRequestForExistingFile(), message.getCollectionID());
         checkThatAllRequestedFilesAreAvailable(message);
         respondSuccesfullIdentification(message);
     }
@@ -96,7 +96,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
             
-            throw new IdentifyContributorException(irInfo);
+            throw new IdentifyContributorException(irInfo, message.getCollectionID());
         }
     }
     

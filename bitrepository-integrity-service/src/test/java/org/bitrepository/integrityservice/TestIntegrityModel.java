@@ -552,7 +552,7 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public void setAllFilesToUnknownFileState(String collectionId) {
+    public void setExistingFilesToPreviouslySeenFileState(String collectionId) {
         for(String s : cache.keySet()) {
             if(s.endsWith("-" + collectionId)) {
                 CollectionFileIDInfo collectionInfo = cache.get(s);
@@ -655,5 +655,15 @@ public class TestIntegrityModel implements IntegrityModel {
     public Long getPillarDataSize(String pillarID) {
         // TODO Fix this
         return null;
+    }
+    
+    @Override
+    public void setPreviouslySeenFilesToMissing(String collectionId) {
+        // TODO Fix this
+    }
+    
+    @Override
+    public void setPreviouslySeenToExisting(String collectionId, String pillarId) {
+        // TODO Fix this
     }
 }

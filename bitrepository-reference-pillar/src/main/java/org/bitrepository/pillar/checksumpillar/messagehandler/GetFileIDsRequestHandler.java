@@ -123,7 +123,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
         if(!getCache().hasFile(fileids.getFileID(), message.getCollectionID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            throw new InvalidMessageException(irInfo);
+            throw new InvalidMessageException(irInfo, message.getCollectionID());
         }
     }
     
@@ -188,7 +188,7 @@ public class GetFileIDsRequestHandler extends ChecksumPillarMessageHandler<GetFi
                 ResponseInfo ir = new ResponseInfo();
                 ir.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
                 ir.setResponseText(e.getMessage());
-                throw new InvalidMessageException(ir, e);
+                throw new InvalidMessageException(ir, message.getCollectionID(), e);
             }
         }
         

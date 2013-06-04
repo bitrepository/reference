@@ -19,16 +19,16 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.referencepillar;
+package org.bitrepository.pillar.referencepillar.archive;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
 
+import org.bitrepository.common.filestore.DefaultFileInfo;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.cache.ChecksumDAO;
@@ -36,8 +36,6 @@ import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.cache.MemoryCacheMock;
 import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.common.ChecksumDatabaseCreator;
-import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
-import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
@@ -66,7 +64,7 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
         ChecksumStore csCache = new MemoryCacheMock();
         AlarmDispatcher alarmDispatcher = new AlarmDispatcher(settingsForCUT, messageBus);
         ReferenceChecksumManager csManager =
-                new ReferenceChecksumManager(archives, csCache, alarmDispatcher, ChecksumUtils.getDefault(settingsForCUT), 3600000L);
+                new ReferenceChecksumManager(archives, csCache, alarmDispatcher, settingsForCUT);
 
         testRecalculatingChecksumsDueToChangedFile(csManager, archives);
     }
@@ -85,7 +83,7 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
         CollectionArchiveManager archives = new CollectionArchiveManager(settingsForCUT);
         ChecksumStore csCache = new ChecksumDAO(settingsForCUT);
         ReferenceChecksumManager csManager = new ReferenceChecksumManager(archives, csCache, 
-                new AlarmDispatcher(settingsForCUT, messageBus), ChecksumUtils.getDefault(settingsForCUT), 3600000L);
+                new AlarmDispatcher(settingsForCUT, messageBus), settingsForCUT);
 
         testRecalculatingChecksumsDueToChangedFile(csManager, archives);
     }
@@ -112,8 +110,8 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
                 csResults.getEntries().get(0).getCalculationTimestamp()).getTime() > initialDate.getTime());
         Assert.assertTrue(CalendarUtils.convertFromXMLGregorianCalendar(
                 csResults.getEntries().get(0).getCalculationTimestamp()).getTime() < beforeChange.getTime());
-        Assert.assertTrue(archives.getFile(TEST_FILE, collectionID).lastModified() >= initialDate.getTime()); 
-        Assert.assertTrue(archives.getFile(TEST_FILE, collectionID).lastModified() <= beforeChange.getTime());
+        Assert.assertTrue(archives.getFileInfo(TEST_FILE, collectionID).getMdate() >= initialDate.getTime()); 
+        Assert.assertTrue(archives.getFileInfo(TEST_FILE, collectionID).getMdate() <= beforeChange.getTime());
 
         synchronized(this) {
             addStep("The file system cannot handle timestamps in millis.", "One second wait, before changing the file.");
@@ -121,7 +119,8 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
         }
 
         addStep("Change the file", "Should be recalculated and thus have a newer timestamp");
-        FileOutputStream out = new FileOutputStream(archives.getFile(TEST_FILE, collectionID), true);
+        DefaultFileInfo dfi = (DefaultFileInfo) archives.getFileInfo(TEST_FILE, collectionID);
+        FileOutputStream out = new FileOutputStream(dfi.getFile(), true);
         out.write("\n".getBytes());
         out.write(TEST_ADDED_CONTENT.getBytes());
         out.flush();
@@ -138,9 +137,9 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
                 changedCsResults.getEntries().get(0).getCalculationTimestamp()).getTime() > beforeChange.getTime());
         Assert.assertTrue(CalendarUtils.convertFromXMLGregorianCalendar(
                 changedCsResults.getEntries().get(0).getCalculationTimestamp()).getTime() <= afterChange.getTime());
-        Assert.assertTrue(archives.getFile(TEST_FILE, collectionID).lastModified() >= initialDate.getTime());
-        Assert.assertTrue(archives.getFile(TEST_FILE, collectionID).lastModified() >= beforeChange.getTime());
-        Assert.assertTrue(archives.getFile(TEST_FILE, collectionID).lastModified() <= afterChange.getTime());
+        Assert.assertTrue(archives.getFileInfo(TEST_FILE, collectionID).getMdate() >= initialDate.getTime());
+        Assert.assertTrue(archives.getFileInfo(TEST_FILE, collectionID).getMdate() >= beforeChange.getTime());
+        Assert.assertTrue(archives.getFileInfo(TEST_FILE, collectionID).getMdate() <= afterChange.getTime());
         
         addStep("Test the checksum of before and after the change", "Not identical");
         String csBefore = Base16Utils.decodeBase16(csResults.getEntries().get(0).getChecksumValue());

@@ -154,6 +154,14 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element name="EnsureChecksumWorkflowInterval" type="xs:nonNegativeInteger" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>
+              The number of milliseconds between running the workflow for ensuring the checksums integrity.
+              Default is once per hour, or 3600000.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
         <xs:element name="AuditTrailContributerDatabase" type="DatabaseSpecifics">
           <xs:annotation>
             <xs:documentation xml:lang="en">
@@ -181,6 +189,15 @@
             <xs:documentation xml:lang="en">
               Whether the ChecksumPillar should download the file regarding PutFile operations.
               Default value is 'DOWNLOAD_WHEN_MISSING_FROM_MESSAGE'.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="FileStoreClass" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Classpath for the FileStore backend of the ReferencePillar.
+              Default value, when undefined is: 
+              'org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager'.
             </xs:documentation>
           </xs:annotation>
         </xs:element>

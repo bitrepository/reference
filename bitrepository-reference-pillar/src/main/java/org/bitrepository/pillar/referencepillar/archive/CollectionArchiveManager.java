@@ -1,7 +1,27 @@
+/*
+ * #%L
+ * Bitrepository Reference Pillar
+ * %%
+ * Copyright (C) 2010 - 2013 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.pillar.referencepillar.archive;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -10,7 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bitrepository.common.FileStore;
+import org.bitrepository.common.filestore.DefaultFileInfo;
+import org.bitrepository.common.filestore.FileInfo;
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.settings.referencesettings.CollectionDirs;
@@ -79,13 +101,8 @@ public class CollectionArchiveManager implements FileStore {
     }
 
     @Override
-    public FileInputStream getFileAsInputstream(String fileID, String collectionId) throws IOException {
-        return getArchive(collectionId).getFileAsInputstream(fileID);
-    }
-
-    @Override
-    public File getFile(String fileID, String collectionId) {
-        return getArchive(collectionId).getFile(fileID);
+    public FileInfo getFileInfo(String fileID, String collectionId) {
+        return new DefaultFileInfo(getArchive(collectionId).getFile(fileID));
     }
 
     @Override
@@ -99,9 +116,9 @@ public class CollectionArchiveManager implements FileStore {
     }
 
     @Override
-    public File downloadFileForValidation(String fileID, String collectionId, InputStream inputStream) 
+    public FileInfo downloadFileForValidation(String fileID, String collectionId, InputStream inputStream) 
             throws IOException {
-        return getArchive(collectionId).downloadFileForValidation(fileID, inputStream);
+        return new DefaultFileInfo(getArchive(collectionId).downloadFileForValidation(fileID, inputStream));
     }
 
     @Override
@@ -114,40 +131,31 @@ public class CollectionArchiveManager implements FileStore {
         getArchive(collectionId).deleteFile(fileID);        
     }
     
-    /**
-     * The replace operation atomically.
-     * Removes the archived file from its directory, and moves the tmpFile into the archive dir.
-     * 
-     * @param fileID The id of the file to perform the replace function upon.
-     */
+    @Override
     public synchronized void replaceFile(String fileID, String collectionId) {
         getArchive(collectionId).replaceFile(fileID);
     }
     
-    /**
-     * For retrieval of the size left in this archive.
-     * @return The number of bytes left in the archive.
-     */
+    @Override
     public long sizeLeftInArchive(String collectionId) {
         return getArchive(collectionId).sizeLeftInArchive();
     }
     
-    /**
-     * Retrieves the file within a tmpDir.
-     * @param fileId The id of the file to locate within the tmpDir.
-     * @return The file in the tmpDir.
-     */
-    public File getFileInTmpDir(String fileId, String collectionId) {
-        return getArchive(collectionId).getFileInTmpDir(fileId);
+    @Override
+    public FileInfo getFileInTmpDir(String fileId, String collectionId) {
+        return new DefaultFileInfo(getArchive(collectionId).getFileInTmpDir(fileId));
     }
     
-    /**
-     * Ensures that no such file exists within the tmp directory.
-     * 
-     * @param fileId The id of the file to clean up after.
-     */
+    @Override
     public void ensureFileNotInTmpDir(String fileId, String collectionId) {
         getArchive(collectionId).ensureFileNotInTmpDir(fileId);
+    }
+    
+    @Override
+    public void close() {
+        for(ReferenceArchive ra : archives.values()){
+            ra.close();
+        }
     }
     
     /**
@@ -161,15 +169,6 @@ public class CollectionArchiveManager implements FileStore {
             return archives.get(collectionId);
         } else {
             throw new IllegalStateException("The collection '" + collectionId + "' has no attached archive.");
-        }
-    }
-    
-    /**
-     * Closes all the archives.
-     */
-    public void close() {
-        for(ReferenceArchive ra : archives.values()){
-            ra.close();
         }
     }
 }

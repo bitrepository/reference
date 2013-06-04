@@ -36,9 +36,9 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -70,7 +70,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected ReplaceFileRequestHandler(MessageHandlerContext context, CollectionArchiveManager archivesManager, 
+    protected ReplaceFileRequestHandler(MessageHandlerContext context, FileStore archivesManager, 
             ReferenceChecksumManager csManager) {
         super(context, archivesManager, csManager);
     }
@@ -109,27 +109,29 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
     protected void validateMessage(ReplaceFileRequest message) throws RequestHandlerException {
         validateCollectionID(message);
         validatePillarId(message.getPillarID());
-        validateChecksumSpecification(message.getChecksumRequestForExistingFile());
-        validateChecksumSpecification(message.getChecksumRequestForNewFile());
+        validateChecksumSpecification(message.getChecksumRequestForExistingFile(), message.getCollectionID());
+        validateChecksumSpecification(message.getChecksumRequestForNewFile(), message.getCollectionID());
         if(message.getChecksumDataForExistingFile() != null) {
-            validateChecksumSpecification(message.getChecksumDataForExistingFile().getChecksumSpec());
+            validateChecksumSpecification(message.getChecksumDataForExistingFile().getChecksumSpec(), 
+                    message.getCollectionID());
         } else if(getSettings().getRepositorySettings().getProtocolSettings()
                 .isRequireChecksumForDestructiveRequests()) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
             responseInfo.setResponseText("According to the contract a checksum for file to be deleted during the "
                     + "replacing operation is required.");
-            throw new IllegalOperationException(responseInfo);
+            throw new IllegalOperationException(responseInfo, message.getCollectionID());
         }
         if(message.getChecksumDataForNewFile() != null) {
-            validateChecksumSpecification(message.getChecksumDataForNewFile().getChecksumSpec());
+            validateChecksumSpecification(message.getChecksumDataForNewFile().getChecksumSpec(), 
+                    message.getCollectionID());
         } else if(getSettings().getRepositorySettings().getProtocolSettings()
                 .isRequireChecksumForNewFileRequests()) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
             responseInfo.setResponseText("According to the contract a checksum for new file in the "
                     + "replacing operation is required.");
-            throw new IllegalOperationException(responseInfo);
+            throw new IllegalOperationException(responseInfo, message.getCollectionID());
         }
         
         // Validate, that we have the requested file.
@@ -138,7 +140,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
             responseInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             responseInfo.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
                     + "not have that file!");
-            throw new InvalidMessageException(responseInfo);
+            throw new InvalidMessageException(responseInfo, message.getCollectionID());
         }
 
         // validate, that we have enough space for the new file.
@@ -152,7 +154,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FAILURE);
             responseInfo.setResponseText(errMsg);
-            throw new InvalidMessageException(responseInfo);
+            throw new InvalidMessageException(responseInfo, message.getCollectionID());
         }
         
         // Make audit about calculating the checksum.
@@ -178,7 +180,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
                 ResponseInfo responseInfo = new ResponseInfo();
                 responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
                 responseInfo.setResponseText(errMsg);
-                throw new IllegalOperationException(responseInfo);
+                throw new IllegalOperationException(responseInfo, message.getCollectionID());
             }
         } else {
             log.debug("No checksum for validation of the existing file before replace.");
@@ -220,7 +222,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
             ResponseInfo ri = new ResponseInfo();
             ri.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
             ri.setResponseText(errMsg);
-            throw new InvalidMessageException(ri);
+            throw new InvalidMessageException(ri, message.getCollectionID());
         }
         
         ChecksumDataForFileTYPE csData = message.getChecksumDataForNewFile();
@@ -236,7 +238,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
                 responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
                 responseInfo.setResponseText("Wrong checksum! Expected: [" + requestedChecksum 
                         + "], but calculated: [" + checksum + "]");
-                throw new IllegalOperationException(responseInfo);
+                throw new IllegalOperationException(responseInfo, message.getCollectionID());
             }
         } else {
             // TODO is such a checksum required?

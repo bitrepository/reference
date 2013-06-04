@@ -32,17 +32,19 @@ public class IllegalOperationException extends RequestHandlerException {
     /**
      * Constructor.
      * @param rInfo The ResponseInfo for this class to wrap.
+     * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
      */
-    public IllegalOperationException(ResponseInfo rInfo) {
-        super(rInfo);
+    public IllegalOperationException(ResponseInfo rInfo, String collectionId) {
+        super(rInfo, collectionId);
     }
     
     /**
      * Constructor.
      * @param rInfo The ResponseInfo for this class to wrap.
+     * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
      * @param e The exception to wrap into the StackTrace.
      */
-    public IllegalOperationException(ResponseInfo rInfo, Exception e) {
-        super(rInfo, e);
+    public IllegalOperationException(ResponseInfo rInfo, String collectionId, Exception e) {
+        super(rInfo, collectionId, e);
     }
 }

@@ -77,7 +77,7 @@ public interface IntegrityModel {
      * Retrieves the number of files on a pillar in a collection
      * @param pillarId The pillar.
      * @param collectionId The ID of the collection to get the number of files from
-     * @return Retrieves the number of files in the state 'EXISTING' at a given pillar.
+     * @return Retrieves the number of files in the state 'EXISTING' or 'PREVIOUSLY_SEEN' at a given pillar.
      */
     long getNumberOfFiles(String pillarId, String collectionId);
     
@@ -205,13 +205,27 @@ public interface IntegrityModel {
      * Set the file state of all files to 'unknown'.
      * @param collectionId The ID of the collection to work on.
      */
-    void setAllFilesToUnknownFileState(String collectionId);
+    void setExistingFilesToPreviouslySeenFileState(String collectionId);
 
     /**
-     * Set the file state of all unknown files to 'missing'.
+     * Set the file state of all unknown files to 'missing' if the file-date is newer than the grace period.
      * @param collectionId The ID of the collection to work on
      */
     void setOldUnknownFilesToMissing(String collectionId);
+    
+    /**
+     * Set the file state of all 'PreviouslySeen' files to 'missing'.
+     * @param collectionId
+     */
+    void setPreviouslySeenFilesToMissing(String collectionId);
+    
+    /**
+     * Set the file state of all 'PreviouslySeen' files of a given pillar to 'existing'.
+     * This is to be used when a is not responding during a update of the filelist.
+     * @param collectionId The id of the collection.
+     * @param pillar The id of the pillar.
+     */
+    void setPreviouslySeenToExisting(String collectionId, String pillarId);
 
     /**
      * Retrieves the date for the latest file entry for a given collection.
