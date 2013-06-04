@@ -39,10 +39,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.bitrepository.common.utils.TimeUtils;
-import org.bitrepository.integrityservice.IntegrityService;
-import org.bitrepository.integrityservice.IntegrityServiceFactory;
 import org.bitrepository.common.utils.FileSizeUtils;
+import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.common.utils.TimeUtils;
+import org.bitrepository.integrityservice.IntegrityServiceManager;
+import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.service.workflow.WorkflowID;
+import org.bitrepository.service.workflow.WorkflowManager;
 import org.bitrepository.service.workflow.WorkflowTimerTask;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,10 +56,12 @@ import org.slf4j.LoggerFactory;
 @Path("/IntegrityService")
 public class RestIntegrityService {
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private IntegrityService service;
+    private IntegrityModel model;
+    private WorkflowManager workflowManager;
 
     public RestIntegrityService() {
-        this.service = IntegrityServiceFactory.getIntegrityService();
+        this.model = IntegrityServiceManager.getIntegrityModel();
+        this.workflowManager = IntegrityServiceManager.getWorkflowManager();
     }
 
     /**
@@ -78,7 +83,7 @@ public class RestIntegrityService {
         int firstID = (pageNumber - 1) * pageSize;
         int lastID = (pageNumber * pageSize) - 1;
         
-        List<String> ids = service.getChecksumErrors(collectionID, pillarID, firstID, lastID);
+        List<String> ids = model.getFilesWithChecksumErrorsAtPillar(pillarID, firstID, lastID, collectionID);
         return ids;
     }
 
@@ -101,7 +106,7 @@ public class RestIntegrityService {
         int firstID = (pageNumber - 1) * pageSize;
         int lastID = (pageNumber * pageSize) - 1;
         
-        List<String> ids = service.getMissingFiles(collectionID, pillarID, firstID, lastID);
+        List<String> ids = model.getMissingFilesAtPillar(pillarID, firstID, lastID, collectionID);
         return ids;
     }
     
@@ -124,7 +129,7 @@ public class RestIntegrityService {
         int firstID = (pageNumber - 1) * pageSize;
         int lastID = (pageNumber * pageSize) - 1;
         
-        List<String> ids = service.getAllFileIDs(collectionID, pillarID, firstID, lastID);
+        List<String> ids = model.getFilesOnPillar(pillarID, firstID, lastID, collectionID);
         return ids;
     }
 
@@ -136,7 +141,7 @@ public class RestIntegrityService {
     @Produces(MediaType.APPLICATION_JSON)
     public String getIntegrityStatus(@QueryParam("collectionID") String collectionID) {
         JSONArray array = new JSONArray();
-        for(String pillar : service.getPillarList(collectionID)) {
+        for(String pillar : SettingsUtils.getPillarIDsForCollection(collectionID)) {
             array.put(makeIntegrityStatusObj(pillar, collectionID));
         }
         return array.toString();
@@ -151,7 +156,7 @@ public class RestIntegrityService {
     public String getWorkflowSetup(@QueryParam("collectionID") String collectionID) {
         try {
             JSONArray array = new JSONArray();
-            Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows(collectionID);
+            Collection<WorkflowTimerTask> workflows = workflowManager.getWorkflows(collectionID);
             for(WorkflowTimerTask workflow : workflows) {
                 array.put(makeWorkflowSetupObj(workflow));
             }
@@ -169,7 +174,7 @@ public class RestIntegrityService {
     @Path("/getWorkflowList/")
     @Produces(MediaType.APPLICATION_JSON)
     public List<String> getWorkflowList(@QueryParam("collectionID") String collectionID) {
-        Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows(collectionID);
+        Collection<WorkflowTimerTask> workflows = workflowManager.getWorkflows(collectionID);
         List<String> workflowIDs = new ArrayList<String>();
         for(WorkflowTimerTask workflow : workflows) {
             workflowIDs.add(workflow.getWorkflowID().getWorkflowName());
@@ -186,13 +191,7 @@ public class RestIntegrityService {
     @Produces("text/html")
     public String startWorkflow(@FormParam("workflowID") String workflowID,
                                 @FormParam("collectionID") String collectionID) {
-        Collection<WorkflowTimerTask> workflows = service.getScheduledWorkflows(collectionID);
-        for(WorkflowTimerTask workflowTask : workflows) {
-            if(workflowTask.getWorkflowID().getWorkflowName().equals(workflowID)) {
-                return workflowTask.runWorkflow();
-            }
-        }
-        return "No workflow named '" + workflowID + "' was found!";
+        return workflowManager.startWorkflow(new WorkflowID(workflowID, collectionID));
     }
 
     /**
@@ -203,9 +202,9 @@ public class RestIntegrityService {
     @Produces(MediaType.APPLICATION_JSON)
     public String getCollectionInformation(@QueryParam("collectionID") String collectionID) {
         JSONObject obj = new JSONObject();
-        Date lastIngest = service.getDateForNewestFileInCollection(collectionID);
-        Long collectionDataSize = service.getCollectionSize(collectionID);
-        Long numberOfFiles = service.getNumberOfFilesInCollection(collectionID);
+        Date lastIngest = model.getDateForNewestFileEntryForCollection(collectionID);
+        Long collectionDataSize = model.getCollectionFileSize(collectionID);
+        Long numberOfFiles = model.getNumberOfFilesInCollection(collectionID);
         String lastIngestStr = lastIngest == null ? "No files ingested yet" : TimeUtils.shortDate(lastIngest);
         try {
             obj.put("lastIngest", lastIngestStr);
@@ -221,9 +220,9 @@ public class RestIntegrityService {
         JSONObject obj = new JSONObject();
         try {
             obj.put("pillarID", pillarID);
-            obj.put("totalFileCount", service.getNumberOfFiles(pillarID, collectionID));
-            obj.put("missingFilesCount",service.getNumberOfMissingFiles(pillarID, collectionID));
-            obj.put("checksumErrorCount", service.getNumberOfChecksumErrors(pillarID, collectionID));
+            obj.put("totalFileCount", model.getNumberOfFiles(pillarID, collectionID));
+            obj.put("missingFilesCount", model.getNumberOfMissingFiles(pillarID, collectionID));
+            obj.put("checksumErrorCount", model.getNumberOfChecksumErrors(pillarID, collectionID));
             return obj;
         } catch (JSONException e) {
             return (JSONObject) JSONObject.NULL;
@@ -249,5 +248,4 @@ public class RestIntegrityService {
             return (JSONObject) JSONObject.NULL;
         }
     }
-
 }

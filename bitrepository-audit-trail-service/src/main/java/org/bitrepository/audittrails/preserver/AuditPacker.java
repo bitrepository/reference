@@ -66,7 +66,7 @@ public class AuditPacker {
         this.collectionId = collectionId;
         this.directory = FileUtils.retrieveDirectory(settings.getReferenceSettings().getAuditTrailServiceSettings()
                 .getAuditTrailPreservationTemporaryDirectory());
-        this.contributors.addAll(SettingsUtils.getAuditContributorsForCollection(settings, collectionId));
+        this.contributors.addAll(SettingsUtils.getAuditContributorsForCollection(collectionId));
         
         initialiseReachedSequenceNumbers();
     }

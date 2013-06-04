@@ -2,6 +2,7 @@ package org.bitrepository.pillar.referencepillar.scheduler;
 
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.WorkflowContext;
 import org.bitrepository.service.workflow.WorkflowID;
 import org.bitrepository.service.workflow.WorkflowStatistic;
 import org.slf4j.Logger;
@@ -58,5 +59,10 @@ public class RecalculateChecksumWorkflow implements Workflow {
     @Override
     public WorkflowID getWorkflowID() {
         return null;
+    }
+
+    @Override
+    public void initialise(WorkflowContext context, String collectionID) {
+        //Not used as reference pillar workflows are defined compiletime.
     }
 }

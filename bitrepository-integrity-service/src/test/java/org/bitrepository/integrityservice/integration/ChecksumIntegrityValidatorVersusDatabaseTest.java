@@ -39,15 +39,11 @@ import org.bitrepository.integrityservice.cache.database.ChecksumState;
 import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.checking.ChecksumIntegrityValidator;
 import org.bitrepository.integrityservice.checking.reports.ChecksumReportModel;
-import org.bitrepository.integrityservice.mocks.MockAuditManager;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatabaseTestCase {
-    /** The settings for the tests. Should be instantiated in the setup.*/
-    MockAuditManager auditManager;
-    
     public static final String TEST_PILLAR_1 = "test-pillar-1";
     public static final String TEST_PILLAR_2 = "test-pillar-2";
     public static final String TEST_PILLAR_3 = "test-pillar-3";
@@ -60,7 +56,6 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
     public void setup() throws Exception {
         super.setup();
         TEST_COLLECTION = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-        auditManager = new MockAuditManager();
     }
     
     @Override 

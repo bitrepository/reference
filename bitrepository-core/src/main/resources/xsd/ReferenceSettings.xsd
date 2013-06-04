@@ -98,11 +98,11 @@
           <xs:annotation>
             <xs:documentation xml:lang="en">
               Number of allowed automatic retries for the performing part of an operation.
-              This relates to operations which can fail due to file transfer errors. 
+              This relates to operations which can fail due to file transfer errors.
               0 denotes that a operation should not be retried (only the initial operation attempt).
-              1 or higher denotes the number of additional attempts of file transfer. I.e. if 2 up to 3 
-              attempts is allowed before the operation fails. 
-              
+              1 or higher denotes the number of additional attempts of file transfer. I.e. if 2 up to 3
+              attempts is allowed before the operation fails.
+
             </xs:documentation>
           </xs:annotation>
         </xs:element>
@@ -204,7 +204,7 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="CollectionDirs">
     <xs:complexType>
       <xs:sequence>
@@ -213,10 +213,10 @@
             <xs:documentation xml:lang="en">
               The list of collection ids to have its data archived with the following list of directories.
               Each collection will have its files archived in its own sub-directory with the collection name.
-              A collection is only able to be used in one 'CollectionDir'.    
-              
+              A collection is only able to be used in one 'CollectionDir'.
+
               If no collection ids are defined, then it will be used as default directory for the collections, which
-              does not have a specific set of directories defined.              
+              does not have a specific set of directories defined.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
@@ -538,23 +538,17 @@
     <xs:complexType>
       <xs:annotation>
         <xs:documentation>
-          The settings for the Alarm service.
+          The settings for the Integrity service.
         </xs:documentation>
       </xs:annotation>
       <xs:sequence>
         <xs:element name="ID" type="xs:string" />
-        <xs:element name="SchedulerInterval" type="xs:long">
+        <xs:element name="Workflows" type="WorkflowSettings" />
+        <xs:element name="SchedulerInterval" type="xs:long" minOccurs="0" >
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The amount of milliseconds between each time the scheduler collects integrity information.
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="GracePeriod" type="xs:long" minOccurs="0">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              Initial grace period in milliseconds after startup to allow the system to finish startup. The default is
-              0 ms.
+              The amount of milliseconds between each time the scheduler checks if any workflow should be run. The
+              default is 60000 ms, eg. 1 minut.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
@@ -575,7 +569,7 @@
         <xs:element name="MaximumNumberOfResultsPerConversation" type="xs:positiveInteger" minOccurs="0">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The maximum number of results for each conversation when updating the database with checksums or 
+              The maximum number of results for each conversation when updating the database with checksums or
               file ids from the pillars using the GetChecksumsClient or GetFileIDsClient respectively.
               Optional. If not set, then the default value is 10000.
             </xs:documentation>
@@ -596,6 +590,81 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+    <xs:complexType name="WorkflowSettings">
+      <xs:annotation>
+        <xs:documentation>List of Collections present in the repository.</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="Workflow" type ="WorkflowConfiguration" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+
+  <xs:complexType name="WorkflowConfiguration">
+    <xs:annotation>
+      <xs:documentation>Defines a specific workflow.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="WorkflowClass" type="xs:string" minOccurs="0" >
+        <xs:annotation>
+          <xs:documentation>The class for the workflow to run.
+            The class most implement the workflow interface</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element ref="Schedules" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            List of the schedules to run for this workflow.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="Schedules">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>List of Collections present in the repository.</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element ref="Schedule" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Schedule">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>Defines a specific workflow.</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="WorkflowInterval" type="xs:long">
+          <xs:annotation>
+            <xs:documentation>The time in milliseconds between the workflow is run.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="Collections" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>
+              List of the collections this scheduled workflow should be run on. If no collections are specified, the workflow is
+              run on all workflows.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Collections">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>Defines a set of collections.</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="CollectionID" type="xs:string" maxOccurs="unbounded" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

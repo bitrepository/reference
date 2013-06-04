@@ -39,8 +39,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Scheduler that uses Timer to run workflows.
  */
-public class TimerbasedScheduler implements ServiceScheduler {
-    /** The log.*/
+public class TimerbasedScheduler implements WorkflowScheduler {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /** The timer that schedules events. */
@@ -49,7 +48,8 @@ public class TimerbasedScheduler implements ServiceScheduler {
     private final long schedulerInterval;
     /** The map between the running timertasks and their names.*/
     private Map<WorkflowID, WorkflowTimerTask> intervalTasks = new HashMap<WorkflowID, WorkflowTimerTask>();
-    
+    public static final long DEFAULT_SCHEDULER_INTERVAL = 86400000;
+
     /** The name of the timer.*/
     private static final String TIMER_NAME = "Service Scheduler";
     /** Whether the timer is a deamon.*/
@@ -59,40 +59,59 @@ public class TimerbasedScheduler implements ServiceScheduler {
 
     /** Setup a timer task for running the workflows at requested interval.
      *
-     * @param interval The interval for the scheduling of a workflow.
+     * @param interval The interval for checking if workflows should be run.
      */
     public TimerbasedScheduler(long interval) {
-        this.schedulerInterval = interval;
+        if (interval == -1) {
+            schedulerInterval = DEFAULT_SCHEDULER_INTERVAL;
+        } else {
+            schedulerInterval = interval;
+        }
         timer = new Timer(TIMER_NAME, TIMER_IS_DEAMON);
     }
 
     @Override
     public void scheduleWorkflow(Workflow workflow, Long interval) {
-        if(cancelWorkflow(workflow.getWorkflowID())) {
-            log.info("Recreated workflow named '" + workflow.getWorkflowID() + "': " + workflow);
-        } else {
-            log.debug("Created a workflow named '" + workflow.getWorkflowID() + "': " + workflow);
-        }
+        log.info("Scheduling workflow : " + workflow);
+
         WorkflowTimerTask task = new WorkflowTimerTask(interval, workflow);
         timer.scheduleAtFixedRate(task, NO_DELAY, schedulerInterval);
         intervalTasks.put(workflow.getWorkflowID(), task);
     }
-    
+
     @Override
-    public boolean cancelWorkflow(WorkflowID workflowID) {
-        WorkflowTimerTask task = intervalTasks.remove(workflowID);
-        if(task == null) {
-            return false;
+    public String startWorkflow(Workflow workflow) {
+        long timeBetweenRuns = -1;
+        WorkflowTimerTask oldTask = cancelWorkflow(workflow.getWorkflowID());
+        if (oldTask != null) {
+            timeBetweenRuns = oldTask.getIntervalBetweenRuns();
         }
-        
-        return task.cancel();
+
+        WorkflowTimerTask task = new WorkflowTimerTask(timeBetweenRuns, workflow);
+        timer.scheduleAtFixedRate(task, NO_DELAY, schedulerInterval);
+        intervalTasks.put(workflow.getWorkflowID(), task);
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
     
     @Override
-    public List<WorkflowTimerTask> getScheduledWorkflows() {
+    public WorkflowTimerTask cancelWorkflow(WorkflowID workflowID) {
+        WorkflowTimerTask task = intervalTasks.remove(workflowID);
+        if(task == null) {
+            return null;
+        }
+        task.cancel();
+
+        return task;
+    }
+    
+    @Override
+    public List<WorkflowTimerTask> getWorkflows(String collectionID) {
         List<WorkflowTimerTask> workflows = new ArrayList<WorkflowTimerTask>();
-        workflows.addAll(intervalTasks.values());
-        
+        for(WorkflowTimerTask task : intervalTasks.values()) {
+            if(task.getWorkflowID().getCollectionID().equals(collectionID)) {
+                workflows.add(task);
+            }
+        }
         return workflows;
     }
 }

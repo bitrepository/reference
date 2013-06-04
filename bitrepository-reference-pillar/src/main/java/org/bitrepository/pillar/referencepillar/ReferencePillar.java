@@ -32,6 +32,7 @@ import javax.jms.JMSException;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.pillar.Pillar;
 import org.bitrepository.pillar.cache.ChecksumDAO;
 import org.bitrepository.pillar.cache.ChecksumStore;
@@ -48,8 +49,8 @@ import org.bitrepository.service.audit.AuditTrailContributerDAO;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.database.DBConnector;
-import org.bitrepository.service.scheduler.ServiceScheduler;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
+import org.bitrepository.service.scheduler.WorkflowScheduler;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.slf4j.Logger;
@@ -72,7 +73,7 @@ public class ReferencePillar implements Pillar {
     /** The checksum store.*/
     private final ChecksumStore csStore;
     /** The scheduler for the recalculation workflows.*/
-    private final ServiceScheduler scheduler;
+    private final WorkflowScheduler scheduler;
     /** The manager of the checksums with regard to the archive.*/
     private final ReferenceChecksumManager manager;
     
@@ -89,8 +90,8 @@ public class ReferencePillar implements Pillar {
     public ReferencePillar(MessageBus messageBus, Settings settings) {
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
-
         this.messageBus = messageBus;
+        SettingsUtils.initialize(settings);
         this.settings = settings;
 
         log.info("Starting the ReferencePillar");

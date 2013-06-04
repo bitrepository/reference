@@ -24,7 +24,7 @@
  */
 package org.bitrepository.integrityservice.web;
 
-import org.bitrepository.integrityservice.IntegrityServiceFactory;
+import org.bitrepository.integrityservice.IntegrityServiceManager;
 import org.bitrepository.service.AbstractBitrepositoryContextListener;
 import org.bitrepository.service.LifeCycledService;
 
@@ -40,11 +40,11 @@ public class IntegrityServiceContextListener extends AbstractBitrepositoryContex
 
     @Override
     public LifeCycledService getService() {
-        return IntegrityServiceFactory.getIntegrityService();
+        return IntegrityServiceManager.getIntegrityLifeCycleHandler();
     }
 
     @Override
     public void initialize(String configurationDir) {
-        IntegrityServiceFactory.init(configurationDir);
+        IntegrityServiceManager.initialize(configurationDir);
     }    
 }

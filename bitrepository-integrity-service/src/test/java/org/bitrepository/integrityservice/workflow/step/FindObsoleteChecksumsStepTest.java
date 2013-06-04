@@ -21,66 +21,51 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import java.util.Collection;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.common.utils.CalendarUtils;
+import java.util.List;
+
 import org.bitrepository.integrityservice.checking.MaxChecksumAgeProvider;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
 import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReportModel;
-import org.bitrepository.integrityservice.mocks.MockChecker;
-import org.bitrepository.integrityservice.mocks.MockIntegrityAlerter;
-import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
+import org.mockito.Matchers;
 import org.testng.annotations.Test;
 
-public class FindObsoleteChecksumsStepTest extends ExtendedTestCase {
-    public static final String TEST_PILLAR_1 = "test-pillar-1";
-    public static final String TEST_FILE_1 = "test-file-1";
-    protected Settings settings;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-    public static final String TEST_COLLECTION = "collection1";
-    
-    @BeforeMethod(alwaysRun = true)
-    public void setup() throws Exception {
-        settings = TestSettingsProvider.reloadSettings("FindObsoleteChecksumsStepTest");
-    }
-    
+public class FindObsoleteChecksumsStepTest extends WorkflowstepTest {
     @Test(groups = {"regressiontest", "integritytest"})
     public void testGoodCase() {
         addDescription("Test the step for finding obsolete checksum when the report is positive.");
-        MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
-        MockChecker checker = new MockChecker();
+        addStep("Run the step with a integritychecker which will return a clean ObsoleteChecksumReportModel",
+                "No alerts should be generated");
         FindObsoleteChecksumsStep step = new FindObsoleteChecksumsStep(settings, checker, alerter, TEST_COLLECTION);
-        
+
+        when(checker.checkObsoleteChecksums(
+                Matchers.<MaxChecksumAgeProvider>any(), Matchers.<List<String>>any(), eq(TEST_COLLECTION))).
+                thenReturn(new ObsoleteChecksumReportModel(TEST_COLLECTION));
         step.performStep();
-        Assert.assertEquals(alerter.getCallsForIntegrityFailed(), 0);
-        Assert.assertEquals(checker.getCallsForCheckChecksums(), 0);
-        Assert.assertEquals(checker.getCallsForCheckFileIDs(), 0);
-        Assert.assertEquals(checker.getCallsForCheckMissingChecksums(), 0);
-        Assert.assertEquals(checker.getCallsForCheckObsoleteChecksums(), 1);
+        verify(checker).checkObsoleteChecksums(
+                Matchers.<MaxChecksumAgeProvider>any(), Matchers.<List<String>>any(), eq(TEST_COLLECTION));
+        verifyNoMoreInteractions(alerter, checker);
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
     public void testBadCase() {
-        addDescription("Test the step for finding obsolete checksum when the report is negative.");
-        MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
-        MockChecker checker = new MockChecker() {
-            @Override
-            public ObsoleteChecksumReportModel checkObsoleteChecksums(
-                MaxChecksumAgeProvider maxChecksumAgeProvider, Collection<String> pillarIDs, String collectionId) {
-                ObsoleteChecksumReportModel res = super.checkObsoleteChecksums(maxChecksumAgeProvider, pillarIDs, collectionId);
-                res.reportObsoleteChecksum(TEST_FILE_1, TEST_PILLAR_1, CalendarUtils.getEpoch());
-                return res;
-            }
-        };
+        addDescription("Test the step for finding obsolete checksum when the report contains obsplete.");
+        addStep("Run the step with a integritychecker which will return a ObsoleteChecksumReportModel with integrity issues",
+                "The IntegrityAlerter's integrityFailed method should be called with the ObsoleteChecksumReportModel");
         FindObsoleteChecksumsStep step = new FindObsoleteChecksumsStep(settings, checker, alerter, TEST_COLLECTION);
-        
+
+        final ObsoleteChecksumReportModel report = mock(ObsoleteChecksumReportModel.class);
+        when(report.hasIntegrityIssues()).thenReturn(true);
+        when(checker.checkObsoleteChecksums(
+                Matchers.<MaxChecksumAgeProvider>any(), Matchers.<List<String>>any(), eq(TEST_COLLECTION))).
+                thenReturn(report);
         step.performStep();
-        Assert.assertEquals(alerter.getCallsForIntegrityFailed(), 1);
-        Assert.assertEquals(checker.getCallsForCheckChecksums(), 0);
-        Assert.assertEquals(checker.getCallsForCheckFileIDs(), 0);
-        Assert.assertEquals(checker.getCallsForCheckMissingChecksums(), 0);
-        Assert.assertEquals(checker.getCallsForCheckObsoleteChecksums(), 1);
+        verify(alerter).integrityFailed(any(IntegrityReportModel.class));
     }   
 }

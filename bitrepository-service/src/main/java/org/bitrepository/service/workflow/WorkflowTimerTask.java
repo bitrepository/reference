@@ -97,7 +97,9 @@ public class WorkflowTimerTask extends TimerTask {
             if (workflow.currentState().equals(StepBasedWorkflow.NOT_RUNNING)) {
                 log.info("Starting the workflow: " + getName());
                 workflow.start();
-                nextRun = new Date(System.currentTimeMillis() + interval);
+                if (interval < 0) {
+                    nextRun = new Date(System.currentTimeMillis() + interval);
+                }
                 lastWorkflowStatistics = workflow.getWorkflowStatistics();
                 return "Workflow '" + workflow.getClass().getSimpleName() + "' finished";
 
@@ -125,12 +127,12 @@ public class WorkflowTimerTask extends TimerTask {
     @Override
     public void run() {
         try {
-            if(getNextRun().getTime() <= System.currentTimeMillis()) {
+            if( nextRun != null &&
+                getNextRun().getTime() <= System.currentTimeMillis()) {
                 runWorkflow();
             }
         } catch (Exception e) {
             log.error("Failed to run workflow", e);
         }
     }
-
 }

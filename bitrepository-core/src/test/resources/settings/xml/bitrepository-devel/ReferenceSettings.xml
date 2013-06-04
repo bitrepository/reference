@@ -81,7 +81,11 @@
   </AuditTrailServiceSettings>
   <IntegrityServiceSettings>
     <ID>integrity-service</ID>
-    <SchedulerInterval>600000</SchedulerInterval>
+    <Workflows>
+      <Workflow>
+        <WorkflowClass>org.bitrepository.integrityservice.workflow.CompleteIntegrityCheck</WorkflowClass>
+      </Workflow>
+    </Workflows>
     <IntegrityDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:target/test/integrityservice/integritydb</DatabaseURL>

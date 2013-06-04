@@ -33,13 +33,22 @@ import org.bitrepository.settings.repositorysettings.Collection;
  * Utility method for handling the settings.
  */
 public class SettingsUtils {
+    private static Settings settings;
+
     /**
-     * Finds the collections, which the given pillar is part of. 
-     * @param settings The settings with the collections.
+     *
+     * @param injectedSettings The settings to use.
+     */
+    public static void initialize(Settings injectedSettings) {
+        settings = injectedSettings;
+    }
+
+    /**
+     * Finds the collections, which the given pillar is part of.
      * @param pillarID The id of the pillar.
      * @return The list of collection ids, which this pillar is part of.
      */
-    public static List<String> getCollectionIDsForPillar(Settings settings, String pillarID) {
+    public static List<String> getCollectionIDsForPillar(String pillarID) {
         List<String> res = new ArrayList<String>();
         for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
             if(c.getPillarIDs().getPillarID().contains(pillarID)) {
@@ -52,9 +61,8 @@ public class SettingsUtils {
     
     /**
      * Finds the complete list of collections in the repository.
-     * @param settings The settings for the repository. 
      */
-    public static List<String> getAllCollectionsIDs(Settings settings) {
+    public static List<String> getAllCollectionsIDs() {
         List<String> res = new ArrayList<String>();
         for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
             res.add(c.getID());
@@ -64,10 +72,9 @@ public class SettingsUtils {
     
     /**
      * Retrieves all the different pillar ids defined across all collections (without duplicates).
-     * @param settings The settings.
      * @return The list of pillar ids. 
      */
-    public static List<String> getAllPillarIDs(Settings settings) {
+    public static List<String> getAllPillarIDs() {
         List<String> res = new ArrayList<String>();
         for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
             for(String pillarId : c.getPillarIDs().getPillarID()) {
@@ -79,7 +86,7 @@ public class SettingsUtils {
         return res;
     }
     
-    public static List<String> getPillarIDsForCollection(Settings settings, String collectionID) {
+    public static List<String> getPillarIDsForCollection(String collectionID) {
         List<String> res = new ArrayList<String>();
         for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
             if(c.getID().equals(collectionID)) {
@@ -91,28 +98,26 @@ public class SettingsUtils {
     
     /**
      * Retrieves the contributors for audittrail for a specific collection.
-     * @param settings The settings.
      * @param collectionID The id of the collection.
      * @return The list of ids for the contributors of audittrails for the collection
      */
-    public static Set<String> getAuditContributorsForCollection(Settings settings, String collectionID) {
+    public static Set<String> getAuditContributorsForCollection(String collectionID) {
         Set<String> contributors = new HashSet<String>();
         contributors.addAll(
                 settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs());
-        contributors.addAll(SettingsUtils.getPillarIDsForCollection(settings, collectionID));
+        contributors.addAll(SettingsUtils.getPillarIDsForCollection(collectionID));
         return contributors;
     }
 
     /**
      * Retrieves the contributors for status.
-     * @param settings The settings.
      * @return The list of ids for the status contributors.
      */
-    public static Set<String> getStatusContributorsForCollection(Settings settings) {
+    public static Set<String> getStatusContributorsForCollection() {
         Set<String> contributors = new HashSet<String>();
         contributors.addAll(
                 settings.getRepositorySettings().getGetStatusSettings().getNonPillarContributorIDs());
-        contributors.addAll(SettingsUtils.getAllPillarIDs(settings));
+        contributors.addAll(SettingsUtils.getAllPillarIDs());
         return contributors;
     }
 }

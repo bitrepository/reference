@@ -51,4 +51,9 @@ public interface Workflow {
      *  @return Provides an ID to identify the workflow on
      */
     WorkflowID getWorkflowID();
+
+    /**
+     * Initialises a workflow with a context and a collection to run the workflow on.
+     */
+    void initialise(WorkflowContext context, String collectionID);
 }

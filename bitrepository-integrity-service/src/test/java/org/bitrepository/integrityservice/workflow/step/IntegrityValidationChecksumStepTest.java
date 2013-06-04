@@ -22,52 +22,40 @@
 package org.bitrepository.integrityservice.workflow.step;
 
 import org.bitrepository.integrityservice.checking.reports.ChecksumReportModel;
-import org.bitrepository.integrityservice.mocks.MockChecker;
-import org.bitrepository.integrityservice.mocks.MockIntegrityAlerter;
-import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class IntegrityValidationChecksumStepTest extends ExtendedTestCase {
-    public static final String TEST_PILLAR_1 = "test-pillar-1";
-    public static final String TEST_FILE_1 = "test-file-1";
-    public static final String DEFAULT_CHECKSUM = "0123456789";
-    public static final String TEST_COLLECTION = "collection1";
-    
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+public class IntegrityValidationChecksumStepTest extends WorkflowstepTest {
     @Test(groups = {"regressiontest", "integritytest"})
     public void testGoodCase() {
         addDescription("Test the step for integrity validation of checksum when the report is positive.");
-        MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
-        MockChecker checker = new MockChecker();
         IntegrityValidationChecksumStep step = new IntegrityValidationChecksumStep(checker, alerter, TEST_COLLECTION);
-        
+
+        addStep("Run the step with a integritychecker which will return a clean ChecksumReportModel",
+                "No alerts should be generated");
+        when(checker.checkChecksum(TEST_COLLECTION)).thenReturn(new ChecksumReportModel(TEST_COLLECTION));
         step.performStep();
-        Assert.assertEquals(alerter.getCallsForIntegrityFailed(), 0);
-        Assert.assertEquals(checker.getCallsForCheckChecksums(), 1);
-        Assert.assertEquals(checker.getCallsForCheckFileIDs(), 0);
-        Assert.assertEquals(checker.getCallsForCheckMissingChecksums(), 0);
-        Assert.assertEquals(checker.getCallsForCheckObsoleteChecksums(), 0);
+        verify(checker).checkChecksum(TEST_COLLECTION);
+        verifyNoMoreInteractions(alerter, checker);
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
     public void testBadCase() {
         addDescription("Test the step for integrity validation of checksum when the report is negative.");
-        MockIntegrityAlerter alerter = new MockIntegrityAlerter();        
-        MockChecker checker = new MockChecker() {
-            @Override
-            public ChecksumReportModel checkChecksum(String collectionId) {
-                ChecksumReportModel res = super.checkChecksum(collectionId);
-                res.reportChecksumIssue(TEST_FILE_1, TEST_PILLAR_1, DEFAULT_CHECKSUM);
-                return res;
-            }
-        };
         IntegrityValidationChecksumStep step = new IntegrityValidationChecksumStep(checker, alerter, TEST_COLLECTION);
-        
+
+        addStep("Run the step with a integritychecker which will return a ChecksumReportModel with integrity issues",
+                "The IntegrityAlerters integrityFailed method should be called with the ChecksumReportModel");
+        ChecksumReportModel report = mock(ChecksumReportModel.class);
+        when(report.hasIntegrityIssues()).thenReturn(true);
+        when(checker.checkChecksum(TEST_COLLECTION)).thenReturn(report);
         step.performStep();
-        Assert.assertEquals(alerter.getCallsForIntegrityFailed(), 1);
-        Assert.assertEquals(checker.getCallsForCheckChecksums(), 1);
-        Assert.assertEquals(checker.getCallsForCheckFileIDs(), 0);
-        Assert.assertEquals(checker.getCallsForCheckMissingChecksums(), 0);
-        Assert.assertEquals(checker.getCallsForCheckObsoleteChecksums(), 0);
+
+        verify(alerter).integrityFailed(report);
+        verifyNoMoreInteractions(alerter);
     }
 }

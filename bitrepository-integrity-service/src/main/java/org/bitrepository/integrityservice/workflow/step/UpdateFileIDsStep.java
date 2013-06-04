@@ -95,13 +95,14 @@ public class UpdateFileIDsStep extends AbstractWorkFlowStep {
         store.setExistingFilesToPreviouslySeenFileState(collectionId);
 
         try {
-            List<String> pillarsToCollectFrom = new ArrayList<String>(SettingsUtils.getPillarIDsForCollection(settings,
-                    collectionId));
+            List<String> pillarsToCollectFrom =
+                    new ArrayList<String>(SettingsUtils.getPillarIDsForCollection(collectionId));
             log.debug("Collecting fileIDs from: " + pillarsToCollectFrom);
             while (!pillarsToCollectFrom.isEmpty()) {
                 IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
-                collector.getFileIDs(collectionId, pillarsToCollectFrom, "IntegrityService: " + getName(), queries, eventHandler);
+                collector.getFileIDs(collectionId, pillarsToCollectFrom,
+                        "IntegrityService: " + getName(), queries, eventHandler);
                 
                 OperationEvent event = eventHandler.getFinish();
                 log.debug("Collection of file ids had the final event: " + event);

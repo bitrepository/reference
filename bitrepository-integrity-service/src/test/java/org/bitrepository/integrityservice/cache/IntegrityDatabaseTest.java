@@ -40,14 +40,15 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
 import org.bitrepository.integrityservice.cache.database.ChecksumState;
 import org.bitrepository.integrityservice.cache.database.FileState;
-import org.bitrepository.integrityservice.mocks.MockAuditManager;
+import org.bitrepository.service.audit.AuditTrailManager;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static org.mockito.Mockito.mock;
+
 public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
-    /** The settings for the tests. Should be instantiated in the setup.*/
-    MockAuditManager auditManager;
+    AuditTrailManager auditManager;
     String TEST_PILLAR_1 = "MY-TEST-PILLAR-1";
     String TEST_PILLAR_2 = "MY-TEST-PILLAR-2";
     
@@ -61,7 +62,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     public void setup() throws Exception {
         super.setup();
         TEST_COLLECTIONID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-        auditManager = new MockAuditManager();
+        auditManager = mock(AuditTrailManager.class);
     }
     
     @Override 

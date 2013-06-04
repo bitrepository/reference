@@ -34,7 +34,6 @@ import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.TestIntegrityModel;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReportModel;
-import org.bitrepository.integrityservice.mocks.MockAuditManager;
 import org.bitrepository.settings.referencesettings.ObsoleteChecksumSettings;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -42,9 +41,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
-    /** The settings for the tests. Should be instantiated in the setup.*/
-    Settings settings;
-    MockAuditManager auditManager;
+    private Settings settings;
     
     public static final String TEST_PILLAR_1 = "test-pillar-1";
     public static final String TEST_PILLAR_2 = "test-pillar-2";
@@ -63,7 +60,6 @@ public class ObsoleteChecksumsFinderTest extends ExtendedTestCase {
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_2);
         settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0L);
         TEST_COLLECTIONID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-        auditManager = new MockAuditManager();
     }
     
     @Test(groups = {"regressiontest", "integritytest"})

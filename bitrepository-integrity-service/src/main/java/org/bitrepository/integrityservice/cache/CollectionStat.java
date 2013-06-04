@@ -24,19 +24,13 @@ package org.bitrepository.integrityservice.cache;
 import java.util.Date;
 
 public class CollectionStat {
-
-    /** The ID of the collection */
-    private String collectionID;
-    /** The number of files in the collection */
-    private Long fileCount;
-    /** The size of the collection */
-    private Long dataSize; 
-    /** The number of checksum errors */
-    private Long checksumErrors;
-    /** The date that the statistics were collected */
-    private Date statsTime;
+    private final String collectionID;
+    private final Long fileCount;
+    private final Long dataSize;
+    private final Long checksumErrors;
+    private final Date statsTime;
     /** The date that the statistics were updated */
-    private Date updateTime;
+    private final Date updateTime;
     
     public CollectionStat(String collectionID, Long fileCount, Long dataSize, Long checksumErrors, 
             Date statsTime, Date updateTime) {
@@ -47,42 +41,30 @@ public class CollectionStat {
         this.statsTime = statsTime;
         this.updateTime = updateTime;
     }
-    
+
+
+    /** The ID of the collection */
     public String getCollectionID() {
         return collectionID;
     }
-    public void setCollectionID(String collectionID) {
-        this.collectionID = collectionID;
-    }
+    /** The number of files in the collection */
     public Long getFileCount() {
         return fileCount;
     }
-    public void setFileCount(Long fileCount) {
-        this.fileCount = fileCount;
-    }
+    /** The size of the collection */
     public Long getDataSize() {
         return dataSize;
     }
-    public void setDataSize(Long dataSize) {
-        this.dataSize = dataSize;
-    }
+    /** The number of checksum errors */
     public Long getChecksumErrors() {
         return checksumErrors;
     }
-    public void setChecksumErrors(Long checksumErrors) {
-        this.checksumErrors = checksumErrors;
-    }
+    /** The date that the statistics were collected */
     public Date getStatsTime() {
         return statsTime;
     }
-    public void setStatsTime(Date statsTime) {
-        this.statsTime = statsTime;
-    }
+    /** The date that the statistics were updated */
     public Date getUpdateTime() {
         return updateTime;
     }
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-    
 }

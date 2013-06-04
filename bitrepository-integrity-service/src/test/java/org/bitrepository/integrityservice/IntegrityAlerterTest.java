@@ -21,71 +21,42 @@
  */
 package org.bitrepository.integrityservice;
 
-import org.bitrepository.bitrepositoryelements.Alarm;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.bitrepositoryelements.AlarmCode;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.integrityservice.alerter.IntegrityAlarmDispatcher;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
-import org.bitrepository.integrityservice.mocks.MockIntegrityReport;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.security.DummySecurityManager;
-import org.bitrepository.protocol.security.SecurityManager;
-import org.jaccept.structure.ExtendedTestCase;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
+import org.bitrepository.protocol.IntegrationTest;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class IntegrityAlerterTest extends ExtendedTestCase {
-    Settings settings;
-    MessageBus messageBus;
-    
-    public static final String TEST_COLLECTION = "collection1";
-    
-    @BeforeClass (alwaysRun = true)
-    public void setup() {
-        settings = TestSettingsProvider.reloadSettings("IntegrityAlerterUnderTest");
-        SecurityManager securityManager = new DummySecurityManager();
-        messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
-    }
-    
-    static int callsForError = 0;
-    
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class IntegrityAlerterTest extends IntegrationTest {
     @Test(groups = {"regressiontest", "integritytest"})
     public void testIntegrityFailed() {
         addDescription("Test the IntegrityFailed method for the IntegrityAlerter");
-        callsForError = 0;
-        
-        addStep("Create the alerter, but remove the actual sending of the alarm", 
-                "Should increase the counter 'callsForError'");
-        IntegrityAlerter alerter = new IntegrityAlarmDispatcher(settings, messageBus, null) {
-            @Override
-            public void error(Alarm alarm) {
-                callsForError++;
-            }
-        };
-        
-        addStep("Call the function for integrity failure.", "Should attempt to make a call for 'error'.");
-        alerter.integrityFailed(new MockIntegrityReport(TEST_COLLECTION));
-        Assert.assertEquals(callsForError, 1);
+
+        addStep("Call the function for integrity failure.", "A integrity alarm should be created.");
+        IntegrityAlerter alerter = new IntegrityAlarmDispatcher(settingsForCUT, messageBus, null);
+        IntegrityReportModel report = mock(IntegrityReportModel.class);
+        when(report.generateSummaryOfReport()).thenReturn("Testing IntegrityAlerter");
+        alerter.integrityFailed(report);
+        AlarmMessage alarmMessage = alarmReceiver.waitForMessage(AlarmMessage.class);
+        Assert.assertEquals(alarmMessage.getAlarm().getAlarmCode(), AlarmCode.INTEGRITY_ISSUE);
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testOperationFailed() {
         addDescription("Test the OperationFailed method for the IntegrityAlerter");
-        callsForError = 0;
         
-        addStep("Create the alerter, but remove the actual sending of the alarm", 
-                "Should increase the counter 'callsForError'");
-        IntegrityAlerter alerter = new IntegrityAlarmDispatcher(settings, messageBus, null) {
-            @Override
-            public void error(Alarm alarm) {
-                callsForError++;
-            }
-        };
-        
-        addStep("Call the function for integrity failure.", "Should attempt to make a call for 'error'.");
-        alerter.operationFailed("Testing the ability to fail.", TEST_COLLECTION);
-        Assert.assertEquals(callsForError, 1);
+        addStep("Call the function for integrity failure.", "A integrity alarm should be generate.");
+
+        IntegrityAlerter alerter = new IntegrityAlarmDispatcher(settingsForCUT, messageBus, null);
+        alerter.operationFailed("Testing the ability to fail.", collectionID);
+
+        AlarmMessage alarmMessage = alarmReceiver.waitForMessage(AlarmMessage.class);
+        Assert.assertEquals(alarmMessage.getAlarm().getAlarmCode(), AlarmCode.FAILED_OPERATION);
     }
 }

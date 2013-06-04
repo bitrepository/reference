@@ -33,7 +33,14 @@
 
   <IntegrityServiceSettings>
     <ID>integrity-service</ID>
-    <SchedulerInterval>2000</SchedulerInterval>
+    <WorkflowSchedulerSettings>
+      <WorkflowSchedules>
+        <WorkflowSchedule>
+          <WorkflowClass>org.bitrepository.integrityservice.workflow.CompleteIntegrityCheck</WorkflowClass>
+          <WorkflowInterval>86400000</WorkflowInterval>
+        </WorkflowSchedule>
+      </WorkflowSchedules>
+    </WorkflowSchedulerSettings>
     <IntegrityDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/integrityservice/integritydb</DatabaseURL>

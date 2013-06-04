@@ -34,6 +34,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
 import org.bitrepository.protocol.security.BasicMessageSigner;
 import org.bitrepository.protocol.security.BasicOperationAuthorizor;
@@ -148,7 +149,7 @@ public class CommandLineArgumentsHandler {
                         componentId);
             settings = settingsLoader.getSettings();
         }
-        
+        SettingsUtils.initialize(settings);
         return settings;
     }
     
