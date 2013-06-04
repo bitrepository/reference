@@ -46,7 +46,14 @@ import org.bitrepository.integrityservice.workflow.IntegrityWorkflowContext;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowManager;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.security.BasicMessageAuthenticator;
+import org.bitrepository.protocol.security.BasicMessageSigner;
+import org.bitrepository.protocol.security.BasicOperationAuthorizor;
 import org.bitrepository.protocol.security.BasicSecurityManager;
+import org.bitrepository.protocol.security.MessageAuthenticator;
+import org.bitrepository.protocol.security.MessageSigner;
+import org.bitrepository.protocol.security.OperationAuthorizor;
+import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.ServiceSettingsProvider;
 import org.bitrepository.service.audit.AuditTrailContributerDAO;
@@ -104,6 +111,7 @@ public final class IntegrityServiceManager {
     public static synchronized void initialize(String configurationDir) {
         confDir = configurationDir;
         loadSettings();
+        createSecurityManager();
         messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
         auditManager = new AuditTrailContributerDAO(settings, new DBConnector(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getAuditTrailContributerDatabase()));
@@ -160,6 +168,20 @@ public final class IntegrityServiceManager {
         } catch (IOException e) {
             throw new IllegalStateException("Could not instantiate the properties.", e);
         }
+    }
+
+    /**
+     * Instantiated the security manager for the integrity service.
+     * @see {@link BasicSecurityManager}
+     */
+    private static void createSecurityManager() {
+            PermissionStore permissionStore = new PermissionStore();
+            MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
+            MessageSigner signer = new BasicMessageSigner();
+            OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
+            securityManager = new BasicSecurityManager(settings.getRepositorySettings(), privateKeyFile,
+                    authenticator, signer, authorizer, permissionStore,
+                    settings.getReferenceSettings().getIntegrityServiceSettings().getID());
     }
 
     /**
