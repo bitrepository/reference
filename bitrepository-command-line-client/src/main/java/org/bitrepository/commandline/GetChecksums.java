@@ -112,7 +112,8 @@ public class GetChecksums extends CommandLineClient {
         res.setChecksumType(ChecksumType.fromValue(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
         
         if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
-            res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
+            res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(
+                    Constants.REQUEST_CHECKSUM_SALT_ARG)));
         }
         return res;
     }
