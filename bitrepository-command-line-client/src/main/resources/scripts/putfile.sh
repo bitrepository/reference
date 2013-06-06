@@ -22,7 +22,7 @@
 # #L%
 ###
 
-SCRIPT_PATH=$(dirname $(readlink -f $0))
+SCRIPT_PATH=$(dirname $(perl -e "use Cwd 'abs_path';print abs_path('$0');"))
 source $SCRIPT_PATH/init.sh
 PUT_FILE="org.bitrepository.commandline.PutFile"
 

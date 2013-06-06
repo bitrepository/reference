@@ -22,7 +22,7 @@
 # #L%
 ###
 
-cd $(dirname $(readlink -f $0))
+cd $(dirname $(perl -e "use Cwd 'abs_path';print abs_path('$0');"))
 
 if [ ! -e conf ]; then
   echo "Requires the directory 'conf' with settings, etc. in folder `pwd`";
