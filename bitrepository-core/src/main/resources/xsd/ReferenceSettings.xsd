@@ -543,12 +543,27 @@
       </xs:annotation>
       <xs:sequence>
         <xs:element name="ID" type="xs:string" />
-        <xs:element name="Workflows" type="WorkflowSettings" />
+        <xs:element name="Workflows" type="WorkflowSettings" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Defines which workflow to run when on what collections. If undefined the following workflows are run:
+              CompleteIntegrityCheck on all collections every day.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
         <xs:element name="SchedulerInterval" type="xs:long" minOccurs="0" >
           <xs:annotation>
             <xs:documentation xml:lang="en">
               The amount of milliseconds between each time the scheduler checks if any workflow should be run. The
               default is 60000 ms, eg. 1 minut.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="GracePeriod" type="xs:long" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Initial grace period in milliseconds after startup to allow the system to finish startup.
+              The default is 0 ms.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
