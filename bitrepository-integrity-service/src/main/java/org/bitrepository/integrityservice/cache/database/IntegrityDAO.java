@@ -52,42 +52,7 @@ import org.bitrepository.settings.repositorysettings.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTIONS_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_ID;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_KEY;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_STATS_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.CS_CHECKSUM_ERRORS;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.CS_FILECOUNT;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.CS_FILESIZE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.CS_STAT_KEY;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_CREATION_DATE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_ID;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_KEY;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILE_INFO_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_CHECKSUM;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_CHECKSUM_STATE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_KEY;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_SIZE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_STATE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_LAST_CHECKSUM_UPDATE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_LAST_FILE_UPDATE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_PILLAR_KEY;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_ID;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_KEY;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_STATS_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_CHECKSUM_ERRORS;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_FILE_COUNT;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_FILE_SIZE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_MISSING_FILES_COUNT;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_PILLAR_KEY;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_STAT_KEY;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_COLLECTION_KEY;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_KEY;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_LAST_UPDATE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TIME;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.*;
 
 /**
  * Handles the communication with the integrity database.
@@ -372,6 +337,10 @@ public class IntegrityDAO {
         return DatabaseUtils.selectLongValue(dbConnector, sql, collectionKey);
     }
     
+    /**
+     * @param collectionID The collection id where the number of checksum errors should be counted.
+     * @return The number of checksum errors within a given collection.
+     */
     public long getNumberOfChecksumErrorsIncollection(String collectionID) {
         log.trace("Retrieving the number of files with checksumerrors in collection '" + collectionID + "'.");
         Long collectionKey = retrieveCollectionKey(collectionID);
@@ -384,71 +353,44 @@ public class IntegrityDAO {
     }
     
     /**
-     * Retrieves the number of files in the given pillar, which has the file state 'EXISTING' or 'PREVIOUSLY_SEEN'.
+     * Retrieves the number of files in the given pillar, which has one of the given filestates.
      * @param pillarId The id of the pillar.
-     * @param collectionId The ID of the collection to get the number of existing files from
-     * @return The number of files with file state 'EXISTING' or 'PREVIOUSLY_SEEN' for the given pillar.
+     * @param collectionId The ID of the collection to get the number of existing files from.
+     * @param filestates The filestates accepted for this extraction.
+     * @return The number of files matching either of the given filestates.
      */
-    public int getNumberOfFilesForAPillar(String pillarId, String collectionId) {
+    public int getNumberOfFilesWithFileStateForAPillar(String pillarId, String collectionId, FileState ...fileStates) {
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
+        ArgumentValidator.checkNotNullOrEmpty(fileStates, "FileStates ... fileStates");
         log.trace("Retrieving number of existing files at '{}'.", pillarId);
         Long pillarKey = retrievePillarKey(pillarId);
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String sql = "SELECT COUNT(*) FROM " + FILE_INFO_TABLE 
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM " + FILE_INFO_TABLE 
                 + " JOIN " + FILES_TABLE 
                 + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY 
                 + " WHERE " + FI_PILLAR_KEY + " = ?" 
-                + " AND " + COLLECTION_KEY + " = ?"
-                + " AND ( " + FI_FILE_STATE + " = ? OR " + FI_FILE_STATE + " = ? )";
-        return DatabaseUtils.selectIntValue(dbConnector, sql, pillarKey, collectionKey, FileState.EXISTING.ordinal(), 
-                FileState.PREVIOUSLY_SEEN.ordinal());
+                + " AND " + COLLECTION_KEY + " = ?");
+        sql.append(" AND ( ");
+        List<Object> args = new ArrayList<Object>();
+        args.add(pillarKey);
+        args.add(collectionKey);
+        boolean first = true;
+        for(FileState f : fileStates) {
+            if(first) {
+                first = false;
+            } else {
+                sql.append(" OR ");
+            }
+            sql.append(FI_FILE_STATE + " = ? ");
+            args.add(new Integer(f.ordinal()));
+        }
+        sql.append(" )");
+        
+        return DatabaseUtils.selectIntValue(dbConnector, sql.toString(), args.toArray());
     }
     
 
-    /**
-     * Retrieves the number of files in the given pillar, which has the file state 'EXISTING' or 'PREVIOUSLY_SEEN'.
-     * @param pillarId The id of the pillar.
-     * @param collectionId The ID of the collection to get the number of existing files from
-     * @return The number of files with file state 'EXISTING' or 'PREVIOUSLY_SEEN' for the given pillar.
-     */
-    public int getNumberOfPreviouslySeenFilesForAPillar(String pillarId, String collectionId) {
-        ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
-        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
-        log.trace("Retrieving number of previously seen files at '{}'.", pillarId);
-        Long pillarKey = retrievePillarKey(pillarId);
-        Long collectionKey = retrieveCollectionKey(collectionId);
-        String sql = "SELECT COUNT(*) FROM " + FILE_INFO_TABLE 
-                + " JOIN " + FILES_TABLE 
-                + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY 
-                + " WHERE " + FI_PILLAR_KEY + " = ?" 
-                + " AND " + COLLECTION_KEY + " = ?"
-                + " AND " + FI_FILE_STATE + " = ?";
-        return DatabaseUtils.selectIntValue(dbConnector, sql, pillarKey, collectionKey,  
-                FileState.PREVIOUSLY_SEEN.ordinal());
-    }
-    
-    /**
-     * Retrieves the number of files in the given pillar, which has the file state 'MISSING'.
-     * @param pillarId The id of the pillar.
-     * @param collectionId The ID of the collection to get the number of missing files from
-     * @return The number of files with file state 'MISSING' for the given pillar.
-     */
-    public int getNumberOfMissingFilesForAPillar(String pillarId, String collectionId) {
-        ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
-        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
-        log.trace("Retrieving number of missing files at '{}'.", pillarId);
-        Long pillarKey = retrievePillarKey(pillarId);
-        Long collectionKey = retrieveCollectionKey(collectionId);
-        String sql = "SELECT COUNT(*) FROM " + FILE_INFO_TABLE  
-                + " JOIN " + FILES_TABLE 
-                + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY 
-                + " WHERE " + FI_PILLAR_KEY + " = ?" 
-                + " AND " + FI_FILE_STATE + " = ?"
-                + " AND " + COLLECTION_KEY + " = ?";
-        return DatabaseUtils.selectIntValue(dbConnector, sql, pillarKey, FileState.MISSING.ordinal(), collectionKey);
-    }
-    
     /**
      * Retrieves the number of files in the given pillar, which has the checksum state 'INCONSISTENT'.
      * @param pillarId The id of the pillar.
@@ -1353,10 +1295,11 @@ public class IntegrityDAO {
      */
     private void insertPillarStatistics(Long statisticsKey, String collectionID, String pillarID) {
         Long pillarKey = retrievePillarKey(pillarID);
-        Long fileCount = (long) getNumberOfFilesForAPillar(pillarID, collectionID);
+        Long fileCount = (long) getNumberOfFilesWithFileStateForAPillar(pillarID, collectionID, 
+                FileState.PREVIOUSLY_SEEN, FileState.EXISTING);
         Long dataSize = getCollectionFileSizeAtPillar(collectionID, pillarID);
         dataSize = dataSize == null ? 0 : dataSize;
-        Long missingFiles = (long) getNumberOfMissingFilesForAPillar(pillarID, collectionID);
+        Long missingFiles = (long) getNumberOfFilesWithFileStateForAPillar(pillarID, collectionID, FileState.MISSING);
         Long checksumErrors = (long) getNumberOfChecksumErrorsForAPillar(pillarID, collectionID);
         
         String newPillarStatSql = "INSERT INTO " + PILLAR_STATS_TABLE 

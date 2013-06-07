@@ -187,12 +187,16 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertEquals(cache.getNumberOfChecksumErrorsForAPillar(TEST_PILLAR_2, TEST_COLLECTIONID), 0);
         
         addStep("Test the 'getNumberOfExistingFilesForAPillar'", "Should be zero for both pillars.");
-        Assert.assertEquals(cache.getNumberOfFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 0);
-        Assert.assertEquals(cache.getNumberOfFilesForAPillar(TEST_PILLAR_2, TEST_COLLECTIONID), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID, 
+                FileState.EXISTING, FileState.PREVIOUSLY_SEEN), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_2, TEST_COLLECTIONID, 
+                FileState.EXISTING, FileState.PREVIOUSLY_SEEN), 0);
         
         addStep("Test the 'getNumberOfMissingFilesForAPillar'", "Should be zero for both pillars.");
-        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 0);
-        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_2, TEST_COLLECTIONID), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID, 
+                FileState.MISSING), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_2, TEST_COLLECTIONID, 
+                FileState.MISSING), 0);
         
         addStep("Test the 'getPillarsMissingFile'", "Should deliver an empty collection");
         Collection<String> pillarsMissingFile = cache.getMissingAtPillars(TEST_FILE_ID, TEST_COLLECTIONID);
@@ -582,23 +586,32 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         
         addStep("Update the 2 file ids", "Ingesting the data into the database");
         cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, TEST_FILE_ID+"1"), TEST_PILLAR_1, TEST_COLLECTIONID);
-        Assert.assertEquals(cache.getNumberOfFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 2);
-        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.EXISTING, FileState.PREVIOUSLY_SEEN), 2);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID, 
+                FileState.MISSING), 0);
 
         cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, TEST_FILE_ID+"1"), TEST_PILLAR_1, EXTRA_COLLECTION);
-        Assert.assertEquals(cache.getNumberOfFilesForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION), 2);
-        Assert.assertEquals(cache.getNumberOfPreviouslySeenFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 0l);
-        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION, 
+                FileState.EXISTING), 2);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.PREVIOUSLY_SEEN), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION,
+                FileState.MISSING), 0);
         
         addStep("Set the file state of all files to unknown.", "Neither any missing nor existing files for the pillar");
         cache.setExistingFilesToPreviouslySeenFileState(TEST_COLLECTIONID);
-        Assert.assertEquals(cache.getNumberOfPreviouslySeenFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 2);
-        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.PREVIOUSLY_SEEN), 2);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.MISSING), 0);
         
         addStep("Check that the changes in collection '" + TEST_COLLECTIONID + "' does not effect collection '" 
                 + EXTRA_COLLECTION +"'.", "The collection is uneffected");
-        Assert.assertEquals(cache.getNumberOfFilesForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION), 2);
-        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION,
+                FileState.EXISTING, FileState.PREVIOUSLY_SEEN), 2);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION,
+                FileState.MISSING), 0);
     }
 
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
@@ -608,29 +621,41 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         
         addStep("Update the 2 file ids", "Ingesting the data into the database");
         cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, TEST_FILE_ID+"1"), TEST_PILLAR_1, TEST_COLLECTIONID);
-        Assert.assertEquals(cache.getNumberOfFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 2);
-        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.EXISTING), 2);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.MISSING), 0);
         cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, TEST_FILE_ID+"1"), TEST_PILLAR_1, EXTRA_COLLECTION);
-        Assert.assertEquals(cache.getNumberOfFilesForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION), 2);
-        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION), 0);        
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION,
+                FileState.EXISTING), 2);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION,
+                FileState.MISSING), 0);        
         
         addStep("Set the file state of all files to unknown.", "Neither any missing nor existing files for the pillar");
         cache.setFilesToUnknown(TEST_PILLAR_1, TEST_COLLECTIONID);
-        Assert.assertEquals(cache.getNumberOfFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 0);
-        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.EXISTING, FileState.PREVIOUSLY_SEEN, FileState.MISSING), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.UNKNOWN), 2);
         
         addStep("Ensure that the changes to one collection does not influence the other", "The extra collection is uneffected");
-        Assert.assertEquals(cache.getNumberOfFilesForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION), 2);
-        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION,
+                FileState.EXISTING), 2);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION,
+                FileState.MISSING), 0);
         
         addStep("Set the unknown files to missing.", "Both files is missing.");
         cache.setOldUnknownFilesToMissing(new Date(), TEST_COLLECTIONID);
-        Assert.assertEquals(cache.getNumberOfFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 0);
-        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 2);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.EXISTING, FileState.PREVIOUSLY_SEEN, FileState.UNKNOWN), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.MISSING), 2);
         
         addStep("Ensure that the changes to one collection does not influence the other", "The extra collection is uneffected");
-        Assert.assertEquals(cache.getNumberOfFilesForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION), 2);
-        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION,
+                FileState.EXISTING), 2);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, EXTRA_COLLECTION,
+                FileState.MISSING), 0);
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
@@ -645,19 +670,27 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
 
         Date betweenFiles = new Date();
         cache.updateFileIDs(getFileIDsData(file2), TEST_PILLAR_1, TEST_COLLECTIONID);
-        Assert.assertEquals(cache.getNumberOfFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 2);
-        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.EXISTING), 2);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.MISSING), 0);
         
         addStep("Set the file state of all files to unknown.", "Neither any missing nor existing files for the pillar");
         cache.setFilesToUnknown(TEST_PILLAR_1, TEST_COLLECTIONID);
-        Assert.assertEquals(cache.getNumberOfFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 0);
-        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 0);        
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.EXISTING, FileState.MISSING, FileState.PREVIOUSLY_SEEN), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.UNKNOWN), 2);        
         
         addStep("Set the unknown files older than the timestamp to missing.", 
-                "Only the oldest file should be marked as missing.");
+                "Only the oldest file should be marked as missing. The other still unknown.");
         cache.setOldUnknownFilesToMissing(betweenFiles, TEST_COLLECTIONID);
-        Assert.assertEquals(cache.getNumberOfFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 0);
-        Assert.assertEquals(cache.getNumberOfMissingFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 1);        
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.PREVIOUSLY_SEEN, FileState.EXISTING), 0);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.MISSING), 1);        
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.UNKNOWN), 1);        
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
@@ -1045,8 +1078,10 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         
         addStep("Check that the data is in the database", "The data is present");
         Assert.assertEquals(cache.getNumberOfFilesInCollection(TEST_COLLECTIONID), 5);
-        Assert.assertEquals(cache.getNumberOfFilesForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID), 4);
-        Assert.assertEquals(cache.getNumberOfFilesForAPillar(TEST_PILLAR_2, TEST_COLLECTIONID), 4);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_1, TEST_COLLECTIONID,
+                FileState.PREVIOUSLY_SEEN, FileState.EXISTING), 4);
+        Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_2, TEST_COLLECTIONID,
+                FileState.PREVIOUSLY_SEEN, FileState.EXISTING), 4);
         Assert.assertEquals(cache.getNumberOfChecksumErrorsIncollection(TEST_COLLECTIONID), 1);
         List<String> pillar1FileIDs = cache.getFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
         Assert.assertEquals(pillar1FileIDs.size(), 4);

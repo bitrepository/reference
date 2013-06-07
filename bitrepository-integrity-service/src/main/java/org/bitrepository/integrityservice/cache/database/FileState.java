@@ -38,7 +38,10 @@ public enum FileState {
      * but not yet in the current one.
      */
     PREVIOUSLY_SEEN,
-    /** The state when it is not known for the given file.*/
+    /** 
+     * The state when it is not known for the given file.
+     * E.g. it hasn't been seen yet, or the file wasn't seen in the last file check.
+     */
     UNKNOWN;
     
     /**

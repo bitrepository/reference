@@ -31,6 +31,7 @@ import java.util.List;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.service.database.DBConnector;
 import org.slf4j.Logger;
@@ -88,12 +89,13 @@ public class IntegrityDatabase implements IntegrityModel {
 
     @Override
     public long getNumberOfFiles(String pillarId, String collectionId) {
-        return store.getNumberOfFilesForAPillar(pillarId, collectionId);
+        return store.getNumberOfFilesWithFileStateForAPillar(pillarId, collectionId, FileState.EXISTING, 
+                FileState.PREVIOUSLY_SEEN);
     }
 
     @Override
     public long getNumberOfMissingFiles(String pillarId, String collectionId) {
-        return store.getNumberOfMissingFilesForAPillar(pillarId, collectionId);
+        return store.getNumberOfFilesWithFileStateForAPillar(pillarId, collectionId, FileState.MISSING);
     }
 
     @Override
