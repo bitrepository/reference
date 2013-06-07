@@ -105,27 +105,27 @@ public final class TimeUtils {
         if(ms >= MS_PER_MINUTE) {
             includeRemainingMs = false;
         }
-        if(ms > 0) {
+        if(ms >= 0) {
             if(ms >= MS_PER_DAY) {
                 sb.append(millisecondsToDays(ms));
             }
             ms = (ms % MS_PER_DAY);
-            if(ms > 0) {
+            if(ms >= 0) {
                 if(ms >= MS_PER_HOUR) {
                     sb.append(" " + millisecondsToHours(ms));
                 }
                 ms = (ms % MS_PER_HOUR);
-                if(ms > 0) {
+                if(ms >= 0) {
                     if(ms >= MS_PER_MINUTE) {
                         sb.append(" " + millisecondsToMinutes(ms));
                     }
                     ms = (ms % MS_PER_MINUTE);
-                    if(ms > 0) {
+                    if(ms >= 0) {
                         if(ms >= MS_PER_S) {
                             sb.append(" " + millisecondsToSeconds(ms));
                         }
                         ms = (ms % MS_PER_S);
-                        if(ms > 0 && includeRemainingMs) {
+                        if(ms >= 0 && includeRemainingMs) {
                             sb.append(" " + ms + " ms");
                         }
                     }

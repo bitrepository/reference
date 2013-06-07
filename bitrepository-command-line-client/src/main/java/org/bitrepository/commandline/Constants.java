@@ -34,8 +34,10 @@ public class Constants {
     public static final Boolean ARGUMENT_IS_REQUIRED = true;
     /** If an argument is not required.*/
     public static final Boolean ARGUMENT_IS_NOT_REQUIRED = false;
-    /** Whether a given option has an argument.*/
+    /** If a given option has an argument.*/
     public static final Boolean HAS_ARGUMENT = true;
+    /** If a given option dies not have an argument.*/
+    public static final Boolean NO_ARGUMENT = false;
     /** For not allowing undefined arguments when parsing of arguments.*/
     public static final Boolean NOT_ALLOWING_UNDEFINED_ARGUMENTS = false;
     

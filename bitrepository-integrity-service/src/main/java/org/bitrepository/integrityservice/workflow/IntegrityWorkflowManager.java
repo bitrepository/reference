@@ -23,15 +23,33 @@
 package org.bitrepository.integrityservice.workflow;
 
 import org.bitrepository.service.workflow.SchedulableJob;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.service.workflow.WorkflowManager;
+import org.bitrepository.settings.referencesettings.WorkflowConfiguration;
+import org.bitrepository.settings.referencesettings.WorkflowSettings;
 
 public class IntegrityWorkflowManager extends WorkflowManager {
-
-    private final IntegrityWorkflowContext context;
     public IntegrityWorkflowManager(IntegrityWorkflowContext context) {
         super(context,
-              context.getSettings().getReferenceSettings().getIntegrityServiceSettings().getWorkflows(),
+              getWorkflowSettings(context.getSettings()),
               context.getSettings().getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval());
-        this.context = context;
+    }
+
+    private static WorkflowSettings getWorkflowSettings(Settings settings) {
+        WorkflowSettings workflowSettings;
+        if (settings.getReferenceSettings().getIntegrityServiceSettings().isSetWorkflows()) {
+            workflowSettings = settings.getReferenceSettings().getIntegrityServiceSettings().getWorkflows();
+        } else {
+            workflowSettings = createDefaultWorkflowSettings();
+        }
+        return workflowSettings;
+    }
+
+    protected static WorkflowSettings createDefaultWorkflowSettings() {
+        WorkflowSettings defaultWorkflowSettings = new WorkflowSettings();
+        WorkflowConfiguration completeIntegrityWorkflowConf = new WorkflowConfiguration();
+        completeIntegrityWorkflowConf.setWorkflowClass(CompleteIntegrityCheck.class.getCanonicalName());
+        defaultWorkflowSettings.getWorkflow().add(completeIntegrityWorkflowConf);
+        return defaultWorkflowSettings;
     }
 }
