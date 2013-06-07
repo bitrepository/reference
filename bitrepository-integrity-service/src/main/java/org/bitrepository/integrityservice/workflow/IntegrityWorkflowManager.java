@@ -22,7 +22,7 @@
 
 package org.bitrepository.integrityservice.workflow;
 
-import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.SchedulableJob;
 import org.bitrepository.service.workflow.WorkflowManager;
 
 public class IntegrityWorkflowManager extends WorkflowManager {

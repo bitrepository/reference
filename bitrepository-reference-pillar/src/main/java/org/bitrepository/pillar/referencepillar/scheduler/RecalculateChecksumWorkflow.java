@@ -1,7 +1,7 @@
 package org.bitrepository.pillar.referencepillar.scheduler;
 
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
-import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.SchedulableJob;
 import org.bitrepository.service.workflow.WorkflowContext;
 import org.bitrepository.service.workflow.WorkflowID;
 import org.bitrepository.service.workflow.WorkflowStatistic;
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Workflow for recalculating the checksums of the files of a given collection.
  */
-public class RecalculateChecksumWorkflow implements Workflow {
+public class RecalculateChecksumWorkflow implements SchedulableJob {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The id of the collection to recalculate the checksum for.*/

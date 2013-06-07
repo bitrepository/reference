@@ -26,7 +26,7 @@ package org.bitrepository.service.scheduler;
 
 import java.util.List;
 
-import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.SchedulableJob;
 import org.bitrepository.service.workflow.WorkflowID;
 import org.bitrepository.service.workflow.WorkflowTimerTask;
 
@@ -39,7 +39,7 @@ public interface WorkflowScheduler {
      * @param workflow The workflow to schedule.
      * @param interval The interval for how often the workflow should be triggered.
      */
-    void scheduleWorkflow(Workflow workflow, Long interval);
+    void scheduleWorkflow(SchedulableJob workflow, Long interval);
     
     /**
      * Cancels the workflow with the given name.
@@ -59,5 +59,5 @@ public interface WorkflowScheduler {
      * @param workflow
      * @return A string indicating the result of the attempt to start the workflow.
      */
-    String startWorkflow(Workflow workflow);
+    String startWorkflow(SchedulableJob workflow);
 }
