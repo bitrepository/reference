@@ -362,4 +362,14 @@ public class MockIntegrityModel implements IntegrityModel {
     public int getCallsForSetPreviouslySeenToExisting() {
         return callsForSetPreviouslySeenToExisting;
     }
+    
+    private int callsForHasFile = 0;
+    @Override
+    public boolean hasFile(String fileId, String collectionId) {
+        callsForHasFile++;
+        return integrityModel.hasFile(fileId, collectionId);
+    }
+    public int getCallsForHasFile() {
+        return callsForHasFile;
+    }
 }

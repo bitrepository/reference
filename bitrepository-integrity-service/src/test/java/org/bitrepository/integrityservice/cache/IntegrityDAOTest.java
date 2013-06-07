@@ -241,8 +241,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         
         addStep("Create data", "Should be ingested into the database");
         List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM);
-        cache.updateChecksumData(csData, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateChecksumData(csData, TEST_PILLAR_2, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData, TEST_PILLAR_1, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData, TEST_PILLAR_2, TEST_COLLECTIONID);
         
         addStep("Extract the data", "Should be identical to the ingested data");
         Collection<FileInfo> fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
@@ -253,7 +253,6 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
             Assert.assertEquals(fi.getChecksumState(), ChecksumState.UNKNOWN);
             Assert.assertEquals(fi.getFileState(), FileState.EXISTING);
             Assert.assertEquals(fi.getDateForLastChecksumCheck(), csData.get(0).getCalculationTimestamp());
-            Assert.assertEquals(fi.getDateForLastFileIDCheck(), CalendarUtils.getEpoch());
         }
         
         addStep("Check that the extra collection is untouched by the ingest", "should deliver an empty collection and no errors");
@@ -379,10 +378,10 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
 
         addStep("Create data", "Should be ingested into the database");
         List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM); 
-        cache.updateChecksumData(csData, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateChecksumData(csData, TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateChecksumData(csData, TEST_PILLAR_1, EXTRA_COLLECTION);
-        cache.updateChecksumData(csData, EXTRA_PILLAR, EXTRA_COLLECTION);
+        insertChecksumDataForDAO(cache, csData, TEST_PILLAR_1, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData, TEST_PILLAR_2, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData, TEST_PILLAR_1, EXTRA_COLLECTION);
+        insertChecksumDataForDAO(cache, csData, EXTRA_PILLAR, EXTRA_COLLECTION);
         
         Collection<FileInfo> fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
         Assert.assertNotNull(fileinfos);
@@ -427,10 +426,10 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
 
         addStep("Create data", "Should be ingested into the database");
         List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM); 
-        cache.updateChecksumData(csData, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateChecksumData(csData, TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateChecksumData(csData, TEST_PILLAR_1, EXTRA_COLLECTION);
-        cache.updateChecksumData(csData, EXTRA_PILLAR, EXTRA_COLLECTION);
+        insertChecksumDataForDAO(cache, csData, TEST_PILLAR_1, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData, TEST_PILLAR_2, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData, TEST_PILLAR_1, EXTRA_COLLECTION);
+        insertChecksumDataForDAO(cache, csData, EXTRA_PILLAR, EXTRA_COLLECTION);
         
         Collection<FileInfo> fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
         Assert.assertNotNull(fileinfos);
@@ -488,15 +487,15 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         List<ChecksumDataForChecksumSpecTYPE> csData1_1 = getChecksumResults(BAD_FILE_ID_1, checksum1_1);
         List<ChecksumDataForChecksumSpecTYPE> csData1_2 = getChecksumResults(BAD_FILE_ID_2, checksum1_2);
         List<ChecksumDataForChecksumSpecTYPE> csData1_3 = getChecksumResults(GOOD_FILE_ID, checksum3);
-        cache.updateChecksumData(csData1_1, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateChecksumData(csData1_2, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateChecksumData(csData1_3, TEST_PILLAR_1, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData1_1, TEST_PILLAR_1, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData1_2, TEST_PILLAR_1, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData1_3, TEST_PILLAR_1, TEST_COLLECTIONID);
         List<ChecksumDataForChecksumSpecTYPE> csData2_1 = getChecksumResults(BAD_FILE_ID_1, checksum2_1);
         List<ChecksumDataForChecksumSpecTYPE> csData2_2 = getChecksumResults(BAD_FILE_ID_2, checksum2_2);
         List<ChecksumDataForChecksumSpecTYPE> csData2_3 = getChecksumResults(GOOD_FILE_ID, checksum3);
-        cache.updateChecksumData(csData2_1, TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateChecksumData(csData2_2, TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateChecksumData(csData2_3, TEST_PILLAR_2, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData2_1, TEST_PILLAR_2, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData2_2, TEST_PILLAR_2, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData2_3, TEST_PILLAR_2, TEST_COLLECTIONID);
 
         addStep("Find the files with inconsistent checksums", "Bad file 1 and 2");
         List<String> filesWithChecksumError = cache.findFilesWithInconsistentChecksums(new Date(), TEST_COLLECTIONID);
@@ -532,12 +531,12 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         addStep("Update the database with 2 inconsistent files", "Ingesting the data into the database");
         List<ChecksumDataForChecksumSpecTYPE> csData1_1 = getChecksumResults(BAD_FILE_ID_1, checksum1_1);
         List<ChecksumDataForChecksumSpecTYPE> csData1_2 = getChecksumResults(BAD_FILE_ID_2, checksum1_2);
-        cache.updateChecksumData(csData1_1, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateChecksumData(csData1_2, TEST_PILLAR_1, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData1_1, TEST_PILLAR_1, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData1_2, TEST_PILLAR_1, TEST_COLLECTIONID);
         List<ChecksumDataForChecksumSpecTYPE> csData2_1 = getChecksumResults(BAD_FILE_ID_1, checksum2_1);
         List<ChecksumDataForChecksumSpecTYPE> csData2_2 = getChecksumResults(BAD_FILE_ID_2, checksum2_2);
-        cache.updateChecksumData(csData2_1, TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateChecksumData(csData2_2, TEST_PILLAR_2, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData2_1, TEST_PILLAR_2, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData2_2, TEST_PILLAR_2, TEST_COLLECTIONID);
 
         addStep("Find the files with inconsistent checksums, but with an older date than 'epoch'", 
                 "No such files expected.");
@@ -569,7 +568,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         addStep("Update the database with 2 inconsistent files and one consistent file.", 
                 "Ingesting the data into the database");
         cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateChecksumData(getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM), TEST_PILLAR_2, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM), TEST_PILLAR_2, TEST_COLLECTIONID);
 
         addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
         List<String> filesWithChecksumError = cache.findFilesWithInconsistentChecksums(new Date(), TEST_COLLECTIONID);      
@@ -1034,8 +1033,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Long pillar2Size = size1 + size2 + size3 + size4;
         Long collectionSize = size1 + size2 + size3 + size4 + size5;
 
-        cache.updateChecksumData(csDataPillar1, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateChecksumData(csDataPillar2, TEST_PILLAR_2, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csDataPillar1, TEST_PILLAR_1, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csDataPillar2, TEST_PILLAR_2, TEST_COLLECTIONID);
         cache.updateFileIDs(data1, TEST_PILLAR_1, EXTRA_COLLECTION);
         cache.updateFileIDs(data1, EXTRA_PILLAR, EXTRA_COLLECTION);
         

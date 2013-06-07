@@ -353,4 +353,9 @@ public class IntegrityCache implements IntegrityModel {
     public void setPreviouslySeenToExisting(String collectionId, String pillarId) {
         integrityModel.setPreviouslySeenToExisting(collectionId, pillarId);
     }
+
+    @Override
+    public boolean hasFile(String fileId, String collectionId) {
+        return integrityModel.hasFile(fileId, collectionId);
+    }
 }

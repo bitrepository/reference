@@ -156,8 +156,8 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
         List<ChecksumDataForChecksumSpecTYPE> checksumData = createChecksumData("1234cccc4321", TEST_FILE_1);
         
         // add the checksums for two pillars.
-        cache.addChecksums(checksumData, TEST_PILLAR_1, TEST_COLLECTION);
-        cache.addChecksums(checksumData, TEST_PILLAR_2, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, checksumData, TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, checksumData, TEST_PILLAR_2, TEST_COLLECTION);
         
         addStep("Check the checksum status.", "Should not have issues.");
         ChecksumReportModel report = checker.checkChecksum(TEST_COLLECTION);
@@ -173,13 +173,13 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
        
         addStep("Initialise the checksum results data.", "Should be created and put into the cache.");
         List<ChecksumDataForChecksumSpecTYPE> checksumData = createChecksumData("1234cccc4321", TEST_FILE_1);
-        cache.addChecksums(checksumData, TEST_PILLAR_2, TEST_COLLECTION);
-        cache.addChecksums(checksumData, TEST_PILLAR_2, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, checksumData, TEST_PILLAR_2, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, checksumData, TEST_PILLAR_2, TEST_COLLECTION);
         
         List<ChecksumDataForChecksumSpecTYPE> checksumData1 = createChecksumData("1234567890", TEST_FILE_2);
         List<ChecksumDataForChecksumSpecTYPE> checksumData2 = createChecksumData("0987654321", TEST_FILE_2);
-        cache.addChecksums(checksumData1, TEST_PILLAR_1, TEST_COLLECTION);
-        cache.addChecksums(checksumData2, TEST_PILLAR_2, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, checksumData1, TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, checksumData2, TEST_PILLAR_2, TEST_COLLECTION);
         
         addStep("Check the checksum status.", "Should have checksum issues.");
         ChecksumReportModel report = checker.checkChecksum(TEST_COLLECTION);
@@ -195,8 +195,8 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
        
         addStep("Initialise the data cache", "Should be created and put into the cache.");
         List<ChecksumDataForChecksumSpecTYPE> checksumData = createChecksumData("1234cccc4321", TEST_FILE_1);
-        cache.addChecksums(checksumData, TEST_PILLAR_1, TEST_COLLECTION);
-        cache.addChecksums(checksumData, TEST_PILLAR_2, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, checksumData, TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, checksumData, TEST_PILLAR_2, TEST_COLLECTION);
         cache.setChecksumAgreement(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2), TEST_COLLECTION);
         
         addStep("Check the checksum status.", "Should not find the issue.");
@@ -234,11 +234,11 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
         cache.addFileIDs(fileidsData, TEST_PILLAR_1, TEST_COLLECTION);
         cache.addFileIDs(fileidsData, TEST_PILLAR_2, TEST_COLLECTION);
         List<ChecksumDataForChecksumSpecTYPE> checksumData1 = createChecksumData("1234cccc4321", TEST_FILE_1);
-        cache.addChecksums(checksumData1, TEST_PILLAR_1, TEST_COLLECTION);
-        cache.addChecksums(checksumData1, TEST_PILLAR_2, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, checksumData1, TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, checksumData1, TEST_PILLAR_2, TEST_COLLECTION);
         cache.setChecksumAgreement(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2), TEST_COLLECTION);
         List<ChecksumDataForChecksumSpecTYPE> checksumData2 = createChecksumData("1234cccc4321", TEST_FILE_2);
-        cache.addChecksums(checksumData2, TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, checksumData2, TEST_PILLAR_1, TEST_COLLECTION);
         cache.setChecksumAgreement(TEST_FILE_2, Arrays.asList(TEST_PILLAR_1), TEST_COLLECTION);
         
         addStep("Check the checksum status.", "Should be checksum missing at pillar 2.");
@@ -257,8 +257,8 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
        
         addStep("Initialise the data cache", "Should be created and put into the cache.");
         List<ChecksumDataForChecksumSpecTYPE> checksumData1 = createChecksumData("1234cccc4321", TEST_FILE_1);
-        cache.addChecksums(checksumData1, TEST_PILLAR_1, TEST_COLLECTION);
-        cache.addChecksums(checksumData1, TEST_PILLAR_2, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, checksumData1, TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, checksumData1, TEST_PILLAR_2, TEST_COLLECTION);
         
         addStep("Check the checksum status.", "Should be checksum missing at pillar 2.");
         ObsoleteChecksumReportModel report = checker.checkObsoleteChecksums(
@@ -274,9 +274,9 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
        
         addStep("Initialise the data cache", "Should be created and put into the cache.");
         List<ChecksumDataForChecksumSpecTYPE> checksumData = createChecksumData("1234cccc4321", TEST_FILE_1);
-        cache.addChecksums(checksumData, TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, checksumData, TEST_PILLAR_1, TEST_COLLECTION);
         checksumData.get(0).setCalculationTimestamp(CalendarUtils.getEpoch());
-        cache.addChecksums(checksumData, TEST_PILLAR_2, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, checksumData, TEST_PILLAR_2, TEST_COLLECTION);
         
         addStep("Check the checksum status.", "Should be checksum missing at pillar 2.");
         ObsoleteChecksumReportModel report = checker.checkObsoleteChecksums(

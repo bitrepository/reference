@@ -666,4 +666,10 @@ public class TestIntegrityModel implements IntegrityModel {
     public void setPreviouslySeenToExisting(String collectionId, String pillarId) {
         // TODO Fix this
     }
+
+    @Override
+    public boolean hasFile(String fileId, String collectionId) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

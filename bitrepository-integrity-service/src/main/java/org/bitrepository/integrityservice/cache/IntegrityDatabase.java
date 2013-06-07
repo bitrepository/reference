@@ -247,4 +247,9 @@ public class IntegrityDatabase implements IntegrityModel {
     public void makeStatisticsForCollection(String collectionID) {
         store.makeStatisticsEntry(collectionID);
     }
+
+    @Override
+    public boolean hasFile(String fileId, String collectionId) {
+        return store.hasFileIDAtCollection(fileId, collectionId);
+    }
 }

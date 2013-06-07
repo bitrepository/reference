@@ -136,6 +136,10 @@ public class IntegrityDAO {
         }
     }
     
+    /**
+     * Initialize the table with the collections in the database.
+     * Ensures that all the collections are properly defined.
+     */
     private synchronized void initializeCollections() {
         List<String> collectionsInDatabase = retrieveCollectionsInDatabase();
         if(collectionsInDatabase.isEmpty()) {
@@ -260,9 +264,12 @@ public class IntegrityDAO {
         
         log.trace("Updating the checksum data '" + data + "' for pillar '" + pillarId + "' in collection " + collectionId + "'");
         for(ChecksumDataForChecksumSpecTYPE csData : data) {
-            Date timestamp = CalendarUtils.convertFromXMLGregorianCalendar(csData.getCalculationTimestamp());
-            ensureFileIdExists(csData.getFileID(), timestamp, collectionId);
-            updateFileInfoWithChecksum(csData, pillarId, collectionId);
+            if(hasFileIDAtCollection(csData.getFileID(), collectionId)) {
+                updateFileInfoWithChecksum(csData, pillarId, collectionId);
+            } else {
+                log.info("New file entry for '" + csData.getFileID() + "' at '" + collectionId + "' found during "
+                        + "updating the checksums. Will be ignored.");
+            }
         }
     }
     
@@ -1495,13 +1502,23 @@ public class IntegrityDAO {
      * @param collectionId The ID of the collection
      */
     private void ensureFileIdExists(String fileId, Date fileDate, String collectionId) {
+        if(!hasFileIDAtCollection(fileId, collectionId)) {
+            insertNewFileID(fileId, fileDate, collectionId);
+        }
+    }
+    
+    /**
+     * Looksup whether a given file id for the given collection exists.
+     * @param fileId The id of the file.
+     * @param collectionId The id of the collection.
+     * @return Whether it exists.
+     */
+    public boolean hasFileIDAtCollection(String fileId, String collectionId) {
         log.trace("Retrieving key for file '{}'.", fileId);
         String sql = "SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
                 + " WHERE " + FILES_ID + " = ? " 
                 + " AND " + COLLECTION_KEY + " = ?";
-        if(DatabaseUtils.selectLongValue(dbConnector, sql, fileId, retrieveCollectionKey(collectionId)) == null) {
-            insertNewFileID(fileId, fileDate, collectionId);
-        }
+        return DatabaseUtils.selectLongValue(dbConnector, sql, fileId, retrieveCollectionKey(collectionId)) != null;
     }
     
     /**
