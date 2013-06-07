@@ -21,11 +21,15 @@
  */
 package org.bitrepository.common.utils;
 
-import java.util.Date;
 import org.bitrepository.common.TestValidationUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.Date;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 public class TimeUtilsTest extends ExtendedTestCase {
     @Test(groups = { "regressiontest" })
@@ -42,32 +46,40 @@ public class TimeUtilsTest extends ExtendedTestCase {
         long millis = 271433605;
         String millisInSec = TimeUtils.millisecondsToSeconds(millis % 60000);
         String expectedSec = "53s";
-        Assert.assertTrue(millisInSec.startsWith(expectedSec));
+        assertTrue(millisInSec.startsWith(expectedSec));
         
         addStep("Test that milliseconds can be converted into human readable minutes.", 
                 "Pi days % hours");
         String millisInMin = TimeUtils.millisecondsToMinutes(millis % 3600000);
         String expectedMin = "23m";
-        Assert.assertTrue(millisInMin.startsWith(expectedMin));
+        assertTrue(millisInMin.startsWith(expectedMin));
         
         addStep("Test that milliseconds can be converted into human readable hours.", 
                 "Pi days % days");
         String millisInHour = TimeUtils.millisecondsToHours(millis % (3600000*24));
         String expectedHours = "3h";
-        Assert.assertTrue(millisInHour.startsWith(expectedHours));
+        assertTrue(millisInHour.startsWith(expectedHours));
         
         addStep("Test that milliseconds can be converted into human readable minutes.", 
                 "Pi days");
         String millisInDay = TimeUtils.millisecondsToDays(millis);
         String expectedDays = "3d";
-        Assert.assertTrue(millisInDay.startsWith(expectedDays));
+        assertTrue(millisInDay.startsWith(expectedDays));
         
         addStep("Test the human readable output.", "");
         String human = TimeUtils.millisecondsToHuman(millis);
-        Assert.assertTrue(human.contains(expectedSec), human);
-        Assert.assertTrue(human.contains(expectedMin), human);
-        Assert.assertTrue(human.contains(expectedHours), human);
-        Assert.assertTrue(human.contains(expectedDays), human);
+        assertTrue(human.contains(expectedSec), human);
+        assertTrue(human.contains(expectedMin), human);
+        assertTrue(human.contains(expectedHours), human);
+        assertTrue(human.contains(expectedDays), human);
+    }
+
+    @Test(groups = {"regressiontest"})
+    public void zeroIntervalTest() throws Exception {
+        addDescription("Verifies that a 0 ms interval is represented correctly");
+        addStep("Call the millisecondsToHuman with 0 ms", "The output should be '0 ms'");
+        String zeroTimeString = TimeUtils.millisecondsToHuman(0);
+        assertEquals(zeroTimeString, " 0 ms");
     }
 
 
