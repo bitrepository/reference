@@ -25,13 +25,13 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.cache.ChecksumStore;
