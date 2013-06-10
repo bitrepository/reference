@@ -59,7 +59,7 @@
   <fileSets>
     <fileSet>
       <outputDirectory>testprops</outputDirectory>
-      <directory>src/test/testprops</directory>
+      <directory>src/test/resources/testprops</directory>
       <directoryMode>0755</directoryMode>
       <fileMode>0644</fileMode>
       <filtered>true</filtered>
@@ -68,7 +68,7 @@
       <outputDirectory>bin</outputDirectory>
       <directoryMode>0755</directoryMode>
       <fileMode>0744</fileMode>
-      <directory>src/test/bin</directory>
+      <directory>src/test/resources/bin</directory>
       <filtered>true</filtered>
     </fileSet>
   </fileSets>

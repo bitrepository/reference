@@ -21,6 +21,8 @@
  */
 package org.bitrepository.pillar.integration;
 
+import java.util.Arrays;
+
 import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.client.conversation.mediator.ConversationMediatorManager;
 import org.bitrepository.common.exceptions.OperationFailedException;
@@ -48,8 +50,6 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 
-import java.util.Arrays;
-
 /**
  * Super class for all tests which should test functionality on a single pillar.
  *
@@ -60,10 +60,10 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     /** The path to the directory containing the integration test configuration files */
     protected static final String PATH_TO_CONFIG_DIR = System.getProperty(
             "pillar.integrationtest.settings.path",
-            "src/test/conf");   /** The path to the directory containing the integration test configuration files */
+            "conf");   /** The path to the directory containing the integration test configuration files */
     protected static final String PATH_TO_TESTPROPS_DIR = System.getProperty(
             "pillar.integrationtest.testprops.path",
-            "src/test/testprops");
+            "testprops");
     public static final String TEST_CONFIGURATION_FILE_NAME = "pillar-integration-test.properties";
     protected static PillarIntegrationTestConfiguration testConfiguration;
     private EmbeddedPillar embeddedPillar;
