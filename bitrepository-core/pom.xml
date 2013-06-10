@@ -72,8 +72,6 @@
       <version>1.3</version>
       <scope>test</scope>
     </dependency>
-
-
   </dependencies>
 
   <build>
@@ -90,13 +88,6 @@
         </includes>
       </resource>
     </resources>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
-
     <plugins>
       <plugin>
         <!-- Include remote resources -->
