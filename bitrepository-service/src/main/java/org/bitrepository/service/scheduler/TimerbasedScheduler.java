@@ -30,16 +30,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
+import org.bitrepository.service.workflow.JobID;
+import org.bitrepository.service.workflow.JobTimerTask;
 import org.bitrepository.service.workflow.SchedulableJob;
-import org.bitrepository.service.workflow.WorkflowID;
-import org.bitrepository.service.workflow.WorkflowTimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Scheduler that uses Timer to run workflows.
  */
-public class TimerbasedScheduler implements WorkflowScheduler {
+public class TimerbasedScheduler implements JobScheduler {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /** The timer that schedules events. */
@@ -47,7 +47,7 @@ public class TimerbasedScheduler implements WorkflowScheduler {
     /** The period between testing whether triggers have triggered. */
     private final long schedulerInterval;
     /** The map between the running timertasks and their names.*/
-    private Map<WorkflowID, WorkflowTimerTask> intervalTasks = new HashMap<WorkflowID, WorkflowTimerTask>();
+    private Map<JobID, JobTimerTask> intervalTasks = new HashMap<JobID, JobTimerTask>();
     public static final long DEFAULT_SCHEDULER_INTERVAL = 86400000;
 
     /** The name of the timer.*/
@@ -71,31 +71,31 @@ public class TimerbasedScheduler implements WorkflowScheduler {
     }
 
     @Override
-    public void scheduleWorkflow(SchedulableJob workflow, Long interval) {
+    public void schedule(SchedulableJob workflow, Long interval) {
         log.info("Scheduling workflow : " + workflow);
 
-        WorkflowTimerTask task = new WorkflowTimerTask(interval, workflow);
+        JobTimerTask task = new JobTimerTask(interval, workflow);
         timer.scheduleAtFixedRate(task, NO_DELAY, schedulerInterval);
-        intervalTasks.put(workflow.getWorkflowID(), task);
+        intervalTasks.put(workflow.getJobID(), task);
     }
 
     @Override
-    public String startWorkflow(SchedulableJob workflow) {
+    public String startJob(SchedulableJob workflow) {
         long timeBetweenRuns = -1;
-        WorkflowTimerTask oldTask = cancelWorkflow(workflow.getWorkflowID());
+        JobTimerTask oldTask = cancelJob(workflow.getJobID());
         if (oldTask != null) {
             timeBetweenRuns = oldTask.getIntervalBetweenRuns();
         }
 
-        WorkflowTimerTask task = new WorkflowTimerTask(timeBetweenRuns, workflow);
+        JobTimerTask task = new JobTimerTask(timeBetweenRuns, workflow);
         timer.scheduleAtFixedRate(task, NO_DELAY, schedulerInterval);
-        intervalTasks.put(workflow.getWorkflowID(), task);
+        intervalTasks.put(workflow.getJobID(), task);
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
     
     @Override
-    public WorkflowTimerTask cancelWorkflow(WorkflowID workflowID) {
-        WorkflowTimerTask task = intervalTasks.remove(workflowID);
+    public JobTimerTask cancelJob(JobID jobID) {
+        JobTimerTask task = intervalTasks.remove(jobID);
         if(task == null) {
             return null;
         }
@@ -105,9 +105,9 @@ public class TimerbasedScheduler implements WorkflowScheduler {
     }
     
     @Override
-    public List<WorkflowTimerTask> getWorkflows(String collectionID) {
-        List<WorkflowTimerTask> workflows = new ArrayList<WorkflowTimerTask>();
-        for(WorkflowTimerTask task : intervalTasks.values()) {
+    public List<JobTimerTask> getJobs(String collectionID) {
+        List<JobTimerTask> workflows = new ArrayList<JobTimerTask>();
+        for(JobTimerTask task : intervalTasks.values()) {
             if(task.getWorkflowID().getCollectionID().equals(collectionID)) {
                 workflows.add(task);
             }

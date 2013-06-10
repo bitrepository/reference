@@ -23,8 +23,8 @@
 package org.bitrepository.service.workflow;
 
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.service.scheduler.JobScheduler;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
-import org.bitrepository.service.scheduler.WorkflowScheduler;
 import org.bitrepository.settings.referencesettings.Schedule;
 import org.bitrepository.settings.referencesettings.WorkflowConfiguration;
 import org.bitrepository.settings.referencesettings.WorkflowSettings;
@@ -39,9 +39,9 @@ import java.util.Map;
 
 public abstract class WorkflowManager {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final WorkflowScheduler scheduler;
+    private final JobScheduler scheduler;
     private final WorkflowContext context;
-    private final Map<WorkflowID, SchedulableJob> workflows = new HashMap<WorkflowID, SchedulableJob>();
+    private final Map<JobID, SchedulableJob> workflows = new HashMap<JobID, SchedulableJob>();
 
     public WorkflowManager(
             WorkflowContext context,
@@ -52,13 +52,13 @@ public abstract class WorkflowManager {
         loadWorkFlows(configuration);
     }
 
-    public String startWorkflow(WorkflowID workflowID) {
-        SchedulableJob workflowToStart = workflows.get(workflowID);
-        return scheduler.startWorkflow(workflowToStart);
+    public String startWorkflow(JobID jobID) {
+        SchedulableJob workflowToStart = workflows.get(jobID);
+        return scheduler.startJob(workflowToStart);
     }
 
-    public Collection<WorkflowTimerTask> getWorkflows(String collectionID) {
-        return scheduler.getWorkflows(collectionID);
+    public Collection<JobTimerTask> getWorkflows(String collectionID) {
+        return scheduler.getJobs(collectionID);
     }
 
     private void loadWorkFlows(WorkflowSettings configuration) {
@@ -76,7 +76,7 @@ public abstract class WorkflowManager {
                         Workflow workflow =
                                 (Workflow)lookupClass(workflowConf.getWorkflowClass()).newInstance();
                         workflow.initialise(context, collectionID);
-                        scheduler.scheduleWorkflow(workflow, schedule.getWorkflowInterval());
+                        scheduler.schedule(workflow, schedule.getWorkflowInterval());
                         unscheduledWorkFlows.remove(collectionID);
                     }
                 }
@@ -85,7 +85,7 @@ public abstract class WorkflowManager {
                     SchedulableJob workflow =
                             (SchedulableJob)Class.forName(workflowConf.getWorkflowClass()).newInstance();
                     workflow.initialise(context, collection);
-                    scheduler.scheduleWorkflow(workflow, null);
+                    scheduler.schedule(workflow, null);
                 }
             } catch (Exception e) {
                 log.error("Unable to schedule workflow " + workflowConf.getWorkflowClass(), e);

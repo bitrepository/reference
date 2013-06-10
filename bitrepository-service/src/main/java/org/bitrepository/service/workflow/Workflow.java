@@ -93,5 +93,5 @@ public abstract class Workflow implements SchedulableJob {
         return statistics;
     }
     
-    public abstract WorkflowID getWorkflowID();
+    public abstract JobID getJobID();
 }

@@ -49,24 +49,24 @@
 //        addDescription("Test that schedulers call all workflow at the given intervals.");
 //        addStep("Setup a scheduler and validate initial state", "No errors and no workflows");
 //        TimerbasedScheduler scheduler = new TimerbasedScheduler(settings);
-//        Assert.assertEquals(scheduler.getWorkflows().size(), 0, "Should not be any workflows in the scheduler.");
+//        Assert.assertEquals(scheduler.getJobs().size(), 0, "Should not be any workflows in the scheduler.");
 //        
 //        addStep("Make a new workflow, add it to the scheduler and extract it afterwards.", 
 //                "Should extract the same workflow");
 //        Workflow testWorkflow = new MockWorkflow(3600000L, "testWorkflow");
 //        scheduler.putWorkflow(testWorkflow);
-//        Assert.assertEquals(scheduler.getWorkflows().size(), 1, "Should only be one workflow in the scheduler.");
-//        Assert.assertEquals(scheduler.getWorkflows().get(0), testWorkflow, "Should be the same workflow.");
+//        Assert.assertEquals(scheduler.getJobs().size(), 1, "Should only be one workflow in the scheduler.");
+//        Assert.assertEquals(scheduler.getJobs().get(0), testWorkflow, "Should be the same workflow.");
 //        
 //        addStep("Add the workflow again to the scheduler", "Should still be only the one and same workflow in the scheduler");
 //        scheduler.putWorkflow(testWorkflow);
-//        Assert.assertEquals(scheduler.getWorkflows().size(), 1, "Should only be one workflow in the scheduler.");
-//        Assert.assertEquals(scheduler.getWorkflows().get(0), testWorkflow, "Should be the same workflow.");        
+//        Assert.assertEquals(scheduler.getJobs().size(), 1, "Should only be one workflow in the scheduler.");
+//        Assert.assertEquals(scheduler.getJobs().get(0), testWorkflow, "Should be the same workflow.");
 //        
 //        addStep("Remove the workflow from the scheduler two times", 
 //                "Should not be any workflows in the scheduler, and only successfully remove workflow once.");
 //        Assert.assertTrue(scheduler.removeWorkflow(testWorkflow.getPrimitiveName()));
-//        Assert.assertEquals(scheduler.getWorkflows().size(), 0, "Should not be any workflows in the scheduler.");
+//        Assert.assertEquals(scheduler.getJobs().size(), 0, "Should not be any workflows in the scheduler.");
 //        Assert.assertFalse(scheduler.removeWorkflow(testWorkflow.getPrimitiveName()));
 //    }
 //    

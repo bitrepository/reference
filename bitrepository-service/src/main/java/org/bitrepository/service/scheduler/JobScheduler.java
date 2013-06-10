@@ -24,40 +24,40 @@
  */
 package org.bitrepository.service.scheduler;
 
+import org.bitrepository.service.workflow.JobTimerTask;
 import org.bitrepository.service.workflow.SchedulableJob;
-import org.bitrepository.service.workflow.WorkflowID;
-import org.bitrepository.service.workflow.WorkflowTimerTask;
+import org.bitrepository.service.workflow.JobID;
 
 import java.util.List;
 
 /**
- * Interface for scheduling workflows for the services.
+ * Interface for scheduling jobs for services.
  */
-public interface WorkflowScheduler {
+public interface JobScheduler {
     /**
-     * Adds a workflow for the scheduler to schedule. 
-     * @param workflow The workflow to schedule.
+     * Adds a job for the scheduler to schedule.
+     * @param job The jo to schedule.
      * @param interval The interval for how often the workflow should be triggered.
      */
-    void scheduleWorkflow(SchedulableJob workflow, Long interval);
-    
+    void schedule(SchedulableJob job, Long interval);
+
     /**
      * Cancels the workflow with the given name.
-     * 
-     * @param workflowId The ID of the workflow to cancel.
-     * @return The canceled WorkflowTimerTask.
+     *
+     * @param jobId The ID of the workflow to cancelJob.
+     * @return The canceled JobTimerTask.
      */
-    WorkflowTimerTask cancelWorkflow(WorkflowID workflowId);
-    
+    JobTimerTask cancelJob(JobID jobId);
+
     /**
      * @return The list of workflows currently scheduled for the indicated collection.
      */
-    List<WorkflowTimerTask> getWorkflows(String collectionID);
+    List<JobTimerTask> getJobs(String collectionID);
 
     /**
      * Reschedules the workflow to start now
-     * @param workflow
+     * @param job
      * @return A string indicating the result of the attempt to start the workflow.
      */
-    String startWorkflow(SchedulableJob workflow);
+    String startJob(SchedulableJob job);
 }

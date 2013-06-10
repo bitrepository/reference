@@ -31,7 +31,7 @@ import java.util.TimerTask;
  * A timer task encapsulating a workflow.
  * Used for scheduling workflows to run continuously at a given interval.
  */
-public class WorkflowTimerTask extends TimerTask {
+public class JobTimerTask extends TimerTask {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The date for the next run of the workflow.*/
@@ -46,7 +46,7 @@ public class WorkflowTimerTask extends TimerTask {
      * @param interval The interval between triggering events in milliseconds.
      * @param workflow:  The  workflow.
      */
-    public WorkflowTimerTask(long interval, SchedulableJob workflow) {
+    public JobTimerTask(long interval, SchedulableJob workflow) {
         this.interval = interval;
         this.workflow = workflow;
         nextRun = new Date();
@@ -118,11 +118,11 @@ public class WorkflowTimerTask extends TimerTask {
      * @return The name of the workflow.
      */
     public String getName() {
-        return workflow.getWorkflowID().toString();
+        return workflow.getJobID().toString();
     }
     
-    public WorkflowID getWorkflowID() {
-        return workflow.getWorkflowID();
+    public JobID getWorkflowID() {
+        return workflow.getJobID();
     }
 
     @Override

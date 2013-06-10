@@ -50,7 +50,7 @@ public interface SchedulableJob {
     /**
      *  @return Provides an ID to identify the SchedulableJob on
      */
-    WorkflowID getWorkflowID();
+    JobID getJobID();
 
     /**
      * Initializes a SchedulableJob with a context and a collection to run the SchedulableJob on.

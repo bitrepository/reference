@@ -24,10 +24,19 @@
  */
 package org.bitrepository.integrityservice.web;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import org.bitrepository.common.utils.FileSizeUtils;
+import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.common.utils.TimeUtils;
+import org.bitrepository.integrityservice.IntegrityServiceManager;
+import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.service.workflow.JobID;
+import org.bitrepository.service.workflow.JobTimerTask;
+import org.bitrepository.service.workflow.WorkflowManager;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -38,20 +47,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-
-import org.bitrepository.common.utils.FileSizeUtils;
-import org.bitrepository.common.utils.SettingsUtils;
-import org.bitrepository.common.utils.TimeUtils;
-import org.bitrepository.integrityservice.IntegrityServiceManager;
-import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.service.workflow.WorkflowID;
-import org.bitrepository.service.workflow.WorkflowManager;
-import org.bitrepository.service.workflow.WorkflowTimerTask;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 @Path("/IntegrityService")
 public class RestIntegrityService {
@@ -156,8 +155,8 @@ public class RestIntegrityService {
     public String getWorkflowSetup(@QueryParam("collectionID") String collectionID) {
         try {
             JSONArray array = new JSONArray();
-            Collection<WorkflowTimerTask> workflows = workflowManager.getWorkflows(collectionID);
-            for(WorkflowTimerTask workflow : workflows) {
+            Collection<JobTimerTask> workflows = workflowManager.getWorkflows(collectionID);
+            for(JobTimerTask workflow : workflows) {
                 array.put(makeWorkflowSetupObj(workflow));
             }
             return array.toString();
@@ -174,9 +173,9 @@ public class RestIntegrityService {
     @Path("/getWorkflowList/")
     @Produces(MediaType.APPLICATION_JSON)
     public List<String> getWorkflowList(@QueryParam("collectionID") String collectionID) {
-        Collection<WorkflowTimerTask> workflows = workflowManager.getWorkflows(collectionID);
+        Collection<JobTimerTask> workflows = workflowManager.getWorkflows(collectionID);
         List<String> workflowIDs = new ArrayList<String>();
-        for(WorkflowTimerTask workflow : workflows) {
+        for(JobTimerTask workflow : workflows) {
             workflowIDs.add(workflow.getWorkflowID().getWorkflowName());
         }
         return workflowIDs;
@@ -186,12 +185,12 @@ public class RestIntegrityService {
      * Start a named workflow.  
      */
     @POST
-    @Path("/startWorkflow/")
+    @Path("/startJob/")
     @Consumes("application/x-www-form-urlencoded")
     @Produces("text/html")
     public String startWorkflow(@FormParam("workflowID") String workflowID,
                                 @FormParam("collectionID") String collectionID) {
-        return workflowManager.startWorkflow(new WorkflowID(workflowID, collectionID));
+        return workflowManager.startWorkflow(new JobID(workflowID, collectionID));
     }
 
     /**
@@ -229,7 +228,7 @@ public class RestIntegrityService {
         }
     }
 
-    private JSONObject makeWorkflowSetupObj(WorkflowTimerTask workflowTask) {
+    private JSONObject makeWorkflowSetupObj(JobTimerTask workflowTask) {
         JSONObject obj = new JSONObject();
         try {
             obj.put("workflowID", workflowTask.getWorkflowID().getWorkflowName());

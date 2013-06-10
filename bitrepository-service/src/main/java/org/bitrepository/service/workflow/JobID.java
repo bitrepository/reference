@@ -24,12 +24,11 @@ package org.bitrepository.service.workflow;
 /**
  * Class to identify a workflow instance, based on the collection it belongs to and the workflow name/type 
  */
-public class WorkflowID {
-    
+public class JobID {
     private final String collectionID;
     private final String workflowName;
     
-    public WorkflowID(String collectionID, String workflowName) {
+    public JobID(String collectionID, String workflowName) {
         this.collectionID = collectionID;
         this.workflowName = workflowName;
     }
@@ -61,7 +60,7 @@ public class WorkflowID {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        WorkflowID other = (WorkflowID) obj;
+        JobID other = (JobID) obj;
         if (collectionID == null) {
             if (other.collectionID != null)
                 return false;

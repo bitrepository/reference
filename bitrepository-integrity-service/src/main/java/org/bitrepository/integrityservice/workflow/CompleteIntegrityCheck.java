@@ -32,7 +32,7 @@ import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowContext;
-import org.bitrepository.service.workflow.WorkflowID;
+import org.bitrepository.service.workflow.JobID;
 
 /**
  * Simple workflow for performing integrity checks of the system. 
@@ -43,8 +43,8 @@ import org.bitrepository.service.workflow.WorkflowID;
 public class CompleteIntegrityCheck extends Workflow {
     /** The context for the workflow.*/
     private IntegrityWorkflowContext context;
-    /** The workflowID */
-    private WorkflowID workflowID;
+    /** The jobID */
+    private JobID jobID;
     private String collectionID;
     /**
      * Remember to call the initialise method needs to be called before the start method.
@@ -55,7 +55,7 @@ public class CompleteIntegrityCheck extends Workflow {
     public void initialise(WorkflowContext context, String collectionID) {
         this.context = (IntegrityWorkflowContext)context;
         this.collectionID = collectionID;
-        workflowID = new WorkflowID(collectionID, getClass().getSimpleName());
+        jobID = new JobID(collectionID, getClass().getSimpleName());
     }
     
     @Override
@@ -112,7 +112,7 @@ public class CompleteIntegrityCheck extends Workflow {
     }
     
     @Override 
-    public WorkflowID getWorkflowID() {
-        return workflowID; 
+    public JobID getJobID() {
+        return jobID;
     }
 }

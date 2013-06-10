@@ -49,8 +49,8 @@ import org.bitrepository.service.audit.AuditTrailContributerDAO;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.scheduler.JobScheduler;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
-import org.bitrepository.service.scheduler.WorkflowScheduler;
 import org.bitrepository.service.workflow.SchedulableJob;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.slf4j.Logger;
@@ -73,7 +73,7 @@ public class ReferencePillar implements Pillar {
     /** The checksum store.*/
     private final ChecksumStore csStore;
     /** The scheduler for the recalculation workflows.*/
-    private final WorkflowScheduler scheduler;
+    private final JobScheduler scheduler;
     /** The manager of the checksums with regard to the archive.*/
     private final ReferenceChecksumManager manager;
     
@@ -127,7 +127,7 @@ public class ReferencePillar implements Pillar {
         }
         for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
             SchedulableJob workflow = new RecalculateChecksumWorkflow(c.getID(), manager);
-            scheduler.scheduleWorkflow(workflow, interval);
+            scheduler.schedule(workflow, interval);
         }
     }
     
