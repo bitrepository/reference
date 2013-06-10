@@ -27,6 +27,10 @@ import org.bitrepository.service.workflow.WorkflowManager;
 import org.bitrepository.settings.referencesettings.WorkflowConfiguration;
 import org.bitrepository.settings.referencesettings.WorkflowSettings;
 
+/**
+ * Manages the workflows for the integrity service. Delegates most functionality to the <code>Workflow</code>
+ * class, put handles som configation specif to the integrity workflows.
+ */
 public class IntegrityWorkflowManager extends WorkflowManager {
     public IntegrityWorkflowManager(IntegrityWorkflowContext context) {
         super(context,
@@ -44,11 +48,20 @@ public class IntegrityWorkflowManager extends WorkflowManager {
         return workflowSettings;
     }
 
+    /**
+     * Will create a default set of workflows. This is currently just the <code>CompleteIntegrityCheck</code>
+     * workflow running once a day on all collections.
+     */
     protected static WorkflowSettings createDefaultWorkflowSettings() {
         WorkflowSettings defaultWorkflowSettings = new WorkflowSettings();
         WorkflowConfiguration completeIntegrityWorkflowConf = new WorkflowConfiguration();
         completeIntegrityWorkflowConf.setWorkflowClass(CompleteIntegrityCheck.class.getCanonicalName());
         defaultWorkflowSettings.getWorkflow().add(completeIntegrityWorkflowConf);
         return defaultWorkflowSettings;
+    }
+
+    @Override
+    protected String getDefaultWorkflowPackage() {
+        return "org.bitrepository.integrityservice.workflow";
     }
 }

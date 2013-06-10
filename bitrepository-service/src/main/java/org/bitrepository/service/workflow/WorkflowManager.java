@@ -22,12 +22,6 @@
 
 package org.bitrepository.service.workflow;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
 import org.bitrepository.service.scheduler.WorkflowScheduler;
@@ -37,7 +31,13 @@ import org.bitrepository.settings.referencesettings.WorkflowSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WorkflowManager {
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+public abstract class WorkflowManager {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final WorkflowScheduler scheduler;
     private final WorkflowContext context;
@@ -74,7 +74,7 @@ public class WorkflowManager {
                     }
                     for (String collectionID:collectionsToScheduleWorkflowFor) {
                         Workflow workflow =
-                                (Workflow)Class.forName(workflowConf.getWorkflowClass()).newInstance();
+                                (Workflow)lookupClass(workflowConf.getWorkflowClass()).newInstance();
                         workflow.initialise(context, collectionID);
                         scheduler.scheduleWorkflow(workflow, schedule.getWorkflowInterval());
                         unscheduledWorkFlows.remove(collectionID);
@@ -92,4 +92,21 @@ public class WorkflowManager {
             }
         }
     }
+
+    private Class lookupClass(String settingsDefinedClass) throws ClassNotFoundException {
+        String fullClassName;
+        if (settingsDefinedClass.indexOf('.') == -1) {
+            fullClassName = getDefaultWorkflowPackage() + "." + settingsDefinedClass;
+        } else {
+            fullClassName = settingsDefinedClass;
+        }
+        return Class.forName(fullClassName);
+     }
+
+    /**
+     * Allows subclasses to define a workflow package where workflow classes defined with a simplename in the settings
+     * will be prefixed with the namespace defined here.
+     * @return
+     */
+    protected abstract String getDefaultWorkflowPackage();
 }
