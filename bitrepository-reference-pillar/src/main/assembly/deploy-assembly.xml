@@ -39,7 +39,7 @@
       <outputDirectory>deploy</outputDirectory>
       <directoryMode>0755</directoryMode>
       <fileMode>0744</fileMode>
-      <directory>src/main/resources/deploy</directory>
+      <directory>src/main/deploy</directory>
       <filtered>true</filtered>
     </fileSet>
   </fileSets>
