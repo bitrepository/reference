@@ -24,8 +24,6 @@
  */
 package org.bitrepository.integrityservice.collector;
 
-import java.util.Collection;
-
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
@@ -35,6 +33,8 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
 
 /**
  * Integrity information collector that delegates collecting information to the clients.
@@ -52,9 +52,9 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     private final AuditTrailManager auditManager;
     
     /**
-     * @param collectionID the collection to collect information for.
      * @param getFileIDsClient The client for retrieving file IDs
      * @param getChecksumsClient The client for retrieving checksums
+     * @param auditManager Log audit event here.
      */
     public DelegatingIntegrityInformationCollector(
             GetFileIDsClient getFileIDsClient,
@@ -87,7 +87,6 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
             getChecksumsClient.getChecksums(collectionID, queries, null, checksumType, null, eventHandler,
                     auditTrailInformation);
         } catch (Exception e) {
-            // Barrier
             log.error("Unexpected failure!", e);
         }
     }

@@ -123,8 +123,8 @@ CREATE TABLE fileinfo (
     last_checksum_update TIMESTAMP,
                                  -- The date for the latest checksum calculation.
     file_state INT,              -- The state of the file. 0 For EXISTING, 1 for MISSING, 
-                                 -- and everything else for UNKNOWN.
-    checksum_state INT,           -- Checksum integrity state. Either 0 for VALID, 1 for INCONSISTENT,
+                                 -- 2 for PREVIOUSLY_SEEN, and everything else for UNKNOWN.
+    checksum_state INT,          -- Checksum integrity state. Either 0 for VALID, 1 for INCONSISTENT,
                                  -- and everything else for UNKNOWN.
     FOREIGN KEY (file_key) REFERENCES files(file_key),
                                  -- Foreign key constraint on file_key, enforcing the presence of the referred id

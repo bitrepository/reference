@@ -92,9 +92,9 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csData, TEST_PILLAR_1, TEST_COLLECTION);
-        cache.addChecksums(csData, TEST_PILLAR_2, TEST_COLLECTION);
-        cache.addChecksums(csData, TEST_PILLAR_3, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData, TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData, TEST_PILLAR_2, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData, TEST_PILLAR_3, TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
         ChecksumReportModel report = validator.generateReport(TEST_COLLECTION);
@@ -115,8 +115,8 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csData, TEST_PILLAR_1, TEST_COLLECTION);
-        cache.addChecksums(csData, TEST_PILLAR_2, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData, TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData, TEST_PILLAR_2, TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
         ChecksumReportModel report = validator.generateReport(TEST_COLLECTION);
@@ -133,9 +133,9 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData1 = createChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csData1, TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData1, TEST_PILLAR_1, TEST_COLLECTION);
         List<ChecksumDataForChecksumSpecTYPE> csData2 = createChecksumData("1c2c3c44c3c2c1", FILE_1);
-        cache.addChecksums(csData2, TEST_PILLAR_2, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData2, TEST_PILLAR_2, TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should have integrity issues. No entry should be valid.");
         ChecksumReportModel report = validator.generateReport(TEST_COLLECTION);
@@ -159,11 +159,11 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData1 = createChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csData1, TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData1, TEST_PILLAR_1, TEST_COLLECTION);
         List<ChecksumDataForChecksumSpecTYPE> csData2 = createChecksumData("cccc12344321cccc", FILE_1);
-        cache.addChecksums(csData2, TEST_PILLAR_2, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData2, TEST_PILLAR_2, TEST_COLLECTION);
         List<ChecksumDataForChecksumSpecTYPE> csData3 = createChecksumData("1c2c3c44c3c2c1", FILE_1);
-        cache.addChecksums(csData3, TEST_PILLAR_3, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData3, TEST_PILLAR_3, TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should have integrity issues.");
         ChecksumReportModel report = validator.generateReport(TEST_COLLECTION);
@@ -182,9 +182,9 @@ public class ChecksumIntegrityValidatorVersusDatabaseTest extends IntegrityDatab
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csData, TEST_PILLAR_1, TEST_COLLECTION);
-        cache.addChecksums(csData, TEST_PILLAR_2, TEST_COLLECTION);
-        cache.addChecksums(csData, TEST_PILLAR_3, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData, TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData, TEST_PILLAR_2, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData, TEST_PILLAR_3, TEST_COLLECTION);
         
         addStep("Validate the file ids", "No integrity issues and all should be valid");
         ChecksumReportModel report = validator.generateReport(TEST_COLLECTION);

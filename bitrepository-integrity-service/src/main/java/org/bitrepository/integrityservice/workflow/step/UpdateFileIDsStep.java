@@ -1,4 +1,5 @@
 /*
+/*
  * #%L
  * Bitrepository Integrity Service
  * %%
@@ -21,9 +22,6 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.settings.Settings;
@@ -35,6 +33,10 @@ import org.bitrepository.integrityservice.collector.IntegrityInformationCollecto
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The step for collecting of all file ids from all pillars.
@@ -55,7 +57,6 @@ public class UpdateFileIDsStep extends AbstractWorkFlowStep {
     private final Integer maxNumberOfResultsPerConversation;
     /** The collectionID */
     private final String collectionId;
-    private final Settings settings;
     
     /** The default value for the maximum number of results for each conversation. Is case the setting is missing.*/
     private final Integer DEFAULT_MAX_RESULTS = 10000;
@@ -73,7 +74,6 @@ public class UpdateFileIDsStep extends AbstractWorkFlowStep {
         this.store = store;
         this.alerter = alerter;
         this.collectionId = collectionId;
-        this.settings = settings;
         this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
                 + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
         if(settings.getReferenceSettings().getIntegrityServiceSettings().getMaximumNumberOfResultsPerConversation() 

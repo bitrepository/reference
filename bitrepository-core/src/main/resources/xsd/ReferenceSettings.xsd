@@ -154,7 +154,7 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="EnsureChecksumWorkflowInterval" type="xs:nonNegativeInteger" minOccurs="0">
+        <xs:element name="RecalculateOldChecksumsInterval" type="xs:nonNegativeInteger" minOccurs="0">
           <xs:annotation>
             <xs:documentation>
               The number of milliseconds between running the workflow for ensuring the checksums integrity.

@@ -228,6 +228,13 @@ public interface IntegrityModel {
     void setPreviouslySeenToExisting(String collectionId, String pillarId);
 
     /**
+     * @param fileId The id of the file.
+     * @param collectionId The id of the collection.
+     * @return Whether the given file is within the given collection.
+     */
+    boolean hasFile(String fileId, String collectionId);
+    
+    /**
      * Retrieves the date for the latest file entry for a given collection.
      * E.g. the date for the latest file which has been positively identified as existing in the collection.  
      * @param collectionId The ID of the collection to look in
@@ -273,7 +280,6 @@ public interface IntegrityModel {
      *  @return {@link CollectionStat} The latest collection statistics object for the collection
      */
     List<CollectionStat> getLatestCollectionStat(String collectionID, int count);
-    
     
     /**
      * Method to create a new set of statistics entries for a given collection

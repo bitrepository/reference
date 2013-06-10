@@ -51,7 +51,7 @@ import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
 import org.bitrepository.service.scheduler.WorkflowScheduler;
-import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.SchedulableJob;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,12 +121,12 @@ public class ReferencePillar implements Pillar {
      */
     private void initializeWorkflows() {
         Long interval = DEFAULT_RECALCULATION_WORKFLOW_TIME;
-        if(settings.getReferenceSettings().getPillarSettings().getEnsureChecksumWorkflowInterval() != null) {
+        if(settings.getReferenceSettings().getPillarSettings().getRecalculateOldChecksumsInterval() != null) {
             interval = settings.getReferenceSettings().getPillarSettings()
-                    .getEnsureChecksumWorkflowInterval().longValue();
+                    .getRecalculateOldChecksumsInterval().longValue();
         }
         for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
-            Workflow workflow = new RecalculateChecksumWorkflow(c.getID(), manager);
+            SchedulableJob workflow = new RecalculateChecksumWorkflow(c.getID(), manager);
             scheduler.scheduleWorkflow(workflow, interval);
         }
     }

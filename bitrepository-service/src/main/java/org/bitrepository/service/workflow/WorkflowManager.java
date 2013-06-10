@@ -41,7 +41,7 @@ public abstract class WorkflowManager {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final WorkflowScheduler scheduler;
     private final WorkflowContext context;
-    private final Map<WorkflowID, Workflow> workflows = new HashMap<WorkflowID, Workflow>();
+    private final Map<WorkflowID, SchedulableJob> workflows = new HashMap<WorkflowID, SchedulableJob>();
 
     public WorkflowManager(
             WorkflowContext context,
@@ -53,7 +53,7 @@ public abstract class WorkflowManager {
     }
 
     public String startWorkflow(WorkflowID workflowID) {
-        Workflow workflowToStart = workflows.get(workflowID);
+        SchedulableJob workflowToStart = workflows.get(workflowID);
         return scheduler.startWorkflow(workflowToStart);
     }
 
@@ -82,8 +82,8 @@ public abstract class WorkflowManager {
                 }
                 // Create a instance of all workflows not explicitly scheduled.
                 for (String collection:unscheduledWorkFlows) {
-                    Workflow workflow =
-                            (Workflow)Class.forName(workflowConf.getWorkflowClass()).newInstance();
+                    SchedulableJob workflow =
+                            (SchedulableJob)Class.forName(workflowConf.getWorkflowClass()).newInstance();
                     workflow.initialise(context, collection);
                     scheduler.scheduleWorkflow(workflow, null);
                 }

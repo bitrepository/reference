@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
-import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.SchedulableJob;
 import org.bitrepository.service.workflow.WorkflowID;
 import org.bitrepository.service.workflow.WorkflowTimerTask;
 import org.slf4j.Logger;
@@ -71,7 +71,7 @@ public class TimerbasedScheduler implements WorkflowScheduler {
     }
 
     @Override
-    public void scheduleWorkflow(Workflow workflow, Long interval) {
+    public void scheduleWorkflow(SchedulableJob workflow, Long interval) {
         log.info("Scheduling workflow : " + workflow);
 
         WorkflowTimerTask task = new WorkflowTimerTask(interval, workflow);
@@ -80,7 +80,7 @@ public class TimerbasedScheduler implements WorkflowScheduler {
     }
 
     @Override
-    public String startWorkflow(Workflow workflow) {
+    public String startWorkflow(SchedulableJob workflow) {
         long timeBetweenRuns = -1;
         WorkflowTimerTask oldTask = cancelWorkflow(workflow.getWorkflowID());
         if (oldTask != null) {

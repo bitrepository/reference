@@ -83,7 +83,7 @@ public class ObsoleteChecksumsFinderVersusDatabaseTest extends IntegrityDatabase
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createNewChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csData, TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData, TEST_PILLAR_1, TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
         ObsoleteChecksumReportModel report = finder.generateReport(
@@ -99,7 +99,7 @@ public class ObsoleteChecksumsFinderVersusDatabaseTest extends IntegrityDatabase
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createOldChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csData, TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData, TEST_PILLAR_1, TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
         ObsoleteChecksumReportModel report = finder.generateReport(
@@ -120,9 +120,9 @@ public class ObsoleteChecksumsFinderVersusDatabaseTest extends IntegrityDatabase
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csOldData = createOldChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csOldData, TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csOldData, TEST_PILLAR_1, TEST_COLLECTION);
         List<ChecksumDataForChecksumSpecTYPE> csNewData = createNewChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csNewData, TEST_PILLAR_2, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csNewData, TEST_PILLAR_2, TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
         ObsoleteChecksumReportModel report = finder.generateReport(
@@ -142,7 +142,7 @@ public class ObsoleteChecksumsFinderVersusDatabaseTest extends IntegrityDatabase
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createOldChecksumData("1234cccc4321", FILE_1);
-        cache.addChecksums(csData, TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData, TEST_PILLAR_1, TEST_COLLECTION);
         cache.setFileMissing(FILE_1, Arrays.asList(TEST_PILLAR_1), TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should not have integrity issues.");

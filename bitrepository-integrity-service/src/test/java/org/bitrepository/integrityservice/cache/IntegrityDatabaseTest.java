@@ -162,8 +162,8 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         
         addStep("Create data", "Should be ingested into the database");
         List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM);
-        model.addChecksums(csData, TEST_PILLAR_1, TEST_COLLECTIONID);
-        model.addChecksums(csData, TEST_PILLAR_2, TEST_COLLECTIONID);
+        insertChecksumDataForModel(model, csData, TEST_PILLAR_1, TEST_COLLECTIONID);
+        insertChecksumDataForModel(model, csData, TEST_PILLAR_2, TEST_COLLECTIONID);
         
         addStep("Extract the data", "Should be identical to the ingested data");
         Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
@@ -174,7 +174,6 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
             Assert.assertEquals(fi.getChecksumState(), ChecksumState.UNKNOWN);
             Assert.assertEquals(fi.getFileState(), FileState.EXISTING);
             Assert.assertEquals(fi.getDateForLastChecksumCheck(), csData.get(0).getCalculationTimestamp());
-            Assert.assertEquals(fi.getDateForLastFileIDCheck(), CalendarUtils.getEpoch());
         }
     }
     
@@ -237,8 +236,8 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
 
         addStep("Create data", "Should be ingested into the database");
         List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM); 
-        model.addChecksums(csData, TEST_PILLAR_1, TEST_COLLECTIONID);
-        model.addChecksums(csData, TEST_PILLAR_2, TEST_COLLECTIONID);
+        insertChecksumDataForModel(model, csData, TEST_PILLAR_1, TEST_COLLECTIONID);
+        insertChecksumDataForModel(model, csData, TEST_PILLAR_2, TEST_COLLECTIONID);
         
         Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
         Assert.assertNotNull(fileinfos);
@@ -268,8 +267,8 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
 
         addStep("Create data", "Should be ingested into the database");
         List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM); 
-        model.addChecksums(csData, TEST_PILLAR_1, TEST_COLLECTIONID);
-        model.addChecksums(csData, TEST_PILLAR_2, TEST_COLLECTIONID);
+        insertChecksumDataForModel(model, csData, TEST_PILLAR_1, TEST_COLLECTIONID);
+        insertChecksumDataForModel(model, csData, TEST_PILLAR_2, TEST_COLLECTIONID);
         
         Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
         Assert.assertNotNull(fileinfos);

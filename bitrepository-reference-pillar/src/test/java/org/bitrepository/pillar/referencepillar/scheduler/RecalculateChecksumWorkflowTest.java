@@ -25,7 +25,7 @@ import java.math.BigInteger;
 import java.util.Date;
 
 import org.bitrepository.pillar.referencepillar.ReferencePillarTest;
-import org.bitrepository.service.workflow.Workflow;
+import org.bitrepository.service.workflow.SchedulableJob;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -43,7 +43,7 @@ public class RecalculateChecksumWorkflowTest extends ReferencePillarTest {
         }
         
         addStep("Create and run workflow", "The checksum");
-        Workflow workflow = new RecalculateChecksumWorkflow(collectionID, csManager);
+        SchedulableJob workflow = new RecalculateChecksumWorkflow(collectionID, csManager);
         workflow.start();
         Date afterWorkflowDate = csCache.getCalculationDate(DEFAULT_FILE_ID, collectionID);
         
@@ -65,7 +65,7 @@ public class RecalculateChecksumWorkflowTest extends ReferencePillarTest {
         }
         
         addStep("Create and run workflow", "The checksum");
-        Workflow workflow = new RecalculateChecksumWorkflow(collectionID, csManager);
+        SchedulableJob workflow = new RecalculateChecksumWorkflow(collectionID, csManager);
         workflow.start();
         Date afterWorkflowDate = csCache.getCalculationDate(DEFAULT_FILE_ID, collectionID);
         

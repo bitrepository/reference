@@ -22,6 +22,7 @@
 <%@page pageEncoding="UTF-8"%>
 
 <%
+long UTC_FIX = 2*60*60*1000L;
   ArrayList<ArrayList<StatisticsDataSize>> allDataSizeList = (  ArrayList<ArrayList<StatisticsDataSize>> ) request.getAttribute(DashboardServlet.DATA_SIZE_HISTORY_ATTRIBUTE);
   ArrayList<String> allDataSizeNamesList = (  ArrayList<String> ) request.getAttribute(DashboardServlet.DATA_SIZE_HISTORY_NAMES_ATTRIBUTE);
   
@@ -129,7 +130,7 @@ var data_tilvaekst<%=i%> = [
 <%
 for (int j = 0 ;j <dataSizeList.size();j++){
   StatisticsDataSize current = dataSizeList.get(j);%>
- [<%=current.getDateMillis()%> ,  <%=current.getDataSize()/byteUnit%> ],
+[<%=(current.getDateMillis()+UTC_FIX)%> ,  <%=current.getDataSize()/byteUnit%> ],
 <%}%>
 ];
 
@@ -178,7 +179,7 @@ $.fn.UseTooltip = function (plot) {
 
                 $("#tooltip").remove();
                 
-                var x = item.datapoint[0];
+                var x = item.datapoint[0]-<%=UTC_FIX%>;
                 var y = item.datapoint[1];                
                 
                 var d = new Date(x);

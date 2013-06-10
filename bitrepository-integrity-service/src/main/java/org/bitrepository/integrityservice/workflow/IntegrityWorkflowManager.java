@@ -22,6 +22,7 @@
 
 package org.bitrepository.integrityservice.workflow;
 
+import org.bitrepository.service.workflow.SchedulableJob;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.service.workflow.WorkflowManager;
 import org.bitrepository.settings.referencesettings.WorkflowConfiguration;

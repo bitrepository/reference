@@ -30,7 +30,7 @@ import org.bitrepository.integrityservice.workflow.step.IntegrityValidationFileI
 import org.bitrepository.integrityservice.workflow.step.RemoveDeletableFileIDsFromDatabaseStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
-import org.bitrepository.service.workflow.StepBasedWorkflow;
+import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowContext;
 import org.bitrepository.service.workflow.WorkflowID;
 
@@ -40,7 +40,7 @@ import org.bitrepository.service.workflow.WorkflowID;
  * Then the data is validated for integrity issues.
  * And finally it is verified whether any missing or obsolete checksums can be found.
  */
-public class CompleteIntegrityCheck extends StepBasedWorkflow {
+public class CompleteIntegrityCheck extends Workflow {
     /** The context for the workflow.*/
     private IntegrityWorkflowContext context;
     /** The workflowID */

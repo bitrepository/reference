@@ -109,9 +109,9 @@ public class PutFile extends CommandLineClient {
         checksumSaltOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
 
-        Option deleteOption = new Option(Constants.DELETE_FILE_ARG, Constants.HAS_ARGUMENT, 
-                "[OPTIONAL] Whether or not to delete the file at the server afterwards. "
-                + "Use 'true' or 'false'. Default is 'false'.");
+        Option deleteOption = new Option(Constants.DELETE_FILE_ARG, Constants.NO_ARGUMENT, 
+                "If this argument is present, then the file will be removed from the server, "
+                + "when the operation is complete.");
         deleteOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(deleteOption);
     }
@@ -135,7 +135,7 @@ public class PutFile extends CommandLineClient {
         client.putFile(getCollectionID(), url, fileId, f.length(), validationChecksum, requestChecksum, eventHandler,
                 "Putting the file '" + f + "' with the file id '" + fileId + "' from commandLine.");
         
-        if(getWhetherToDeleteAfterwards()) {
+        if(cmdHandler.hasOption(Constants.DELETE_FILE_ARG)) {
             try {
                 fileexchange.deleteFromServer(url);
             } catch (Exception e) {
@@ -207,22 +207,6 @@ public class PutFile extends CommandLineClient {
             res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
         }
         return res;
-    }
-    
-    /**
-     * @return Whether or not to delete the file afterwards, based on the commandline argument. 
-     */
-    private boolean getWhetherToDeleteAfterwards() {
-        if(!cmdHandler.hasOption(Constants.DELETE_FILE_ARG)) {
-            return false;
-        }
-        
-        String arg = cmdHandler.getOptionValue(Constants.DELETE_FILE_ARG);
-        if(arg.toLowerCase().equals("true")) {
-            return true;
-        } else {
-            return false;
-        }
     }
     
     /**

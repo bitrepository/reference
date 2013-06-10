@@ -21,10 +21,10 @@
  */
 package org.bitrepository.commandline.outputformatter;
 
-import java.util.Collection;
-
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.resultmodel.ChecksumResult;
+
+import java.util.Collection;
 
 /**
  * Class to format GetChecksums client output. 
@@ -47,8 +47,8 @@ public class GetChecksumsInfoFormatter implements GetChecksumsOutputFormatter {
     
     
     public void formatResult(Collection<ChecksumResult> results) {
-        String firstContributor = null;
-        String checksum = null; 
+        String firstContributor;
+        String checksum;
         for(ChecksumResult result : results) {
             firstContributor = result.getContributors().get(0);
             if(result.isDirty()) {

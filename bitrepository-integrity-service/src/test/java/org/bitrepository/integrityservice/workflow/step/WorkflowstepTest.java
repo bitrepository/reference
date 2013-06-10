@@ -24,6 +24,7 @@ package org.bitrepository.integrityservice.workflow.step;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
@@ -54,6 +55,7 @@ public class WorkflowstepTest extends ExtendedTestCase{
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_1);
         settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0L);
         TEST_COLLECTION = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
+        SettingsUtils.initialize(settings);
 
         alerter = mock(IntegrityAlerter.class);
         checker = mock(IntegrityChecker.class);

@@ -21,10 +21,11 @@
  */
 package org.bitrepository.service.workflow;
 
-import java.util.Date;
-import java.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
+import java.util.TimerTask;
 
 /**
  * A timer task encapsulating a workflow.
@@ -37,7 +38,7 @@ public class WorkflowTimerTask extends TimerTask {
     private Date nextRun;
     /** The interval between triggers. */
     private final long interval;
-    private final Workflow workflow;
+    private final SchedulableJob workflow;
     private WorkflowStatistic lastWorkflowStatistics;
 
     /**
@@ -45,7 +46,7 @@ public class WorkflowTimerTask extends TimerTask {
      * @param interval The interval between triggering events in milliseconds.
      * @param workflow:  The  workflow.
      */
-    public WorkflowTimerTask(long interval, Workflow workflow) {
+    public WorkflowTimerTask(long interval, SchedulableJob workflow) {
         this.interval = interval;
         this.workflow = workflow;
         nextRun = new Date();
@@ -94,7 +95,7 @@ public class WorkflowTimerTask extends TimerTask {
      */
     public String runWorkflow() {
         try {
-            if (workflow.currentState().equals(StepBasedWorkflow.NOT_RUNNING)) {
+            if (workflow.currentState().equals(Workflow.NOT_RUNNING)) {
                 log.info("Starting the workflow: " + getName());
                 workflow.start();
                 if (interval < 0) {
