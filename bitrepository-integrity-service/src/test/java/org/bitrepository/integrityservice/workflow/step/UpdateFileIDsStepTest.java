@@ -21,159 +21,149 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.List;
-
+import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.client.eventhandler.CompleteEvent;
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
+import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.BeforeMethod;
+import org.mockito.Matchers;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.testng.annotations.Test;
 
-public class UpdateFileIDsStepTest extends ExtendedTestCase {
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Collection;
+
+import static org.mockito.Mockito.*;
+
+public class UpdateFileIDsStepTest extends WorkflowstepTest {
     public static final String TEST_PILLAR_1 = "test-pillar-1";
-    public static final List<String> PILLAR_IDS = Arrays.asList(TEST_PILLAR_1);
     public static final String TEST_FILE_1 = "test-file-1";
-    public static final String DEFAULT_CHECKSUM = "0123456789";
-    
-    public static final Integer NUMBER_OF_PARTIAL_RESULTS = 3;
-    
-    protected Settings settings;
-    
-    String TEST_COLLECTIONID;
-    
-    @BeforeMethod (alwaysRun = true)
-    public void setup() throws Exception {
-        settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
-        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
-        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().addAll(PILLAR_IDS);
-        TEST_COLLECTIONID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-    }
-    
+
     @Test(groups = {"regressiontest", "integritytest"})
     public void testPositiveReply() {
         addDescription("Test the step for updating the file ids can handle COMPLETE operation event.");
-      /*  MockCollector collector = new MockCollector() {
-            @Override
-            public void getFileIDs(String collectionID, Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
-                    EventHandler eventHandler) {
-                super.getFileIDs(collectionID, pillarIDs, auditTrailInformation, queries, eventHandler);
-                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTIONID, null));
+        doAnswer(new Answer() {
+            public Void answer(InvocationOnMock invocation) {
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[4];
+                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+                return null;
             }
-        };
-        MockIntegrityAlerter alerter = new MockIntegrityAlerter();
-        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, store, alerter, settings, TEST_COLLECTIONID);
-        
+        }).when(collector).getFileIDs(
+                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
+                any(EventHandler.class));
+
+        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION);
         step.performStep();
-        Assert.assertEquals(store.getCallsForAddFileIDs(), 0);
-        Assert.assertEquals(alerter.getCallsForOperationFailed(), 0);
-        Assert.assertEquals(collector.getNumberOfCallsForGetFileIDs(), 1);*/
+        verify(collector).getFileIDs(
+                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
+                any(EventHandler.class));
+        verifyNoMoreInteractions(alerter);
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
     public void testNegativeReply() {
         addDescription("Test the step for updating the file ids can handle FAILED operation event.");
-     /*   MockCollector collector = new MockCollector() {
-            @Override
-            public void getFileIDs(String collectionID, Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
-                    EventHandler eventHandler) {
-                super.getFileIDs(collectionID, pillarIDs, auditTrailInformation, queries, eventHandler);
-                eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTIONID, "Operation failed", null));
+        doAnswer(new Answer() {
+            public Void answer(InvocationOnMock invocation) {
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[4];
+                eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Operation failed", null));
+                return null;
             }
-        };
-        MockIntegrityAlerter alerter = new MockIntegrityAlerter();
-        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, store, alerter, settings, TEST_COLLECTIONID);
+        }).when(collector).getFileIDs(
+                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
+                any(EventHandler.class));
+        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION);
         
         step.performStep();
-        Assert.assertEquals(store.getCallsForAddFileIDs(), 0);
-        Assert.assertEquals(alerter.getCallsForOperationFailed(), 1);
-        Assert.assertEquals(collector.getNumberOfCallsForGetFileIDs(), 1);*/
+        verify(alerter).operationFailed(anyString(), anyString());
+        verify(collector).getFileIDs(
+                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
+                any(EventHandler.class));
     }
-    
+
     @Test(groups = {"regressiontest", "integritytest"})
     public void testIngestOfResults() {
         addDescription("Test the step for updating the file ids can ingest the data correctly into the store.");
-      /*  MockCollector collector = new MockCollector() {
-            @Override
-            public void getFileIDs(String collectionID, Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
-                    EventHandler eventHandler) {
-                super.getFileIDs(collectionID, pillarIDs, auditTrailInformation, queries, eventHandler);
-                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTIONID, Arrays.asList(TEST_PILLAR_1)));
-                FileIDsCompletePillarEvent event = new FileIDsCompletePillarEvent(
-                        TEST_PILLAR_1, TEST_COLLECTIONID, createResultingFileIDs(TEST_FILE_1), false);
-                eventHandler.handleEvent(event);
-                
-                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTIONID, null));
+        final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);
+        doAnswer(new Answer() {
+            public Void answer(InvocationOnMock invocation) {
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[4];
+                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(TEST_PILLAR_1)));
+                eventHandler.handleEvent(new FileIDsCompletePillarEvent(
+                        TEST_PILLAR_1, TEST_COLLECTION, resultingFileIDs, false));
+                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+                return null;
             }
-        };
-        MockIntegrityAlerter alerter = new MockIntegrityAlerter();
-        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, store, alerter, settings, TEST_COLLECTIONID);
-        
+        }).when(collector).getFileIDs(
+                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
+                any(EventHandler.class));
+
+        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION);
         step.performStep();
-        Assert.assertEquals(store.getCallsForAddFileIDs(), 1);
-        Assert.assertEquals(alerter.getCallsForOperationFailed(), 0);
-        Assert.assertEquals(collector.getNumberOfCallsForGetFileIDs(), 1);*/
+        verify(model).addFileIDs(resultingFileIDs.getFileIDsData(), TEST_PILLAR_1, TEST_COLLECTION);
     }
-    
-    
+
+
     @Test(groups = {"regressiontest", "integritytest"})
     public void testPartialResults() {
         addDescription("Test that the number of partial is used for generating more than one request.");
-      /*  MockCollector collector = new MockCollector() {
-            Integer numberOfPartialResultsLeft = NUMBER_OF_PARTIAL_RESULTS;
-            @Override
-            public void getFileIDs(String collectionID, Collection<String> pillarIDs, String auditTrailInformation, ContributorQuery[] queries,
-                    EventHandler eventHandler) {
-                super.getFileIDs(collectionID, pillarIDs, auditTrailInformation, queries, eventHandler);
-                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTIONID, Arrays.asList(TEST_PILLAR_1)));
-                FileIDsCompletePillarEvent event;
-                if(numberOfPartialResultsLeft > 0) {
-                    event = new FileIDsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTIONID, createResultingFileIDs(TEST_FILE_1), true);
-                    numberOfPartialResultsLeft--;
-                } else {
-                    event = new FileIDsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTIONID, createResultingFileIDs(TEST_FILE_1), false);
-                }
-                eventHandler.handleEvent(event);
-                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTIONID, null));
+        final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);
+
+        addStep("Setup the collector mock to generate a isPartialResult=true event the first time and a " +
+                "isPartialResult=false the second time",
+                "The collectors getFileIDs should be called 2 time. The same goes for the 'models' addFileIDs");
+        Answer callbackAnswer = new Answer() {
+            boolean firstPage = true;
+            public Void answer(InvocationOnMock invocation) {
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[4];
+                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(TEST_PILLAR_1)));
+                eventHandler.handleEvent(
+                        new FileIDsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION, resultingFileIDs, firstPage));
+                firstPage = false;
+                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+                return null;
             }
         };
-        MockIntegrityAlerter alerter = new MockIntegrityAlerter();
-        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, store, alerter, settings, TEST_COLLECTIONID);
+        doAnswer(callbackAnswer).when(collector).getFileIDs(
+                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(),
+                any(ContributorQuery[].class),
+                any(EventHandler.class));
+
+        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION);
         
         step.performStep();
-        Assert.assertEquals(store.getCallsForAddFileIDs(), NUMBER_OF_PARTIAL_RESULTS + 1);
-        Assert.assertEquals(alerter.getCallsForOperationFailed(), 0);
-        Assert.assertEquals(collector.getNumberOfCallsForGetFileIDs(), NUMBER_OF_PARTIAL_RESULTS + 1);*/
+        verify(model, times(2)).addFileIDs(resultingFileIDs.getFileIDsData(), TEST_PILLAR_1, TEST_COLLECTION);
+        verify(collector, times(2)).getFileIDs(
+                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
+                any(EventHandler.class));
     }
-    
+
     private ResultingFileIDs createResultingFileIDs(String ... fileIds) {
         ResultingFileIDs res = new ResultingFileIDs();
         res.setFileIDsData(getFileIDsData(fileIds));
         return res;
     }
-    
+
     private FileIDsData getFileIDsData(String... fileIds) {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems items = new FileIDsDataItems();
-        
+
         for(String fileId : fileIds) {
             FileIDsDataItem dataItem = new FileIDsDataItem();
             dataItem.setFileID(fileId);
             dataItem.setFileSize(BigInteger.valueOf(items.getFileIDsDataItem().size() + 1));
             dataItem.setLastModificationTime(CalendarUtils.getNow());
             items.getFileIDsDataItem().add(dataItem);
-        } 
-        
+        }
+
         res.setFileIDsDataItems(items);
         return res;
     }

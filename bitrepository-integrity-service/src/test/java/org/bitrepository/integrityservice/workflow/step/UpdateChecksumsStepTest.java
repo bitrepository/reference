@@ -21,10 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -34,120 +31,122 @@ import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
+import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.mockito.Matchers;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 public class UpdateChecksumsStepTest extends WorkflowstepTest {
     public static final String TEST_PILLAR_1 = "test-pillar-1";
-    public static final List<String> PILLAR_IDS = Arrays.asList(TEST_PILLAR_1);
     public static final String TEST_FILE_1 = "test-file-1";
     public static final String DEFAULT_CHECKSUM = "0123456789";
 
     @Test(groups = {"regressiontest", "integritytest"})
     public void testPositiveReply() {
         addDescription("Test the step for updating the checksums can handle COMPLETE operation event.");
-        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(),
-                settings, TEST_COLLECTION);
-        /*
+        doAnswer(new Answer() {
+            public Void answer(InvocationOnMock invocation) {
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+                return null;
+            }
+        }).when(collector).getChecksums(
+                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
+                any(ContributorQuery[].class), any(EventHandler.class));
+
+        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
         step.performStep();
-        verify(collector).getChecksums(TEST_COLLECTION, null, null, null, null, null);
-        verifyNoMoreInteractions(alerter, model, checker);*/
+        verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+        verifyNoMoreInteractions(alerter);
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
     public void testNegativeReply() {
         addDescription("Test the step for updating the checksums can handle FAILURE operation event.");
-        /*MockCollector collector = new MockCollector() {
-            @Override
-            public void getChecksums(String collectionID, Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation,
-                    ContributorQuery[] queries, EventHandler eventHandler) {
-                super.getChecksums(collectionID, pillarIDs, checksumType, auditTrailInformation, queries, eventHandler);
+        doAnswer(new Answer() {
+            public Void answer(InvocationOnMock invocation) {
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
                 eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Problem encountered", null));
+                return null;
             }
-        };
-        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, model, alerter, null, settings, TEST_COLLECTION);
-        ArgumentCaptor<EventHandler> eventHandlerArgument = ArgumentCaptor.forClass(EventHandler.class);
-        verify(collector).getChecksums(TEST_COLLECTION, null, null, null, null, eventHandlerArgument.capture());
-        step.performStep();
-        eventHandlerArgument.getValue().handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Problem encountered", null));
+        }).when(collector).getChecksums(
+                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
+                any(ContributorQuery[].class), any(EventHandler.class));
 
-        verify(alerter).operationFailed(anyString(), TEST_COLLECTION);
-        verifyNoMoreInteractions(alerter, model, checker);                  */
+        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        step.performStep();
+        verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+        verify(alerter).operationFailed(anyString(), eq(TEST_COLLECTION));
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testIngestOfResults() {
         addDescription("Test the step for updating the checksums delivers the results to the integrity model.");
-      /*  MockCollector collector = new MockCollector() {
-            @Override
-            public void getChecksums(String collectionID, Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation,
-                    ContributorQuery[] queries, EventHandler eventHandler) {
-                super.getChecksums(collectionID, pillarIDs, checksumType, auditTrailInformation, queries, eventHandler);
+        final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
+        doAnswer(new Answer() {
+            public Void answer(InvocationOnMock invocation) {
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
                 eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(TEST_PILLAR_1)));
-                ChecksumsCompletePillarEvent event = new ChecksumsCompletePillarEvent(
-                        TEST_PILLAR_1, TEST_COLLECTION, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
-                        createChecksumSpecTYPE(), false);
-                eventHandler.handleEvent(event);
-                
+                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION,
+                        resultingChecksums, createChecksumSpecTYPE(), false));
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+                return null;
             }
-        };
-        MockIntegrityAlerter alerter = new MockIntegrityAlerter();
-        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, store, alerter, createChecksumSpecTYPE(),
-                settings, TEST_COLLECTION);
-        
+        }).when(collector).getChecksums(
+                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
+                any(ContributorQuery[].class), any(EventHandler.class));
+
+        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
         step.performStep();
-        Assert.assertEquals(store.getCallsForAddChecksums(), 1);
-        Assert.assertEquals(alerter.getCallsForOperationFailed(), 0);
-        Assert.assertEquals(collector.getNumberOfCallsForGetChecksums(), 1);*/
-    }
-    
-    @Test(groups = {"regressiontest", "integritytest"})
-    public void testThreadedResults() {
-        addDescription("Test the step for updating the checksums delivers the results to the integrity model.");
-       /* MockCollector collector = new MockCollector() {
-            @Override
-            public void getChecksums(String collectionID, Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation,
-                    ContributorQuery[] queries, EventHandler eventHandler) {
-                super.getChecksums(collectionID, pillarIDs, checksumType, auditTrailInformation, queries, eventHandler);
-                new Thread(new TestEventHandler(eventHandler, 0)).start();
-            }
-        };
-        MockIntegrityAlerter alerter = new MockIntegrityAlerter();
-        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, store, alerter, createChecksumSpecTYPE(),
-                settings, TEST_COLLECTION);
-        
-        step.performStep();
-        Assert.assertEquals(store.getCallsForAddChecksums(), 1);
-        Assert.assertEquals(alerter.getCallsForOperationFailed(), 0);
-        Assert.assertEquals(collector.getNumberOfCallsForGetChecksums(), 1);*/
+        verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
+                any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+        verify(model).addChecksums(resultingChecksums.getChecksumDataItems(), TEST_PILLAR_1, TEST_COLLECTION);
+        verifyNoMoreInteractions(alerter);
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testPartialResults() {
         addDescription("Test that the number of partial is used for generating more than one request.");
-       /* MockCollector collector = new MockCollector() {
-            Integer numberOfPartialResultsLeft = NUMBER_OF_PARTIAL_RESULTS;
-            @Override
-            public void getChecksums(String collectionID, Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String auditTrailInformation,
-                    ContributorQuery[] queries, EventHandler eventHandler) {
-                super.getChecksums(collectionID, pillarIDs, checksumType, auditTrailInformation, queries, eventHandler);
-                new Thread(new TestEventHandler(eventHandler, numberOfPartialResultsLeft)).start();
-                numberOfPartialResultsLeft--;
+        final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
+
+        addStep("Setup the collector mock to generate a isPartialResult=true event the first time and a " +
+                "isPartialResult=false the second time",
+                "The collectors getFileIDs should be called 2 time. The same goes for the 'models' addFileIDs");
+        Answer callbackAnswer = new Answer() {
+            boolean firstPage = true;
+            public Void answer(InvocationOnMock invocation) {
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(TEST_PILLAR_1)));
+                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION,
+                        resultingChecksums, createChecksumSpecTYPE(), firstPage));
+                firstPage = false;
+                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+                return null;
             }
         };
-        MockIntegrityAlerter alerter = new MockIntegrityAlerter();
-        MockIntegrityModel store = new MockIntegrityModel(new TestIntegrityModel(PILLAR_IDS));
-        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, store, alerter, createChecksumSpecTYPE(),
-                settings, TEST_COLLECTION);
-        
+        doAnswer(callbackAnswer).when(collector).getChecksums(
+                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
+                any(ContributorQuery[].class), any(EventHandler.class));
+
+        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+
         step.performStep();
-        Assert.assertEquals(store.getCallsForAddChecksums(), NUMBER_OF_PARTIAL_RESULTS + 1);
-        Assert.assertEquals(alerter.getCallsForOperationFailed(), 0);
-        Assert.assertEquals(collector.getNumberOfCallsForGetChecksums(), NUMBER_OF_PARTIAL_RESULTS + 1);*/
+        verify(model, times(2)).addChecksums(resultingChecksums.getChecksumDataItems(), TEST_PILLAR_1, TEST_COLLECTION);
+        verify(collector, times(2)).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
+                any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
     }
     
     private class TestEventHandler implements Runnable {
