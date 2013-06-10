@@ -60,7 +60,7 @@ public class RecalculateChecksumWorkflow implements SchedulableJob {
 
     @Override
     public JobID getJobID() {
-        return null;
+        return id;
     }
 
     @Override
