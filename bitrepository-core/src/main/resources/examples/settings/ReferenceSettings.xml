@@ -357,10 +357,6 @@
         </Workflow>
       </Workflows>
 
-     <!--
-       Interval between the scheduler checks for workflows to run.
-     -->
-    <SchedulerInterval>2000</SchedulerInterval>
     <!-- 
       Database specification object for the cache of integrity service database.
     -->

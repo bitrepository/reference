@@ -23,8 +23,6 @@
   <http://www.gnu.org/licenses/lgpl-2.1.html>.
   #L%
   -->
-
-
 <ReferenceSettings xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd">
   <GeneralSettings>
     <ReceiverDestinationIDFactoryClass>org.bitrepository.protocol.messagebus.destination.UserSpecificReceiverDestinationIDFactory</ReceiverDestinationIDFactoryClass>
@@ -104,7 +102,6 @@
   <FileExchangeSettings>
     <ProtocolType>HTTP</ProtocolType>
     <ServerName>sandkasse-01.kb.dk</ServerName>
-    <!-- <ServerName>regulus.statsbiblioteket.dk</ServerName> -->
     <Port>80</Port>
     <Path>/dav</Path>
   </FileExchangeSettings>

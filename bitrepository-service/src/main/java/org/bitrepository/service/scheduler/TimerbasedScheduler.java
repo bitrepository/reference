@@ -24,17 +24,17 @@
  */
 package org.bitrepository.service.scheduler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.JobTimerTask;
 import org.bitrepository.service.workflow.SchedulableJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
 
 /**
  * Scheduler that uses Timer to run workflows.
@@ -44,29 +44,20 @@ public class TimerbasedScheduler implements JobScheduler {
 
     /** The timer that schedules events. */
     private final Timer timer;
-    /** The period between testing whether triggers have triggered. */
-    private final long schedulerInterval;
-    /** The map between the running timertasks and their names.*/
+    /** The map between the running timertasks and their names. */
     private Map<JobID, JobTimerTask> intervalTasks = new HashMap<JobID, JobTimerTask>();
-    public static final long DEFAULT_SCHEDULER_INTERVAL = 86400000;
+    public static final long SCHEDULE_INTERVAL = 60000;
 
     /** The name of the timer.*/
     private static final String TIMER_NAME = "Service Scheduler";
-    /** Whether the timer is a deamon.*/
-    private static final boolean TIMER_IS_DEAMON = true;
+    /** Whether the timer is a daemon.*/
+    private static final boolean TIMER_IS_DEAMON = false;
     /** A timer delay of 0 seconds.*/
     private static final Long NO_DELAY = 0L;
 
     /** Setup a timer task for running the workflows at requested interval.
-     *
-     * @param interval The interval for checking if workflows should be run.
      */
-    public TimerbasedScheduler(long interval) {
-        if (interval == -1) {
-            schedulerInterval = DEFAULT_SCHEDULER_INTERVAL;
-        } else {
-            schedulerInterval = interval;
-        }
+    public TimerbasedScheduler() {
         timer = new Timer(TIMER_NAME, TIMER_IS_DEAMON);
     }
 
@@ -75,7 +66,7 @@ public class TimerbasedScheduler implements JobScheduler {
         log.info("Scheduling workflow : " + workflow);
 
         JobTimerTask task = new JobTimerTask(interval, workflow);
-        timer.scheduleAtFixedRate(task, NO_DELAY, schedulerInterval);
+        timer.scheduleAtFixedRate(task, NO_DELAY, SCHEDULE_INTERVAL);
         intervalTasks.put(workflow.getJobID(), task);
     }
 
@@ -88,7 +79,7 @@ public class TimerbasedScheduler implements JobScheduler {
         }
 
         JobTimerTask task = new JobTimerTask(timeBetweenRuns, workflow);
-        timer.scheduleAtFixedRate(task, NO_DELAY, schedulerInterval);
+        timer.scheduleAtFixedRate(task, NO_DELAY, SCHEDULE_INTERVAL);
         intervalTasks.put(workflow.getJobID(), task);
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
