@@ -22,9 +22,11 @@
 
 package org.bitrepository.integrityservice.workflow;
 
-import org.bitrepository.service.workflow.SchedulableJob;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.service.scheduler.JobScheduler;
 import org.bitrepository.service.workflow.WorkflowManager;
+import org.bitrepository.settings.referencesettings.Schedule;
+import org.bitrepository.settings.referencesettings.Schedules;
 import org.bitrepository.settings.referencesettings.WorkflowConfiguration;
 import org.bitrepository.settings.referencesettings.WorkflowSettings;
 
@@ -33,10 +35,13 @@ import org.bitrepository.settings.referencesettings.WorkflowSettings;
  * class, put handles som configation specif to the integrity workflows.
  */
 public class IntegrityWorkflowManager extends WorkflowManager {
-    public IntegrityWorkflowManager(IntegrityWorkflowContext context) {
+    public static final long DAILY = 86400000;
+    public static final long HOURLY = 360000;
+
+    public IntegrityWorkflowManager(IntegrityWorkflowContext context, JobScheduler scheduler) {
         super(context,
               getWorkflowSettings(context.getSettings()),
-              context.getSettings().getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval());
+              scheduler);
     }
 
     private static WorkflowSettings getWorkflowSettings(Settings settings) {
@@ -57,6 +62,10 @@ public class IntegrityWorkflowManager extends WorkflowManager {
         WorkflowSettings defaultWorkflowSettings = new WorkflowSettings();
         WorkflowConfiguration completeIntegrityWorkflowConf = new WorkflowConfiguration();
         completeIntegrityWorkflowConf.setWorkflowClass(CompleteIntegrityCheck.class.getCanonicalName());
+        Schedule schedule = new Schedule();
+        schedule.setWorkflowInterval(DAILY);
+        completeIntegrityWorkflowConf.setSchedules(new Schedules());
+        completeIntegrityWorkflowConf.getSchedules().getSchedule().add(schedule);
         defaultWorkflowSettings.getWorkflow().add(completeIntegrityWorkflowConf);
         return defaultWorkflowSettings;
     }

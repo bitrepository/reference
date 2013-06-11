@@ -54,7 +54,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     public static final String TEST_FILE_1 = "test-file-1";
     public static final String DEFAULT_CHECKSUM = "0123456789";
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test(groups = {"regressiontest"})
     public void testPositiveReply() {
         addDescription("Test the step for updating the checksums can handle COMPLETE operation event.");
         doAnswer(new Answer() {
@@ -73,7 +73,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(alerter);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test(groups = {"regressiontest"})
     public void testNegativeReply() {
         addDescription("Test the step for updating the checksums can handle FAILURE operation event.");
         doAnswer(new Answer() {
@@ -92,7 +92,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         verify(alerter).operationFailed(anyString(), eq(TEST_COLLECTION));
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test(groups = {"regressiontest"})
     public void testIngestOfResults() {
         addDescription("Test the step for updating the checksums delivers the results to the integrity model.");
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
@@ -117,7 +117,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(alerter);
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test(groups = {"regressiontest"})
     public void testPartialResults() {
         addDescription("Test that the number of partial is used for generating more than one request.");
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);

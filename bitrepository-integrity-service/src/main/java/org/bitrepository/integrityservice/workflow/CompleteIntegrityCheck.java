@@ -115,4 +115,21 @@ public class CompleteIntegrityCheck extends Workflow {
     public JobID getJobID() {
         return jobID;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CompleteIntegrityCheck)) return false;
+
+        CompleteIntegrityCheck that = (CompleteIntegrityCheck) o;
+
+        if (!jobID.equals(that.jobID)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return jobID.hashCode();
+    }
 }

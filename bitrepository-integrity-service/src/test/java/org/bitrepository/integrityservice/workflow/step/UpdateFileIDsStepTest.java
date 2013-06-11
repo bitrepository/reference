@@ -47,7 +47,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
     public static final String TEST_PILLAR_1 = "test-pillar-1";
     public static final String TEST_FILE_1 = "test-file-1";
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test(groups = {"regressiontest"})
     public void testPositiveReply() {
         addDescription("Test the step for updating the file ids can handle COMPLETE operation event.");
         doAnswer(new Answer() {
@@ -68,7 +68,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(alerter);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test(groups = {"regressiontest"})
     public void testNegativeReply() {
         addDescription("Test the step for updating the file ids can handle FAILED operation event.");
         doAnswer(new Answer() {
@@ -89,7 +89,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 any(EventHandler.class));
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test(groups = {"regressiontest"})
     public void testIngestOfResults() {
         addDescription("Test the step for updating the file ids can ingest the data correctly into the store.");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);
@@ -112,7 +112,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
     }
 
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test(groups = {"regressiontest"})
     public void testPartialResults() {
         addDescription("Test that the number of partial is used for generating more than one request.");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);

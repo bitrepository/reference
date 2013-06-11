@@ -21,23 +21,20 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import java.util.List;
-
 import org.bitrepository.integrityservice.checking.MaxChecksumAgeProvider;
 import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
 import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReportModel;
 import org.mockito.Matchers;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-public class FindObsoleteChecksumsStepTest extends WorkflowstepTest {
-    @Test(groups = {"regressiontest", "integritytest"})
+public class    FindObsoleteChecksumsStepTest extends WorkflowstepTest {
+    @Test(groups = {"regressiontest"})
     public void testGoodCase() {
         addDescription("Test the step for finding obsolete checksum when the report is positive.");
         addStep("Run the step with a integritychecker which will return a clean ObsoleteChecksumReportModel",
@@ -53,9 +50,9 @@ public class FindObsoleteChecksumsStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(alerter, checker);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test(groups = {"regressiontest"})
     public void testBadCase() {
-        addDescription("Test the step for finding obsolete checksum when the report contains obsplete.");
+        addDescription("Test the step for finding obsolete checksum when the report contains obsolete checksums.");
         addStep("Run the step with a integritychecker which will return a ObsoleteChecksumReportModel with integrity issues",
                 "The IntegrityAlerter's integrityFailed method should be called with the ObsoleteChecksumReportModel");
         FindObsoleteChecksumsStep step = new FindObsoleteChecksumsStep(settings, checker, alerter, TEST_COLLECTION);

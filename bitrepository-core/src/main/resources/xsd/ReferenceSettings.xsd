@@ -554,7 +554,7 @@
         <xs:element name="SchedulerInterval" type="xs:long" minOccurs="0" >
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The amount of milliseconds between each time the scheduler checks if any workflow should be run. The
+              Deprecated. The amount of milliseconds between each time the scheduler checks if any workflow should be run. The
               default is 60000 ms, eg. 1 minut.
             </xs:documentation>
           </xs:annotation>

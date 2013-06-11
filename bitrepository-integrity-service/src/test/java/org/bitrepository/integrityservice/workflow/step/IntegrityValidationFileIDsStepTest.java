@@ -40,7 +40,7 @@ public class IntegrityValidationFileIDsStepTest extends WorkflowstepTest {
         step = new IntegrityValidationFileIDsStep(checker, alerter, TEST_COLLECTION);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test(groups = {"regressiontest"})
     public void testGoodCase() {
         addDescription("Test the step for integrity validation of fileids when the report is positive.");
         addStep("Run the step with a integritychecker which will return a clean MissingFileReportModel",
@@ -52,7 +52,7 @@ public class IntegrityValidationFileIDsStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(alerter, checker);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test(groups = {"regressiontest"})
     public void testBadCase() {
         addDescription("Test the step for integrity validation of file ids when the report is negative.");
         addStep("Run the step with a integritychecker which will return a MissingFileReportModel with integrity issues",
