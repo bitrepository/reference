@@ -346,7 +346,7 @@
             </Collections>
             </Schedule>
             <!--
-            Run every hour on the TwoPillarCollection collection.
+            Run every hour on the SinglePillarCollection collection.
             -->
             <Schedule>
               <WorkflowInterval>360000</WorkflowInterval>  <Collections>

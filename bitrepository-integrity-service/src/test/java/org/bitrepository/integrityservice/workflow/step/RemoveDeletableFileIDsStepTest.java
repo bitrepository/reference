@@ -31,7 +31,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class RemoveDeletableFileIDsStepTest extends WorkflowstepTest {
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test(groups = {"regressiontest"})
     public void testNoFilesToDelete() {
         addDescription("Testing the case, when no files should be deleted from the database.");
         MissingFileReportModel report = new MissingFileReportModel(TEST_COLLECTION);
@@ -44,8 +44,8 @@ public class RemoveDeletableFileIDsStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(model);
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
-    public void testFileToDelete() {
+    @Test(groups = {"regressiontest"})
+    public void testFilesToDelete() {
         addDescription("Testing the case, when one file should be deleted from the database.");
         String TEST_FILE_1 = "test-file-1";
         String TEST_FILE_2 = "test-file-2";

@@ -24,11 +24,6 @@
  */
 package org.bitrepository.integrityservice;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
-
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
@@ -61,11 +56,17 @@ import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
 import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.scheduler.TimerbasedScheduler;
 import org.bitrepository.service.workflow.WorkflowManager;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.bitrepository.settings.referencesettings.ServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Provides access to the different component in the integrity module.
@@ -127,7 +128,8 @@ public final class IntegrityServiceManager {
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()), auditManager);
 
         workFlowManager = new IntegrityWorkflowManager(
-                new IntegrityWorkflowContext(settings, collector, model, integrityChecker, alarmDispatcher, auditManager)
+                new IntegrityWorkflowContext(settings, collector, model, integrityChecker, alarmDispatcher, auditManager),
+                new TimerbasedScheduler(settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval())
         );
         contributor = new SimpleContributorMediator(messageBus, settings, auditManager);
         contributor.start();

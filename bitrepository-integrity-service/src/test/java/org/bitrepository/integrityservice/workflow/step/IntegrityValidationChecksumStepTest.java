@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class IntegrityValidationChecksumStepTest extends WorkflowstepTest {
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test(groups = {"regressiontest"})
     public void testGoodCase() {
         addDescription("Test the step for integrity validation of checksum when the report is positive.");
         IntegrityValidationChecksumStep step = new IntegrityValidationChecksumStep(checker, alerter, TEST_COLLECTION);
@@ -43,7 +43,7 @@ public class IntegrityValidationChecksumStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(alerter, checker);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test(groups = {"regressiontest"})
     public void testBadCase() {
         addDescription("Test the step for integrity validation of checksum when the report is negative.");
         IntegrityValidationChecksumStep step = new IntegrityValidationChecksumStep(checker, alerter, TEST_COLLECTION);

@@ -24,7 +24,6 @@ package org.bitrepository.service.workflow;
 
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.scheduler.JobScheduler;
-import org.bitrepository.service.scheduler.TimerbasedScheduler;
 import org.bitrepository.settings.referencesettings.Schedule;
 import org.bitrepository.settings.referencesettings.WorkflowConfiguration;
 import org.bitrepository.settings.referencesettings.WorkflowSettings;
@@ -46,9 +45,9 @@ public abstract class WorkflowManager {
     public WorkflowManager(
             WorkflowContext context,
             WorkflowSettings configuration,
-            long schedulerInterval) {
+            JobScheduler scheduler) {
         this.context = context;
-        scheduler = new TimerbasedScheduler(schedulerInterval);
+        this.scheduler = scheduler;
         loadWorkFlows(configuration);
     }
 
@@ -65,19 +64,21 @@ public abstract class WorkflowManager {
         for (WorkflowConfiguration workflowConf:configuration.getWorkflow()) {
             List<String> unscheduledWorkFlows = new LinkedList<String>(SettingsUtils.getAllCollectionsIDs());
             try {
-                for (Schedule schedule:workflowConf.getSchedules().getSchedule()) {
-                    List<String> collectionsToScheduleWorkflowFor;
-                    if (schedule.isSetCollections()) {
-                        collectionsToScheduleWorkflowFor = schedule.getCollections().getCollectionID();
-                    } else {
-                        collectionsToScheduleWorkflowFor = SettingsUtils.getAllCollectionsIDs();
-                    }
-                    for (String collectionID:collectionsToScheduleWorkflowFor) {
-                        Workflow workflow =
-                                (Workflow)lookupClass(workflowConf.getWorkflowClass()).newInstance();
-                        workflow.initialise(context, collectionID);
-                        scheduler.schedule(workflow, schedule.getWorkflowInterval());
-                        unscheduledWorkFlows.remove(collectionID);
+                if (workflowConf.getSchedules() != null) {
+                    for (Schedule schedule:workflowConf.getSchedules().getSchedule()) {
+                        List<String> collectionsToScheduleWorkflowFor;
+                        if (schedule.isSetCollections()) {
+                            collectionsToScheduleWorkflowFor = schedule.getCollections().getCollectionID();
+                        } else {
+                            collectionsToScheduleWorkflowFor = SettingsUtils.getAllCollectionsIDs();
+                        }
+                        for (String collectionID:collectionsToScheduleWorkflowFor) {
+                            Workflow workflow =
+                                    (Workflow)lookupClass(workflowConf.getWorkflowClass()).newInstance();
+                            workflow.initialise(context, collectionID);
+                            scheduler.schedule(workflow, schedule.getWorkflowInterval());
+                            unscheduledWorkFlows.remove(collectionID);
+                        }
                     }
                 }
                 // Create a instance of all workflows not explicitly scheduled.
@@ -101,7 +102,7 @@ public abstract class WorkflowManager {
             fullClassName = settingsDefinedClass;
         }
         return Class.forName(fullClassName);
-     }
+    }
 
     /**
      * Allows subclasses to define a workflow package where workflow classes defined with a simplename in the settings

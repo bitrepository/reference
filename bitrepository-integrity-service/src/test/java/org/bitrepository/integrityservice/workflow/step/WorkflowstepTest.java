@@ -35,7 +35,7 @@ import org.testng.annotations.BeforeMethod;
 
 import static org.mockito.Mockito.mock;
 
-public class WorkflowstepTest extends ExtendedTestCase{
+public class WorkflowstepTest extends ExtendedTestCase {
     protected Settings settings;
 
     public static final String TEST_PILLAR_1 = "test-pillar-1";

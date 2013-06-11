@@ -39,7 +39,7 @@ public class FindMissingChecksumsTest extends WorkflowstepTest {
         step = new FindMissingChecksumsStep(checker, alerter, TEST_COLLECTION);
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test(groups = {"regressiontest"})
     public void testGoodCase() {
         addDescription("Test the step for finding missing checksum when the report is positive.");
         addStep("Run the step with a integritychecker which will return a clean MissingChecksumReportModel",
@@ -50,7 +50,7 @@ public class FindMissingChecksumsTest extends WorkflowstepTest {
         verifyNoMoreInteractions(alerter, checker);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test(groups = {"regressiontest"})
     public void testBadCase() {
         addDescription("Test the step for finding missing checksum when the report is negative.");
         addStep("Run the step with a integritychecker which will return a MissingChecksumReportModel with integrity issues",
