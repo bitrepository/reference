@@ -24,7 +24,7 @@
 #Script for initiating the quick start default deployment of  the Bitrepository
 
 #Make sure we are in the scripts folder
-cd $(dirname $(readlink -f $0))
+cd $(dirname $(perl -e "use Cwd 'abs_path';print abs_path('$0');"))
 #Go back to the quickstart "root dir"
 cd ..
 quickstartdir=$(pwd)

@@ -29,7 +29,7 @@ CLASSPATH="-classpath ./:lib/*"
 CHECKSUM_DB_SCRIPT="sql/derby/checksumDBCreation.sql";
 AUDIT_CONTRIBUTOR_DB_SCRIPT="sql/derby/auditContributorDBCreation.sql";
 
-cd $(dirname $(readlink -f $0))/..
+cd $(dirname $(perl -e "use Cwd 'abs_path';print abs_path('$0');"))/..
 echo "Running pillar database creation from $PWD dir"
 #Check availability of crucial system components
 [ -x "$JAVA" ] || exit

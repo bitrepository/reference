@@ -31,7 +31,7 @@ PIDFILE="checksumpillar.pid"
 SCRIPTNAME="checksumpillar"
 NAME="checksum-pillar"
 
-cd $(dirname $(readlink -f $0))/..
+cd $(dirname $(perl -e "use Cwd 'abs_path';print abs_path('$0');"))/..
 #Check availability of crucial system components
 [ -x "$JAVA" ] || exit 2
 
