@@ -103,8 +103,6 @@ public final class IntegrityServiceManager {
         return lifeCycleHandler;
     }
 
-
-
     /**
      * Initializes the integrity service
      * Should only be run at initialization time.
@@ -129,8 +127,7 @@ public final class IntegrityServiceManager {
 
         workFlowManager = new IntegrityWorkflowManager(
                 new IntegrityWorkflowContext(settings, collector, model, integrityChecker, alarmDispatcher, auditManager),
-                new TimerbasedScheduler(settings.getReferenceSettings().getIntegrityServiceSettings().getSchedulerInterval())
-        );
+                new TimerbasedScheduler());
         contributor = new SimpleContributorMediator(messageBus, settings, auditManager);
         contributor.start();
     }

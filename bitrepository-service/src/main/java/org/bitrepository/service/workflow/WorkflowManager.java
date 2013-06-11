@@ -62,6 +62,7 @@ public abstract class WorkflowManager {
 
     private void loadWorkFlows(WorkflowSettings configuration) {
         for (WorkflowConfiguration workflowConf:configuration.getWorkflow()) {
+            log.info("Scheduling from configuration: " + workflowConf);
             List<String> unscheduledWorkFlows = new LinkedList<String>(SettingsUtils.getAllCollectionsIDs());
             try {
                 if (workflowConf.getSchedules() != null) {

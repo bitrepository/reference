@@ -24,11 +24,6 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
-import java.lang.reflect.Constructor;
-import java.util.Arrays;
-
-import javax.jms.JMSException;
-
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.settings.Settings;
@@ -56,6 +51,10 @@ import org.bitrepository.settings.repositorysettings.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jms.JMSException;
+import java.lang.reflect.Constructor;
+import java.util.Arrays;
+
 /**
  * Reference pillar. This very simply starts the PillarMediator, which handles all the communications.
  */
@@ -76,9 +75,6 @@ public class ReferencePillar implements Pillar {
     private final JobScheduler scheduler;
     /** The manager of the checksums with regard to the archive.*/
     private final ReferenceChecksumManager manager;
-    
-    /** How often the scheduler will check whether any workflow is ready for running.*/
-    private static final Long TIME_FOR_SCHEDULING = 1000L;
     /** The default time for running the recalculation workflow, when the settings is not set.*/
     private static final Long DEFAULT_RECALCULATION_WORKFLOW_TIME = 3600000L;
 
@@ -111,7 +107,7 @@ public class ReferencePillar implements Pillar {
         mediator = new ReferencePillarMediator(messageBus, context, archiveManager, manager);
         mediator.start();
         
-        this.scheduler = new TimerbasedScheduler(TIME_FOR_SCHEDULING);
+        this.scheduler = new TimerbasedScheduler();
         initializeWorkflows();
         log.info("ReferencePillar started!");
     }
