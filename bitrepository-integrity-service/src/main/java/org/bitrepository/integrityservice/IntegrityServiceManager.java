@@ -123,7 +123,7 @@ public final class IntegrityServiceManager {
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager,
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager,
-                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()), auditManager);
+                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()));
 
         workFlowManager = new IntegrityWorkflowManager(
                 new IntegrityWorkflowContext(settings, collector, model, integrityChecker, alarmDispatcher, auditManager),

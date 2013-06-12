@@ -28,9 +28,7 @@ import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.service.audit.AuditTrailManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,28 +47,22 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     /** The client for retrieving checksums. */
     private final GetChecksumsClient getChecksumsClient;
     /** The audit trail manager.*/
-    private final AuditTrailManager auditManager;
     
     /**
      * @param getFileIDsClient The client for retrieving file IDs
-     * @param getChecksumsClient The client for retrieving checksums
-     * @param auditManager Log audit event here.
+     * @param getChecksumsClient The client for retrieving checksums.
      */
     public DelegatingIntegrityInformationCollector(
             GetFileIDsClient getFileIDsClient,
-            GetChecksumsClient getChecksumsClient, AuditTrailManager auditManager) {
+            GetChecksumsClient getChecksumsClient) {
         this.getFileIDsClient = getFileIDsClient;
         this.getChecksumsClient = getChecksumsClient;
-        this.auditManager = auditManager;
     }
 
     @Override
     public synchronized void getFileIDs(String collectionID, Collection<String> pillarIDs, String auditTrailInformation, 
             ContributorQuery[] queries, EventHandler eventHandler) {
-        try {
-            auditManager.addAuditEvent(collectionID, null, "IntegrityService", 
-                    "Collecting file ids from '" + pillarIDs + "'", auditTrailInformation, FileAction.INTEGRITY_CHECK);
-            getFileIDsClient.getFileIDs(collectionID, queries, null, null, eventHandler);
+        try {getFileIDsClient.getFileIDs(collectionID, queries, null, null, eventHandler);
         } catch (Exception e) {
             // Barrier
             log.error("Unexpected failure!", e);
@@ -80,11 +72,7 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     @Override
     public synchronized void getChecksums(String collectionID, Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, 
             String auditTrailInformation, ContributorQuery[] queries, EventHandler eventHandler) {
-        try {
-            // Is this really necessary to audit log. Better to auditlog on workflow exit.
-            auditManager.addAuditEvent(collectionID, null, "IntegrityService",
-                    "Collecting checksums", auditTrailInformation, FileAction.INTEGRITY_CHECK);
-            getChecksumsClient.getChecksums(collectionID, queries, null, checksumType, null, eventHandler,
+        try {getChecksumsClient.getChecksums(collectionID, queries, null, checksumType, null, eventHandler,
                     auditTrailInformation);
         } catch (Exception e) {
             log.error("Unexpected failure!", e);

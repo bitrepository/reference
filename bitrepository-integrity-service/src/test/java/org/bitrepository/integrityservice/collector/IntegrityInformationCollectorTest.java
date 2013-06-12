@@ -21,8 +21,6 @@
  */
 package org.bitrepository.integrityservice.collector;
 
-import java.net.URL;
-import java.util.Arrays;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
@@ -30,26 +28,19 @@ import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.service.audit.AuditTrailManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import static org.mockito.Mockito.mock;
+import java.net.URL;
+import java.util.Arrays;
 
 /**
  * Test that collecting integrity information has the desired effect.
  */
 public class IntegrityInformationCollectorTest extends ExtendedTestCase {
-    protected AuditTrailManager auditManager;
 
     public final static String collectionID = "dummy-collection";
-    
-    @BeforeClass (alwaysRun = true)
-    public void setup() {
-        auditManager = mock(AuditTrailManager.class);
-    }
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testCollectorGetFileIDs() throws Exception {
@@ -61,7 +52,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         
         addStep("Setup a GetFileIDsClient for test purpose.", "Should be OK.");
         MockGetFileIDsClient getFileIDs = new MockGetFileIDsClient();
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(getFileIDs, null, auditManager);
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(getFileIDs, null);
         
         addStep("Call the getFileIDs on the collector.", "Should go directly to the GetFileIDsClient");
         collector.getFileIDs(collectionID, Arrays.asList(pillarId), auditTrailInformation, contributorQueries, null);
@@ -90,7 +81,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         addStep("Setup a GetChecksumsClient for test purpose.", "Should be OK.");
         MockGetChecksumsClient getChecksumsClient = new MockGetChecksumsClient();
         IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(
-                null, getChecksumsClient, auditManager);
+                null, getChecksumsClient);
         
         addStep("Call the getChecksumsClient on the collector.", "Should go directly to the GetChecksumsClient");
         collector.getChecksums(collectionID, Arrays.asList(pillarId), csType, auditTrailInformation, contributorQueries, null);
@@ -146,7 +137,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         addStep("Setup a FailingGetChecksumClient for test purpose.", "Should be OK.");
         DyingGetChecksumClient getDyingChecksumsClient = new DyingGetChecksumClient();
         IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(
-                null, getDyingChecksumsClient, auditManager);
+                null, getDyingChecksumsClient);
         
         addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
                 "Should not throw an unexpected exception");
@@ -173,7 +164,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         addStep("Setup a FailingGetChecksumClient for test purpose.", "Should be OK.");
         DyingGetFileIDsClient getDyingFileIDsClient = new DyingGetFileIDsClient();
         IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(
-                getDyingFileIDsClient, null, auditManager);
+                getDyingFileIDsClient, null);
         
         addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
                 "Should not throw an unexpected exception");
