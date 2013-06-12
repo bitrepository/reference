@@ -128,9 +128,9 @@ public class DashboardDataCache {
 
 	// only called from the reload() method. This method arrange all the data in nice organized Maps.
 	private static void loadDataMaps() {
-		ArrayList<String> ids = IntegrityClient.getPillarIds();
+		ArrayList<String> ids = IntegrityClient.getCollectionIds();
 		for (String current : ids) {
-			collectionId2NameMap.put(current, IntegrityClient.getPillarName(current));
+			collectionId2NameMap.put(current, IntegrityClient.getCollectionName(current));
 			ArrayList<StatisticsDataSize> dataSizeHistory = IntegrityClient.getDataSizeHistory(current);
 			statisticsIdDataSizeMap.put(current, dataSizeHistory);
 			getCollectionInformationMap.put(current, IntegrityClient.getCollectionInformation(current));
