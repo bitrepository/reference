@@ -21,9 +21,6 @@
  */
 package org.bitrepository.integrityservice.checking;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
@@ -31,6 +28,9 @@ import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An integrity checksum tool for validating the existence of files at given pillars.
@@ -46,8 +46,7 @@ public class FileExistenceValidator {
     private final AuditTrailManager auditManager;
     
     /**
-     * Constructor.
-     * @param settings The settings for the system.
+     * @param collections The collections to check.
      * @param cache The cache with the integrity model.
      * @param auditManager the audit trail manager.
      */

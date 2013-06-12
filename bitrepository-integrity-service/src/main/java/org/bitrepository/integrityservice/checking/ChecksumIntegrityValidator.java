@@ -21,10 +21,6 @@
  */
 package org.bitrepository.integrityservice.checking;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
@@ -33,6 +29,10 @@ import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Performs the validation of the integrity for the checksums.
@@ -51,7 +51,7 @@ public class ChecksumIntegrityValidator {
      * Constructor.
      * @param cache The cache with the integrity model.
      * @param auditManager the audit trail manager.
-     * @param pillarIds This ids of the pillars in the collection.
+     * @param collections The collections to check.
      */
     public ChecksumIntegrityValidator(IntegrityModel cache, AuditTrailManager auditManager, List<Collection> collections) {
         this.cache = cache;
