@@ -98,7 +98,7 @@ public class JobTimerTask extends TimerTask {
             if (workflow.currentState().equals(Workflow.NOT_RUNNING)) {
                 log.info("Starting the workflow: " + getName());
                 workflow.start();
-                if (interval < 0) {
+                if (interval > 0) {
                     nextRun = new Date(System.currentTimeMillis() + interval);
                 }
                 lastWorkflowStatistics = workflow.getWorkflowStatistics();
