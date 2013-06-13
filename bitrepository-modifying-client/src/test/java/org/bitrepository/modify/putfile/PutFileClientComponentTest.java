@@ -758,11 +758,10 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-
     @Test(groups={"regressiontest"})
     public void putToOtherCollection() throws Exception {
         addReference("<a href=https://sbforge.org/jira/browse/BITMAG-925>" +
-                "BITMAG-925 PutFile client will always try to put to the pillars defined in the first collection</a>");
+                "BITMAG-925 Client will always try to put to the pillars defined in the first collection</a>");
         addDescription("Tests the putFIle client will correctly try to put to a second collection if required");
         addFixtureSetup("Sets the identification timeout to 3 sec, allow two retries and only register one pillar.");
 
