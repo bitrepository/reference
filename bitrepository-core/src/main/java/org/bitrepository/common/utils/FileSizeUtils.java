@@ -35,13 +35,13 @@ public class FileSizeUtils {
 	private static final long petaSize = teraSize * unitSize;
 	private static final long exaSize = petaSize * unitSize;
 
-	private static final String bytePostfix = "B";
-	private static final String kiloPostfix = "KB";
-	private static final String megaPostfix = "MB";
-	private static final String gigaPostfix = "GB";
-	private static final String teraPostfix = "TB";
-	private static final String petaPostfix = "PB";
-	private static final String exaPostfix = "EB";
+	private static final String bytePostfix = " B";
+	private static final String kiloPostfix = " KB";
+	private static final String megaPostfix = " MB";
+	private static final String gigaPostfix = " GB";
+	private static final String teraPostfix = " TB";
+	private static final String petaPostfix = " PB";
+	private static final String exaPostfix = " EB";
 
 	/*
 	 * Returns the appropiate unit for a given byte size. Ie. MB or GB
