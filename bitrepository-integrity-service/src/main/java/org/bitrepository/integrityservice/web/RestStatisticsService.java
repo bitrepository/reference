@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -51,8 +52,9 @@ public class RestStatisticsService {
     @GET
     @Path("/getDataSizeHistory/")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<StatisticsDataSize> getDataSizeHistory(@QueryParam("collectionID") String collectionID) {
-        List<CollectionStat> stats = model.getLatestCollectionStat(collectionID, 10);
+    public List<StatisticsDataSize> getDataSizeHistory(@QueryParam("collectionID") String collectionID, 
+            @QueryParam("maxEntries") @DefaultValue("1000") int maxEntries) {
+        List<CollectionStat> stats = model.getLatestCollectionStat(collectionID, maxEntries);
         List<StatisticsDataSize> data = new ArrayList<StatisticsDataSize>();
         for(CollectionStat stat : stats) {
             StatisticsDataSize obj = new StatisticsDataSize();
