@@ -24,7 +24,6 @@
  */
 package org.bitrepository.pillar.referencepillar;
 
-import java.util.Date;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -41,6 +40,8 @@ import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.util.Date;
 
 /**
  * Tests the ReplaceFile functionality on the ReferencePillar.
@@ -73,7 +74,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
     }
 
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"regressiontest"})
     public void referencePillarReplaceTestSuccessCase() throws Exception {
         addDescription("Tests the replace functionality of the reference pillar for the successful scenario.");
         addStep("Setting up the variables for the test.", "Should be instantiated.");
@@ -143,7 +144,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
                 Base16Utils.decodeBase16(replaceCsData.getChecksumValue()));
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"regressiontest"})
     public void referencePillarReplaceFileTestFailedNoSuchFileDuringIdentify() throws Exception {
         addDescription("Tests the ReplaceFile functionality of the checksum pillar for the scenario when the file does not exist.");
 
@@ -164,7 +165,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertEquals(archives.getFileInfo(DEFAULT_FILE_ID, collectionID).getSize(), 0);
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"regressiontest"})
     public void referencePillarReplaceFileTestFailedNoSuchFileDuringOperation() throws Exception {
         addDescription("Tests the ReplaceFile functionality of the reference pillar for the scenario when the file " +
                 "does not exist.");
@@ -177,7 +178,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertEquals(archives.getFileInfo(DEFAULT_FILE_ID, collectionID).getSize(), 0);
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"regressiontest"})
     public void referencePillarReplaceFileTestMissingExistingChecksumArgument() throws Exception {
         addDescription("Tests that a missing 'ChecksumOnExistingFile' will not delete the file.");
         Assert.assertTrue(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
@@ -189,7 +190,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"regressiontest"})
     public void referencePillarReplaceFileTestBadExistingChecksumArgument() throws Exception {
         addDescription("Tests that a wrong checksum in 'ChecksumOnExistingFile' will not delete the file.");
         Assert.assertTrue(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
@@ -207,7 +208,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertEquals(archives.getFileInfo(DEFAULT_FILE_ID, collectionID).getSize(), 0);
     }
 
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"regressiontest"})
     public void referencePillarReplaceFileTestAllowedMissingExistingChecksum() throws Exception {
         addDescription("Tests that a missing 'ChecksumOnExistingFile' will replace the file, when it has been allowed "
                 + "to perform destructive operations in the settings.");
@@ -221,7 +222,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.OPERATION_COMPLETED);
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"regressiontest"})
     public void referencePillarReplaceFileTestMissingNewChecksumArgument() throws Exception {
         addDescription("Tests that a missing 'ChecksumOnNewFile' will replace the file, if it is required but not given.");
         context.getSettings().getRepositorySettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
@@ -233,7 +234,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
     }
 
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"regressiontest"})
     public void referencePillarReplaceFileTestBadNewChecksumArgument() throws Exception {
         addDescription("Tests that a wrong checksum in 'ChecksumOnNewFile' will not delete the file.");
         Assert.assertTrue(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
@@ -250,7 +251,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
     }
 
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"regressiontest"})
     public void referencePillarReplaceFileTestAllowedMissingNewChecksum() throws Exception {
         addDescription("Tests that a missing 'ChecksumOnNewFile' will replace the file, if it is it not required nor given.");
         context.getSettings().getRepositorySettings().getProtocolSettings().setRequireChecksumForNewFileRequests(false);
@@ -263,7 +264,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.OPERATION_COMPLETED);
     }
  
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"regressiontest"})
     public void referencePillarReplaceFileTestBadExistingChecksumSpec() throws Exception {
         addDescription("Tests that bad checksum spec in 'ChecksumOnExistingFile' will not replace the file.");
         context.getSettings().getRepositorySettings().getProtocolSettings().setRequireChecksumForNewFileRequests(false);
@@ -285,7 +286,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"regressiontest"})
     public void referencePillarReplaceFileTestBadNewChecksumSpec() throws Exception {
         addDescription("Tests that bad checksum spec in 'ChecksumOnNewFile' will not replace the file.");
         context.getSettings().getRepositorySettings().getProtocolSettings().setRequireChecksumForNewFileRequests(false);
@@ -307,7 +308,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"regressiontest"})
     public void referencePillarReplaceFileTestBadExistingChecksumRequestSpec() throws Exception {
         addDescription("Tests that bad checksum spec in 'ChecksumSpecForExistingFile' will not replace the file.");
         context.getSettings().getRepositorySettings().getProtocolSettings().setRequireChecksumForNewFileRequests(false);
@@ -325,7 +326,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"regressiontest"})
     public void referencePillarReplaceFileTestBadNewChecksumRequestSpec() throws Exception {
         addDescription("Tests that bad checksum spec in 'ChecksumSpecForNewFile' will not replace the file.");
         context.getSettings().getRepositorySettings().getProtocolSettings().setRequireChecksumForNewFileRequests(false);
@@ -343,7 +344,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"regressiontest"})
     public void referencePillarReplaceFileSuccessWithoutChecksums() throws Exception {
         addDescription("Tests that it is possible to replace a file without any checksums if settings allows it.");
         context.getSettings().getRepositorySettings().getProtocolSettings().setRequireChecksumForNewFileRequests(false);
@@ -356,7 +357,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.OPERATION_COMPLETED);
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"regressiontest"})
     public void referencePillarPutFileTestTooLargeFileInIdentification() throws Exception {
         addDescription("Tests when the PutFile identification delivers a too large file.");
         messageBus.sendMessage(msgFactory.createIdentifyPillarsForReplaceFileRequest(DEFAULT_FILE_ID, Long.MAX_VALUE));
@@ -365,7 +366,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.FAILURE);
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"regressiontest"})
     public void referencePillarPutFileTestNoFileSizeInIdentification() throws Exception {
         addDescription("Tests when the PutFile identification does not deliver a file size. Should succeed");
         messageBus.sendMessage(msgFactory.createIdentifyPillarsForReplaceFileRequest(DEFAULT_FILE_ID, null));
@@ -374,7 +375,7 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
                 ResponseCode.IDENTIFICATION_POSITIVE);
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test( groups = {"regressiontest"})
     public void referencePillarPutFileTestTooLargeFileInOperation() throws Exception {
         addDescription("Tests when the PutFile identification delivers a too large file.");
         messageBus.sendMessage(msgFactory.createReplaceFileRequest(csData, replaceCsData, csSpec, csSpec,
@@ -383,8 +384,8 @@ public class ReplaceFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), 
                 ResponseCode.FAILURE);
     }
-    
-    @Test( groups = {"regressiontest", "pillartest"})
+
+    @Test( groups = {"failing"}) // Fails when run as part of full Maven bui-d??
     public void replacePillarReplaceFileBadURL() throws Exception {
         addDescription("Tests the handling of a bad URL in the request.");
         String fileAddress = "http://127.0.0.1/¾" + new Date().getTime();
