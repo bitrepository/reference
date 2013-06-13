@@ -21,13 +21,13 @@ package org.bitrepository.pillar.referencepillar.scheduler;
  * #L%
  */
 
-import java.math.BigInteger;
-import java.util.Date;
-
 import org.bitrepository.pillar.referencepillar.ReferencePillarTest;
 import org.bitrepository.service.workflow.SchedulableJob;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.math.BigInteger;
+import java.util.Date;
 
 public class RecalculateChecksumWorkflowTest extends ReferencePillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
@@ -43,7 +43,7 @@ public class RecalculateChecksumWorkflowTest extends ReferencePillarTest {
         }
         
         addStep("Create and run workflow", "The checksum");
-        SchedulableJob workflow = new RecalculateChecksumWorkflow(collectionID, csManager);
+        SchedulableJob workflow = new RecalculateChecksumJob(collectionID, csManager);
         workflow.start();
         Date afterWorkflowDate = csCache.getCalculationDate(DEFAULT_FILE_ID, collectionID);
         
@@ -65,7 +65,7 @@ public class RecalculateChecksumWorkflowTest extends ReferencePillarTest {
         }
         
         addStep("Create and run workflow", "The checksum");
-        SchedulableJob workflow = new RecalculateChecksumWorkflow(collectionID, csManager);
+        SchedulableJob workflow = new RecalculateChecksumJob(collectionID, csManager);
         workflow.start();
         Date afterWorkflowDate = csCache.getCalculationDate(DEFAULT_FILE_ID, collectionID);
         

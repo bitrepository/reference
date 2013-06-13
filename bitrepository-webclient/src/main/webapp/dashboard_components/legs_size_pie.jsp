@@ -65,11 +65,11 @@ $(function () {
 });
 </script>
 
-<table cellpadding="5px" style="width: 587px">
+<table cellpadding="5px" style="width: 477px">
 <tr>
 <td>
 <div id="data_ben">    
-    <div id="flotcontainer_data_ben" style="width: 300px;height:300px; text-align: left;"></div>    
+    <div id="flotcontainer_data_ben" style="width: 280px;height:280px; text-align: left;"></div>    
 </div>
 </td>
 <td>             

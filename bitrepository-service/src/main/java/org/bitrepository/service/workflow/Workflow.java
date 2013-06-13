@@ -32,9 +32,7 @@ import org.slf4j.LoggerFactory;
 public abstract class Workflow implements SchedulableJob {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    
-    /** The default state when the workflow is not running.*/
-    public static final String NOT_RUNNING = "The workflow is currently not running.";
+
     /** The current step running.*/
     private WorkflowStep currentStep = null;
     private WorkflowStatistic statistics;
