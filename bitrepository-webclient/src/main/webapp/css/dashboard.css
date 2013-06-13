@@ -1,0 +1,82 @@
+.controlLink{
+    float: right;
+    font-size: 1.2em;
+    margin-top: 0.9em;
+}
+
+.collectionStatus, .dataSizeGraph, .collenctionPieBox, .legPieBox{
+    border: 1px solid #cccccc;
+    float: left;
+    margin: 1em 0;
+    padding: 2em 1%;
+    width: 100%;
+    -moz-box-sizing:    border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing:        border-box;
+}
+
+.collectionStatus, .collenctionPieBox, .legPieBox{
+    background-color: #F9FCFF;
+}
+
+td.error{
+    background-color: #CC0000;
+    color: white;
+    font-weight: bold;
+}
+
+.table-hover tbody tr:hover td.error{
+    color: black;
+}
+
+table.table .legPieBox th{
+    text-align: center;
+}
+
+form.dashboardForm{
+    margin: 0 0 2em 1.5em;
+}
+
+.dashboardForm select, .dashboardForm input[type="checkbox"]{
+    margin: 0 0 0 1.5em;
+    vertical-align: baseline;
+}
+
+.dataSizeGraph #placeholder{
+    height: 300px;
+    width: 1100px;
+}
+
+.collenctionPieBox, .legPieBox{
+    padding: 0 2% 2em;
+    width: 49%;
+}
+
+.collenctionPieBox table, .legPieBox table{
+    font-size: 1.2em;
+    margin-top: 2em;
+}
+
+.collenctionPieBox table td, .legPieBox table td{
+    padding: 0 1em .4em 0;
+}
+
+.collenctionPieBox table td.dataLabel, .legPieBox table td.dataLabel{
+    text-align: right;
+    white-space: nowrap;
+}
+
+.collenctionPieBox table td.dataData, .legPieBox table td.dataData{
+    font-weight: bold;
+}
+
+.legPieBox{
+    margin-left: 2%;
+}
+
+.collenctionPie, .legPie{
+    float: left;
+    margin-bottom: 2em;
+    min-width: 350px;
+    width: 48%;
+}

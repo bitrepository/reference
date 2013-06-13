@@ -21,67 +21,62 @@
   --%>
 <%@page pageEncoding="UTF-8"%>
 <%
-ArrayList<StatisticsCollectionSize> collectionSizeList = DashboardDataCache.getCollectionDataSize();
+    ArrayList<StatisticsCollectionSize> collectionSizeList = DashboardDataCache.getCollectionDataSize();
 %>
-<center><Strong>Samlinger fordelt på TB</Strong></center>
+<h3>Samlinger fordelt på TB</h3>
+<div class="collenctionPie">
+    <script>
+        var data_samling = [
+            <%
+            for (int i = 0 ;i <collectionSizeList.size();i++){
+              StatisticsCollectionSize current = collectionSizeList.get(i);%>
+            {label: "<%=DashboardDataCache.getCollectionId2NameMap().get(current.getCollectionID())%>" , data : <%=current.getDataSize()%>},
+            <%}%>
+        ];
+    </script>
 
-<script>
-var data_samling = [
-<%
-for (int i = 0 ;i <collectionSizeList.size();i++){
-  StatisticsCollectionSize current = collectionSizeList.get(i);%>
-  {label: "<%=DashboardDataCache.getCollectionId2NameMap().get(current.getCollectionID())%>" , data : <%=current.getDataSize()%>},
-<%}%>
-];
-</script>
+    <script type="text/javascript">
+        $(function () {
 
-<script type="text/javascript">
-$(function () { 
-
-    var options = {
-            series: {
-                pie: {
-                    show: true,
-                    radius: 1,                    
-                    label:{                        
-                        radius: 3/4,
-                        formatter: function (label, series) {
-                            return '<div style="border:1px solid gray;font-size:8pt;text-align:center;padding:5px;color:white;">' + label + '<br/>' +   
-                            Math.round(series.percent) + '%</div>';
-                        },
-                        background: {
-                            opacity: 0.5,
-                            color: '#000'
+            var options = {
+                series: {
+                    pie: {
+                        show: true,
+                        radius: 1,
+                        label:{
+                            radius: 3/4,
+                            formatter: function (label, series) {
+                                return '<div style="border:1px solid gray;font-size:8pt;text-align:center;padding:5px;color:white;">' + label + '<br/>' +
+                                        Math.round(series.percent) + '%</div>';
+                            },
+                            background: {
+                                opacity: 0.5,
+                                color: '#000'
+                            }
                         }
                     }
+                },
+                legend: {
+                    show: false
                 }
-            },
-            legend: {
-                show: false
-            }
-         };
+            };
 
-    $.plot($("#samling #flotcontainer_samling"), data_samling, options);  
-});
-</script>
+            $.plot($("#samling #flotcontainer_samling"), data_samling, options);
+        });
+    </script>
 
-<table cellpadding="5px" style="width: 477px">
-<tr>
-<td>
-<div id="samling">
-    <div id="flotcontainer_samling" style="width: 280px;height:280px; text-align: left;"></div>    
+
+    <div id="samling">
+        <div id="flotcontainer_samling" style="width: 280px;height:280px; text-align: left;"></div>
+    </div>
 </div>
-</td>
-<td>             
+
 <table>
-<%
-for (int i = 0 ;i < collectionSizeList.size();i++){
-  StatisticsCollectionSize current = collectionSizeList.get(i);%>
-  <tr>
-    <td style="text-align: left;"><%=DashboardDataCache.getCollectionId2NameMap().get(current.getCollectionID())%>:</td> <td style="text-align: left;"><%=FileSizeUtils.toHumanShort(current.getDataSize())%></td>
-  </tr>  
-<%}%>
-</table>
-</td>
-</tr>
+    <%
+        for (int i = 0 ;i < collectionSizeList.size();i++){
+            StatisticsCollectionSize current = collectionSizeList.get(i);%>
+    <tr>
+        <td class="dataLabel"><%=DashboardDataCache.getCollectionId2NameMap().get(current.getCollectionID())%>:</td> <td class="dataData"><%=FileSizeUtils.toHumanShort(current.getDataSize())%></td>
+    </tr>
+    <%}%>
 </table>
