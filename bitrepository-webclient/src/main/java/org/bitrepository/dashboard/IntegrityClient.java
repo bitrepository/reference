@@ -51,6 +51,18 @@ public class IntegrityClient {
 
 	private final static Logger log = LoggerFactory.getLogger(IntegrityClient.class);
 
+	public static void main(String [] args){
+	 String jsonResponse = "Avis samlingen";
+
+	    Gson converter = getJsonDateBuilder();
+        Type type = new TypeToken<String>() {
+        }.getType();
+        String name = converter.fromJson(jsonResponse, type);
+	System.out.println(name);
+	}
+	
+	
+	
 	public static GetCollectionInformation getCollectionInformation(String collectionID) {
 		ServiceUrl su = ServiceUrlFactory.getInstance();
 		Client c = Client.create();
@@ -141,7 +153,7 @@ public class IntegrityClient {
 		return list;
 	}
 
-	public static ArrayList<String> getPillarIds() {
+	public static ArrayList<String> getCollectionIds() {
 		ServiceUrl su = ServiceUrlFactory.getInstance();
 		Client c = Client.create();
 		WebResource service = c.resource(su.getWebserverUrl() + su.getWebclientServiceUrl());
@@ -156,18 +168,21 @@ public class IntegrityClient {
 		return list;
 	}
 
-	public static String getPillarName(String pillarId) {
+	public static String getCollectionName(String pillarId) {
 		ServiceUrl su = ServiceUrlFactory.getInstance();
 		Client c = Client.create();
 		WebResource service = c.resource(su.getWebserverUrl() + su.getWebclientServiceUrl());
-		String jsonResponse = service.path("repo/reposervice/getCollectionName").queryParam("collectionID", pillarId).type("application/json").accept(MediaType.APPLICATION_JSON).get(String.class);
-
+		String response = service.path("repo/reposervice/getCollectionName").queryParam("collectionID", pillarId).type("application/json").accept(MediaType.APPLICATION_JSON).get(String.class);
+        
+		/* This is not JSON
 		Gson converter = getJsonDateBuilder();
 		Type type = new TypeToken<String>() {
 		}.getType();
 		String name = converter.fromJson(jsonResponse, type);
-
-		return name;
+        return name;
+        */
+        return response; //This is the name
+		
 	}
 
 	// handles java.util.date

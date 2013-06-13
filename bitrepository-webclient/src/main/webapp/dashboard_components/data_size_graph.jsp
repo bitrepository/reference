@@ -144,7 +144,7 @@ var options = {
               
             },            
        xaxis: {  mode: "time",  localTimezone: true , zoomRange: [0.1, 10] , timeformat: "%y/%0m/%0d %0H:%0M"},
-       yaxis: {  axisLabel: '<%=y_axis_text%>'},
+       yaxis: {  axisLabel: "<%=y_axis_text%>"},
        selection:{  mode: "xy" } ,     
        points: { show: true } ,
        lines: { show: true},        
@@ -157,7 +157,7 @@ var dataObj = [
  for (int i = 0; i< allDataSizeNamesList.size();i++){
  %>
  
-        {label:'<%=allDataSizeNamesList.get(i)%> ( <%=y_axis_text%>)', data: data_tilvaekst<%=i%>},  
+        {label:"<%=allDataSizeNamesList.get(i)%> ( <%=y_axis_text%>)", data: data_tilvaekst<%=i%>},  
 <%}%>
 ];
 
