@@ -136,15 +136,15 @@
 
         grid:  {
             hoverable: true,
-            //mouseActiveRadius: 30
+            borderColor: "#cccccc"
 
         },
         xaxis: {  mode: "time",  localTimezone: true , zoomRange: [0.1, 10] , timeformat: "%y/%0m/%0d %0H:%0M"},
         yaxis: {  axisLabel: "<%=y_axis_text%>"},
         selection:{  mode: "xy" } ,
-        points: { show: true } ,
+        points: { show: true} ,
         lines: { show: true},
-        zoom: { interactive: true},
+        zoom: { interactive: true}
     };
 
 

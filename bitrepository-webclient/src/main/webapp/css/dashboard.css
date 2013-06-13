@@ -35,7 +35,7 @@ td.error{
 
 .table-hover tbody tr:hover td.error{
     background-color: #CC0000;
-    color: black;
+    color: white;
 }
 
 table.table .legPieBox th{

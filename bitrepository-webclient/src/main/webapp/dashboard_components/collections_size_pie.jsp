@@ -46,11 +46,11 @@
                         label:{
                             radius: 3/4,
                             formatter: function (label, series) {
-                                return '<div style="border:1px solid gray;font-size:8pt;text-align:center;padding:5px;color:white;">' + label + '<br/>' +
+                                return '<div style="font-size:.85em;text-align:center;padding:5px;color:white;">' + label + '<br/>' +
                                         Math.round(series.percent) + '%</div>';
                             },
                             background: {
-                                opacity: 0.5,
+                                opacity: 0.6,
                                 color: '#000'
                             }
                         }
