@@ -185,7 +185,7 @@ public class RestIntegrityService {
      * Start a named workflow.  
      */
     @POST
-    @Path("/startJob/")
+    @Path("/startWorkflow/")
     @Consumes("application/x-www-form-urlencoded")
     @Produces("text/html")
     public String startWorkflow(@FormParam("workflowID") String workflowID,
