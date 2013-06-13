@@ -14,5 +14,11 @@
     <MediatorCleanupInterval>1000</MediatorCleanupInterval>
     <ConversationTimeout>3600000</ConversationTimeout>
   </ClientSettings>
+  <FileExchangeSettings>
+    <ProtocolType>HTTP</ProtocolType>
+    <ServerName>localhost</ServerName>
+    <Port>80</Port>
+    <Path>/dav</Path>
+  </FileExchangeSettings>
 </ReferenceSettings>
 

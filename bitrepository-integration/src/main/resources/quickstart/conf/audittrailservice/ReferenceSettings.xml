@@ -46,4 +46,10 @@
     <AuditTrailPreservationCollection>quick-start-collection1</AuditTrailPreservationCollection>
     <AuditTrailPreservationTemporaryDirectory>/tmp/</AuditTrailPreservationTemporaryDirectory>
   </AuditTrailServiceSettings>
+  <FileExchangeSettings>
+    <ProtocolType>HTTP</ProtocolType>
+    <ServerName>localhost</ServerName>
+    <Port>80</Port>
+    <Path>/dav</Path>
+  </FileExchangeSettings>
 </ReferenceSettings>
