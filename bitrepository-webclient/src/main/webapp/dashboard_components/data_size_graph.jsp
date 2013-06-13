@@ -196,7 +196,7 @@ $.fn.UseTooltip = function (plot) {
         }
         
            var placeholder = $("#placeholder"); //Zoom out             
-        $('<div class="button" style="right:600px;top:20px">zoom out</div>').appendTo(placeholder).click(function (e) {
+        $('<div class="button" style="right:450px;top:20px">zoom out</div>').appendTo(placeholder).click(function (e) {
            e.preventDefault();                 
                              
          plot.setupGrid();
@@ -231,4 +231,4 @@ $(function () {
 });
 
 </script>
- <div id="placeholder" style="width:1200px;height:300px;"></div>
+ <div id="placeholder" style="width:980px;height:300px;"></div>

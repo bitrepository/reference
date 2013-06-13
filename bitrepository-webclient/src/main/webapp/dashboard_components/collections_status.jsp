@@ -25,7 +25,7 @@
  Iterator<String> ids_iterator= idMap.keySet().iterator();
 
 %>
-<table style="font-size:10px;width:1230px;" class="table table-hover table-condensed">
+<table style="font-size:10px;width:1016px;" class="table table-hover table-condensed">
  <thead>
    <tr>
     <td><b>Samlingens navn</b></td>
