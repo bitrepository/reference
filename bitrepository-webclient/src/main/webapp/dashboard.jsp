@@ -55,7 +55,7 @@
 <div class="container-fluid">
     <div class="row-fluid">
         <div class="">
-            <div class="controlLink"><a href="#myModal" role="button" data-toggle="modal">Procedurer for kontrol</a></div>
+            <!--<div class="controlLink"><a href="#myModal" role="button" data-toggle="modal">Procedurer for kontrol</a></div>-->
             <h2>Overblik over din bitbevaringsløsning</h2>
         </div>
 
