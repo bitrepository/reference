@@ -53,6 +53,9 @@ public abstract class WorkflowManager {
 
     public String startWorkflow(JobID jobID) {
         SchedulableJob workflowToStart = workflows.get(jobID);
+        if (workflowToStart != null) {
+            throw new IllegalArgumentException("Unknown workflow" + jobID);
+        }
         return scheduler.startJob(workflowToStart);
     }
 
@@ -78,6 +81,7 @@ public abstract class WorkflowManager {
                                     (Workflow)lookupClass(workflowConf.getWorkflowClass()).newInstance();
                             workflow.initialise(context, collectionID);
                             scheduler.schedule(workflow, schedule.getWorkflowInterval());
+                            workflows.put(workflow.getJobID(), workflow);
                             unscheduledWorkFlows.remove(collectionID);
                         }
                     }
@@ -87,10 +91,11 @@ public abstract class WorkflowManager {
                     SchedulableJob workflow =
                             (SchedulableJob)Class.forName(workflowConf.getWorkflowClass()).newInstance();
                     workflow.initialise(context, collection);
+                    workflows.put(workflow.getJobID(), workflow);
                     scheduler.schedule(workflow, null);
                 }
             } catch (Exception e) {
-                log.error("Unable to schedule workflow " + workflowConf.getWorkflowClass(), e);
+                log.error("Unable to load workflow " + workflowConf.getWorkflowClass(), e);
             }
         }
     }
