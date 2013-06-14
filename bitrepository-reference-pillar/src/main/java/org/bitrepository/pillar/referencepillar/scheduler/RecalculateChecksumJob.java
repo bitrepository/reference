@@ -31,7 +31,7 @@ public class RecalculateChecksumJob implements SchedulableJob {
     public RecalculateChecksumJob(String collectionID, ReferenceChecksumManager manager) {
         this.collectionID = collectionID;
         this.manager = manager;
-        id = new JobID(collectionID, getClass().getSimpleName());
+        id = new JobID(getClass().getSimpleName(), collectionID);
     }
     
     @Override

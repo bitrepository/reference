@@ -55,7 +55,7 @@ public class CompleteIntegrityCheck extends Workflow {
     public void initialise(WorkflowContext context, String collectionID) {
         this.context = (IntegrityWorkflowContext)context;
         this.collectionID = collectionID;
-        jobID = new JobID(collectionID, getClass().getSimpleName());
+        jobID = new JobID(getClass().getSimpleName(), collectionID);
     }
     
     @Override
