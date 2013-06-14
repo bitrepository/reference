@@ -53,7 +53,7 @@ public abstract class WorkflowManager {
 
     public String startWorkflow(JobID jobID) {
         SchedulableJob workflowToStart = workflows.get(jobID);
-        if (workflowToStart != null) {
+        if (workflowToStart == null) {
             throw new IllegalArgumentException("Unknown workflow" + jobID);
         }
         return scheduler.startJob(workflowToStart);
