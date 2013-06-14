@@ -122,7 +122,7 @@ commandlinedistdir=$(ls -t | grep bitrepository-command-line-* | head -1)
 if [ ! -d "commandline" ]; then
     mv $commandlinedistdir "commandline"
     cd commandline
-    rm logback.xml
+    rm -rf conf
     ln -s ../conf/commandline conf
     ln -s conf/logback.xml
 fi
