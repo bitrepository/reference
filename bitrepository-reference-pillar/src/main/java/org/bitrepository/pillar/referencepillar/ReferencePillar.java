@@ -122,8 +122,9 @@ public class ReferencePillar implements Pillar {
             interval = settings.getReferenceSettings().getPillarSettings()
                     .getRecalculateOldChecksumsInterval().longValue();
         }
-        for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
-            SchedulableJob workflow = new RecalculateChecksumJob(c.getID(), manager);
+        for(String collectionId : SettingsUtils.getCollectionIDsForPillar(
+                settings.getReferenceSettings().getPillarSettings().getPillarID())) {
+            SchedulableJob workflow = new RecalculateChecksumJob(collectionId, manager);
             scheduler.schedule(workflow, interval);
         }
     }

@@ -51,7 +51,6 @@ public class JobTimerTask extends TimerTask {
         this.workflow = workflow;
         nextRun = new Date();
         lastWorkflowStatistics = new WorkflowStatistic("Not run yet");
-
     }
 
     /**
@@ -103,10 +102,10 @@ public class JobTimerTask extends TimerTask {
                 }
                 lastWorkflowStatistics = workflow.getWorkflowStatistics();
                 return "Job '" + workflow.getJobID() + "' finished";
-
             } else {
                 log.info("Ignoring start request for " + workflow.getJobID() + " the workflow is already running");
-                return "Can not start " + workflow.getJobID() + ", it is already running in state " + workflow.currentState();
+                return "Can not start " + workflow.getJobID() + ", it is already running in state " 
+                        + workflow.currentState();
             }
         } catch (Throwable e) {
             log.error("Fault barrier for '" + workflow.getJobID() + "' caught unexpected exception.", e);
