@@ -33,6 +33,7 @@ import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.slf4j.Logger;
@@ -81,6 +82,11 @@ public class IntegrityCollectorEventHandler implements EventHandler {
         } else if(event.getEventType() == OperationEventType.FAILED) {
             log.warn("Failure: " + event.toString());
             alerter.operationFailed("Failed integrity operation: " + event.toString(), event.getCollectionID());
+            
+            for(String pillarId : SettingsUtils.getPillarIDsForCollection(event.getCollectionID())) {
+                store.setPreviouslySeenToExisting(event.getCollectionID(), pillarId);
+            }
+            
             finalEventQueue.add(event);
         } else if(event.getEventType() == OperationEventType.COMPONENT_FAILED) {
             ContributorFailedEvent cfe = (ContributorFailedEvent) event;
