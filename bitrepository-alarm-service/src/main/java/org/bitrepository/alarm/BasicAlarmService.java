@@ -24,11 +24,6 @@
  */
 package org.bitrepository.alarm;
 
-import java.util.Collection;
-import java.util.Date;
-
-import javax.jms.JMSException;
-
 import org.bitrepository.alarm.handling.AlarmHandler;
 import org.bitrepository.alarm.handling.AlarmMediator;
 import org.bitrepository.alarm.store.AlarmStore;
@@ -39,6 +34,10 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jms.JMSException;
+import java.util.Collection;
+import java.util.Date;
 
 /**
  * The basic alarm service
@@ -89,7 +88,7 @@ public class BasicAlarmService implements AlarmService {
             contributorMediator.close();
         }
         if (store != null) {
-            shutdown();
+            store.shutdown();
         }
         try {
             messageBus.close();

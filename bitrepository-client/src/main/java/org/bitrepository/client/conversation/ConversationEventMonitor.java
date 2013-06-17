@@ -24,9 +24,6 @@
  */
 package org.bitrepository.client.conversation;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
@@ -43,6 +40,10 @@ import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.OperationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.*;
 
@@ -110,13 +111,11 @@ public class ConversationEventMonitor {
         if (!unrespondingContributors.isEmpty()) {
             failureMessage.append("\nThe following contributors didn't respond: " + unrespondingContributors);
         }
-        if (!contributorFailedEvents.isEmpty()) {
-            failureMessage.append("\nThe following contributors failed: " + unrespondingContributors);
-            for (ContributorFailedEvent failedEvent:contributorFailedEvents) {
-                failureMessage.append(failedEvent.getContributorID() + "(" + failedEvent.getInfo() + "),");
-            }
-        }
         notifyEventListerners(createDefaultEvent(IDENTIFY_TIMEOUT, failureMessage.toString()));
+
+        for (String contributorID : unrespondingContributors) {
+            contributorFailed("Timeout for identifying contributor", contributorID, null);
+        }
     }
 
     /**
@@ -178,8 +177,8 @@ public class ConversationEventMonitor {
      * @param info Cause information
      * @param contributorID The ID of the contributor
      */
-    public void contributorFailed(String info, String contributor, ResponseCode responseCode) {
-        ContributorFailedEvent failedEvent = createContributorFailedEvent(info, contributor, responseCode);
+    public void contributorFailed(String info, String contributorID, ResponseCode responseCode) {
+        ContributorFailedEvent failedEvent = createContributorFailedEvent(info, contributorID, responseCode);
         contributorFailedEvents.add(failedEvent);
         notifyEventListerners(failedEvent);
     }
