@@ -34,7 +34,11 @@
   <PillarSettings> 
     <PillarID>reference2-pillar</PillarID>
     <CollectionDirs>
-      <CollectionID>quick-start-collection</CollectionID>
+      <CollectionID>quick-start-collection1</CollectionID>
+      <FileDirs><!--foobarpattern-->var/reference2pillar</FileDirs>
+    </CollectionDirs>
+    <CollectionDirs>
+      <CollectionID>quick-start-collection2</CollectionID>
       <FileDirs><!--foobarpattern-->var/reference2pillar</FileDirs>
     </CollectionDirs>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>

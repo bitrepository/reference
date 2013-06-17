@@ -21,45 +21,45 @@
   --%>
 <%@page pageEncoding="UTF-8"%>
 <%
- HashMap<String,String>idMap = DashboardDataCache.getCollectionId2NameMap();
- Iterator<String> ids_iterator= idMap.keySet().iterator();
+    HashMap<String,String>idMap = DashboardDataCache.getCollectionId2NameMap();
+    Iterator<String> ids_iterator= idMap.keySet().iterator();
 
 %>
-<table style="font-size:10px;width:1016px;" class="table table-hover table-condensed">
- <thead>
-   <tr>
-    <td><b>Samlingens navn</b></td>
-    <td style="text-align: right;"><b>Antal filer</b></td>
-    <td style="text-align: right;"><b>Seneste Ingest</b></td>
-    <td style="text-align: right;"><b>Samlingens størrelse</b></td>
-    <td style="text-align: right;"><b>Ben</b></td>
-    <td style="text-align: right;"><b>Seneste kontrol</b></td>
-    <td style="text-align: right;"><b>Checksum fejl</b></td>
-    <td style="text-align: right;"><b>Manglede filer</b></td>
-    <td style="text-align: right;"><b>Næste planlagte kontrol</b></td>      
-   </tr>
- </thead>
- <% while (ids_iterator.hasNext()){
-    String id = ids_iterator.next();
-    GetCollectionInformation collectionInfo= DashboardDataCache.getCollectionInformationMap().get(id);
-    ArrayList<GetWorkflowSetup> workFlowList = DashboardDataCache.getWorkflowSetupMap().get(id);
-    ArrayList<GetIntegrityStatus> integrityStatusList = DashboardDataCache.getIntegrityStatusMap().get(id); 
-    int checkSumErrors = DashboardServlet.countCheckSumErrors(integrityStatusList);
-    int missingFiles = DashboardServlet.countMissingFiles(integrityStatusList);
-    
-    GetWorkflowSetup workFlow = workFlowList.get(0); //If there ever comes more than 1 I need to know which to take!
- %>
- <tr style="background-color:#ffffcc;">
-   <td><%=idMap.get(id)%></td>   
-   <td style="text-align: right;"><%=collectionInfo.getNumberOfFiles()%></td>
-   <td style="text-align: right;"><%=collectionInfo.getLastIngest()%></td>
-   <td style="text-align: right;"><%=collectionInfo.getCollectionSize()%></td>
-   <td style="text-align: right;"><%=integrityStatusList.size()%></td>
-   <td style="text-align: right;"><%=workFlow.getLastRun()%></td>   
-   <td style="text-align: right; <%if (checkSumErrors > 0){%> color:red;<%}%>>"><%=checkSumErrors%></td>
-   <td style="text-align: right; <%if (missingFiles > 0){%> color:red;<%}%>>"><%=missingFiles%></td>
-   <td style="text-align: right;"><%=workFlow.getNextRun()%></td>
- </tr>
- <%}%>
- 
+<table class="table table-hover table-condensed">
+    <thead>
+    <tr>
+        <th class="collectionName">Samlingens navn</th>
+        <th>Antal filer</th>
+        <th>Seneste Ingest</th>
+        <th>Samlingens størrelse</th>
+        <th>Ben</th>
+        <th>Seneste kontrol</th>
+        <th>Checksum fejl</th>
+        <th>Manglende filer</th>
+        <th>Næste planlagte kontrol</th>
+    </tr>
+    </thead>
+    <% while (ids_iterator.hasNext()){
+        String id = ids_iterator.next();
+        GetCollectionInformation collectionInfo= DashboardDataCache.getCollectionInformationMap().get(id);
+        ArrayList<GetWorkflowSetup> workFlowList = DashboardDataCache.getWorkflowSetupMap().get(id);
+        ArrayList<GetIntegrityStatus> integrityStatusList = DashboardDataCache.getIntegrityStatusMap().get(id);
+        int checkSumErrors = DashboardServlet.countCheckSumErrors(integrityStatusList);
+        int missingFiles = DashboardServlet.countMissingFiles(integrityStatusList);
+
+        GetWorkflowSetup workFlow = workFlowList.get(0); //If there ever comes more than 1 I need to know which to take!
+    %>
+    <tr>
+        <td class="collectionName"><%=idMap.get(id)%></td>
+        <td><%=collectionInfo.getNumberOfFiles()%></td>
+        <td><%=collectionInfo.getLastIngest()%></td>
+        <td><%=collectionInfo.getCollectionSize()%></td>
+        <td><%=integrityStatusList.size()%></td>
+        <td><%=workFlow.getLastRun()%></td>
+        <td class="<%if (checkSumErrors > 0){%>error<%}%>"><%=checkSumErrors%></td>
+        <td class="<%if (missingFiles > 0){%>error<%}%>"><%=missingFiles%></td>
+        <td><%=workFlow.getNextRun()%></td>
+    </tr>
+    <%}%>
+
 </table>
