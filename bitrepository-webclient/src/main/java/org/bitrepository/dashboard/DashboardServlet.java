@@ -23,6 +23,7 @@ package org.bitrepository.dashboard;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.TimeZone;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -62,6 +63,7 @@ public class DashboardServlet extends HttpServlet {
 				dataSetNames.add(DashboardDataCache.getCollectionId2NameMap().get(id));
 				collectionIdsSelected.add(id);
 				request.setAttribute(id, "on");
+			
 			}
 			request.setAttribute(DATA_SIZE_HISTORY_ATTRIBUTE, dataSet);
 			request.setAttribute(DATA_SIZE_HISTORY_NAMES_ATTRIBUTE, dataSetNames);
@@ -157,4 +159,10 @@ public class DashboardServlet extends HttpServlet {
 		return max;
 	}
 
+	public static long getTimeZoneOffSetInMillis(){	    
+        TimeZone timeZone = TimeZone.getTimeZone("Europe/Copenhagen");
+        int  offSet= timeZone.getOffset(System.currentTimeMillis());
+	    return offSet;
+	}
+	
 }

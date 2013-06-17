@@ -22,7 +22,7 @@
 <%@page pageEncoding="UTF-8"%>
 
 <%
-    long UTC_FIX = 2*60*60*1000L;
+    long UTC_FIX = DashboardServlet.getTimeZoneOffSetInMillis(); //Because javascript-time is local in browser. This fix makes it work in Denmark summer and winter time
     ArrayList<ArrayList<StatisticsDataSize>> allDataSizeList = (  ArrayList<ArrayList<StatisticsDataSize>> ) request.getAttribute(DashboardServlet.DATA_SIZE_HISTORY_ATTRIBUTE);
     ArrayList<String> allDataSizeNamesList = (  ArrayList<String> ) request.getAttribute(DashboardServlet.DATA_SIZE_HISTORY_NAMES_ATTRIBUTE);
 
@@ -40,12 +40,12 @@
     String byteUnitSuffix =FileSizeUtils.toHumanUnit(maxByteSize);
     float byteUnit = FileSizeUtils.getByteSize(byteUnitSuffix);
 
-    String y_axis_text=byteUnitSuffix;
+    String y_axis_text=byteUnitSuffix.trim();
     if ("graph_tilvaekst".equals(graphType)){
-        y_axis_text = byteUnitSuffix;
+        y_axis_text = byteUnitSuffix.trim();
     }
     else if ("graph_delta".equals(graphType)){
-        y_axis_text = byteUnitSuffix+" pr. dag";
+        y_axis_text = byteUnitSuffix.trim()+" pr. dag";
     }
 
 
@@ -82,7 +82,7 @@
     function dateFormat(formattedDate) {
 
         var d = formattedDate.getDate();
-        var m = formattedDate.getMonth();
+        var m = formattedDate.getMonth()+1; //Javascript getMonths() returns 0 - 11.
         var y = formattedDate.getFullYear();
         var minutes = formattedDate.getMinutes();
         var hour = formattedDate.getHours();
@@ -133,6 +133,12 @@
     <%}%>
     var options = {
         hoverable: true,
+      
+        legend:{        
+            backgroundOpacity: 0.5,
+            noColumns: 5,  
+            position: "nw"
+        }, 
 
         grid:  {
             hoverable: true,
@@ -142,7 +148,7 @@
         xaxis: {  mode: "time",  localTimezone: true , zoomRange: [0.1, 10] , timeformat: "%y/%0m/%0d %0H:%0M"},
         yaxis: {  axisLabel: "<%=y_axis_text%>"},
         selection:{  mode: "xy" } ,
-        points: { show: true} ,
+        points: { show: true ,  radius: 2} ,
         lines: { show: true},
         zoom: { interactive: true}
     };
@@ -153,7 +159,7 @@
          for (int i = 0; i< allDataSizeNamesList.size();i++){
          %>
 
-        {label:"<%=allDataSizeNamesList.get(i)%> ( <%=y_axis_text%>)", data: data_tilvaekst<%=i%>},
+        {label:"<%=allDataSizeNamesList.get(i)%> (<%=y_axis_text%>)", data: data_tilvaekst<%=i%>},
         <%}%>
     ];
 
@@ -182,7 +188,7 @@
                     var formated_date = dateFormat(d);
 
                     showTooltip(item.pageX, item.pageY,
-                            formated_date  + "<br/>" + "<strong>" + y + " <%=y_axis_text%></strong>");
+                            formated_date  + "<br/>  <strong>" + y +  "<%=y_axis_text%></strong><br/>" + item.series.label );
 
                 }
             }
@@ -222,8 +228,7 @@
     $(function () {
         var plot = $.plot("#placeholder", dataObj, options);
         $("#placeholder").UseRange(plot);
-        $("#placeholder").UseTooltip(plot);
-
+        $("#placeholder").UseTooltip(plot);          
     });
 
 </script>

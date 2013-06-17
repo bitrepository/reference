@@ -102,9 +102,9 @@ public class FileSizeUtils {
 	 */	
 	public static String toHumanShort(Long size) {
 		if (size == null) {
-			return "0B";
+			return "0 B";
 		}
-		if (size >= petaSize) {
+		if (size >= exaSize) {
 			return formatShortExa(size);
 		} else if (size >= petaSize) {
 			return formatShortPeta(size);

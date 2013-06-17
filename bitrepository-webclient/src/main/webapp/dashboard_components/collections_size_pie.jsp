@@ -44,7 +44,7 @@
                         show: true,
                         radius: 1,
                         label:{
-                            radius: 3/4,
+                            radius: 3/5,
                             formatter: function (label, series) {
                                 return '<div style="font-size:.85em;text-align:center;padding:5px;color:white;">' + label + '<br/>' +
                                         Math.round(series.percent) + '%</div>';

@@ -68,6 +68,7 @@ form.dashboardForm{
 
 .collenctionPieBox table td, .legPieBox table td{
     padding: 0 1em .4em 0;
+    white-space: nowrap;
 }
 
 .collenctionPieBox table td.dataLabel, .legPieBox table td.dataLabel{
