@@ -24,8 +24,6 @@
  */
 package org.bitrepository.access.getchecksums;
 
-import java.net.URL;
-import java.util.Arrays;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getchecksums.conversation.GetChecksumsConversationContext;
@@ -36,9 +34,13 @@ import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.URL;
+import java.util.Arrays;
 
 /**
  * The default <code>GetChecksumsClient</code>.
@@ -71,7 +73,7 @@ public class ConversationBasedGetChecksumsClient extends AbstractClient implemen
         validateFileID(fileID);
         if (contributorQueries == null) {
             contributorQueries = ContributorQueryUtils.createFullContributorQuery(
-                    settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+                    SettingsUtils.getPillarIDsForCollection(collectionID));
         }
 
         log.info("Requesting the checksums for file '" + "' with the specifications '" + checksumSpec + fileID +

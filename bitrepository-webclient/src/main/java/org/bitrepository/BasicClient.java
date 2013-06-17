@@ -21,17 +21,16 @@
  */
 package org.bitrepository;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.jms.JMSException;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.RepositorySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jms.JMSException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BasicClient {
     private Settings settings;
@@ -93,9 +92,5 @@ public class BasicClient {
         sb.append("Messagebus URL: <br> &nbsp;&nbsp;&nbsp; <i>"); 
         sb.append(repositorySettings.getProtocolSettings().getMessageBusConfiguration().getURL() + "</i><br>");
         return sb.toString();
-    }
-
-    public List<String> getPillarList() {
-        return settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID();
     }
 }

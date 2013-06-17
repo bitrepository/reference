@@ -47,7 +47,7 @@ public class TestWorkflow extends Workflow {
 
     @Override
     public void initialise(WorkflowContext context, String collectionID) {
-        jobID = new JobID(collectionID, getClass().getSimpleName());
+        jobID = new JobID(getClass().getSimpleName(), collectionID);
     }
 
     @Override

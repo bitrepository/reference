@@ -21,18 +21,15 @@
  */
 package org.bitrepository.webservice;
 
-import java.util.Iterator;
-import java.util.List;
+import org.bitrepository.BasicClient;
+import org.bitrepository.BasicClientFactory;
+import org.json.JSONArray;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-
-import org.bitrepository.BasicClient;
-import org.bitrepository.BasicClientFactory;
-import org.json.JSONArray;
 
 /**
  * The class exposes the REST webservices provided by the Bitrepository-webclient using Jersey. 
@@ -65,25 +62,6 @@ public class Reposervice {
     @Produces(MediaType.APPLICATION_JSON)
     public String getCollectionName(@QueryParam("collectionID") String collectionID) {
         return client.getCollectionName(collectionID);
-    }
-
-    @GET
-    @Path("/getPillarList/")
-    @Produces("text/json")
-    public String getPillarList(@QueryParam("collectionID") String collectionID) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        List<String> pillars = client.getPillarList();
-        Iterator<String> it = pillars.iterator();
-        while(it.hasNext()) {
-            String pillar = it.next();
-            sb.append("{\"optionValue\":\"" + pillar + "\", \"optionDisplay\": \"" + pillar + "\"}");
-            if(it.hasNext()) {
-                sb.append(",");
-            }
-        }
-        sb.append("]");
-        return sb.toString();
     }
 
     /**

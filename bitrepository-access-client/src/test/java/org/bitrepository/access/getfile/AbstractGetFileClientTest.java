@@ -43,10 +43,10 @@ import org.bitrepository.client.DefaultFixtureClientTest;
 import org.testng.annotations.BeforeMethod;
 
 public abstract class AbstractGetFileClientTest extends DefaultFixtureClientTest   {
-    protected TestGetFileMessageFactory testMessageFactory;
+    protected TestGetFileMessageFactory messageFactory;
 
     @BeforeMethod (alwaysRun=true)
     public void beforeMethodSetup() throws Exception {
-        testMessageFactory = new TestGetFileMessageFactory(settingsForTestClient.getComponentID());
+        messageFactory = new TestGetFileMessageFactory(settingsForTestClient.getComponentID());
     }
 }

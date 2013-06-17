@@ -24,9 +24,6 @@
  */
 package org.bitrepository.access.getfile;
 
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Collection;
 import org.bitrepository.access.getfile.conversation.GetFileConversationContext;
 import org.bitrepository.access.getfile.conversation.IdentifyingPillarsForGetFile;
 import org.bitrepository.bitrepositoryelements.FilePart;
@@ -35,9 +32,14 @@ import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * The default <code>GetFileClient</code>.
@@ -69,8 +71,7 @@ public class ConversationBasedGetFileClient extends AbstractClient implements Ge
         
         log.info("Requesting the file '" + fileID + " from the fastest pillar");
         getFile(collectionID, messageBus, settings, fileID, filePart,
-                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(),
-                 uploadUrl, eventHandler, auditTrailInformation);
+                SettingsUtils.getPillarIDsForCollection(collectionID), uploadUrl, eventHandler, auditTrailInformation);
     }
 
     @Override

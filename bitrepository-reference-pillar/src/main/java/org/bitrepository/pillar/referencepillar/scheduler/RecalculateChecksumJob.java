@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Workflow for recalculating the checksums of the files of a given collection.
  */
-public class RecalculateChecksumWorkflow implements SchedulableJob {
+public class RecalculateChecksumJob implements SchedulableJob {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The id of the collection to recalculate the checksum for.*/
@@ -20,7 +20,7 @@ public class RecalculateChecksumWorkflow implements SchedulableJob {
     private final ReferenceChecksumManager manager;
     
     /** The state of this workflow. */
-    private String workflowState;
+    private String state;
     private final JobID id;
     
     /**
@@ -28,24 +28,27 @@ public class RecalculateChecksumWorkflow implements SchedulableJob {
      * @param collectionID The id of the collection to recalculate checksum for.
      * @param manager The manager of the checksums and reference archive.
      */
-    public RecalculateChecksumWorkflow(String collectionID, ReferenceChecksumManager manager) {
+    public RecalculateChecksumJob(String collectionID, ReferenceChecksumManager manager) {
         this.collectionID = collectionID;
         this.manager = manager;
-        id = new JobID(collectionID, getClass().getSimpleName());
-        workflowState = "Has not yet run.";
+        id = new JobID(getClass().getSimpleName(), collectionID);
     }
     
     @Override
     public void start() {
         log.info("Recalculating old checksums.");
-        workflowState = "Running";
+        state = "Running";
         manager.ensureStateOfAllData(collectionID);
-        workflowState = "Currently not running";
+        state = null;
     }
 
     @Override
     public String currentState() {
-        return workflowState;
+        if(state == null) {
+            return NOT_RUNNING;
+        } else {
+            return state;
+        }
     }
 
     @Override

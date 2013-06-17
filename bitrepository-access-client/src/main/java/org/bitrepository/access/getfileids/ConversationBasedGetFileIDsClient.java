@@ -24,11 +24,6 @@
  */
 package org.bitrepository.access.getfileids;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getfileids.conversation.GetFileIDsConversationContext;
@@ -38,9 +33,13 @@ import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.URL;
+import java.util.Arrays;
 
 /**
  * The reference implementation of the client side of the GetFileIDs identification and operation.
@@ -71,7 +70,7 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
         validateFileID(fileID);
         if (contributorQueries == null) {
             contributorQueries = ContributorQueryUtils.createFullContributorQuery(
-                    settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+                    SettingsUtils.getPillarIDsForCollection(collectionID));
         }
 
         log.info("Requesting the fileIDs for file '" + fileID + "' with query "+
@@ -83,18 +82,5 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
                 ContributorQueryUtils.getContributors(contributorQueries), eventHandler);
 
         startConversation(context, new IdentifyPillarsForGetFileIDs(context));
-    }
-
-    /**
-     * Used to create a <code>AuditTrailQuery[]</code> array in case no array is defined.
-     * @return A <code>AuditTrailQuery[]</code> array requesting all audit trails from all the defined contributers.
-     */
-    private ContributorQuery[] createFullContributorQuery() {
-        List<String> contributers = settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID();
-        List<ContributorQuery> componentQueryList = new ArrayList<ContributorQuery>(contributers.size());
-        for (String contributer : contributers) {
-            componentQueryList.add(new ContributorQuery(contributer, null, null, null));
-        }
-        return componentQueryList.toArray(new ContributorQuery[componentQueryList.size()]);
     }
 }

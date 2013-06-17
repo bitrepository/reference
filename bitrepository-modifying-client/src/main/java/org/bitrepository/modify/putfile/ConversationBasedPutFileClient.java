@@ -24,7 +24,6 @@
  */
 package org.bitrepository.modify.putfile;
 
-import java.net.URL;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.AbstractClient;
@@ -32,11 +31,14 @@ import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.modify.putfile.conversation.IdentifyPillarsForPutFile;
 import org.bitrepository.modify.putfile.conversation.PutFileConversationContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.URL;
 
 /**
  * A simple implementation of the PutClient.
@@ -69,8 +71,7 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
         
         PutFileConversationContext context = new PutFileConversationContext(collectionID, fileID, url, sizeOfFile,
                 checksumForValidationAtPillar, checksumRequestsForValidation, settings, messageBus,
-                clientID, settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(), eventHandler, auditTrailInformation);
+                clientID, SettingsUtils.getPillarIDsForCollection(collectionID), eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForPutFile(context));
     }
-
 }

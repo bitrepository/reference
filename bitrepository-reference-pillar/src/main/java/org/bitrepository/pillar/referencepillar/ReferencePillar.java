@@ -37,7 +37,7 @@ import org.bitrepository.pillar.common.SettingsHelper;
 import org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMediator;
-import org.bitrepository.pillar.referencepillar.scheduler.RecalculateChecksumWorkflow;
+import org.bitrepository.pillar.referencepillar.scheduler.RecalculateChecksumJob;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.audit.AuditTrailContributerDAO;
@@ -75,7 +75,8 @@ public class ReferencePillar implements Pillar {
     private final JobScheduler scheduler;
     /** The manager of the checksums with regard to the archive.*/
     private final ReferenceChecksumManager manager;
-    /** The default time for running the recalculation workflow, when the settings is not set.*/
+    /** The default time for running the recalculation workflow, when the settings is not set.
+     * The default is every hour. */
     private static final Long DEFAULT_RECALCULATION_WORKFLOW_TIME = 3600000L;
 
     /**
@@ -121,8 +122,9 @@ public class ReferencePillar implements Pillar {
             interval = settings.getReferenceSettings().getPillarSettings()
                     .getRecalculateOldChecksumsInterval().longValue();
         }
-        for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
-            SchedulableJob workflow = new RecalculateChecksumWorkflow(c.getID(), manager);
+        for(String collectionId : SettingsUtils.getCollectionIDsForPillar(
+                settings.getReferenceSettings().getPillarSettings().getPillarID())) {
+            SchedulableJob workflow = new RecalculateChecksumJob(collectionId, manager);
             scheduler.schedule(workflow, interval);
         }
     }

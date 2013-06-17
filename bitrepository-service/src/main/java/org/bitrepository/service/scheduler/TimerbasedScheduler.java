@@ -24,6 +24,7 @@
  */
 package org.bitrepository.service.scheduler;
 
+import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.JobTimerTask;
 import org.bitrepository.service.workflow.SchedulableJob;
@@ -63,7 +64,7 @@ public class TimerbasedScheduler implements JobScheduler {
 
     @Override
     public void schedule(SchedulableJob workflow, Long interval) {
-        log.info("Scheduling workflow : " + workflow);
+        log.info("Scheduling job : " + workflow.getJobID() + " to run every " + TimeUtils.millisecondsToHuman(interval));
 
         JobTimerTask task = new JobTimerTask(interval, workflow);
         timer.scheduleAtFixedRate(task, NO_DELAY, SCHEDULE_INTERVAL);

@@ -161,4 +161,15 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
         verifyNoMoreInteractions(scheduler);
     }
 
+    @Test (groups = {"regressiontest"})
+    public void startWorkflow() {
+        addDescription("Verifies that the that it is possible to manually start a workflow.");
+
+        addStep("Call the startWorkflow with a workflow defined in the configuration",
+                "The schedulers startJob should be called with the indicated workflow.  .");
+        IntegrityWorkflowManager manager =
+                new IntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null), scheduler);
+        manager.startWorkflow(workflow1.getJobID());
+        verify(scheduler).startJob(workflow1);
+    }
 }

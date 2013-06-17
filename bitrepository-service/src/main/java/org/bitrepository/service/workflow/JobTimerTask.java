@@ -51,7 +51,6 @@ public class JobTimerTask extends TimerTask {
         this.workflow = workflow;
         nextRun = new Date();
         lastWorkflowStatistics = new WorkflowStatistic("Not run yet");
-
     }
 
     /**
@@ -95,21 +94,21 @@ public class JobTimerTask extends TimerTask {
      */
     public String runWorkflow() {
         try {
-            if (workflow.currentState().equals(Workflow.NOT_RUNNING)) {
-                log.info("Starting the workflow: " + getName());
+            if (workflow.currentState().equals(SchedulableJob.NOT_RUNNING)) {
+                log.info("Starting job: " + workflow.getJobID());
                 workflow.start();
                 if (interval > 0) {
                     nextRun = new Date(System.currentTimeMillis() + interval);
                 }
                 lastWorkflowStatistics = workflow.getWorkflowStatistics();
-                return "Workflow '" + workflow.getClass().getSimpleName() + "' finished";
-
+                return "Job '" + workflow.getJobID() + "' finished";
             } else {
-                log.info("Ignoring start request for " + getName() + " the workflow is already running");
-                return "Can not start " +getName() + ", it is already running in state " + workflow.currentState();
+                log.info("Ignoring start request for " + workflow.getJobID() + " the workflow is already running");
+                return "Can not start " + workflow.getJobID() + ", it is already running in state " 
+                        + workflow.currentState();
             }
         } catch (Throwable e) {
-            log.error("Fault barrier for '" + getName() + "' caught unexpected exception.", e);
+            log.error("Fault barrier for '" + workflow.getJobID() + "' caught unexpected exception.", e);
             throw new RuntimeException("Failed to run workflow" + e.getMessage() + ", see server log for details.");
         }
     }
