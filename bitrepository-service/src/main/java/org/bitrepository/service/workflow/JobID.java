@@ -28,7 +28,7 @@ public class JobID {
     private final String collectionID;
     private final String workflowName;
     
-    public JobID(String collectionID, String workflowName) {
+    public JobID(String workflowName, String collectionID) {
         this.collectionID = collectionID;
         this.workflowName = workflowName;
     }

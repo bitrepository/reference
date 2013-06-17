@@ -22,17 +22,17 @@
 
 package org.bitrepository.integrityservice.cache;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.jcs.JCS;
 import org.apache.jcs.access.exception.CacheException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Adds caching functionality for all the simple read methods. Read operations returning set or lists of results
@@ -301,14 +301,16 @@ public class IntegrityCache implements IntegrityModel {
     private void markPillarsDirty(JCS cache, Collection<String> pillarIds, String collectionID) {
         for (String pillarID:pillarIds) {
             try {
-                cache.getElementAttributes(getCacheID(pillarID, collectionID))
-                        .setMaxLifeSeconds(refreshPeriodAfterDirtyMark);
+                if (cache.get(getCacheID(pillarID, collectionID)) != null ) {
+                    cache.getElementAttributes(getCacheID(pillarID, collectionID)).
+                            setMaxLifeSeconds(refreshPeriodAfterDirtyMark);
+                }
             } catch (CacheException ce) {
                 log.warn("Failed to read cache.", ce);
             }
         }
     }
-    
+
     /**
      * Will cause the cache to return null after <code>refreshPeriodAfterDirtyMark</code> has passed, since
      * the value was updated in the cache. This will ensure that the backend model isn't read more than
