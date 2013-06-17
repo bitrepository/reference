@@ -63,16 +63,16 @@ for directory in $(find conf -maxdepth 1 -mindepth 1 -type d)
 do
         cd "$directory"
         ln -sf ../RepositorySettings.xml .
-        sed -i s%\<\!--foobarpattern--\>%$quickstartdir/% ReferenceSettings.xml > /dev/null
-        sed -i s%\$\{user.home\}%$quickstartdir% logback.xml 
+        sed -i '' s%\<\!--foobarpattern--\>%$quickstartdir/% ReferenceSettings.xml > /dev/null
+        sed -i '' s%\$\{user.home\}%$quickstartdir% logback.xml
         cd $quickstartdir
 done
 
-sed -i s%eventsfile%$quickstartdir/logs/webclient-events% $configdir/webclient/webclient.properties 
+sed -i '' s%eventsfile%$quickstartdir/logs/webclient-events% $configdir/webclient/webclient.properties
 
 for file in $(find tomcat-services -iname '*.xml')
 do
-	sed -i s%\${user.home}%$quickstartdir% $file
+	sed -i '' s%\${user.home}%$quickstartdir% $file
 done
 
 refpillartarfile=$(ls bitrepository-reference-pillar*.tar.gz)

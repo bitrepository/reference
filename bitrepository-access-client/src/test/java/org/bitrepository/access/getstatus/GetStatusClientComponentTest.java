@@ -21,8 +21,6 @@
  */
 package org.bitrepository.access.getstatus;
 
-import java.math.BigInteger;
-import java.util.List;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getstatus.conversation.StatusCompleteContributorEvent;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
@@ -41,6 +39,9 @@ import org.bitrepository.settings.repositorysettings.GetStatusSettings;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.math.BigInteger;
+import java.util.List;
 
 public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
 
@@ -99,6 +100,8 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
                     "Right after this a GetStatusRequest should be sent to pillar1");
             Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                     OperationEventType.IDENTIFY_TIMEOUT);
+            Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
+                    OperationEventType.COMPONENT_FAILED);
             Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                     OperationEventType.IDENTIFICATION_COMPLETE);
             Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),

@@ -20,8 +20,6 @@
   <http://www.gnu.org/licenses/lgpl-2.1.html>.
   #L%
   -->
-
-
 <xs:schema targetNamespace="http://bitrepository.org/settings/ReferenceSettings.xsd"
            attributeFormDefault="unqualified" elementFormDefault="qualified"
            xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema"

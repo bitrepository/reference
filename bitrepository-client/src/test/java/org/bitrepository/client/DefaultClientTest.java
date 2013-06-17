@@ -21,8 +21,6 @@ package org.bitrepository.client;
  * #L%
  */
 
-import java.math.BigInteger;
-import java.util.concurrent.TimeUnit;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
@@ -31,6 +29,9 @@ import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.math.BigInteger;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Tests the general client functionality. A number of abstract methods with needs to be implemented with concrete
@@ -145,6 +146,7 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
                 "A IDENTIFY_TIMEOUT event should be generated, followed by a IDENTIFICATION_COMPLETE.");
         Assert.assertEquals(testEventHandler.waitForEvent(
                5, TimeUnit.SECONDS).getEventType(), OperationEventType.IDENTIFY_TIMEOUT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
 
         addStep("Verify that the client continues to the performing phase.",
@@ -158,7 +160,7 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         completeMsg.getResponseInfo().setResponseCode(ResponseCode.OPERATION_COMPLETED);
         messageBus.sendMessage(completeMsg);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_COMPLETE);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
 
     }
 
@@ -177,6 +179,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         addStep("Wait for 5 seconds", "An IdentifyPillarTimeout event should be received followed by a FAILED event");
         Assert.assertEquals(testEventHandler.waitForEvent(3, TimeUnit.SECONDS).getEventType(),
                 OperationEventType.IDENTIFY_TIMEOUT);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
+        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
