@@ -90,3 +90,9 @@ form.dashboardForm{
     min-width: 350px;
     width: 48%;
 }
+
+.checkboxLegend{
+    display: inline-block;
+    height: 13px;
+    width: 13px;
+}
