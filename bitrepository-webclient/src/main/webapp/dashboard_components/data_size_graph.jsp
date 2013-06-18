@@ -107,7 +107,7 @@
         <%
             for ( String id : collectionId2NameMap.keySet()){
         %>
-        <input type="checkbox" onClick="javascript:changeData();"  <%if(request.getAttribute(id) != null){out.println("checked");}%> name="<%=id%>"> <div class="checkboxLegend" style="background-color: "></div> <%=collectionId2NameMap.get(id)%>
+        <input type="checkbox" onClick="javascript:changeData();"  <%if(request.getAttribute(id) != null){out.println("checked");}%> name="<%=id%>"> <div class="checkboxLegend" style="background-color: <%=collectionId2ColorMap.get(id)%> "></div> <%=collectionId2NameMap.get(id)%>
         <%
             }
         %>
