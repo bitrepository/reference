@@ -99,7 +99,6 @@
 
 <form name="dashboardForm" action="dashboardServlet" method="POST" class="dashboardForm">
 
-    <p>
         <select name="graphType" onchange="javascript:changeData();">
             <option <%if ("graph_tilvaekst".equals(graphType)){ out.println(" selected "); }%> value="graph_tilvaekst">Tilvækst</option>
             <option <%if ("graph_delta".equals(graphType)){ out.println(" selected "); }%> value="graph_delta">Tilvækstændring</option>
@@ -108,11 +107,10 @@
         <%
             for ( String id : collectionId2NameMap.keySet()){
         %>
-        <input type="checkbox" onClick="javascript:changeData();"  <%if(request.getAttribute(id) != null){out.println("checked");}%> name="<%=id%>"> <%=collectionId2NameMap.get(id)%>
+        <input type="checkbox" onClick="javascript:changeData();"  <%if(request.getAttribute(id) != null){out.println("checked");}%> name="<%=id%>"> <div class="checkboxLegend"></div> <%=collectionId2NameMap.get(id)%>
         <%
             }
         %>
-    </p>
 </form>
 
 <script>
