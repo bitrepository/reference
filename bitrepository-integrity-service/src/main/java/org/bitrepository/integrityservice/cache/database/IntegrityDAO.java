@@ -1114,7 +1114,6 @@ public class IntegrityDAO {
         final int indexUpdateTime = 7;
         
         Long statsKey = getLatestStatisticsKey(collectionID);
-        Long collectionKey = retrieveCollectionKey(collectionID);
         if(statsKey == null) {
             log.debug("Trying to retrieve pillar stats but none exists for collectionID: '" + collectionID + "'.");
             return new ArrayList<PillarStat>();
@@ -1127,8 +1126,7 @@ public class IntegrityDAO {
                 + " FROM " + PILLAR_STATS_TABLE + " p "
                 + " JOIN " + STATS_TABLE + " s" 
                 + " ON  p." + PS_STAT_KEY + " = s." + STATS_KEY
-                + " WHERE s." + STATS_COLLECTION_KEY + " = ?"
-                + " AND s." + STATS_KEY + " = ?";
+                + " WHERE s." + STATS_KEY + " = ?";
         
         try {
             ResultSet dbResult = null;
@@ -1136,7 +1134,7 @@ public class IntegrityDAO {
             Connection conn = null;
             try {
                 conn = dbConnector.getConnection();
-                ps = DatabaseUtils.createPreparedStatement(conn, sql, collectionKey, statsKey);
+                ps = DatabaseUtils.createPreparedStatement(conn, sql, statsKey);
                 dbResult = ps.executeQuery();
                 
                 while(dbResult.next()) {

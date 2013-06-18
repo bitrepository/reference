@@ -28,7 +28,9 @@ import org.bitrepository.common.utils.FileSizeUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.IntegrityServiceManager;
+import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.cache.PillarStat;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.JobTimerTask;
 import org.bitrepository.service.workflow.WorkflowManager;
@@ -140,8 +142,12 @@ public class RestIntegrityService {
     @Produces(MediaType.APPLICATION_JSON)
     public String getIntegrityStatus(@QueryParam("collectionID") String collectionID) {
         JSONArray array = new JSONArray();
-        for(String pillar : SettingsUtils.getPillarIDsForCollection(collectionID)) {
-            array.put(makeIntegrityStatusObj(pillar, collectionID));
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
+        List<PillarStat> stats = model.getLatestPillarStats(collectionID);
+        for(PillarStat stat : stats) {
+            if(pillars.contains(stat.getPillarID())) {
+                array.put(makeIntegrityStatusObj(stat));
+            }
         }
         return array.toString();
     }
@@ -201,27 +207,32 @@ public class RestIntegrityService {
     @Produces(MediaType.APPLICATION_JSON)
     public String getCollectionInformation(@QueryParam("collectionID") String collectionID) {
         JSONObject obj = new JSONObject();
+        List<CollectionStat> stats = model.getLatestCollectionStat(collectionID, 1);
         Date lastIngest = model.getDateForNewestFileEntryForCollection(collectionID);
-        Long collectionDataSize = model.getCollectionFileSize(collectionID);
-        Long numberOfFiles = model.getNumberOfFilesInCollection(collectionID);
         String lastIngestStr = lastIngest == null ? "No files ingested yet" : TimeUtils.shortDate(lastIngest);
-        try {
-            obj.put("lastIngest", lastIngestStr);
-            obj.put("collectionSize", FileSizeUtils.toHumanShort(collectionDataSize == null ? 0 : collectionDataSize));
-            obj.put("numberOfFiles", numberOfFiles == null ? 0 : numberOfFiles);
-        } catch (JSONException e) {
+        if(stats == null) {
             obj = (JSONObject) JSONObject.NULL;
+        } else {
+            CollectionStat stat = stats.get(0);
+            try {
+                obj.put("lastIngest", lastIngestStr);
+                obj.put("collectionSize", FileSizeUtils.toHumanShort(stat.getDataSize() == null ? 0 : stat.getDataSize()));
+                obj.put("numberOfFiles", stat.getFileCount() == null ? 0 : stat.getFileCount());
+            } catch (JSONException e) {
+                obj = (JSONObject) JSONObject.NULL;
+            }
+
         }
         return obj.toString();
     }
- 
-    private JSONObject makeIntegrityStatusObj(String pillarID, String collectionID) {
+    
+    private JSONObject makeIntegrityStatusObj(PillarStat stat) {
         JSONObject obj = new JSONObject();
         try {
-            obj.put("pillarID", pillarID);
-            obj.put("totalFileCount", model.getNumberOfFiles(pillarID, collectionID));
-            obj.put("missingFilesCount", model.getNumberOfMissingFiles(pillarID, collectionID));
-            obj.put("checksumErrorCount", model.getNumberOfChecksumErrors(pillarID, collectionID));
+            obj.put("pillarID", stat.getPillarID());
+            obj.put("totalFileCount", stat.getFileCount());
+            obj.put("missingFilesCount", stat.getMissingFiles());
+            obj.put("checksumErrorCount", stat.getChecksumErrors());
             return obj;
         } catch (JSONException e) {
             return (JSONObject) JSONObject.NULL;
