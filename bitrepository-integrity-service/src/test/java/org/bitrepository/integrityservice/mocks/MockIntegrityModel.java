@@ -30,6 +30,7 @@ import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.cache.PillarStat;
 
 /**
  * Wrapper of an integrity model and count how many times each method it used.
@@ -322,6 +323,15 @@ public class MockIntegrityModel implements IntegrityModel {
     }
     public int getCallsForGetLatestCollectionStat() {
         return callsGetLatestCollectionStat;
+    }
+    private int callsGetLatestPillarStats = 0;
+    @Override
+    public List<PillarStat> getLatestPillarStats(String collectionID) {
+        callsGetLatestPillarStats++;
+        return integrityModel.getLatestPillarStats(collectionID);
+    }
+    public int getCallsForGetLatestPillarStats() {
+        return callsGetLatestPillarStats;
     }
     private int callsMakeStatisticsForCollection = 0;
     @Override

@@ -282,6 +282,13 @@ public interface IntegrityModel {
     List<CollectionStat> getLatestCollectionStat(String collectionID, int count);
     
     /**
+     * Retrieves the lastest statistics for the set of pillars in the given collection
+     * @param collectionID The ID of the collection
+     * @return {@link PillarStat} The latest pillar statistics for the pillars in the collection 
+     */
+    List<PillarStat> getLatestPillarStats(String collectionID);
+    
+    /**
      * Method to create a new set of statistics entries for a given collection
      * @param collectionID The ID of the collection
      */
