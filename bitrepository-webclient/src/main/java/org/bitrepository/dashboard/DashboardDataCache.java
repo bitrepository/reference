@@ -22,7 +22,10 @@
 package org.bitrepository.dashboard;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bitrepository.common.webobjects.StatisticsCollectionSize;
 import org.bitrepository.common.webobjects.StatisticsDataSize;
@@ -37,17 +40,50 @@ import org.slf4j.LoggerFactory;
 public class DashboardDataCache {
 	private final static Logger log = LoggerFactory.getLogger(DashboardDataCache.class);
 	private static HashMap<String, String> collectionId2NameMap;
+	private static HashMap<String, String> collectionId2ColorMap;	
 	private static HashMap<String, ArrayList<StatisticsDataSize>> statisticsIdDataSizeMap;
 	private static HashMap<String, GetCollectionInformation> getCollectionInformationMap;
 	private static HashMap<String, ArrayList<StatisticsDataSize>> statisticsIdDataGrowthMap;
 	private static HashMap<String, ArrayList<GetWorkflowSetup>> getWorkflowSetupMap;
-	private static HashMap<String, ArrayList<GetIntegrityStatus>> getIntegrityStatusMap;
+	private static HashMap<String, ArrayList<GetIntegrityStatus>> getIntegrityStatusMap;	
 	private static ArrayList<StatisticsCollectionSize> collectionDataSize;
 	private static ArrayList<StatisticsPillarSize> latestPillarDataSize;
 	private static long lastReload = 0;
 	private static long reloadTimer = 1 * 60 * 1000L; // 1 min
 	private static long MILIS_PR_DAY = 86400 * 1000L;
-
+	   public static final List<String> COLORS =
+	            Collections.unmodifiableList(Arrays.asList(
+	                    "#8cacc6",
+	                    "#ee1c1c",
+	                    "#4da74d",
+	                    "#9440ed",
+	                    "#ffe84c",
+	                    "#afd8f8",
+	                    "#a23c3c",
+	                    "#3d853d",
+	                    "#7633bd",
+	                    "#edc240",
+	                    "#d2ffff",
+	                    "#f35a5a",
+	                    "#5cc85c",
+	                    "#b14cff",
+	                    "#ffe84c",
+	                    "#698194",
+	                    "#792d2d",
+	                    "#2e642e",
+	                    "#58268e",
+	                    "#8e7426",
+	                    "#9ce1e1",
+	                    "#ff6969",
+	                    "#6be96b",
+	                    "#cf59ff",
+	                    "#ffff59",
+	                    "#455663",
+	                    "#511d1d",
+	                    "#5e4d19"
+	                    ));
+	
+	
 	static {
 		try {
 			reload();
@@ -87,6 +123,11 @@ public class DashboardDataCache {
 		return collectionId2NameMap;
 	}
 
+	public static HashMap<String, String> getCollectionId2ColorMap() {
+        reload();
+        return collectionId2ColorMap;
+    }
+	
 	public static ArrayList<StatisticsCollectionSize> getCollectionDataSize() {
 		reload();
 		return collectionDataSize;
@@ -96,7 +137,7 @@ public class DashboardDataCache {
 		reload();
 		return latestPillarDataSize;
 	}
-
+		
 	/*
 	 * Calculate the delta (data growth rate over time) of the StatisticsDataSize
 	 */
@@ -129,8 +170,10 @@ public class DashboardDataCache {
 	// only called from the reload() method. This method arrange all the data in nice organized Maps.
 	private static void loadDataMaps() {
 		ArrayList<String> ids = IntegrityClient.getCollectionIds();
+		int index=0;
 		for (String current : ids) {
 			collectionId2NameMap.put(current, IntegrityClient.getCollectionName(current));
+			collectionId2ColorMap.put(current, COLORS.get(index++ % COLORS.size())); //cyclic			
 			ArrayList<StatisticsDataSize> dataSizeHistory = IntegrityClient.getDataSizeHistory(current);
 			statisticsIdDataSizeMap.put(current, dataSizeHistory);
 			getCollectionInformationMap.put(current, IntegrityClient.getCollectionInformation(current));
@@ -151,6 +194,7 @@ public class DashboardDataCache {
 
 		log.debug("reloading dashboard data cache");
 		collectionId2NameMap = new HashMap<String, String>();
+		collectionId2ColorMap = new HashMap<String, String>();
 		statisticsIdDataSizeMap = new HashMap<String, ArrayList<StatisticsDataSize>>();
 		getCollectionInformationMap = new HashMap<String, GetCollectionInformation>();
 		statisticsIdDataGrowthMap = new HashMap<String, ArrayList<StatisticsDataSize>>();

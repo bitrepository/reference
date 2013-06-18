@@ -24,18 +24,19 @@
 <%
     long UTC_FIX = DashboardServlet.getTimeZoneOffSetInMillis(); //Because javascript-time is local in browser. This fix makes it work in Denmark summer and winter time
     ArrayList<ArrayList<StatisticsDataSize>> allDataSizeList = (  ArrayList<ArrayList<StatisticsDataSize>> ) request.getAttribute(DashboardServlet.DATA_SIZE_HISTORY_ATTRIBUTE);
-    ArrayList<String> allDataSizeNamesList = (  ArrayList<String> ) request.getAttribute(DashboardServlet.DATA_SIZE_HISTORY_NAMES_ATTRIBUTE);
+    ArrayList<String> allDataSizeIdList = (  ArrayList<String> ) request.getAttribute(DashboardServlet.DATA_SIZE_HISTORY_ID_ATTRIBUTE);
 
     String graphType = (String) request.getAttribute(DashboardServlet.GRAPH_TYPE_ATTRIBUTE);
 
     if (allDataSizeList == null){
         allDataSizeList = new ArrayList<ArrayList<StatisticsDataSize>>();
     }
-    if (allDataSizeNamesList == null){
-        allDataSizeNamesList = new ArrayList<String>();
+    if (allDataSizeIdList == null){
+        allDataSizeIdList = new ArrayList<String>();
     }
 
     HashMap<String,String> collectionId2NameMap = DashboardDataCache.getCollectionId2NameMap();
+    HashMap<String, String> collectionId2ColorMap = DashboardDataCache.getCollectionId2ColorMap();
     long maxByteSize=DashboardServlet.getMaximumByteSize(allDataSizeList);
     String byteUnitSuffix =FileSizeUtils.toHumanUnit(maxByteSize);
     float byteUnit = FileSizeUtils.getByteSize(byteUnitSuffix);
@@ -62,8 +63,6 @@
         background-color: #eee;
         padding: 2px;
     }
-
-
     #placeholder .button:hover {
         border-top-color: #28597a;
         background: #28597a;
@@ -156,10 +155,12 @@
 
     var dataObj = [
         <%
-         for (int i = 0; i< allDataSizeNamesList.size();i++){
+         for (int i = 0; i< allDataSizeIdList.size();i++){
+         String currentId = allDataSizeIdList.get(i);
          %>
 
-        {label:"<%=allDataSizeNamesList.get(i)%> (<%=y_axis_text%>)", data: data_tilvaekst<%=i%>},
+        {label:"<%=collectionId2NameMap.get(currentId)%> (<%=y_axis_text%>)", data: data_tilvaekst<%=i%> , color: '<%=collectionId2ColorMap.get(currentId)%>'},
+        
         <%}%>
     ];
 
