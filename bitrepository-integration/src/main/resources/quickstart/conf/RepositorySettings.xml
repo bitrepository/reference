@@ -21,11 +21,11 @@
   #L%
   -->
 <RepositorySettings xmlns="http://bitrepository.org/settings/RepositorySettings.xsd">
-  <Name>quick-start-repository</Name>
+  <Name>Quickstart-repository</Name>
   <Collections>
     <Collection>
-      <ID>quick-start-collection1</ID>
-      <Name>Quick start collection1</Name>
+      <ID>books</ID>
+      <Name>The Book collection</Name>
       <PillarIDs>
         <PillarID>checksum-pillar</PillarID>
         <PillarID>reference1-pillar</PillarID>
@@ -33,8 +33,8 @@
       </PillarIDs>
     </Collection>
     <Collection>
-      <ID>quick-start-collection2</ID>
-      <Name>Quick start collection2</Name>
+      <ID>dvd</ID>
+      <Name>DVD collection</Name>
       <PillarIDs>
         <PillarID>checksum-pillar</PillarID>
         <PillarID>reference2-pillar</PillarID>
@@ -48,8 +48,8 @@
     <RequireOperationAuthorization>false</RequireOperationAuthorization>
     <RequireChecksumForDestructiveRequests>true</RequireChecksumForDestructiveRequests>
     <RequireChecksumForNewFileRequests>true</RequireChecksumForNewFileRequests>
-    <CollectionDestination>topic://quick-start-collection</CollectionDestination>
-    <AlarmDestination>topic://quick-start-collection.alarms</AlarmDestination>
+    <CollectionDestination>topic://quick-start</CollectionDestination>
+    <AlarmDestination>topic://quick-start.alarms</AlarmDestination>
     <MessageBusConfiguration>
       <Name>Local ActiveMQ</Name>
       <URL>failover:(tcp://localhost:61616?keepAlive=true)</URL>
