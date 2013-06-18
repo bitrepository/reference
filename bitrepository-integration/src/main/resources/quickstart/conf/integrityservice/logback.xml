@@ -38,12 +38,11 @@
     </encoder>
   </appender>
         
-  <root level="INFO">
+  <root level="WARN">
     <appender-ref ref="FILE" />
   </root>
 
-  <logger name="org.bitrepository" level="DEBUG" />
-  <logger name="dk.statsbiblioteket" level="DEBUG" />
+  <logger name="org.bitrepository" level="INFO" />
 </configuration>
 
 

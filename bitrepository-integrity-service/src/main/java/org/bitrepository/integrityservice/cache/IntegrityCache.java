@@ -279,6 +279,11 @@ public class IntegrityCache implements IntegrityModel {
         return integrityModel.getLatestCollectionStat(collectionID, count);
     }
     
+    @Override 
+    public List<PillarStat> getLatestPillarStats(String collectionID) {
+        return integrityModel.getLatestPillarStats(collectionID);
+    }
+    
     @Override
     public void makeStatisticsForCollection(String collectionID) {
         integrityModel.makeStatisticsForCollection(collectionID);

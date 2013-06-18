@@ -43,6 +43,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.cache.PillarStat;
 import org.bitrepository.integrityservice.cache.database.ChecksumState;
 import org.bitrepository.integrityservice.cache.database.FileState;
 import org.slf4j.Logger;
@@ -642,6 +643,12 @@ public class TestIntegrityModel implements IntegrityModel {
 
     @Override
     public List<CollectionStat> getLatestCollectionStat(String collectionID, int count) {
+        // TODO fix this...
+        return null;
+    }
+    
+    @Override 
+    public List<PillarStat> getLatestPillarStats(String collectionId) {
         // TODO fix this...
         return null;
     }

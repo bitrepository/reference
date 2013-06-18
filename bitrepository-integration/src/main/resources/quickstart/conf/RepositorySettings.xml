@@ -68,9 +68,6 @@
   <GetFileSettings/>
   <GetFileIDsSettings/>
   <GetStatusSettings>
-    <NonPillarContributorIDs>checksum-pillar</NonPillarContributorIDs>
-    <NonPillarContributorIDs>reference1-pillar</NonPillarContributorIDs>
-    <NonPillarContributorIDs>reference2-pillar</NonPillarContributorIDs>
     <NonPillarContributorIDs>alarm-service</NonPillarContributorIDs>
     <NonPillarContributorIDs>integrity-service</NonPillarContributorIDs>
     <NonPillarContributorIDs>audittrail-service</NonPillarContributorIDs>

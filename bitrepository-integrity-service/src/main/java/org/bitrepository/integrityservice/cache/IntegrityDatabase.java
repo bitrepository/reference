@@ -244,6 +244,11 @@ public class IntegrityDatabase implements IntegrityModel {
     public List<CollectionStat> getLatestCollectionStat(String collectionID, int count) {
         return store.getLatestCollectionStats(collectionID, (long) count);
     }
+    
+    @Override 
+    public List<PillarStat> getLatestPillarStats(String collectionID) {
+        return store.getLatestPillarStats(collectionID);
+    }
 
     @Override
     public void makeStatisticsForCollection(String collectionID) {
