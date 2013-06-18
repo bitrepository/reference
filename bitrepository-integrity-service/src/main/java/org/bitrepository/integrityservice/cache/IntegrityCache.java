@@ -280,7 +280,7 @@ public class IntegrityCache implements IntegrityModel {
     }
     
     @Override 
-    public List<PillarStat> getLatestPillarStat(String collectionID) {
+    public List<PillarStat> getLatestPillarStats(String collectionID) {
         return integrityModel.getLatestPillarStats(collectionID);
     }
     

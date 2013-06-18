@@ -23,7 +23,7 @@
 <%
     ArrayList<StatisticsCollectionSize> collectionSizeList = DashboardDataCache.getCollectionDataSize();
 %>
-<h3>Samlinger fordelt på TB</h3>
+<h3> Data fordelt på samlinger</h3>
 <div class="collenctionPie">
     <script>
         var data_samling = [
