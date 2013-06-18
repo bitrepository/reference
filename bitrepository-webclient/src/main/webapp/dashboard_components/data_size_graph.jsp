@@ -197,7 +197,7 @@
             }
 
             var placeholder = $("#placeholder"); //Zoom out
-            $('<div class="button" style="right:450px;top:20px">zoom out</div>').appendTo(placeholder).click(function (e) {
+            $('<div class="button" style="left:600px;top:20px">zoom out</div>').appendTo(placeholder).click(function (e) {
                 e.preventDefault();
 
                 plot.setupGrid();
