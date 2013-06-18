@@ -45,7 +45,7 @@ public class DashboardDataCache {
 	private static ArrayList<StatisticsCollectionSize> collectionDataSize;
 	private static ArrayList<StatisticsPillarSize> latestPillarDataSize;
 	private static long lastReload = 0;
-	private static long reloadTimer = 5 * 60 * 1000L; // 5min
+	private static long reloadTimer = 1 * 60 * 1000L; // 1 min
 	private static long MILIS_PR_DAY = 86400 * 1000L;
 
 	static {
