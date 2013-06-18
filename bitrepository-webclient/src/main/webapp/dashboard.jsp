@@ -70,7 +70,7 @@
         </div>
 
 
-        <div class="collenctionPieBox">
+        <div class="collectionPieBox">
             <%@ include file="dashboard_components/collections_size_pie.jsp"%>
         </div>
 

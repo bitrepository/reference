@@ -59,7 +59,7 @@
 
   <fileSets>
     <fileSet>
-      <outputDirectory>${prefix}/scripts</outputDirectory>
+      <outputDirectory>${prefix}/</outputDirectory>
       <directory>src/main/resources/quickstart/scripts</directory>
       <directoryMode>0744</directoryMode>
       <fileMode>0744</fileMode>

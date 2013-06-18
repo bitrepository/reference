@@ -24,18 +24,19 @@
 <%
     long UTC_FIX = DashboardServlet.getTimeZoneOffSetInMillis(); //Because javascript-time is local in browser. This fix makes it work in Denmark summer and winter time
     ArrayList<ArrayList<StatisticsDataSize>> allDataSizeList = (  ArrayList<ArrayList<StatisticsDataSize>> ) request.getAttribute(DashboardServlet.DATA_SIZE_HISTORY_ATTRIBUTE);
-    ArrayList<String> allDataSizeNamesList = (  ArrayList<String> ) request.getAttribute(DashboardServlet.DATA_SIZE_HISTORY_NAMES_ATTRIBUTE);
+    ArrayList<String> allDataSizeIdList = (  ArrayList<String> ) request.getAttribute(DashboardServlet.DATA_SIZE_HISTORY_ID_ATTRIBUTE);
 
     String graphType = (String) request.getAttribute(DashboardServlet.GRAPH_TYPE_ATTRIBUTE);
 
     if (allDataSizeList == null){
         allDataSizeList = new ArrayList<ArrayList<StatisticsDataSize>>();
     }
-    if (allDataSizeNamesList == null){
-        allDataSizeNamesList = new ArrayList<String>();
+    if (allDataSizeIdList == null){
+        allDataSizeIdList = new ArrayList<String>();
     }
 
     HashMap<String,String> collectionId2NameMap = DashboardDataCache.getCollectionId2NameMap();
+    HashMap<String, String> collectionId2ColorMap = DashboardDataCache.getCollectionId2ColorMap();
     long maxByteSize=DashboardServlet.getMaximumByteSize(allDataSizeList);
     String byteUnitSuffix =FileSizeUtils.toHumanUnit(maxByteSize);
     float byteUnit = FileSizeUtils.getByteSize(byteUnitSuffix);
@@ -62,8 +63,6 @@
         background-color: #eee;
         padding: 2px;
     }
-
-
     #placeholder .button:hover {
         border-top-color: #28597a;
         background: #28597a;
@@ -100,7 +99,6 @@
 
 <form name="dashboardForm" action="dashboardServlet" method="POST" class="dashboardForm">
 
-    <p>
         <select name="graphType" onchange="javascript:changeData();">
             <option <%if ("graph_tilvaekst".equals(graphType)){ out.println(" selected "); }%> value="graph_tilvaekst">Tilvækst</option>
             <option <%if ("graph_delta".equals(graphType)){ out.println(" selected "); }%> value="graph_delta">Tilvækstændring</option>
@@ -109,11 +107,10 @@
         <%
             for ( String id : collectionId2NameMap.keySet()){
         %>
-        <input type="checkbox" onClick="javascript:changeData();"  <%if(request.getAttribute(id) != null){out.println("checked");}%> name="<%=id%>"> <%=collectionId2NameMap.get(id)%>
+        <div class="collectionCheckBoxes"><input type="checkbox" onClick="javascript:changeData();"  <%if(request.getAttribute(id) != null){out.println("checked");}%> name="<%=id%>"> <div class="checkboxLegendWrap"><div class="checkboxLegend" style="background-color: <%=collectionId2ColorMap.get(id)%> "></div></div> <%=collectionId2NameMap.get(id)%> </div>
         <%
             }
         %>
-    </p>
 </form>
 
 <script>
@@ -156,10 +153,12 @@
 
     var dataObj = [
         <%
-         for (int i = 0; i< allDataSizeNamesList.size();i++){
+         for (int i = 0; i< allDataSizeIdList.size();i++){
+         String currentId = allDataSizeIdList.get(i);
          %>
 
-        {label:"<%=allDataSizeNamesList.get(i)%> (<%=y_axis_text%>)", data: data_tilvaekst<%=i%>},
+        {label:"<%=collectionId2NameMap.get(currentId)%> (<%=y_axis_text%>)", data: data_tilvaekst<%=i%> , color: '<%=collectionId2ColorMap.get(currentId)%>'},
+        
         <%}%>
     ];
 
@@ -198,7 +197,7 @@
             }
 
             var placeholder = $("#placeholder"); //Zoom out
-            $('<div class="button" style="right:450px;top:20px">zoom out</div>').appendTo(placeholder).click(function (e) {
+            $('<div class="button" style="left:600px;top:20px">zoom out</div>').appendTo(placeholder).click(function (e) {
                 e.preventDefault();
 
                 plot.setupGrid();

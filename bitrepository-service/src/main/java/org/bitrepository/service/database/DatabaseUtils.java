@@ -24,6 +24,10 @@
  */
 package org.bitrepository.service.database;
 
+import org.bitrepository.common.ArgumentValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,10 +37,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import org.bitrepository.common.ArgumentValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for operating on databases.
@@ -474,7 +474,7 @@ public class DatabaseUtils {
             } else if (arg instanceof Date) {
                 s.setTimestamp(i, new Timestamp(((Date) arg).getTime()));
             } else {
-                throw new IllegalStateException("Cannot handle type '" + arg.getClass().getName() + "'. We can only "
+                 throw new IllegalStateException("Cannot handle type '" + arg.getClass().getName() + "'. We can only "
                         + "handle string, int, long, date or boolean args for query: " + query);
             }
             i++;

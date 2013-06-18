@@ -24,13 +24,15 @@
     ArrayList<StatisticsCollectionSize> collectionSizeList = DashboardDataCache.getCollectionDataSize();
 %>
 <h3> Data fordelt på samlinger</h3>
-<div class="collenctionPie">
+<div class="collectionPie">
     <script>
         var data_samling = [
             <%
             for (int i = 0 ;i <collectionSizeList.size();i++){
-              StatisticsCollectionSize current = collectionSizeList.get(i);%>
-            {label: "<%=DashboardDataCache.getCollectionId2NameMap().get(current.getCollectionID())%>" , data : <%=current.getDataSize()%>},
+              StatisticsCollectionSize current = collectionSizeList.get(i);
+              String currentId = current.getCollectionID();
+            %>
+            {label: "<%=DashboardDataCache.getCollectionId2NameMap().get(currentId)%>" , data : <%=current.getDataSize()%> , color : '<%=DashboardDataCache.getCollectionId2ColorMap().get(currentId)%>' },
             <%}%>
         ];
     </script>

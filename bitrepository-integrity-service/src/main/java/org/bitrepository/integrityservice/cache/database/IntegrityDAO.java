@@ -1026,7 +1026,8 @@ public class IntegrityDAO {
         log.trace("Summarizing the filesizes for the files in collection '" + collectionId + "'.");
 
         String summarizeSql = "SELECT SUM (" + FI_FILE_SIZE + ") FROM" + " ("
-                + " SELECT DISTINCT " + FI_FILE_KEY + ", " + FI_FILE_SIZE + " FROM " + FILE_INFO_TABLE + " ) AS distinctKeys"
+                + " SELECT DISTINCT " + FI_FILE_KEY + ", " + FI_FILE_SIZE
+                + " FROM " + FILE_INFO_TABLE + " ) AS distinctKeys"
                 + " JOIN " + FILES_TABLE 
                 + " ON " + "distinctKeys." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY
                 + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?";
@@ -1035,7 +1036,8 @@ public class IntegrityDAO {
         if (collectionFileSize == null) {
             collectionFileSize = new Long(0);
         }
-        log.debug("Summarized the filesize(" + collectionFileSize +") for collection " + collectionId + " in " + (System.currentTimeMillis() - startTime) + "ms");
+        log.debug("Summarized the filesize(" + collectionFileSize +") for collection " + collectionId + " in " +
+                (System.currentTimeMillis() - startTime) + "ms");
         return collectionFileSize;
     }
     
@@ -1057,7 +1059,8 @@ public class IntegrityDAO {
                     + " ON " + "distinctKeys." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY;
 
         Long result = DatabaseUtils.selectLongValue(dbConnector, summarizeSql, pillarKey);        
-        log.debug("Summarized the data size in " + (System.currentTimeMillis() - startTime) + "ms");
+        log.debug("Summarized the data size in " + (System.currentTimeMillis() - startTime) + "ms for pillar " +
+                pillarID);
         return result;
     }  
     
@@ -1071,7 +1074,8 @@ public class IntegrityDAO {
         long startTime = System.currentTimeMillis();
         Long collectionKey = retrieveCollectionKey(collectionId);
         Long pillarKey = retrievePillarKey(pillarId);
-        log.trace("Summarizing the filesizes for the files in collection '" + collectionId + "' on pillar '" + pillarId + "'.");
+        log.trace("Summarizing the filesizes for the files in collection '" + collectionId + "' on pillar '" +
+                pillarId + "'.");
         
         String summarizeSql = "SELECT SUM (" + FI_FILE_SIZE + ") FROM " + FILE_INFO_TABLE
                 + " JOIN " + FILES_TABLE 
@@ -1082,7 +1086,8 @@ public class IntegrityDAO {
                 + " AND " + PILLAR_TABLE + "." + PILLAR_KEY + "= ?";
 
         Long result = DatabaseUtils.selectLongValue(dbConnector, summarizeSql, collectionKey, pillarKey);        
-        log.debug("Summarized the filesizes in " + (System.currentTimeMillis() - startTime) + "ms");
+        log.debug("Summarized the filesizes in " + (System.currentTimeMillis() - startTime) + "ms for collection " +
+                collectionId +" on pillar " + pillarId);
         return result;
     } 
     
