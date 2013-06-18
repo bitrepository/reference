@@ -27,6 +27,7 @@
 cd $(dirname $(perl -e "use Cwd 'abs_path';print abs_path('$0');"))
 #Go back to the quickstart "root dir"
 quickstartdir=$(pwd)
+export CATALINA_PID="${quickstartdir}/tomcat/pid.tomcat"
 
 #
 # Function that starts the quickstart components
