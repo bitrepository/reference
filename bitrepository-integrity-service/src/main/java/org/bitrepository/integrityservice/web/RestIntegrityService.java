@@ -52,7 +52,9 @@ import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Path("/IntegrityService")
 public class RestIntegrityService {
@@ -143,11 +145,21 @@ public class RestIntegrityService {
     public String getIntegrityStatus(@QueryParam("collectionID") String collectionID) {
         JSONArray array = new JSONArray();
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
-        List<PillarStat> stats = model.getLatestPillarStats(collectionID);
-        for(PillarStat stat : stats) {
+        Map<String, PillarStat> stats = new HashMap<String, PillarStat>();
+        for(PillarStat stat : model.getLatestPillarStats(collectionID)) {
             if(pillars.contains(stat.getPillarID())) {
-                array.put(makeIntegrityStatusObj(stat));
+                stats.put(stat.getPillarID(), stat);
             }
+        }
+        for(String pillar : pillars) {
+            if(!stats.containsKey(pillar)) {
+                PillarStat emptyStat = new PillarStat(pillar, collectionID, 0L, 0L, 0L, 0L, 
+                        new Date(0), new Date(0));;
+                stats.put(pillar, emptyStat);
+            }
+        }
+        for(PillarStat stat : stats.values()) {
+             array.put(makeIntegrityStatusObj(stat));
         }
         return array.toString();
     }
@@ -210,18 +222,22 @@ public class RestIntegrityService {
         List<CollectionStat> stats = model.getLatestCollectionStat(collectionID, 1);
         Date lastIngest = model.getDateForNewestFileEntryForCollection(collectionID);
         String lastIngestStr = lastIngest == null ? "No files ingested yet" : TimeUtils.shortDate(lastIngest);
-        if(stats == null) {
-            obj = (JSONObject) JSONObject.NULL;
+        Long collectionSize = null;
+        Long numberOfFiles = null;
+        if(stats == null || stats.isEmpty()) {
+            collectionSize = 0L;
+            numberOfFiles = 0L;
         } else {
             CollectionStat stat = stats.get(0);
-            try {
-                obj.put("lastIngest", lastIngestStr);
-                obj.put("collectionSize", FileSizeUtils.toHumanShort(stat.getDataSize() == null ? 0 : stat.getDataSize()));
-                obj.put("numberOfFiles", stat.getFileCount() == null ? 0 : stat.getFileCount());
-            } catch (JSONException e) {
-                obj = (JSONObject) JSONObject.NULL;
-            }
-
+            collectionSize = stat.getDataSize();
+            numberOfFiles = stat.getFileCount();
+        }
+        try {
+            obj.put("lastIngest", lastIngestStr);
+            obj.put("collectionSize", FileSizeUtils.toHumanShort(collectionSize));
+            obj.put("numberOfFiles", numberOfFiles);
+        } catch (JSONException e) {
+            obj = (JSONObject) JSONObject.NULL;
         }
         return obj.toString();
     }
