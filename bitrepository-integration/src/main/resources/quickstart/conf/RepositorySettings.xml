@@ -33,7 +33,7 @@
       </PillarIDs>
     </Collection>
     <Collection>
-      <ID>dvd</ID>
+      <ID>dvds</ID>
       <Name>DVD collection</Name>
       <PillarIDs>
         <PillarID>checksum-pillar</PillarID>

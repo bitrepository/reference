@@ -34,7 +34,7 @@
   <PillarSettings> 
     <PillarID>reference1-pillar</PillarID>
     <CollectionDirs>
-      <CollectionID>quick-start-collection1</CollectionID>
+      <CollectionID>books</CollectionID>
       <FileDirs><!--foobarpattern-->var/reference1pillar</FileDirs>
     </CollectionDirs>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>

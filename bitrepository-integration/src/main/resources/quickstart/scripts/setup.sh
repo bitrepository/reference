@@ -81,6 +81,7 @@ if [ ! -z $refpillartarfile ]; then
 	rm $refpillartarfile
 fi
 
+echo "Installing checksumpillar"
 refpillardistdir=$(ls -t | grep bitrepository-reference-pillar-.* | head -1)
 if [ ! -d "checksumpillar" ]; then 
 	mkdir "checksumpillar"
@@ -88,26 +89,24 @@ if [ ! -d "checksumpillar" ]; then
 	cp -r $refpillardistdir/bin checksumpillar/.
 	ln -s ../conf/checksumpillar checksumpillar/conf
 fi
-cd checksumpillar/bin
-cd $quickstartdir
 
+echo "Installing reference1pillar"
 if [ ! -d "reference1pillar" ]; then
 	mkdir "reference1pillar" 
 	cp -r $refpillardistdir/lib reference1pillar/.
 	cp -r $refpillardistdir/bin reference1pillar/.
 	ln -s ../conf/reference1pillar reference1pillar/conf
 fi
-cd reference1pillar/bin
-cd $quickstartdir
 
+echo "Installing reference2pillar"
 if [ ! -d "reference2pillar" ]; then
         mkdir "reference2pillar"
         cp -r $refpillardistdir/lib reference2pillar/.
         cp -r $refpillardistdir/bin reference2pillar/.
         ln -s ../conf/reference2pillar reference2pillar/conf
 fi
-cd reference2pillar/bin
-cd $quickstartdir
+
+rm -r $refpillardistdir
 
 commandlinetarfile=$(ls bitrepository-command-line-*.tar.gz)
 if [ ! -z $commandlinetarfile ]; then
@@ -123,7 +122,6 @@ if [ ! -d "commandline" ]; then
     ln -s ../conf/commandline conf
     ln -s conf/logback.xml
 fi
-cd $quickstartdir
 
 #Fetch, unpack, setup Apache Tomcat server
 echo "Installing tomcat"
