@@ -34,7 +34,7 @@
   <PillarSettings> 
     <PillarID>checksum-pillar</PillarID>
     <CollectionDirs>
-      <CollectionID>quick-start-collection</CollectionID>
+      <CollectionID>not-used</CollectionID>
       <FileDirs><!--foobarpattern-->var/checksumpillar</FileDirs>
     </CollectionDirs>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
