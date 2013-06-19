@@ -123,6 +123,8 @@ if [ ! -d "commandline" ]; then
     ln -s conf/logback.xml
 fi
 
+cd $quickstartdir
+
 #Fetch, unpack, setup Apache Tomcat server
 echo "Installing tomcat"
 if [ -d "tomcat" ]; then
