@@ -130,7 +130,7 @@ echo "Installing tomcat"
 if [ -d "tomcat" ]; then
 	rm -rf tomcat
 fi
-curl http://ftp.download-by.net/apache/tomcat/tomcat-6/v6.0.37/bin/apache-tomcat-6.0.37.tar.gz > tomcat.tar.gz
+curl http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.37/bin/apache-tomcat-6.0.37.tar.gz > tomcat.tar.gz
 tar xfz tomcat.tar.gz
 mv apache-tomcat-* tomcat
 
