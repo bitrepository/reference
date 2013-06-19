@@ -133,10 +133,11 @@ fi
 curl http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.37/bin/apache-tomcat-6.0.37.tar.gz > tomcat.tar.gz
 tar xfz tomcat.tar.gz
 mv apache-tomcat-* tomcat
+rm tomcat.tar.gz
 
 cd tomcat/conf
 if [ ! -d Catalina ]; then
-        echo "Catalina dir is missing"
+        echo "Creating Catalina dir"
         mkdir Catalina
         cd Catalina
         mkdir localhost

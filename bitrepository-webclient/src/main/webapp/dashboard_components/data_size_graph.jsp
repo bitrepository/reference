@@ -145,7 +145,7 @@
         xaxis: {  mode: "time",  localTimezone: true , zoomRange: [0.1, 10] , timeformat: "%y/%0m/%0d %0H:%0M"},
         yaxis: {  axisLabel: "<%=y_axis_text%>"},
         selection:{  mode: "xy" } ,
-        points: { show: true ,  radius: 2} ,
+        points: { show: true ,  radius: 1} ,
         lines: { show: true},
         zoom: { interactive: true}
     };
