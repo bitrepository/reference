@@ -120,6 +120,6 @@ public class RestStatisticsService {
                 stats.put(stat.getPillarID(), stat);
             }
         }
-        return (List<StatisticsPillarSize>) stats.values();
+        return new ArrayList<StatisticsPillarSize>(stats.values());
     }
 }
