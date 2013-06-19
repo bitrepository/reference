@@ -107,7 +107,7 @@
         <%
             for ( String id : collectionId2NameMap.keySet()){
         %>
-        <input type="checkbox" onClick="javascript:changeData();"  <%if(request.getAttribute(id) != null){out.println("checked");}%> name="<%=id%>"> <div class="checkboxLegend" style="background-color: <%=collectionId2ColorMap.get(id)%> "></div> <%=collectionId2NameMap.get(id)%>
+        <div class="collectionCheckBoxes"><input type="checkbox" onClick="javascript:changeData();"  <%if(request.getAttribute(id) != null){out.println("checked");}%> name="<%=id%>"> <div class="checkboxLegendWrap"><div class="checkboxLegend" style="background-color: <%=collectionId2ColorMap.get(id)%> "></div></div> <%=collectionId2NameMap.get(id)%> </div>
         <%
             }
         %>
@@ -145,7 +145,7 @@
         xaxis: {  mode: "time",  localTimezone: true , zoomRange: [0.1, 10] , timeformat: "%y/%0m/%0d %0H:%0M"},
         yaxis: {  axisLabel: "<%=y_axis_text%>"},
         selection:{  mode: "xy" } ,
-        points: { show: true ,  radius: 2} ,
+        points: { show: true ,  radius: 1} ,
         lines: { show: true},
         zoom: { interactive: true}
     };

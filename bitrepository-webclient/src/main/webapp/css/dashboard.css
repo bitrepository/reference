@@ -4,7 +4,7 @@
     margin-top: 0.9em;
 }
 
-.collectionStatus, .dataSizeGraph, .collenctionPieBox, .legPieBox{
+.collectionStatus, .dataSizeGraph, .collectionPieBox, .legPieBox{
     border: 1px solid #cccccc;
     float: left;
     margin: 0em 0 2em;
@@ -15,7 +15,7 @@
     box-sizing:        border-box;
 }
 
-.collectionStatus, .collenctionPieBox, .legPieBox{
+.collectionStatus, .collectionPieBox, .legPieBox{
     background-color: #F9FCFF;
 }
 
@@ -56,27 +56,27 @@ form.dashboardForm{
     width: 96%;
 }
 
-.collenctionPieBox, .legPieBox{
+.collectionPieBox, .legPieBox{
     padding: 0 2% 2em;
     width: 49%;
 }
 
-.collenctionPieBox table, .legPieBox table{
+.collectionPieBox table, .legPieBox table{
     font-size: 1.2em;
     margin-top: 2em;
 }
 
-.collenctionPieBox table td, .legPieBox table td{
+.collectionPieBox table td, .legPieBox table td{
     padding: 0 1em .4em 0;
     white-space: nowrap;
 }
 
-.collenctionPieBox table td.dataLabel, .legPieBox table td.dataLabel{
+.collectionPieBox table td.dataLabel, .legPieBox table td.dataLabel{
     text-align: right;
     white-space: nowrap;
 }
 
-.collenctionPieBox table td.dataData, .legPieBox table td.dataData{
+.collectionPieBox table td.dataData, .legPieBox table td.dataData{
     font-weight: bold;
 }
 
@@ -84,15 +84,31 @@ form.dashboardForm{
     margin-left: 2%;
 }
 
-.collenctionPie, .legPie{
+.collectionPie, .legPie{
     float: left;
     margin-bottom: 2em;
     min-width: 350px;
     width: 48%;
 }
 
-.checkboxLegend{
+.collectionCheckBoxes{
     display: inline-block;
-    height: 13px;
+    margin-top: .8em;
+    white-space: nowrap;
+}
+
+.checkboxLegendWrap{
+    border: 1px solid #cccccc;
+    display: inline-block;
+    height: 10px;
+    margin-right: -2px;
+    padding: 1px;
+    position: relative;
+    top: 1px;
+    width: 13px;
+}
+
+.checkboxLegend{
+    height: 10px;
     width: 13px;
 }

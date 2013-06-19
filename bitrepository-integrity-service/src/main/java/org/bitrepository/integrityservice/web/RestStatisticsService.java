@@ -22,8 +22,11 @@
 package org.bitrepository.integrityservice.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -40,6 +43,7 @@ import org.bitrepository.common.webobjects.StatisticsPillarSize;
 import org.bitrepository.integrityservice.IntegrityServiceManager;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.cache.PillarStat;
 
 @Path("/Statistics")
 public class RestStatisticsService {
@@ -66,41 +70,6 @@ public class RestStatisticsService {
         }
         
         return data;
-    }
-    
-    @GET
-    @Path("/getDataSizeHistoryMocked/")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<StatisticsDataSize> getDataSizeHistoryMock(@QueryParam("collectionID") String collectionID) {
-        List<Date> mockDates = new ArrayList<Date>();
-        long startTime = 1360886243*1000;
-        mockDates.add(new Date(startTime));
-        startTime += 12345*1000;
-        mockDates.add(new Date(startTime));
-        startTime += 12345*1000;
-        mockDates.add(new Date(startTime));
-        startTime += 12345*1000;
-        mockDates.add(new Date(startTime));
-        startTime += 12345*1000;
-        mockDates.add(new Date(startTime));
-        startTime += 12345*1000;
-        mockDates.add(new Date(startTime));
-        startTime += 12345*1000;
-        mockDates.add(new Date(startTime));
-               
-        List<StatisticsDataSize> mockData = new ArrayList<StatisticsDataSize>();
-        
-        Long size =  140000L;
-        for(Date date : mockDates) {
-            StatisticsDataSize obj = new StatisticsDataSize();
-            obj.setDateMillis(date.getTime());
-            obj.setDateString(TimeUtils.shortDate(date));
-            size = (long) (size * 1.23 + 24);
-            obj.setDataSize(size);
-            mockData.add(obj);
-        }
-        
-        return mockData;
     }
     
     @GET
@@ -137,14 +106,20 @@ public class RestStatisticsService {
     }
 
     public List<StatisticsPillarSize> getCurrentPillarsDataSize() {
-        List<StatisticsPillarSize> stats = new ArrayList<StatisticsPillarSize>();
-        for(String pillar : SettingsUtils.getAllPillarIDs()) {
+        Map<String, StatisticsPillarSize> stats = new HashMap<String, StatisticsPillarSize>();
+        for(String pillar: SettingsUtils.getAllPillarIDs()) {
             StatisticsPillarSize stat = new StatisticsPillarSize();
-            Long dataSize = model.getPillarDataSize(pillar);
-            stat.setDataSize(dataSize);
             stat.setPillarID(pillar);
-            stats.add(stat);
+            stat.setDataSize(0L);
+            stats.put(pillar, stat);
         }
-        return stats;
+        for(String collection : SettingsUtils.getAllCollectionsIDs()) {
+            for(PillarStat pillarStat : model.getLatestPillarStats(collection)) {
+                StatisticsPillarSize stat = stats.get(pillarStat.getPillarID());
+                stat.setDataSize(stat.getDataSize() + pillarStat.getDataSize());
+                stats.put(stat.getPillarID(), stat);
+            }
+        }
+        return (List<StatisticsPillarSize>) stats.values();
     }
 }
