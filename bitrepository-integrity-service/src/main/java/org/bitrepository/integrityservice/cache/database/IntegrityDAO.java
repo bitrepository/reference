@@ -187,7 +187,7 @@ public class IntegrityDAO {
         List<String> uniqueCollectionsInSettings = new ArrayList<String>(collectionPillarsMap.keySet());
         uniqueCollectionsInSettings.removeAll(collectionsFromDatabase);
         if(!uniqueCollectionsInDatabase.isEmpty() || !uniqueCollectionsInSettings.isEmpty()) {
-            throw new IllegalStateException("There is inkonsistency between the collections in the database, '" 
+            throw new IllegalStateException("There is inconsistency between the collections in the database, '"
                     + collectionsFromDatabase + "', and the ones in the settings, '" + collectionPillarsMap.keySet() + "'.");
         }
     }

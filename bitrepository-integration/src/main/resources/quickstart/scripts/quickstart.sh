@@ -62,22 +62,22 @@ do_status() {
 
 case "$1" in
   start)
-	do_start
-	;;
-  stop)
-	do_stop
-	;;
-  status)
-	do_status
-	;;
-  restart|force-reload)
-	do_stop
     do_start
-	;;
+    ;;
+  stop)
+    do_stop
+    ;;
+  status)
+    do_status
+    ;;
+  restart|force-reload)
+    do_stop
+    do_start
+    ;;
   *)
-	echo "Usage: $SCRIPTNAME {start|stop|status|restart}" >&2
-	exit 4
-	;;
+    echo "Usage: $SCRIPTNAME {start|stop|status|restart}" >&2
+    exit 4
+  ;;
 esac
 
 

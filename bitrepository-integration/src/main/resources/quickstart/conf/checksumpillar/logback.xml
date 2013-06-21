@@ -43,7 +43,6 @@
   </root>
 
   <logger name="org.bitrepository" level="INFO" />
-  <logger name="dk.statsbiblioteket" level="INFO" />
 </configuration>
 
 

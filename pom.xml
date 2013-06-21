@@ -193,6 +193,10 @@
           <licenseName>lgpl_v2_1</licenseName>
           <useMissingFile>true</useMissingFile>
           <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+          <includes>
+            <include>java</include>
+            <include>xsd</include>
+          </includes>
           <extraExtensions>
             <xsd>xml</xsd>
           </extraExtensions>
