@@ -279,8 +279,8 @@ public class AlarmDatabaseExtractor {
      * @return The id of the component corresponding to guid.
      */
     private String retrieveComponentId(long componentGuid) {
-        String sqlRetrieve = "SELECT " + COMPONENT_ID + " FROM " + COMPONENT_TABLE + " WHERE " + COMPONENT_GUID 
-                + " = ?";
+        String sqlRetrieve = "SELECT " + COMPONENT_ID + " FROM " + COMPONENT_TABLE 
+                + " WHERE " + COMPONENT_GUID + " = ?";
         
         return DatabaseUtils.selectStringValue(dbConnector, sqlRetrieve, componentGuid);
     }

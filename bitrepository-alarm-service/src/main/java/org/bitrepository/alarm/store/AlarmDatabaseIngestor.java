@@ -76,8 +76,8 @@ public class AlarmDatabaseIngestor {
     public void ingestAlarm(Alarm alarm) {
         ArgumentValidator.checkNotNull(alarm, "Alarm alarm");
         
-        String sqlInsert = "INSERT INTO " + ALARM_TABLE + " ( " + createIngestElementString(alarm) + " ) VALUES ( " 
-                + createIngestArgumentString(alarm) + " )";
+        String sqlInsert = "INSERT INTO " + ALARM_TABLE + " ( " + createIngestElementString(alarm) + " )"
+                + " VALUES ( " + createIngestArgumentString(alarm) + " )";
         DatabaseUtils.executeStatement(dbConnector, sqlInsert, extractArgumentsFromEvent(alarm));
     }
 
@@ -195,8 +195,8 @@ public class AlarmDatabaseIngestor {
      * @return The guid of the component with the given name.
      */
     private synchronized long retrieveComponentGuid(String componentId) {
-        String sqlRetrieve = "SELECT " + COMPONENT_GUID + " FROM " + COMPONENT_TABLE + " WHERE " 
-                + COMPONENT_ID + " = ?";
+        String sqlRetrieve = "SELECT " + COMPONENT_GUID + " FROM " + COMPONENT_TABLE 
+                + " WHERE " + COMPONENT_ID + " = ?";
         
         Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, componentId);
         
