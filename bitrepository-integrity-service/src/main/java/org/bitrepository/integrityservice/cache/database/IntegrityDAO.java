@@ -57,7 +57,7 @@ import static org.bitrepository.integrityservice.cache.database.DatabaseConstant
 /**
  * Handles the communication with the integrity database.
  */
-public class IntegrityDAO {
+public abstract class IntegrityDAO {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The connector to the database.*/
@@ -802,11 +802,11 @@ public class IntegrityDAO {
         Long collectionKey = retrieveCollectionKey(collectionId);
         String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?"
                               + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
-                              + " AND " + " EXISTS ( " 
-                                                            + "SELECT 1 FROM " + FILES_TABLE 
-                                                            + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
-                                                                    + FILE_INFO_TABLE + "." + FI_FILE_KEY 
-                                                            + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
+                              + " AND " + " EXISTS (" 
+                                  + " SELECT 1 FROM " + FILES_TABLE 
+                                  + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
+                                      + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                                  + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
         
         DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.MISSING.ordinal(), 
                 FileState.PREVIOUSLY_SEEN.ordinal(), collectionKey);
@@ -824,11 +824,11 @@ public class IntegrityDAO {
         String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?"
                               + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
                               + " AND " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ? "
-                              + " AND " + " EXISTS ( " 
-                                                            + "SELECT 1 FROM " + FILES_TABLE 
-                                                            + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
-                                                                    + FILE_INFO_TABLE + "." + FI_FILE_KEY 
-                                                            + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
+                              + " AND " + " EXISTS (" 
+                                  + " SELECT 1 FROM " + FILES_TABLE 
+                                  + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
+                                      + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                                  + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
         
         DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.EXISTING.ordinal(), 
                 FileState.PREVIOUSLY_SEEN.ordinal(), pillarKeyCache.get(pillarId), collectionKey);
@@ -909,11 +909,11 @@ public class IntegrityDAO {
         String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
                 + " JOIN " + FILE_INFO_TABLE 
                 + " ON " + FILES_TABLE + "." + FILES_KEY + "=" + FILE_INFO_TABLE + "." + FI_FILE_KEY 
-                + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ? "
-                + "AND "+ FILES_TABLE + "." + COLLECTION_KEY + "= ? " 
-                + "AND " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ("
+                + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
+                + " AND "+ FILES_TABLE + "." + COLLECTION_KEY + "= ?" 
+                + " AND " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ("
                     + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
-                    + " WHERE " + PILLAR_ID + " = ?)"
+                    + " WHERE " + PILLAR_ID + " = ? )"
                 + " ORDER BY " + FILES_TABLE + "." + FILES_KEY;
         
         try {
@@ -1052,7 +1052,8 @@ public class IntegrityDAO {
         log.trace("Summarizing the data size for the files on pillar '" + pillarID + "'.");
 
         String summarizeSql = "SELECT SUM (" + FI_FILE_SIZE + ") FROM" + " ("
-                        + " SELECT DISTINCT " + FI_FILE_KEY + ", " + FI_FILE_SIZE + " FROM " + FILE_INFO_TABLE 
+                        + " SELECT DISTINCT " + FI_FILE_KEY + ", " + FI_FILE_SIZE 
+                        + " FROM " + FILE_INFO_TABLE 
                         + " WHERE " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ?"
                         + " ) AS distinctKeys"
                     + " JOIN " + FILES_TABLE 
@@ -1174,6 +1175,13 @@ public class IntegrityDAO {
         return res;   
     }
     
+    
+    /**
+     * Method to acquire the backend specific SQL, for use getLatestCollectionStats method
+     * @return The sql for getting the latest collection stats. 
+     */
+    protected abstract String getLatestCollectionStatsSQL();
+    
     /**
      * Retrieves the latest set of statistics for pillars in a collection
      * @param collectionID The ID of the collection 
@@ -1186,20 +1194,12 @@ public class IntegrityDAO {
         final int indexStatTime = 4;
         final int indexUpdateTime = 5;
         
-
         Long collectionKey = retrieveCollectionKey(collectionID);
 
         List<CollectionStat> res = new ArrayList<CollectionStat>();
         
-        String sql = "SELECT c." + CS_FILECOUNT +  ", c." + CS_FILESIZE + ", c." + CS_CHECKSUM_ERRORS
-                            + ", s." + STATS_TIME + ", s." + STATS_LAST_UPDATE 
-                            + " FROM " + COLLECTION_STATS_TABLE + " c "
-                            + " JOIN " + STATS_TABLE + " s" 
-                            + " ON  c." + CS_STAT_KEY + " = s." + STATS_KEY
-                            + " WHERE s." + STATS_COLLECTION_KEY + " = ?"
-                            + " ORDER BY s." + STATS_TIME + " DESC "
-                            + " FETCH FIRST ? ROWS ONLY";
- 
+        String sql = getLatestCollectionStatsSQL();
+
         try {
             ResultSet dbResult = null;
             PreparedStatement ps = null;
@@ -1240,6 +1240,11 @@ public class IntegrityDAO {
         return res;   
     }
 
+    /**
+     * Method to acquire the backend specific SQL, for use in getLatestStatisticsKey method
+     * @return The sql for getting the latest collection stats. 
+     */
+    protected abstract String getLatestStatisticsKeySQL();
     
     /**
      * Retrieves the key for the latest statistics entry for a given collection
@@ -1248,10 +1253,7 @@ public class IntegrityDAO {
      */
     private Long getLatestStatisticsKey(String collectionID) {
         Long collectionKey = retrieveCollectionKey(collectionID);
-        String selectStatisticsIDSql = "SELECT " + STATS_KEY + " FROM " + STATS_TABLE
-                + " WHERE " + STATS_COLLECTION_KEY + " = ?"
-                + " ORDER BY " + STATS_KEY + " DESC"
-                + " FETCH FIRST ROW ONLY ";
+        String selectStatisticsIDSql = getLatestStatisticsKeySQL();
         Long statisticsID = DatabaseUtils.selectFirstLongValue(dbConnector, selectStatisticsIDSql, collectionKey);
         return statisticsID;  
     }
@@ -1267,11 +1269,9 @@ public class IntegrityDAO {
                 + " ( " + STATS_TIME + ", " + STATS_LAST_UPDATE + ", " + STATS_COLLECTION_KEY + " )" 
                     + " VALUES ( ?, ?, ? )";
         DatabaseUtils.executeStatement(dbConnector, newStatisticsSql, entryTime, entryTime, collectionKey);
-        
-        String selectStatisticsIDSql = "SELECT " + STATS_KEY + " FROM " + STATS_TABLE
-                + " ORDER BY " + STATS_KEY + " DESC"
-                + " FETCH FIRST ROW ONLY ";
-        Long statisticsID = DatabaseUtils.selectFirstLongValue(dbConnector, selectStatisticsIDSql,  new Object[0]);
+       
+        String selectStatisticsIDSql = getLatestStatisticsKeySQL();
+        Long statisticsID = DatabaseUtils.selectFirstLongValue(dbConnector, selectStatisticsIDSql, collectionKey);
         return statisticsID;
     }
     

@@ -40,6 +40,7 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
+import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityDatabaseCreator;
 import org.bitrepository.service.database.DBConnector;
@@ -134,7 +135,7 @@ public class DatabaseStressTests extends ExtendedTestCase {
     }
     
     private IntegrityDAO createDAO() {
-        return new IntegrityDAO(new DBConnector(
+        return new DerbyIntegrityDAO(new DBConnector(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
                 settings.getRepositorySettings().getCollections());
     }

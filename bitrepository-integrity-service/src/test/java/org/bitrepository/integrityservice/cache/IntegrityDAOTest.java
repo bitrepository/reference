@@ -39,6 +39,7 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
 import org.bitrepository.integrityservice.cache.database.ChecksumState;
+import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.service.audit.AuditTrailManager;
@@ -137,7 +138,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         DBConnector connector = new DBConnector(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
                         
-        IntegrityDAO cache = new IntegrityDAO(connector, settings.getRepositorySettings().getCollections());
+        IntegrityDAO cache = new DerbyIntegrityDAO(connector, settings.getRepositorySettings().getCollections());
         Assert.assertNotNull(cache);
 
         addStep("Close the connection and create another one.", "Should not fail");
@@ -149,7 +150,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         
         DBConnector reconnector = new DBConnector(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        cache = new IntegrityDAO(reconnector, settings.getRepositorySettings().getCollections());
+        cache = new DerbyIntegrityDAO(reconnector, settings.getRepositorySettings().getCollections());
     }
 
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
@@ -1167,7 +1168,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     }
     
     private IntegrityDAO createDAO() {
-        return new IntegrityDAO(new DBConnector(
+        return new DerbyIntegrityDAO(new DBConnector(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
                 settings.getRepositorySettings().getCollections());
     }

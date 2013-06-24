@@ -33,6 +33,7 @@ import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
+import org.bitrepository.integrityservice.cache.database.IntegrityDAOFactory;
 import org.bitrepository.service.database.DBConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,10 +57,7 @@ public class IntegrityDatabase implements IntegrityModel {
      */
     public IntegrityDatabase(Settings settings) {
         this.settings = settings;
-        //System.setProperty("derby.language.logQueryPlan", "true");
-        this.store = new IntegrityDAO(new DBConnector(
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
-                settings.getRepositorySettings().getCollections());
+        this.store = IntegrityDAOFactory.getDAOInstance(settings);
     }
     
     @Override
