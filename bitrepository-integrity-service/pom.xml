@@ -90,11 +90,6 @@
       <version>${activemq.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <version>8.4-702.jdbc4</version>
-    </dependency>
   </dependencies>
   <build>
     <testResources>
