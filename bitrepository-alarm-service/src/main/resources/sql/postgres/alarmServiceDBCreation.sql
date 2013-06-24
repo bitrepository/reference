@@ -64,7 +64,7 @@ CREATE TABLE alarm (
     guid SERIAL PRIMARY KEY,         -- The guid for the alarm.
     component_guid INT NOT NULL,  -- The guid for the component behind the alarm.
     alarm_code VARCHAR(50) NOT NULL, -- The code for the alarm.
-    alarm_text CLOB NOT NULL,        -- The text for the alarm.
+    alarm_text TEXT NOT NULL,        -- The text for the alarm.
     alarm_date TIMESTAMP NOT NULL,   -- The date for the alarm.
     file_id VARCHAR(255),            -- The id for the file (allowed to be null).
     collection_id VARCHAR(255),      -- The id of the collection that the alarm belongs to (allowed to be null)
