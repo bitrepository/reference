@@ -232,8 +232,9 @@ public class AuditDatabaseIngestor {
         ArgumentValidator.checkNotNull(fileId, "fileId");
         Long collectionKey = retrieveCollectionKey(collectionId);
         
-        String sqlRetrieve = "SELECT " + FILE_KEY + " FROM " + FILE_TABLE + " WHERE " + FILE_FILEID + " = ? AND "
-                + FILE_COLLECTION_KEY + " = ?";
+        String sqlRetrieve = "SELECT " + FILE_KEY + " FROM " + FILE_TABLE 
+                + " WHERE " + FILE_FILEID + " = ?" 
+                + " AND " + FILE_COLLECTION_KEY + " = ?";
         Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId, collectionKey);
         
         if(guid == null) {
