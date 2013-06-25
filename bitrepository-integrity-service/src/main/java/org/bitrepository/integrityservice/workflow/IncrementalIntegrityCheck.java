@@ -21,7 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow;
 
-import org.bitrepository.integrityservice.workflow.step.FullUpdateFileIDsStep;
+import org.bitrepository.integrityservice.workflow.step.IncrementalUpdateFileIDsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
 
 /**
@@ -30,16 +30,15 @@ import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
  * Then the data is validated for integrity issues.
  * And finally it is verified whether any missing or obsolete checksums can be found.
  */
-public class CompleteIntegrityCheck extends IntegrityCheckWorkflow {
+public class IncrementalIntegrityCheck extends IntegrityCheckWorkflow {
     /**
      * Remember to call the initialise method needs to be called before the start method.
      */
-    public CompleteIntegrityCheck() {}
+    public IncrementalIntegrityCheck() {}
 
-  
     @Override
     public String getDescription() {
-        return "Retrieves all fileIDs and checksums from all pillars and checks for all potential integrity " +
+        return "Retrieves new fileIDs and checksums from all pillars and checks for all potential integrity " +
                 "problems."
                 //+ LINEFEED + getStepDescriptions()
                 ;
@@ -47,7 +46,8 @@ public class CompleteIntegrityCheck extends IntegrityCheckWorkflow {
     
     @Override
     protected UpdateFileIDsStep getUpdateFileIDsStep() {
-        return new FullUpdateFileIDsStep(context.getCollector(), context.getStore(),
+        return new IncrementalUpdateFileIDsStep(context.getCollector(), context.getStore(),
                 context.getAlerter(), context.getSettings(), collectionID);
     }
-}
+    
+ }

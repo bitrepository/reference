@@ -90,7 +90,7 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
     
     @Override
     public String getName() {
-        return "Collect all checksums from pillars";
+        return "Collect new checksums from pillars";
     }
 
     @Override
@@ -127,7 +127,7 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
     }
 
     public static String getDescription() {
-        return "Contacts all pillar to retrieve the full list of checksums for the pillar";
+        return "Contacts all pillar to retrieve the list of new checksums for the pillar";
     }
     
     private List<String> getPillarIDs(String collectionId) {

@@ -60,7 +60,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
                 any(EventHandler.class));
 
-        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION);
+        UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION);
         step.performStep();
         verify(collector).getFileIDs(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
@@ -80,7 +80,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         }).when(collector).getFileIDs(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
                 any(EventHandler.class));
-        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION);
+        UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION);
         
         step.performStep();
         verify(alerter).operationFailed(anyString(), anyString());
@@ -106,7 +106,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
                 any(EventHandler.class));
 
-        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION);
+        UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION);
         step.performStep();
         verify(model).addFileIDs(resultingFileIDs.getFileIDsData(), TEST_PILLAR_1, TEST_COLLECTION);
     }
@@ -137,7 +137,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 any(ContributorQuery[].class),
                 any(EventHandler.class));
 
-        UpdateFileIDsStep step = new UpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION);
+        UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION);
         
         step.performStep();
         verify(model, times(2)).addFileIDs(resultingFileIDs.getFileIDsData(), TEST_PILLAR_1, TEST_COLLECTION);

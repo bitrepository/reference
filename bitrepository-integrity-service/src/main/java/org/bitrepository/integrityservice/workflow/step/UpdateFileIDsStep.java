@@ -41,14 +41,14 @@ import java.util.List;
 /**
  * The step for collecting of all file ids from all pillars.
  */
-public class UpdateFileIDsStep extends AbstractWorkFlowStep {
+public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
     /** The collector for retrieving the file ids.*/
     private final IntegrityInformationCollector collector;
     /** The model where the integrity data is stored.*/
-    private final IntegrityModel store;
+    protected final IntegrityModel store;
     /** The integrity alerter.*/
     private final IntegrityAlerter alerter;
     /** The timeout for waiting for the results of the GetFileIDs operation.*/
@@ -56,7 +56,7 @@ public class UpdateFileIDsStep extends AbstractWorkFlowStep {
     /** The maximum number of results for each conversation.*/
     private final Integer maxNumberOfResultsPerConversation;
     /** The collectionID */
-    private final String collectionId;
+    protected final String collectionId;
     
     /** The default value for the maximum number of results for each conversation. Is case the setting is missing.*/
     private final Integer DEFAULT_MAX_RESULTS = 10000;
@@ -85,14 +85,14 @@ public class UpdateFileIDsStep extends AbstractWorkFlowStep {
         }
     }
     
-    @Override
-    public String getName() {
-        return "Collect all fileIDs from pillars";
-    }
-
+    /**
+     * Method to implement early/pre-performStep action  
+     */
+    protected abstract void initialStepAction();
+    
     @Override
     public synchronized void performStep() {
-        store.setExistingFilesToPreviouslySeenFileState(collectionId);
+        initialStepAction();
 
         try {
             List<String> pillarsToCollectFrom =
@@ -129,12 +129,5 @@ public class UpdateFileIDsStep extends AbstractWorkFlowStep {
         }
         
         return res.toArray(new ContributorQuery[pillars.size()]);
-    }
-
-    /**
-     * @return Description of this step.
-     */
-    public static String getDescription() {
-        return "Contacts all pillar to retrieve the full list of files from the pillars";
     }
 }
