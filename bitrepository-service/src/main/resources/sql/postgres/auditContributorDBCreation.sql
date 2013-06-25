@@ -20,8 +20,6 @@
 -- #L%
 ---
 
-connect 'jdbc:derby:auditcontributerdb;create=true';
-
 --**************************************************************************--
 -- Name:        tableversions
 -- Description: This table contains an overview of the different tables 
@@ -31,17 +29,14 @@ connect 'jdbc:derby:auditcontributerdb;create=true';
 --              of the tables, especially when upgrading.
 -- Expected entry count: only those in this script.
 --**************************************************************************--
-create table tableversions (
-    tablename varchar(100) not null, -- Name of table
-    version int not null             -- version of table
+CREATE TABLE tableversions (
+    tablename VARCHAR(100) NOT NULL, -- Name of table
+    version INT NOT NULL             -- version of table
 );
 
-insert into tableversions ( tablename, version )
-            values ( 'audit', 2);
-insert into tableversions ( tablename, version )
-            values ( 'file', 2);
-insert into tableversions ( tablename, version )
-            values ( 'actor', 1);
+INSERT INTO tableversions ( tablename, version ) VALUES ( 'audit', 2);
+INSERT INTO tableversions ( tablename, version ) VALUES ( 'file', 2);
+INSERT INTO tableversions ( tablename, version ) VALUES ( 'actor', 1);
 
 --*************************************************************************--
 -- Name:     file
@@ -49,14 +44,13 @@ insert into tableversions ( tablename, version )
 -- Purpose:  Keeps track of the different file ids. 
 -- Expected entry count: A lot. Though not as many as 'audittrail'.
 --*************************************************************************--
-create table file (
-    file_guid bigint not null generated always as identity primary key,
-                                    -- The guid for the file id.
-    fileid varchar(255),            -- The actual file id.
-    collectionid varchar(255)       -- The collection for the file id.
+CREATE TABLE file (
+    file_guid SERIAL PRIMARY KEY,   -- The guid for the file id.
+    fileid VARCHAR(255),            -- The actual file id.
+    collectionid VARCHAR(255)       -- The collection for the file id.
 );
 
-create index fileindex on file ( fileid, collectionid );
+CREATE INDEX fileindex ON file ( fileid, collectionid );
 
 --*************************************************************************--
 -- Name:     actor
@@ -64,13 +58,12 @@ create index fileindex on file ( fileid, collectionid );
 -- Purpose:  Keeps track of the different actors.
 -- Expected entry count: Some, though not many.
 --*************************************************************************--
-create table actor (
-    actor_guid bigint not null generated always as identity primary key,
-                                    -- The guid for the actor.
-    actor_name varchar(255)         -- The name of the actor.
+CREATE TABLE actor (
+    actor_guid SERIAL PRIMARY KEY,  -- The guid for the actor.
+    actor_name VARCHAR(255)         -- The name of the actor.
 );
 
-create index actorindex on actor ( actor_name );
+CREATE INDEX actorindex ON actor ( actor_name );
 
 --*************************************************************************--
 -- Name:     audittrail
@@ -80,21 +73,21 @@ create index actorindex on actor ( actor_name );
 -- Purpose:  Keeps track of the different audits.
 -- Expected entry count: Very, very many.
 --*************************************************************************--
-create table audittrail (
-    sequence_number bigint not null generated always as identity primary key,
+CREATE TABLE audittrail (
+    sequence_number SERIAL PRIMARY KEY,
                                     -- The sequence number and unique key for this table.
-    file_guid bigint,               -- The identifier for the file. Used to lookup in the file table.
-    actor_guid bigint,              -- The identifier for the actor which performed the action for the audit. 
+    file_guid INT,                  -- The identifier for the file. Used to lookup in the file table.
+    actor_guid INT,                 -- The identifier for the actor which performed the action for the audit. 
                                     -- Used for looking up in the 
-    operation varchar(100),         -- The name of the action behind the audit.
-    operation_date timestamp,       -- The date when the action was performed.
-    audit varchar(255),             -- The audit trail delivered from the actor. 
-    information varchar(255),       -- The information about the audit.
+    operation VARCHAR(100),         -- The name of the action behind the audit.
+    operation_date TIMESTAMP,       -- The date when the action was performed.
+    audit VARCHAR(255),             -- The audit trail delivered from the actor. 
+    information VARCHAR(255),        -- The information about the audit.
     FOREIGN KEY ( file_guid ) REFERENCES file ( file_guid ),
                                     -- Foreign key constraint for enforcing relationship
     FOREIGN KEY ( actor_guid ) REFERENCES actor ( actor_guid )
                                     -- Foreign key constraint for enforcing relationship
 );
 
-create index dateindex on audittrail ( operation_date );
-create index fileidindex on audittrail ( file_guid );
+CREATE INDEX dateindex ON audittrail ( operation_date );
+CREATE INDEX fileidindex ON audittrail ( file_guid );
