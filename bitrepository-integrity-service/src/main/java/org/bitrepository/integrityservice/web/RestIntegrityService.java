@@ -32,29 +32,18 @@ import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.PillarStat;
 import org.bitrepository.service.workflow.JobID;
-import org.bitrepository.service.workflow.JobTimerTask;
+import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowManager;
+import org.bitrepository.service.workflow.WorkflowStatistic;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Path("/IntegrityService")
 public class RestIntegrityService {
@@ -173,9 +162,8 @@ public class RestIntegrityService {
     public String getWorkflowSetup(@QueryParam("collectionID") String collectionID) {
         try {
             JSONArray array = new JSONArray();
-            Collection<JobTimerTask> workflows = workflowManager.getWorkflows(collectionID);
-            for(JobTimerTask workflow : workflows) {
-                array.put(makeWorkflowSetupObj(workflow));
+            for(JobID workflowID : workflowManager.getWorkflows(collectionID)) {
+                array.put(makeWorkflowSetupObj(workflowID));
             }
             return array.toString();
         } catch (RuntimeException e) {
@@ -191,10 +179,9 @@ public class RestIntegrityService {
     @Path("/getWorkflowList/")
     @Produces(MediaType.APPLICATION_JSON)
     public List<String> getWorkflowList(@QueryParam("collectionID") String collectionID) {
-        Collection<JobTimerTask> workflows = workflowManager.getWorkflows(collectionID);
-        List<String> workflowIDs = new ArrayList<String>();
-        for(JobTimerTask workflow : workflows) {
-            workflowIDs.add(workflow.getWorkflowID().getWorkflowName());
+        List<String> workflowIDs = new LinkedList<String>();
+        for(JobID workflowID : workflowManager.getWorkflows(collectionID)) {
+            workflowIDs.add(workflowID.getWorkflowName());
         }
         return workflowIDs;
     }
@@ -255,20 +242,29 @@ public class RestIntegrityService {
         }
     }
 
-    private JSONObject makeWorkflowSetupObj(JobTimerTask workflowTask) {
+    private JSONObject makeWorkflowSetupObj(JobID workflowID) {
         JSONObject obj = new JSONObject();
+        Workflow workflow = workflowManager.getWorkflow(workflowID);
+        WorkflowStatistic lastRunStatistic = workflowManager.getLastCompleteStatistics(workflowID);
         try {
-            obj.put("workflowID", workflowTask.getWorkflowID().getWorkflowName());
-            obj.put("workflowDescription", workflowTask.getDescription());
-            obj.put("nextRun", TimeUtils.shortDate(workflowTask.getNextRun()));
-            if (workflowTask.getLastRunStatistics().getFinish() == null) {
+            obj.put("workflowID", workflowID.getWorkflowName());
+            obj.put("workflowDescription", workflow.getDescription());
+            obj.put("nextRun", TimeUtils.shortDate(workflowManager.getNextScheduledRun(workflowID)));
+            if (lastRunStatistic.getFinish() == null) {
                 obj.put("lastRun", "Workflow hasn't finished a run yet");
             } else {
-                obj.put("lastRun", TimeUtils.shortDate(workflowTask.getLastRunStatistics().getFinish()));
+                obj.put("lastRun", TimeUtils.shortDate(lastRunStatistic.getFinish()));
             }
-            obj.put("lastRunDetails", workflowTask.getLastRunStatistics().getFullStatistics());
-            obj.put("executionInterval", TimeUtils.millisecondsToHuman(workflowTask.getIntervalBetweenRuns()));
-            obj.put("currentState", workflowTask.getCurrentRunStatistics().getPartStatistics());
+            obj.put("lastRunDetails", lastRunStatistic.getFullStatistics());
+            long runInterval = workflowManager.getRunInterval(workflowID);
+            String intervalString;
+            if (runInterval == -1 ) {
+                intervalString = "Never";
+            }  else {
+                intervalString = TimeUtils.millisecondsToHuman(runInterval);
+            }
+            obj.put("executionInterval", intervalString);
+            obj.put("currentState", workflowManager.getCurrentStatistics(workflowID).getPartStatistics());
             return obj;
         } catch (JSONException e) {
             return (JSONObject) JSONObject.NULL;

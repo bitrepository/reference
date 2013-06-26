@@ -4,7 +4,6 @@ import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.SchedulableJob;
 import org.bitrepository.service.workflow.WorkflowContext;
-import org.bitrepository.service.workflow.WorkflowStatistic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,11 +53,6 @@ public class RecalculateChecksumJob implements SchedulableJob {
     @Override
     public String getDescription() {
         return "Recalculates the checksums for collection: '" + collectionID + "'.";
-    }
-
-    @Override
-    public WorkflowStatistic getWorkflowStatistics() {
-        return null;
     }
 
     @Override

@@ -83,7 +83,6 @@ public abstract class Workflow implements SchedulableJob {
     /**
      * @return The statistics for this workflow.
      */
-    @Override
     public synchronized WorkflowStatistic getWorkflowStatistics() {
         if(statistics == null) {
             statistics = new WorkflowStatistic(getClass().getSimpleName());

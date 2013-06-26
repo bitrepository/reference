@@ -23,6 +23,7 @@
 package org.bitrepository.service.workflow;
 
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.service.scheduler.JobEventListener;
 import org.bitrepository.service.scheduler.JobScheduler;
 import org.bitrepository.settings.referencesettings.Schedule;
 import org.bitrepository.settings.referencesettings.WorkflowConfiguration;
@@ -30,17 +31,16 @@ import org.bitrepository.settings.referencesettings.WorkflowSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class WorkflowManager {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final JobScheduler scheduler;
     private final WorkflowContext context;
-    private final Map<JobID, SchedulableJob> workflows = new HashMap<JobID, SchedulableJob>();
+    private final Map<JobID, Workflow> workflows = new HashMap<JobID, Workflow>();
+    private final Map<String, List<JobID>> collectionWorkflows = new HashMap<String, List<JobID>>();
+    private final Map<JobID, List<WorkflowStatistic>> statistics = new HashMap<JobID, List<WorkflowStatistic>>();
+    public static final int MAX_NUMBER_OF_STATISTISCS_FOR_A_WORKFLOW = 1;
 
     public WorkflowManager(
             WorkflowContext context,
@@ -49,24 +49,65 @@ public abstract class WorkflowManager {
         this.context = context;
         this.scheduler = scheduler;
         loadWorkFlows(configuration);
+        scheduler.addJobEventListener(new WorkflowEventListener());
     }
 
     public String startWorkflow(JobID jobID) {
-        SchedulableJob workflowToStart = workflows.get(jobID);
-        if (workflowToStart == null) {
-            throw new IllegalArgumentException("Unknown workflow" + jobID);
-        }
-        return scheduler.startJob(workflowToStart);
+        return scheduler.startJob(getWorkflow(jobID));
     }
 
-    public Collection<JobTimerTask> getWorkflows(String collectionID) {
-        return scheduler.getJobs(collectionID);
+    public List<JobID> getWorkflows(String collectionID) {
+        return collectionWorkflows.get(collectionID);
+    }
+
+    public Workflow getWorkflow(JobID jobID) {
+        if (workflows.containsKey(jobID)) {
+            return workflows.get(jobID);
+        } else {
+            throw new IllegalArgumentException("Unknown workflow" + jobID);
+        }
+    }
+
+    public WorkflowStatistic getCurrentStatistics(JobID jobID) {
+        return getWorkflow(jobID).getWorkflowStatistics();
+    }
+
+    public WorkflowStatistic getLastCompleteStatistics(JobID jobID) {
+        if (statistics.containsKey(jobID)) {
+            return statistics.get(jobID).get(0);
+        } else {
+            throw new IllegalArgumentException("Unknown workflow" + jobID);
+        }
+    }
+
+    public Date getNextScheduledRun(JobID jobID) {
+        Date nextRun = scheduler.getNextRun(jobID);
+        if (nextRun == null) {
+            if (workflows.containsKey(jobID)) { // Unscheduled job
+                return null;
+            } else {
+                throw new IllegalArgumentException("Unknown workflow" + jobID);
+            }
+        }
+        return nextRun;
+    }
+
+    public long getRunInterval(JobID jobID) {
+        long interval = scheduler.getRunInterval(jobID);
+        if (interval == -1) {
+            if (workflows.containsKey(jobID)) { // Unscheduled job
+                return -1;
+            } else {
+                throw new IllegalArgumentException("Unknown workflow" + jobID);
+            }
+        }
+        return interval;
     }
 
     private void loadWorkFlows(WorkflowSettings configuration) {
         for (WorkflowConfiguration workflowConf:configuration.getWorkflow()) {
             log.info("Scheduling from configuration: " + workflowConf);
-            List<String> unscheduledWorkFlows = new LinkedList<String>(SettingsUtils.getAllCollectionsIDs());
+            List<String> unscheduledCollections = new LinkedList<String>(SettingsUtils.getAllCollectionsIDs());
             try {
                 if (workflowConf.getSchedules() != null) {
                     for (Schedule schedule:workflowConf.getSchedules().getSchedule()) {
@@ -81,18 +122,17 @@ public abstract class WorkflowManager {
                                     (Workflow)lookupClass(workflowConf.getWorkflowClass()).newInstance();
                             workflow.initialise(context, collectionID);
                             scheduler.schedule(workflow, schedule.getWorkflowInterval());
-                            workflows.put(workflow.getJobID(), workflow);
-                            unscheduledWorkFlows.remove(collectionID);
+                            addWorkflow(collectionID, workflow);
+                            unscheduledCollections.remove(collectionID);
                         }
                     }
                 }
                 // Create a instance of all workflows not explicitly scheduled.
-                for (String collection:unscheduledWorkFlows) {
-                    SchedulableJob workflow =
-                            (SchedulableJob)Class.forName(workflowConf.getWorkflowClass()).newInstance();
-                    workflow.initialise(context, collection);
-                    workflows.put(workflow.getJobID(), workflow);
-                    scheduler.schedule(workflow, null);
+                for (String collectionID:unscheduledCollections) {
+                    Workflow workflow =
+                            (Workflow)Class.forName(workflowConf.getWorkflowClass()).newInstance();
+                    workflow.initialise(context, collectionID);
+                    addWorkflow(collectionID, workflow);
                 }
             } catch (Exception e) {
                 log.error("Unable to load workflow " + workflowConf.getWorkflowClass(), e);
@@ -110,10 +150,45 @@ public abstract class WorkflowManager {
         return Class.forName(fullClassName);
     }
 
+    private void addWorkflow(String collectionID, Workflow workflow) {
+        workflows.put(workflow.getJobID(), workflow);
+        if (!collectionWorkflows.containsKey(collectionID)) {
+            collectionWorkflows.put(collectionID, new LinkedList<JobID>());
+        }
+        collectionWorkflows.get(collectionID).add(workflow.getJobID());
+    }
+
     /**
      * Allows subclasses to define a workflow package where workflow classes defined with a simplename in the settings
      * will be prefixed with the namespace defined here.
      * @return
      */
     protected abstract String getDefaultWorkflowPackage();
+
+    /**
+     * Stores workflow statistics when a workflow has finished.
+     */
+    public class WorkflowEventListener implements JobEventListener {
+        @Override
+        public void jobStarted(SchedulableJob job) {}
+
+        @Override
+        public void jobFailed(SchedulableJob job) {}
+
+        /**
+         * Adds the workflow statistics to the statistics list for this workflow. Will also remove older statistisics
+         * if the number of statistiscs exceeds <code>MAX_NUMBER_OF_STATISTISCS_FOR_A_WORKFLOW</code>.
+         * @param job
+         */
+        @Override
+        public void jobFinished(SchedulableJob job) {
+            List<WorkflowStatistic> workflowStatistics = statistics.get(job.getJobID());
+            if (workflows.containsKey(job.getJobID())) { // One of mine
+                workflowStatistics.add((((Workflow)job).getWorkflowStatistics()));
+            }
+            if (workflowStatistics.size() > MAX_NUMBER_OF_STATISTISCS_FOR_A_WORKFLOW) {
+                workflowStatistics.remove(workflowStatistics.size()-1);
+            }
+        }
+    }
 }

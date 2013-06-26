@@ -43,8 +43,6 @@ public interface SchedulableJob {
      */
     String currentState();
 
-    WorkflowStatistic getWorkflowStatistics();
-
     /**
      * @return Provides a human readable description of the SchedulableJob.
      */

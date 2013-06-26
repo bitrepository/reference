@@ -26,17 +26,16 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
-import org.bitrepository.settings.referencesettings.Collections;
-import org.bitrepository.settings.referencesettings.Schedule;
-import org.bitrepository.settings.referencesettings.Schedules;
-import org.bitrepository.settings.referencesettings.WorkflowConfiguration;
-import org.bitrepository.settings.referencesettings.WorkflowSettings;
+import org.bitrepository.service.workflow.WorkflowManager;
+import org.bitrepository.settings.referencesettings.*;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 
 public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
     private Settings settings;
@@ -75,7 +74,7 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
                 "collection system",
                 "Two Test workflows should be scheduled daily, one for each collection");
 
-        new IntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null), scheduler);
+        createIntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null));
         verify(scheduler).schedule(eq(workflow1), eq(IntegrityWorkflowManager.DAILY));
         verify(scheduler).schedule(eq(workflow2), eq(IntegrityWorkflowManager.DAILY));
         verifyNoMoreInteractions(scheduler);
@@ -91,7 +90,7 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
                 "Two Test workflows should be scheduled daily, one for each collection");
         workflowSettings.getWorkflow().get(0).setWorkflowClass("TestWorkflow");
 
-        new IntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null), scheduler);
+        createIntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null));
         verify(scheduler).schedule(eq(workflow1), eq(IntegrityWorkflowManager.DAILY));
         verify(scheduler).schedule(eq(workflow2), eq(IntegrityWorkflowManager.DAILY));
         verifyNoMoreInteractions(scheduler);
@@ -112,7 +111,7 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
         defaultWorkflow2.initialise(null, collection2ID);
 
 
-        new IntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null), scheduler);
+        createIntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null));
         verify(scheduler).schedule(eq(defaultWorkflow1), eq(IntegrityWorkflowManager.DAILY));
         verify(scheduler).schedule(eq(defaultWorkflow2), eq(IntegrityWorkflowManager.DAILY));
         verifyNoMoreInteractions(scheduler);
@@ -140,7 +139,7 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
         schedule2.getCollections().getCollectionID().add(collection2ID);
         workflowConfiguration.getSchedules().getSchedule().add(schedule2);
 
-        new IntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null), scheduler);
+        createIntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null));
         verify(scheduler).schedule(eq(workflow1), eq(IntegrityWorkflowManager.DAILY));
         verify(scheduler).schedule(eq(workflow2), eq(IntegrityWorkflowManager.HOURLY));
         verifyNoMoreInteractions(scheduler);
@@ -155,10 +154,12 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
                 "Two Test workflows should be create with a -1 interval between runs.");
         workflowSettings.getWorkflow().get(0).setSchedules(null);
 
-        new IntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null), scheduler);
-        verify(scheduler).schedule(eq(workflow1), eq((Long)null));
-        verify(scheduler).schedule(eq(workflow2), eq((Long)null));
-        verifyNoMoreInteractions(scheduler);
+        IntegrityWorkflowManager manager = createIntegrityWorkflowManager(
+                new IntegrityWorkflowContext(settings, null, null, null, null, null));
+        when(manager.getNextScheduledRun(workflow1.getJobID())).thenReturn(null);
+        when(manager.getRunInterval(workflow1.getJobID())).thenReturn(-1L);
+        assertNull(manager.getNextScheduledRun(workflow1.getJobID()));
+        assertEquals(manager.getRunInterval(workflow1.getJobID()), -1);
     }
 
     @Test (groups = {"regressiontest"})
@@ -171,5 +172,13 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
                 new IntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null), scheduler);
         manager.startWorkflow(workflow1.getJobID());
         verify(scheduler).startJob(workflow1);
+    }
+
+    private IntegrityWorkflowManager createIntegrityWorkflowManager(IntegrityWorkflowContext context) {
+        IntegrityWorkflowManager manager =
+                new IntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null),
+                        scheduler);
+        verify(scheduler).addJobEventListener(any(WorkflowManager.WorkflowEventListener.class));
+        return manager;
     }
 }

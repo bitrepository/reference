@@ -31,11 +31,7 @@ import org.bitrepository.service.workflow.SchedulableJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
+import java.util.*;
 
 /**
  * Scheduler that uses Timer to run workflows.
@@ -55,6 +51,7 @@ public class TimerbasedScheduler implements JobScheduler {
     private static final boolean TIMER_IS_DEAMON = false;
     /** A timer delay of 0 seconds.*/
     private static final Long NO_DELAY = 0L;
+    private List<JobEventListener> jobListeners = new LinkedList<JobEventListener>();
 
     /** Setup a timer task for running the workflows at requested interval.
      */
@@ -66,25 +63,44 @@ public class TimerbasedScheduler implements JobScheduler {
     public void schedule(SchedulableJob workflow, Long interval) {
         log.info("Scheduling job : " + workflow.getJobID() + " to run every " + TimeUtils.millisecondsToHuman(interval));
 
-        JobTimerTask task = new JobTimerTask(interval, workflow);
+        JobTimerTask task = new JobTimerTask(interval, workflow, Collections.unmodifiableList(jobListeners));
         timer.scheduleAtFixedRate(task, NO_DELAY, SCHEDULE_INTERVAL);
         intervalTasks.put(workflow.getJobID(), task);
     }
 
     @Override
-    public String startJob(SchedulableJob workflow) {
+    public String startJob(SchedulableJob job) {
         long timeBetweenRuns = -1;
-        JobTimerTask oldTask = cancelJob(workflow.getJobID());
+        JobTimerTask oldTask = cancelJob(job.getJobID());
         if (oldTask != null) {
             timeBetweenRuns = oldTask.getIntervalBetweenRuns();
         }
 
-        JobTimerTask task = new JobTimerTask(timeBetweenRuns, workflow);
+        JobTimerTask task = new JobTimerTask(timeBetweenRuns, job, jobListeners);
         timer.scheduleAtFixedRate(task, NO_DELAY, SCHEDULE_INTERVAL);
-        intervalTasks.put(workflow.getJobID(), task);
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        intervalTasks.put(job.getJobID(), task);
+        return null;
     }
-    
+
+    @Override
+    public Date getNextRun(JobID jobId) {
+        if (intervalTasks.containsKey(jobId)) {
+            return intervalTasks.get(jobId).getNextRun();
+        } else return null;
+    }
+
+    @Override
+    public long getRunInterval(JobID jobId) {
+        if (intervalTasks.containsKey(jobId)) {
+            return intervalTasks.get(jobId).getIntervalBetweenRuns();
+        } else return -1;
+    }
+
+    @Override
+    public void addJobEventListener(JobEventListener listener) {
+        jobListeners.add(listener);
+    }
+
     @Override
     public JobTimerTask cancelJob(JobID jobID) {
         JobTimerTask task = intervalTasks.remove(jobID);
@@ -94,16 +110,5 @@ public class TimerbasedScheduler implements JobScheduler {
         task.cancel();
 
         return task;
-    }
-    
-    @Override
-    public List<JobTimerTask> getJobs(String collectionID) {
-        List<JobTimerTask> workflows = new ArrayList<JobTimerTask>();
-        for(JobTimerTask task : intervalTasks.values()) {
-            if(task.getWorkflowID().getCollectionID().equals(collectionID)) {
-                workflows.add(task);
-            }
-        }
-        return workflows;
     }
 }

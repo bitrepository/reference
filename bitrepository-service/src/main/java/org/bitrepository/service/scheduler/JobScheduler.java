@@ -24,11 +24,11 @@
  */
 package org.bitrepository.service.scheduler;
 
+import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.JobTimerTask;
 import org.bitrepository.service.workflow.SchedulableJob;
-import org.bitrepository.service.workflow.JobID;
 
-import java.util.List;
+import java.util.Date;
 
 /**
  * Interface for scheduling jobs for services.
@@ -49,15 +49,27 @@ public interface JobScheduler {
      */
     JobTimerTask cancelJob(JobID jobId);
 
-    /**
-     * @return The list of workflows currently scheduled for the indicated collection.
-     */
-    List<JobTimerTask> getJobs(String collectionID);
 
     /**
-     * Reschedules the workflow to start now
+     * Reschedules the job to start now,
      * @param job
      * @return A string indicating the result of the attempt to start the workflow.
      */
     String startJob(SchedulableJob job);
+
+    /**
+     * Return the date for the next run of the indicated workflow. Return null if the workflow isn't scheduled.
+     */
+    Date getNextRun(JobID jobId);
+
+    /**
+     * Returns the interval between runs for the indicated workflow. The interval is in milliseconds.
+     */
+    long getRunInterval(JobID jobId);
+
+    /**
+     * Enables other objects to listen for job events.
+     * @param listener The callback listener to receive the events.
+     */
+    void addJobEventListener(JobEventListener listener);
 }

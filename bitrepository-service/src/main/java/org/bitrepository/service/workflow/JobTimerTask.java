@@ -21,10 +21,12 @@
  */
 package org.bitrepository.service.workflow;
 
+import org.bitrepository.service.scheduler.JobEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
+import java.util.List;
 import java.util.TimerTask;
 
 /**
@@ -38,19 +40,19 @@ public class JobTimerTask extends TimerTask {
     private Date nextRun;
     /** The interval between triggers. */
     private final long interval;
-    private final SchedulableJob workflow;
-    private WorkflowStatistic lastWorkflowStatistics;
+    private final SchedulableJob job;
+    private List<JobEventListener> jobListeners;
 
     /**
      * Initialise trigger.
      * @param interval The interval between triggering events in milliseconds.
-     * @param workflow:  The  workflow.
+     * @param job:  The job.
      */
-    public JobTimerTask(long interval, SchedulableJob workflow) {
+    public JobTimerTask(long interval, SchedulableJob job, List<JobEventListener> jobListeners) {
         this.interval = interval;
-        this.workflow = workflow;
+        this.job = job;
         nextRun = new Date();
-        lastWorkflowStatistics = new WorkflowStatistic("Not run yet");
+        this.jobListeners = jobListeners;
     }
 
     /**
@@ -61,22 +63,6 @@ public class JobTimerTask extends TimerTask {
     }
 
     /**
-     * @return The statistics object with information on the time statistics for the last run. May be null if
-     * the workflow hasn't been run yet.
-     */
-    public WorkflowStatistic getLastRunStatistics() {
-        return lastWorkflowStatistics;
-    }
-
-    /**
-     * @return The statistics object with information on the time statistics for the current run.
-     * May be null if the workflow hasn't been run yet.
-     */
-    public WorkflowStatistic getCurrentRunStatistics() {
-        return workflow.getWorkflowStatistics();
-    }
-
-    /**
      * @return The interval between the runs in millis.
      */
     public long getIntervalBetweenRuns() {
@@ -84,44 +70,50 @@ public class JobTimerTask extends TimerTask {
     }
 
     public String getDescription() {
-        return workflow.getDescription();
+        return job.getDescription();
     }
 
     /**
-     * Trigger the workflow.
-     * Resets the date for the next run of the workflow.
+     * Runs the job.
+     * Resets the date for the next run of the job.
      * @return String
      */
-    public String runWorkflow() {
+    public String runJob() {
         try {
-            if (workflow.currentState().equals(SchedulableJob.NOT_RUNNING)) {
-                log.info("Starting job: " + workflow.getJobID());
-                workflow.start();
+            if (job.currentState().equals(SchedulableJob.NOT_RUNNING)) {
+                log.info("Starting job: " + job.getJobID());
+                job.start();
                 if (interval > 0) {
                     nextRun = new Date(System.currentTimeMillis() + interval);
                 }
-                lastWorkflowStatistics = workflow.getWorkflowStatistics();
-                return "Job '" + workflow.getJobID() + "' finished";
+                notifyListenersAboutFinishedJob(job);
+                return "Job '" + job.getJobID() + "' finished";
             } else {
-                log.info("Ignoring start request for " + workflow.getJobID() + " the workflow is already running");
-                return "Can not start " + workflow.getJobID() + ", it is already running in state " 
-                        + workflow.currentState();
+                log.info("Ignoring start request for " + job.getJobID() + " the job is already running");
+                return "Can not start " + job.getJobID() + ", it is already running in state "
+                        + job.currentState();
             }
         } catch (Throwable e) {
-            log.error("Fault barrier for '" + workflow.getJobID() + "' caught unexpected exception.", e);
-            throw new RuntimeException("Failed to run workflow" + e.getMessage() + ", see server log for details.");
+            log.error("Fault barrier for '" + job.getJobID() + "' caught unexpected exception.", e);
+            throw new RuntimeException("Failed to run job" + e.getMessage() + ", see server log for details.");
+        }
+    }
+
+    private void notifyListenersAboutFinishedJob(SchedulableJob job) {
+        for (JobEventListener listener:jobListeners) {
+            listener.jobStarted(job);
         }
     }
 
     /**
-     * @return The name of the workflow.
+     * @return The name of the job.
      */
     public String getName() {
-        return workflow.getJobID().toString();
+        return job.getJobID().toString();
     }
     
     public JobID getWorkflowID() {
-        return workflow.getJobID();
+        return job.getJobID();
     }
 
     @Override
@@ -129,10 +121,10 @@ public class JobTimerTask extends TimerTask {
         try {
             if( nextRun != null &&
                 getNextRun().getTime() <= System.currentTimeMillis()) {
-                runWorkflow();
+                runJob();
             }
         } catch (Exception e) {
-            log.error("Failed to run workflow", e);
+            log.error("Failed to run job", e);
         }
     }
 }

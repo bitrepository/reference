@@ -49,5 +49,4 @@ public class IncrementalIntegrityCheck extends IntegrityCheckWorkflow {
         return new IncrementalUpdateFileIDsStep(context.getCollector(), context.getStore(),
                 context.getAlerter(), context.getSettings(), collectionID);
     }
-    
  }
