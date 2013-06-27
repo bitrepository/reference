@@ -60,11 +60,11 @@ public abstract class WorkflowManager {
         return collectionWorkflows.get(collectionID);
     }
 
-    public Workflow getWorkflow(JobID jobID) {
-        if (workflows.containsKey(jobID)) {
-            return workflows.get(jobID);
+    public Workflow getWorkflow(JobID workflowID) {
+        if (workflows.containsKey(workflowID)) {
+            return workflows.get(workflowID);
         } else {
-            throw new IllegalArgumentException("Unknown workflow " + jobID);
+            throw new IllegalArgumentException("Unknown workflow " + workflowID);
         }
     }
 
@@ -73,12 +73,10 @@ public abstract class WorkflowManager {
     }
 
     public WorkflowStatistic getLastCompleteStatistics(JobID workflowID) {
+        getWorkflow(workflowID);
         if (statistics.containsKey(workflowID)) {
             return statistics.get(workflowID).get(0);
-        } else {
-            throw new IllegalArgumentException("No statistiscs for workflow:" + workflowID +
-                    "\n   I have statistics for: " + statistics.keySet());
-        }
+        } else return null;
     }
 
     public Date getNextScheduledRun(JobID jobID) {
@@ -99,7 +97,7 @@ public abstract class WorkflowManager {
             if (workflows.containsKey(jobID)) { // Unscheduled job
                 return -1;
             } else {
-                throw new IllegalArgumentException("Unknown workflow" + jobID);
+                throw new IllegalArgumentException("Unknown workflow " + jobID);
             }
         }
         return interval;
