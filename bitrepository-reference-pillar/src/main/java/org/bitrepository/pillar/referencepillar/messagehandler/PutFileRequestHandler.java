@@ -24,10 +24,6 @@
  */
 package org.bitrepository.pillar.referencepillar.messagehandler;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.URL;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -47,6 +43,10 @@ import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.URL;
 
 /**
  * Class for performing the PutFile operation.
@@ -192,10 +192,6 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         }
         
         if(message.getChecksumDataForNewFile() != null) {
-            getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                    "Calculating the validation checksum for the file before putting it into archive.", 
-                    message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
-            
             ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
             String calculatedChecksum = getCsManager().getChecksumForTempFile(message.getFileID(), 
                     message.getCollectionID(), csType.getChecksumSpec());
@@ -211,9 +207,8 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
             // TODO is such a checksum required?
             log.warn("No checksums for validating the retrieved file.");
         }
-        
         getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                "Putting the downloaded file into archive.", message.getAuditTrailInformation(), FileAction.PUT_FILE);
+                "Add file to archive.", message.getAuditTrailInformation(), FileAction.PUT_FILE);
         getArchives().moveToArchive(message.getFileID(), message.getCollectionID());
         getCsManager().recalculateChecksum(message.getFileID(), message.getCollectionID());
     }
@@ -231,9 +226,6 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         response.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
         
         if(message.getChecksumRequestForNewFile() != null) {
-            getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                    "Calculating requested checksum.", message.getAuditTrailInformation(), 
-                    FileAction.CHECKSUM_CALCULATED);
             response.setChecksumDataForNewFile(getCsManager().getChecksumDataForFile(message.getFileID(),
                     message.getCollectionID(), message.getChecksumRequestForNewFile()));
         } else {

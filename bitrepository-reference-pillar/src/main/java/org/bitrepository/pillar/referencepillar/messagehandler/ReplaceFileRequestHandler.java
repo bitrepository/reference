@@ -24,14 +24,7 @@
  */
 package org.bitrepository.pillar.referencepillar.messagehandler;
 
-import java.io.IOException;
-import java.net.URL;
-
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositoryelements.*;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
@@ -47,6 +40,9 @@ import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.URL;
 
 /**
  * Class for handling the ReplaceFile operation.
@@ -156,12 +152,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
             responseInfo.setResponseText(errMsg);
             throw new InvalidMessageException(responseInfo, message.getCollectionID());
         }
-        
-        // Make audit about calculating the checksum.
-        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                "Calculating the checksum for validating, the it is the correct file to replace.", 
-                message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
-        
+
         // calculate and validate the checksum of the file.
         ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
         if(checksumData != null) {
@@ -227,9 +218,6 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         
         ChecksumDataForFileTYPE csData = message.getChecksumDataForNewFile();
         if(csData != null) {
-            getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                    "Calculating the checksum of the downloaded file for the replace operation.", 
-                    message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
             String checksum = getCsManager().getChecksumForTempFile(message.getFileID(), message.getCollectionID(), 
                     csData.getChecksumSpec());
             String requestedChecksum = Base16Utils.decodeBase16(csData.getChecksumValue());
@@ -275,9 +263,6 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
     private ChecksumDataForFileTYPE calculateChecksumOnOldFile(ReplaceFileRequest message) {
         ChecksumSpecTYPE csType = message.getChecksumRequestForExistingFile();
         if(csType != null) {
-            getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                    "Calculating the requested checksum of the existing file before replacing it.", 
-                    message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
             return calculatedChecksumForFile(csType, message);
         }
         
@@ -296,9 +281,6 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
         // TODO insert the new checksum
         ChecksumSpecTYPE csType = message.getChecksumRequestForNewFile();
         if(csType != null) {
-            getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                    "Calculating the requested checksum of the new file before replacing the old one.", 
-                    message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
             return calculatedChecksumForFile(csType, message);
         }
         
