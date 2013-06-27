@@ -32,7 +32,7 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.TestIntegrityModel;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
+import org.bitrepository.integrityservice.checking.reports.OldMissingFileReportModel;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -70,7 +70,7 @@ public class FileExistenceValidatorTest extends ExtendedTestCase {
         FileExistenceValidator validator = new FileExistenceValidator(settings.getCollections(), cache, auditManager);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
-        MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs(TEST_COLLECTION), TEST_COLLECTION);
+        OldMissingFileReportModel report = validator.generateReport(cache.getAllFileIDs(TEST_COLLECTION), TEST_COLLECTION);
         Assert.assertFalse(report.hasIntegrityIssues(), report.generateReport());
     }
     
@@ -100,7 +100,7 @@ public class FileExistenceValidatorTest extends ExtendedTestCase {
         cache.addFileIDs(fileidData, TEST_PILLAR_1, TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should be missing at pillar 2.");
-        MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs(TEST_COLLECTION), TEST_COLLECTION);
+        OldMissingFileReportModel report = validator.generateReport(cache.getAllFileIDs(TEST_COLLECTION), TEST_COLLECTION);
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getDeleteableFiles().size(), 0);
         Assert.assertEquals(report.getMissingFiles().size(), 1);
@@ -121,7 +121,7 @@ public class FileExistenceValidatorTest extends ExtendedTestCase {
         cache.setFileMissing(FILE_1, Arrays.asList(TEST_PILLAR_1), TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should be missing at pillar 1.");
-        MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs(TEST_COLLECTION), TEST_COLLECTION);
+        OldMissingFileReportModel report = validator.generateReport(cache.getAllFileIDs(TEST_COLLECTION), TEST_COLLECTION);
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getDeleteableFiles().size(), 0);
         Assert.assertEquals(report.getMissingFiles().size(), 1);
@@ -141,7 +141,7 @@ public class FileExistenceValidatorTest extends ExtendedTestCase {
         cache.setFileMissing(FILE_1, Arrays.asList(TEST_PILLAR_1), TEST_COLLECTION);
         
         addStep("Validate the file ids", "Should be missing at pillar 1.");
-        MissingFileReportModel report = validator.generateReport(cache.getAllFileIDs(TEST_COLLECTION), TEST_COLLECTION);
+        OldMissingFileReportModel report = validator.generateReport(cache.getAllFileIDs(TEST_COLLECTION), TEST_COLLECTION);
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getDeleteableFiles().size(), 1);
         Assert.assertEquals(report.getDeleteableFiles(), Arrays.asList(FILE_1));

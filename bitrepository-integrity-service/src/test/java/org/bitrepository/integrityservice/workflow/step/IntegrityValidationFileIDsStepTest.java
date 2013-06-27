@@ -22,7 +22,7 @@
 package org.bitrepository.integrityservice.workflow.step;
 
 import org.bitrepository.common.utils.FileIDsUtils;
-import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
+import org.bitrepository.integrityservice.checking.reports.OldMissingFileReportModel;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -45,7 +45,7 @@ public class IntegrityValidationFileIDsStepTest extends WorkflowstepTest {
         addDescription("Test the step for integrity validation of fileids when the report is positive.");
         addStep("Run the step with a integritychecker which will return a clean MissingFileReportModel",
                 "No alerts should be generated");
-        when(checker.checkFileIDs(FileIDsUtils.getAllFileIDs(), TEST_COLLECTION)).thenReturn(new MissingFileReportModel(TEST_COLLECTION));
+        when(checker.checkFileIDs(FileIDsUtils.getAllFileIDs(), TEST_COLLECTION)).thenReturn(new OldMissingFileReportModel(TEST_COLLECTION));
         step.performStep();
 
         verify(checker).checkFileIDs(FileIDsUtils.getAllFileIDs(), TEST_COLLECTION);
@@ -57,7 +57,7 @@ public class IntegrityValidationFileIDsStepTest extends WorkflowstepTest {
         addDescription("Test the step for integrity validation of file ids when the report is negative.");
         addStep("Run the step with a integritychecker which will return a MissingFileReportModel with integrity issues",
                 "The IntegrityAlerters integrityFailed method should be called with the MissingFileReportModel");
-        final MissingFileReportModel report = mock(MissingFileReportModel.class);
+        final OldMissingFileReportModel report = mock(OldMissingFileReportModel.class);
         when(checker.checkFileIDs(FileIDsUtils.getAllFileIDs(), TEST_COLLECTION)).thenReturn(report);
         when(report.hasIntegrityIssues()).thenReturn(true);
         step.performStep();

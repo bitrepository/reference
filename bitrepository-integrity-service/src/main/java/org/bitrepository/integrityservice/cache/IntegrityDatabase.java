@@ -257,4 +257,9 @@ public class IntegrityDatabase implements IntegrityModel {
     public boolean hasFile(String fileId, String collectionId) {
         return store.hasFileIDAtCollection(fileId, collectionId);
     }
+
+    @Override
+    public List<String> findOrphanFiles(String collectionID) {
+        return store.findOrphanFiles(collectionID);
+    }
 }

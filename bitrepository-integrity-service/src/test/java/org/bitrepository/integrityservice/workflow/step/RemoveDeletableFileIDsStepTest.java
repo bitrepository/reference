@@ -21,7 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
+import org.bitrepository.integrityservice.checking.reports.OldMissingFileReportModel;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.workflow.WorkflowStep;
 import org.testng.annotations.Test;
@@ -34,7 +34,7 @@ public class RemoveDeletableFileIDsStepTest extends WorkflowstepTest {
     @Test(groups = {"regressiontest"})
     public void testNoFilesToDelete() {
         addDescription("Testing the case, when no files should be deleted from the database.");
-        MissingFileReportModel report = new MissingFileReportModel(TEST_COLLECTION);
+        OldMissingFileReportModel report = new OldMissingFileReportModel(TEST_COLLECTION);
         WorkflowStep step = new RemoveDeletableFileIDsFromDatabaseStep(model, report, auditManager, settings);
         verifyNoMoreInteractions(model);
         
@@ -49,7 +49,7 @@ public class RemoveDeletableFileIDsStepTest extends WorkflowstepTest {
         addDescription("Testing the case, when one file should be deleted from the database.");
         String TEST_FILE_1 = "test-file-1";
         String TEST_FILE_2 = "test-file-2";
-        MissingFileReportModel report = new MissingFileReportModel(TEST_COLLECTION);
+        OldMissingFileReportModel report = new OldMissingFileReportModel(TEST_COLLECTION);
         report.reportDeletableFile(TEST_FILE_1);
         report.reportDeletableFile(TEST_FILE_2);
         MockAuditManager auditManager = new MockAuditManager();

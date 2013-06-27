@@ -181,6 +181,13 @@ public interface IntegrityModel {
     List<String> findMissingFiles(String collectionId);
     
     /**
+     * Finds orphan files within a collection, i.e. files that no longer exists on any pillar
+     * @param collectionId, The ID of the collection in which to find orphan files.
+     * @return The list of orphan files   
+     */
+    List<String> findOrphanFiles(String collectionID);
+    
+    /**
      * Checks whether a given file is missing and returns the list of pillars, where it is missing.
      * @param fileId The id of the file to check whether it is missing.
      * @param collectiondId The ID of the collection where the file belongs

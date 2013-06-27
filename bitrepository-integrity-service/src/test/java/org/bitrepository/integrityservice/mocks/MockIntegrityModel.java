@@ -195,6 +195,16 @@ public class MockIntegrityModel implements IntegrityModel {
         return callsForFindMissingFiles;
     }
     
+    private int callsForFindOrphanFiles = 0;
+    @Override
+    public List<String> findOrphanFiles(String collectionId) {
+        callsForFindOrphanFiles++;
+        return integrityModel.findOrphanFiles(collectionId);
+    }
+    public int getCallsForFindOrphanFiles() {
+        return callsForFindOrphanFiles;
+    }
+    
     private int callsForFindChecksumsOlderThan = 0;
     @Override
     public Collection<String> findChecksumsOlderThan(Date date, String pillarID, String collectionId) {

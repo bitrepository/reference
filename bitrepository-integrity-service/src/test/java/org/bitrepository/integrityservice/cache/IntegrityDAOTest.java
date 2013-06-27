@@ -377,6 +377,38 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testFindOrphanFiles() throws Exception {
+        addDescription("Tests the ability to find orphan files.");
+        IntegrityDAO cache = createDAO();
+
+        addStep("Create data", "Should be ingested into the database");
+        String orphanFile = "orphan";
+        String missingFile = "missing";
+        String existingFile = "existing";
+        FileIDsData data1 = getFileIDsData(orphanFile);
+        FileIDsData data2 = getFileIDsData(missingFile);
+        FileIDsData data3 = getFileIDsData(existingFile);
+        FileIDsData data4 = getFileIDsData(TEST_FILE_ID);
+        cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileIDs(data2, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileIDs(data2, TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileIDs(data3, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileIDs(data3, TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileIDs(data4, TEST_PILLAR_1, EXTRA_COLLECTION);
+        cache.updateFileIDs(data4, TEST_PILLAR_2, EXTRA_COLLECTION);
+        
+        cache.setFileMissing(orphanFile, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.setFileMissing(orphanFile, TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.setFileMissing(missingFile, TEST_PILLAR_1, TEST_COLLECTIONID);
+        
+        List<String> orphanFiles = cache.findOrphanFiles(TEST_COLLECTIONID);
+        Assert.assertNotNull(orphanFiles);
+        Assert.assertEquals(orphanFiles.size(), 1);
+        Assert.assertEquals(orphanFiles.get(0), orphanFile);
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void testSettingChecksumStateToError() throws Exception {
         addDescription("Tests the ability to set the checksum state to error for a given pillar.");
         IntegrityDAO cache = createDAO();

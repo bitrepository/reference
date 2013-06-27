@@ -28,6 +28,7 @@ import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReporter;
 import org.bitrepository.protocol.messagebus.MessageSender;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
@@ -55,6 +56,8 @@ public class IntegrityAlarmDispatcher extends AlarmDispatcher implements Integri
         ad.setCollectionID(report.getCollectionID());
         error(ad);
     }
+    
+    
 
     @Override
     public void operationFailed(String issue, String collectionID) {
@@ -63,5 +66,14 @@ public class IntegrityAlarmDispatcher extends AlarmDispatcher implements Integri
         ad.setAlarmText(issue);
         ad.setCollectionID(collectionID);
         error(ad);
+    }
+
+    @Override
+    public void integrityFailed(IntegrityReporter reporter) {
+        Alarm ad = new Alarm();
+        ad.setAlarmCode(AlarmCode.INTEGRITY_ISSUE);
+        ad.setAlarmText(reporter.generateSummaryOfReport());
+        ad.setCollectionID(reporter.getCollectionID());
+        error(ad);        
     }
 }

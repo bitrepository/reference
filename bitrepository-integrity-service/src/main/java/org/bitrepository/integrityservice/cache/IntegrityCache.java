@@ -365,4 +365,9 @@ public class IntegrityCache implements IntegrityModel {
     public boolean hasFile(String fileId, String collectionId) {
         return integrityModel.hasFile(fileId, collectionId);
     }
+
+    @Override
+    public List<String> findOrphanFiles(String collectionID) {
+        return integrityModel.findOrphanFiles(collectionID);
+    }
 }

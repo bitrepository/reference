@@ -24,7 +24,7 @@ package org.bitrepository.integrityservice.workflow.step;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.checking.IntegrityChecker;
-import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
+import org.bitrepository.integrityservice.checking.reports.OldMissingFileReportModel;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ public class IntegrityValidationFileIDsStep extends AbstractWorkFlowStep {
     private final IntegrityAlerter dispatcher;
     
     /** The final report for this check.*/
-    private MissingFileReportModel report = null; 
+    private OldMissingFileReportModel report = null; 
     /** The ID of the collection to check */
     private final String collectionId;
     
@@ -78,7 +78,7 @@ public class IntegrityValidationFileIDsStep extends AbstractWorkFlowStep {
      * @return The report from this workflow step. 
      * Will return null, if the step has not yet been run.
      */
-    public MissingFileReportModel getReport() {
+    public OldMissingFileReportModel getReport() {
         return report;
     }
 }

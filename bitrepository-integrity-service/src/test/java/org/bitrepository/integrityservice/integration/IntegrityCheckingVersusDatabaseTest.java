@@ -43,7 +43,7 @@ import org.bitrepository.integrityservice.checking.MaxChecksumAgeProvider;
 import org.bitrepository.integrityservice.checking.SimpleIntegrityChecker;
 import org.bitrepository.integrityservice.checking.reports.ChecksumReportModel;
 import org.bitrepository.integrityservice.checking.reports.MissingChecksumReportModel;
-import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
+import org.bitrepository.integrityservice.checking.reports.OldMissingFileReportModel;
 import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReportModel;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.testng.Assert;
@@ -97,7 +97,7 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
         cache.addFileIDs(fileidsData1, TEST_PILLAR_2, TEST_COLLECTION);
         
         addStep("Check whether all pillars have all the file ids", "They should contain the same files.");
-        MissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs(), TEST_COLLECTION);
+        OldMissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs(), TEST_COLLECTION);
         Assert.assertFalse(report.hasIntegrityIssues());
     }
     
@@ -113,7 +113,7 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
         cache.addFileIDs(fileidsData1, TEST_PILLAR_1, TEST_COLLECTION);
         
         addStep("Check whether all pillars have all the file ids", "Only one should contain the fileids, so it should return false");
-        MissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs(), TEST_COLLECTION);
+        OldMissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs(), TEST_COLLECTION);
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getMissingFiles().size(), 1);
         Assert.assertEquals(report.getDeleteableFiles().size(), 0);
@@ -136,7 +136,7 @@ public class IntegrityCheckingVersusDatabaseTest extends IntegrityDatabaseTestCa
         cache.setFileMissing(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1), TEST_COLLECTION);
         
         addStep("Check whether all pillars have all the file ids", "Only one should contain the fileids, so it should return false");
-        MissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs(), TEST_COLLECTION);
+        OldMissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs(), TEST_COLLECTION);
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getMissingFiles().size(), 0);
         Assert.assertEquals(report.getDeleteableFiles().size(), 1);

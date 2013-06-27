@@ -23,7 +23,7 @@ package org.bitrepository.integrityservice.checking;
 
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
+import org.bitrepository.integrityservice.checking.reports.OldMissingFileReportModel;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.slf4j.Logger;
@@ -66,8 +66,8 @@ public class FileExistenceValidator {
      * @param requestedFileIDs The list of files to validate.
      * @return The report for the existence state of the given files.
      */
-    public MissingFileReportModel generateReport(java.util.Collection<String> requestedFileIDs, String collectionId) {
-        MissingFileReportModel report = new MissingFileReportModel(collectionId);
+    public OldMissingFileReportModel generateReport(java.util.Collection<String> requestedFileIDs, String collectionId) {
+        OldMissingFileReportModel report = new OldMissingFileReportModel(collectionId);
         for(String fileId : requestedFileIDs) {
             List<String> pillarIds = cache.getPillarsMissingFile(fileId, collectionId);
 

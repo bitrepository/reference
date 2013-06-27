@@ -25,7 +25,7 @@ import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
+import org.bitrepository.integrityservice.checking.reports.OldMissingFileReportModel;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ public class RemoveDeletableFileIDsFromDatabaseStep extends AbstractWorkFlowStep
     /** The model where the integrity data is stored.*/
     private final IntegrityModel cache;
     /** The report which contains the list of file ids to remove from the database.*/
-    private final MissingFileReportModel report;
+    private final OldMissingFileReportModel report;
     /** The manager of audit trails.*/
     private final AuditTrailManager auditManager;
     /** The settings.*/
@@ -55,7 +55,7 @@ public class RemoveDeletableFileIDsFromDatabaseStep extends AbstractWorkFlowStep
      * @param auditManager The audit trail manager.
      * @param settings The settings.
      */
-    public RemoveDeletableFileIDsFromDatabaseStep(IntegrityModel cache, MissingFileReportModel report, 
+    public RemoveDeletableFileIDsFromDatabaseStep(IntegrityModel cache, OldMissingFileReportModel report, 
             AuditTrailManager auditManager, Settings settings) {
         ArgumentValidator.checkNotNull(cache, "IntegrityModel cache");
         ArgumentValidator.checkNotNull(report, "MissingFileReportModel report");

@@ -679,4 +679,10 @@ public class TestIntegrityModel implements IntegrityModel {
         // TODO Auto-generated method stub
         return false;
     }
+
+    @Override
+    public List<String> findOrphanFiles(String collectionID) {
+        // TODO Fix this
+        return null;
+    }
 }

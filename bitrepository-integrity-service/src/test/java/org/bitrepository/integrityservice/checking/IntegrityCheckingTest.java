@@ -42,7 +42,7 @@ import org.bitrepository.integrityservice.TestIntegrityModel;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.reports.ChecksumReportModel;
 import org.bitrepository.integrityservice.checking.reports.MissingChecksumReportModel;
-import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
+import org.bitrepository.integrityservice.checking.reports.OldMissingFileReportModel;
 import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReportModel;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.jaccept.structure.ExtendedTestCase;
@@ -90,7 +90,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addFileIDs(fileidsData1, TEST_PILLAR_2, TEST_COLLECTIONID);
         
         addStep("Check whether all pillars have all the file ids", "They should contain the same files.");
-        MissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs(), TEST_COLLECTIONID);
+        OldMissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs(), TEST_COLLECTIONID);
         Assert.assertFalse(report.hasIntegrityIssues());
     }
     
@@ -106,7 +106,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.addFileIDs(fileidsData1, TEST_PILLAR_1, TEST_COLLECTIONID);
         
         addStep("Check whether all pillars have all the file ids", "Only one should contain the fileids, so it should return false");
-        MissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs(), TEST_COLLECTIONID);
+        OldMissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs(), TEST_COLLECTIONID);
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getMissingFiles().size(), 1);
         Assert.assertEquals(report.getDeleteableFiles().size(), 0);
@@ -129,7 +129,7 @@ public class IntegrityCheckingTest extends ExtendedTestCase {
         cache.setFileMissing(TEST_FILE_1, Arrays.asList(TEST_PILLAR_1), TEST_COLLECTIONID);
         
         addStep("Check whether all pillars have all the file ids", "Only one should contain the fileids, so it should return false");
-        MissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs(), TEST_COLLECTIONID);
+        OldMissingFileReportModel report = checker.checkFileIDs(FileIDsUtils.getAllFileIDs(), TEST_COLLECTIONID);
         Assert.assertTrue(report.hasIntegrityIssues());
         Assert.assertEquals(report.getMissingFiles().size(), 0);
         Assert.assertEquals(report.getDeleteableFiles().size(), 1);

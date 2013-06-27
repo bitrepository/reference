@@ -38,7 +38,7 @@ import org.bitrepository.integrityservice.cache.database.ChecksumState;
 import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.checking.reports.ChecksumReportModel;
 import org.bitrepository.integrityservice.checking.reports.MissingChecksumReportModel;
-import org.bitrepository.integrityservice.checking.reports.MissingFileReportModel;
+import org.bitrepository.integrityservice.checking.reports.OldMissingFileReportModel;
 import org.bitrepository.integrityservice.checking.reports.ObsoleteChecksumReportModel;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.slf4j.Logger;
@@ -74,12 +74,12 @@ public class SimpleIntegrityChecker implements IntegrityChecker {
     }
     
     @Override
-    public MissingFileReportModel checkFileIDs(FileIDs fileIDs, String collectionId) {
+    public OldMissingFileReportModel checkFileIDs(FileIDs fileIDs, String collectionId) {
         log.info("Validating the files: '" + fileIDs + "' in collection: '" + collectionId + "'");
         // TODO could perhaps be optimised by using the method 'getMissingFileIDs' from the database ??
         Collection<String> requestedFileIDs = getRequestedFileIDs(fileIDs, collectionId);
         
-        MissingFileReportModel report = fileIdChecker.generateReport(requestedFileIDs, collectionId);
+        OldMissingFileReportModel report = fileIdChecker.generateReport(requestedFileIDs, collectionId);
             
         if(report.hasIntegrityIssues()) {
             log.warn("Found errors in the integrity check: " + report.generateReport());

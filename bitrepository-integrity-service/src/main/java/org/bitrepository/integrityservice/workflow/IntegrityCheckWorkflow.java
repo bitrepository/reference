@@ -22,9 +22,16 @@
 package org.bitrepository.integrityservice.workflow;
 
 import org.bitrepository.common.utils.ChecksumUtils;
+import org.bitrepository.integrityservice.checking.reports.BasicIntegrityReporter;
+import org.bitrepository.integrityservice.checking.reports.IntegrityReporter;
 import org.bitrepository.integrityservice.workflow.step.CreateStatisticsEntryStep;
 import org.bitrepository.integrityservice.workflow.step.FindMissingChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.FindObsoleteChecksumsStep;
+import org.bitrepository.integrityservice.workflow.step.HandleChecksumValidationStep;
+import org.bitrepository.integrityservice.workflow.step.HandleDeletedFilesStep;
+import org.bitrepository.integrityservice.workflow.step.HandleMissingChecksumsStep;
+import org.bitrepository.integrityservice.workflow.step.HandleMissingFilesStep;
+import org.bitrepository.integrityservice.workflow.step.HandleObsoleteChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.IntegrityValidationChecksumStep;
 import org.bitrepository.integrityservice.workflow.step.IntegrityValidationFileIDsStep;
 import org.bitrepository.integrityservice.workflow.step.RemoveDeletableFileIDsFromDatabaseStep;
@@ -66,6 +73,9 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             throw new IllegalStateException("The workflow can not be started before the initialise method has been " +
                     "called.");
         }
+        
+        IntegrityReporter reporter = new BasicIntegrityReporter(collectionID);
+        
         super.start();
         try {
             UpdateFileIDsStep updateFileIDsStep = getUpdateFileIDsStep();
@@ -76,6 +86,26 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
                     ChecksumUtils.getDefault(context.getSettings()), context.getSettings(), collectionID);
             performStep(updateChecksumStep);
 
+            HandleDeletedFilesStep handleDeletedFilesStep = new HandleDeletedFilesStep(context.getStore(), reporter);
+            performStep(handleDeletedFilesStep);
+            
+            HandleMissingFilesStep handleMissingFilesStep = new HandleMissingFilesStep(context.getStore(), 
+                    context.getAuditManager(), reporter);
+            performStep(handleMissingFilesStep);
+            
+            HandleChecksumValidationStep handleChecksumValidationStep 
+                    = new HandleChecksumValidationStep(context.getStore(), reporter);
+            performStep(handleChecksumValidationStep);
+            
+            HandleMissingChecksumsStep handleMissingChecksumsStep 
+                    = new HandleMissingChecksumsStep(context.getStore(), reporter);
+            performStep(handleMissingChecksumsStep);
+            
+            HandleObsoleteChecksumsStep handleObsoleteChecksumsStep 
+                    = new HandleObsoleteChecksumsStep(context.getSettings(), context.getStore(), reporter);
+            performStep(handleObsoleteChecksumsStep);
+            
+            /*
             IntegrityValidationFileIDsStep validateFileidsStep = new IntegrityValidationFileIDsStep(context.getChecker(),
                     context.getAlerter(), collectionID);
             performStep(validateFileidsStep);
@@ -96,9 +126,17 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             FindObsoleteChecksumsStep findObsoleteChecksums  = new FindObsoleteChecksumsStep(
                     context.getSettings(), context.getChecker(), context.getAlerter(), collectionID);
             performStep(findObsoleteChecksums);
+            */
+            
+            
             CreateStatisticsEntryStep createStatistics = new CreateStatisticsEntryStep(
                     context.getStore(), collectionID);
             performStep(createStatistics);
+            
+            if(reporter.hasIntegrityIssues()) {
+                context.getAlerter().integrityFailed(reporter);
+            }
+            
         } finally {
             finish();
         }

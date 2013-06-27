@@ -520,7 +520,7 @@ public abstract class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         log.trace("Locating files which are missing the checksum at any pillar.");
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String requestSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
+        String requestSql = "SELECT DISTINCT(" + FILES_TABLE + "." + FILES_ID + ") FROM " + FILES_TABLE 
                 + " JOIN " + FILE_INFO_TABLE 
                 + " ON " + FILES_TABLE + "." + FILES_KEY + " = " + FILE_INFO_TABLE + "." + FI_FILE_KEY
                 + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ? " 
@@ -574,6 +574,35 @@ public abstract class IntegrityDAO {
                 + " AND " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " != ? ";
         return DatabaseUtils.selectStringList(dbConnector, requestSql, collectionKey, FileState.EXISTING.ordinal());
     }
+    
+    /**
+     * Finds orphan files within a collection, i.e. files that no longer exists on any pillar
+     * @param collectionId, The ID of the collection in which to find orphan files.
+     * @return The list of orphan files   
+     */
+    public List<String> findOrphanFiles(String collectionId) {
+        Long collectionKey = retrieveCollectionKey(collectionId);
+        log.trace("Locating orphan files in collection '" + collectionId + "'.");
+                
+        String requestSql = "SELECT " + FILES_ID + " FROM ("
+                + " SELECT DISTINCT( " + FI_FILE_KEY + " ) FROM ("
+                    + " SELECT " + FILE_INFO_TABLE + "." + FILES_KEY + " FROM ("
+                        + " SELECT DISTINCT " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " FROM " + FILE_INFO_TABLE
+                        + " JOIN " + FILES_TABLE 
+                        + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                        + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?"
+                        + " AND " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?)" 
+                    + " AS missingSelect"
+                    + " JOIN " + FILE_INFO_TABLE 
+                    + " ON missingSelect." + FILES_KEY + " = " + FILE_INFO_TABLE + "." + FI_FILE_KEY
+                    + " GROUP BY " + FILE_INFO_TABLE + "." + FI_FILE_KEY
+                    + " HAVING COUNT(DISTINCT " + FILE_INFO_TABLE + "." + FI_FILE_STATE + ") = 1)"
+                + " AS innerKeySelect)"
+            + " AS keySelect"
+            + " JOIN " + FILES_TABLE + " ON keySelect." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY;
+        return DatabaseUtils.selectStringList(dbConnector, requestSql, collectionKey, FileState.MISSING.ordinal());
+    }
+    
     
     /**
      * Finds the ids of the pillars where the given file is missing.
