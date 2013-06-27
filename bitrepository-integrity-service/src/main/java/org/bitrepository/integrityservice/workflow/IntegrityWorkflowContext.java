@@ -25,7 +25,6 @@ package org.bitrepository.integrityservice.workflow;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.WorkflowContext;
@@ -38,7 +37,6 @@ public class IntegrityWorkflowContext implements WorkflowContext {
     private final Settings settings;
     private final IntegrityInformationCollector collector;
     private final IntegrityModel store;
-    private final IntegrityChecker checker;
     private final IntegrityAlerter alerter;
     private final AuditTrailManager auditManager;
 
@@ -46,20 +44,17 @@ public class IntegrityWorkflowContext implements WorkflowContext {
      * @param settings The <code>Settings</code> to use in the workflow.
      * @param collector The <code>IntegrityInformationCollector</code> to use in the workflow.
      * @param store The <code>IntegrityModel</code> to use in the workflow.
-     * @param checker The <code>IntegrityChecker</code> to use in the workflow.
      * @param alerter The <code>IntegrityAlerter</code> to use in the workflow.
      * @param auditManager The <code>AuditTrailManager</code> to use in the workflow.
      */
     public IntegrityWorkflowContext(Settings settings,
                                     IntegrityInformationCollector collector,
                                     IntegrityModel store,
-                                    IntegrityChecker checker,
                                     IntegrityAlerter alerter,
                                     AuditTrailManager auditManager) {
         this.settings = settings;
         this.collector = collector;
         this.store = store;
-        this.checker = checker;
         this.alerter = alerter;
         this.auditManager = auditManager;
 
@@ -81,10 +76,6 @@ public class IntegrityWorkflowContext implements WorkflowContext {
         return store;
     }
 
-    public IntegrityChecker getChecker() {
-        return checker;
-    }
-
     public IntegrityAlerter getAlerter() {
         return alerter;
     }
@@ -99,7 +90,6 @@ public class IntegrityWorkflowContext implements WorkflowContext {
                 "settings=" + settings +
                 ", collector=" + collector +
                 ", store=" + store +
-                ", checker=" + checker +
                 ", alerter=" + alerter +
                 ", auditManager=" + auditManager + '\'' +
                 '}';

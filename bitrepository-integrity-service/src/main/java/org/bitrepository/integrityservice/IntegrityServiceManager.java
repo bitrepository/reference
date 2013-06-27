@@ -82,7 +82,7 @@ public final class IntegrityServiceManager {
     private static Settings settings;
     private static BasicSecurityManager securityManager;
     private static IntegrityWorkflowManager workFlowManager;
-    private static IntegrityChecker integrityChecker;
+    //private static IntegrityChecker integrityChecker;
     private static String confDir;
     private static IntegrityLifeCycleHandler lifeCycleHandler;
     private static IntegrityModel model;
@@ -117,7 +117,7 @@ public final class IntegrityServiceManager {
 
         alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus, AlarmLevel.ERROR);
         model = new IntegrityCache(new IntegrityDatabase(settings));
-        integrityChecker = new SimpleIntegrityChecker(settings, model, auditManager);
+        //integrityChecker = new SimpleIntegrityChecker(settings, model, auditManager);
 
         collector = new DelegatingIntegrityInformationCollector(
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager,
@@ -126,7 +126,7 @@ public final class IntegrityServiceManager {
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()));
 
         workFlowManager = new IntegrityWorkflowManager(
-                new IntegrityWorkflowContext(settings, collector, model, integrityChecker, alarmDispatcher, auditManager),
+                new IntegrityWorkflowContext(settings, collector, model, /*integrityChecker,*/ alarmDispatcher, auditManager),
                 new TimerbasedScheduler());
         contributor = new SimpleContributorMediator(messageBus, settings, auditManager);
         contributor.start();
