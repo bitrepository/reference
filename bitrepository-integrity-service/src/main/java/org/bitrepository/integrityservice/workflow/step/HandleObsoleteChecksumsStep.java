@@ -21,20 +21,15 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
-import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.cache.database.ChecksumState;
-import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.checking.MaxChecksumAgeProvider;
 import org.bitrepository.integrityservice.checking.reports.IntegrityReporter;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
@@ -83,18 +78,7 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
             Set<String> filesWithObsoleteChecksums = 
                     new HashSet<String>(store.findChecksumsOlderThan(outDated, pillar, reporter.getCollectionID()));
             for(String file : filesWithObsoleteChecksums) {
-                for(FileInfo fileinfo : store.getFileInfos(file, reporter.getCollectionID())) {
-                    if(!fileinfo.getPillarId().equals(pillar)) {
-                        continue;
-                    }
-                    if(fileinfo.getFileState() != FileState.EXISTING) {
-                        continue;
-                    }
-                    if(CalendarUtils.convertFromXMLGregorianCalendar(
-                        fileinfo.getDateForLastChecksumCheck()).before(outDated)) {
-                        reporter.reportObsoleteChecksum(file, pillar);
-                    }
-                }
+                reporter.reportObsoleteChecksum(file, pillar);
             }
         }
     }

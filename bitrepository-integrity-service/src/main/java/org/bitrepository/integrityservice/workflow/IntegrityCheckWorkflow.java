@@ -25,16 +25,11 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.integrityservice.checking.reports.BasicIntegrityReporter;
 import org.bitrepository.integrityservice.checking.reports.IntegrityReporter;
 import org.bitrepository.integrityservice.workflow.step.CreateStatisticsEntryStep;
-import org.bitrepository.integrityservice.workflow.step.FindMissingChecksumsStep;
-import org.bitrepository.integrityservice.workflow.step.FindObsoleteChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.HandleChecksumValidationStep;
 import org.bitrepository.integrityservice.workflow.step.HandleDeletedFilesStep;
 import org.bitrepository.integrityservice.workflow.step.HandleMissingChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.HandleMissingFilesStep;
 import org.bitrepository.integrityservice.workflow.step.HandleObsoleteChecksumsStep;
-import org.bitrepository.integrityservice.workflow.step.IntegrityValidationChecksumStep;
-import org.bitrepository.integrityservice.workflow.step.IntegrityValidationFileIDsStep;
-import org.bitrepository.integrityservice.workflow.step.RemoveDeletableFileIDsFromDatabaseStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
 import org.bitrepository.service.workflow.JobID;
@@ -104,30 +99,6 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             HandleObsoleteChecksumsStep handleObsoleteChecksumsStep 
                     = new HandleObsoleteChecksumsStep(context.getSettings(), context.getStore(), reporter);
             performStep(handleObsoleteChecksumsStep);
-            
-            /*
-            IntegrityValidationFileIDsStep validateFileidsStep = new IntegrityValidationFileIDsStep(context.getChecker(),
-                    context.getAlerter(), collectionID);
-            performStep(validateFileidsStep);
-            
-            RemoveDeletableFileIDsFromDatabaseStep removeDeletableFileIDsFromDatabaseStep 
-                    = new RemoveDeletableFileIDsFromDatabaseStep(context.getStore(), validateFileidsStep.getReport(),
-                            context.getAuditManager(), context.getSettings());
-            performStep(removeDeletableFileIDsFromDatabaseStep);
-            
-            IntegrityValidationChecksumStep validateChecksumStep = new IntegrityValidationChecksumStep(
-                    context.getChecker(), context.getAlerter(), collectionID);
-            performStep(validateChecksumStep);
-            
-            FindMissingChecksumsStep findMissingChecksums = new FindMissingChecksumsStep(
-                    context.getChecker(), context.getAlerter(), collectionID);
-            performStep(findMissingChecksums);
-            
-            FindObsoleteChecksumsStep findObsoleteChecksums  = new FindObsoleteChecksumsStep(
-                    context.getSettings(), context.getChecker(), context.getAlerter(), collectionID);
-            performStep(findObsoleteChecksums);
-            */
-            
             
             CreateStatisticsEntryStep createStatistics = new CreateStatisticsEntryStep(
                     context.getStore(), collectionID);
