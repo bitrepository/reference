@@ -74,7 +74,7 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
                 "collection system",
                 "Two Test workflows should be scheduled daily, one for each collection");
 
-        createIntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null));
+        createIntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null));
         verify(scheduler).schedule(eq(workflow1), eq(IntegrityWorkflowManager.DAILY));
         verify(scheduler).schedule(eq(workflow2), eq(IntegrityWorkflowManager.DAILY));
         verifyNoMoreInteractions(scheduler);
@@ -90,7 +90,7 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
                 "Two Test workflows should be scheduled daily, one for each collection");
         workflowSettings.getWorkflow().get(0).setWorkflowClass("TestWorkflow");
 
-        createIntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null));
+        createIntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null));
         verify(scheduler).schedule(eq(workflow1), eq(IntegrityWorkflowManager.DAILY));
         verify(scheduler).schedule(eq(workflow2), eq(IntegrityWorkflowManager.DAILY));
         verifyNoMoreInteractions(scheduler);
@@ -111,7 +111,7 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
         defaultWorkflow2.initialise(null, collection2ID);
 
 
-        createIntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null));
+        createIntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null));
         verify(scheduler).schedule(eq(defaultWorkflow1), eq(IntegrityWorkflowManager.DAILY));
         verify(scheduler).schedule(eq(defaultWorkflow2), eq(IntegrityWorkflowManager.DAILY));
         verifyNoMoreInteractions(scheduler);
@@ -139,7 +139,7 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
         schedule2.getCollections().getCollectionID().add(collection2ID);
         workflowConfiguration.getSchedules().getSchedule().add(schedule2);
 
-        createIntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null));
+        createIntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null));
         verify(scheduler).schedule(eq(workflow1), eq(IntegrityWorkflowManager.DAILY));
         verify(scheduler).schedule(eq(workflow2), eq(IntegrityWorkflowManager.HOURLY));
         verifyNoMoreInteractions(scheduler);
@@ -155,7 +155,7 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
         workflowSettings.getWorkflow().get(0).setSchedules(null);
 
         IntegrityWorkflowManager manager = createIntegrityWorkflowManager(
-                new IntegrityWorkflowContext(settings, null, null, null, null, null));
+                new IntegrityWorkflowContext(settings, null, null, null, null));
         when(manager.getNextScheduledRun(workflow1.getJobID())).thenReturn(null);
         when(manager.getRunInterval(workflow1.getJobID())).thenReturn(-1L);
         assertNull(manager.getNextScheduledRun(workflow1.getJobID()));
@@ -169,14 +169,14 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
         addStep("Call the startWorkflow with a workflow defined in the configuration",
                 "The schedulers startJob should be called with the indicated workflow.  .");
         IntegrityWorkflowManager manager =
-                new IntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null), scheduler);
+                new IntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null), scheduler);
         manager.startWorkflow(workflow1.getJobID());
         verify(scheduler).startJob(workflow1);
     }
 
     private IntegrityWorkflowManager createIntegrityWorkflowManager(IntegrityWorkflowContext context) {
         IntegrityWorkflowManager manager =
-                new IntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null, null),
+                new IntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null),
                         scheduler);
         verify(scheduler).addJobEventListener(any(WorkflowManager.WorkflowEventListener.class));
         return manager;
