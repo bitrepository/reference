@@ -552,8 +552,10 @@ public abstract class IntegrityDAO {
                 + " ON " + FILES_TABLE + "." + FILES_KEY + " = " + FILE_INFO_TABLE + "." + FI_FILE_KEY
                 + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ? "
                 + " AND " + FILE_INFO_TABLE + "." + FI_LAST_CHECKSUM_UPDATE + " < ?" 
+                + " AND " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
                 + " AND " + FI_PILLAR_KEY + " = ?";
-        List<String> result = DatabaseUtils.selectStringList(dbConnector, requestSql, collectionKey, date, pillarKey);
+        List<String> result = DatabaseUtils.selectStringList(dbConnector, requestSql, collectionKey, date,
+                FileState.EXISTING.ordinal(), pillarKey);
         log.debug("Located " + result.size() + " obsolete checksums on pillar " + pillarID + " in " +
             (System.currentTimeMillis() - startTime) + "ms");
         return result;
