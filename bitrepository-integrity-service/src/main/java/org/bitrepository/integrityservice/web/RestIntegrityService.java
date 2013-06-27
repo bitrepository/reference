@@ -209,8 +209,8 @@ public class RestIntegrityService {
         List<CollectionStat> stats = model.getLatestCollectionStat(collectionID, 1);
         Date lastIngest = model.getDateForNewestFileEntryForCollection(collectionID);
         String lastIngestStr = lastIngest == null ? "No files ingested yet" : TimeUtils.shortDate(lastIngest);
-        Long collectionSize = null;
-        Long numberOfFiles = null;
+        Long collectionSize;
+        Long numberOfFiles;
         if(stats == null || stats.isEmpty()) {
             collectionSize = 0L;
             numberOfFiles = 0L;
@@ -250,7 +250,7 @@ public class RestIntegrityService {
             obj.put("workflowID", workflowID.getWorkflowName());
             obj.put("workflowDescription", workflow.getDescription());
             obj.put("nextRun", TimeUtils.shortDate(workflowManager.getNextScheduledRun(workflowID)));
-            if (lastRunStatistic.getFinish() == null) {
+            if (lastRunStatistic == null) {
                 obj.put("lastRun", "Workflow hasn't finished a run yet");
             } else {
                 obj.put("lastRun", TimeUtils.shortDate(lastRunStatistic.getFinish()));

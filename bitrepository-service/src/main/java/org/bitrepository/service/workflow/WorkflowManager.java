@@ -60,11 +60,11 @@ public abstract class WorkflowManager {
         return collectionWorkflows.get(collectionID);
     }
 
-    public Workflow getWorkflow(JobID jobID) {
-        if (workflows.containsKey(jobID)) {
-            return workflows.get(jobID);
+    public Workflow getWorkflow(JobID workflowID) {
+        if (workflows.containsKey(workflowID)) {
+            return workflows.get(workflowID);
         } else {
-            throw new IllegalArgumentException("Unknown workflow" + jobID);
+            throw new IllegalArgumentException("Unknown workflow " + workflowID);
         }
     }
 
@@ -72,12 +72,11 @@ public abstract class WorkflowManager {
         return getWorkflow(jobID).getWorkflowStatistics();
     }
 
-    public WorkflowStatistic getLastCompleteStatistics(JobID jobID) {
-        if (statistics.containsKey(jobID)) {
-            return statistics.get(jobID).get(0);
-        } else {
-            throw new IllegalArgumentException("Unknown workflow" + jobID);
-        }
+    public WorkflowStatistic getLastCompleteStatistics(JobID workflowID) {
+        getWorkflow(workflowID);
+        if (statistics.containsKey(workflowID)) {
+            return statistics.get(workflowID).get(0);
+        } else return null;
     }
 
     public Date getNextScheduledRun(JobID jobID) {
@@ -86,7 +85,7 @@ public abstract class WorkflowManager {
             if (workflows.containsKey(jobID)) { // Unscheduled job
                 return null;
             } else {
-                throw new IllegalArgumentException("Unknown workflow" + jobID);
+                throw new IllegalArgumentException("Unknown workflow " + jobID);
             }
         }
         return nextRun;
@@ -98,7 +97,7 @@ public abstract class WorkflowManager {
             if (workflows.containsKey(jobID)) { // Unscheduled job
                 return -1;
             } else {
-                throw new IllegalArgumentException("Unknown workflow" + jobID);
+                throw new IllegalArgumentException("Unknown workflow " + jobID);
             }
         }
         return interval;
@@ -161,7 +160,6 @@ public abstract class WorkflowManager {
     /**
      * Allows subclasses to define a workflow package where workflow classes defined with a simplename in the settings
      * will be prefixed with the namespace defined here.
-     * @return
      */
     protected abstract String getDefaultWorkflowPackage();
 
@@ -177,17 +175,21 @@ public abstract class WorkflowManager {
 
         /**
          * Adds the workflow statistics to the statistics list for this workflow. Will also remove older statistisics
-         * if the number of statistiscs exceeds <code>MAX_NUMBER_OF_STATISTISCS_FOR_A_WORKFLOW</code>.
+         * if the number of statistics exceeds <code>MAX_NUMBER_OF_STATISTISCS_FOR_A_WORKFLOW</code>.
          * @param job
          */
         @Override
         public void jobFinished(SchedulableJob job) {
-            List<WorkflowStatistic> workflowStatistics = statistics.get(job.getJobID());
             if (workflows.containsKey(job.getJobID())) { // One of mine
+                if (!statistics.containsKey(job.getJobID())) {
+                    statistics.put(job.getJobID(), new LinkedList<WorkflowStatistic>());
+                }
+
+                List<WorkflowStatistic> workflowStatistics = statistics.get(job.getJobID());
                 workflowStatistics.add((((Workflow)job).getWorkflowStatistics()));
-            }
-            if (workflowStatistics.size() > MAX_NUMBER_OF_STATISTISCS_FOR_A_WORKFLOW) {
-                workflowStatistics.remove(workflowStatistics.size()-1);
+                if (workflowStatistics.size() > MAX_NUMBER_OF_STATISTISCS_FOR_A_WORKFLOW) {
+                    workflowStatistics.remove(workflowStatistics.size()-1);
+                }
             }
         }
     }
