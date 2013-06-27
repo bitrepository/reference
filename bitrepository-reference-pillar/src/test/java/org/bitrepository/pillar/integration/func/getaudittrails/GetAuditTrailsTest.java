@@ -24,7 +24,6 @@ package org.bitrepository.pillar.integration.func.getaudittrails;
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
-import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.Assert;
@@ -165,20 +164,20 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
             AuditTrailQuery componentQuery,
             String fileID,
             boolean lastResults) {
-        List<ContributorEvent> contributorList;
-        AuditTrailQuery[] auditTrailQueries = null;
+        AuditTrailQuery[] auditTrailQueries;
         if (componentQuery != null) {
             auditTrailQueries = new AuditTrailQuery[] { componentQuery };
         } else {
             auditTrailQueries = new AuditTrailQuery[] { new AuditTrailQuery(getPillarID(), null, null, null) };
         }
-        AuditTrailResult result;
+        AuditTrailResult result = null;
         try {
-            do {
-            contributorList = clientProvider.getAuditTrailsClient().
-                    getAuditTrails(collectionID, auditTrailQueries, fileID, null, null, null);
-                result = (AuditTrailResult)contributorList.get(0);
-            } while (!lastResults || result.isPartialResult());
+            boolean shouldFetchNextPage = true;
+            while (shouldFetchNextPage) {
+                result = (AuditTrailResult)clientProvider.getAuditTrailsClient().
+                    getAuditTrails(collectionID, auditTrailQueries, fileID, null, null, null).get(0);
+                shouldFetchNextPage = lastResults && result.isPartialResult();
+            }
         } catch (NegativeResponseException e) {
             throw new RuntimeException(e);
         }
