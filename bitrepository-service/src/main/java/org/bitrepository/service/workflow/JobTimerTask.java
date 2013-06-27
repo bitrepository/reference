@@ -101,7 +101,7 @@ public class JobTimerTask extends TimerTask {
 
     private void notifyListenersAboutFinishedJob(SchedulableJob job) {
         for (JobEventListener listener:jobListeners) {
-            listener.jobStarted(job);
+            listener.jobFinished(job);
         }
     }
 
