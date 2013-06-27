@@ -250,7 +250,7 @@ public class RestIntegrityService {
             obj.put("workflowID", workflowID.getWorkflowName());
             obj.put("workflowDescription", workflow.getDescription());
             obj.put("nextRun", TimeUtils.shortDate(workflowManager.getNextScheduledRun(workflowID)));
-            if (lastRunStatistic.getFinish() == null) {
+            if (lastRunStatistic == null) {
                 obj.put("lastRun", "Workflow hasn't finished a run yet");
             } else {
                 obj.put("lastRun", TimeUtils.shortDate(lastRunStatistic.getFinish()));
