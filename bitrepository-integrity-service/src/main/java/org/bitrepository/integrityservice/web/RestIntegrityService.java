@@ -209,8 +209,8 @@ public class RestIntegrityService {
         List<CollectionStat> stats = model.getLatestCollectionStat(collectionID, 1);
         Date lastIngest = model.getDateForNewestFileEntryForCollection(collectionID);
         String lastIngestStr = lastIngest == null ? "No files ingested yet" : TimeUtils.shortDate(lastIngest);
-        Long collectionSize = null;
-        Long numberOfFiles = null;
+        Long collectionSize;
+        Long numberOfFiles;
         if(stats == null || stats.isEmpty()) {
             collectionSize = 0L;
             numberOfFiles = 0L;
