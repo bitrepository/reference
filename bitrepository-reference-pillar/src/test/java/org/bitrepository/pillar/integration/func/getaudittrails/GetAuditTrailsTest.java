@@ -21,8 +21,6 @@
  */
 package org.bitrepository.pillar.integration.func.getaudittrails;
 
-import java.util.List;
-
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
@@ -33,12 +31,13 @@ import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 public class GetAuditTrailsTest extends PillarFunctionTest {
     @Override
     protected void initializeCUT() {
         super.initializeCUT();
         settingsForTestClient.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
-        //settingsForTestClient.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(getPillarID());
     }
     
     @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
@@ -50,7 +49,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         addStep("Retrieve a list of all audit trails.",
             "Run through the list and verify each element sequence number is lower than the following elements.");
 
-        List<AuditTrailEvent> auditTrailEvents = getAuditTrails(null, null);
+        List<AuditTrailEvent> auditTrailEvents = getAuditTrails(null, null, false);
         
         for (int counter = 0 ; counter < auditTrailEvents.size() - 1 ; counter ++) {
             Assert.assertTrue(auditTrailEvents.get(counter).getSequenceNumber().compareTo(
@@ -68,13 +67,13 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         
         addStep("Retrieve a list of all audittrails by setting maxSequece to null.",
                 "At 2 audit trails should be returned");
-        List<AuditTrailEvent> originalAuditTrailEventList = getAuditTrails(null, null);
+        List<AuditTrailEvent> originalAuditTrailEventList = getAuditTrails(null, null, false);
         
         addStep("Repeat the audit trail request, this time with maxNumberOfResult set to one",
                 "A result with a single audit event should be returned. The event should be the first " +
                         "audit event in the full list.");
         AuditTrailQuery singleEventQuery = new AuditTrailQuery(getPillarID(), null, null, 1);
-        List<AuditTrailEvent> singleEventList = getAuditTrails(singleEventQuery, null);
+        List<AuditTrailEvent> singleEventList = getAuditTrails(singleEventQuery, null, false);
         Assert.assertEquals(singleEventList.size(), 1, "The result didn't contain a single event");
         Assert.assertEquals(singleEventList.get(0), originalAuditTrailEventList.get(0),
                 "The returned event wasn't equal to the first event");
@@ -90,7 +89,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         
         addStep("Request audit trails for all files on the pillar",
                 "A list with at least 2 events is returned.");
-        List<AuditTrailEvent> originalAuditTrailEventList = getAuditTrails(null, null);
+        List<AuditTrailEvent> originalAuditTrailEventList = getAuditTrails(null, null, true);
         Assert.assertTrue(originalAuditTrailEventList.size() > 1,
                 "The size of the returned list is only " + originalAuditTrailEventList.size() + ", " +
                         "should be at least 2");
@@ -100,7 +99,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         int smallestSequenceNumber = originalAuditTrailEventList.get(0).getSequenceNumber().intValue();
         AuditTrailQuery firstSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
                 new Integer(smallestSequenceNumber), null, null);
-        List<AuditTrailEvent> limitedEventList = getAuditTrails(firstSequenceNumberQuery, null);
+        List<AuditTrailEvent> limitedEventList = getAuditTrails(firstSequenceNumberQuery, null, true);
         Assert.assertEquals(limitedEventList, originalAuditTrailEventList,
                 "Different list return when MinSequenceNumber set to first event");
         
@@ -110,7 +109,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
                 .getSequenceNumber().intValue();
         AuditTrailQuery lastSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
                 new Integer(largestSequenceNumber), null, null);
-        limitedEventList = getAuditTrails(lastSequenceNumberQuery, null);
+        limitedEventList = getAuditTrails(lastSequenceNumberQuery, null, true);
         Assert.assertEquals(limitedEventList.size(), 1, "Received list with size of " + limitedEventList.size() +
                 " when requesting audit trail with MinSequenceNumber set to latest event");
         Assert.assertTrue(limitedEventList.get(0).equals(originalAuditTrailEventList.get(originalAuditTrailEventList.size()-1)),
@@ -121,7 +120,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
                 "No events are returned.");
         AuditTrailQuery laterThanLastSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
                 new Integer(largestSequenceNumber + 1), null, null);
-        limitedEventList = getAuditTrails(laterThanLastSequenceNumberQuery, null);
+        limitedEventList = getAuditTrails(laterThanLastSequenceNumberQuery, null, true);
         Assert.assertEmpty(limitedEventList,
                 "Non-empty event list returned with laterThanLastSequenceNumberQuery: " + limitedEventList);
     }
@@ -134,7 +133,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
 
         addStep("Request audit trails for all files on the pillar",
                 "A list with at least 2 events is returned.");
-        List<AuditTrailEvent> originalAuditTrailEventList = getAuditTrails(null, null);
+        List<AuditTrailEvent> originalAuditTrailEventList = getAuditTrails(null, null, false);
         Assert.assertTrue(originalAuditTrailEventList.size() > 1,
                 "The size of the returned list is only " + originalAuditTrailEventList.size() + ", " +
                         "should be at least 2");
@@ -145,7 +144,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
                 .getSequenceNumber().intValue();
         AuditTrailQuery lastSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
                 null, new Integer(largestSequenceNumber), null);
-        List<AuditTrailEvent> limitedEventList = getAuditTrails(lastSequenceNumberQuery, null);
+        List<AuditTrailEvent> limitedEventList = getAuditTrails(lastSequenceNumberQuery, null, false);
         Assert.assertEquals(limitedEventList, originalAuditTrailEventList,
                 "Different list return when MaxSequenceNumber set to last event");
 
@@ -154,7 +153,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         int smallestSequenceNumber = originalAuditTrailEventList.get(0).getSequenceNumber().intValue();
         AuditTrailQuery firstSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
                 null, new Integer(smallestSequenceNumber), null);
-        limitedEventList = getAuditTrails(firstSequenceNumberQuery, null);
+        limitedEventList = getAuditTrails(firstSequenceNumberQuery, null, false);
         Assert.assertEquals(limitedEventList.size(), 1, "Received list with size of " + limitedEventList.size() + " " +
                 "when requesting audit trail with MaxSequenceNumber set to first event (expected 1 event)");
         Assert.assertEquals(limitedEventList.get(0),
@@ -164,20 +163,26 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
 
     private List<AuditTrailEvent> getAuditTrails(
             AuditTrailQuery componentQuery,
-            String fileID) {
-        List<ContributorEvent> contributorList = null;
+            String fileID,
+            boolean lastResults) {
+        List<ContributorEvent> contributorList;
         AuditTrailQuery[] auditTrailQueries = null;
         if (componentQuery != null) {
-            auditTrailQueries = new AuditTrailQuery[] {componentQuery};
+            auditTrailQueries = new AuditTrailQuery[] { componentQuery };
+        } else {
+            auditTrailQueries = new AuditTrailQuery[] { new AuditTrailQuery(getPillarID(), null, null, null) };
         }
+        AuditTrailResult result;
         try {
+            do {
             contributorList = clientProvider.getAuditTrailsClient().
                     getAuditTrails(collectionID, auditTrailQueries, fileID, null, null, null);
+                result = (AuditTrailResult)contributorList.get(0);
+            } while (!lastResults || result.isPartialResult());
         } catch (NegativeResponseException e) {
             throw new RuntimeException(e);
         }
-        return ((AuditTrailResult)contributorList.get(0)).
-                getAuditTrailEvents().getAuditTrailEvents().getAuditTrailEvent();
+        return result.getAuditTrailEvents().getAuditTrailEvents().getAuditTrailEvent();
 
     }
 }
