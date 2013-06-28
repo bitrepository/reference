@@ -33,12 +33,14 @@
     </encoder>
   </appender>
 
-  <root level="DEBUG">
+
+  <root level="WARN"/>
+  <logger name="org.bitrepository" level="DEBUG">
     <appender-ref ref="FILE" />
-  </root>
-  <root level="INFO">
+  </logger>
+  <logger name="org.bitrepository" level="INFO">
     <appender-ref ref="STDOUT" />
-  </root>
+  </logger>
 </configuration>
 
 

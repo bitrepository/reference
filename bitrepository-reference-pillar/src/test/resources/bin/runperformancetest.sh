@@ -22,7 +22,7 @@
 # #L%
 ###
 
-LOGBACK="-Dlogback.configurationFile=testprops/logback.xml" #configuration directory
+LOGBACK="-Dlogback.configurationFile=testprops/logback-integration-test.xml" #configuration directory
 CONFDIR="conf"
 KEYFILE="conf/client-01.pem" #key file
 JAVA="java"
