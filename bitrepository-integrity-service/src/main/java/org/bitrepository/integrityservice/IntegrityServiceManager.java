@@ -33,8 +33,6 @@ import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityCache;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.checking.IntegrityChecker;
-import org.bitrepository.integrityservice.checking.SimpleIntegrityChecker;
 import org.bitrepository.integrityservice.collector.DelegatingIntegrityInformationCollector;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowContext;

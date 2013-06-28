@@ -27,7 +27,6 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.checking.IntegrityChecker;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.jaccept.structure.ExtendedTestCase;
@@ -43,7 +42,6 @@ public class WorkflowstepTest extends ExtendedTestCase {
 
     protected String TEST_COLLECTION;
     protected IntegrityAlerter alerter;
-    protected IntegrityChecker checker;
     protected IntegrityModel model;
     protected IntegrityInformationCollector collector;
     protected AuditTrailManager auditManager;
@@ -58,7 +56,6 @@ public class WorkflowstepTest extends ExtendedTestCase {
         SettingsUtils.initialize(settings);
 
         alerter = mock(IntegrityAlerter.class);
-        checker = mock(IntegrityChecker.class);
         model = mock(IntegrityModel.class);
         collector = mock(IntegrityInformationCollector.class);
         auditManager = mock(AuditTrailManager.class);

@@ -27,7 +27,6 @@ package org.bitrepository.integrityservice.alerter;
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.integrityservice.checking.reports.IntegrityReportModel;
 import org.bitrepository.integrityservice.checking.reports.IntegrityReporter;
 import org.bitrepository.protocol.messagebus.MessageSender;
 import org.bitrepository.service.AlarmDispatcher;
@@ -47,17 +46,6 @@ public class IntegrityAlarmDispatcher extends AlarmDispatcher implements Integri
     public IntegrityAlarmDispatcher(Settings settings, MessageSender sender, AlarmLevel alarmLevel) {
         super(settings, sender, alarmLevel);
     }
-    
-    @Override
-    public void integrityFailed(IntegrityReportModel report) {
-        Alarm ad = new Alarm();
-        ad.setAlarmCode(AlarmCode.INTEGRITY_ISSUE);
-        ad.setAlarmText(report.generateSummaryOfReport());
-        ad.setCollectionID(report.getCollectionID());
-        error(ad);
-    }
-    
-    
 
     @Override
     public void operationFailed(String issue, String collectionID) {
