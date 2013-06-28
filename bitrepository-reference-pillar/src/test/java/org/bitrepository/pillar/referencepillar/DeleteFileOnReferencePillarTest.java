@@ -107,8 +107,7 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.OPERATION_COMPLETED);
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        Assert.assertEquals(audits.getCallsForAuditEvent(), 2, "Should deliver 2 audits. " +
-                "One for delete and 1 for calculate checksums.");
+        Assert.assertEquals(audits.getCallsForAuditEvent(), 1, "Should create 1 audit for the delete operation.");
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
