@@ -88,7 +88,7 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
     /**
      * Method to implement early/pre-performStep action  
      */
-    protected abstract void initialStepAction();
+    protected void initialStepAction() {}
     
     @Override
     public synchronized void performStep() {
