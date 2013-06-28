@@ -24,15 +24,7 @@
  */
 package org.bitrepository.pillar.checksumpillar.messagehandler;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.Date;
-
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositoryelements.*;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
@@ -50,6 +42,10 @@ import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.Date;
 
 /**
  * Class for handling the ReplaceFile operation.
@@ -218,9 +214,6 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
 
-        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                "Calculating the checksum of the downloaded file for the replace operation.", 
-                message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
         String checksum = null;
         try {
             checksum = ChecksumUtils.generateChecksum(fe.downloadFromServer(new URL(message.getFileAddress())), 

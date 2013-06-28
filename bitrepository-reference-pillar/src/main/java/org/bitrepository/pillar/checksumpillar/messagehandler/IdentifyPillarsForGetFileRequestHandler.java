@@ -24,7 +24,6 @@
  */
 package org.bitrepository.pillar.checksumpillar.messagehandler;
 
-import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
@@ -55,10 +54,6 @@ public class IdentifyPillarsForGetFileRequestHandler extends ChecksumPillarMessa
 
     @Override
     public void processRequest(IdentifyPillarsForGetFileRequest message) throws RequestHandlerException {
-        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                "Failed identification, since the checksum pillar cannot perform the GetFile operation.", 
-                message.getAuditTrailInformation(), FileAction.FAILURE);
-        
         ResponseInfo ri = new ResponseInfo();
         ri.setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);
         ri.setResponseText("The ChecksumPillar '" 

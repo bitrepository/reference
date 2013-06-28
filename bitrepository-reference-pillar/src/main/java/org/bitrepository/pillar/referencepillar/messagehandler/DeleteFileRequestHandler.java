@@ -116,9 +116,6 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
         if(checksumData != null) {
             ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
 
-            getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                    "Calculating the validation checksum on the file, which should be deleted.", 
-                    message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
             String calculatedChecksum = getCsManager().getChecksumForFile(message.getFileID(), 
                     message.getCollectionID(), checksumType);
             String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
@@ -166,10 +163,7 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
         if(checksumType == null) {
             return null;
         }
-        
-        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                "Calculating the requested checksum on the file, which should be deleted.", 
-                message.getAuditTrailInformation(), FileAction.CHECKSUM_CALCULATED);
+
         return getCsManager().getChecksumDataForFile(message.getFileID(), message.getCollectionID(), checksumType);
     }
     
