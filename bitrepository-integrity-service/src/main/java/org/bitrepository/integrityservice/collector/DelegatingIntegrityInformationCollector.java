@@ -72,7 +72,8 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     @Override
     public synchronized void getChecksums(String collectionID, Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, 
             String auditTrailInformation, ContributorQuery[] queries, EventHandler eventHandler) {
-        try {getChecksumsClient.getChecksums(collectionID, queries, null, checksumType, null, eventHandler,
+        try {
+            getChecksumsClient.getChecksums(collectionID, queries, null, checksumType, null, eventHandler,
                     auditTrailInformation);
         } catch (Exception e) {
             log.error("Unexpected failure!", e);
