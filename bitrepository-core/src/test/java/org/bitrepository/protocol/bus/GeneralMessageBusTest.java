@@ -24,14 +24,10 @@
  */
 package org.bitrepository.protocol.bus;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.TimeUnit;
-
-import javax.jms.Message;
-import javax.jms.MessageListener;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.common.TestValidationUtils;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -43,15 +39,31 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import java.util.Arrays;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Class for testing the interface with the message bus.
  */
 public class GeneralMessageBusTest extends IntegrationTest {
+    protected static MessageReceiver collectionReceiver;
+
+    @Override
+    protected void registerMessageReceivers() {
+        super.registerMessageReceivers();
+
+        collectionReceiver = new MessageReceiver(settingsForCUT.getCollectionDestination(), testEventManager);
+        addReceiver(collectionReceiver);
+    }
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() {
-        messageBus.getComponentFilter().clear();
-        messageBus.getCollectionFilter().clear();
+        messageBus.setComponentFilter(Arrays.asList(new String[]{}));
+        messageBus.setCollectionFilter(Arrays.asList(new String[]{}));
     }
 
     @Test(groups = { "regressiontest" })
@@ -114,7 +126,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
     public final void sendMessageToSpecificComponentTest() throws Exception {
         addDescription("Test that message bus correct uses the 'to' header property to indicated that the message " +
                 "is meant for a specific component");
-        addStep("Send a message with the 'Recipent' parameter set to at specific component",
+        addStep("Send a message with the 'Recipient' parameter set to at specific component",
                 "The MESSAGE_TO_KEY ");
         String receiverID = "specificReceiver";
         final BlockingQueue<Message> messageList = new LinkedBlockingDeque<Message>();
@@ -138,69 +150,95 @@ public class GeneralMessageBusTest extends IntegrationTest {
 
     @Test(groups = {"regressiontest"})
     public final void toFilterTest() throws Exception {
-        addDescription("Test that message bus filters messages to other components, eg. ignores these.");
-        addStep("Send an message with a undefined 'To' header property, " +
-                "eg. this messages should be handled by all components.",
-                "Verify that the message bus accepts this message.");
-        final BlockingQueue<Message> messageList = new LinkedBlockingDeque<Message>();
-        messageBus.getComponentFilter().add(settingsForTestClient.getComponentID());
+        addDescription("Test that message bus filters identify requests to other components, eg. ignores these.");
+        addStep("Send an identify request with a undefined 'To' header property, " +
+                "eg. this identify requests should be handled by all components.",
+                "Verify that the identify request bus accepts this identify request.");
+        messageBus.setComponentFilter(Arrays.asList(new String[]{ settingsForTestClient.getComponentID() }));
         RawMessagebus rawMessagebus = new RawMessagebus(
                 settingsForTestClient.getMessageBusConfiguration(),
                 securityManager);
-        AlarmMessage messageToSend = ExampleMessageFactory.createMessage(AlarmMessage.class);
-        messageToSend.setDestination(settingsForTestClient.getAlarmDestination());
-        javax.jms.Message msg = rawMessagebus.createMessage(messageToSend);
-        rawMessagebus.addHeader(msg, messageToSend.getClass().getSimpleName(), messageToSend.getReplyTo(),
+        IdentifyPillarsForDeleteFileRequest identifyRequest =
+                ExampleMessageFactory.createMessage(IdentifyPillarsForDeleteFileRequest.class);
+        identifyRequest.setDestination(settingsForTestClient.getCollectionDestination());
+        javax.jms.Message msg = rawMessagebus.createMessage(identifyRequest);
+        rawMessagebus.addHeader(msg, identifyRequest.getClass().getSimpleName(), identifyRequest.getReplyTo(),
                 null,
-                messageToSend.getCorrelationID());
-        rawMessagebus.sendMessage(settingsForTestClient.getAlarmDestination(), msg);
-        alarmReceiver.waitForMessage(AlarmMessage.class);
+                identifyRequest.getCorrelationID());
+        rawMessagebus.sendMessage(settingsForTestClient.getCollectionDestination(), msg);
+        collectionReceiver.waitForMessage(IdentifyPillarsForDeleteFileRequest.class);
 
-        addStep("Send an message with the 'To' header property set to this component",
-                "Verify that the message bus accepts this message.");
+        addStep("Send an identify request with the 'To' header property set to this component",
+                "Verify that the identify request bus accepts this identify request.");
         msg.setStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY, settingsForTestClient.getComponentID());
-        rawMessagebus.sendMessage(settingsForTestClient.getAlarmDestination(), msg);
-        alarmReceiver.waitForMessage(AlarmMessage.class);
+        rawMessagebus.sendMessage(settingsForTestClient.getCollectionDestination(), msg);
+        collectionReceiver.waitForMessage(IdentifyPillarsForDeleteFileRequest.class);
 
-        addStep("Send an invalid message with the 'To' header property set to another specific component",
-                "Verify that the message bus ignores this before parsing the message.");
+        addStep("Send an invalid identify request with the 'To' header property set to another specific component",
+                "Verify that the identify request bus ignores this before parsing the identify request.");
         msg.setStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY, "OtherComponent");
-        rawMessagebus.sendMessage(settingsForTestClient.getAlarmDestination(), msg);
-        alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
+        rawMessagebus.sendMessage(settingsForTestClient.getCollectionDestination(), msg);
+        collectionReceiver.checkNoMessageIsReceived(IdentifyPillarsForDeleteFileRequest.class);
+
+        addStep("Send an identify response with the 'To' header property set to another component",
+                "Verify that the message bus accepts this message.");
+        IdentifyPillarsForDeleteFileResponse identifyResponse =
+                ExampleMessageFactory.createMessage(IdentifyPillarsForDeleteFileResponse.class);
+        identifyRequest.setDestination(settingsForTestClient.getCollectionDestination());
+        javax.jms.Message response = rawMessagebus.createMessage(identifyResponse);
+        rawMessagebus.addHeader(response, identifyResponse.getClass().getSimpleName(), identifyResponse.getReplyTo(),
+                null,
+                identifyRequest.getCorrelationID());
+        response.setStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY, "OtherComponent");
+        rawMessagebus.sendMessage(settingsForTestClient.getCollectionDestination(), response);
+        collectionReceiver.waitForMessage(IdentifyPillarsForDeleteFileResponse.class);
+
+        addStep("Send an non-identify request with the 'To' header property set to another component",
+                "Verify that the message bus accepts this message.");
+        DeleteFileRequest request =
+                ExampleMessageFactory.createMessage(DeleteFileRequest.class);
+        request.setDestination(settingsForTestClient.getCollectionDestination());
+        javax.jms.Message rq = rawMessagebus.createMessage(request);
+        rawMessagebus.addHeader(rq, request.getClass().getSimpleName(), request.getReplyTo(),
+                null,
+                identifyRequest.getCorrelationID());
+        response.setStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY, "OtherComponent");
+        rawMessagebus.sendMessage(settingsForTestClient.getCollectionDestination(), rq);
+        collectionReceiver.waitForMessage(DeleteFileRequest.class);
     }
 
     @Test(groups = {"regressiontest"})
     public final void collectionFilterTest() throws Exception {
-        addDescription("Test that message bus filters messages to other collection, eg. ignores these.");
-        addStep("Send an message with a undefined 'Collection' header property, " +
-                "eg. this messages should be handled by everybody.",
+        addDescription("Test that message bus filters identify requests to other collection, eg. ignores these.");
+        addStep("Send an identify request with a undefined 'Collection' header property, " +
+                "eg. this identify requests should be handled by everybody.",
                 "Verify that the message bus accepts this message.");
-        final BlockingQueue<Message> messageList = new LinkedBlockingDeque<Message>();
         String myCollectionID = "MyCollection";
-        messageBus.getCollectionFilter().add(myCollectionID);
+        messageBus.setCollectionFilter(Arrays.asList(new String[] { myCollectionID }));
         RawMessagebus rawMessagebus = new RawMessagebus(
                 settingsForTestClient.getMessageBusConfiguration(),
                 securityManager);
-        AlarmMessage messageToSend = ExampleMessageFactory.createMessage(AlarmMessage.class);
-        messageToSend.setCollectionID(myCollectionID);
-        javax.jms.Message msg = rawMessagebus.createMessage(messageToSend);
-        rawMessagebus.addHeader(msg, messageToSend.getClass().getSimpleName(), messageToSend.getReplyTo(),
+        IdentifyPillarsForDeleteFileRequest identifyRequest =
+                ExampleMessageFactory.createMessage(IdentifyPillarsForDeleteFileRequest.class);
+        identifyRequest.setCollectionID(myCollectionID);
+        javax.jms.Message msg = rawMessagebus.createMessage(identifyRequest);
+        rawMessagebus.addHeader(msg, identifyRequest.getClass().getSimpleName(), identifyRequest.getReplyTo(),
                 null,
-                messageToSend.getCorrelationID());
-        rawMessagebus.sendMessage(settingsForTestClient.getAlarmDestination(), msg);
-        alarmReceiver.waitForMessage(AlarmMessage.class);
+                identifyRequest.getCorrelationID());
+        rawMessagebus.sendMessage(settingsForTestClient.getCollectionDestination(), msg);
+        collectionReceiver.waitForMessage(IdentifyPillarsForDeleteFileRequest.class);
 
-        addStep("Send an message with the 'Collection' header property set to my collection",
-                "Verify that the message bus accepts this message.");
+        addStep("Send an identify request with the 'Collection' header property set to my collection",
+                "Verify that the request bus accepts this message.");
         msg.setStringProperty(ActiveMQMessageBus.COLLECTION_ID_KEY, myCollectionID);
-        rawMessagebus.sendMessage(settingsForTestClient.getAlarmDestination(), msg);
-        alarmReceiver.waitForMessage(AlarmMessage.class);
+        rawMessagebus.sendMessage(settingsForTestClient.getCollectionDestination(), msg);
+        collectionReceiver.waitForMessage(IdentifyPillarsForDeleteFileRequest.class);
 
         addStep("Send an invalid message with the 'Receiver' header property set to another specific component",
                 "Verify that the message bus ignores this before parsing the message.");
         msg.setStringProperty(ActiveMQMessageBus.COLLECTION_ID_KEY, "OtherCollection");
-        rawMessagebus.sendMessage(settingsForTestClient.getAlarmDestination(), msg);
-        alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
+        rawMessagebus.sendMessage(settingsForTestClient.getCollectionDestination(), msg);
+        collectionReceiver.checkNoMessageIsReceived(IdentifyPillarsForDeleteFileRequest.class);
     }
 
     @Test(groups = { "specificationonly" })

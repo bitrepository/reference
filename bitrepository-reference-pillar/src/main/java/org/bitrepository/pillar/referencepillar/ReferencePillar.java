@@ -47,7 +47,6 @@ import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.scheduler.JobScheduler;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
 import org.bitrepository.service.workflow.SchedulableJob;
-import org.bitrepository.settings.repositorysettings.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,13 +103,13 @@ public class ReferencePillar implements Pillar {
                 new ResponseDispatcher(settings, messageBus),
                 alarmDispatcher,
                 audits);
-        messageBus.getCollectionFilter().addAll(Arrays.asList(context.getPillarCollections()));
+        messageBus.setCollectionFilter(Arrays.asList(context.getPillarCollections()));
         mediator = new ReferencePillarMediator(messageBus, context, archiveManager, manager);
         mediator.start();
         
         this.scheduler = new TimerbasedScheduler();
         initializeWorkflows();
-        log.info("ReferencePillar started!");
+        log.info("ReferencePillar started for collections: " + Arrays.asList(context.getPillarCollections()));
     }
     
     /**

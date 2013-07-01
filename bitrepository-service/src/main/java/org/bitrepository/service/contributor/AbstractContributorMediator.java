@@ -21,8 +21,6 @@
  */
 package org.bitrepository.service.contributor;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -31,6 +29,9 @@ import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.contributor.handler.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Defines the general functionality for handling a set of requests. Does this by delegating the
@@ -65,6 +66,7 @@ public abstract class AbstractContributorMediator implements ContributorMediator
             handlerMap.put(handler.getRequestClass().getSimpleName(), handler);
         }
         messageBus.addListener(getContext().getSettings().getContributorDestinationID(), messageHandler);
+        System.out.println("Referencepillar: adding lister to pillar topic: " + getContext().getSettings().getContributorDestinationID());
         messageBus.addListener(getContext().getSettings().getCollectionDestination(), messageHandler);
     }
 

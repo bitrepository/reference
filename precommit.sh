@@ -11,4 +11,4 @@ echo "Updating third party licenses"
 mvn license:add-third-party -q
 
 echo "Running regression test"
-mvn clean install -q
+mvn clean install -q -Pintegration-test

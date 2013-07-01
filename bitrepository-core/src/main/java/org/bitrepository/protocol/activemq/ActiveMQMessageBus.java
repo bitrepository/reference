@@ -24,28 +24,6 @@
  */
 package org.bitrepository.protocol.activemq;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import javax.jms.Connection;
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorymessages.Message;
@@ -56,20 +34,16 @@ import org.bitrepository.protocol.MessageVersionValidator;
 import org.bitrepository.protocol.OperationType;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
-import org.bitrepository.protocol.messagebus.logger.AlarmMessageLogger;
-import org.bitrepository.protocol.messagebus.logger.DeleteFileMessageLogger;
-import org.bitrepository.protocol.messagebus.logger.GetAuditTrailsMessageLogger;
-import org.bitrepository.protocol.messagebus.logger.GetChecksumsMessageLogger;
-import org.bitrepository.protocol.messagebus.logger.GetFileIDsMessageLogger;
-import org.bitrepository.protocol.messagebus.logger.GetFileMessageLogger;
-import org.bitrepository.protocol.messagebus.logger.GetStatusMessageLogger;
-import org.bitrepository.protocol.messagebus.logger.MessageLoggerProvider;
-import org.bitrepository.protocol.messagebus.logger.PutFileMessageLogger;
+import org.bitrepository.protocol.messagebus.logger.*;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import javax.jms.*;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Contains the basic functionality for connection and communicating with the
@@ -430,17 +404,19 @@ public class ActiveMQMessageBus implements MessageBus {
             try {
                 String recipientID = jmsMessage.getStringProperty(MESSAGE_TO_KEY);
                 type = jmsMessage.getStringProperty(MESSAGE_TYPE_KEY);
-                if(!componentFilter.isEmpty()) {
-                    if (recipientID != null && !componentFilter.contains(recipientID)) {
-                        log.trace("Ignoring " + type + " message to other component " + recipientID);
-                        return;
+                if (type.startsWith("Identify") && type.endsWith("Request")) {
+                    if(!componentFilter.isEmpty()) {
+                        if (recipientID != null && !componentFilter.contains(recipientID)) {
+                            log.trace("Ignoring " + type + " message to other component " + recipientID);
+                            return;
+                        }
                     }
-                }
-                String collectionID = jmsMessage.getStringProperty(COLLECTION_ID_KEY);
-                if(!collectionFilter.isEmpty()) {
-                    if (collectionID != null && !collectionFilter.contains(collectionID)) {
-                        log.trace("Ignoring message to unknown collection " + collectionID);
-                        return;
+                    String collectionID = jmsMessage.getStringProperty(COLLECTION_ID_KEY);
+                    if(!collectionFilter.isEmpty()) {
+                        if (collectionID != null && !collectionFilter.contains(collectionID)) {
+                            log.trace("Ignoring message to unknown collection " + collectionID);
+                            return;
+                        }
                     }
                 }
                 String signature = jmsMessage.getStringProperty(MESSAGE_SIGNATURE_KEY);
@@ -516,12 +492,16 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     @Override
-    public Set<String> getComponentFilter() {
-        return componentFilter;
+    public void setComponentFilter(List<String> componentIDs) {
+        log.info("Settings component filter to: " + componentIDs);
+        componentFilter.clear();
+        componentFilter.addAll(componentIDs);
     }
 
     @Override
-    public Set<String> getCollectionFilter() {
-        return collectionFilter;
+    public void setCollectionFilter(List<String> collectionIDs) {
+        log.info("Settings collection filter to: " + collectionIDs);
+        collectionFilter.clear();
+        collectionFilter.addAll(collectionIDs);
     }
 }

@@ -24,13 +24,13 @@
  */
 package org.bitrepository.protocol.bus;
 
-import java.util.Set;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.jaccept.TestEventManager;
 
 import javax.jms.JMSException;
+import java.util.List;
 
 public class MessageBusWrapper implements MessageBus {
     private final MessageBus messageBus;
@@ -64,12 +64,12 @@ public class MessageBusWrapper implements MessageBus {
     }
 
     @Override
-    public Set<String> getComponentFilter() {
-        return messageBus.getComponentFilter();
+    public void setComponentFilter(List<String>  componentIDs) {
+        messageBus.setComponentFilter(componentIDs);
     }
 
     @Override
-    public Set<String> getCollectionFilter() {
-        return messageBus.getCollectionFilter();
+    public void setCollectionFilter(List<String> collectionIDs) {
+        messageBus.setCollectionFilter(collectionIDs);
     }
 }

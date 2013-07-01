@@ -158,7 +158,7 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
     
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarDeleteFileTestMissingChecksumArgument() throws Exception {
+    public void pillarDeleteFileTestMissingChecksumArgument() throws Exception {
         addDescription("Tests that a missing 'ChecksumOnExistingFile' will not delete the file.");
         Assert.assertTrue(context.getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests());
         messageBus.sendMessage(msgFactory.createDeleteFileRequest(null, null, DEFAULT_FILE_ID));
@@ -169,7 +169,7 @@ public class DeleteFileOnReferencePillarTest extends ReferencePillarTest {
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void checksumPillarDeleteFileTestAllowedMissingChecksum() throws Exception {
+    public void pillarDeleteFileTestAllowedMissingChecksum() throws Exception {
         addDescription("Tests that a missing 'ChecksumOnExistingFile' will delete the file, when it has been allowed "
                 + "to perform destructive operations in the settings.");
         context.getSettings().getRepositorySettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(false);

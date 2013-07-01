@@ -24,13 +24,6 @@
  */
 package org.bitrepository.protocol;
 
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import javax.jms.JMSException;
-import javax.swing.JFrame;
-
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
 import org.bitrepository.common.settings.Settings;
@@ -54,11 +47,13 @@ import org.jaccept.testreport.ReportGenerator;
 import org.slf4j.LoggerFactory;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.*;
+
+import javax.jms.JMSException;
+import javax.swing.*;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * Contains the generic parts for integration testing.
@@ -256,7 +251,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
         messageBus = new MessageBusWrapper(
                 ProtocolComponentFactory.getInstance().getMessageBus(settingsForCUT, securityManager), testEventManager);
-        messageBus.getComponentFilter().clear();
     }
 
     /**

@@ -24,17 +24,17 @@
  */
 package org.bitrepository.protocol.messagebus;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.jms.JMSException;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jms.JMSException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The place to get message buses. Only one message bus is created for each collection ID.
@@ -62,7 +62,8 @@ public final class MessageBusManager {
                     settings.getMessageBusConfiguration(),
                     securityManager);
             messageBusMap.put(DEFAULT_MESSAGE_BUS, messageBus);
-            messageBus.getComponentFilter().add(settings.getComponentID());
+            log.info("Setting message bus componentID filet to " + settings.getComponentID());
+            messageBus.setComponentFilter(Arrays.asList(new String[] {settings.getComponentID()}));
         }
         return messageBusMap.get(DEFAULT_MESSAGE_BUS);
     }

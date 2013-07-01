@@ -24,8 +24,8 @@
  */
 package org.bitrepository.protocol.messagebus;
 
-import java.util.Set;
 import javax.jms.JMSException;
+import java.util.List;
 
 
 /**
@@ -56,7 +56,7 @@ public interface MessageBus extends MessageSender {
     void close() throws JMSException;
 
     /**
-     * @return Defines the list of componentIDs with receiver component ID relevant for this messagebus instance. If
+     * @param componentIDs Defines the list of componentIDs with receiver component ID relevant for this messagebus instance. If
      * the list contains any elements, the receiverID for incoming messages are read before being parsed. This enables
      * the message bus to discard messages prior to parsing, if the message is meant for other components.
      * <p>
@@ -65,10 +65,10 @@ public interface MessageBus extends MessageSender {
      * </p>
      *
      */
-    Set<String> getComponentFilter();
+    void setComponentFilter(List<String> componentIDs);
 
     /**
-     * @return If defined specifies the list of componentIDs with should be handled.If
+     * @param collectionIDs If defined specifies the list of collectionIDs with should be handled. If
      * the list contains any elements, the collectionID for incoming messages are read before being parsed. This
      * enables the message bus to discard messages prior to parsing, if the message is meant for other collections.
      * <p>
@@ -77,5 +77,5 @@ public interface MessageBus extends MessageSender {
      * </p>
      *
      */
-    Set<String> getCollectionFilter();
+    void setCollectionFilter(List<String> collectionIDs);
 }
