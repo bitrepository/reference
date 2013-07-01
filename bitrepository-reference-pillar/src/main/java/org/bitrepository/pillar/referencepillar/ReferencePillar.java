@@ -109,7 +109,6 @@ public class ReferencePillar implements Pillar {
         
         this.scheduler = new TimerbasedScheduler();
         initializeWorkflows();
-        log.info("ReferencePillar started for collections: " + Arrays.asList(context.getPillarCollections()));
     }
     
     /**

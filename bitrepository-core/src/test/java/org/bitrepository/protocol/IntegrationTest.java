@@ -54,6 +54,7 @@ import javax.swing.*;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 /**
  * Contains the generic parts for integration testing.
@@ -139,6 +140,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         DEFAULT_AUDITINFORMATION = testMethodName;
         receiverManager = new MessageReceiverManager(messageBus);
         registerMessageReceivers();
+        messageBus.setCollectionFilter(Arrays.asList(new String[]{}));
+        messageBus.setComponentFilter(Arrays.asList(new String[]{}));
         receiverManager.startListeners();
         initializeCUT();
     }

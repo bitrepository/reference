@@ -74,10 +74,12 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
      */
     private void updateSettingsWithSpecificPillarID(Settings settings, String pillarID) {
         settings.getReferenceSettings().getPillarSettings().setPillarID(pillarID);
-        for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
-            if(c.getPillarIDs().getPillarID().remove(DEFAULT_PILLAR_ID_TO_REPLACE)) {
-                c.getPillarIDs().getPillarID().add(pillarID);
+        for(Collection collection : settings.getRepositorySettings().getCollections().getCollection()) {
+            if(collection.getPillarIDs().getPillarID().remove(DEFAULT_PILLAR_ID_TO_REPLACE)) {
+                collection.getPillarIDs().getPillarID().add(pillarID);
             }
         }
     }
+
+
 }
