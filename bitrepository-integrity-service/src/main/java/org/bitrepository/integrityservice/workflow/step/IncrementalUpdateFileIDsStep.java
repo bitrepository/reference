@@ -16,12 +16,6 @@ public class IncrementalUpdateFileIDsStep extends UpdateFileIDsStep {
     public String getName() {
         return "Collect new fileIDs from pillars";
     }
-    
-    @Override
-    protected void initialStepAction() {
-        //Empty, no initial action is required. 
-    }
-
 
     /**
      * @return Description of this step.
