@@ -53,13 +53,7 @@ public class PutFile extends CommandLineClient {
      * @param args The arguments for performing the PutFile operation.
      */
     public static void main(String[] args) {
-    	try {
-            PutFile putfile = new PutFile(args);
-            putfile.performOperation();
-    	} catch (RuntimeException e) {
-    		e.printStackTrace();
-    		System.exit(Constants.EXIT_OPERATION_FAILURE);
-    	}
+        CommandLineClient.runCommandLineClient(new PutFile(args));
     }
 
     /**
@@ -94,7 +88,7 @@ public class PutFile extends CommandLineClient {
             System.exit(Constants.EXIT_OPERATION_FAILURE);
         }
     }
-    
+
     @Override
     protected void createOptionsForCmdArgumentHandler() {
         super.createOptionsForCmdArgumentHandler();
@@ -116,11 +110,11 @@ public class PutFile extends CommandLineClient {
 
         Option deleteOption = new Option(Constants.DELETE_FILE_ARG, Constants.NO_ARGUMENT, 
                 "If this argument is present, then the file will be removed from the server, "
-                + "when the operation is complete.");
+                        + "when the operation is complete.");
         deleteOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(deleteOption);
     }
-    
+
     /**
      * Initiates the operation and waits for the results.
      * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
@@ -131,15 +125,15 @@ public class PutFile extends CommandLineClient {
         FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
         URL url = fileexchange.uploadToServer(f);
         String fileId = retrieveTheName(f);
-        
+
         output.debug("Initiating the PutFile conversation.");
         ChecksumDataForFileTYPE validationChecksum = getValidationChecksum(f);
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpec();
-        
+
         CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings, output);
         client.putFile(getCollectionID(), url, fileId, f.length(), validationChecksum, requestChecksum, eventHandler,
                 "Putting the file '" + f + "' with the file id '" + fileId + "' from commandLine.");
-        
+
         if(cmdHandler.hasOption(Constants.DELETE_FILE_ARG)) {
             try {
                 fileexchange.deleteFromServer(url);
@@ -148,23 +142,23 @@ public class PutFile extends CommandLineClient {
                 e.printStackTrace();
             }
         }
-        
+
         return eventHandler.getFinish();
     }
-    
+
     /**
      * Finds the file from the arguments.
      * @return The requested file.
      */
     private File findTheFile() {
         String filePath = cmdHandler.getOptionValue(Constants.FILE_ARG);
-        
+
         File file = new File(filePath);
         if(!file.isFile()) {
             throw new IllegalArgumentException("The file '" + filePath + "' is invalid. It does not exists or it "
                     + "is a directory.");
         }
-        
+
         return file;
     }
 
@@ -179,7 +173,7 @@ public class PutFile extends CommandLineClient {
             return f.getName();
         }
     }
-    
+
     /**
      * Creates the data structure for encapsulating the validation checksums for validation of the PutFile operation.
      * @param file The file to have the checksum calculated.
@@ -188,15 +182,15 @@ public class PutFile extends CommandLineClient {
     private ChecksumDataForFileTYPE getValidationChecksum(File file) {
         ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settings);
         String checksum = ChecksumUtils.generateChecksum(file, csSpec);
-            
+
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         res.setCalculationTimestamp(CalendarUtils.getNow());
         res.setChecksumSpec(csSpec);
         res.setChecksumValue(Base16Utils.encodeBase16(checksum));
-        
+
         return res;
     }
-    
+
     /**
      * @return The requested checksum spec, or null if the arguments does not exist.
      */
@@ -204,21 +198,21 @@ public class PutFile extends CommandLineClient {
         if(!cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
             return null;
         }
-        
+
         ChecksumSpecTYPE res = new ChecksumSpecTYPE();
         res.setChecksumType(ChecksumType.fromValue(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
-        
+
         if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
             res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
         }
         return res;
     }
-    
+
     /**
      * @return The filename for the file to upload. 
      */
     private String getFileIDForMessage() {
         return cmdHandler.getOptionValue(Constants.FILE_ARG) + (cmdHandler.hasOption(Constants.FILE_ID_ARG) ? 
-                        " (with the id '" + cmdHandler.getOptionValue(Constants.FILE_ID_ARG) + "')" : "");
+                " (with the id '" + cmdHandler.getOptionValue(Constants.FILE_ID_ARG) + "')" : "");
     }
 }

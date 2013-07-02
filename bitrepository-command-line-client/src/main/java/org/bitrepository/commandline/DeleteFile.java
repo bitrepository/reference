@@ -46,13 +46,7 @@ public class DeleteFile extends CommandLineClient {
      * @param args The arguments for performing the DeleteFile operation.
      */
     public static void main(String[] args) {
-    	try {
-    		DeleteFile deletefile = new DeleteFile(args);
-            deletefile.performOperation();
-    	} catch (RuntimeException e) {
-    		e.printStackTrace();
-    		System.exit(Constants.EXIT_OPERATION_FAILURE);
-    	}
+        CommandLineClient.runCommandLineClient(new DeleteFile(args));
     }
 
     /**

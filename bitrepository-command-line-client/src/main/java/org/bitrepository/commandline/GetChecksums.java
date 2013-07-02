@@ -46,13 +46,7 @@ public class GetChecksums extends CommandLineClient {
      * @param args The arguments for performing the GetChecksums operation.
      */
     public static void main(String[] args) {
-    	try {
-    		GetChecksums getFileIDs = new GetChecksums(args);
-    		getFileIDs.performOperation();
-    	} catch (RuntimeException e) {
-    		e.printStackTrace();
-    		System.exit(Constants.EXIT_OPERATION_FAILURE);
-    	}
+        CommandLineClient.runCommandLineClient(new GetChecksums(args));
     }
 
     /**
@@ -84,21 +78,21 @@ public class GetChecksums extends CommandLineClient {
 
         Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT, 
                 "[OPTIONAL] The algorithm of checksum to request in the response from the pillars. "
-                + "If no such argument is given, then the default from settings is retrieved.");
+                        + "If no such argument is given, then the default from settings is retrieved.");
         checksumTypeOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumTypeOption);
-        
+
         Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT, 
                 "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
         checksumSaltOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
     }
-    
+
     /**
      * Perform the GetChecksums operation.
      */
     public void performOperation() {
-    	ChecksumSpecTYPE spec = getRequestChecksumSpec();
+        ChecksumSpecTYPE spec = getRequestChecksumSpec();
         output.startupInfo("Performing the GetChecksums operation.");
         Boolean success = pagingClient.getChecksums(getCollectionID(), getFileIDs(), 
                 getPillarIDs(), spec);
@@ -116,22 +110,22 @@ public class GetChecksums extends CommandLineClient {
         if(!cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
             return ChecksumUtils.getDefault(settings);
         }
-        
+
         ChecksumSpecTYPE res = new ChecksumSpecTYPE();
         res.setChecksumType(ChecksumType.fromValue(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
-        
+
         if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
             res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(
                     Constants.REQUEST_CHECKSUM_SALT_ARG)));
         }
-        
+
         try {
-			ChecksumUtils.verifyAlgorithm(res);
-		} catch (NoSuchAlgorithmException e) {
-        	output.error("Invalid checksum algorithm: " + e.getMessage());
-			throw new IllegalStateException("Invalid checksumspec for '" + res + "'", e);
-		}
-        
+            ChecksumUtils.verifyAlgorithm(res);
+        } catch (NoSuchAlgorithmException e) {
+            output.error("Invalid checksum algorithm: " + e.getMessage());
+            throw new IllegalStateException("Invalid checksumspec for '" + res + "'", e);
+        }
+
         return res;
     }
 }

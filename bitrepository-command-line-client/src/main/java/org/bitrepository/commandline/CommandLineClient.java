@@ -25,6 +25,8 @@ package org.bitrepository.commandline;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.jms.JMSException;
+
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
 import org.bitrepository.commandline.output.DefaultOutputHandler;
@@ -33,12 +35,31 @@ import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
 
 /**
- * Defines the common functionality for commandline clients.
+ * Defines the common functionality for command-line-clients.
  */
 public abstract class CommandLineClient {
+    /**
+     * Runs a specific command-line-client. Handles also the closing of connections and deals with exceptions.
+     * @param clc The CommandLineClient to perform the operation of.
+     */
+    public static void runCommandLineClient(CommandLineClient clc) {
+        try {
+            try {
+                clc.performOperation();
+            } finally {
+                clc.closeConnection();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(Constants.EXIT_OPERATION_FAILURE);
+        }
+    }
+    
     /** For handling the output.*/
     protected final OutputHandler output = new DefaultOutputHandler(getClass());
 
@@ -77,6 +98,11 @@ public abstract class CommandLineClient {
 
         output.startupInfo("Creating client.");
     }
+    
+    /**
+     * Method for performing the operation of the specific commandline client.
+     */
+    public abstract void performOperation();
 
     /**
      * Defines the componentID of the concrete client. Must be specified by in the subclass.
@@ -176,5 +202,16 @@ public abstract class CommandLineClient {
     protected long getTimeout() {
         return settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
                 + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
+    }
+    
+    /**
+     * Closes the connections, e.g. to the message-bus.
+     * @throws JMSException If the message-bus cannot be closed.
+     */
+    public void closeConnection() throws JMSException {
+        MessageBus bus = MessageBusManager.getMessageBus();
+        if(bus != null) {
+            bus.close();
+        }
     }
 }

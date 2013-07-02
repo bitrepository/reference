@@ -47,7 +47,7 @@ import org.bitrepository.protocol.CoordinationLayerException;
  * Uses the HMAC method for calculating the checksums with salt.
  */
 public final class ChecksumUtils {
-    
+
     /** The maximal size of the byte array for digest.*/
     private static final int BYTE_ARRAY_SIZE_FOR_DIGEST = 4096;
     
