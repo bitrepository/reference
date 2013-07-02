@@ -50,7 +50,8 @@ public class GetFile extends CommandLineClient {
      * @param args The arguments for performing the GetFile operation.
      */
     public static void main(String[] args) {
-        CommandLineClient.runCommandLineClient(new GetFile(args));
+        GetFile client = new GetFile(args);
+        client.runCommand();
     }
 
     /**

@@ -53,7 +53,8 @@ public class PutFile extends CommandLineClient {
      * @param args The arguments for performing the PutFile operation.
      */
     public static void main(String[] args) {
-        CommandLineClient.runCommandLineClient(new PutFile(args));
+        PutFile client = new PutFile(args);
+        client.runCommand();
     }
 
     /**

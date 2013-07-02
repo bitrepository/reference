@@ -46,7 +46,8 @@ public class GetChecksums extends CommandLineClient {
      * @param args The arguments for performing the GetChecksums operation.
      */
     public static void main(String[] args) {
-        CommandLineClient.runCommandLineClient(new GetChecksums(args));
+        GetChecksums client = new GetChecksums(args);
+        client.runCommand();
     }
 
     /**
