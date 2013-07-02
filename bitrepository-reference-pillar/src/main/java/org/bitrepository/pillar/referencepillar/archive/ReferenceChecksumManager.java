@@ -206,12 +206,32 @@ public class ReferenceChecksumManager {
      * @param maxTimeStamp The maximum date for the timestamp of the extracted checksum entries.
      * @param maxNumberOfResults The maximum number of results.
      * @param collectionId The id of the collection.
-     * @return The checksum entries from the store.
+     * @param spec The checksum specification.
+     * @return If default checksum, then the checksum entries from the store. Otherwise recalculate all the requested
+     * checksums.
      */
     public ExtractedChecksumResultSet getEntries(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            Long maxNumberOfResults, String collectionId) {
-        ensureStateOfAllData(collectionId);
-        return cache.getEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults, collectionId);
+            Long maxNumberOfResults, String collectionId, ChecksumSpecTYPE spec) {
+    	if(spec.equals(defaultChecksumSpec)) {
+    		ensureStateOfAllData(collectionId);
+    		return cache.getEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults, collectionId);
+    	} else {
+    		ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
+    		
+    		long i = 0;
+    		for(String fileId : cache.getAllFileIDs(collectionId)) {
+    			if(maxNumberOfResults != null && i > maxNumberOfResults) {
+    				break;
+    			}
+    			i++;
+    			
+    			String checksum = getChecksumForFile(fileId, collectionId, spec);
+    			ChecksumEntry entry = new ChecksumEntry(fileId, checksum, new Date());
+    			res.insertChecksumEntry(entry);    			
+    		}
+    		
+    		return res;
+    	}
     }
     
     /**

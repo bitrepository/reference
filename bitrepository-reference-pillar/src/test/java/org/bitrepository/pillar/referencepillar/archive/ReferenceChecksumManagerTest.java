@@ -29,6 +29,7 @@ import java.util.Date;
 import org.bitrepository.common.filestore.DefaultFileInfo;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.cache.ChecksumDAO;
@@ -90,7 +91,8 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
     
     private void testRecalculatingChecksumsDueToChangedFile(ReferenceChecksumManager csManager, CollectionArchiveManager archives) throws Exception {
         Date initialDate = new Date();
-        ExtractedChecksumResultSet initialCsResults = csManager.getEntries(null, null, null, collectionID);
+        ExtractedChecksumResultSet initialCsResults = csManager.getEntries(null, null, null, collectionID, 
+        		ChecksumUtils.getDefault(settingsForCUT));
         Assert.assertEquals(initialCsResults.getEntries().size(), 0);
 
         synchronized(this) {
@@ -101,7 +103,8 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
         addStep("Put a file into the archive", "The checksum of the file is extracted through the checksum entries");
         archives.downloadFileForValidation(TEST_FILE, collectionID, new ByteArrayInputStream(TEST_CONTENT.getBytes()));
         archives.moveToArchive(TEST_FILE, collectionID);
-        ExtractedChecksumResultSet csResults = csManager.getEntries(null, null, null, collectionID);
+        ExtractedChecksumResultSet csResults = csManager.getEntries(null, null, null, collectionID, 
+        		ChecksumUtils.getDefault(settingsForCUT));
         Assert.assertEquals(csResults.getEntries().size(), 1);
         
         addStep("Validate the dates", "Calculation time should be between the initial test time and now.");
@@ -126,7 +129,8 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
         out.flush();
         out.close();
 
-        ExtractedChecksumResultSet changedCsResults = csManager.getEntries(null, null, null, collectionID);
+        ExtractedChecksumResultSet changedCsResults = csManager.getEntries(null, null, null, collectionID, 
+        		ChecksumUtils.getDefault(settingsForCUT));
         Assert.assertEquals(changedCsResults.getEntries().size(), 1);
         
         addStep("Validate the dates", "New calculation time should be between the initial test time and now.");

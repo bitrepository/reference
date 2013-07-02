@@ -177,7 +177,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
                 maxResults = message.getMaxNumberOfResults().longValue();
             }
             return getCsManager().getEntries(message.getMinTimestamp(), message.getMaxTimestamp(), maxResults,
-                    message.getCollectionID());
+                    message.getCollectionID(), message.getChecksumRequestForExistingFile());
         }
     }
     
