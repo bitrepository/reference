@@ -66,6 +66,7 @@ public class PagingGetChecksumsClient {
             client.getChecksums(collectionID, queries, fileID, checksumSpec, null, eventHandler, "");
             OperationEvent event = eventHandler.getFinish();
             if(event.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
+                outputFormatter.formatResult(model.getUncompletedResults());
                 return false;
             }
             pillarsToGetFrom = eventHandler.getPillarsWithPartialResults();

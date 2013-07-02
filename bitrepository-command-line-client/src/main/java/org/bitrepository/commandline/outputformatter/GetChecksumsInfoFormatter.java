@@ -41,11 +41,12 @@ public class GetChecksumsInfoFormatter implements GetChecksumsOutputFormatter {
         this.outputHandler = outputHandler;
     }
     
+    @Override
     public void formatHeader() {
         outputHandler.resultHeader(header);
     }
     
-    
+    @Override
     public void formatResult(Collection<ChecksumResult> results) {
         String firstContributor;
         String checksum;

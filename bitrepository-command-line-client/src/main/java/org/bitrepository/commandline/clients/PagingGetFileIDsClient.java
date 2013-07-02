@@ -65,6 +65,7 @@ public class PagingGetFileIDsClient {
             client.getFileIDs(collectionID, queries, fileID, null, eventHandler);
             OperationEvent event = eventHandler.getFinish();
             if(event.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
+                outputFormatter.formatResult(model.getUncompletedResults());
                 return false;
             }
             pillarsToGetFrom = eventHandler.getPillarsWithPartialResults();
