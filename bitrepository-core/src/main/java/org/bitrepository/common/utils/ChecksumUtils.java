@@ -233,7 +233,7 @@ public final class ChecksumUtils {
                 || (algorithm == ChecksumType.SHA512)) {
             if(checksumSpec.getChecksumSalt() != null && checksumSpec.getChecksumSalt().length > 0) {
                 throw new NoSuchAlgorithmException("Cannot perform a message-digest checksum calculation with salt "
-                        + "as requested:" + checksumSpec);
+                        + "as requested: " + checksumSpec);
             }
         } else if((algorithm == ChecksumType.HMAC_MD5) 
                 || (algorithm == ChecksumType.HMAC_SHA1)
@@ -242,7 +242,7 @@ public final class ChecksumUtils {
                 || (algorithm == ChecksumType.HMAC_SHA512)) {
             if(checksumSpec.getChecksumSalt() == null) {
                 throw new NoSuchAlgorithmException("Cannot perform a HMAC checksum calculation without salt as "
-                        + "requested:" + checksumSpec);
+                        + "requested: " + checksumSpec);
             }
         } else {
             throw new NoSuchAlgorithmException("The checksum specification '" + checksumSpec + "' is not supported.");

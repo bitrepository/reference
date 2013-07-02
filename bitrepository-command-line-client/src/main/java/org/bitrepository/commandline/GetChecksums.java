@@ -21,6 +21,8 @@
  */
 package org.bitrepository.commandline;
 
+import java.security.NoSuchAlgorithmException;
+
 import org.apache.commons.cli.Option;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
@@ -44,8 +46,13 @@ public class GetChecksums extends CommandLineClient {
      * @param args The arguments for performing the GetChecksums operation.
      */
     public static void main(String[] args) {
-        GetChecksums getFileIDs = new GetChecksums(args);
-        getFileIDs.performOperation();
+    	try {
+    		GetChecksums getFileIDs = new GetChecksums(args);
+    		getFileIDs.performOperation();
+    	} catch (RuntimeException e) {
+    		e.printStackTrace();
+    		System.exit(Constants.EXIT_OPERATION_FAILURE);
+    	}
     }
 
     /**
@@ -80,6 +87,7 @@ public class GetChecksums extends CommandLineClient {
                 + "If no such argument is given, then the default from settings is retrieved.");
         checksumTypeOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumTypeOption);
+        
         Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT, 
                 "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
         checksumSaltOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
@@ -90,9 +98,10 @@ public class GetChecksums extends CommandLineClient {
      * Perform the GetChecksums operation.
      */
     public void performOperation() {
+    	ChecksumSpecTYPE spec = getRequestChecksumSpec();
         output.startupInfo("Performing the GetChecksums operation.");
         Boolean success = pagingClient.getChecksums(getCollectionID(), getFileIDs(), 
-                getPillarIDs(), getRequestChecksumSpec());
+                getPillarIDs(), spec);
         if(success) {
             System.exit(Constants.EXIT_SUCCESS);
         } else {
@@ -115,6 +124,14 @@ public class GetChecksums extends CommandLineClient {
             res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(
                     Constants.REQUEST_CHECKSUM_SALT_ARG)));
         }
+        
+        try {
+			ChecksumUtils.verifyAlgorithm(res);
+		} catch (NoSuchAlgorithmException e) {
+        	output.error("Invalid checksum algorithm: " + e.getMessage());
+			throw new IllegalStateException("Invalid checksumspec for '" + res + "'", e);
+		}
+        
         return res;
     }
 }
