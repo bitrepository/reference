@@ -44,15 +44,15 @@ import org.bitrepository.protocol.security.SecurityManager;
  */
 public abstract class CommandLineClient {
     /**
-     * Runs a specific command-line-client. Handles also the closing of connections and deals with exceptions.
-     * @param clc The CommandLineClient to perform the operation of.
+     * Runs a specific command-line-client operation. 
+     * Handles also the closing of connections and deals with exceptions.
      */
-    public static void runCommandLineClient(CommandLineClient clc) {
+    public void runCommand() {
         try {
             try {
-                clc.performOperation();
+                performOperation();
             } finally {
-                clc.closeConnection();
+                shutdown();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -208,7 +208,7 @@ public abstract class CommandLineClient {
      * Closes the connections, e.g. to the message-bus.
      * @throws JMSException If the message-bus cannot be closed.
      */
-    public void closeConnection() throws JMSException {
+    public void shutdown() throws JMSException {
         MessageBus bus = MessageBusManager.getMessageBus();
         if(bus != null) {
             bus.close();

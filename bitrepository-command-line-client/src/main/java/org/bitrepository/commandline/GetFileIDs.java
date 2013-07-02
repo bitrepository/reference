@@ -40,7 +40,8 @@ public class GetFileIDs extends CommandLineClient {
      * @param args The arguments for performing the GetFileIDs operation.
      */
     public static void main(String[] args) {
-        CommandLineClient.runCommandLineClient(new GetFileIDs(args));
+        GetFileIDs client = new GetFileIDs(args);
+        client.runCommand();
     }
 
     /**
