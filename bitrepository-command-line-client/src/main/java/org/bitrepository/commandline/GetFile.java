@@ -50,8 +50,13 @@ public class GetFile extends CommandLineClient {
      * @param args The arguments for performing the GetFile operation.
      */
     public static void main(String[] args) {
-        GetFile getfile = new GetFile(args);
-        getfile.performOperation();
+    	try {
+            GetFile getfile = new GetFile(args);
+            getfile.performOperation();
+    	} catch (RuntimeException e) {
+    		e.printStackTrace();
+    		System.exit(Constants.EXIT_OPERATION_FAILURE);
+    	}
     }
 
     /**

@@ -40,8 +40,13 @@ public class GetFileIDs extends CommandLineClient {
      * @param args The arguments for performing the GetFileIDs operation.
      */
     public static void main(String[] args) {
-        GetFileIDs getFileIDs = new GetFileIDs(args);
-        getFileIDs.performOperation();
+    	try {
+            GetFileIDs getFileIDs = new GetFileIDs(args);
+            getFileIDs.performOperation();
+    	} catch (RuntimeException e) {
+    		e.printStackTrace();
+    		System.exit(Constants.EXIT_OPERATION_FAILURE);
+    	}
     }
 
     /**
