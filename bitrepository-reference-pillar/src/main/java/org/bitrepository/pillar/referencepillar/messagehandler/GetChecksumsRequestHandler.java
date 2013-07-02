@@ -75,7 +75,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
             ReferenceChecksumManager csManager) {
         super(context, archivesManager, csManager);
     }
-    
+
     @Override
     public Class<GetChecksumsRequest> getRequestClass() {
         return GetChecksumsRequest.class;
@@ -94,7 +94,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
     public MessageResponse generateFailedResponse(GetChecksumsRequest message) {
         return createFinalResponse(message);
     }
-    
+
     /**
      * Method for validating the content of the GetChecksumsRequest message. 
      * Is it possible to perform the operation?
@@ -106,10 +106,10 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
         validatePillarId(message.getPillarID());
         validateChecksumSpecification(message.getChecksumRequestForExistingFile(), message.getCollectionID());
         validateFileIDs(message);
-        
+
         log.debug(MessageUtils.createMessageIdentifier(message) + "' validated and accepted.");
     }
-    
+
     /**
      * Method for validating the FileIDs in the GetChecksumsRequest message.
      * Do we have the requested files?
@@ -127,7 +127,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
             return;
         }
         validateFileID(fileID);
-        
+
         // if not missing, then all files have been found!
         if(!getArchives().hasFile(fileID, message.getCollectionID())) {
             // report on the missing files
@@ -140,14 +140,14 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
             throw new InvalidMessageException(fri, message.getCollectionID());
         }
     }
-    
+
     /**
      * Method for creating and sending the initial progress response for accepting the operation.
      * @param request The request to base the response upon.
      */
     private void sendInitialProgressMessage(GetChecksumsRequest request) {
         GetChecksumsProgressResponse response = createProgressResponse(request);
-        
+
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Starting to calculate checksums.");
@@ -155,7 +155,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
 
         dispatchResponse(response, request);
     }
-    
+
     /**
      * Method for calculating the checksum results requested.
      * @param message The message with the checksum request.
@@ -163,7 +163,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
      */
     private ExtractedChecksumResultSet extractChecksumResults(GetChecksumsRequest message) {
         log.debug("Starting to extracting the checksum of the requested files.");
-        
+
         if(message.getFileIDs().isSetFileID()) {
             ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
             ChecksumDataForChecksumSpecTYPE data = getCsManager().getChecksumDataForChecksumSpec(
@@ -180,7 +180,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
                     message.getCollectionID(), message.getChecksumRequestForExistingFile());
         }
     }
-    
+
     /**
      * Performs the needed operations to complete the operation.
      * If the results should be uploaded to a given URL, then the results are packed into a file and uploaded, 
@@ -193,7 +193,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
     private ResultingChecksums performPostProcessing(GetChecksumsRequest message, 
             ExtractedChecksumResultSet checksumResultSet) throws RequestHandlerException {
         ResultingChecksums res = new ResultingChecksums();
-        
+
         String url = message.getResultAddress();
         if(url != null) {
             try {
@@ -205,7 +205,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
                 ir.setResponseText("Could not handle the creation and upload of the results due to: " + e.getMessage());
                 throw new InvalidMessageException(ir, message.getCollectionID(), e);
             }
-            
+
             res.setResultAddress(url);
         } else {
             // Put the checksums into the result structure.
@@ -213,10 +213,10 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
                 res.getChecksumDataItems().add(cs);
             }
         }
-        
+
         return res;
     }
-    
+
     /**
      * Method for creating a file containing the list of calculated checksums.
      * 
@@ -232,7 +232,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
         // Create the temporary file.
         File checksumResultFile = File.createTempFile(request.getCorrelationID(), new Date().getTime() + ".cs");
         log.debug("Writing the list of checksums to the file '" + checksumResultFile + "'");
-        
+
         // Create data format 
         GetChecksumsResults results = new GetChecksumsResults();
         results.setVersion(VERSION);
@@ -257,10 +257,10 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
                 is.close();
             }
         }
-        
+
         return checksumResultFile;
     }
-    
+
     /**
      * Method for uploading a file to a given URL.
      * 
@@ -270,13 +270,13 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
      */
     private void uploadFile(File fileToUpload, String url) throws IOException {
         URL uploadUrl = new URL(url);
-        
+
         // Upload the file.
         log.debug("Uploading file: " + fileToUpload.getName() + " to " + url);
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
         fe.uploadToServer(new FileInputStream(fileToUpload), uploadUrl);
     }
-    
+
     /**
      * Method for sending a final response reporting the success.
      * @param request The GetChecksumRequest to base the response upon.
@@ -298,7 +298,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
 
         dispatchResponse(response, request);
     }
-    
+
     /**
      * Method for creating a GetChecksumProgressResponse based on a request.
      * Missing arguments:
@@ -316,7 +316,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
 
         return res;
     }
-    
+
     /**
      * Method for creating the generic GetChecksumsFinalResponse based on a GetChecksumRequest.
      * Missing fields:
@@ -331,7 +331,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
         GetChecksumsFinalResponse res = new GetChecksumsFinalResponse();
         res.setChecksumRequestForExistingFile(message.getChecksumRequestForExistingFile());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        
+
         return res;
     }
 }

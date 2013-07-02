@@ -48,7 +48,7 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
     private static final String TEST_FILE = "testFile"; 
     private static final String TEST_CONTENT = "This is the initial content."; 
     private static final String TEST_ADDED_CONTENT = "This is the newly added content to change the file."; 
-    
+
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
         File fileDir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getCollectionDirs().get(0).getFileDirs().get(0));
@@ -69,7 +69,7 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
 
         testRecalculatingChecksumsDueToChangedFile(csManager, archives);
     }
-    
+
     @Test( groups = {"regressiontest", "pillartest"})
     public void testRecalculationWithRealCache() throws Exception {
         addDescription("Test the ability to recalculate the checksums automatically with a database cache.");
@@ -88,25 +88,25 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
 
         testRecalculatingChecksumsDueToChangedFile(csManager, archives);
     }
-    
+
     private void testRecalculatingChecksumsDueToChangedFile(ReferenceChecksumManager csManager, CollectionArchiveManager archives) throws Exception {
         Date initialDate = new Date();
         ExtractedChecksumResultSet initialCsResults = csManager.getEntries(null, null, null, collectionID, 
-        		ChecksumUtils.getDefault(settingsForCUT));
+                ChecksumUtils.getDefault(settingsForCUT));
         Assert.assertEquals(initialCsResults.getEntries().size(), 0);
 
         synchronized(this) {
             addStep("The file system cannot handle timestamps in millis.", "One second wait, before inserting a file.");
             this.wait(1000);
         }
-        
+
         addStep("Put a file into the archive", "The checksum of the file is extracted through the checksum entries");
         archives.downloadFileForValidation(TEST_FILE, collectionID, new ByteArrayInputStream(TEST_CONTENT.getBytes()));
         archives.moveToArchive(TEST_FILE, collectionID);
         ExtractedChecksumResultSet csResults = csManager.getEntries(null, null, null, collectionID, 
-        		ChecksumUtils.getDefault(settingsForCUT));
+                ChecksumUtils.getDefault(settingsForCUT));
         Assert.assertEquals(csResults.getEntries().size(), 1);
-        
+
         addStep("Validate the dates", "Calculation time should be between the initial test time and now.");
         Date beforeChange = new Date();
         Assert.assertTrue(CalendarUtils.convertFromXMLGregorianCalendar(
@@ -130,9 +130,9 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
         out.close();
 
         ExtractedChecksumResultSet changedCsResults = csManager.getEntries(null, null, null, collectionID, 
-        		ChecksumUtils.getDefault(settingsForCUT));
+                ChecksumUtils.getDefault(settingsForCUT));
         Assert.assertEquals(changedCsResults.getEntries().size(), 1);
-        
+
         addStep("Validate the dates", "New calculation time should be between the initial test time and now.");
         Date afterChange = new Date();
         Assert.assertTrue(CalendarUtils.convertFromXMLGregorianCalendar(
@@ -144,7 +144,7 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
         Assert.assertTrue(archives.getFileInfo(TEST_FILE, collectionID).getMdate() >= initialDate.getTime());
         Assert.assertTrue(archives.getFileInfo(TEST_FILE, collectionID).getMdate() >= beforeChange.getTime());
         Assert.assertTrue(archives.getFileInfo(TEST_FILE, collectionID).getMdate() <= afterChange.getTime());
-        
+
         addStep("Test the checksum of before and after the change", "Not identical");
         String csBefore = Base16Utils.decodeBase16(csResults.getEntries().get(0).getChecksumValue());
         String csAfter = Base16Utils.decodeBase16(changedCsResults.getEntries().get(0).getChecksumValue());
