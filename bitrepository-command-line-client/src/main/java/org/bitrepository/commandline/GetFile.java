@@ -30,7 +30,8 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.commandline.utils.CompleteEventAwaiter;
+import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
+import org.bitrepository.commandline.eventhandler.GetFileEventHandler;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.http.HttpFileExchange;
@@ -110,7 +111,7 @@ public class GetFile extends CommandLineClient {
         String fileId = cmdHandler.getOptionValue(Constants.FILE_ID_ARG);
         fileUrl = extractUrl(fileId);
 
-        CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings, output);
+        CompleteEventAwaiter eventHandler = new GetFileEventHandler(settings, output);
         output.debug("Initiating the GetFile conversation.");
 
         if(cmdHandler.hasOption(Constants.PILLAR_ARG)) {

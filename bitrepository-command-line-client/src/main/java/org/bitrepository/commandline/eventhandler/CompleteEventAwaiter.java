@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.commandline.utils;
+package org.bitrepository.commandline.eventhandler;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -35,11 +35,11 @@ import org.bitrepository.common.settings.Settings;
  * EventHandler for awaiting an operation to be complete.
  * Just use the 'getFinish()' for awaiting the final event (either FAILURE or COMPLETE).
  */
-public class CompleteEventAwaiter implements EventHandler {
+public abstract class CompleteEventAwaiter implements EventHandler {
     /** The amount of milliseconds before the results are required.*/
     private final Long timeout;
     /** The handler of the output for this event handler.*/
-    private final OutputHandler output;
+    protected final OutputHandler output;
     
     /** The queue used to store the received operation events. */
     private final BlockingQueue<OperationEvent> finalEventQueue = new LinkedBlockingQueue<OperationEvent>(1);
@@ -62,10 +62,14 @@ public class CompleteEventAwaiter implements EventHandler {
         } else if(event.getEventType() == OperationEventType.FAILED) {
             output.warn("Failure: " + event.toString());
             finalEventQueue.add(event);
+        } else if(event.getEventType() == OperationEventType.COMPONENT_COMPLETE) {
+            handleComponentComplete(event);
         } else {
             output.debug("Received event: " + event.toString());
         }
     }
+    
+    public abstract void handleComponentComplete(OperationEvent event);
     
     /**
      * Retrieves the final event when the operation finishes. The final event is awaited for 'timeout' amount 

@@ -62,7 +62,8 @@ public class PuttingFile extends PerformingOperationState {
         if (msg instanceof PutFileFinalResponse) {
             PutFileFinalResponse response = (PutFileFinalResponse) msg;
             getContext().getMonitor().contributorComplete(
-                    new PutFileCompletePillarEvent(response.getPillarID(), response.getCollectionID(), response.getChecksumDataForNewFile()));
+                    new PutFileCompletePillarEvent(response.getPillarID(), response.getCollectionID(), 
+                            response.getChecksumDataForNewFile()));
         } else {
             throw new UnexpectedResponseException("Received unexpected msg " + msg.getClass().getSimpleName() +
                     " while waiting for Put file response.");
@@ -95,7 +96,7 @@ public class PuttingFile extends PerformingOperationState {
         }
         context.getMessageSender().sendMessage(msg);
     }
-    
+
     /**
      * Will create a PutFileRequest based on the context. The ChecksumRequestForNewFile parameter is not added as this
      * should only be added in case of full pillars.
@@ -121,7 +122,7 @@ public class PuttingFile extends PerformingOperationState {
     protected String getPrimitiveName() {
         return "PutFile";
     }
-    
+
     @Override
     protected boolean handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
         boolean isFinalResponse = true;
@@ -135,24 +136,27 @@ public class PuttingFile extends PerformingOperationState {
                     isFinalResponse = false;
                     sendPillarRequest(pillarID);
                     componentRequestCount.put(pillarID, componentRequestCount.get(pillarID)+1);
-                    context.getMonitor().retry("Retrying putfile (attempt number " + componentRequestCount.get(pillarID) + ")",
+                    context.getMonitor().retry("Retrying putfile (attempt number " 
+                            + componentRequestCount.get(pillarID) + ")",
                             pillarID);
                 } else {
                     getContext().getMonitor().contributorFailed(
-                            msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+                            msg.getResponseInfo().getResponseText(), msg.getFrom(), 
+                            msg.getResponseInfo().getResponseCode());
                 }
                 break;
             case DUPLICATE_FILE_FAILURE:
                 if(ChecksumUtils.areEqual(
                         response.getChecksumDataForExistingFile(), context.getChecksumForValidationAtPillar())) {
                     PutFileCompletePillarEvent event = new PutFileCompletePillarEvent(
-                            response.getPillarID(), response.getCollectionID(), response.getChecksumDataForExistingFile());
+                            response.getPillarID(), response.getCollectionID(), 
+                            response.getChecksumDataForExistingFile());
                     event.setInfo("File already existed on " + response.getPillarID());
                     getContext().getMonitor().contributorComplete(event);
                 } else {
                     getContext().getMonitor().contributorFailed(
                             "Received negative response from component " + response.getFrom() +
-                                    ":  " + response.getResponseInfo() + " (existing file checksum does not match)",
+                            ":  " + response.getResponseInfo() + " (existing file checksum does not match)",
                             response.getFrom(), response.getResponseInfo().getResponseCode());
                     throw new UnableToFinishException("Can not put file " + context.getFileID() +
                             ", as an different file already exists on pillar " + response.getPillarID());
@@ -160,12 +164,13 @@ public class PuttingFile extends PerformingOperationState {
                 break;
             default:
                 getContext().getMonitor().contributorFailed(
-                        msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
+                        msg.getResponseInfo().getResponseText(), msg.getFrom(), 
+                        msg.getResponseInfo().getResponseCode());
             }
         }
         return isFinalResponse;
     }
-    
+
     /**
      * Method to determine whether it should be allowed to retry a component.  
      * @param pillarID The id of the pillar that we'd like to retry.
@@ -174,7 +179,8 @@ public class PuttingFile extends PerformingOperationState {
     private boolean canRetry(String pillarID) {
         boolean allowed = false;
         if(context.getSettings().getReferenceSettings().getClientSettings().isSetOperationRetryCount()) {
-            BigInteger allowedRetryCount = context.getSettings().getReferenceSettings().getClientSettings().getOperationRetryCount();
+            BigInteger allowedRetryCount = 
+                    context.getSettings().getReferenceSettings().getClientSettings().getOperationRetryCount();
             Integer pillarRequestCount = componentRequestCount.get(pillarID);
             if(pillarRequestCount != null) {
                 if(pillarRequestCount <= allowedRetryCount.intValue()) {

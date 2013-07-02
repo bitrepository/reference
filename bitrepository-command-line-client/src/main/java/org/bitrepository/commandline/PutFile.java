@@ -30,7 +30,8 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.commandline.utils.CompleteEventAwaiter;
+import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
+import org.bitrepository.commandline.eventhandler.PutFileEventHandler;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
@@ -131,7 +132,10 @@ public class PutFile extends CommandLineClient {
         ChecksumDataForFileTYPE validationChecksum = getValidationChecksum(f);
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpec();
 
-        CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings, output);
+        CompleteEventAwaiter eventHandler = new PutFileEventHandler(settings, output);
+        if (requestChecksum != null) {
+            output.resultHeader("PillarId \t Checksum");
+        }
         client.putFile(getCollectionID(), url, fileId, f.length(), validationChecksum, requestChecksum, eventHandler,
                 "Putting the file '" + f + "' with the file id '" + fileId + "' from commandLine.");
 
@@ -204,7 +208,7 @@ public class PutFile extends CommandLineClient {
         res.setChecksumType(ChecksumType.fromValue(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
 
         if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
-            res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
+            res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_SALT_ARG)));
         }
         return res;
     }

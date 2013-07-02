@@ -27,7 +27,8 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.commandline.utils.CompleteEventAwaiter;
+import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
+import org.bitrepository.commandline.eventhandler.DeleteFileEventHandler;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
@@ -128,8 +129,12 @@ public class DeleteFile extends CommandLineClient {
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpec();
 
         output.debug("Initiating the DeleteFile conversation.");
-        CompleteEventAwaiter eventHandler = new CompleteEventAwaiter(settings, output);
+        CompleteEventAwaiter eventHandler = new DeleteFileEventHandler(settings, output);
         String pillarId = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
+        
+        if (requestChecksum != null) {
+            output.resultHeader("PillarId \t Checksum");
+        }
         client.deleteFile(getCollectionID(), fileId, pillarId, validationChecksum, requestChecksum, eventHandler,
                 "Delete file from commandline for file '" + fileId + "' at pillar '" + pillarId + "'.");
 
@@ -165,7 +170,7 @@ public class DeleteFile extends CommandLineClient {
         res.setChecksumType(ChecksumType.fromValue(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
 
         if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
-            res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
+            res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_SALT_ARG)));
         }
         return res;
     }
