@@ -24,9 +24,6 @@
  */
 package org.bitrepository.client.conversation;
 
-import java.util.Collection;
-import java.util.Timer;
-import java.util.TimerTask;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
@@ -34,6 +31,10 @@ import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.protocol.ProtocolVersionLoader;
+
+import java.util.Collection;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Implements the generic conversation state functionality, 
@@ -47,7 +48,7 @@ public abstract class GeneralConversationState implements ConversationState {
     /** The timer used for timeout checks. */
     private static final Timer timer = new Timer(NAME_OF_TIMER, TIMER_IS_DAEMON);
     /** The timer task for timeout of identify in this conversation. */
-    private final TimerTask stateTimeoutTask = new StateTimerTask();
+    private  TimerTask stateTimeoutTask;
     /** For response bookkeeping */
     private final ContributorResponseStatus responseStatus;
 
@@ -68,7 +69,7 @@ public abstract class GeneralConversationState implements ConversationState {
      */
     public void start() {
         if (!responseStatus.getOutstandComponents().isEmpty()) {
-            timer.schedule(stateTimeoutTask, getTimeoutValue());
+            timer.schedule(stateTimeoutTask = new StateTimerTask(), getTimeoutValue());
             sendRequest();
         } else {
             // No contributors need to be called for the operation to finish.
