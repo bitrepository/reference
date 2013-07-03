@@ -22,6 +22,7 @@
 
 package org.bitrepository.commandline;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,10 +30,14 @@ import javax.jms.JMSException;
 
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.commandline.output.DefaultOutputHandler;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.Base16Utils;
+import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -202,6 +207,32 @@ public abstract class CommandLineClient {
     protected long getTimeout() {
         return settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
                 + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
+    }
+    
+    /**
+     * @return The requested checksum spec, or the default checksum from settings if the arguments does not exist.
+     */
+    protected ChecksumSpecTYPE getRequestChecksumSpec() {
+        if(!cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
+            return ChecksumUtils.getDefault(settings);
+        }
+
+        ChecksumSpecTYPE res = new ChecksumSpecTYPE();
+        res.setChecksumType(ChecksumType.fromValue(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
+
+        if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
+            res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(
+                    Constants.REQUEST_CHECKSUM_SALT_ARG)));
+        }
+
+        try {
+            ChecksumUtils.verifyAlgorithm(res);
+        } catch (NoSuchAlgorithmException e) {
+            output.error("Invalid checksum algorithm: " + e.getMessage());
+            throw new IllegalStateException("Invalid checksumspec for '" + res + "'", e);
+        }
+
+        return res;
     }
     
     /**

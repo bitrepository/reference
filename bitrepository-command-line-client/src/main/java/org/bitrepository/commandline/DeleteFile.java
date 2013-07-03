@@ -157,21 +157,4 @@ public class DeleteFile extends CommandLineClient {
 
         return res;
     }
-
-    /**
-     * @return The requested checksum spec, or null if the arguments does not exist.
-     */
-    private ChecksumSpecTYPE getRequestChecksumSpec() {
-        if(!cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
-            return null;
-        }
-
-        ChecksumSpecTYPE res = new ChecksumSpecTYPE();
-        res.setChecksumType(ChecksumType.fromValue(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
-
-        if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
-            res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_SALT_ARG)));
-        }
-        return res;
-    }
 }

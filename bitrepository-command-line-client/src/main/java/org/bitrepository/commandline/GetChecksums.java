@@ -21,18 +21,13 @@
  */
 package org.bitrepository.commandline;
 
-import java.security.NoSuchAlgorithmException;
-
 import org.apache.commons.cli.Option;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.commandline.clients.PagingGetChecksumsClient;
 import org.bitrepository.commandline.outputformatter.GetChecksumsInfoFormatter;
 import org.bitrepository.commandline.outputformatter.GetChecksumsOutputFormatter;
-import org.bitrepository.common.utils.Base16Utils;
-import org.bitrepository.common.utils.ChecksumUtils;
 
 /**
  * Perform the GetChecksums operation.
@@ -102,31 +97,5 @@ public class GetChecksums extends CommandLineClient {
         } else {
             System.exit(Constants.EXIT_OPERATION_FAILURE);
         }
-    }
-
-    /**
-     * @return The requested checksum spec, or the default checksum from settings if the arguments does not exist.
-     */
-    private ChecksumSpecTYPE getRequestChecksumSpec() {
-        if(!cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
-            return ChecksumUtils.getDefault(settings);
-        }
-
-        ChecksumSpecTYPE res = new ChecksumSpecTYPE();
-        res.setChecksumType(ChecksumType.fromValue(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
-
-        if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
-            res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(
-                    Constants.REQUEST_CHECKSUM_SALT_ARG)));
-        }
-
-        try {
-            ChecksumUtils.verifyAlgorithm(res);
-        } catch (NoSuchAlgorithmException e) {
-            output.error("Invalid checksum algorithm: " + e.getMessage());
-            throw new IllegalStateException("Invalid checksumspec for '" + res + "'", e);
-        }
-
-        return res;
     }
 }
