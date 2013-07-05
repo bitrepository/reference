@@ -121,6 +121,7 @@
   <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="datepicker/js/bootstrap-datepicker.js"></script>
   <script type="text/javascript" src="menu.js"></script>
+  <script type="text/javascript" src="utils.js"></script>
 
   <script>
     function clearElement(element) {
@@ -152,7 +153,7 @@
                              "</td><td>" + j[i].AlarmRaiser +
                              "</td><td>" + j[i].CollectionID +
                              "</td> <td>" + j[i].AlarmCode + 
-                             "</td> <td>" + j[i].AlarmText + 
+                             "</td> <td>" + nl2br(j[i].AlarmText) +
                              "</td></tr>";
           }
         }
