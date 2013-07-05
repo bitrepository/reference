@@ -121,6 +121,7 @@
   <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="datepicker/js/bootstrap-datepicker.js"></script>
   <script type="text/javascript" src="menu.js"></script>
+  <script type="text/javascript" src="utils.js"></script>
 
   <script>
     function clearElement(element) {
