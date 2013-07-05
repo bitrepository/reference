@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityservice.checking.reports;
+package org.bitrepository.integrityservice.reports;
 
 /**
  * Container for the results of an integrity check.
@@ -88,28 +88,4 @@ public interface IntegrityReporter {
      */
     void reportObsoleteChecksum(String fileID, String pillarID);
     
-    /**
-     * @return The number of deleted files reported.
-     */
-    long numberOfDeletedFiles();
-
-    /**
-     * @return The number of missing files reported.
-     */
-    long numberOfMissingFiles();
-    
-    /**
-     * @return The number of files with inconsistent checksums reported.
-     */
-    long numberOfInconsistentChecksums();
-    
-    /**
-     * @return The number of files missing their checksum reported.
-     */
-    long numberOfMissingChecksums();
-    
-    /**
-     * @return The number of files with an obsolete checksum reported.
-     */
-    long numberOfObsoleteChecksums();
 }

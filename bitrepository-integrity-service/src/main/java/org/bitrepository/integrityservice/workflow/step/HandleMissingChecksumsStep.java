@@ -26,7 +26,7 @@ import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.ChecksumState;
 import org.bitrepository.integrityservice.cache.database.FileState;
-import org.bitrepository.integrityservice.checking.reports.IntegrityReporter;
+import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

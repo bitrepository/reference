@@ -21,14 +21,10 @@
  */
 package org.bitrepository.integrityservice;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.integrityservice.alerter.IntegrityAlarmDispatcher;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
-import org.bitrepository.integrityservice.checking.reports.IntegrityReporter;
 import org.bitrepository.protocol.IntegrationTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -40,9 +36,7 @@ public class IntegrityAlerterTest extends IntegrationTest {
 
         addStep("Call the function for integrity failure.", "A integrity alarm should be created.");
         IntegrityAlerter alerter = new IntegrityAlarmDispatcher(settingsForCUT, messageBus, null);
-        IntegrityReporter report = mock(IntegrityReporter.class);
-        when(report.generateSummaryOfReport()).thenReturn("Testing IntegrityAlerter");
-        alerter.integrityFailed(report);
+        alerter.integrityFailed("Testaintegrity alarm", collectionID);
         AlarmMessage alarmMessage = alarmReceiver.waitForMessage(AlarmMessage.class);
         Assert.assertEquals(alarmMessage.getAlarm().getAlarmCode(), AlarmCode.INTEGRITY_ISSUE);
     }

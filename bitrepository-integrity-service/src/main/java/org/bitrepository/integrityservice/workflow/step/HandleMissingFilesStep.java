@@ -30,7 +30,7 @@ import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.checking.reports.IntegrityReporter;
+import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
