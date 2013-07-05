@@ -26,6 +26,7 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.commandline.clients.PagingGetChecksumsClient;
+import org.bitrepository.commandline.outputformatter.GetChecksumsDisagreementInfoFormatter;
 import org.bitrepository.commandline.outputformatter.GetChecksumsInfoFormatter;
 import org.bitrepository.commandline.outputformatter.GetChecksumsOutputFormatter;
 
@@ -52,7 +53,7 @@ public class GetChecksums extends CommandLineClient {
         super(args);
         GetChecksumsClient client = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, 
                 securityManager, COMPONENT_ID);
-        GetChecksumsOutputFormatter outputFormatter = new GetChecksumsInfoFormatter(output);
+        GetChecksumsOutputFormatter outputFormatter = retrieveOutputFormatter();
         pagingClient = new PagingGetChecksumsClient(client, getTimeout(), outputFormatter, output); 
     }
 
@@ -87,7 +88,8 @@ public class GetChecksums extends CommandLineClient {
     /**
      * Perform the GetChecksums operation.
      */
-    public void performOperation() {
+    @Override
+    protected void performOperation() {
         ChecksumSpecTYPE spec = getRequestChecksumSpec();
         output.startupInfo("Performing the GetChecksums operation.");
         Boolean success = pagingClient.getChecksums(getCollectionID(), getFileIDs(), 
@@ -98,4 +100,17 @@ public class GetChecksums extends CommandLineClient {
             System.exit(Constants.EXIT_OPERATION_FAILURE);
         }
     }
+    
+    /**
+     * Retrieves the given output formatter depending on whether or not it requests a given file or all files.
+     * @return The output formatter.
+     */
+    private GetChecksumsOutputFormatter retrieveOutputFormatter() {
+        if(cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
+            return new GetChecksumsDisagreementInfoFormatter(output);
+        } else {
+            return new GetChecksumsInfoFormatter(output);
+        }
+    }
+    
 }

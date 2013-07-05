@@ -107,7 +107,7 @@ public abstract class CommandLineClient {
     /**
      * Method for performing the operation of the specific commandline client.
      */
-    public abstract void performOperation();
+    protected abstract void performOperation();
 
     /**
      * Defines the componentID of the concrete client. Must be specified by in the subclass.
