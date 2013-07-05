@@ -152,7 +152,7 @@
                              "</td><td>" + j[i].AlarmRaiser +
                              "</td><td>" + j[i].CollectionID +
                              "</td> <td>" + j[i].AlarmCode + 
-                             "</td> <td>" + j[i].AlarmText + 
+                             "</td> <td>" + nl2br(j[i].AlarmText) +
                              "</td></tr>";
           }
         }
