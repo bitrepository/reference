@@ -25,7 +25,7 @@
 package org.bitrepository.integrityservice.reports;
 
 /**
- * Container for the results of an integrity check.
+ * Used for extracting textual information about the integrity status.
  */
 public interface IntegrityReporter {
     /**
@@ -55,7 +55,7 @@ public interface IntegrityReporter {
     String getCollectionID();
     
     /**
-     * Report that a file has been deleted from the collection
+     * Report that a file has been deleted from the collection. Note this is not considered a integrity issue.
      * @param fileID The ID of the file that has been removed 
      */
     void reportDeletedFile(String fileID);

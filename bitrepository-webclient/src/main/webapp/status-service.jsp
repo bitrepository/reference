@@ -79,7 +79,7 @@
   <script type="text/javascript" src="jquery/jquery-1.9.0.min.js"></script>
   <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="menu.js"></script>
-    <script type="text/javascript" src="utils.js"></script>
+  <script type="text/javascript" src="utils.js"></script>
 
   <script>
     var components = new Object();
