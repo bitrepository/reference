@@ -31,40 +31,39 @@ import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
-import org.bitrepository.commandline.eventhandler.PutFileEventHandler;
+import org.bitrepository.commandline.eventhandler.ReplaceFileEventHandler;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
-import org.bitrepository.modify.putfile.PutFileClient;
+import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 
 /**
- * Putting a file to the collection.
+ * Replace a file from the collection.
+ * 
  */
-public class PutFile extends CommandLineClient {
-    /** The component id. */
-    private final static String COMPONENT_ID = "PutFileClient";
-
-    /** The client for performing the PutFile operation.*/
-    private final PutFileClient client;
+public class ReplaceFile extends CommandLineClient {
+    private final static String COMPONENT_ID = "ReplaceFileClient";
+    /** The client for performing the ReplaceFile operation.*/
+    private final ReplaceFileClient client;
 
     /**
-     * @param args The arguments for performing the PutFile operation.
+     * @param args The arguments for performing the ReplaceFile operation.
      */
     public static void main(String[] args) {
-        PutFile client = new PutFile(args);
+        ReplaceFile client = new ReplaceFile(args);
         client.runCommand();
     }
 
     /**
-     * 
-     * @param args
+     * @param args The command line arguments for defining the operation.
      */
-    private PutFile(String ... args) {
+    private ReplaceFile(String ... args) {
         super(args);
-        client = ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager, COMPONENT_ID);
+        client = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings, securityManager,
+                COMPONENT_ID);
     }
 
     @Override
@@ -77,13 +76,52 @@ public class PutFile extends CommandLineClient {
         return false;
     }
 
+    @Override
+    protected void createOptionsForCmdArgumentHandler() {
+        super.createOptionsForCmdArgumentHandler();
+
+        Option checksumOption = new Option(Constants.CHECKSUM_ARG, Constants.HAS_ARGUMENT,
+                "[OPTIONAL] The checksum of the file to be replaced.");
+        checksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(checksumOption);
+        Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT,
+                "The path to the new file for the replacement");
+        fileOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
+        cmdHandler.addOption(fileOption);
+
+        Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT,
+                "[OPTIONAL] The algorithm of checksum to request in the response from the pillars.");
+        checksumTypeOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(checksumTypeOption);
+        Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT,
+                "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
+        checksumSaltOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(checksumSaltOption);
+    }
+
+    @Override
+    protected void validateArguments() {
+        super.validateArguments();
+        if(!cmdHandler.hasOption(Constants.PILLAR_ARG)) {
+            throw new IllegalArgumentException("The pillar argument -p must defined for the Replace operation, " +
+                    "only single pillar Replaces are allowed");
+        }
+        if (!cmdHandler.hasOption(Constants.CHECKSUM_ARG) &&
+                settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
+            throw new IllegalArgumentException("Checksum argument (-C) are mandatory for Replace and replace operations" +
+                    "as defined in RepositorySettings.");
+        }
+    }
+
     /**
-     * Perform the PutFile operation.
+     * Perform the ReplaceFile operation.
      */
     public void performOperation() {
-        output.startupInfo("Putting .");
-        OperationEvent finalEvent = putTheFile();
-        output.completeEvent("Results of the PutFile operation for the file '" + getFileIDForMessage(), finalEvent);
+        output.debug("Performing the ReplaceFile operation.");
+        OperationEvent finalEvent = replaceTheFile();
+        output.completeEvent("Results of the ReplaceFile operation for the file '"
+                + cmdHandler.getOptionValue(Constants.FILE_ID_ARG) + "'"
+                + ": ", finalEvent);
         if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
             System.exit(Constants.EXIT_SUCCESS);
         } else {
@@ -91,66 +129,35 @@ public class PutFile extends CommandLineClient {
         }
     }
 
-    @Override
-    protected void createOptionsForCmdArgumentHandler() {
-        super.createOptionsForCmdArgumentHandler();
-
-        Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT,
-                "The path to the file, which is wanted to be put");
-        fileOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
-        cmdHandler.addOption(fileOption);
-
-        Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT, 
-                "[OPTIONAL] The algorithm of checksum to request in the response from the pillars.");
-        checksumTypeOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
-        cmdHandler.addOption(checksumTypeOption);
-
-        Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT, 
-                "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
-        checksumSaltOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
-        cmdHandler.addOption(checksumSaltOption);
-
-        Option deleteOption = new Option(Constants.DELETE_FILE_ARG, Constants.NO_ARGUMENT, 
-                "If this argument is present, then the file will be removed from the server, "
-                        + "when the operation is complete.");
-        deleteOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
-        cmdHandler.addOption(deleteOption);
-    }
-
     /**
      * Initiates the operation and waits for the results.
      * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
      */
-    private OperationEvent putTheFile() {
-        output.debug("Uploading the file to the FileExchange.");
+    private OperationEvent replaceTheFile() {
+        
         File f = findTheFile();
         FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
         URL url = fileexchange.uploadToServer(f);
-        String fileId = retrieveTheName(f);
 
-        output.debug("Initiating the PutFile conversation.");
-        ChecksumDataForFileTYPE validationChecksum = getValidationChecksum(f);
+        ChecksumDataForFileTYPE replaceValidationChecksum = getValidationChecksumForOldFile();
+        ChecksumDataForFileTYPE newValidationChecksum = getValidationChecksum(f);
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpec();
 
-        CompleteEventAwaiter eventHandler = new PutFileEventHandler(settings, output);
+        output.debug("Initiating the ReplaceFile conversation.");
+        CompleteEventAwaiter eventHandler = new ReplaceFileEventHandler(settings, output);
+        String pillarId = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
+        
         if (requestChecksum != null) {
-            output.resultHeader("PillarId \t Checksum");
+            output.resultHeader("PillarId results");
         }
-        client.putFile(getCollectionID(), url, fileId, f.length(), validationChecksum, requestChecksum, eventHandler,
-                "Putting the file '" + f + "' with the file id '" + fileId + "' from commandLine.");
-
-        if(cmdHandler.hasOption(Constants.DELETE_FILE_ARG)) {
-            try {
-                fileexchange.deleteFromServer(url);
-            } catch (Exception e) {
-                System.err.println("Issue regarding removing file from server: " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
+        
+        client.replaceFile(getCollectionID(), retrieveTheName(f), pillarId, replaceValidationChecksum, 
+                requestChecksum, url, f.length(), newValidationChecksum, 
+                requestChecksum, eventHandler, "");
 
         return eventHandler.getFinish();
     }
-
+    
     /**
      * Finds the file from the arguments.
      * @return The requested file.
@@ -168,7 +175,7 @@ public class PutFile extends CommandLineClient {
     }
 
     /**
-     * Extracts the id of the file to be put.
+     * Extracts the id of the file to be replaced.
      * @return The either the value of the file id argument, or no such option, then the name of the file.
      */
     private String retrieveTheName(File f) {
@@ -195,12 +202,21 @@ public class PutFile extends CommandLineClient {
 
         return res;
     }
-
+    
     /**
-     * @return The filename for the file to upload. 
+     * Creates the data structure for encapsulating the validation checksums for validation on the pillars.
+     * @return The ChecksumDataForFileTYPE for the pillars to validate the ReplaceFile operation.
      */
-    private String getFileIDForMessage() {
-        return cmdHandler.getOptionValue(Constants.FILE_ARG) + (cmdHandler.hasOption(Constants.FILE_ID_ARG) ? 
-                " (with the id '" + cmdHandler.getOptionValue(Constants.FILE_ID_ARG) + "')" : "");
+    private ChecksumDataForFileTYPE getValidationChecksumForOldFile() {
+        if(!cmdHandler.hasOption(Constants.CHECKSUM_ARG)) {
+            return null;
+        }
+
+        ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
+        res.setCalculationTimestamp(CalendarUtils.getNow());
+        res.setChecksumSpec(ChecksumUtils.getDefault(settings));
+        res.setChecksumValue(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.CHECKSUM_ARG)));
+
+        return res;
     }
 }

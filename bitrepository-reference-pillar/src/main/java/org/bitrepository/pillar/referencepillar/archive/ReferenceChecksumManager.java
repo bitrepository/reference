@@ -64,7 +64,7 @@ public class ReferenceChecksumManager {
     private final AlarmDispatcher alarmDispatcher;
     /** The settings.*/
     private final Settings settings;
-    
+
     /**
      * Constructor.
      * @param archive The archive with the data.
@@ -81,7 +81,7 @@ public class ReferenceChecksumManager {
         this.settings = settings;
         this.defaultChecksumSpec = ChecksumUtils.getDefault(settings);
     }
-    
+
     /**
      * Retrieves the entry for the checksum for a given file with the given checksum specification.
      * If it is the default checksum specification, then the cached checksum is returned (though it is recalculated 
@@ -102,13 +102,13 @@ public class ReferenceChecksumManager {
         } else {
             log.trace("Non-default checksum specification: {}. Recalculating the checksums.", csType);
             recalculateChecksum(fileId, collectionId);
-            
+
             FileInfo fi = archives.getFileInfo(fileId, collectionId);
             String checksum = ChecksumUtils.generateChecksum(fi, csType);
             return new ChecksumEntry(fileId, checksum, new Date());
         }
     }
-    
+
     /**
      * Retrieves the checksum for a given file with the given checksum specification.
      * If it is the default checksum specification, then the cached checksum is returned (though it is recalculated 
@@ -127,12 +127,12 @@ public class ReferenceChecksumManager {
             return cache.getChecksum(fileId, collectionId);            
         } else {
             recalculateChecksum(fileId, collectionId);
-            
+
             FileInfo fi = archives.getFileInfo(fileId, collectionId);
             return ChecksumUtils.generateChecksum(fi, csType);
         }
     }
-    
+
     /**
      * Recalculates the checksum of a given file based on the default checksum specification.
      * @param fileId The id of the file to recalculate its default checksum for.
@@ -144,7 +144,7 @@ public class ReferenceChecksumManager {
         String checksum = ChecksumUtils.generateChecksum(fi, defaultChecksumSpec);
         cache.insertChecksumCalculation(fileId, collectionId, checksum, new Date());
     }
-    
+
     /**
      * Removes the entry for the given file.
      * @param fileId The id of the file to remove.
@@ -153,7 +153,7 @@ public class ReferenceChecksumManager {
     public void deleteEntry(String fileId, String collectionId) {
         cache.deleteEntry(fileId, collectionId);
     }
-    
+
     /**
      * Calculates the checksum of a file within the tmpDir.
      * @param fileId The id of the file to calculate the checksum for.
@@ -165,7 +165,7 @@ public class ReferenceChecksumManager {
         FileInfo fi = archives.getFileInTmpDir(fileId, collectionId);
         return ChecksumUtils.generateChecksum(fi, csType);
     }
-    
+
     /**
      * Retrieves the entry for a given file with a given checksumSpec in the ChecksumDataForFileTYPE format.
      * @param fileId The id of the file to retrieve the data from.
@@ -181,7 +181,7 @@ public class ReferenceChecksumManager {
         res.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
         return res;
     }
-    
+
     /**
      * Retrieves the entry for a given file with a given checksumSpec in the ChecksumDataForChecksumSpecTYPE format.
      * @param fileId The id of the file to retrieve the data from.
@@ -196,10 +196,10 @@ public class ReferenceChecksumManager {
         res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(csEntry.getCalculationDate()));
         res.setFileID(csEntry.getFileId());
         res.setChecksumValue(Base16Utils.encodeBase16(csEntry.getChecksum()));
-        
+
         return res;
     }
-    
+
     /**
      * Ensures, that all files are up to date, and retrieves the requested entries.
      * @param minTimeStamp The minimum date for the timestamp of the extracted checksum entries.
@@ -212,28 +212,28 @@ public class ReferenceChecksumManager {
      */
     public ExtractedChecksumResultSet getEntries(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
             Long maxNumberOfResults, String collectionId, ChecksumSpecTYPE spec) {
-    	if(spec.equals(defaultChecksumSpec)) {
-    		ensureStateOfAllData(collectionId);
-    		return cache.getEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults, collectionId);
-    	} else {
-    		ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
-    		
-    		long i = 0;
-    		for(String fileId : cache.getAllFileIDs(collectionId)) {
-    			if(maxNumberOfResults != null && i > maxNumberOfResults) {
-    				break;
-    			}
-    			i++;
-    			
-    			String checksum = getChecksumForFile(fileId, collectionId, spec);
-    			ChecksumEntry entry = new ChecksumEntry(fileId, checksum, new Date());
-    			res.insertChecksumEntry(entry);    			
-    		}
-    		
-    		return res;
-    	}
+        if(spec.equals(defaultChecksumSpec)) {
+            ensureStateOfAllData(collectionId);
+            return cache.getEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults, collectionId);
+        } else {
+            ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
+
+            long i = 0;
+            for(String fileId : cache.getAllFileIDs(collectionId)) {
+                if(maxNumberOfResults != null && i > maxNumberOfResults) {
+                    break;
+                }
+                i++;
+
+                String checksum = getChecksumForFile(fileId, collectionId, spec);
+                ChecksumEntry entry = new ChecksumEntry(fileId, checksum, new Date());
+                res.insertChecksumEntry(entry);    			
+            }
+
+            return res;
+        }
     }
-    
+
     /**
      * TODO this should be in the database instead.
      * @param minTimeStamp The minimum date for the timestamp of the extracted file ids entries.
@@ -245,7 +245,7 @@ public class ReferenceChecksumManager {
     public ExtractedFileIDsResultSet getFileIds(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
             Long maxNumberOfResults, String collectionId) {
         ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
-        
+
         Long minTime = 0L;
         if(minTimeStamp != null) {
             minTime = CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp).getTime();
@@ -254,7 +254,7 @@ public class ReferenceChecksumManager {
         if(maxTimeStamp != null) {
             maxTime = CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp).getTime();
         }
-        
+
         // Map between lastModifiedDate and fileInfo.
         ConcurrentSkipListMap<Long, FileInfo> sortedDateFileIDMap = new ConcurrentSkipListMap<Long, FileInfo>();
         for(String fileId : archives.getAllFileIds(collectionId)) {
@@ -264,7 +264,7 @@ public class ReferenceChecksumManager {
                 sortedDateFileIDMap.put(fi.getMdate(), fi);
             }
         }
-        
+
         int i = 0;
         Map.Entry<Long, FileInfo> entry;
         while((entry = sortedDateFileIDMap.pollFirstEntry()) != null && 
@@ -272,14 +272,14 @@ public class ReferenceChecksumManager {
             res.insertFileInfo(entry.getValue());
             i++;
         }
-        
+
         if(maxNumberOfResults != null && i >= maxNumberOfResults) {
             res.reportMoreEntriesFound();
         }
-        
+
         return res;
     }
-    
+
     /**
      * Validates that all files in the cache is also in the archive, and that all files in the archive
      * is also in the cache.
@@ -289,12 +289,12 @@ public class ReferenceChecksumManager {
         for(String fileId : cache.getAllFileIDs(collectionId)) {
             ensureFileState(fileId, collectionId);
         }
-        
+
         for(String fileId : archives.getAllFileIds(collectionId)) {
             ensureChecksumState(fileId, collectionId);
         }
     }
-    
+
     /**
      * Ensures that a file id in the cache is also in the archive.
      * Will send an alarm, if the file is missing, then remove it from index.
@@ -311,11 +311,11 @@ public class ReferenceChecksumManager {
                     + "from index. Removing it from index.");
             alarm.setFileID(fileId);
             alarmDispatcher.error(alarm);
-            
+
             cache.deleteEntry(fileId, collectionId);
         }
     }
-    
+
     /**
      * Ensures that the cache has an non-deprecated checksum for the given file.
      * Also validates, that the checksum is up to date with the file.
