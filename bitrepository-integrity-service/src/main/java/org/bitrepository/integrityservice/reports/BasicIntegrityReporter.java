@@ -7,6 +7,7 @@ public class BasicIntegrityReporter implements IntegrityReporter {
 
     private final String collectionID;
     private Long deletedFilesCount = 0L;
+    //Treemaps ensures alphapetical sorting.
     private final Map<String, Long> missingFiles = new TreeMap<String, Long>();
     private final Map<String, Long> checksumIssues = new TreeMap<String, Long>();
     private final Map<String, Long> missingChecksums = new TreeMap<String, Long>();
@@ -42,19 +43,25 @@ public class BasicIntegrityReporter implements IntegrityReporter {
         
         for(String pillar : checksumIssues.keySet()) {
             if(checksumIssues.get(pillar) != 0) {
-                report.append("\n" + pillar + " has " + checksumIssues.get(pillar) + " potential corrupt file(s).");
+                report.append("\n" + pillar + " has " + checksumIssues.get(pillar) + " potentially corrupt file");
+                if (checksumIssues.get(pillar) > 1) report.append("s");
+                report.append(".");
             }
         }
         
         for(String pillar : missingChecksums.keySet()) {
             if(missingChecksums.get(pillar) != 0) {
-                report.append("\n " + pillar + " is missing " + missingChecksums.get(pillar) + " checksum(s).");
+                report.append("\n" + pillar + " is missing " + missingChecksums.get(pillar) + " checksum");
+                if (missingChecksums.get(pillar) > 1) report.append("s");
+                report.append(".");
             }
         }
         
         for(String pillar : obsoleteChecksums.keySet()) {
             if(obsoleteChecksums.get(pillar) != 0) {
-                report.append("\n " + pillar + " has " + obsoleteChecksums.get(pillar) + " obsolete checksum(s).");
+                report.append("\n" + pillar + " has " + obsoleteChecksums.get(pillar) + " obsolete checksum");
+                if (obsoleteChecksums.get(pillar) > 1) report.append("s");
+                report.append(".");
             }
         }
         return report.toString();
