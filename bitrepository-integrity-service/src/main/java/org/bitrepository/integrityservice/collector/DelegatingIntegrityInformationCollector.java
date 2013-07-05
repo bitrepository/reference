@@ -62,7 +62,8 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     @Override
     public synchronized void getFileIDs(String collectionID, Collection<String> pillarIDs, String auditTrailInformation, 
             ContributorQuery[] queries, EventHandler eventHandler) {
-        try {getFileIDsClient.getFileIDs(collectionID, queries, null, null, eventHandler);
+        try {
+            getFileIDsClient.getFileIDs(collectionID, queries, null, null, eventHandler);
         } catch (Exception e) {
             // Barrier
             log.error("Unexpected failure!", e);

@@ -34,7 +34,6 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAOFactory;
-import org.bitrepository.service.database.DBConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -161,9 +160,7 @@ public class IntegrityDatabase implements IntegrityModel {
 
     @Override
     public List<String> getFilesWithInconsistentChecksums(String collectionId) {
-        Date maxDate = new Date(System.currentTimeMillis() - 
-                settings.getReferenceSettings().getIntegrityServiceSettings().getTimeBeforeMissingFileCheck());
-        return store.findFilesWithInconsistentChecksums(maxDate, collectionId);
+        return store.findFilesWithInconsistentChecksums(collectionId);
     }
 
     @Override

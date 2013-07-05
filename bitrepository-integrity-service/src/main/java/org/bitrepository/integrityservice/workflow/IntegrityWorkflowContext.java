@@ -48,10 +48,10 @@ public class IntegrityWorkflowContext implements WorkflowContext {
      * @param auditManager The <code>AuditTrailManager</code> to use in the workflow.
      */
     public IntegrityWorkflowContext(Settings settings,
-                                    IntegrityInformationCollector collector,
-                                    IntegrityModel store,
-                                    IntegrityAlerter alerter,
-                                    AuditTrailManager auditManager) {
+            IntegrityInformationCollector collector,
+            IntegrityModel store,
+            IntegrityAlerter alerter,
+            AuditTrailManager auditManager) {
         this.settings = settings;
         this.collector = collector;
         this.store = store;

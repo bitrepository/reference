@@ -94,6 +94,7 @@ public abstract class PillarMediator extends AbstractContributorMediator {
         return (PillarAlarmDispatcher) context.getAlarmDispatcher();
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void dispatchNegativeResponse(MessageRequest request, RequestHandler handler, ResponseInfo info) {
         log.warn("Cannot perform operation. Sending failed response. Cause: " + info.getResponseText());
         MessageResponse response = handler.generateFailedResponse(request);

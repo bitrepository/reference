@@ -27,7 +27,6 @@ import java.net.URL;
 import org.apache.commons.cli.Option;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
@@ -134,7 +133,6 @@ public class ReplaceFile extends CommandLineClient {
      * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
      */
     private OperationEvent replaceTheFile() {
-        
         File f = findTheFile();
         FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
         URL url = fileexchange.uploadToServer(f);
@@ -218,5 +216,14 @@ public class ReplaceFile extends CommandLineClient {
         res.setChecksumValue(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.CHECKSUM_ARG)));
 
         return res;
+    }
+    
+    @Override
+    protected ChecksumSpecTYPE getRequestChecksumSpec() {
+        if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
+            return super.getRequestChecksumSpec();
+        } else {
+            return null;
+        }
     }
 }

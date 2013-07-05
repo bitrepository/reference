@@ -89,8 +89,6 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         pids.getPillarID().add(EXTRA_PILLAR);
         extraCollection.setPillarIDs(pids);
         settings.getRepositorySettings().getCollections().getCollection().add(extraCollection);
-        
-        
     }
 
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
@@ -535,7 +533,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         insertChecksumDataForDAO(cache, csData2_3, TEST_PILLAR_2, TEST_COLLECTIONID);
 
         addStep("Find the files with inconsistent checksums", "Bad file 1 and 2");
-        List<String> filesWithChecksumError = cache.findFilesWithInconsistentChecksums(new Date(), TEST_COLLECTIONID);
+        List<String> filesWithChecksumError = cache.findFilesWithInconsistentChecksums(TEST_COLLECTIONID);
         Assert.assertEquals(filesWithChecksumError, Arrays.asList(BAD_FILE_ID_1, BAD_FILE_ID_2));
         
         addStep("Set the files with consistent checksums to valid.", 
@@ -553,35 +551,6 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
-    public void testTooNewChecksum() throws Exception {
-        addDescription("Testing that too new files are found with checksum error.");
-        IntegrityDAO cache = createDAO();
-        
-        String checksum1_1 = "11";
-        String checksum1_2 = "12";
-        String checksum2_1 = "21";
-        String checksum2_2 = "22";
-        
-        String BAD_FILE_ID_1 = "BAD-FILE-1";
-        String BAD_FILE_ID_2 = "BAD-FILE-2";
-
-        addStep("Update the database with 2 inconsistent files", "Ingesting the data into the database");
-        List<ChecksumDataForChecksumSpecTYPE> csData1_1 = getChecksumResults(BAD_FILE_ID_1, checksum1_1);
-        List<ChecksumDataForChecksumSpecTYPE> csData1_2 = getChecksumResults(BAD_FILE_ID_2, checksum1_2);
-        insertChecksumDataForDAO(cache, csData1_1, TEST_PILLAR_1, TEST_COLLECTIONID);
-        insertChecksumDataForDAO(cache, csData1_2, TEST_PILLAR_1, TEST_COLLECTIONID);
-        List<ChecksumDataForChecksumSpecTYPE> csData2_1 = getChecksumResults(BAD_FILE_ID_1, checksum2_1);
-        List<ChecksumDataForChecksumSpecTYPE> csData2_2 = getChecksumResults(BAD_FILE_ID_2, checksum2_2);
-        insertChecksumDataForDAO(cache, csData2_1, TEST_PILLAR_2, TEST_COLLECTIONID);
-        insertChecksumDataForDAO(cache, csData2_2, TEST_PILLAR_2, TEST_COLLECTIONID);
-
-        addStep("Find the files with inconsistent checksums, but with an older date than 'epoch'", 
-                "No such files expected.");
-        List<String> filesWithChecksumError = cache.findFilesWithInconsistentChecksums(new Date(0), TEST_COLLECTIONID);
-        Assert.assertEquals(filesWithChecksumError, Arrays.asList());
-    }
-    
-    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void testNoChecksums() throws Exception {
         addDescription("Testing the checksum validation, when no checksums exists.");
         IntegrityDAO cache = createDAO();
@@ -593,7 +562,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         cache.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
 
         addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
-        List<String> filesWithChecksumError = cache.findFilesWithInconsistentChecksums(new Date(), TEST_COLLECTIONID);
+        List<String> filesWithChecksumError = cache.findFilesWithInconsistentChecksums(TEST_COLLECTIONID);
         Assert.assertEquals(filesWithChecksumError, Arrays.asList());
     }
 
@@ -608,7 +577,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         insertChecksumDataForDAO(cache, getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM), TEST_PILLAR_2, TEST_COLLECTIONID);
 
         addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
-        List<String> filesWithChecksumError = cache.findFilesWithInconsistentChecksums(new Date(), TEST_COLLECTIONID);      
+        List<String> filesWithChecksumError = cache.findFilesWithInconsistentChecksums(TEST_COLLECTIONID);      
         Assert.assertEquals(filesWithChecksumError, Arrays.asList());
     }
 

@@ -6,7 +6,7 @@ import java.util.Map;
 public class BasicIntegrityReporter implements IntegrityReporter {
 
     private final String collectionID;
-    private Long deletedFilesCount = 0L;
+    private long deletedFilesCount = 0l;
     private final Map<String, Long> missingFiles = new HashMap<String, Long>();
     private final Map<String, Long> checksumIssues = new HashMap<String, Long>();
     private final Map<String, Long> missingChecksums = new HashMap<String, Long>();
@@ -49,8 +49,8 @@ public class BasicIntegrityReporter implements IntegrityReporter {
     @Override
     public String generateReport() {
         StringBuilder report = new StringBuilder();
-        if(deletedFilesCount != 0L) {
-            report.append("Detected " + deletedFilesCount + " files as removed from the collection.\n");
+        if(deletedFilesCount > 0l) {
+            report.append("Reported " + deletedFilesCount + " files removed from the collection.\n");
         }
         for(String pillar : missingFiles.keySet()) {
             if(missingFiles.get(pillar) != 0) {
@@ -85,7 +85,7 @@ public class BasicIntegrityReporter implements IntegrityReporter {
         if(!hasIntegrityIssues()) {
             return "No integrity issues found";
         } else {
-            return "Integrity issues found!";
+            return generateReport();
         }
     }
 
@@ -133,6 +133,31 @@ public class BasicIntegrityReporter implements IntegrityReporter {
         } else {
             obsoleteChecksums.put(pillarID, 1L);
         }
+    }
+
+    @Override
+    public long numberOfDeletedFiles() {
+        return deletedFilesCount;
+    }
+
+    @Override
+    public long numberOfMissingFiles() {
+        return missingFiles.size();
+    }
+
+    @Override
+    public long numberOfInconsistentChecksums() {
+        return checksumIssues.size();
+    }
+
+    @Override
+    public long numberOfMissingChecksums() {
+        return missingChecksums.size();
+    }
+
+    @Override
+    public long numberOfObsoleteChecksums() {
+        return obsoleteChecksums.size();
     }
 
 }

@@ -645,7 +645,7 @@ public abstract class IntegrityDAO {
      * @param collectionId The ID of the collection to find inconsistent checksums in
      * @return The list of file ids for the files with inconsistent checksums.
      */
-    public List<String> findFilesWithInconsistentChecksums(Date maxCreationDate, String collectionId) {
+    public List<String> findFilesWithInconsistentChecksums(String collectionId) {
         long startTime = System.currentTimeMillis();
         Long collectionKey = retrieveCollectionKey(collectionId);       
         log.trace("Localizing the file ids where the checksums are not consistent.");
@@ -659,10 +659,9 @@ public abstract class IntegrityDAO {
         String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
                 + " JOIN ( " + eliminateSql + " ) AS eliminate1"
                 + " ON " + FILES_TABLE + "." + FILES_KEY + " = eliminate1." + FI_FILE_KEY 
-                + " WHERE " + FILES_CREATION_DATE + " < ?"
-                + " AND " + COLLECTION_KEY + " = ? ";
+                + " WHERE " + COLLECTION_KEY + " = ? ";
         List<String> res = DatabaseUtils.selectStringList(dbConnector, selectSql,  
-                FileState.MISSING.ordinal(), maxCreationDate, collectionKey);
+                FileState.MISSING.ordinal(), collectionKey);
         log.debug("Found " + res.size() + " inconsistencies in " + (System.currentTimeMillis() - startTime) + "ms");
         return res;
     }
@@ -1588,7 +1587,7 @@ public abstract class IntegrityDAO {
         String sql = "SELECT " + PILLAR_ID + " FROM " + PILLAR_TABLE + " WHERE " + PILLAR_KEY + " = ?";
         return DatabaseUtils.selectStringValue(dbConnector, sql, key);
     }
-
+    
     /**
      * Destroys the DB connector.
      */

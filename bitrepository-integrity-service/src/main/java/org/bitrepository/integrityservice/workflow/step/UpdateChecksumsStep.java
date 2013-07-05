@@ -28,6 +28,7 @@ import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityCollectorEventHandler;
@@ -96,12 +97,14 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
     @Override
     public synchronized void performStep() {
         try {
-            List<String> pillarsToCollectFrom = new ArrayList<String>(getPillarIDs(collectionId));
+            List<String> pillarsToCollectFrom = new ArrayList<String>(
+                    SettingsUtils.getPillarIDsForCollection(collectionId));
+            log.debug("Collection checksums from '" + pillarsToCollectFrom + "' for collection '" + collectionId + "'.");
             while (!pillarsToCollectFrom.isEmpty()) {
                 IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
-                collector.getChecksums(collectionId, pillarsToCollectFrom, checksumType, "IntegrityService: " + getName(), queries, 
-                        eventHandler);
+                collector.getChecksums(collectionId, pillarsToCollectFrom, checksumType, "IntegrityService: " 
+                        + getName(), queries, eventHandler);
                 OperationEvent event = eventHandler.getFinish();
                 log.debug("Collection of file ids had the final event: " + event);
                 pillarsToCollectFrom = new ArrayList<String>(eventHandler.getPillarsWithPartialResult());
@@ -128,16 +131,5 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
 
     public static String getDescription() {
         return "Contacts all pillar to retrieve the list of new checksums for the pillar";
-    }
-    
-    private List<String> getPillarIDs(String collectionId) {
-        List<String> pillars = null;
-        for(org.bitrepository.settings.repositorysettings.Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
-            if(c.getID().equals(collectionId)) {
-                pillars = c.getPillarIDs().getPillarID();
-                break;
-            }
-        }
-        return pillars;
     }
 }

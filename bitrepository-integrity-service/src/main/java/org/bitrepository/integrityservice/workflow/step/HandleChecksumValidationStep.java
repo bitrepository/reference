@@ -21,18 +21,23 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.checking.reports.IntegrityReporter;
+import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A workflow step for finding missing checksums.
- * Uses the IntegrityChecker to perform the actual check.
+ * A workflow step for finding inconsistency between the checksums.
  */
 public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
     /** The log.*/
@@ -41,9 +46,13 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
     /** The report model to populate */
     private final IntegrityReporter reporter;
+    /** The audit trail manager.*/
+    private final AuditTrailManager auditManager;
     
-    public HandleChecksumValidationStep(IntegrityModel store, IntegrityReporter reporter) {
+    public HandleChecksumValidationStep(IntegrityModel store, AuditTrailManager auditManager, 
+            IntegrityReporter reporter) {
         this.store = store;
+        this.auditManager = auditManager;
         this.reporter = reporter;
     }
     
@@ -57,17 +66,43 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
      */
     @Override
     public synchronized void performStep() {
-        List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
-        for(String pillar : pillars) {
-            List<String> missingFiles = 
-                    store.getMissingFilesAtPillar(pillar, 0, Integer.MAX_VALUE, reporter.getCollectionID());
-            for(String missingFile : missingFiles) {
-                reporter.reportMissingFile(missingFile, pillar);
+        List<String> inconsistentFiles = store.getFilesWithInconsistentChecksums(reporter.getCollectionID());
+        List<String> collectionPillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
+        for(String file : inconsistentFiles) {
+            Collection<FileInfo> infos = store.getFileInfos(file, reporter.getCollectionID());
+            Set<String> checksums = getUniqueChecksums(infos);
+            if(checksums.size() > 1) {
+                auditManager.addAuditEvent(reporter.getCollectionID(), file, "IntegrityService", 
+                        "Checksum inconsistency for file '" + file + "'. The pillar have more than one unique checksum.",
+                        "IntegrityService validating the checksums.", FileAction.INCONSISTENCY);
+                for(FileInfo info : infos) {
+                    reporter.reportChecksumIssue(file, info.getPillarId());
+                }
+                store.setChecksumError(file, collectionPillars, reporter.getCollectionID());
+            } else {
+                log.error("File with inconsistent checksums from SQL have apparently not inconsistency according to "
+                        + "Java! This is a scenario, which must never occur!!!");
+                store.setChecksumAgreement(file, collectionPillars, reporter.getCollectionID());
             }
         }
+        
+        store.setFilesWithConsistentChecksumToValid(reporter.getCollectionID());
+        
+    }
+    
+    private Set<String> getUniqueChecksums(Collection<FileInfo> infos) {
+        Set<String> checksums = new HashSet<String>();
+        
+        for(FileInfo info : infos) {
+            if(info.getChecksum() != null) {
+                checksums.add(info.getChecksum());
+            }
+        }
+        
+        return checksums;
     }
 
     public static String getDescription() {
-        return "Detects and reports files that are missing from one or more pillars in the collection.";
+        return "Validates checksum consistency, and updates database to reflect the situation.";
     }
 }

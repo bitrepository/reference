@@ -84,12 +84,12 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             HandleDeletedFilesStep handleDeletedFilesStep = new HandleDeletedFilesStep(context.getStore(), reporter);
             performStep(handleDeletedFilesStep);
             
-            HandleMissingFilesStep handleMissingFilesStep = new HandleMissingFilesStep(context.getStore(), 
-                    context.getAuditManager(), reporter);
+            HandleMissingFilesStep handleMissingFilesStep = new HandleMissingFilesStep(context.getStore(),reporter);
             performStep(handleMissingFilesStep);
             
             HandleChecksumValidationStep handleChecksumValidationStep 
-                    = new HandleChecksumValidationStep(context.getStore(), reporter);
+                    = new HandleChecksumValidationStep(context.getStore(),  
+                            context.getAuditManager(), reporter);
             performStep(handleChecksumValidationStep);
             
             HandleMissingChecksumsStep handleMissingChecksumsStep 

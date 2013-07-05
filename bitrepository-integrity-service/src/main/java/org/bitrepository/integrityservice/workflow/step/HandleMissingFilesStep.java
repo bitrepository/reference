@@ -47,12 +47,9 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
     /** The report model to populate */
     private final IntegrityReporter reporter;
-    /** The audit trail manager.*/
-    private final AuditTrailManager auditManager;
     
-    public HandleMissingFilesStep(IntegrityModel store, AuditTrailManager auditManager, IntegrityReporter reporter) {
+    public HandleMissingFilesStep(IntegrityModel store, IntegrityReporter reporter) {
         this.store = store;
-        this.auditManager = auditManager;
         this.reporter = reporter;
     }
     
@@ -68,35 +65,17 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
      */
     @Override
     public synchronized void performStep() {
-        List<String> inconsistentFiles = store.getFilesWithInconsistentChecksums(reporter.getCollectionID());
-        List<String> collectionPillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
-        for(String file : inconsistentFiles) {
-            Collection<FileInfo> infos = store.getFileInfos(file, reporter.getCollectionID());
-            Set<String> checksums = getUniqueChecksums(infos);
-            if(checksums.size() > 1) {
-                auditManager.addAuditEvent(reporter.getCollectionID(), file, "IntegrityService", 
-                        "Checksum inconsistency for file '" + file + "'. The pillar have more than one unique checksum.",
-                        "IntegrityService validating the checksums.", FileAction.INCONSISTENCY);
-                for(FileInfo info : infos) {
-                    reporter.reportChecksumIssue(file, info.getPillarId());
-                }
-                store.setChecksumError(file, collectionPillars, reporter.getCollectionID());
-            } else {
-                store.setChecksumAgreement(file, collectionPillars, reporter.getCollectionID());
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
+        for(String pillar : pillars) {
+            List<String> missingFiles = 
+                    store.getMissingFilesAtPillar(pillar, 0, Integer.MAX_VALUE, reporter.getCollectionID());
+            for(String missingFile : missingFiles) {
+                reporter.reportMissingFile(missingFile, pillar);
             }
         }
-        
-        store.setFilesWithConsistentChecksumToValid(reporter.getCollectionID());
-        
-    }
-    
-    private Set<String> getUniqueChecksums(Collection<FileInfo> infos) {
-        Set<String> checksums = new HashSet<String>();
-        
-        return checksums;
     }
 
     public static String getDescription() {
-        return "Validates checksum consistency, and updates database to reflect the situation.";
+        return "Detects and reports files that are missing from one or more pillars in the collection.";
     }
 }
