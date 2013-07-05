@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.checking.reports.IntegrityReporter;
+import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

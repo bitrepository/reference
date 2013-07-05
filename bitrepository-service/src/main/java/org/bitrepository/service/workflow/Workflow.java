@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
  * @see WorkflowStep {@link WorkflowStep} 
  */
 public abstract class Workflow implements SchedulableJob {
+    /** The jobID */
+    protected JobID jobID;
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -89,6 +91,24 @@ public abstract class Workflow implements SchedulableJob {
         }
         return statistics;
     }
-    
-    public abstract JobID getJobID();
+
+    @Override
+    public JobID getJobID() {
+        return jobID;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        Workflow that = (Workflow) o;
+
+        if (!jobID.equals(that.jobID)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return jobID.hashCode();
+    }
 }

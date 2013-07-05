@@ -1,16 +1,16 @@
-package org.bitrepository.integrityservice.checking.reports;
+package org.bitrepository.integrityservice.reports;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class BasicIntegrityReporter implements IntegrityReporter {
 
     private final String collectionID;
     private Long deletedFilesCount = 0L;
-    private final Map<String, Long> missingFiles = new HashMap<String, Long>();
-    private final Map<String, Long> checksumIssues = new HashMap<String, Long>();
-    private final Map<String, Long> missingChecksums = new HashMap<String, Long>();
-    private final Map<String, Long> obsoleteChecksums = new HashMap<String, Long>();
+    private final Map<String, Long> missingFiles = new TreeMap<String, Long>();
+    private final Map<String, Long> checksumIssues = new TreeMap<String, Long>();
+    private final Map<String, Long> missingChecksums = new TreeMap<String, Long>();
+    private final Map<String, Long> obsoleteChecksums = new TreeMap<String, Long>();
     
     public BasicIntegrityReporter(String collectionID) {
         this.collectionID = collectionID;
@@ -18,74 +18,54 @@ public class BasicIntegrityReporter implements IntegrityReporter {
     
     @Override
     public boolean hasIntegrityIssues() {
-        boolean hasIssues = false;
-        for(Long count : missingFiles.values()) {
-            if(count != 0L) {
-                hasIssues = true;
-            }
-        }
-        
-        for(Long count : checksumIssues.values()) {
-            if(count != 0L) {
-                hasIssues = true;
-            }
-        }
-        
-        for(Long count : missingChecksums.values()) {
-            if(count != 0L) {
-                hasIssues = true;
-            }
-        }
-        
-        for(Long count : obsoleteChecksums.values()) {
-            if(count != 0L) {
-                hasIssues = true;
-            }
-        }
-        
-        return hasIssues;
+        return !(
+                missingFiles.isEmpty() &&
+                checksumIssues.isEmpty() &&
+                missingChecksums.isEmpty() &&
+                obsoleteChecksums.isEmpty()
+        );
     }
 
     @Override
     public String generateReport() {
         StringBuilder report = new StringBuilder();
         if(deletedFilesCount != 0L) {
-            report.append("Detected " + deletedFilesCount + " files as removed from the collection.\n");
+            report.append("Detected " + deletedFilesCount + " files as removed from the collection.");
         }
         for(String pillar : missingFiles.keySet()) {
             if(missingFiles.get(pillar) != 0) {
-                report.append("Pillar " + pillar + " is missing " + missingFiles.get(pillar) + " file(s).\n");
+                report.append("\n" + pillar + " is missing " + missingFiles.get(pillar) + " file");
+                if (missingFiles.get(pillar) > 1) report.append("s");
+                report.append(".");
             }
         }
         
         for(String pillar : checksumIssues.keySet()) {
             if(checksumIssues.get(pillar) != 0) {
-                report.append("Pillar " + pillar + " has " + checksumIssues.get(pillar) + " checksum issue(s).\n");
+                report.append("\n" + pillar + " has " + checksumIssues.get(pillar) + " potential corrupt file(s).");
             }
         }
         
         for(String pillar : missingChecksums.keySet()) {
             if(missingChecksums.get(pillar) != 0) {
-                report.append("Pillar " + pillar + " is missing " + missingChecksums.get(pillar) + " checksum(s).\n");
+                report.append("\n " + pillar + " is missing " + missingChecksums.get(pillar) + " checksum(s).");
             }
         }
         
         for(String pillar : obsoleteChecksums.keySet()) {
             if(obsoleteChecksums.get(pillar) != 0) {
-                report.append("Pillar " + pillar + " has " + obsoleteChecksums.get(pillar) + " obsolete checksum(s).\n");
+                report.append("\n " + pillar + " has " + obsoleteChecksums.get(pillar) + " obsolete checksum(s).");
             }
         }
-        
         return report.toString();
     }
 
     @Override
     public String generateSummaryOfReport() {
-        // TODO Figure out what to write in the summary
         if(!hasIntegrityIssues()) {
             return "No integrity issues found";
         } else {
-            return "Integrity issues found!";
+            return "The following integrity issues where found:" +   generateReport();
         }
     }
 
@@ -134,5 +114,4 @@ public class BasicIntegrityReporter implements IntegrityReporter {
             obsoleteChecksums.put(pillarID, 1L);
         }
     }
-
 }

@@ -22,16 +22,9 @@
 package org.bitrepository.integrityservice.workflow;
 
 import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.integrityservice.checking.reports.BasicIntegrityReporter;
-import org.bitrepository.integrityservice.checking.reports.IntegrityReporter;
-import org.bitrepository.integrityservice.workflow.step.CreateStatisticsEntryStep;
-import org.bitrepository.integrityservice.workflow.step.HandleChecksumValidationStep;
-import org.bitrepository.integrityservice.workflow.step.HandleDeletedFilesStep;
-import org.bitrepository.integrityservice.workflow.step.HandleMissingChecksumsStep;
-import org.bitrepository.integrityservice.workflow.step.HandleMissingFilesStep;
-import org.bitrepository.integrityservice.workflow.step.HandleObsoleteChecksumsStep;
-import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
-import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
+import org.bitrepository.integrityservice.reports.BasicIntegrityReporter;
+import org.bitrepository.integrityservice.reports.IntegrityReporter;
+import org.bitrepository.integrityservice.workflow.step.*;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowContext;
@@ -45,8 +38,6 @@ import org.bitrepository.service.workflow.WorkflowContext;
 public abstract class IntegrityCheckWorkflow extends Workflow {
     /** The context for the workflow.*/
     protected IntegrityWorkflowContext context;
-    /** The jobID */
-    private JobID jobID;
     protected String collectionID;
     /**
      * Remember to call the initialise method needs to be called before the start method.
@@ -64,6 +55,7 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
     
     @Override
     public void start() {
+
         if (context == null) {
             throw new IllegalStateException("The workflow can not be started before the initialise method has been " +
                     "called.");
@@ -103,35 +95,13 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             CreateStatisticsEntryStep createStatistics = new CreateStatisticsEntryStep(
                     context.getStore(), collectionID);
             performStep(createStatistics);
-            
+
             if(reporter.hasIntegrityIssues()) {
-                context.getAlerter().integrityFailed(reporter);
+                context.getAlerter().integrityFailed(reporter.generateSummaryOfReport(), collectionID);
             }
             
         } finally {
             finish();
         }
-    }
-   
-    @Override 
-    public JobID getJobID() {
-        return jobID;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof IntegrityCheckWorkflow)) return false;
-
-        IntegrityCheckWorkflow that = (IntegrityCheckWorkflow) o;
-
-        if (!jobID.equals(that.jobID)) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return jobID.hashCode();
     }
 }

@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.integrityservice.checking.reports;
+package org.bitrepository.integrityservice.reports;
 
 /**
  * Container for the results of an integrity check.
