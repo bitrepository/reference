@@ -29,7 +29,6 @@ import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -47,8 +46,6 @@ public class IntegrityCache implements IntegrityModel {
     private JCS collectionSizeCache;
     private JCS collectionTotalFilesCache;
     private JCS collectionLatestFileDateCache;
-    /** Seconds to wait from a cache elements has been updated to the elements is reloaded from the model **/
-    protected int refreshPeriodAfterDirtyMark = 5;
 
     public IntegrityCache(IntegrityModel integrityModel) {
         this.integrityModel = integrityModel;
@@ -67,10 +64,6 @@ public class IntegrityCache implements IntegrityModel {
     @Override
     public void addFileIDs(FileIDsData data, String pillarId, String collectionId) {
         integrityModel.addFileIDs(data, pillarId, collectionId);
-        markPillarsDirty(filesCache, Arrays.asList(new String[]{pillarId}), collectionId);
-        markDirty(collectionSizeCache, collectionId);
-        markDirty(collectionTotalFilesCache, collectionId);
-        markDirty(collectionLatestFileDateCache, collectionId);
     }
 
     @Override
@@ -161,23 +154,16 @@ public class IntegrityCache implements IntegrityModel {
     @Override
     public void setFileMissing(String fileId, Collection<String> pillarIds, String collectionId) {
         integrityModel.setFileMissing(fileId, pillarIds, collectionId);
-        markPillarsDirty(missingFilesCache, pillarIds, collectionId);
-        markPillarsDirty(filesCache, pillarIds, collectionId);
-        markDirty(collectionSizeCache, collectionId);
-        markDirty(collectionTotalFilesCache, collectionId);
-        markDirty(collectionLatestFileDateCache, collectionId);
     }
 
     @Override
     public void setChecksumError(String fileId, Collection<String> pillarIds, String collectionId) {
         integrityModel.setChecksumError(fileId, pillarIds, collectionId);
-        markPillarsDirty(corruptFilesCache, pillarIds, collectionId);
     }
 
     @Override
     public void setChecksumAgreement(String fileId, Collection<String> pillarIds, String collectionId) {
         integrityModel.setChecksumAgreement(fileId, pillarIds, collectionId);
-        markPillarsDirty(corruptFilesCache, pillarIds, collectionId);
     }
 
     @Override
@@ -293,42 +279,6 @@ public class IntegrityCache implements IntegrityModel {
     @Override
     public void close() {
         //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    /**
-     * Will cause the cache to return null after <code>refreshPeriodAfterDirtyMark</code> has passed, since
-     * the value was updated in the cache. This will ensure that the backend model isn't read more than
-     *  each <code>refreshPeriodAfterDirtyMark</code> second.
-     * @param cache The cache to use.
-     * @param pillarIds The pillars to mark dirty
-     * @param collectionID The collection to mark dirty
-     */
-    private void markPillarsDirty(JCS cache, Collection<String> pillarIds, String collectionID) {
-        for (String pillarID:pillarIds) {
-            try {
-                if (cache.get(getCacheID(pillarID, collectionID)) != null ) {
-                    cache.getElementAttributes(getCacheID(pillarID, collectionID)).
-                            setMaxLifeSeconds(refreshPeriodAfterDirtyMark);
-                }
-            } catch (CacheException ce) {
-                log.warn("Failed to read cache.", ce);
-            }
-        }
-    }
-
-    /**
-     * Will cause the cache to return null after <code>refreshPeriodAfterDirtyMark</code> has passed, since
-     * the value was updated in the cache. This will ensure that the backend model isn't read more than
-     *  each <code>refreshPeriodAfterDirtyMark</code> second.
-     * @param cache The cache to use.
-     * @param collectionID The collection to mark dirty
-     */
-    private void markDirty(JCS cache, String collectionID) {
-        try {
-            cache.getElementAttributes(collectionID).setMaxLifeSeconds(refreshPeriodAfterDirtyMark);
-        } catch (CacheException ce) {
-            log.warn("Failed to read cache.", ce);
-        }
     }
 
     /**
