@@ -126,7 +126,7 @@ public class PutFile extends CommandLineClient {
         ChecksumDataForFileTYPE validationChecksum = getValidationChecksumDataForFile(f);
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpecOrNull();
 
-        boolean printChecksums = (requestChecksum != null);
+        boolean printChecksums = cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG);
         
         CompleteEventAwaiter eventHandler = new PutFileEventHandler(settings, output, printChecksums);
         client.putFile(getCollectionID(), url, fileId, f.length(), validationChecksum, requestChecksum, eventHandler, null);

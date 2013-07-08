@@ -38,12 +38,12 @@ import java.util.Map;
  * 
  * If all pillars agree, then the 'pillars' will just say 'All'.
  */
-public class GetChecksumDistrubtionFormatter implements GetChecksumsOutputFormatter {
+public class GetChecksumDistributionFormatter implements GetChecksumsOutputFormatter {
 
     private final OutputHandler outputHandler;
     final static String header = "Count: \tFileID: \tChecksum: \t \t \tPillars:";
     
-    public GetChecksumDistrubtionFormatter(OutputHandler outputHandler) {
+    public GetChecksumDistributionFormatter(OutputHandler outputHandler) {
         this.outputHandler = outputHandler;
     }
     
