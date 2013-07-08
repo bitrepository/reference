@@ -448,16 +448,16 @@ public abstract class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         log.debug("Sets invalid checksum for file '" + fileId + "' at pillar '" + pillarId + "'");
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String sqlUpdate = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ? , " + FI_CHECKSUM_STATE + " = ?" 
+        String sqlUpdate = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_CHECKSUM_STATE + " = ?" 
                 + " WHERE " + FI_FILE_KEY + " = (" 
                     + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
                     + " WHERE " + FILES_ID + " = ?" 
                     + " AND " + COLLECTION_KEY + " = ?)" 
-                + " AND " + FI_PILLAR_KEY + " = (" 
-                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE
-                    + " WHERE " + PILLAR_ID + " = ?)";
-        DatabaseUtils.executeStatement(dbConnector, sqlUpdate, FileState.EXISTING.ordinal(), 
-                ChecksumState.ERROR.ordinal(), fileId, collectionKey, pillarId);
+                + " AND " + FI_PILLAR_KEY + " = ?"
+                + " AND " + FI_FILE_STATE + " = ? ";
+        
+        DatabaseUtils.executeStatement(dbConnector, sqlUpdate, ChecksumState.ERROR.ordinal(), fileId, collectionKey, 
+                pillarKeyCache.get(pillarId), FileState.EXISTING.ordinal());
     }
 
     /**

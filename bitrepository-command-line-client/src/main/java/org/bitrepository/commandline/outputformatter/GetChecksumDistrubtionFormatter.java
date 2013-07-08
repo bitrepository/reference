@@ -70,7 +70,7 @@ public class GetChecksumDistrubtionFormatter implements GetChecksumsOutputFormat
      */
     private void printInconsistency(ChecksumResult result) {
         for(Map.Entry<String, List<String>> checksumsDistribution : retrieveChecksumDistribution(result).entrySet()) {
-            outputHandler.resultLine(result.getContributors().size() + " \t" + result.getID() + " \t" 
+            outputHandler.resultLine(checksumsDistribution.getValue().size() + " \t" + result.getID() + " \t" 
                     + checksumsDistribution.getKey() + " \t" + checksumsDistribution.getValue());                    
         }
     }

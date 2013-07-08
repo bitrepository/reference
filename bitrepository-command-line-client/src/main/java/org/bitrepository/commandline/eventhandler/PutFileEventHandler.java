@@ -12,13 +12,20 @@ import org.bitrepository.modify.putfile.conversation.PutFileCompletePillarEvent;
  */
 public class PutFileEventHandler extends CompleteEventAwaiter {
 
+    private final Boolean printOutput;
+    
     /**
      * Constructor.
      * @param settings
      * @param outputHandler
      */
-    public PutFileEventHandler(Settings settings, OutputHandler outputHandler) {
+    public PutFileEventHandler(Settings settings, OutputHandler outputHandler, boolean printOutput) {
         super(settings, outputHandler);
+        this.printOutput = printOutput;
+        
+        if(printOutput) {
+            output.resultHeader("PillarId \t Checksum");
+        }
     }
 
     @Override
@@ -29,7 +36,7 @@ public class PutFileEventHandler extends CompleteEventAwaiter {
         }
         
         PutFileCompletePillarEvent pillarEvent = (PutFileCompletePillarEvent) event;
-        if(pillarEvent.getChecksums() != null) {
+        if(printOutput && pillarEvent.getChecksums() != null) {
             output.resultLine(pillarEvent.getContributorID() + " \t " + Base16Utils.decodeBase16(pillarEvent.getChecksums().getChecksumValue()));
         }
     }

@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
@@ -78,7 +80,7 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
                 for(FileInfo info : infos) {
                     reporter.reportChecksumIssue(file, info.getPillarId());
                 }
-                store.setChecksumError(file, collectionPillars, reporter.getCollectionID());
+                store.setChecksumError(file, getPillarsFileExisting(infos), reporter.getCollectionID());
             } else {
                 log.error("File with inconsistent checksums from SQL have apparently not inconsistency according to "
                         + "Java! This is a scenario, which must never occur!!!");
@@ -90,16 +92,39 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
         
     }
     
+    /**
+     * Retrieves the unique checksums for the files, which exists.
+     * Ignores files with another filestate than 'EXISTING'.
+     * @param infos The FileInfo with information about the file at the different pillars. 
+     * @return The set of unique checksums.
+     */
     private Set<String> getUniqueChecksums(Collection<FileInfo> infos) {
         Set<String> checksums = new HashSet<String>();
         
         for(FileInfo info : infos) {
-            if(info.getChecksum() != null) {
+            if((info.getChecksum() != null) && (info.getFileState() == FileState.EXISTING)) {
                 checksums.add(info.getChecksum());
             }
         }
         
         return checksums;
+    }
+    
+    /**
+     * Extract the pillars where the file has state 'EXISTING'.
+     * @param infos The FileInfo with information about the file at the different pillars. 
+     * @return The list of pillars which has the file.
+     */
+    private List<String> getPillarsFileExisting(Collection<FileInfo> infos) {
+        List<String> res = new ArrayList<String>();
+        
+        for(FileInfo info : infos) {
+            if(info.getFileState() == FileState.EXISTING) {
+                res.add(info.getPillarId());
+            }
+        }
+        
+        return res;
     }
 
     public static String getDescription() {

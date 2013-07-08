@@ -126,10 +126,9 @@ public class PutFile extends CommandLineClient {
         ChecksumDataForFileTYPE validationChecksum = getValidationChecksumDataForFile(f);
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpecOrNull();
 
-        CompleteEventAwaiter eventHandler = new PutFileEventHandler(settings, output);
-        if (requestChecksum != null) {
-            output.resultHeader("PillarId \t Checksum");
-        }
+        boolean printChecksums = (requestChecksum != null);
+        
+        CompleteEventAwaiter eventHandler = new PutFileEventHandler(settings, output, printChecksums);
         client.putFile(getCollectionID(), url, fileId, f.length(), validationChecksum, requestChecksum, eventHandler, null);
 
         if(cmdHandler.hasOption(Constants.DELETE_FILE_ARG)) {
