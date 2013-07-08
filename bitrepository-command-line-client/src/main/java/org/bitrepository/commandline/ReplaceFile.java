@@ -21,6 +21,9 @@
  */
 package org.bitrepository.commandline;
 
+import java.io.File;
+import java.net.URL;
+
 import org.apache.commons.cli.Option;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -28,16 +31,10 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
 import org.bitrepository.commandline.eventhandler.ReplaceFileEventHandler;
-import org.bitrepository.common.utils.Base16Utils;
-import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-
-import java.io.File;
-import java.net.URL;
 
 /**
  * Replace a file from the collection.
@@ -111,9 +108,7 @@ public class ReplaceFile extends CommandLineClient {
         }
     }
 
-    /**
-     * Perform the ReplaceFile operation.
-     */
+    @Override
     public void performOperation() {
         output.debug("Performing the ReplaceFile operation.");
         OperationEvent finalEvent = replaceTheFile();
@@ -136,9 +131,9 @@ public class ReplaceFile extends CommandLineClient {
         FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
         URL url = fileexchange.uploadToServer(f);
 
-        ChecksumDataForFileTYPE replaceValidationChecksum = getValidationChecksumForOldFile();
-        ChecksumDataForFileTYPE newValidationChecksum = getValidationChecksum(f);
-        ChecksumSpecTYPE requestChecksum = getRequestChecksumSpec();
+        ChecksumDataForFileTYPE replaceValidationChecksum = getChecksumDataForDeleteValidation();
+        ChecksumDataForFileTYPE newValidationChecksum = getValidationChecksumDataForFile(f);
+        ChecksumSpecTYPE requestChecksum = getRequestChecksumSpecOrNull();
 
         output.debug("Initiating the ReplaceFile conversation.");
         CompleteEventAwaiter eventHandler = new ReplaceFileEventHandler(settings, output);
@@ -154,22 +149,6 @@ public class ReplaceFile extends CommandLineClient {
 
         return eventHandler.getFinish();
     }
-    
-    /**
-     * Finds the file from the arguments.
-     * @return The requested file.
-     */
-    private File findTheFile() {
-        String filePath = cmdHandler.getOptionValue(Constants.FILE_ARG);
-
-        File file = new File(filePath);
-        if(!file.isFile()) {
-            throw new IllegalArgumentException("The file '" + filePath + "' is invalid. It does not exists or it "
-                    + "is a directory.");
-        }
-
-        return file;
-    }
 
     /**
      * Extracts the id of the file to be replaced.
@@ -180,49 +159,6 @@ public class ReplaceFile extends CommandLineClient {
             return cmdHandler.getOptionValue(Constants.FILE_ID_ARG);
         } else {
             return f.getName();
-        }
-    }
-
-    /**
-     * Creates the data structure for encapsulating the validation checksums for validation of the PutFile operation.
-     * @param file The file to have the checksum calculated.
-     * @return The ChecksumDataForFileTYPE for the pillars to validate the PutFile operation.
-     */
-    private ChecksumDataForFileTYPE getValidationChecksum(File file) {
-        ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settings);
-        String checksum = ChecksumUtils.generateChecksum(file, csSpec);
-
-        ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
-        res.setCalculationTimestamp(CalendarUtils.getNow());
-        res.setChecksumSpec(csSpec);
-        res.setChecksumValue(Base16Utils.encodeBase16(checksum));
-
-        return res;
-    }
-    
-    /**
-     * Creates the data structure for encapsulating the validation checksums for validation on the pillars.
-     * @return The ChecksumDataForFileTYPE for the pillars to validate the ReplaceFile operation.
-     */
-    private ChecksumDataForFileTYPE getValidationChecksumForOldFile() {
-        if(!cmdHandler.hasOption(Constants.CHECKSUM_ARG)) {
-            return null;
-        }
-
-        ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
-        res.setCalculationTimestamp(CalendarUtils.getNow());
-        res.setChecksumSpec(ChecksumUtils.getDefault(settings));
-        res.setChecksumValue(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.CHECKSUM_ARG)));
-
-        return res;
-    }
-    
-    @Override
-    protected ChecksumSpecTYPE getRequestChecksumSpec() {
-        if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
-            return super.getRequestChecksumSpec();
-        } else {
-            return null;
         }
     }
 }

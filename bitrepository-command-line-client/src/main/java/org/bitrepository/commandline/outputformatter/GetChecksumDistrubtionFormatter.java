@@ -31,17 +31,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class to format GetChecksums client output. 
+ * Class to deliver GetChecksums client output in a format showing the distribution of the checksum between the pillars.
  * Output format 'style' is 'info' i.e.
  * Tab separated columns with the columns: 
- * Count Checksum FileID 
+ * Count FileID Checksum Pillars
+ * 
+ * If all pillars agree, then the 'pillars' will just say 'All'.
  */
-public class GetChecksumsDisagreementInfoFormatter implements GetChecksumsOutputFormatter {
+public class GetChecksumDistrubtionFormatter implements GetChecksumsOutputFormatter {
 
     private final OutputHandler outputHandler;
     final static String header = "Count: \tFileID: \tChecksum: \t \t \tPillars:";
     
-    public GetChecksumsDisagreementInfoFormatter(OutputHandler outputHandler) {
+    public GetChecksumDistrubtionFormatter(OutputHandler outputHandler) {
         this.outputHandler = outputHandler;
     }
     
@@ -54,7 +56,7 @@ public class GetChecksumsDisagreementInfoFormatter implements GetChecksumsOutput
     public void formatResult(Collection<ChecksumResult> results) {
         for(ChecksumResult result : results) {
             if(result.isDirty()) {
-                printDisagreement(result);
+                printInconsistency(result);
             } else {
                 outputHandler.resultLine(result.getContributors().size() + " \t" + result.getID() + " \t" 
                         + result.getChecksum(result.getContributors().get(0)) + " \tAll");
@@ -63,16 +65,21 @@ public class GetChecksumsDisagreementInfoFormatter implements GetChecksumsOutput
     }
     
     /**
-     * Prints the different checksums
-     * @param result
+     * Prints the different checksums along with the pillar distribution amongst these checksums. 
+     * @param result The checksum results to format the inconsistency distribution upon.
      */
-    private void printDisagreement(ChecksumResult result) {
+    private void printInconsistency(ChecksumResult result) {
         for(Map.Entry<String, List<String>> checksumsDistribution : retrieveChecksumDistribution(result).entrySet()) {
             outputHandler.resultLine(result.getContributors().size() + " \t" + result.getID() + " \t" 
                     + checksumsDistribution.getKey() + " \t" + checksumsDistribution.getValue());                    
         }
     }
     
+    /**
+     * Creates the map between a checksum and the list of pillars having the checksum.
+     * @param result The checksum results.
+     * @return The map between checksum and pillars.
+     */
     private Map<String, List<String>> retrieveChecksumDistribution(ChecksumResult result) {
         Map<String, List<String>> res = new HashMap<String, List<String>>();
         

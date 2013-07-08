@@ -26,7 +26,7 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.commandline.clients.PagingGetChecksumsClient;
-import org.bitrepository.commandline.outputformatter.GetChecksumsDisagreementInfoFormatter;
+import org.bitrepository.commandline.outputformatter.GetChecksumDistrubtionFormatter;
 import org.bitrepository.commandline.outputformatter.GetChecksumsInfoFormatter;
 import org.bitrepository.commandline.outputformatter.GetChecksumsOutputFormatter;
 
@@ -89,7 +89,7 @@ public class GetChecksums extends CommandLineClient {
      */
     @Override
     protected void performOperation() {
-        ChecksumSpecTYPE spec = getRequestChecksumSpec();
+        ChecksumSpecTYPE spec = getRequestChecksumSpecOrDefault();
         output.startupInfo("Performing the GetChecksums operation.");
         Boolean success = pagingClient.getChecksums(getCollectionID(), getFileIDs(), 
                 getPillarIDs(), spec);
@@ -106,7 +106,7 @@ public class GetChecksums extends CommandLineClient {
      */
     private GetChecksumsOutputFormatter retrieveOutputFormatter() {
         if(cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
-            return new GetChecksumsDisagreementInfoFormatter(output);
+            return new GetChecksumDistrubtionFormatter(output);
         } else {
             return new GetChecksumsInfoFormatter(output);
         }

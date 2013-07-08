@@ -24,6 +24,7 @@ package org.bitrepository.commandline;
 
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.commandline.output.DefaultOutputHandler;
@@ -31,6 +32,7 @@ import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.Base16Utils;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -39,6 +41,8 @@ import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
 
 import javax.jms.JMSException;
+
+import java.io.File;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
@@ -213,11 +217,32 @@ public abstract class CommandLineClient {
     /**
      * @return The requested checksum spec, or the default checksum from settings if the arguments does not exist.
      */
-    protected ChecksumSpecTYPE getRequestChecksumSpec() {
+    protected ChecksumSpecTYPE getRequestChecksumSpecOrDefault() {
         if(!cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
             return ChecksumUtils.getDefault(settings);
         }
 
+        return getRequestChecksumSpec();
+    }
+    
+    /**
+     * @return The requested checksum spec, or null.
+     */
+    protected ChecksumSpecTYPE getRequestChecksumSpecOrNull() {
+        if(!cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
+            return null;
+        }
+
+        return getRequestChecksumSpec();
+    }
+    
+    /**
+     * Create the ChecksumSpecTYPE based on the cmd-line arguments.
+     * Do not use directly. Use either 'getRequestChecksumSpecOrNull' or 'getRequestChecksumSpecOrDefault' to handle
+     * the case, when no request arguments have been defined.
+     * @return The requested checksum spec.
+     */
+    private ChecksumSpecTYPE getRequestChecksumSpec() {
         ChecksumSpecTYPE res = new ChecksumSpecTYPE();
         res.setChecksumType(ChecksumType.fromValue(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
 
@@ -232,6 +257,60 @@ public abstract class CommandLineClient {
             output.error("Invalid checksum algorithm: " + e.getMessage());
             throw new IllegalStateException("Invalid checksumspec for '" + res + "'", e);
         }
+
+        return res;
+    }
+    
+    /**
+     * Finds the file from the arguments.
+     * @return The requested file, or null if no file argument was given.
+     */
+    protected File findTheFile() {
+        if(!cmdHandler.hasOption(Constants.FILE_ARG)) {
+            return null;
+        }
+        String filePath = cmdHandler.getOptionValue(Constants.FILE_ARG);
+
+        File file = new File(filePath);
+        if(!file.isFile()) {
+            throw new IllegalArgumentException("The file '" + filePath + "' is invalid. It does not exists or it "
+                    + "is a directory.");
+        }
+
+        return file;
+    }
+
+    /**
+     * Creates the data structure for encapsulating the validation checksums for validation on the pillars.
+     * @return The ChecksumDataForFileTYPE for the pillars to validate the DeleteFile or ReplaceFile operations.
+     */
+    protected ChecksumDataForFileTYPE getChecksumDataForDeleteValidation() {
+        if(!cmdHandler.hasOption(Constants.CHECKSUM_ARG)) {
+            return null;
+        }
+
+        ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
+        res.setCalculationTimestamp(CalendarUtils.getNow());
+        res.setChecksumSpec(ChecksumUtils.getDefault(settings));
+        res.setChecksumValue(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.CHECKSUM_ARG)));
+
+        return res;
+    }
+
+    /**
+     * Creates the data structure for encapsulating the validation checksums for validation of the PutFile 
+     * or ReplaceFile operations.
+     * @param file The file to have the checksum calculated.
+     * @return The ChecksumDataForFileTYPE for the pillars to validate the operations.
+     */
+    protected ChecksumDataForFileTYPE getValidationChecksumDataForFile(File file) {
+        ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settings);
+        String checksum = ChecksumUtils.generateChecksum(file, csSpec);
+
+        ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
+        res.setCalculationTimestamp(CalendarUtils.getNow());
+        res.setChecksumSpec(csSpec);
+        res.setChecksumValue(Base16Utils.encodeBase16(checksum));
 
         return res;
     }

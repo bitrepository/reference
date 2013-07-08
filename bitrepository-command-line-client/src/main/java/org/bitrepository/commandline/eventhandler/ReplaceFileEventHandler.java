@@ -14,8 +14,8 @@ public class ReplaceFileEventHandler extends CompleteEventAwaiter {
 
     /**
      * Constructor.
-     * @param settings
-     * @param outputHandler
+     * @param settings The settings.
+     * @param outputHandler The output handler.
      */
     public ReplaceFileEventHandler(Settings settings, OutputHandler outputHandler) {
         super(settings, outputHandler);
@@ -44,5 +44,4 @@ public class ReplaceFileEventHandler extends CompleteEventAwaiter {
             output.resultLine(pillarEvent.getContributorID() + " : \t" + componentText.toString());
         }
     }
-
 }

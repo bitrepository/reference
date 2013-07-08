@@ -21,6 +21,9 @@
  */
 package org.bitrepository.commandline;
 
+import java.io.File;
+import java.net.URL;
+
 import org.apache.commons.cli.Option;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -28,16 +31,10 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
 import org.bitrepository.commandline.eventhandler.PutFileEventHandler;
-import org.bitrepository.common.utils.Base16Utils;
-import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-
-import java.io.File;
-import java.net.URL;
 
 /**
  * Putting a file to the collection.
@@ -126,8 +123,8 @@ public class PutFile extends CommandLineClient {
         String fileId = retrieveTheName(f);
 
         output.debug("Initiating the PutFile conversation.");
-        ChecksumDataForFileTYPE validationChecksum = getValidationChecksum(f);
-        ChecksumSpecTYPE requestChecksum = getRequestChecksumSpec();
+        ChecksumDataForFileTYPE validationChecksum = getValidationChecksumDataForFile(f);
+        ChecksumSpecTYPE requestChecksum = getRequestChecksumSpecOrNull();
 
         CompleteEventAwaiter eventHandler = new PutFileEventHandler(settings, output);
         if (requestChecksum != null) {
@@ -147,21 +144,6 @@ public class PutFile extends CommandLineClient {
         return eventHandler.getFinish();
     }
 
-    /**
-     * Finds the file from the arguments.
-     * @return The requested file.
-     */
-    private File findTheFile() {
-        String filePath = cmdHandler.getOptionValue(Constants.FILE_ARG);
-
-        File file = new File(filePath);
-        if(!file.isFile()) {
-            throw new IllegalArgumentException("The file '" + filePath + "' is invalid. It does not exists or it "
-                    + "is a directory.");
-        }
-
-        return file;
-    }
 
     /**
      * Extracts the id of the file to be put.
@@ -173,23 +155,6 @@ public class PutFile extends CommandLineClient {
         } else {
             return f.getName();
         }
-    }
-
-    /**
-     * Creates the data structure for encapsulating the validation checksums for validation of the PutFile operation.
-     * @param file The file to have the checksum calculated.
-     * @return The ChecksumDataForFileTYPE for the pillars to validate the PutFile operation.
-     */
-    private ChecksumDataForFileTYPE getValidationChecksum(File file) {
-        ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settings);
-        String checksum = ChecksumUtils.generateChecksum(file, csSpec);
-
-        ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
-        res.setCalculationTimestamp(CalendarUtils.getNow());
-        res.setChecksumSpec(csSpec);
-        res.setChecksumValue(Base16Utils.encodeBase16(checksum));
-
-        return res;
     }
 
     /**

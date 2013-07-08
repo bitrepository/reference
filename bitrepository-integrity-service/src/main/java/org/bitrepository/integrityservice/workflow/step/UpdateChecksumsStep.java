@@ -99,18 +99,20 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
         try {
             List<String> pillarsToCollectFrom = new ArrayList<String>(
                     SettingsUtils.getPillarIDsForCollection(collectionId));
-            log.debug("Collection checksums from '" + pillarsToCollectFrom + "' for collection '" + collectionId + "'.");
+            log.debug("Collecting checksums from '" + pillarsToCollectFrom + "' for collection '" 
+                    + collectionId + "'.");
             while (!pillarsToCollectFrom.isEmpty()) {
-                IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
+                IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, 
+                        alerter, timeout);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
                 collector.getChecksums(collectionId, pillarsToCollectFrom, checksumType, "IntegrityService: " 
                         + getName(), queries, eventHandler);
                 OperationEvent event = eventHandler.getFinish();
-                log.debug("Collection of file ids had the final event: " + event);
+                log.debug("Collecting of checksums ids had the final event: " + event);
                 pillarsToCollectFrom = new ArrayList<String>(eventHandler.getPillarsWithPartialResult());
             }
         } catch (InterruptedException e) {
-            log.warn("Interrupted while collecting file ids.", e);
+            log.warn("Interrupted while collecting checksums.", e);
         }
     }
     

@@ -80,8 +80,7 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             performStep(handleMissingFilesStep);
             
             HandleChecksumValidationStep handleChecksumValidationStep 
-                    = new HandleChecksumValidationStep(context.getStore(),  
-                            context.getAuditManager(), reporter);
+                    = new HandleChecksumValidationStep(context.getStore(), context.getAuditManager(), reporter);
             performStep(handleChecksumValidationStep);
             
             HandleMissingChecksumsStep handleMissingChecksumsStep 

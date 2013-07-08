@@ -28,9 +28,6 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
 import org.bitrepository.commandline.eventhandler.DeleteFileEventHandler;
-import org.bitrepository.common.utils.Base16Utils;
-import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
 
@@ -123,8 +120,8 @@ public class DeleteFile extends CommandLineClient {
     private OperationEvent deleteTheFile() {
         String fileId = cmdHandler.getOptionValue(Constants.FILE_ID_ARG);
 
-        ChecksumDataForFileTYPE validationChecksum = getValidationChecksum();
-        ChecksumSpecTYPE requestChecksum = getRequestChecksumSpec();
+        ChecksumDataForFileTYPE validationChecksum = getChecksumDataForDeleteValidation();
+        ChecksumSpecTYPE requestChecksum = getRequestChecksumSpecOrNull();
 
         output.debug("Initiating the DeleteFile conversation.");
         CompleteEventAwaiter eventHandler = new DeleteFileEventHandler(settings, output);
@@ -136,22 +133,5 @@ public class DeleteFile extends CommandLineClient {
         client.deleteFile(getCollectionID(), fileId, pillarId, validationChecksum, requestChecksum, eventHandler, null);
 
         return eventHandler.getFinish();
-    }
-
-    /**
-     * Creates the data structure for encapsulating the validation checksums for validation on the pillars.
-     * @return The ChecksumDataForFileTYPE for the pillars to validate the DeleteFile operation.
-     */
-    private ChecksumDataForFileTYPE getValidationChecksum() {
-        if(!cmdHandler.hasOption(Constants.CHECKSUM_ARG)) {
-            return null;
-        }
-
-        ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
-        res.setCalculationTimestamp(CalendarUtils.getNow());
-        res.setChecksumSpec(ChecksumUtils.getDefault(settings));
-        res.setChecksumValue(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.CHECKSUM_ARG)));
-
-        return res;
     }
 }
