@@ -551,6 +551,61 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testInconsistentChecksumAndMissingFile() throws Exception {
+        addDescription("Testing the localization of inconsistent checksums");
+        addStep("make 3 pillars in settings.", "");
+        final String TEST_PILLAR_3 = EXTRA_PILLAR;
+        org.bitrepository.settings.repositorysettings.Collection c0 = 
+                settings.getRepositorySettings().getCollections().getCollection().get(0);
+        c0.getPillarIDs().getPillarID().clear();
+        c0.getPillarIDs().getPillarID().add(TEST_PILLAR_1);
+        c0.getPillarIDs().getPillarID().add(TEST_PILLAR_2);
+        c0.getPillarIDs().getPillarID().add(TEST_PILLAR_3);
+        settings.getRepositorySettings().getCollections().getCollection().clear();
+        settings.getRepositorySettings().getCollections().getCollection().add(c0);
+
+        addStep("", "");
+        IntegrityDAO cache = createDAO();
+        
+        String checksum1 = "11";
+        String checksum2 = "22";
+        String FILE_ID = "TEST-FILE";
+        
+        addStep("Update the database with different checksum for the file for 2 pillars, but no update for the third pillar.", 
+                "Ingesting the data into the database");
+        List<ChecksumDataForChecksumSpecTYPE> csData1 = getChecksumResults(FILE_ID, checksum1);
+        insertChecksumDataForDAO(cache, csData1, TEST_PILLAR_1, TEST_COLLECTIONID);
+        List<ChecksumDataForChecksumSpecTYPE> csData2 = getChecksumResults(FILE_ID, checksum2);
+        insertChecksumDataForDAO(cache, csData2, TEST_PILLAR_2, TEST_COLLECTIONID);
+        
+        addStep("Set old unknown files to missing", "The file is missing at the third pillar");
+        cache.setOldUnknownFilesToMissing(new Date(), TEST_COLLECTIONID);
+        List<String> missingFiles = cache.findMissingFiles(TEST_COLLECTIONID);
+        Assert.assertEquals(missingFiles, Arrays.asList(FILE_ID));
+        
+        addStep("Find the files with inconsistent checksums", "The file is found.");
+        List<String> filesWithChecksumError = cache.findFilesWithInconsistentChecksums(TEST_COLLECTIONID);
+        Assert.assertEquals(filesWithChecksumError, Arrays.asList(FILE_ID));
+        
+        addStep("Set checksum error for all pillars", "");
+        cache.setChecksumError(FILE_ID, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.setChecksumError(FILE_ID, TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.setChecksumError(FILE_ID, TEST_PILLAR_3, TEST_COLLECTIONID);
+        
+        addStep("Validate the states", 
+                "EXISTING and CHECKSUM_ERROR for pillar1 and pillar2, but MISSING and CHECKSUM_UNKNOWN for pillar3");
+        for(FileInfo fi : cache.getFileInfosForFile(FILE_ID, TEST_COLLECTIONID)) {
+            if(fi.getPillarId().equals(TEST_PILLAR_3)) {
+                Assert.assertEquals(fi.getFileState(), FileState.MISSING);
+                Assert.assertEquals(fi.getChecksumState(), ChecksumState.UNKNOWN);
+            } else {
+                Assert.assertEquals(fi.getFileState(), FileState.EXISTING);
+                Assert.assertEquals(fi.getChecksumState(), ChecksumState.ERROR);
+            }
+        }
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void testNoChecksums() throws Exception {
         addDescription("Testing the checksum validation, when no checksums exists.");
         IntegrityDAO cache = createDAO();
@@ -1010,7 +1065,6 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertEquals(cache.getCollectionFileSize(TEST_COLLECTIONID), collection1DataSize);
         Assert.assertEquals(cache.getCollectionFileSize(EXTRA_COLLECTION), collection1DataSize);
         Assert.assertEquals(cache.getPillarDataSize(TEST_PILLAR_1), pillar1DataSize);
-        
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})

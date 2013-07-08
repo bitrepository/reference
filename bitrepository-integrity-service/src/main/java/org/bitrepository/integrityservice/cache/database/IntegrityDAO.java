@@ -457,7 +457,7 @@ public abstract class IntegrityDAO {
                 + " AND " + FI_FILE_STATE + " = ? ";
         
         DatabaseUtils.executeStatement(dbConnector, sqlUpdate, ChecksumState.ERROR.ordinal(), fileId, collectionKey, 
-                pillarKeyCache.get(pillarId), FileState.EXISTING.ordinal());
+                retrievePillarKey(pillarId), FileState.EXISTING.ordinal());
     }
 
     /**
@@ -780,7 +780,7 @@ public abstract class IntegrityDAO {
                     + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " + FILE_INFO_TABLE + "." + FI_FILE_KEY 
                     + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ?)";
         DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.UNKNOWN.ordinal(), 
-                FileState.EXISTING.ordinal(), pillarKeyCache.get(pillarId), collectionKey);
+                FileState.EXISTING.ordinal(), retrievePillarKey(pillarId), collectionKey);
     }
 
     /**
@@ -861,7 +861,7 @@ public abstract class IntegrityDAO {
                                   + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
         
         DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.EXISTING.ordinal(), 
-                FileState.PREVIOUSLY_SEEN.ordinal(), pillarKeyCache.get(pillarId), collectionKey);
+                FileState.PREVIOUSLY_SEEN.ordinal(), retrievePillarKey(pillarId), collectionKey);
     }
     
     /**

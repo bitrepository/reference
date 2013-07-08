@@ -26,7 +26,7 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.commandline.clients.PagingGetChecksumsClient;
-import org.bitrepository.commandline.outputformatter.GetChecksumDistrubtionFormatter;
+import org.bitrepository.commandline.outputformatter.GetChecksumDistributionFormatter;
 import org.bitrepository.commandline.outputformatter.GetChecksumsInfoFormatter;
 import org.bitrepository.commandline.outputformatter.GetChecksumsOutputFormatter;
 
@@ -106,7 +106,7 @@ public class GetChecksums extends CommandLineClient {
      */
     private GetChecksumsOutputFormatter retrieveOutputFormatter() {
         if(cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
-            return new GetChecksumDistrubtionFormatter(output);
+            return new GetChecksumDistributionFormatter(output);
         } else {
             return new GetChecksumsInfoFormatter(output);
         }

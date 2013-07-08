@@ -474,11 +474,17 @@ public class DatabaseUtils {
             } else if (arg instanceof Date) {
                 s.setTimestamp(i, new Timestamp(((Date) arg).getTime()));
             } else {
-                 throw new IllegalStateException("Cannot handle type '" + arg.getClass().getName() + "'. We can only "
-                        + "handle string, int, long, date or boolean args for query: " + query);
+                if(arg == null) {
+                    throw new IllegalStateException("Cannot handle a null as argument for SQL query. We can only "
+                            + "handle string, int, long, date or boolean args for query: " + query);                    
+                } else  {
+                    throw new IllegalStateException("Cannot handle type '" + arg.getClass().getName() + "'. We can only "
+                            + "handle string, int, long, date or boolean args for query: " + query);
+                }
             }
             i++;
         }
+
         return s;
     }
     
