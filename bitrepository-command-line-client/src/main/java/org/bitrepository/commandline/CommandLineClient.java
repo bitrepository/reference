@@ -22,12 +22,6 @@
 
 package org.bitrepository.commandline;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.jms.JMSException;
-
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -44,10 +38,17 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
 
+import javax.jms.JMSException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Defines the common functionality for command-line-clients.
  */
 public abstract class CommandLineClient {
+    protected final String COMPONENT_ID =
+            System.getProperty("user.name") + "'s cmdline client";
     /**
      * Runs a specific command-line-client operation. 
      * Handles also the closing of connections and deals with exceptions.

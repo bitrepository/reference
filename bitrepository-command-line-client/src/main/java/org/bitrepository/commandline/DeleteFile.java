@@ -38,7 +38,6 @@ import org.bitrepository.modify.deletefile.DeleteFileClient;
  * Deleting a file from the collection.
  */
 public class DeleteFile extends CommandLineClient {
-    private final static String COMPONENT_ID = "DeleteFileClient";
     /** The client for performing the DeleteFile operation.*/
     private final DeleteFileClient client;
 
@@ -134,8 +133,7 @@ public class DeleteFile extends CommandLineClient {
         if (requestChecksum != null) {
             output.resultHeader("PillarId \t Checksum");
         }
-        client.deleteFile(getCollectionID(), fileId, pillarId, validationChecksum, requestChecksum, eventHandler,
-                "Delete file from commandline for file '" + fileId + "' at pillar '" + pillarId + "'.");
+        client.deleteFile(getCollectionID(), fileId, pillarId, validationChecksum, requestChecksum, eventHandler, null);
 
         return eventHandler.getFinish();
     }

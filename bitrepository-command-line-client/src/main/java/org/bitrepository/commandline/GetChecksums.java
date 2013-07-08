@@ -33,7 +33,6 @@ import org.bitrepository.commandline.outputformatter.GetChecksumsOutputFormatter
  * Perform the GetChecksums operation.
  */
 public class GetChecksums extends CommandLineClient {
-    private final static String COMPONENT_ID = "GetChecksumsClient";
     /** The client for performing the GetChecksums operation.*/
     private final PagingGetChecksumsClient pagingClient;
 

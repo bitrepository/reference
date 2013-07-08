@@ -31,8 +31,6 @@ import org.bitrepository.commandline.outputformatter.GetFileIDsOutputFormatter;
  * Perform the GetFileIDs operation.
  */
 public class GetFileIDs extends CommandLineClient {
-    private final static String COMPONENT_ID = "GetFileIDsClient";
-
     /** The client for performing the actual operation.*/
     private final PagingGetFileIDsClient pagingClient;
 

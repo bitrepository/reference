@@ -21,10 +21,6 @@
  */
 package org.bitrepository.commandline;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.apache.commons.cli.Option;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getfile.GetFileClient;
@@ -36,12 +32,14 @@ import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.http.HttpFileExchange;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 /**
  * Perform the GetFile operation.
  */
 public class GetFile extends CommandLineClient {
-    /** For handling the output.*/
-    private final static String COMPONENT_ID = "GetFileClient";
     /** The client for performing the GetFile operation.*/
     private final GetFileClient client;
     /** The URL for where the file from the GetFile*/

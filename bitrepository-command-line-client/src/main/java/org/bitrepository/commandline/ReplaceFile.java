@@ -21,9 +21,6 @@
  */
 package org.bitrepository.commandline;
 
-import java.io.File;
-import java.net.URL;
-
 import org.apache.commons.cli.Option;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -39,12 +36,14 @@ import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 
+import java.io.File;
+import java.net.URL;
+
 /**
  * Replace a file from the collection.
  * 
  */
 public class ReplaceFile extends CommandLineClient {
-    private final static String COMPONENT_ID = "ReplaceFileClient";
     /** The client for performing the ReplaceFile operation.*/
     private final ReplaceFileClient client;
 
@@ -151,7 +150,7 @@ public class ReplaceFile extends CommandLineClient {
         
         client.replaceFile(getCollectionID(), retrieveTheName(f), pillarId, replaceValidationChecksum, 
                 requestChecksum, url, f.length(), newValidationChecksum, 
-                requestChecksum, eventHandler, "");
+                requestChecksum, eventHandler, null);
 
         return eventHandler.getFinish();
     }

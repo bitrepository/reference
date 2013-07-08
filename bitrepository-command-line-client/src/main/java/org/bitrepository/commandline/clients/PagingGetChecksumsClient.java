@@ -21,10 +21,6 @@
  */
 package org.bitrepository.commandline.clients;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -33,6 +29,10 @@ import org.bitrepository.commandline.eventhandler.GetChecksumsEventHandler;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.outputformatter.GetChecksumsOutputFormatter;
 import org.bitrepository.commandline.resultmodel.GetChecksumsResultModel;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Wrapper class for GetChecksumClient to handle paging through large result sets 
@@ -63,7 +63,7 @@ public class PagingGetChecksumsClient {
         while(!pillarsToGetFrom.isEmpty()) {
             eventHandler = new GetChecksumsEventHandler(model, timeout, outputHandler);
             ContributorQuery[] queries = makeQuery(pillarsToGetFrom);
-            client.getChecksums(collectionID, queries, fileID, checksumSpec, null, eventHandler, "");
+            client.getChecksums(collectionID, queries, fileID, checksumSpec, null, eventHandler, null);
             OperationEvent event = eventHandler.getFinish();
             if(event.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
                 outputFormatter.formatResult(model.getUncompletedResults());

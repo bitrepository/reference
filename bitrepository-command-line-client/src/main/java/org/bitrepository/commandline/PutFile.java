@@ -21,9 +21,6 @@
  */
 package org.bitrepository.commandline;
 
-import java.io.File;
-import java.net.URL;
-
 import org.apache.commons.cli.Option;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -39,12 +36,13 @@ import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 
+import java.io.File;
+import java.net.URL;
+
 /**
  * Putting a file to the collection.
  */
 public class PutFile extends CommandLineClient {
-    /** The component id. */
-    private final static String COMPONENT_ID = "PutFileClient";
 
     /** The client for performing the PutFile operation.*/
     private final PutFileClient client;
@@ -135,8 +133,7 @@ public class PutFile extends CommandLineClient {
         if (requestChecksum != null) {
             output.resultHeader("PillarId \t Checksum");
         }
-        client.putFile(getCollectionID(), url, fileId, f.length(), validationChecksum, requestChecksum, eventHandler,
-                "Putting the file '" + f + "' with the file id '" + fileId + "' from commandLine.");
+        client.putFile(getCollectionID(), url, fileId, f.length(), validationChecksum, requestChecksum, eventHandler, null);
 
         if(cmdHandler.hasOption(Constants.DELETE_FILE_ARG)) {
             try {
