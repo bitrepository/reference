@@ -24,6 +24,10 @@
  */
 package org.bitrepository.client.conversation;
 
+import java.util.Collection;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
@@ -31,22 +35,21 @@ import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.protocol.ProtocolVersionLoader;
-
-import java.util.Collection;
-import java.util.Timer;
-import java.util.TimerTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implements the generic conversation state functionality, 
  * like timeouts and the definition of the common state attributes.
  */
 public abstract class GeneralConversationState implements ConversationState {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     /** Defines that the timer is a daemon thread. */
     private static final Boolean TIMER_IS_DAEMON = true;
     /** The name of the timer.*/
     private static final String NAME_OF_TIMER = "Timer for the general conversation state";
     /** The timer used for timeout checks. */
-    private static final Timer timer = new Timer(NAME_OF_TIMER, TIMER_IS_DAEMON);
+    private final Timer timer = new Timer(NAME_OF_TIMER, TIMER_IS_DAEMON);
     /** The timer task for timeout of identify in this conversation. */
     private  TimerTask stateTimeoutTask;
     /** For response bookkeeping */
@@ -127,6 +130,8 @@ public abstract class GeneralConversationState implements ConversationState {
                 changeState();
             } catch (UnableToFinishException e) {
                 failConversation(e.getMessage());
+            } catch (Throwable throwable) {
+                log.error("Failed to handle timeout correctly", throwable);
             }
         }
     }
