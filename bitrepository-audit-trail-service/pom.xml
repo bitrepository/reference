@@ -4,7 +4,7 @@
   <parent>
     <artifactId>bitrepository-parent</artifactId>
     <groupId>org.bitrepository.reference</groupId>
-    <version>0.27-SNAPSHOT</version>
+    <version>0.27</version>
   </parent>
 
   <artifactId>bitrepository-audit-trail-service</artifactId>
