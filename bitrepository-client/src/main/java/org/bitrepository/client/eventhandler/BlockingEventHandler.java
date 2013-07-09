@@ -32,7 +32,6 @@ public class BlockingEventHandler implements EventHandler {
     private OperationEvent finishEvent;
     private List<ContributorEvent> componentCompleteEvents = new LinkedList<ContributorEvent>();
     private List<ContributorFailedEvent> componentFailedEvents = new LinkedList<ContributorFailedEvent>();
-    private boolean operationFailed = false;
 
     public BlockingEventHandler() {
         eventHandler = null;

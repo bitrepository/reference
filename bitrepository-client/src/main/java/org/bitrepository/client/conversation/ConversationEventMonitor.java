@@ -24,6 +24,10 @@
  */
 package org.bitrepository.client.conversation;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
@@ -40,10 +44,6 @@ import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.OperationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.*;
 
@@ -380,7 +380,11 @@ public class ConversationEventMonitor {
     private void notifyEventListerners(OperationEvent event) {
         eventLogger.trace(event.toString());
         if (eventHandler != null) {
-            eventHandler.handleEvent(event);
+            try {
+                eventHandler.handleEvent(event);
+            } catch (Throwable thr) {
+                log.warn("The eventhandler (" + eventHandler + ") failed when called with event " + event, thr);
+            }
         }
     }
 }
