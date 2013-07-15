@@ -24,7 +24,6 @@ package org.bitrepository.monitoringservice.status;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
-import org.bitrepository.common.utils.CalendarUtils;
 
 /**
  * Class to encapsulate the status of a component.  
@@ -48,7 +47,7 @@ public class ComponentStatus {
     public ComponentStatus() {
         numberOfMissingReplies = 0;
         status = ComponentStatusCode.UNKNOWN;
-        lastReply = CalendarUtils.getEpoch();
+        lastReply = null;
         info = "No status received yet.";
         alarmed = false;
     }

@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.monitoringservice.MonitoringService;
@@ -71,11 +72,16 @@ public class RestMonitoringService {
     
     private JSONObject makeJSONStatusObject(String componentID, ComponentStatus status) {
         JSONObject obj = new JSONObject();
+        String timestamp = "N/A";
         try {
             obj.put("componentID", componentID);
             obj.put("status", status.getStatus());
             obj.put("info", status.getInfo());
-            obj.put("timeStamp", TimeUtils.shortDate(status.getLastReply().toGregorianCalendar().getTime()));
+            XMLGregorianCalendar cal = status.getLastReply();
+            if(cal != null) {
+                timestamp = TimeUtils.shortDate(cal.toGregorianCalendar().getTime());
+            }
+            obj.put("timeStamp", timestamp);
             return obj;
         } catch (JSONException e) {
             return (JSONObject) JSONObject.NULL;
