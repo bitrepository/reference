@@ -74,7 +74,6 @@ public class RestIntegrityService {
         
         int firstID = (pageNumber - 1) * pageSize;
         int lastID = (pageNumber * pageSize) - 1;
-        
         List<String> ids = model.getFilesWithChecksumErrorsAtPillar(pillarID, firstID, lastID, collectionID);
         return ids;
     }
@@ -184,6 +183,17 @@ public class RestIntegrityService {
             workflowIDs.add(workflowID.getWorkflowName());
         }
         return workflowIDs;
+    }
+    
+    /**
+     * Get the latest integrity report 
+     */
+    @GET
+    @Path("/getLatestIntegrityReport/")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getLatestIntegrityReport(@QueryParam("collectionID") String collectionID, 
+            @QueryParam("workflowID") String workflowID) {
+        return "Latest integrity report for workflow: " + workflowID + " for collection: " + collectionID;
     }
 
     /**

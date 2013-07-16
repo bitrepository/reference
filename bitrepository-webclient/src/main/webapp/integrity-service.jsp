@@ -71,7 +71,12 @@
         </form>
       </div>
       <div class="span11"> 
-        <legend>Integrity status</legend>
+          <legend>
+            <span>
+              <span>Integrity status</span>
+              <span class="pull-right" id="integrityReportGetter"></span>
+            </span>
+          </legend>
         <table class="table table-bordered table-striped">
           <thead>
             <tr>
@@ -304,7 +309,8 @@
       $("#integrity-status-table-body").empty();
       $("#workflow-status-table-body").empty();
       $("#workflowSelector").empty();
-      $("#collectionInfoDiv").empty();  
+      $("#collectionInfoDiv").empty();
+      $("#integrityReportGetter").empty();
       pillars = new Object();
       workflows = new Object();
     }
@@ -321,7 +327,11 @@
 
     function collectionChanged() {
         clearContent();
-        $("#integrityLegend").html("Integrity information for collection " + getCollectionID());  
+        $("#integrityLegend").html("Integrity information for collection " + getCollectionID());
+        reportUrl =  "<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getLatestIntegrityReport/";
+        reportUrl += "?collectionID=" + getCollectionID();
+        reportUrl += "&workflowID=" + "CompleteIntegrityCheck";
+        $("#integrityReportGetter").html("<a class=\"btn btn-link\" href=\"" + reportUrl + "\" target=\"_blank\">Get latest integrity report</a>");
         clearInterval(update_page);
         loadWorkflows();
         getCollectionInformation();

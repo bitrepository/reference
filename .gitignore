@@ -9,3 +9,4 @@ auditcontributerdb
 */target/*
 */derby.log
 */bitrepository.log
+bitrepository-reference-pillar/log
