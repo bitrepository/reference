@@ -205,7 +205,7 @@ public class RestIntegrityService {
                         return integrityWorkflow.getLatestIntegrityReport().generateReport();
                     } else {
                         return "No integrity report for workflow " + workflowID + " for collection: " 
-                                + collectionID + "available yet";
+                                + collectionID + " available yet";
                     }
                 }
             } 

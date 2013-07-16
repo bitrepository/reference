@@ -64,7 +64,11 @@ public class BasicIntegrityReporter implements IntegrityReporter {
                 report.append(".");
             }
         }
-        return report.toString();
+        if(report.toString().isEmpty()) {
+            return "No integrity issues found";
+        } else {
+            return report.toString();            
+        }
     }
 
     @Override
