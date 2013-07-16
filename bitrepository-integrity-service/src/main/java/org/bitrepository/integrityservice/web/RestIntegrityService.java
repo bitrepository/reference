@@ -31,6 +31,7 @@ import org.bitrepository.integrityservice.IntegrityServiceManager;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.PillarStat;
+import org.bitrepository.integrityservice.workflow.IntegrityCheckWorkflow;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowManager;
@@ -43,6 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+
 import java.util.*;
 
 @Path("/IntegrityService")
@@ -186,14 +188,30 @@ public class RestIntegrityService {
     }
     
     /**
-     * Get the latest integrity report 
+     * Get the latest integrity report, or an error message telling no such report found.  
      */
     @GET
     @Path("/getLatestIntegrityReport/")
     @Produces(MediaType.TEXT_PLAIN)
     public String getLatestIntegrityReport(@QueryParam("collectionID") String collectionID, 
             @QueryParam("workflowID") String workflowID) {
-        return "Latest integrity report for workflow: " + workflowID + " for collection: " + collectionID;
+        List<JobID> jobIDs = workflowManager.getWorkflows(collectionID);
+        for(JobID jobID : jobIDs) {
+            if(jobID.getWorkflowName().equals(workflowID)) {
+                Workflow workflow = workflowManager.getWorkflow(jobID);
+                if(workflow instanceof IntegrityCheckWorkflow) {
+                    IntegrityCheckWorkflow integrityWorkflow = (IntegrityCheckWorkflow) workflow;
+                    if(integrityWorkflow.getLatestIntegrityReport() != null) {
+                        return integrityWorkflow.getLatestIntegrityReport().generateReport();
+                    } else {
+                        return "No integrity report for workflow " + workflowID + " for collection: " 
+                                + collectionID + "available yet";
+                    }
+                }
+            } 
+        }
+        
+        return "No integrity report for workflow: " + workflowID + " for collection: " + collectionID + " found!";
     }
 
     /**

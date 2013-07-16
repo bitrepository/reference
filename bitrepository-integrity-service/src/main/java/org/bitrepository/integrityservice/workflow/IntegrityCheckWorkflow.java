@@ -39,6 +39,7 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
     /** The context for the workflow.*/
     protected IntegrityWorkflowContext context;
     protected String collectionID;
+    protected IntegrityReporter latestReport = null;
     /**
      * Remember to call the initialise method needs to be called before the start method.
      */
@@ -52,6 +53,10 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
     }
     
     protected abstract UpdateFileIDsStep getUpdateFileIDsStep();
+    
+    public IntegrityReporter getLatestIntegrityReport() {
+        return latestReport;
+    }
     
     @Override
     public void start() {
@@ -98,6 +103,8 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             if(reporter.hasIntegrityIssues()) {
                 context.getAlerter().integrityFailed(reporter.generateSummaryOfReport(), collectionID);
             }
+            
+            latestReport = reporter;
             
         } finally {
             finish();
