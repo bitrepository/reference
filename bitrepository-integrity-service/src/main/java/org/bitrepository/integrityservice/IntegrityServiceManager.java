@@ -62,6 +62,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
@@ -72,15 +73,17 @@ import java.util.Properties;
 public final class IntegrityServiceManager {
     private static final Logger log = LoggerFactory.getLogger(IntegrityServiceManager.class);
     private static String privateKeyFile;
+    private static File integrityReportStorageDir;
 
     /** The properties file holding implementation specifics for the integrity service. */
     private static final String CONFIGFILE = "integrity.properties";
     /** Property key to tell where to locate the path and filename to the private key file. */
     private static final String PRIVATE_KEY_FILE = "org.bitrepository.integrity-service.privateKeyFile";
+    /** Property key to tell where to locate the path to the dir to store integrity reports in. */
+    private static final String INTEGRITY_REPORT_STORE = "org.bitrepository.integrity-service.integrityreportstore";
     private static Settings settings;
     private static BasicSecurityManager securityManager;
     private static IntegrityWorkflowManager workFlowManager;
-    //private static IntegrityChecker integrityChecker;
     private static String confDir;
     private static IntegrityLifeCycleHandler lifeCycleHandler;
     private static IntegrityModel model;
@@ -115,7 +118,6 @@ public final class IntegrityServiceManager {
 
         alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus, AlarmLevel.ERROR);
         model = new IntegrityCache(new IntegrityDatabase(settings));
-        //integrityChecker = new SimpleIntegrityChecker(settings, model, auditManager);
 
         collector = new DelegatingIntegrityInformationCollector(
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager,
@@ -124,7 +126,7 @@ public final class IntegrityServiceManager {
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()));
 
         workFlowManager = new IntegrityWorkflowManager(
-                new IntegrityWorkflowContext(settings, collector, model, /*integrityChecker,*/ alarmDispatcher, auditManager),
+                new IntegrityWorkflowContext(settings, collector, model, alarmDispatcher, auditManager),
                 new TimerbasedScheduler());
         contributor = new SimpleContributorMediator(messageBus, settings, auditManager);
         contributor.start();
@@ -153,13 +155,26 @@ public final class IntegrityServiceManager {
             Properties properties = new Properties();
             String propertiesFile = confDir + "/" + CONFIGFILE;
             BufferedReader propertiesReader = null;
+            String integrityReportDir;
             try {
                 propertiesReader = new BufferedReader(new FileReader(propertiesFile));
                 properties.load(propertiesReader);
                 privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);
+                integrityReportDir = properties.getProperty(INTEGRITY_REPORT_STORE);
             } finally {
                 if(propertiesReader != null) {
                     propertiesReader.close();
+                }
+            }
+            if(integrityReportDir == null) {
+                throw new IllegalStateException(INTEGRITY_REPORT_STORE + " is missing or has an empty value");
+            } else {
+                integrityReportStorageDir = new File(integrityReportDir);
+                if(!(integrityReportStorageDir.isDirectory() 
+                        && integrityReportStorageDir.canRead() 
+                        && integrityReportStorageDir.canWrite())) {
+                    throw new IllegalStateException(integrityReportStorageDir.getAbsolutePath() 
+                            + " is either not a directory, can't be read or written to.");
                 }
             }
         } catch (IOException e) {
@@ -187,6 +202,13 @@ public final class IntegrityServiceManager {
      */
     public static IntegrityModel getIntegrityModel() {
         return model;
+    }
+    
+    /**
+     *  Gets the directory for integrity report storage. 
+     */
+    public static File getIntegrityReportStorageDir() {
+        return integrityReportStorageDir;
     }
 
     /**
