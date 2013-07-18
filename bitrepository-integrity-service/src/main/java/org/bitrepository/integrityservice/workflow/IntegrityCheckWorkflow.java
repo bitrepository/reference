@@ -21,6 +21,8 @@
  */
 package org.bitrepository.integrityservice.workflow;
 
+import java.io.IOException;
+
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.integrityservice.reports.BasicIntegrityReporter;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
@@ -28,6 +30,8 @@ import org.bitrepository.integrityservice.workflow.step.*;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simple workflow for performing integrity checks of the system. 
@@ -36,6 +40,7 @@ import org.bitrepository.service.workflow.WorkflowContext;
  * And finally it is verified whether any missing or obsolete checksums can be found.
  */
 public abstract class IntegrityCheckWorkflow extends Workflow {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     /** The context for the workflow.*/
     protected IntegrityWorkflowContext context;
     protected String collectionID;
@@ -102,6 +107,11 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
 
             if(reporter.hasIntegrityIssues()) {
                 context.getAlerter().integrityFailed(reporter.generateSummaryOfReport(), collectionID);
+            }
+            try {
+                reporter.generateReport();
+            } catch (IOException e) {
+                log.error("Failed to generate integrity report", e);
             }
             
             latestReport = reporter;

@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -70,7 +71,11 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
             List<String> missingFiles = 
                     store.getMissingFilesAtPillar(pillar, 0, Integer.MAX_VALUE, reporter.getCollectionID());
             for(String missingFile : missingFiles) {
-                reporter.reportMissingFile(missingFile, pillar);
+                try {
+                    reporter.reportMissingFile(missingFile, pillar);
+                } catch (IOException e) {
+                    log.error("Failed to report file: " + missingFile + " as missing", e);
+                }
             }
         }
     }

@@ -24,6 +24,10 @@
  */
 package org.bitrepository.integrityservice.reports;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 /**
  * Used for extracting textual information about the integrity status.
  */
@@ -34,12 +38,24 @@ public interface IntegrityReporter {
      */
     boolean hasIntegrityIssues();
     
+    /**
+     * Method to test if a report is available
+     * @return true if an integrity report is available.  
+     */
+    boolean hasReport();
+    
+    /**
+     * Retrieves the written report 
+     * @throws FileNotFoundException if no report is found
+     */
+    File getReport() throws FileNotFoundException;
+    
     /** 
      * Creates the human readable report for the entire integrity issue.
      * This involves all the specifics, e.g. at single file-level.
-     * @return The entire report.
+     * @throws IOException 
      */
-    String generateReport();
+    void generateReport() throws IOException;
     
     /**
      * Create a human readable summary of the integrity issue.
@@ -57,35 +73,40 @@ public interface IntegrityReporter {
     /**
      * Report that a file has been deleted from the collection. Note this is not considered a integrity issue.
      * @param fileID The ID of the file that has been removed 
+     * @throws IOException if writing fails
      */
-    void reportDeletedFile(String fileID);
+    void reportDeletedFile(String fileID) throws IOException;
     
     /**
      * Report that a file is missing from a pillar 
      * @param fileID The ID of the file that is missing
      * @param pillarID The ID of the pillar that the file is missing on. 
+     * @throws IOException 
      */
-    void reportMissingFile(String fileID, String pillarID);
+    void reportMissingFile(String fileID, String pillarID) throws IOException;
     
     /**
      * Report that a file have a checksum issues on a given pillar
      * @param fileID The ID of the file that has a checksum issue
      * @param pillarID The ID of the pillar with the checksum issue 
+     * @throws IOException 
      */
-    void reportChecksumIssue(String fileID, String pillarID);
+    void reportChecksumIssue(String fileID, String pillarID) throws IOException;
     
     /**
      *  Report that a file is missing a checksum on a given pillar
      *  @param fileID The ID of the file that is missing a checksum
      *  @param pillarID The ID of the pillar that does not have the checksum for the file
+     * @throws IOException 
      */
-    void reportMissingChecksum(String fileID, String pillarID);
+    void reportMissingChecksum(String fileID, String pillarID) throws IOException;
     
     /**
      * Report that a file have an obsolete checksum on a given pillar 
      * @param fileID The ID of the file with the obsolete checksum
      * @param pillarID The ID of the pillar that have the obsolete checksum
+     * @throws IOException 
      */
-    void reportObsoleteChecksum(String fileID, String pillarID);
+    void reportObsoleteChecksum(String fileID, String pillarID) throws IOException;
     
 }

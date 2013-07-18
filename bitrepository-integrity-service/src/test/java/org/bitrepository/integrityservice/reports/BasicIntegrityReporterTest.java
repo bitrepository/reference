@@ -33,7 +33,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
     private static final String REPORT_SUMMARY_START = "The following integrity issues where found:\n";
 
     @Test(groups = {"regressiontest"})
-    public void deletedFilesTest() {
+    public void deletedFilesTest() throws Exception {
         addDescription("Verifies that the hasIntegrityIssues() reports deleted correctly");
         addStep("Report a delete file for a new Reporter", "hasIntegrityIssues() should return false and the summary " +
                 "report should inform that no issues where found.");
@@ -57,7 +57,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
     }
 
     @Test(groups = {"regressiontest"})
-    public void missingFilesTest() {
+    public void missingFilesTest()  throws Exception {
         addDescription("Verifies that missing files are reported correctly");
 
         addStep("Report a missing file", "hasIntegrityIssues() should return true and the summary report should " +
@@ -81,7 +81,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
     }
 
     @Test(groups = {"regressiontest"})
-    public void checksumIssuesTest() {
+    public void checksumIssuesTest() throws Exception {
         addDescription("Verifies that missing files are reported correctly");
 
         addStep("Report a checksum issue", "hasIntegrityIssues() should return true and the summary report should " +
@@ -107,7 +107,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
     }
 
     @Test(groups = {"regressiontest"})
-    public void missingChecksumTest() {
+    public void missingChecksumTest() throws Exception {
         addDescription("Verifies that missing checksums are reported correctly");
 
         addStep("Report a missing checksum", "hasIntegrityIssues() should return true and the summary report should " +
@@ -133,7 +133,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
 
 
     @Test(groups = {"regressiontest"})
-    public void obsoleteChecksumTest() {
+    public void obsoleteChecksumTest() throws Exception {
         addDescription("Verifies that obsolete checksums are reported correctly");
 
         addStep("Report a obsolete checksum", "hasIntegrityIssues() should return true and the summary report should " +

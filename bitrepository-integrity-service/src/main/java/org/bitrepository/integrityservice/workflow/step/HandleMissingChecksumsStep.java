@@ -21,7 +21,9 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import java.io.IOException;
 import java.util.Collection;
+
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.ChecksumState;
@@ -62,7 +64,11 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
         for(String file : filesWithMissingChecksums) {
             for(FileInfo info : store.getFileInfos(file, reporter.getCollectionID())) {
                 if(info.getFileState() == FileState.EXISTING && info.getChecksumState() == ChecksumState.UNKNOWN) {
-                    reporter.reportMissingChecksum(file, info.getPillarId());
+                    try {
+                        reporter.reportMissingChecksum(file, info.getPillarId());
+                    } catch (IOException e) {
+                        log.error("Failed to report file: " + file + " as having a missing checksum", e);
+                    }
                 }
             }
         }

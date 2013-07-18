@@ -44,7 +44,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.*;
 
 @Path("/IntegrityService")
@@ -193,7 +200,7 @@ public class RestIntegrityService {
     @GET
     @Path("/getLatestIntegrityReport/")
     @Produces(MediaType.TEXT_PLAIN)
-    public String getLatestIntegrityReport(@QueryParam("collectionID") String collectionID, 
+    public StreamingOutput getLatestIntegrityReport(@QueryParam("collectionID") String collectionID, 
             @QueryParam("workflowID") String workflowID) {
         List<JobID> jobIDs = workflowManager.getWorkflows(collectionID);
         for(JobID jobID : jobIDs) {
@@ -202,16 +209,44 @@ public class RestIntegrityService {
                 if(workflow instanceof IntegrityCheckWorkflow) {
                     IntegrityCheckWorkflow integrityWorkflow = (IntegrityCheckWorkflow) workflow;
                     if(integrityWorkflow.getLatestIntegrityReport() != null) {
-                        return integrityWorkflow.getLatestIntegrityReport().generateReport();
+                        final File report;
+                        try {
+                            report = integrityWorkflow.getLatestIntegrityReport().getReport();
+                        } catch (FileNotFoundException e) {
+                            throw new WebApplicationException(e);
+
+                        }
+                        return new StreamingOutput() {
+                            public void write(OutputStream output) throws IOException, WebApplicationException {
+                                try {
+                                    int i;
+                                    byte[] data = new byte[4096];
+                                    FileInputStream is = new FileInputStream(report);
+                                    while((i = is.read(data)) >= 0) {
+                                        output.write(data, 0, i);
+                                    }
+                                    is.close();
+                                } catch (Exception e) {
+                                    throw new WebApplicationException(e);
+                                }
+                            }
+                        };
                     } else {
-                        return "No integrity report for workflow " + workflowID + " for collection: " 
-                                + collectionID + " available yet";
+                        throw new WebApplicationException(Response.status(Response.Status.OK)
+                                .entity("No integrity report for workflow " + workflowID + " for collection: " 
+                                        + collectionID + " available yet")
+                                .type(MediaType.TEXT_PLAIN)
+                                .build());
                     }
                 }
             } 
         }
         
-        return "No integrity report for workflow: " + workflowID + " for collection: " + collectionID + " found!";
+        throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                .entity("No integrity report for workflow: " + workflowID + " for collection: " 
+                        + collectionID + " found!")
+                .type(MediaType.TEXT_PLAIN)
+                .build());
     }
 
     /**

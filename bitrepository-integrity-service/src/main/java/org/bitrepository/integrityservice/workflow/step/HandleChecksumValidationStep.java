@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -78,7 +79,11 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
                         "Checksum inconsistency for file '" + file + "'. The pillar have more than one unique checksum.",
                         "IntegrityService validating the checksums.", FileAction.INCONSISTENCY);
                 for(FileInfo info : infos) {
-                    reporter.reportChecksumIssue(file, info.getPillarId());
+                    try {
+                        reporter.reportChecksumIssue(file, info.getPillarId());
+                    } catch (IOException e) {
+                        log.error("Failed to report file: " + file + " as having a checksum issue", e);
+                    }
                 }
                 store.setChecksumError(file, getPillarsFileExisting(infos), reporter.getCollectionID());
             } else {

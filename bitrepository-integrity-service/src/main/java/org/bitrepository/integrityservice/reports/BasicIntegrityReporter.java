@@ -1,20 +1,37 @@
 package org.bitrepository.integrityservice.reports;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
+
+import org.bitrepository.integrityservice.IntegrityServiceManager;
 
 public class BasicIntegrityReporter implements IntegrityReporter {
 
     private final String collectionID;
+    /** Date of the report, use for identification and for placing it in time. */
+    private final Date reportDate;
+    private static final String DATE_FORMAT = "yyyyMMDD-HHmmss"; 
     private Long deletedFilesCount = 0L;
     //Treemaps ensures alphapetical sorting.
     private final Map<String, Long> missingFiles = new TreeMap<String, Long>();
     private final Map<String, Long> checksumIssues = new TreeMap<String, Long>();
     private final Map<String, Long> missingChecksums = new TreeMap<String, Long>();
     private final Map<String, Long> obsoleteChecksums = new TreeMap<String, Long>();
+    private final IntegrityReportWriter writer;
     
     public BasicIntegrityReporter(String collectionID) {
         this.collectionID = collectionID;
+        reportDate = new Date();
+        DateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
+        File reportDir = new File(IntegrityServiceManager.getIntegrityReportStorageDir(), formatter.format(reportDate));
+        reportDir.mkdir();
+        writer = new IntegrityReportWriter(reportDir);
     }
     
     @Override
@@ -26,9 +43,36 @@ public class BasicIntegrityReporter implements IntegrityReporter {
                 obsoleteChecksums.isEmpty()
         );
     }
-
+    
     @Override
-    public String generateReport() {
+    public boolean hasReport() {
+        String reportPath = writer.getReportFilePath();
+        File report = new File(reportPath);
+        if(report.exists()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    @Override
+    public File getReport() throws FileNotFoundException {
+        String reportPath = writer.getReportFilePath();
+        File report = new File(reportPath);
+        if(report.exists()) {
+            return report;
+        } else {
+            throw new FileNotFoundException("The report file cant be found on path: " + reportPath);
+        }
+    }
+    
+    @Override 
+    public void generateReport() throws IOException {
+        writer.writeReport();
+        writer.close();
+    }
+    
+    private String generateSummary() {
         StringBuilder report = new StringBuilder();
         if(deletedFilesCount != 0L) {
             report.append("Detected " + deletedFilesCount + " files as removed from the collection.");
@@ -76,7 +120,7 @@ public class BasicIntegrityReporter implements IntegrityReporter {
         if(!hasIntegrityIssues()) {
             return "No integrity issues found";
         } else {
-            return "The following integrity issues where found:" +   generateReport();
+            return "The following integrity issues where found:" +   generateSummary();
         }
     }
 
@@ -86,43 +130,48 @@ public class BasicIntegrityReporter implements IntegrityReporter {
     }
 
     @Override
-    public void reportDeletedFile(String fileID) {
+    public void reportDeletedFile(String fileID) throws IOException {
         deletedFilesCount++;
+        writer.writeDeletedFile(fileID);
     }
 
     @Override
-    public void reportMissingFile(String fileID, String pillarID) {
+    public void reportMissingFile(String fileID, String pillarID) throws IOException {
         if(missingFiles.containsKey(pillarID)) {
             missingFiles.put(pillarID, (missingFiles.get(pillarID) + 1));
         } else {
             missingFiles.put(pillarID, 1L);
         }
+        writer.writeMissingFile(pillarID, fileID);
     }
 
     @Override
-    public void reportChecksumIssue(String fileID, String pillarID) {
+    public void reportChecksumIssue(String fileID, String pillarID) throws IOException {
         if(checksumIssues.containsKey(pillarID)) {
             checksumIssues.put(pillarID, (checksumIssues.get(pillarID) + 1));
         } else {
             checksumIssues.put(pillarID, 1L);
         }
+        writer.writeChecksumIssue(pillarID, fileID);
     }
 
     @Override
-    public void reportMissingChecksum(String fileID, String pillarID) {
+    public void reportMissingChecksum(String fileID, String pillarID) throws IOException {
         if(missingChecksums.containsKey(pillarID)) {
             missingChecksums.put(pillarID, (missingChecksums.get(pillarID) + 1));
         } else {
             missingChecksums.put(pillarID, 1L);
         }
+        writer.writeMissingChecksum(pillarID, fileID);
     }
 
     @Override
-    public void reportObsoleteChecksum(String fileID, String pillarID) {
+    public void reportObsoleteChecksum(String fileID, String pillarID) throws IOException {
         if(obsoleteChecksums.containsKey(pillarID)) {
             obsoleteChecksums.put(pillarID, (obsoleteChecksums.get(pillarID) + 1));
         } else {
             obsoleteChecksums.put(pillarID, 1L);
         }
+        writer.writeObsoleteChecksum(pillarID, fileID);
     }
 }

@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.bitrepository.integrityservice.cache.IntegrityModel;
@@ -59,7 +60,11 @@ public class HandleDeletedFilesStep extends AbstractWorkFlowStep {
         List<String> deletedFiles = store.findOrphanFiles(reporter.getCollectionID());
         for(String deletedFile : deletedFiles) {
             store.deleteFileIdEntry(deletedFile, reporter.getCollectionID());
-            reporter.reportDeletedFile(deletedFile);
+            try {
+                reporter.reportDeletedFile(deletedFile);
+            } catch (IOException e) {
+                log.error("Failed to report file: " + deletedFile + " as deleted", e);
+            }
         }
     }
 

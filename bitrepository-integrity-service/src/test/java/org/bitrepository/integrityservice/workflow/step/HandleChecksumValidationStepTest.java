@@ -85,7 +85,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         addStep("Validate the file ids", "Should not have integrity issues.");
         step.performStep();
         
-        Assert.assertFalse(reporter.hasIntegrityIssues(), reporter.generateReport());
+        Assert.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
@@ -105,7 +105,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         step.performStep();
 
         addStep("Validate the file ids", "Should not have integrity issues.");
-        Assert.assertFalse(reporter.hasIntegrityIssues(), reporter.generateReport());
+        Assert.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
         for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
             Assert.assertEquals(fi.getChecksum(), "1234cccc4321");
             Assert.assertEquals(fi.getChecksumState(), ChecksumState.VALID);
@@ -129,7 +129,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         step.performStep();
 
         addStep("Validate the file ids", "No integrity issues.");
-        Assert.assertFalse(reporter.hasIntegrityIssues(), reporter.generateReport());
+        Assert.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
@@ -149,7 +149,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         step.performStep();
 
         addStep("Validate the file ids", "Should have integrity issues. No entry should be valid.");
-        Assert.assertTrue(reporter.hasIntegrityIssues(), reporter.generateReport());
+        Assert.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
         for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
             Assert.assertTrue(fi.getChecksumState() != ChecksumState.VALID);
         }
@@ -174,7 +174,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         step.performStep();
 
         addStep("Validate the file ids", "Should have integrity issues.");
-        Assert.assertTrue(reporter.hasIntegrityIssues(), reporter.generateReport());
+        Assert.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
         for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
             Assert.assertTrue(fi.getChecksumState() == ChecksumState.ERROR);
         }
@@ -197,7 +197,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         step.performStep();
 
         addStep("Validate the file ids", "No integrity issues and all should be valid");
-        Assert.assertFalse(reporter.hasIntegrityIssues(), reporter.generateReport());
+        Assert.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
         for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
             Assert.assertEquals(fi.getChecksumState(), ChecksumState.VALID);
         }

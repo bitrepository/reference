@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -78,7 +79,11 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
             Set<String> filesWithObsoleteChecksums = 
                     new HashSet<String>(store.findChecksumsOlderThan(outDated, pillar, reporter.getCollectionID()));
             for(String file : filesWithObsoleteChecksums) {
-                reporter.reportObsoleteChecksum(file, pillar);
+                try {
+                    reporter.reportObsoleteChecksum(file, pillar);
+                } catch (IOException e) {
+                    log.error("Failed to report file: " + file + " as having an obsolete checksum", e);
+                }
             }
         }
     }
