@@ -29,6 +29,7 @@ public class IntegrityReportWriter {
     
     private static final String SECTION_HEADER_START_STOP = "========";
     private static final String PILLAR_HEADER_START_STOP = "--------";
+    private static final String NOISSUE_HEADER_START_STOP = "++++++++";
     
     private final Map<String, BufferedWriter> missingFiles = new TreeMap<String, BufferedWriter>();
     private final Map<String, BufferedWriter> checksumIssues = new TreeMap<String, BufferedWriter>();
@@ -172,25 +173,38 @@ public class IntegrityReportWriter {
             reportFileWriter = new BufferedWriter(new FileWriter(reportFile, true));
         }
         
+        writeSectionHeader(reportFileWriter, "Deleted files");
         if(deletedFilesWriter != null) {
-            writeSectionHeader(reportFileWriter, "Deleted files");
             writeSectionPart(reportFileWriter, new File(reportDir, DELETED_FILE));
+        } else {
+            writeNoIssueHeader(reportFileWriter, "No deleted files detected");
         }
-        
+        writeSectionHeader(reportFileWriter, "Missing files");
         if(!missingFiles.isEmpty()) {
-            writeReportSection(reportFileWriter, missingFiles.keySet(), "Missing files");
+            writeReportSection(reportFileWriter, missingFiles.keySet());
+        } else {
+            writeNoIssueHeader(reportFileWriter, "No missing files detected");
         }
         
+        writeSectionHeader(reportFileWriter, "Checksum issues");
         if(!checksumIssues.isEmpty()) {
-            writeReportSection(reportFileWriter, checksumIssues.keySet(), "Checksum issues");
+            writeReportSection(reportFileWriter, checksumIssues.keySet());
+        } else {
+            writeNoIssueHeader(reportFileWriter, "No checksum issues detected");
         }
         
+        writeSectionHeader(reportFileWriter, "Missing checksums");
         if(!missingChecksums.isEmpty()) {
-            writeReportSection(reportFileWriter, missingChecksums.keySet(), "Missing checksums");
+            writeReportSection(reportFileWriter, missingChecksums.keySet());
+        } else {
+            writeNoIssueHeader(reportFileWriter, "No missing checksums detected");
         }
         
+        writeSectionHeader(reportFileWriter, "Obsolete checksums");
         if(!obsoleteChecksums.isEmpty()) {
-            writeReportSection(reportFileWriter, obsoleteChecksums.keySet(), "Obsolete checksums");
+            writeReportSection(reportFileWriter, obsoleteChecksums.keySet());
+        } else {
+            writeNoIssueHeader(reportFileWriter, "No obsolete checksums detected");
         }
         
         reportFileWriter.flush();
@@ -262,9 +276,13 @@ public class IntegrityReportWriter {
         report.newLine();
     }
     
-    private void writeReportSection(BufferedWriter report, Set<String> section, String sectionName) throws IOException {
-        log.debug("Writing section: " + sectionName);
-        writeSectionHeader(report, sectionName);
+    private void writeNoIssueHeader(BufferedWriter report, String issueMessage) throws IOException {
+        report.append(NOISSUE_HEADER_START_STOP + " " + issueMessage + " " + NOISSUE_HEADER_START_STOP);
+        report.newLine();
+
+    }
+    
+    private void writeReportSection(BufferedWriter report, Set<String> section) throws IOException {
         for(String part : section) {
             String pillarName = part.split("-")[1];
             File partFile = new File(reportDir, part);
