@@ -22,6 +22,8 @@
 
 package org.bitrepository.integrityservice.reports;
 
+import java.io.File;
+
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
 
@@ -37,7 +39,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
         addDescription("Verifies that the hasIntegrityIssues() reports deleted correctly");
         addStep("Report a delete file for a new Reporter", "hasIntegrityIssues() should return false and the summary " +
                 "report should inform that no issues where found.");
-        BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues");
+        BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues", new File("target/"));
         reporter.reportDeletedFile("TestFile");
         assertFalse("Reporter interpreted delete file as a integrity issue", reporter.hasIntegrityIssues());
         String expectedReport = "No integrity issues found";
@@ -50,7 +52,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
 
         addStep("Create a clean reporter", "hasIntegrityIssues() should return false and the summary report should " +
                 "state that no  inform of the missing file.");
-        BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithoutIssues");
+        BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithoutIssues", new File("target/"));
         assertFalse("Reporter interpreted delete file as a integrity issue", reporter.hasIntegrityIssues());
         String expectedReport = "No integrity issues found";
         assertEquals("Reporter didn't create clean report", expectedReport, reporter.generateSummaryOfReport());
@@ -62,7 +64,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
 
         addStep("Report a missing file", "hasIntegrityIssues() should return true and the summary report should " +
                 "correctly inform of the missing file.");
-        BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues");
+        BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues", new File("target/"));
         reporter.reportMissingFile("TestFile", "Pillar1");
         assertTrue("Reporter didn't interpreted missing file as a integrity issue", reporter.hasIntegrityIssues());
         String expectedReport = REPORT_SUMMARY_START + "Pillar1 is missing 1 file.";
@@ -86,7 +88,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
 
         addStep("Report a checksum issue", "hasIntegrityIssues() should return true and the summary report should " +
                 "correctly inform of the checksum issue.");
-        BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues");
+        BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues", new File("target/"));
         reporter.reportChecksumIssue("TestFile", "Pillar1");
         assertTrue("Reporter didn't interpreted checksum issue as a integrity issue", reporter.hasIntegrityIssues());
         String expectedReport = REPORT_SUMMARY_START + "Pillar1 has 1 potentially corrupt file.";
@@ -112,7 +114,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
 
         addStep("Report a missing checksum", "hasIntegrityIssues() should return true and the summary report should " +
                 "correctly inform of the missing checksum.");
-        BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues");
+        BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues", new File("target/"));
         reporter.reportMissingChecksum("TestChecksum", "Pillar1");
         assertTrue("Reporter didn't interpreted missing checksum as a integrity issue", reporter.hasIntegrityIssues());
         String expectedReport = REPORT_SUMMARY_START + "Pillar1 is missing 1 checksum.";
@@ -138,7 +140,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
 
         addStep("Report a obsolete checksum", "hasIntegrityIssues() should return true and the summary report should " +
                 "correctly inform of the obsolete checksum.");
-        BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues");
+        BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues", new File("target/"));
         reporter.reportObsoleteChecksum("TestChecksum", "Pillar1");
         assertTrue("Reporter didn't interpreted obsolete checksum as a integrity issue", reporter.hasIntegrityIssues());
         String expectedReport = REPORT_SUMMARY_START + "Pillar1 has 1 obsolete checksum.";

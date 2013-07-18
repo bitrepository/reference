@@ -24,9 +24,17 @@ package org.bitrepository.integrityservice.workflow;
 import java.io.IOException;
 
 import org.bitrepository.common.utils.ChecksumUtils;
+import org.bitrepository.integrityservice.IntegrityServiceManager;
 import org.bitrepository.integrityservice.reports.BasicIntegrityReporter;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
-import org.bitrepository.integrityservice.workflow.step.*;
+import org.bitrepository.integrityservice.workflow.step.CreateStatisticsEntryStep;
+import org.bitrepository.integrityservice.workflow.step.HandleChecksumValidationStep;
+import org.bitrepository.integrityservice.workflow.step.HandleDeletedFilesStep;
+import org.bitrepository.integrityservice.workflow.step.HandleMissingChecksumsStep;
+import org.bitrepository.integrityservice.workflow.step.HandleMissingFilesStep;
+import org.bitrepository.integrityservice.workflow.step.HandleObsoleteChecksumsStep;
+import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
+import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowContext;
@@ -71,7 +79,8 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
                     "called.");
         }
         
-        IntegrityReporter reporter = new BasicIntegrityReporter(collectionID);
+        IntegrityReporter reporter = new BasicIntegrityReporter(collectionID, 
+                IntegrityServiceManager.getIntegrityReportStorageDir());
         
         super.start();
         try {

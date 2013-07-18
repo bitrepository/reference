@@ -9,8 +9,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.bitrepository.integrityservice.IntegrityServiceManager;
-
 public class BasicIntegrityReporter implements IntegrityReporter {
 
     private final String collectionID;
@@ -25,11 +23,11 @@ public class BasicIntegrityReporter implements IntegrityReporter {
     private final Map<String, Long> obsoleteChecksums = new TreeMap<String, Long>();
     private final IntegrityReportWriter writer;
     
-    public BasicIntegrityReporter(String collectionID) {
+    public BasicIntegrityReporter(String collectionID, File reportsDir) {
         this.collectionID = collectionID;
         reportDate = new Date();
         DateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
-        File reportDir = new File(IntegrityServiceManager.getIntegrityReportStorageDir(), formatter.format(reportDate));
+        File reportDir = new File(reportsDir, formatter.format(reportDate));
         reportDir.mkdir();
         writer = new IntegrityReportWriter(reportDir);
     }

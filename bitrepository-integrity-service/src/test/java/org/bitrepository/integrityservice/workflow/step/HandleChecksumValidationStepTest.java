@@ -23,6 +23,7 @@ package org.bitrepository.integrityservice.workflow.step;
 
 import static org.mockito.Mockito.mock;
 
+import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +80,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     public void testNoData() {
         addDescription("Test the checksum integrity validator without any data in the cache.");
         IntegrityModel cache = getIntegrityModel();
-        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION);
+        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, new File("target/"));
         HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
@@ -92,7 +93,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     public void testSimilarData() {
         addDescription("Test the checksum integrity validator when all pillars have similar data.");
         IntegrityModel cache = getIntegrityModel();
-        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION);
+        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, new File("target/"));
         HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter);
         
         addStep("Add data to the cache", "");
@@ -117,7 +118,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     public void testMissingAtOnePillar() {
         addDescription("Test the checksum integrity validator when one pillar is missing the data.");
         IntegrityModel cache = getIntegrityModel();
-        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION);
+        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, new File("target/"));
         HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter);
 
         addStep("Update the cache with identitical data for both pillars.", "");
@@ -136,7 +137,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     public void testTwoDisagreeingChecksums() {
         addDescription("Test the checksum integrity validator when only two pillar has data, but it it different.");
         IntegrityModel cache = getIntegrityModel();
-        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION);
+        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, new File("target/"));
         HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter);
         
         addStep("Add data to the cache", "");
@@ -159,7 +160,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     public void testThreeDisagreeingChecksums() {
         addDescription("Test the checksum integrity validator when all pillars have different checksums.");
         IntegrityModel cache = getIntegrityModel();
-        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION);
+        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, new File("target/"));
         HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter);
         
         addStep("Add data to the cache", "");
@@ -184,7 +185,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     public void testUpdatingFileIDsForValidChecksum() {
         addDescription("Test the checksum integrity validator when two pillars agreee about the checksum, but the third does not.");
         IntegrityModel cache = getIntegrityModel();
-        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION);
+        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, new File("target/"));
         HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter);
         
         addStep("Add data to the cache", "");
