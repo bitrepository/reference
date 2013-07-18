@@ -44,6 +44,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
         assertFalse("Reporter interpreted delete file as a integrity issue", reporter.hasIntegrityIssues());
         String expectedReport = "No integrity issues found";
         assertEquals("Reporter didn't create clean report", expectedReport, reporter.generateSummaryOfReport());
+        reporter.generateReport();
     }
 
     @Test(groups = {"regressiontest"})

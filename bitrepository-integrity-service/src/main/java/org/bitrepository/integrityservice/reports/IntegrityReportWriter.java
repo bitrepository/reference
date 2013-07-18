@@ -172,7 +172,7 @@ public class IntegrityReportWriter {
             reportFileWriter = new BufferedWriter(new FileWriter(reportFile, true));
         }
         
-        if(deletedFilesWriter == null) {
+        if(deletedFilesWriter != null) {
             writeSectionHeader(reportFileWriter, "Deleted files");
             writeSectionPart(reportFileWriter, new File(reportDir, DELETED_FILE));
         }
@@ -263,10 +263,12 @@ public class IntegrityReportWriter {
     }
     
     private void writeReportSection(BufferedWriter report, Set<String> section, String sectionName) throws IOException {
+        log.debug("Writing section: " + sectionName);
         writeSectionHeader(report, sectionName);
         for(String part : section) {
             String pillarName = part.split("-")[1];
             File partFile = new File(reportDir, part);
+            log.debug("Writing part for pillar: " + pillarName);
             writePillarHeader(report, pillarName);
             writeSectionPart(report, partFile);
         }
@@ -281,12 +283,12 @@ public class IntegrityReportWriter {
                 report.newLine();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         } finally {
             try {
                 br.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
             }
         }
     }
