@@ -57,6 +57,7 @@ public class IntegrityReportWriter {
         }
         deletedFilesWriter.append(fileID);
         deletedFilesWriter.newLine();
+        deletedFilesWriter.flush();
     }
     
     /**
@@ -79,6 +80,7 @@ public class IntegrityReportWriter {
         }
         checksumIssueWriter.append(fileID);
         checksumIssueWriter.newLine();
+        checksumIssueWriter.flush();
         
     }
     
@@ -102,6 +104,7 @@ public class IntegrityReportWriter {
         }
         missingFileWriter.append(fileID);
         missingFileWriter.newLine();
+        missingFileWriter.flush();
     }
     
     /**
@@ -123,7 +126,8 @@ public class IntegrityReportWriter {
             obsoleteChecksumWriter = obsoleteChecksums.get(key);
         }
         obsoleteChecksumWriter.append(fileID);
-        obsoleteChecksumWriter.newLine();   
+        obsoleteChecksumWriter.newLine();
+        obsoleteChecksumWriter.flush();
     }
     
     /**
@@ -145,7 +149,8 @@ public class IntegrityReportWriter {
             missingChecksumWriter = missingChecksums.get(key);
         }
         missingChecksumWriter.append(fileID);
-        missingChecksumWriter.newLine();     
+        missingChecksumWriter.newLine();
+        missingChecksumWriter.flush();
     }
     
     /**

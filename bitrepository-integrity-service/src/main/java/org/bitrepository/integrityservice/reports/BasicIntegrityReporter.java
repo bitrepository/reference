@@ -27,7 +27,11 @@ public class BasicIntegrityReporter implements IntegrityReporter {
         this.collectionID = collectionID;
         reportDate = new Date();
         DateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
-        File reportDir = new File(reportsDir, formatter.format(reportDate));
+        File collectionReportsDir = new File(reportsDir, collectionID);
+        if(!collectionReportsDir.isDirectory()) {
+            collectionReportsDir.mkdir();
+        }
+        File reportDir = new File(collectionReportsDir, formatter.format(reportDate));
         reportDir.mkdir();
         writer = new IntegrityReportWriter(reportDir);
     }
