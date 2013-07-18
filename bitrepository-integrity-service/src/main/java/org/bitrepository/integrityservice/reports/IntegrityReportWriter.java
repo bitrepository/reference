@@ -43,27 +43,25 @@ public class IntegrityReportWriter {
         this.reportDir = reportDir;
     }
     
+    /**
+     * Method to retrieve the path to the report file 
+     */
     public String getReportFilePath() {
         File reportFile = new File(reportDir, REPORT_FILE);
         log.debug("getReportFilePath: Report file located at: " + reportFile.getAbsolutePath());
         return reportFile.getAbsolutePath();
     }
-    
+        
     /**
      * Method to handle writing of a deleted file entry to on-disk storage 
      * @param fileID The ID of the file to be added to the report as deleted from system.
      */
     public void writeDeletedFile(String fileID) throws IOException {
         if(deletedFilesWriter == null) {
-            File deletedFilesFile = new File(reportDir, DELETED_FILE);
-            if(deletedFilesFile.exists()) {
-                deletedFilesFile.delete();
-            }
+            File deletedFilesFile = makeEmptyFile(reportDir, DELETED_FILE);
             deletedFilesWriter = new BufferedWriter(new FileWriter(deletedFilesFile, true));
         }
-        deletedFilesWriter.append(fileID);
-        deletedFilesWriter.newLine();
-        deletedFilesWriter.flush();
+        addLine(deletedFilesWriter, fileID);
     }
     
     /**
@@ -75,19 +73,13 @@ public class IntegrityReportWriter {
         BufferedWriter checksumIssueWriter;
         String key = CHECKSUM_ISSUE_PREFIX + pillarID;
         if(!checksumIssues.containsKey(key)) {
-            File checksumIssueFile = new File(reportDir, key);
-            if(checksumIssueFile.exists()) {
-                checksumIssueFile.delete();
-            }
+            File checksumIssueFile = makeEmptyFile(reportDir, key);
             checksumIssueWriter = new BufferedWriter(new FileWriter(checksumIssueFile, true));
             checksumIssues.put(key, checksumIssueWriter);
         } else {
             checksumIssueWriter = checksumIssues.get(key); 
         }
-        checksumIssueWriter.append(fileID);
-        checksumIssueWriter.newLine();
-        checksumIssueWriter.flush();
-        
+        addLine(checksumIssueWriter, fileID);        
     }
     
     /**
@@ -99,18 +91,13 @@ public class IntegrityReportWriter {
         BufferedWriter missingFileWriter;
         String key = MISSING_FILE_PREFIX + pillarID;
         if(!missingFiles.containsKey(key)) {
-            File missingFileFile = new File(reportDir, key);
-            if(missingFileFile.exists()) {
-                missingFileFile.delete();
-            }
+            File missingFileFile = makeEmptyFile(reportDir, key);
             missingFileWriter = new BufferedWriter(new FileWriter(missingFileFile, true));
             missingFiles.put(key, missingFileWriter);
         } else {
             missingFileWriter = missingFiles.get(key);
         }
-        missingFileWriter.append(fileID);
-        missingFileWriter.newLine();
-        missingFileWriter.flush();
+        addLine(missingFileWriter, fileID);
     }
     
     /**
@@ -122,18 +109,13 @@ public class IntegrityReportWriter {
         BufferedWriter obsoleteChecksumWriter;
         String key = OBSOLETE_CHECKSUM_PREFIX + pillarID;
         if(!obsoleteChecksums.containsKey(key)) {
-            File obsoleteChecksumFile = new File(reportDir, key);
-            if(obsoleteChecksumFile.exists()) {
-                obsoleteChecksumFile.delete();
-            }
+            File obsoleteChecksumFile = makeEmptyFile(reportDir, key);
             obsoleteChecksumWriter = new BufferedWriter(new FileWriter(obsoleteChecksumFile, true));
             obsoleteChecksums.put(key, obsoleteChecksumWriter);
         } else {
             obsoleteChecksumWriter = obsoleteChecksums.get(key);
         }
-        obsoleteChecksumWriter.append(fileID);
-        obsoleteChecksumWriter.newLine();
-        obsoleteChecksumWriter.flush();
+        addLine(obsoleteChecksumWriter, fileID);
     }
     
     /**
@@ -145,18 +127,13 @@ public class IntegrityReportWriter {
         BufferedWriter missingChecksumWriter;
         String key = MISSING_CHECKSUM_PREFIX + pillarID;
         if(!missingChecksums.containsKey(key)) {
-            File missingChecksumFile = new File(reportDir, key);
-            if(missingChecksumFile.exists()) {
-                missingChecksumFile.delete();
-            }
+            File missingChecksumFile = makeEmptyFile(reportDir, key);
             missingChecksumWriter = new BufferedWriter(new FileWriter(missingChecksumFile, true));
             missingChecksums.put(key, missingChecksumWriter);
         } else {
             missingChecksumWriter = missingChecksums.get(key);
         }
-        missingChecksumWriter.append(fileID);
-        missingChecksumWriter.newLine();
-        missingChecksumWriter.flush();
+        addLine(missingChecksumWriter, fileID);
     }
     
     /**
@@ -266,22 +243,34 @@ public class IntegrityReportWriter {
         }
     }
     
+    /**
+     * Helper method to write the header of a report section 
+     */
     private void writeSectionHeader(BufferedWriter report, String sectionName) throws IOException {
         report.append(SECTION_HEADER_START_STOP + " " + sectionName + " " + SECTION_HEADER_START_STOP);
         report.newLine();
     }
     
+    /**
+     * Helper method to write the header of a pillar part of a section 
+     */
     private void writePillarHeader(BufferedWriter report, String pillarName) throws IOException {
         report.append(PILLAR_HEADER_START_STOP + " " + pillarName + " " + PILLAR_HEADER_START_STOP);
         report.newLine();
     }
     
+    /**
+     * Helper method to write the no-issue header of a section 
+     */
     private void writeNoIssueHeader(BufferedWriter report, String issueMessage) throws IOException {
         report.append(NOISSUE_HEADER_START_STOP + " " + issueMessage + " " + NOISSUE_HEADER_START_STOP);
         report.newLine();
 
     }
     
+    /**
+     * Helper method to write the content of a report section 
+     */
     private void writeReportSection(BufferedWriter report, Set<String> section) throws IOException {
         for(String part : section) {
             String pillarName = part.split("-")[1];
@@ -292,6 +281,9 @@ public class IntegrityReportWriter {
         }
     }
     
+    /**
+     * Helper method to read the actual content and write it back to the combined report file. 
+     */
     private void writeSectionPart(BufferedWriter report, File partData) throws FileNotFoundException {
         BufferedReader br = new BufferedReader(new FileReader(partData));
         String fileID;
@@ -309,5 +301,26 @@ public class IntegrityReportWriter {
                 log.error(e.getMessage(), e);
             }
         }
+    }
+    
+    /**
+     * Creates a File object, and makes sure that it's empty. I.e. deletes the old file if present on disk. 
+     */
+    private File makeEmptyFile(File dir, String fileName) {
+        File file = new File(reportDir, DELETED_FILE);
+        if(file.exists()) {
+            file.delete();
+        }
+        return file;
+    }
+    
+    /**
+     * Helper method to add an entry to a partial report file. 
+     * Writes the line, adds a new line, and flushes to disk. 
+     */
+    private void addLine(BufferedWriter writer, String line) throws IOException {
+        writer.append(line);
+        writer.newLine();
+        writer.flush(); 
     }
 }
