@@ -11,11 +11,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Class to handle writing (streaming) report parts, and generation (writing) of the final report 
  */
 public class IntegrityReportWriter {
-    
+    private static final Logger log = LoggerFactory.getLogger(IntegrityReportWriter.class);
+
     private static final String DELETED_FILE = "deletedFile";
     private static final String CHECKSUM_ISSUE_PREFIX = "checksumIssue-";
     private static final String MISSING_CHECKSUM_PREFIX = "missingChecksum-";
@@ -40,6 +44,7 @@ public class IntegrityReportWriter {
     
     public String getReportFilePath() {
         File reportFile = new File(reportDir, REPORT_FILE);
+        log.debug("getReportFilePath: Report file located at: " + reportFile.getAbsolutePath());
         return reportFile.getAbsolutePath();
     }
     
@@ -158,6 +163,7 @@ public class IntegrityReportWriter {
      * and a fresh one generated.   
      */
     public void writeReport() throws IOException {
+        flushAll();
         if(reportFileWriter == null) {
             File reportFile = new File(reportDir, REPORT_FILE);
             if(reportFile.exists()) {
@@ -189,6 +195,31 @@ public class IntegrityReportWriter {
         
         reportFileWriter.flush();
         
+    }
+    
+    /**
+     * Flushes all open files 
+     */
+    private void flushAll() throws IOException {
+        if(deletedFilesWriter != null) {
+            deletedFilesWriter.flush();
+        }
+        
+        for(BufferedWriter writer : missingFiles.values()) {
+            writer.flush();
+        }
+        
+        for(BufferedWriter writer : checksumIssues.values()) {
+            writer.flush();
+        }
+        
+        for(BufferedWriter writer : missingChecksums.values()) {
+            writer.flush();
+        }
+        
+        for(BufferedWriter writer : obsoleteChecksums.values()) {
+            writer.flush();
+        }
     }
     
     /**
