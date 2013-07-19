@@ -1,6 +1,6 @@
 
 
-<script>
+
 
   var collections = new Object();
   
@@ -19,7 +19,7 @@
                              numMissingFiles: 0,
                              nextCheck: "Unknown"};
         
-        $(tableBody).append(makeCollectionRow(collections[j[i]]);
+        $(tableBody).append(makeCollectionRow(collections[j[i]]));
       }
     });
   }
@@ -41,7 +41,7 @@
   }
 
   function updateCollectionRow(collection) {
-    var id = collection.collectionID;
+    var id = collection['collectionID'];
     $("#" + id + "-name").html(collection.collectionName);
     $("#" + id + "-numFiles").html(collection.numFiles);
     $("#" + id + "-latestIngest").html(collection.latestIngest);
@@ -55,8 +55,7 @@
 
   function refreshCollectionStatus(tableBody) {
     for(c in collections) {
-      updateCollectionRow(c);
+      updateCollectionRow(collections[c]);
     }
   }
 
-</script>

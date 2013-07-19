@@ -51,7 +51,7 @@
               <th>Next scheduled check</th>
             </tr>
           </thead>
-          <tbody id=collectionStatusBody></tbody>
+          <tbody id="collectionStatusBody"></tbody>
         </table>
       </div>
     </div>
@@ -70,6 +70,7 @@
 -->
 
   <script type="text/javascript" src="menu.js"></script>
+  <script type="text/javascript" src="dashboard_components/collectionStatus.js"></script>
 
   <script>
     $(document).ready(function(){
