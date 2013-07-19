@@ -140,7 +140,7 @@ public class IntegrityReportWriter {
      * Method to write the full report. If a report already exists, the old file will be deleted 
      * and a fresh one generated.   
      */
-    public void writeReport() throws IOException {
+    public void writeReport(String reportHeader) throws IOException {
         flushAll();
         if(reportFileWriter == null) {
             File reportFile = new File(reportDir, REPORT_FILE);
@@ -149,7 +149,8 @@ public class IntegrityReportWriter {
             }
             reportFileWriter = new BufferedWriter(new FileWriter(reportFile, true));
         }
-        
+        reportFileWriter.append(reportHeader);
+        reportFileWriter.newLine();
         writeSectionHeader(reportFileWriter, "Deleted files");
         if(deletedFilesWriter != null) {
             writeSectionPart(reportFileWriter, new File(reportDir, DELETED_FILE));

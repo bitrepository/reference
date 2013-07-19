@@ -78,8 +78,7 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             throw new IllegalStateException("The workflow can not be started before the initialise method has been " +
                     "called.");
         }
-        
-        IntegrityReporter reporter = new BasicIntegrityReporter(collectionID, 
+        IntegrityReporter reporter = new BasicIntegrityReporter(jobID.getCollectionID(), jobID.getWorkflowName(),
                 IntegrityServiceManager.getIntegrityReportStorageDir());
         
         super.start();
