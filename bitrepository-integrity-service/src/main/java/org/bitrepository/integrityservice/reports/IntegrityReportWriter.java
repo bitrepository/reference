@@ -151,6 +151,7 @@ public class IntegrityReportWriter {
         }
         reportFileWriter.append(reportHeader);
         reportFileWriter.newLine();
+        
         writeSectionHeader(reportFileWriter, "Deleted files");
         if(deletedFilesWriter != null) {
             writeSectionPart(reportFileWriter, new File(reportDir, DELETED_FILE));
@@ -308,7 +309,7 @@ public class IntegrityReportWriter {
      * Creates a File object, and makes sure that it's empty. I.e. deletes the old file if present on disk. 
      */
     private File makeEmptyFile(File dir, String fileName) {
-        File file = new File(reportDir, DELETED_FILE);
+        File file = new File(reportDir, fileName);
         if(file.exists()) {
             file.delete();
         }
