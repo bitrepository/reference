@@ -1,12 +1,10 @@
 
 
-
-
   var collections = new Object();
-  
+  var readyForRefresh = false;
 
   function loadCollections(url, tableBody) {
-    $.getJSON('repo/reposervice/getCollectionIDs/', {}, function(j) {
+    $.getJSON(url, {}, function(j) {
       for(var i = 0; i < j.length; i++) {
         collections[j[i]] = {collectionID: j[i],
                              collectionName: j[i],
@@ -21,6 +19,7 @@
         
         $(tableBody).append(makeCollectionRow(collections[j[i]]));
       }
+      readyForRefresh = true;
     });
   }
 
@@ -53,9 +52,11 @@
     $("#" + id + "-nextCheck").html(collection.nextCheck);
   }
 
-  function refreshCollectionStatus(tableBody) {
-    for(c in collections) {
-      updateCollectionRow(collections[c]);
+  function refreshCollectionStatus() {
+    if(readyForRefresh) {
+      for(c in collections) {
+        updateCollectionRow(collections[c]);
+      }
     }
   }
 

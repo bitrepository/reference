@@ -75,6 +75,7 @@
   <script>
     $(document).ready(function(){
       makeMenu("dashboard2", "#pageMenu");
+      loadCollections("repo/reposervice/getCollectionIDs/", "#collectionStatusBody");
     });
   </script>
 </body>
