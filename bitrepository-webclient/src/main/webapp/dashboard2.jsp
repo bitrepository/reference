@@ -36,7 +36,24 @@
       <div class="">
         <h2>Overview of your bitpresavation solution</h2>
       </div>
-      <div class="collectionStatus"></div>
+      <div class="collectionStatus" id="statusDiv">
+        <table class="table table-hover table-condensed">
+          <thead>
+            <tr>
+              <th class="collectionName">Collection name</th>
+              <th>Number of files</th>
+              <th>Latest Ingest</th>
+              <th>Size of collection</th>
+              <th>Pillars</th>
+              <th>Latest check</th>
+              <th>Number of checksum errors</th>
+              <th>Number of missing files</th>
+              <th>Next scheduled check</th>
+            </tr>
+          </thead>
+          <tbody id=collectionStatusBody></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -57,7 +74,6 @@
   <script>
     $(document).ready(function(){
       makeMenu("dashboard2", "#pageMenu");
-      $("#collectionStatus").load("dashboard_components/collectionStatus.jsp");
     });
   </script>
 </body>
