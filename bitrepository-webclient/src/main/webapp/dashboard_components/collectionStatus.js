@@ -37,7 +37,7 @@
     var c = collection;
     $.get(url, {}, function(j) {
       collections[c].collectionName = j;
-    }, "html");
+    }, "html").done(function(){updateCollectionRow(collections[c])});
   }
 
   function loadCollectionNames() {
@@ -54,7 +54,7 @@
     $.getJSON(url, {}, function(j) {
       collections[c].lastCheck = j[0].lastRun;
       collections[c].nextCheck = j[0].nextRun;
-    });
+    }).done(function(){updateCollectionRow(collections[c])});
   }
 
   function updateWorkflowStatuses() {
@@ -72,7 +72,7 @@
       collections[c].numFiles = j.numberOfFiles;
       collections[c].collectionSize = j.collectionSize;
       collections[c].latestIngest = j.lastIngest;
-    });
+    }).done(function(){updateCollectionRow(collections[c])});
   }
 
   function updateInfo() {
@@ -98,7 +98,7 @@
       collections[c].pillars = pillarCount;
       collections[c].numChecksumErrors = checksumErrors;
       collections[c].numMissingFiles = missingFiles;
-    }); 
+    }).done(function(){updateCollectionRow(collections[c])}); 
   }
 
   function updateStatistics() {
@@ -126,7 +126,7 @@
   }
 
   function updateCollectionRow(collection) {
-    var id = collection['collectionID'];
+    var id = collection.collectionID;
     $("#" + id + "-name").html(collection.collectionName);
     $("#" + id + "-numFiles").html(collection.numFiles);
     $("#" + id + "-latestIngest").html(collection.latestIngest);
