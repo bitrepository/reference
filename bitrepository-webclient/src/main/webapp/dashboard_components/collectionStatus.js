@@ -61,7 +61,7 @@
     }
   }
 
-  function updateCollectionStatistic(collection) {
+  function updateCollectionInfo(collection) {
     url = integrityServiceUrl + "/integrity/IntegrityService/getCollectionInformation/?collectionID=" + collection;
     var c = collection;
     $.getJSON(url, {}, function(j) {
@@ -69,6 +69,32 @@
       collections[c].collectionSize = j.collectionSize;
       collections[c].latestIngest = j.lastIngest;
     });
+  }
+
+  function updateInfo() {
+    if(readyForRefresh) {
+      for(c in collections) {
+        updateCollectionInfo(c);
+      }
+    }
+  }
+
+  function updateCollectionStatistic(collection) { 
+    url = integrityServiceUrl + "/integrity/IntegrityService/getIntegrityStatus/?collectionID=" + collection;
+    var c = collection;
+    $.getJSON(url, {}, function(j) {
+      var checksumErrors = 0;
+      var missingFiles = 0;
+      var pillarCount = 0;
+      for(stat in j) {
+        pillarCount += 1;
+        checksumErrors += j.checksumErrorCount;
+        missingFiles += j.missingFilesCount;
+      }
+      collection[c].pillars = pillarCount;
+      collections[c].numChecksumErrors = checksumErrors;
+      collections[c].numMissingFiles = missingFiles;
+    }); 
   }
 
   function updateStatistics() {
