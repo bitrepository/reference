@@ -25,13 +25,17 @@
         $(tableBody).append(makeCollectionRow(collections[j[i]]));
       }
       readyForRefresh = true;
+      loadCollectionNames();
+      updateWorkflowStatuses();
+      updateInfo();
+      updateStatistics();
     });
   }
 
   function loadCollectionName(collection) {
     url = "repo/reposervice/getCollectionName/?collectionID=" + collection;
     var c = collection;
-    $.getJSON(url, {}, function(j) {
+    $.get(url, {}, function(j) {
       collections[c].collectionName = j;
     }, "html");
   }
@@ -88,10 +92,10 @@
       var pillarCount = 0;
       for(stat in j) {
         pillarCount += 1;
-        checksumErrors += j.checksumErrorCount;
-        missingFiles += j.missingFilesCount;
+        checksumErrors += j[stat].checksumErrorCount;
+        missingFiles += j[stat].missingFilesCount;
       }
-      collection[c].pillars = pillarCount;
+      collections[c].pillars = pillarCount;
       collections[c].numChecksumErrors = checksumErrors;
       collections[c].numMissingFiles = missingFiles;
     }); 
@@ -130,7 +134,17 @@
     $("#" + id + "-pillars").html(collection.pillars);
     $("#" + id + "-latestCheck").html(collection.lastCheck);
     $("#" + id + "-numChecksumErrors").html(collection.numChecksumErrors);
+    if(collection.numChecksumErrors > 0) {
+      $("#" + id + "-numChecksumErrors").addClass("error");
+    } else {
+      $("#" + id + "-numChecksumErrors").removeClass("error");
+    }
     $("#" + id + "-numMissingFiles").html(collection.numMissingFiles);
+    if(collection.numMissingFiles > 0) {
+      $("#" + id + "-numMissingFiles").addClass("error");
+    } else {
+      $("#" + id + "-numMissingFiles").removeClass("error");
+    }
     $("#" + id + "-nextCheck").html(collection.nextCheck);
   }
 

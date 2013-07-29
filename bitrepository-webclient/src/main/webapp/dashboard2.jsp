@@ -73,10 +73,15 @@
     <script type="text/javascript" src="dashboard_components/collectionStatus.js"></script>
 
     <script>
+      var update_page;
+
       $(document).ready(function(){
         makeMenu("dashboard2", "#pageMenu");
         setIntegrityServiceUrl("<%= su.getIntegrityServiceUrl() %>");
-        loadCollections("repo/reposervice/getCollectionIDs/", "#collectionStatusBody");
+        loadCollections("repo/reposervice/getCollectionIDs/", "#collectionStatusBody");        
+        update_page = setInterval(function() {
+          refreshCollectionStatus(); 
+        }, 2500);
       });
     </script>
   </body>
