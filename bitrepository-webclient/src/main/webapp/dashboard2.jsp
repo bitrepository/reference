@@ -79,9 +79,9 @@
         makeMenu("dashboard2", "#pageMenu");
         setIntegrityServiceUrl("<%= su.getIntegrityServiceUrl() %>");
         loadCollections("repo/reposervice/getCollectionIDs/", "#collectionStatusBody");        
-//        update_page = setInterval(function() {
-//          refreshCollectionStatus(); 
-//        }, 2500);
+        update_page = setInterval(function() {
+          refreshContent(); 
+        }, 2500);
       });
     </script>
   </body>

@@ -26,9 +26,7 @@
       }
       readyForRefresh = true;
       loadCollectionNames();
-      updateWorkflowStatuses();
-      updateInfo();
-      updateStatistics();
+      refreshContent();
     });
   }
 
@@ -148,11 +146,9 @@
     $("#" + id + "-nextCheck").html(collection.nextCheck);
   }
 
-  function refreshCollectionStatus() {
-    if(readyForRefresh) {
-      for(c in collections) {
-        updateCollectionRow(collections[c]);
-      }
-    }
+  function refreshContent() {
+      updateWorkflowStatuses();
+      updateInfo();
+      updateStatistics();
   }
 
