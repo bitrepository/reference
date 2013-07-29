@@ -69,14 +69,12 @@
     <!-- Javascript -->
     <script src="jquery/jquery-1.9.0.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
-<!--    <script src="flot/excanvas.js"></script>     
+    <script src="flot/excanvas.js"></script>     
     <script src="flot/jquery.flot.min.js"></script>
     <script src="flot/jquery.flot.pie.js"></script>
     <script src="flot/jquery.flot.selection.min.js"></script>
     <script src="flot/jquery.flot.axislabels.js"></script>
     <script src="flot/jquery.flot.resize.js"></script>
-
--->
 
     <script type="text/javascript" src="menu.js"></script>
     <script type="text/javascript" src="dashboard_components/collectionStatus.js"></script>
