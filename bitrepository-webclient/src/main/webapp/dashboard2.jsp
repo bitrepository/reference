@@ -54,6 +54,15 @@
             <tbody id="collectionStatusBody"></tbody>
           </table>
         </div>
+        <div id="dataSizeGraphContainer" class="dataSizeGraph"></div>
+        <div id="collectionPieBoxContainer" class="collectionPieBox"></div>
+        <div id="legPieBoxContainer" class="legPieBox">
+          <div class="legPie">
+            <div id="data_ben">
+              <div id="flotcontainer_data_ben" style="width: 280px;height:280px; text-align: left;"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -71,6 +80,7 @@
 
     <script type="text/javascript" src="menu.js"></script>
     <script type="text/javascript" src="dashboard_components/collectionStatus.js"></script>
+    <script type="text/javascript" src="dashboard_components/legsSizePie.js"></script>
 
     <script>
       var update_page;
@@ -82,6 +92,7 @@
         update_page = setInterval(function() {
           refreshContent(); 
         }, 2500);
+        drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
       });
     </script>
   </body>
