@@ -2,6 +2,11 @@
 
   var collections = new Object();
   var readyForRefresh = false;
+  var integrityServiceUrl;
+
+  function setIntegrityServiceUrl(url) {
+    integrityServiceUrl = url;
+  }
 
   function loadCollections(url, tableBody) {
     $.getJSON(url, {}, function(j) {
@@ -21,6 +26,57 @@
       }
       readyForRefresh = true;
     });
+  }
+
+  function loadCollectionName(collection) {
+    url = "repo/reposervice/getCollectionName/?collectionID=" + collection;
+    var c = collection;
+    $.getJSON(url, {}, function(j) {
+      collections[c].collectionName = j;
+    }, "html");
+  }
+
+  function loadCollectionNames() {
+    if(readyForRefresh) {
+      for(c in collections) {
+        loadCollectionName(c);
+      }
+    }
+  }
+
+  function updateWorkflowStatus(collection) {
+    url = integrityServiceUrl + "/integrity/IntegrityService/getWorkflowSetup/?collectionID=" + collection;
+    var c = collection;
+    $.getJSON(url, {}, function(j) {
+      collections[c].lastCheck = j[0].lastRun;
+      collections[c].nextCheck = j[0].nextRun;
+    });
+  }
+
+  function updateWorkflowStatuses() {
+    if(readyForRefresh) {
+      for(c in collections) {
+        updateWorkflowStatus(c);
+      }
+    }
+  }
+
+  function updateCollectionStatistic(collection) {
+    url = integrityServiceUrl + "/integrity/IntegrityService/getCollectionInformation/?collectionID=" + collection;
+    var c = collection;
+    $.getJSON(url, {}, function(j) {
+      collections[c].numFiles = j.numberOfFiles;
+      collections[c].collectionSize = j.collectionSize;
+      collections[c].latestIngest = j.lastIngest;
+    });
+  }
+
+  function updateStatistics() {
+    if(readyForRefresh) {
+      for(c in collections) {
+        updateCollectionStatistic(c);
+      }
+    }
   }
 
   function makeCollectionRow(collection) { 

@@ -19,43 +19,43 @@
   <http://www.gnu.org/licenses/lgpl-2.1.html>.
   #L%
   --%>
+<%@page import="org.bitrepository.webservice.ServiceUrlFactory" %>
+<%@page import="org.bitrepository.webservice.ServiceUrl" %>
 <!DOCTYPE html>
 <html>
-<head>
+  <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
+  <head>
     <title>Bitrepository dashboard</title>
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="css/dashboard.css" rel="stylesheet" media="screen">
-
-
-
-</head>
-<body>
-  <div id="pageMenu"></div>
-  <div class="container-fluid">
-    <div class="row-fluid">
-      <div class="">
-        <h2>Overview of your bitpresavation solution</h2>
-      </div>
-      <div class="collectionStatus" id="statusDiv">
-        <table class="table table-hover table-condensed">
-          <thead>
-            <tr>
-              <th class="collectionName">Collection name</th>
-              <th>Number of files</th>
-              <th>Latest Ingest</th>
-              <th>Size of collection</th>
-              <th>Pillars</th>
-              <th>Latest check</th>
-              <th>Number of checksum errors</th>
-              <th>Number of missing files</th>
-              <th>Next scheduled check</th>
-            </tr>
-          </thead>
-          <tbody id="collectionStatusBody"></tbody>
-        </table>
+  </head>
+  <body>
+    <div id="pageMenu"></div>
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="">
+          <h2>Overview of your bitpresavation solution</h2>
+        </div>
+        <div class="collectionStatus" id="statusDiv">
+          <table class="table table-hover table-condensed">
+            <thead>
+              <tr>
+                <th class="collectionName">Collection name</th>
+                <th>Number of files</th>
+                <th>Latest Ingest</th>
+                <th>Size of collection</th>
+                <th>Pillars</th>
+                <th>Latest check</th>
+                <th>Number of checksum errors</th>
+                <th>Number of missing files</th>
+                <th>Next scheduled check</th>
+              </tr>
+            </thead>
+            <tbody id="collectionStatusBody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
-  </div>
 
     <!-- Javascript -->
     <script src="jquery/jquery-1.9.0.min.js"></script>
@@ -69,14 +69,15 @@
 
 -->
 
-  <script type="text/javascript" src="menu.js"></script>
-  <script type="text/javascript" src="dashboard_components/collectionStatus.js"></script>
+    <script type="text/javascript" src="menu.js"></script>
+    <script type="text/javascript" src="dashboard_components/collectionStatus.js"></script>
 
-  <script>
-    $(document).ready(function(){
-      makeMenu("dashboard2", "#pageMenu");
-      loadCollections("repo/reposervice/getCollectionIDs/", "#collectionStatusBody");
-    });
-  </script>
-</body>
+    <script>
+      $(document).ready(function(){
+        makeMenu("dashboard2", "#pageMenu");
+        setIntegrityServiceUrl("<%= su.getIntegrityServiceUrl() %>");
+        loadCollections("repo/reposervice/getCollectionIDs/", "#collectionStatusBody");
+      });
+    </script>
+  </body>
 </html>
