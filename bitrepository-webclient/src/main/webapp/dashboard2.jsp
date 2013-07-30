@@ -62,6 +62,7 @@
               <div id="flotcontainer_collection" style="width: 280px;height:280px; text-align: left;"></div>
             </div>
           </div>
+          <div id=collectionLegendDiv></div>
         </div>
         <div id="legPieBoxContainer" class="legPieBox">
           <h3>Data distributed on pillars</h3>
@@ -70,6 +71,7 @@
               <div id="flotcontainer_data_pillar" style="width: 280px;height:280px; text-align: left;"></div>
             </div>
           </div>
+          <div id=pillarLegendDiv></div>
         </div>
       </div>
     </div>
