@@ -8,28 +8,6 @@
     integrityServiceUrl = url;
   }
 
-  function loadCollections(url, tableBody) {
-    $.getJSON(url, {}, function(j) {
-      for(var i = 0; i < j.length; i++) {
-        collections[j[i]] = {collectionID: j[i],
-                             collectionName: j[i],
-                             numFiles: 0, 
-                             latestIngest: "Unknown",
-                             collectionSize: 0,
-                             pillars: 0,
-                             lastCheck: "Unknown",
-                             numChecksumErrors: 0,
-                             numMissingFiles: 0,
-                             nextCheck: "Unknown"};
-        
-        $(tableBody).append(makeCollectionRow(collections[j[i]]));
-      }
-      readyForRefresh = true;
-      loadCollectionNames();
-      refreshContent();
-    });
-  }
-
   function loadCollections(collectionIDs, tableBody) {
     for(var i = 0; i < collectionIDs.length; i++) {
         collections[collectionIDs[i]] = {collectionID: collectionIDs[i],
@@ -42,7 +20,7 @@
                                          numChecksumErrors: 0,
                                          numMissingFiles: 0,
                                          nextCheck: "Unknown"};
-        $(tableBody).append(makeCollectionRow(collections[j[i]]));
+        $(tableBody).append(makeCollectionRow(collections[collectionIDs[i]]));
       }
       readyForRefresh = true;
       loadCollectionNames();

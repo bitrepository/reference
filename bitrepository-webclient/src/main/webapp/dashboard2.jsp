@@ -87,6 +87,7 @@
     <script src="flot/jquery.flot.resize.js"></script>
 
     <script type="text/javascript" src="menu.js"></script>
+    <script type="text/javascript" src="dashboard_components/colorMapper.js"></script>
     <script type="text/javascript" src="dashboard_components/collectionStatus.js"></script>
     <script type="text/javascript" src="dashboard_components/legsSizePie.js"></script>
     <script type="text/javascript" src="dashboard_components/collectionSizePie.js"></script>
