@@ -9,7 +9,7 @@
       pillar_size_table_data = new Array();
       for(i=0; i<j.length; i++) {
         pillar_size_data[i] = {label: j[i].pillarID, data: j[i].dataSize};
-        pillar_size_data[i] = {label: j[i].pillarID, data: j[i].humanSize};
+        pillar_size_table_data[i] = {pillar: j[i].pillarID, size: j[i].humanSize};
       }
     }).done(function() {
       var options = { series: {
@@ -34,8 +34,8 @@
 
       // Make legend
       var legendHtml = "<table>";
-      for(i=0; i<collection_size_table_data.length; i++) {
-        legendHtml += "<tr><td class=\"dataLabel\">" + pillar_size_table_data[i].collection + "</td><td class=\"dataData\">" + pillar_size_table_data[i].size + "</td></tr>";
+      for(i=0; i<pillar_size_table_data.length; i++) {
+        legendHtml += "<tr><td class=\"dataLabel\">" + pillar_size_table_data[i].pillar + "</td><td class=\"dataData\">" + pillar_size_table_data[i].size + "</td></tr>";
       }
       legendHtml += "</table>";
       $("#pillarLegendDiv").html(legendHtml);
