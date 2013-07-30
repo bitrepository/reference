@@ -29,6 +29,7 @@ import java.util.Properties;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.webservice.ServiceUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,7 @@ public class BasicClientFactory {
             }
             SettingsProvider settingsLoader = new SettingsProvider(new XMLFileSettingsLoader(confDir), clientID);
             Settings settings = settingsLoader.getSettings();
+            SettingsUtils.initialize(settings);
             try {
                 client = new BasicClient(settings);
             } catch (Exception e) {
