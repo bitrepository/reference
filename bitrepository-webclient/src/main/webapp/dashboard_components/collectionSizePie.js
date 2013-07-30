@@ -1,12 +1,12 @@
 
-  var pillar_size_data;
-  
-  function drawPillarDataSizePieChart(url) {
+  var collection_size_data
+
+  function drawCollectionDataSizePieChart(url) {
     //Load data, when done, draw chart. 
     $.getJSON(url, {}, function(j) {
-      pillar_size_data = new Array();
+      collection_size_data = new Array();
       for(i=0; i<j.length; i++) {
-        pillar_size_data[i] = {label: j[i].pillarID, data: j[i].dataSize};
+        collection_size_data[i] = {label: j[i].collectionID, data: j[i].dataSize};
       }
     }).done(function() {
       var options = { series: {
@@ -27,6 +27,7 @@
                       },
                       legend: {show: false}
       };
-      $.plot($("#data_pillar #flotcontainer_data_pillar"), pillar_size_data, options);
+      $.plot($("#collection #flotcontainer_collection"), collection_size_data, options);
     });
   }
+

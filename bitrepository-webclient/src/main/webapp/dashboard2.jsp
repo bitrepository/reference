@@ -55,12 +55,19 @@
           </table>
         </div>
         <div id="dataSizeGraphContainer" class="dataSizeGraph"></div>
-        <div id="collectionPieBoxContainer" class="collectionPieBox"></div>
+        <div id="collectionPieBoxContainer" class="collectionPieBox">
+          <h3>Data distributed on collections</h3>
+          <div class="collectionPie">
+            <div id="collection">
+              <div id="flotcontainer_collection" style="width: 280px;height:280px; text-align: left;"></div>
+            </div>
+          </div>
+        </div>
         <div id="legPieBoxContainer" class="legPieBox">
           <h3>Data distributed on pillars</h3>
           <div class="legPie">
-            <div id="data_ben">
-              <div id="flotcontainer_data_ben" style="width: 280px;height:280px; text-align: left;"></div>
+            <div id="data_pillar">
+              <div id="flotcontainer_data_pillar" style="width: 280px;height:280px; text-align: left;"></div>
             </div>
           </div>
         </div>
@@ -80,6 +87,7 @@
     <script type="text/javascript" src="menu.js"></script>
     <script type="text/javascript" src="dashboard_components/collectionStatus.js"></script>
     <script type="text/javascript" src="dashboard_components/legsSizePie.js"></script>
+    <script type="text/javascript" src="dashboard_components/collectionSizePie.js"></script>
 
     <script>
       var update_page;
@@ -92,6 +100,7 @@
           refreshContent(); 
         }, 2500);
         drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
+        drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/");
       });
     </script>
   </body>
