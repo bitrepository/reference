@@ -27,7 +27,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class StatisticsCollectionSize {
 
     private String collectionID;
+    private String collectionName;
     private Long dataSize;
+    private String humanSize;
     
     public StatisticsCollectionSize() {}
 
@@ -45,6 +47,22 @@ public class StatisticsCollectionSize {
 
     public void setDataSize(Long dataSize) {
         this.dataSize = dataSize;
+    }
+
+    public String getCollectionName() {
+        return collectionName;
+    }
+
+    public void setCollectionName(String collectionName) {
+        this.collectionName = collectionName;
+    }
+
+    public String getHumanSize() {
+        return humanSize;
+    }
+
+    public void setHumanSize(String humanSize) {
+        this.humanSize = humanSize;
     }
     
 }

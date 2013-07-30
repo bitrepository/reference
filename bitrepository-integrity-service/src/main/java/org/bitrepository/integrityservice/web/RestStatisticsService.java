@@ -34,6 +34,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.bitrepository.common.utils.FileSizeUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.common.webobjects.StatisticsCollectionSize;
@@ -87,7 +88,9 @@ public class RestStatisticsService {
         for(CollectionStat stat : stats) {
             StatisticsCollectionSize obj = new StatisticsCollectionSize();
             obj.setCollectionID(stat.getCollectionID());
+            obj.setCollectionName(SettingsUtils.getCollectionName(stat.getCollectionID()));
             obj.setDataSize(stat.getDataSize());
+            obj.setHumanSize(FileSizeUtils.toHumanShort(stat.getDataSize()));
             data.add(obj);
         }
         return data;    
@@ -110,12 +113,14 @@ public class RestStatisticsService {
             StatisticsPillarSize stat = new StatisticsPillarSize();
             stat.setPillarID(pillar);
             stat.setDataSize(0L);
+            stat.setHumanSize("0 B");
             stats.put(pillar, stat);
         }
         for(String collection : SettingsUtils.getAllCollectionsIDs()) {
             for(PillarStat pillarStat : model.getLatestPillarStats(collection)) {
                 StatisticsPillarSize stat = stats.get(pillarStat.getPillarID());
                 stat.setDataSize(stat.getDataSize() + pillarStat.getDataSize());
+                stat.setHumanSize(FileSizeUtils.toHumanShort(stat.getDataSize()));
                 stats.put(stat.getPillarID(), stat);
             }
         }

@@ -50,23 +50,6 @@ public class BasicClient {
         }
         return collections;
     }
-    
-    public String getCollectionName(String collectionID) {
-        String name = null;
-        
-        for(Collection collection : settings.getRepositorySettings().getCollections().getCollection()) {
-            if(collection.getID().equals(collectionID)) {
-                if(collection.isSetName()) {
-                    name = collection.getName();    
-                } else {
-                    name = collection.getID();
-                }
-                break;
-            }
-        }
-        
-        return name;
-    }
 
     public void shutdown() {
         try {

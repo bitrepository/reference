@@ -28,6 +28,7 @@ public class StatisticsPillarSize {
 
     private String pillarID;
     private Long dataSize;
+    private String humanSize;
     
     public StatisticsPillarSize() {}
 
@@ -45,6 +46,14 @@ public class StatisticsPillarSize {
 
     public void setDataSize(Long dataSize) {
         this.dataSize = dataSize;
+    }
+
+    public String getHumanSize() {
+        return humanSize;
+    }
+
+    public void setHumanSize(String humanSize) {
+        this.humanSize = humanSize;
     }
     
 }

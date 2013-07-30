@@ -71,6 +71,28 @@ public class SettingsUtils {
     }
     
     /**
+     * Get's the name of a given collection. If no name is given in the settings, 
+     * the ID of the collection is returned
+     * @return The name of the collection 
+     */
+    public static String getCollectionName(String collectionID) {
+        String name = null;
+        
+        for(Collection collection : settings.getRepositorySettings().getCollections().getCollection()) {
+            if(collection.getID().equals(collectionID)) {
+                if(collection.isSetName()) {
+                    name = collection.getName();    
+                } else {
+                    name = collection.getID();
+                }
+                break;
+            }
+        }
+        
+        return name;
+    }
+    
+    /**
      * Retrieves all the different pillar ids defined across all collections (without duplicates).
      * @return The list of pillar ids. 
      */

@@ -23,6 +23,7 @@ package org.bitrepository.webservice;
 
 import org.bitrepository.BasicClient;
 import org.bitrepository.BasicClientFactory;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.json.JSONArray;
 
 import javax.ws.rs.GET;
@@ -61,7 +62,7 @@ public class Reposervice {
     @Path("getCollectionName")
     @Produces(MediaType.APPLICATION_JSON)
     public String getCollectionName(@QueryParam("collectionID") String collectionID) {
-        return client.getCollectionName(collectionID);
+        return SettingsUtils.getCollectionName(collectionID);
     }
 
     /**
