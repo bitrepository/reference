@@ -93,16 +93,24 @@
 
     <script>
       var update_page;
+      var colorMapper;
+
+      function init() {
+        setIntegrityServiceUrl("<%= su.getIntegrityServiceUrl() %>");
+        $.getJSON("repo/reposervice/getCollectionIDs/", {}, function(collections) {
+          colorMapper = new ColorMapper(collections);
+          loadCollections(collections, "#collectionStatusBody");
+          update_page = setInterval(function() {
+            refreshContent(); 
+          }, 2500);
+          drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
+          drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
+        });
+      }
 
       $(document).ready(function(){
         makeMenu("dashboard2", "#pageMenu");
-        setIntegrityServiceUrl("<%= su.getIntegrityServiceUrl() %>");
-        loadCollections("repo/reposervice/getCollectionIDs/", "#collectionStatusBody");        
-        update_page = setInterval(function() {
-          refreshContent(); 
-        }, 2500);
-        drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
-        drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/");
+        init();
       });
     </script>
   </body>

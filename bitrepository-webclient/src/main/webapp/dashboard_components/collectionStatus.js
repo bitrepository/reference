@@ -30,6 +30,27 @@
     });
   }
 
+  function loadCollections(collectionIDs, tableBody) {
+    for(var i = 0; i < collectionIDs.length; i++) {
+        collections[collectionIDs[i]] = {collectionID: collectionIDs[i],
+                                         collectionName: collectionIDs[i],
+                                         numFiles: 0, 
+                                         latestIngest: "Unknown",
+                                         collectionSize: 0,
+                                         pillars: 0,
+                                         lastCheck: "Unknown",
+                                         numChecksumErrors: 0,
+                                         numMissingFiles: 0,
+                                         nextCheck: "Unknown"};
+        $(tableBody).append(makeCollectionRow(collections[j[i]]));
+      }
+      readyForRefresh = true;
+      loadCollectionNames();
+      refreshContent();
+    
+  }
+
+
   function loadCollectionName(collection) {
     url = "repo/reposervice/getCollectionName/?collectionID=" + collection;
     var c = collection;
