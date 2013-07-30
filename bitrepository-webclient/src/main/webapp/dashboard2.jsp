@@ -34,7 +34,7 @@
     <div class="container-fluid">
       <div class="row-fluid">
         <div class="">
-          <h2>Overview of your bitpresavation solution</h2>
+          <h2>Overview of your bitpresevation solution</h2>
         </div>
         <div class="collectionStatus" id="statusDiv">
           <table class="table table-hover table-condensed">
@@ -57,6 +57,7 @@
         <div id="dataSizeGraphContainer" class="dataSizeGraph"></div>
         <div id="collectionPieBoxContainer" class="collectionPieBox"></div>
         <div id="legPieBoxContainer" class="legPieBox">
+          <h3>Data distributed on pillars</h3>
           <div class="legPie">
             <div id="data_ben">
               <div id="flotcontainer_data_ben" style="width: 280px;height:280px; text-align: left;"></div>
