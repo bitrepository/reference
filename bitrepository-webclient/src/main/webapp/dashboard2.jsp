@@ -54,7 +54,14 @@
             <tbody id="collectionStatusBody"></tbody>
           </table>
         </div>
-        <div id="dataSizeGraphContainer" class="dataSizeGraph"></div>
+        <div id="dataSizeGraphContainer" class="dataSizeGraph">
+          <select id="graphType">
+            <option value="growth" selected>Growth</option>
+            <option value="delta">Rate of growth</option>
+          </select>
+          <div id="dataSizeGraphCollectionSelection" class="collectionCheckBoxes"></div>
+          <div id="dataSizeGraphPlaceholder"></div>
+        </div>
         <div id="collectionPieBoxContainer" class="collectionPieBox">
           <h3>Data distributed on collections</h3>
           <div class="collectionPie">
@@ -91,6 +98,7 @@
     <script type="text/javascript" src="dashboard_components/collectionStatus.js"></script>
     <script type="text/javascript" src="dashboard_components/legsSizePie.js"></script>
     <script type="text/javascript" src="dashboard_components/collectionSizePie.js"></script>
+    <script type="text/javascript" src="dashboard_components/dataSizeGraph.js"></script>
 
     <script>
       var update_page;
