@@ -99,10 +99,12 @@
     <script type="text/javascript" src="dashboard_components/legsSizePie.js"></script>
     <script type="text/javascript" src="dashboard_components/collectionSizePie.js"></script>
     <script type="text/javascript" src="dashboard_components/dataSizeGraph.js"></script>
+    <script type="text/javascript" src="dashboard_components/dataSizeGraphController.js"></script>
 
     <script>
       var update_page;
       var colorMapper;
+      var dsGraph;
 
       function init() {
         setIntegrityServiceUrl("<%= su.getIntegrityServiceUrl() %>");
@@ -112,6 +114,8 @@
           update_page = setInterval(function() {
             refreshContent(); 
           }, 2500);
+          dsGraph = new dataSizeGraph(collections, colorMapper, "#graphType", "#dataSizeGraphCollectionSelection", "#dataSizeGraphPlaceholder");
+          makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph);
           drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
           drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
         });

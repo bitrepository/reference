@@ -2,40 +2,60 @@
 
   function dataSizeGraph(collections, colorMapper, graphTypeSelector, collectionSelector, graphPlaceholder) {
  
-    var collectionsIDs = new Array();
+    var collectionIDs = new Object();
     var colerMap = colorMapper;
     var graphType = graphTypeSelector;
     var collectionSelect = collectionSelector;
     var placeholder = graphPlaceholder;
     var graphDataPool = new Object();
 
-    $(collectionSelect).empty();
-
-    this.collectionChanged = function(element) {
-      alert("collection: " + element.val());
-
-    }
-
-    function addCollectionSelectionCheckbox(collectionID) {
-      var elementID = collectionID + "-selector";
-      var html = "<label class='checkbox inline'>";
-      html+= "<input type='checkbox' id='"+ elementID + "' value='" + collectionID + "'> " + collectionID;
-      html += "</label>";
-      $(collectionSelect).append(html);
-      $("#" + elementID).change(function(event) {event.preventDefault(); collectionChanged(this);});
-    }
-
     for(i=0; i<collections.length; i++) {
-      collectionIDs[i] = {collectionID : collections[i], state : "active" };
-      addCollectionSelectionCheckbox(collections[i]);
+      collectionIDs[collections[i]] = {state : "active" };
     }
 
-    
-
-    this.updateCollectionSelection = function() {
-      for(i=0; i<collectionIDs.length; i++) {
-        
-      }
+    this.enableCollection = function(collectionID) {
+      collectionIDs[collectionID].state = "active";
     }
 
+    this.disableCollection = function(collectionID) {
+      collectionIDs[collectionID].state = "disabled";
+    }
+
+    this.renderGraph = function(graphType) {
+      // use graph type to render the type of graph, i.e. growth or rate of growth    
+    }
+
+    this.updateDate = function() {
+      // update the cached data
+    }
+
+    this.getCollectionIDs = function() {
+      return Object.keys(collectionIDs);
+    } 
   }
+
+
+  var graph;
+
+  function makeCollectionSelectionCheckboxes(collectionSelector, dsGraph) {
+    var graph = dsGraph;
+    $(collectionSelector).empty();
+    for(c in graph.getCollectionIDs()) {
+      var elementID = collectionID + "-selector";
+      makeCollectionSelectionCheckbox(c, elementID);
+      $(collectionSelector).append(html);
+      $("#" + elementID).change(function(event) {event.preventDefault(); collectionChanged(event.target.value, event.target.checked, graph);});
+    }
+  }
+
+  function collectionChanged(collectionID, selected, graph) {
+    alert("collection: " + collectionID + "changed.");
+  }
+
+  function makeCollectionSelectionCheckbox(collectionID, elementID) {
+    var html = "<label class='checkbox inline'>";
+    html+= "<input type='checkbox' id='"+ elementID + "' value='" + collectionID + "'> " + collectionID;
+    html += "</label>";
+    return html;
+  }
+
