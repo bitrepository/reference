@@ -12,14 +12,14 @@
     for(var i = 0; i < collectionIDs.length; i++) {
         collections[collectionIDs[i]] = {collectionID: collectionIDs[i],
                                          collectionName: collectionIDs[i],
-                                         numFiles: 0, 
-                                         latestIngest: "Unknown",
-                                         collectionSize: 0,
-                                         pillars: 0,
-                                         lastCheck: "Unknown",
-                                         numChecksumErrors: 0,
-                                         numMissingFiles: 0,
-                                         nextCheck: "Unknown"};
+                                         numFiles: '-', 
+                                         latestIngest: "Fetching",
+                                         collectionSize: '-',
+                                         pillars: '-',
+                                         lastCheck: "Fetching",
+                                         numChecksumErrors: '-',
+                                         numMissingFiles: '-',
+                                         nextCheck: "Fetching"};
         $(tableBody).append(makeCollectionRow(collections[collectionIDs[i]]));
       }
       readyForRefresh = true;
