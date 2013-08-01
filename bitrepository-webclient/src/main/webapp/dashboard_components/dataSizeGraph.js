@@ -31,6 +31,23 @@
       alert("Graph type changed to: " + $(graphType).val());
     }
 
+    function useRange(element, plot, dataObj, options) {
+      $(this).bind("plotselected", function (event,ranges) {
+        // do the zooming
+        plot = $.plot($(element), 
+                      dataObj,
+                      $.extend(true,
+                               {},
+                               options,
+                               {
+                                xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to },   
+                                yaxis: { min: ranges.yaxis.from, max: ranges.yaxis.to }
+                               }
+                              )
+                     );
+        });
+    }
+
     this.renderGraph = function() {
       var dataObj = new Array();
       for(i in collectionIDs) {
@@ -62,6 +79,7 @@
       };
     
     var plot = $.plot(placeholder, dataObj, options);
+    useRange(placeholder, plot, dataObj, options);
 
       // use graph type to render the type of graph, i.e. growth or rate of growth    
     }

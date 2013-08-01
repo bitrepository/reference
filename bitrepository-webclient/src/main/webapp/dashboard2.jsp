@@ -62,7 +62,7 @@
             </select>
             <div id="dataSizeGraphCollectionSelection"></div>
           </form>
-          <div id="dataSizeGraphPlaceholder" style="height:280px;"></div>
+          <div id="dataSizeGraphPlaceholder" style="height:300px;"></div>
         </div>
         <div id="collectionPieBoxContainer" class="collectionPieBox">
           <h3>Data distributed on collections</h3>
