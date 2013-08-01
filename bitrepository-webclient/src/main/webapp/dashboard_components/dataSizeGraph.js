@@ -32,7 +32,7 @@
     }
 
     function useRange(element, plot, dataObj, options) {
-      $(this).bind("plotselected", function (event,ranges) {
+      $(element).bind("plotselected", function (event,ranges) {
         // do the zooming
         plot = $.plot($(element), 
                       dataObj,
@@ -46,6 +46,17 @@
                               )
                      );
         });
+    }
+
+    function handleHover(element, plot, dataObj, options, placeholder) {
+      $(element).bind("plothover", function (event, pos, item) {
+        $('<div class="button" style="left:600px;top:20px">zoom out</div>').appendTo(placeholder).click(function (e) {
+            e.preventDefault();
+            plot.setupGrid();
+            plot.draw();
+            plot = $.plot(placeholder, dataObj, options);
+        });
+      });
     }
 
     this.renderGraph = function() {
@@ -81,12 +92,7 @@
       var plot = $.plot(placeholder, dataObj, options);
       useRange(placeholder, plot, dataObj, options);
 
-      $('<div class="button" style="left:600px;top:20px">zoom out</div>').appendTo(placeholder).click(function (e) {
-          e.preventDefault();
-          plot.setupGrid();
-          plot.draw();
-          plot = $.plot(placeholder, dataObj, options);
-      });
+
 
       // use graph type to render the type of graph, i.e. growth or rate of growth    
     }
