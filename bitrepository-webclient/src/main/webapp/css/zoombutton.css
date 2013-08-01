@@ -1,0 +1,17 @@
+
+    #dataSizeGraphPlaceholder .button {
+        position: absolute;
+        cursor: pointer;
+    }
+    #dataSizeGraphPlaceholder div.button {
+        font-size: smaller;
+        color: #999;
+        background-color: #eee;
+        padding: 2px;
+    }
+    #dataSizeGraphPlaceholder .button:hover {
+        border-top-color: #28597a;
+        background: #28597a;
+        color: #ccc;
+    }
+

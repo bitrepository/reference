@@ -78,8 +78,15 @@
         zoom: { interactive: true}
       };
     
-    var plot = $.plot(placeholder, dataObj, options);
-    useRange(placeholder, plot, dataObj, options);
+      var plot = $.plot(placeholder, dataObj, options);
+      useRange(placeholder, plot, dataObj, options);
+
+      $('<div class="button" style="left:600px;top:20px">zoom out</div>').appendTo(placeholder).click(function (e) {
+          e.preventDefault();
+          plot.setupGrid();
+          plot.draw();
+          plot = $.plot(placeholder, dataObj, options);
+      });
 
       // use graph type to render the type of graph, i.e. growth or rate of growth    
     }

@@ -28,6 +28,7 @@
     <title>Bitrepository dashboard</title>
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="css/dashboard.css" rel="stylesheet" media="screen">
+    <link href="css/zoombutton.css" rel="stylesheet" media="screen">
   </head>
   <body>
     <div id="pageMenu"></div>
