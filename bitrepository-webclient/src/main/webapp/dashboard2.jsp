@@ -114,12 +114,12 @@
         setIntegrityServiceUrl("<%= su.getIntegrityServiceUrl() %>");
         $.getJSON("repo/reposervice/getCollectionIDs/", {}, function(collections) {
           colorMapper = new ColorMapper(collections);
-          nameMapper = new CollectionNameMapper(collections);
+          nameMapper = new CollectionNameMapper(collections, function(collection, mapper) {updateCheckboxLabel(collection, mapper)});
           setNameMapper(nameMapper);
           loadCollections(collections, "#collectionStatusBody");
           var dataUrl = "<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getDataSizeHistory/?collectionID=";
           dsGraph = new dataSizeGraph(collections, colorMapper, nameMapper, dataUrl, "#graphType", "#dataSizeGraphPlaceholder");
-          makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph, colorMapper);
+          makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph, colorMapper, nameMapper);
           drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
           drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
           $("#graphType").change(function(event) {event.preventDefault(); dsGraph.graphTypeChanged();});

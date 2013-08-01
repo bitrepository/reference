@@ -23,6 +23,12 @@
 
   function makeCollectionSelectionCheckbox(collectionID, elementID, color, name) {
     var html = "<div class=\"collectionCheckBoxes\"><input type=\"checkbox\" id=\"" + elementID + "\" value=\"" + collectionID + "\" checked>";
-    html += "<div class=\"checkboxLegendWrap\"><div class=\"checkboxLegend\" style=\"background-color: " + color + "\"></div></div>" + name + "</div>";
+    html += "<div class=\"checkboxLegendWrap\"><div class=\"checkboxLegend\" style=\"background-color: " + color + "\"></div></div>";
+    html += "<div id=\"" + elementID + "-name\">" + name + "</div></div>";
     return html;
+  }
+
+  function updateCheckboxLabel(collectionID, nameMapper) {
+    var elementID = "#" + collectionID + "-selector-name";
+    $(elementID).html(nameMapper.getName(collectionID));
   }
