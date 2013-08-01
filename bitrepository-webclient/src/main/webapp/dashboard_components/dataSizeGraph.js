@@ -8,6 +8,7 @@
     var placeholder = graphPlaceholder;
     var graphDataPool = new Object();
     var url = dataUrl;
+    var yAxisText = "y-axis text";
 
     for(i=0; i<collections.length; i++) {
       collectionIDs[collections[i]] = {state : "active" };
@@ -23,10 +24,40 @@
 
     this.graphTypeChanged = function() {
       //handle change in graph type
-      alert("Graph type changed to: " + graphType.val())
+      alert("Graph type changed to: " + $(graphType).val())
     }
 
     this.renderGraph = function(graphType) {
+      var dataObj = new Array();
+      for(i in collectionIDs) {
+        if(collectionIDs[i].state == "active") {
+          var collectionID = collectionIDs[i];
+          var dataArray = graphDataPool[collectionID].slice();
+          var collectionObj = {label: collectionID, data: dataArray, color: colorMapper.getCollectionColor(collectionID)};
+        }
+      }
+      
+      var options = {
+        hoverable: true,
+        legend:{        
+            backgroundOpacity: 0.5,
+            noColumns: 5,  
+            position: "nw"
+        },
+        grid:  {
+            hoverable: true,
+            borderColor: "#cccccc"
+        },
+        xaxis: {  mode: "time",  localTimezone: true , zoomRange: [0.1, 10] , timeformat: "%y/%0m/%0d %0H:%0M"},
+        yaxis: {  axisLabel: yAxisText},
+        selection:{  mode: "xy" } ,
+        points: { show: true ,  radius: 1} ,
+        lines: { show: true},
+        zoom: { interactive: true}
+      };
+    
+    var plot = $.plot(placeholder, dataObj, options);
+
       // use graph type to render the type of graph, i.e. growth or rate of growth    
     }
 
