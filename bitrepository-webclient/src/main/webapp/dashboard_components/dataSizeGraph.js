@@ -1,10 +1,11 @@
 
 
-  function dataSizeGraph(collections, colorMapper, nameMapper, dataUrl, graphTypeSelector, graphPlaceholder) {
+  function dataSizeGraph(collections, colorMapper, nameMapper, fileSizeUtils, dataUrl, graphTypeSelector, graphPlaceholder) {
  
     var collectionIDs = new Object();
     var colerMap = colorMapper;
     var nameMap = nameMapper;
+    var sizeUtils = fileSizeUtils;
     var graphType = graphTypeSelector;
     var placeholder = graphPlaceholder;
     var graphDataPool = new Object();
@@ -48,9 +49,9 @@
         });
     }
 
-    function handleHover(element, plot, dataObj, options, placeholder) {
+    function handleHover(element, plot, dataObj, options) {
       $(element).bind("plothover", function (event, pos, item) {
-        $('<div class="button" style="left:600px;top:20px">zoom out</div>').appendTo(placeholder).click(function (e) {
+        $('<div class="button" style="left:600px;top:20px">zoom out</div>').appendTo(element).click(function (e) {
             e.preventDefault();
             plot.setupGrid();
             plot.draw();
@@ -59,17 +60,44 @@
       });
     }
 
+    function scaleAndCopyData(data, factor) {
+      scaledData = new Array();
+      for(i=0; i<data.length; i++) {
+        scaledData[i] = [data[i][0], data[i][1]/factor];
+      }
+      return scaledData;
+    }
+
     this.renderGraph = function() {
       var dataObj = new Array();
+      var dMax = 0;
       for(i in collectionIDs) {
         var collectionID = i;
         if(collectionIDs[i].state == "active" && graphDataPool[collectionID] != null) {
-          var dataArray = graphDataPool[collectionID].slice();
+          if(graphDataPool[collectionID].dataMax > dMax) {
+            dMax = graphDataPool[collectionID].dataMax;
+          }
+        }
+      }
+  
+      var unitSuffix = sizeUtils.toHumanUnit(dMax);
+      var byteUnit = sizeUtils.getByteSize(unitSuffix);
+      
+      for(i in collectionIDs) {
+        var collectionID = i;
+        if(collectionIDs[i].state == "active" && graphDataPool[collectionID] != null) {
+          var dataArray = scaleAndCopyData(graphDataPool[collectionID].data, byteUnit);
           var collectionObj = {label: nameMap.getName(collectionID), data: dataArray, color: colorMapper.getCollectionColor(collectionID)};
           dataObj.push(collectionObj);
         }
       }
-      
+
+      if($(graphType).val() == "growth") {
+        yAxisText = unitSuffix;
+      } else {
+        yAxisText = unitSuffix + "per day";
+      }
+
       var options = {
         hoverable: true,
         legend:{        
@@ -91,6 +119,7 @@
     
       var plot = $.plot(placeholder, dataObj, options);
       useRange(placeholder, plot, dataObj, options);
+      handleHover(placeholder, plot, dataObj, options);
 
 
 
@@ -104,12 +133,16 @@
     function updateCollectionData(collection) {
       var c = collection;
       $.getJSON(url + c, {}, function(data) {
-          collectionData = new Array();
+          var collectionData = new Array();
+          var dMax = 0;
           for(i=0; i<data.length; i++) {
-            a = new Array(data[i].dateMillis, data[i].dataSize);
+            var a = new Array(data[i].dateMillis, data[i].dataSize);
+            if(data[i].dataSize > dMax) {
+              dMax = data[i].dataSize;
+            }
             collectionData[i] = a;
           }
-          graphDataPool[c] = collectionData;
+          graphDataPool[c] = {data: collectionData, dataMax: dMax};
         }).done(function() {mySelf.renderGraph()});
     }
 

@@ -97,6 +97,7 @@
     <script src="flot/jquery.flot.resize.js"></script>
 
     <script type="text/javascript" src="menu.js"></script>
+    <script type="text/javascript" src="FileSizeUtils.js"></script>
     <script type="text/javascript" src="dashboard_components/ColorMapper.js"></script>
     <script type="text/javascript" src="dashboard_components/CollectionNameMapper.js"></script>
     <script type="text/javascript" src="dashboard_components/collectionStatus.js"></script>
@@ -119,7 +120,7 @@
           setNameMapper(nameMapper);
           loadCollections(collections, "#collectionStatusBody");
           var dataUrl = "<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getDataSizeHistory/?collectionID=";
-          dsGraph = new dataSizeGraph(collections, colorMapper, nameMapper, dataUrl, "#graphType", "#dataSizeGraphPlaceholder");
+          dsGraph = new dataSizeGraph(collections, colorMapper, nameMapper, new FileSizeUtils(), dataUrl, "#graphType", "#dataSizeGraphPlaceholder");
           makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph, colorMapper, nameMapper);
           drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
           drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
