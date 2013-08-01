@@ -10,12 +10,12 @@
     var petaSize = teraSize * unitSize;
     var exaSize = petaSize * unitSize;
 
-    var bytePostFix = "B";
-    var kiloPostFix = "KB";
-    var megaPostFix = "MB";
-    var gigaPostFix = "GB";
-    var teraPostFix = "TB";
-    var petaPostFix = "PB";
+    var bytePostfix = "B";
+    var kiloPostfix = "KB";
+    var megaPostfix = "MB";
+    var gigaPostfix = "GB";
+    var teraPostfix = "TB";
+    var petaPostfix = "PB";
     var exaPostfix = "EB";
 
 
@@ -43,19 +43,19 @@
     this.getByteSize = function(unit) {
       if (exaPostfix.equals(unit)) {
         return exaSize;
-      } else if (petaPostfix.equals(unit)) {
+      } else if (petaPostfix == unit) {
         return petaSize;
-      } else if (teraPostfix.equals(unit)) {
+      } else if (teraPostfix == unit) {
         return teraSize;
-      } else if (petaPostfix.equals(unit)) {
+      } else if (petaPostfix == unit) {
         return petaSize;
-      } else if (gigaPostfix.equals(unit)) {
+      } else if (gigaPostfix == unit) {
         return gigaSize;
-      } else if (megaPostfix.equals(unit)) {
+      } else if (megaPostfix == unit) {
         return megaSize;
-      } else if (kiloPostfix.equals(unit)) {
+      } else if (kiloPostfix == unit) {
         return kiloSize;
-      } else if (bytePostfix.equals(unit)) {
+      } else if (bytePostfix == unit) {
         return byteSize;
       } else {
         return byteSize;
