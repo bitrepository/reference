@@ -115,7 +115,8 @@
           update_page = setInterval(function() {
             refreshContent(); 
           }, 2500);
-          dsGraph = new dataSizeGraph(collections, colorMapper, "#graphType", "#dataSizeGraphCollectionSelection", "#dataSizeGraphPlaceholder");
+          var dataUrl = "<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getDataSizeHistory/?collectionID=";
+          dsGraph = new dataSizeGraph(collections, colorMapper, dataUrl, "#graphType", "#dataSizeGraphPlaceholder");
           makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph, colorMapper);
           drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
           drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
