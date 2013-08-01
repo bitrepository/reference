@@ -61,9 +61,8 @@
               <option value="delta">Rate of growth</option>
             </select>
             <div id="dataSizeGraphCollectionSelection"></div>
-<!--          <div id="dataSizeGraphCollectionSelection" class="collectionCheckBoxes"></div>-->
           </form>
-          <div id="dataSizeGraphPlaceholder"></div>
+          <div id="dataSizeGraphPlaceholder" style="height:280px;"></div>
         </div>
         <div id="collectionPieBoxContainer" class="collectionPieBox">
           <h3>Data distributed on collections</h3>
@@ -114,15 +113,16 @@
         $.getJSON("repo/reposervice/getCollectionIDs/", {}, function(collections) {
           colorMapper = new ColorMapper(collections);
           loadCollections(collections, "#collectionStatusBody");
-          update_page = setInterval(function() {
-            refreshContent(); 
-          }, 2500);
           var dataUrl = "<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getDataSizeHistory/?collectionID=";
           dsGraph = new dataSizeGraph(collections, colorMapper, dataUrl, "#graphType", "#dataSizeGraphPlaceholder");
           makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph, colorMapper);
           drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
           drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
           $("#graphType").change(function(event) {event.preventDefault(); dsGraph.graphTypeChanged();});
+          dsGraph.updateData();
+          update_page = setInterval(function() {
+            refreshContent(); 
+          }, 2500);
         });
       }
 

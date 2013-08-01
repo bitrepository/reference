@@ -27,13 +27,14 @@
       alert("Graph type changed to: " + $(graphType).val())
     }
 
-    this.renderGraph = function(graphType) {
+    this.renderGraph = function() {
       var dataObj = new Array();
       for(i in collectionIDs) {
         if(collectionIDs[i].state == "active") {
           var collectionID = collectionIDs[i];
           var dataArray = graphDataPool[collectionID].slice();
           var collectionObj = {label: collectionID, data: dataArray, color: colorMapper.getCollectionColor(collectionID)};
+          dataObj.push(collectionObj);
         }
       }
       
@@ -74,7 +75,7 @@
             collectionData[i] = a;
           }
           graphDataPool[c] = collectionData;
-        });
+        }).done(function() {renderGraph()});
     }
 
     this.updateData = function() {
