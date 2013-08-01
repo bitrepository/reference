@@ -55,12 +55,14 @@
           </table>
         </div>
         <div id="dataSizeGraphContainer" class="dataSizeGraph">
-          <select id="graphType">
-            <option value="growth" selected>Growth</option>
-            <option value="delta">Rate of growth</option>
-          </select>
-          <div id="dataSizeGraphCollectionSelection"></div>
+          <form class="dashboardForm">
+            <select id="graphType">
+              <option value="growth" selected>Growth</option>
+              <option value="delta">Rate of growth</option>
+            </select>
+            <div id="dataSizeGraphCollectionSelection"></div>
 <!--          <div id="dataSizeGraphCollectionSelection" class="collectionCheckBoxes"></div>-->
+          </form>
           <div id="dataSizeGraphPlaceholder"></div>
         </div>
         <div id="collectionPieBoxContainer" class="collectionPieBox">
@@ -120,6 +122,7 @@
           makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph, colorMapper);
           drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
           drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
+          $("#graphType").change(function(event) {event.preventDefault(); dsGraph.graphTypeChanged();});
         });
       }
 

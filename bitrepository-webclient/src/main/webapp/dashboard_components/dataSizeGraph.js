@@ -21,6 +21,11 @@
       collectionIDs[collectionID].state = "disabled";
     }
 
+    this.graphTypeChanged = function() {
+      //handle change in graph type
+      alert("Graph type changed to: " + graphType.val())
+    }
+
     this.renderGraph = function(graphType) {
       // use graph type to render the type of graph, i.e. growth or rate of growth    
     }
@@ -29,17 +34,22 @@
       return graphDataPool;
     }
 
-    this.updateData = function() {
-      for(i in Object.keys(collectionIDs)) {
-        var collection = collectionIDs[i];
-        $.getJSON(url + collection, {}, function(data) {
-          data = new Array();
+    function updateCollectionData(collection) {
+      var c = collection;
+      $.getJSON(url + c, {}, function(data) {
+          collectionData = new Array();
           for(i=0; i<data.length; i++) {
             a = new Array(data[i].dateMillis, data[i].dataSize);
-            data[i] = a;
+            collectionData[i] = a;
           }
-          graphDataPool[collection] = data;
+          graphDataPool[c] = collectionData;
         });
+    }
+
+    this.updateData = function() {
+      var keys = Object.keys(collectionIDs);
+      for(i in keys) {
+        updateCollectionData(keys[i]);
       }
     }
 
