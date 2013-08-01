@@ -1,9 +1,10 @@
 
 
-  function dataSizeGraph(collections, colorMapper, dataUrl, graphTypeSelector, graphPlaceholder) {
+  function dataSizeGraph(collections, colorMapper, nameMapper, dataUrl, graphTypeSelector, graphPlaceholder) {
  
     var collectionIDs = new Object();
     var colerMap = colorMapper;
+    var nameMap = nameMapper;
     var graphType = graphTypeSelector;
     var placeholder = graphPlaceholder;
     var graphDataPool = new Object();
@@ -36,7 +37,7 @@
         var collectionID = i;
         if(collectionIDs[i].state == "active" && graphDataPool[collectionID] != null) {
           var dataArray = graphDataPool[collectionID].slice();
-          var collectionObj = {label: collectionID, data: dataArray, color: colorMapper.getCollectionColor(collectionID)};
+          var collectionObj = {label: nameMap.getName(collectionID), data: dataArray, color: colorMapper.getCollectionColor(collectionID)};
           dataObj.push(collectionObj);
         }
       }

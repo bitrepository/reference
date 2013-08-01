@@ -3,9 +3,14 @@
   var collections = new Object();
   var readyForRefresh = false;
   var integrityServiceUrl;
+  var myNameMapper;
 
   function setIntegrityServiceUrl(url) {
     integrityServiceUrl = url;
+  }
+
+  function setNameMapper(nameMapper) {
+    myNameMapper = nameMapper;
   }
 
   function loadCollections(collectionIDs, tableBody) {
@@ -34,6 +39,7 @@
     var c = collection;
     $.get(url, {}, function(j) {
       collections[c].collectionName = j;
+      myNameMapper.setName(c, j);
     }, "html").done(function(){updateCollectionRow(collections[c])});
   }
 

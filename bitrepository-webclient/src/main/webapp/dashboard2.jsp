@@ -96,7 +96,8 @@
     <script src="flot/jquery.flot.resize.js"></script>
 
     <script type="text/javascript" src="menu.js"></script>
-    <script type="text/javascript" src="dashboard_components/colorMapper.js"></script>
+    <script type="text/javascript" src="dashboard_components/ColorMapper.js"></script>
+    <script type="text/javascript" src="dashboard_components/CollectionNameMapper.js"></script>
     <script type="text/javascript" src="dashboard_components/collectionStatus.js"></script>
     <script type="text/javascript" src="dashboard_components/legsSizePie.js"></script>
     <script type="text/javascript" src="dashboard_components/collectionSizePie.js"></script>
@@ -106,15 +107,18 @@
     <script>
       var update_page;
       var colorMapper;
+      var nameMapper;
       var dsGraph;
 
       function init() {
         setIntegrityServiceUrl("<%= su.getIntegrityServiceUrl() %>");
         $.getJSON("repo/reposervice/getCollectionIDs/", {}, function(collections) {
           colorMapper = new ColorMapper(collections);
+          nameMapper = new CollectionNameMapper(collections);
+          setNameMapper(nameMapper);
           loadCollections(collections, "#collectionStatusBody");
           var dataUrl = "<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getDataSizeHistory/?collectionID=";
-          dsGraph = new dataSizeGraph(collections, colorMapper, dataUrl, "#graphType", "#dataSizeGraphPlaceholder");
+          dsGraph = new dataSizeGraph(collections, colorMapper, nameMapper, dataUrl, "#graphType", "#dataSizeGraphPlaceholder");
           makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph, colorMapper);
           drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
           drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
