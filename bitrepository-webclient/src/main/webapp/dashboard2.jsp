@@ -34,7 +34,7 @@
     <div class="container-fluid">
       <div class="row-fluid">
         <div class="">
-          <h2>Overview of your bitpresevation solution</h2>
+          <h2>Overview of your bitpreservation solution</h2>
         </div>
         <div class="collectionStatus" id="statusDiv">
           <table class="table table-hover table-condensed">
@@ -59,7 +59,8 @@
             <option value="growth" selected>Growth</option>
             <option value="delta">Rate of growth</option>
           </select>
-          <div id="dataSizeGraphCollectionSelection" class="collectionCheckBoxes"></div>
+          <div id="dataSizeGraphCollectionSelection"></div>
+<!--          <div id="dataSizeGraphCollectionSelection" class="collectionCheckBoxes"></div>-->
           <div id="dataSizeGraphPlaceholder"></div>
         </div>
         <div id="collectionPieBoxContainer" class="collectionPieBox">
@@ -115,7 +116,7 @@
             refreshContent(); 
           }, 2500);
           dsGraph = new dataSizeGraph(collections, colorMapper, "#graphType", "#dataSizeGraphCollectionSelection", "#dataSizeGraphPlaceholder");
-          makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph);
+          makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph, colorMapper);
           drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
           drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
         });

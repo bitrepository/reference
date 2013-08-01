@@ -1,22 +1,29 @@
 
-  function makeCollectionSelectionCheckboxes(collectionSelector, dsGraph) {
+  function makeCollectionSelectionCheckboxes(collectionSelector, dsGraph, colorMapper) {
     var graph = dsGraph;
     $(collectionSelector).empty();
-    for(c in graph.getCollectionIDs()) {
-      var elementID = collectionID + "-selector";
-      makeCollectionSelectionCheckbox(c, elementID);
-      $(collectionSelector).append(html);
+    var collections = graph.getCollectionIDs();
+    for(i in collections) {
+      var elementID = collections[i] + "-selector";
+      var color = colorMapper.getCollectionColor(collections[i]);
+      checkbox = makeCollectionSelectionCheckbox(collections[i], elementID, color);
+      $(collectionSelector).append(checkbox);
       $("#" + elementID).change(function(event) {event.preventDefault(); collectionChanged(event.target.value, event.target.checked, graph);});
     }
   }
 
   function collectionChanged(collectionID, selected, graph) {
-    alert("collection: " + collectionID + "changed.");
+    if(selected) {
+      graph.enableCollection(collectionID);
+      alert("enabled collection: " + collectionID);      
+    } else {
+      graph.disableCollection(collectionID);
+      alert("disabled collection: " + collectionID);      
+    }
   }
 
-  function makeCollectionSelectionCheckbox(collectionID, elementID) {
-    var html = "<label class='checkbox inline'>";
-    html+= "<input type='checkbox' id='"+ elementID + "' value='" + collectionID + "'> " + collectionID;
-    html += "</label>";
+  function makeCollectionSelectionCheckbox(collectionID, elementID, color) {
+    var html = "<div class=\"collectionCheckBoxes\"><input type=\"checkbox\" id=\"" + elementID + "\" value=\"" + collectionID + "\" checked>";
+    html += "<div class=\"checkboxLegendWrap\"><div class=\"checkboxLegend\" style=\"background-color: " + color + "\"></div></div>" + collectionID + "</div>";
     return html;
   }
