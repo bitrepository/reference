@@ -9,6 +9,7 @@
     var graphDataPool = new Object();
     var url = dataUrl;
     var yAxisText = "y-axis text";
+    var mySelf = this;
 
     for(i=0; i<collections.length; i++) {
       collectionIDs[collections[i]] = {state : "active" };
@@ -16,22 +17,24 @@
 
     this.enableCollection = function(collectionID) {
       collectionIDs[collectionID].state = "active";
+      this.renderGraph();
     }
 
     this.disableCollection = function(collectionID) {
       collectionIDs[collectionID].state = "disabled";
+      this.renderGraph();
     }
 
     this.graphTypeChanged = function() {
       //handle change in graph type
-      alert("Graph type changed to: " + $(graphType).val())
+      alert("Graph type changed to: " + $(graphType).val());
     }
 
     this.renderGraph = function() {
       var dataObj = new Array();
       for(i in collectionIDs) {
-        if(collectionIDs[i].state == "active") {
-          var collectionID = collectionIDs[i];
+        var collectionID = i;
+        if(collectionIDs[i].state == "active" && graphDataPool[collectionID] != null) {
           var dataArray = graphDataPool[collectionID].slice();
           var collectionObj = {label: collectionID, data: dataArray, color: colorMapper.getCollectionColor(collectionID)};
           dataObj.push(collectionObj);
@@ -75,7 +78,7 @@
             collectionData[i] = a;
           }
           graphDataPool[c] = collectionData;
-        }).done(function() {renderGraph()});
+        }).done(function() {mySelf.renderGraph()});
     }
 
     this.updateData = function() {

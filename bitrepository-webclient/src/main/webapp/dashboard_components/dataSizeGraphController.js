@@ -15,10 +15,8 @@
   function collectionChanged(collectionID, selected, graph) {
     if(selected) {
       graph.enableCollection(collectionID);
-      alert("enabled collection: " + collectionID);      
     } else {
       graph.disableCollection(collectionID);
-      alert("disabled collection: " + collectionID);      
     }
   }
 
