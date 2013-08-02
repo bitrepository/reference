@@ -12,6 +12,7 @@
     var url = dataUrl;
     var yAxisText = "y-axis text";
     var mySelf = this;
+    var msPerDay = 86400 * 1000;
 
     for(i=0; i<collections.length; i++) {
       collectionIDs[collections[i]] = {state : "active" };
@@ -104,7 +105,7 @@
       if($(graphType).val() == "growth") {
         yAxisText = unitSuffix;
       } else {
-        yAxisText = unitSuffix + "per day";
+        yAxisText = unitSuffix + " per day";
       }
 
       var options = {
