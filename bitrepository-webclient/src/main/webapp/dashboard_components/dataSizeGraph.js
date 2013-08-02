@@ -28,8 +28,7 @@
     }
 
     this.graphTypeChanged = function() {
-      //handle change in graph type
-      alert("Graph type changed to: " + $(graphType).val());
+      this.renderGraph();
     }
 
     function useRange(element, plot, dataObj, options) {
@@ -71,11 +70,21 @@
     this.renderGraph = function() {
       var dataObj = new Array();
       var dMax = 0;
+      var dataField;
+      var dMaxField;
+      if($(graphType).val() == "growth") {
+        dataField = "data";
+        dMaxField = "dataMax";
+      } else {
+        dataField = "deltaData";
+        dMaxField = "deltaMax";       
+      }
+
       for(i in collectionIDs) {
         var collectionID = i;
         if(collectionIDs[i].state == "active" && graphDataPool[collectionID] != null) {
-          if(graphDataPool[collectionID].dataMax > dMax) {
-            dMax = graphDataPool[collectionID].dataMax;
+          if(graphDataPool[collectionID][dMaxField] > dMax) {
+            dMax = graphDataPool[collectionID][dMaxField];
           }
         }
       }
@@ -86,7 +95,7 @@
       for(i in collectionIDs) {
         var collectionID = i;
         if(collectionIDs[i].state == "active" && graphDataPool[collectionID] != null) {
-          var dataArray = scaleAndCopyData(graphDataPool[collectionID].data, byteUnit);
+          var dataArray = scaleAndCopyData(graphDataPool[collectionID][dataField], byteUnit);
           var collectionObj = {label: nameMap.getName(collectionID), data: dataArray, color: colorMapper.getCollectionColor(collectionID)};
           dataObj.push(collectionObj);
         }
@@ -121,9 +130,6 @@
       useRange(placeholder, plot, dataObj, options);
       handleHover(placeholder, plot, dataObj, options);
 
-
-
-      // use graph type to render the type of graph, i.e. growth or rate of growth    
     }
 
     this.getGraphData = function() {
@@ -134,15 +140,29 @@
       var c = collection;
       $.getJSON(url + c, {}, function(data) {
           var collectionData = new Array();
+          var deltaCollectionData = new Array();
           var dMax = 0;
+          var deltaDataMax = 0;
           for(i=0; i<data.length; i++) {
             var a = new Array(data[i].dateMillis, data[i].dataSize);
             if(data[i].dataSize > dMax) {
               dMax = data[i].dataSize;
             }
             collectionData[i] = a;
+
+            if(i == 0) {
+              deltaCollectionData.push([data[i].dateMillis, 0]);
+            } else {
+              var deltaBytes = data[i].dataSize - data[i-1].dataSize;
+              var deltaMs = data[i].dateMillis - data[i-1].dateMillis;
+              var growthPerDay = (msPerDay * deltaBytes) / deltaMs;
+              if(growthPerDay > deltaDataMax) {
+                deltaDataMax = growthPerDay;
+              }
+              deltaCollectionData.push([data[i].dateMillis, growthPerDay]);
+            }
           }
-          graphDataPool[c] = {data: collectionData, dataMax: dMax};
+          graphDataPool[c] = {data: collectionData, dataMax: dMax, deltaData: deltaCollectionData, deltaMax: deltaDataMax};
         }).done(function() {mySelf.renderGraph()});
     }
 
