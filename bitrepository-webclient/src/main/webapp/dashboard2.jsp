@@ -98,6 +98,7 @@
 
     <script type="text/javascript" src="menu.js"></script>
     <script type="text/javascript" src="FileSizeUtils.js"></script>
+    <script type="text/javascript" src="momentjs/moment.min.js"></script>
     <script type="text/javascript" src="dashboard_components/ColorMapper.js"></script>
     <script type="text/javascript" src="dashboard_components/CollectionNameMapper.js"></script>
     <script type="text/javascript" src="dashboard_components/collectionStatus.js"></script>

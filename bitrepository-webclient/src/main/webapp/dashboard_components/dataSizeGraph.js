@@ -72,11 +72,13 @@
             $("#tooltip").remove();
             var x = item.datapoint[0]; //-<%=UTC_FIX%>;
             var y = item.datapoint[1];
-            var d = new Date(x);
-            var formated_date = "my formatted date";//dateFormat(d);
+//            var d = new Date(x);
+            var d = new moment.utc(x);
+            //var formated_date = "my formatted date";//dateFormat(d);
+            var formated_date = d.format("YYYY/MM/DD HH:mm");
             showTooltip(item.pageX, 
                         item.pageY,
-                        formated_date  + "<br/>  <strong>" + y +  "<%=y_axis_text%></strong><br/>" + item.series.label);
+                        formated_date  + "<br/>  <strong>" + y + yAxisText +  "</strong>");
           }
         } else {
           $("#tooltip").remove();
