@@ -130,11 +130,13 @@
           dsGraph.updateData();
           update_page = setInterval(function() {
             refreshContent(); 
-          }, 2500);
-          // Update data size history graph every 10 minutes
+          }, 10000);
+          // Update graphs every hour
           update_data_size_graph = setInterval(function() {
             dsGraph.updateData();
-          }, 600000);
+            drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
+            drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
+          }, 3600000);
         });
       }
 
