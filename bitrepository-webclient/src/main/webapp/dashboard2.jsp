@@ -109,6 +109,7 @@
 
     <script>
       var update_page;
+      var update_data_size_graph;
       var colorMapper;
       var nameMapper;
       var dsGraph;
@@ -130,6 +131,10 @@
           update_page = setInterval(function() {
             refreshContent(); 
           }, 2500);
+          // Update data size history graph every 10 minutes
+          update_data_size_graph = setInterval(function() {
+            dsGraph.updateData();
+          }, 600000);
         });
       }
 

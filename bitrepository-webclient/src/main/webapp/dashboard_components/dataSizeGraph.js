@@ -70,15 +70,14 @@
           if(previousPoint != item.dataIndex) {
             previousPoint = item.dataIndex;
             $("#tooltip").remove();
-            var x = item.datapoint[0]; //-<%=UTC_FIX%>;
+            var x = item.datapoint[0];
             var y = item.datapoint[1];
-//            var d = new Date(x);
             var d = new moment.utc(x);
-            //var formated_date = "my formatted date";//dateFormat(d);
-            var formated_date = d.format("YYYY/MM/DD HH:mm");
+            var localDate = d.local();
+            var formated_date = localDate.format("YYYY/MM/DD HH:mm");
             showTooltip(item.pageX, 
                         item.pageY,
-                        formated_date  + "<br/>  <strong>" + y + yAxisText +  "</strong>");
+                        formated_date  + "<br/><strong>" + y.toFixed(4) + " " + yAxisText +  "</strong>");
           }
         } else {
           $("#tooltip").remove();
