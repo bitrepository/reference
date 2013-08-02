@@ -32,6 +32,21 @@
       this.renderGraph();
     }
 
+    function showTooltip(x, y, contents) {
+        $('<div id="tooltip">' + contents + '</div>').css({
+            position: 'absolute',
+            display: 'none',
+            top: y + 5,
+            left: x + 20,
+            border: '2px solid #4572A7',
+            padding: '2px',
+            size: '10',
+            'border-radius': '6px 6px 6px 6px',
+            'background-color': '#fff',
+            opacity: 0.80
+        }).appendTo("body").fadeIn(200);
+    }
+
     function useRange(element, plot, dataObj, options) {
       $(element).bind("plotselected", function (event,ranges) {
         // do the zooming
@@ -51,6 +66,22 @@
 
     function handleHover(element, plot, dataObj, options) {
       $(element).bind("plothover", function (event, pos, item) {
+        if(item) {
+          if(previousPoint != item.dataIndex) {
+            previousPoint = item.dataIndex;
+            $("#tooltip").remove();
+            var x = item.datapoint[0]; //-<%=UTC_FIX%>;
+            var y = item.datapoint[1];
+            var d = new Date(x);
+            var formated_date = "my formatted date";//dateFormat(d);
+            showTooltip(item.pageX, 
+                        item.pageY,
+                        formated_date  + "<br/>  <strong>" + y +  "<%=y_axis_text%></strong><br/>" + item.series.label);
+          }
+        } else {
+          $("#tooltip").remove();
+          previousPoint = null;
+        }
         $('<div class="button" style="left:600px;top:20px">zoom out</div>').appendTo(element).click(function (e) {
             e.preventDefault();
             plot.setupGrid();
