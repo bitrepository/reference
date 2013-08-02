@@ -97,7 +97,7 @@
         var collectionID = i;
         if(collectionIDs[i].state == "active" && graphDataPool[collectionID] != null) {
           var dataArray = scaleAndCopyData(graphDataPool[collectionID][dataField], byteUnit);
-          var collectionObj = {label: nameMap.getName(collectionID), data: dataArray, color: colorMapper.getCollectionColor(collectionID)};
+          var collectionObj = {data: dataArray, color: colorMapper.getCollectionColor(collectionID)};
           dataObj.push(collectionObj);
         }
       }
@@ -110,11 +110,6 @@
 
       var options = {
         hoverable: true,
-        legend:{        
-            backgroundOpacity: 0.5,
-            noColumns: 5,  
-            position: "nw"
-        },
         grid:  {
             hoverable: true,
             borderColor: "#cccccc"
