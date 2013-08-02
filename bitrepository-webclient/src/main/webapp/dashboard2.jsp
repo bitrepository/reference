@@ -57,10 +57,12 @@
         </div>
         <div id="dataSizeGraphContainer" class="dataSizeGraph">
           <form class="dashboardForm">
-            <select id="graphType">
-              <option value="growth" selected>Growth</option>
-              <option value="delta">Rate of growth</option>
-            </select>
+            <div style="float:left;"> 
+              <select id="graphType">
+                <option value="growth" selected>Growth</option>
+                <option value="delta">Rate of growth</option>
+              </select>
+            </div>
             <div id="dataSizeGraphCollectionSelection"></div>
           </form>
           <div id="dataSizeGraphPlaceholder" style="height:300px;"></div>
@@ -108,7 +110,6 @@
     <script type="text/javascript" src="dashboard_components/dataSizeGraphController.js"></script>
 
     <script>
-      var update_page;
       var update_data_size_graph;
       var colorMapper;
       var nameMapper;
@@ -120,7 +121,7 @@
           colorMapper = new ColorMapper(collections);
           nameMapper = new CollectionNameMapper(collections, function(collection, mapper) {updateCheckboxLabel(collection, mapper)});
           setNameMapper(nameMapper);
-          loadCollections(collections, "#collectionStatusBody");
+          initiateCollectionStatus(collections, "#collectionStatusBody", 10000);
           var dataUrl = "<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getDataSizeHistory/?collectionID=";
           dsGraph = new dataSizeGraph(collections, colorMapper, nameMapper, new FileSizeUtils(), dataUrl, "#graphType", "#dataSizeGraphPlaceholder");
           makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph, colorMapper, nameMapper);
@@ -128,9 +129,6 @@
           drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
           $("#graphType").change(function(event) {event.preventDefault(); dsGraph.graphTypeChanged();});
           dsGraph.updateData();
-          update_page = setInterval(function() {
-            refreshContent(); 
-          }, 10000);
           // Update graphs every hour
           update_data_size_graph = setInterval(function() {
             dsGraph.updateData();

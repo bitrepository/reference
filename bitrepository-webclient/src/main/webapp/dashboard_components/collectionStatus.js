@@ -4,6 +4,8 @@
   var readyForRefresh = false;
   var integrityServiceUrl;
   var myNameMapper;
+  var update_page;
+  var updateLock;
 
   function setIntegrityServiceUrl(url) {
     integrityServiceUrl = url;
@@ -13,7 +15,7 @@
     myNameMapper = nameMapper;
   }
 
-  function loadCollections(collectionIDs, tableBody) {
+  function initiateCollectionStatus(collectionIDs, tableBody, updateInterval) {
     for(var i = 0; i < collectionIDs.length; i++) {
         collections[collectionIDs[i]] = {collectionID: collectionIDs[i],
                                          collectionName: collectionIDs[i],
@@ -29,8 +31,7 @@
       }
       readyForRefresh = true;
       loadCollectionNames();
-      refreshContent();
-    
+      initStatusUpdate(updateInterval);
   }
 
 
@@ -52,12 +53,14 @@
   }
 
   function updateWorkflowStatus(collection) {
-    url = integrityServiceUrl + "/integrity/IntegrityService/getWorkflowSetup/?collectionID=" + collection;
-    var c = collection;
-    $.getJSON(url, {}, function(j) {
-      collections[c].lastCheck = j[0].lastRun;
-      collections[c].nextCheck = j[0].nextRun;
-    }).done(function(){updateCollectionRow(collections[c])});
+    if(scheduleUpdate(collection, "status")) {
+      url = integrityServiceUrl + "/integrity/IntegrityService/getWorkflowSetup/?collectionID=" + collection;
+      var c = collection;
+      $.getJSON(url, {}, function(j) {
+        collections[c].lastCheck = j[0].lastRun;
+        collections[c].nextCheck = j[0].nextRun;
+      }).done(function(){updateCollectionRow(collections[c]);}).always(function() {finishUpdate(c, "status");});
+    }
   }
 
   function updateWorkflowStatuses() {
@@ -69,13 +72,15 @@
   }
 
   function updateCollectionInfo(collection) {
-    url = integrityServiceUrl + "/integrity/IntegrityService/getCollectionInformation/?collectionID=" + collection;
-    var c = collection;
-    $.getJSON(url, {}, function(j) {
-      collections[c].numFiles = j.numberOfFiles;
-      collections[c].collectionSize = j.collectionSize;
-      collections[c].latestIngest = j.lastIngest;
-    }).done(function(){updateCollectionRow(collections[c])});
+    if(scheduleUpdate(collection, "info")) {
+      url = integrityServiceUrl + "/integrity/IntegrityService/getCollectionInformation/?collectionID=" + collection;
+      var c = collection;
+      $.getJSON(url, {}, function(j) {
+        collections[c].numFiles = j.numberOfFiles;
+        collections[c].collectionSize = j.collectionSize;
+        collections[c].latestIngest = j.lastIngest;
+      }).done(function(){updateCollectionRow(collections[c]);}).always(function() {finishUpdate(c, "info");});
+    }
   }
 
   function updateInfo() {
@@ -87,21 +92,23 @@
   }
 
   function updateCollectionStatistic(collection) { 
-    url = integrityServiceUrl + "/integrity/IntegrityService/getIntegrityStatus/?collectionID=" + collection;
-    var c = collection;
-    $.getJSON(url, {}, function(j) {
-      var checksumErrors = 0;
-      var missingFiles = 0;
-      var pillarCount = 0;
-      for(stat in j) {
-        pillarCount += 1;
-        checksumErrors += j[stat].checksumErrorCount;
-        missingFiles += j[stat].missingFilesCount;
-      }
-      collections[c].pillars = pillarCount;
-      collections[c].numChecksumErrors = checksumErrors;
-      collections[c].numMissingFiles = missingFiles;
-    }).done(function(){updateCollectionRow(collections[c])}); 
+    if(scheduleUpdate(collection, "stats")) {
+      url = integrityServiceUrl + "/integrity/IntegrityService/getIntegrityStatus/?collectionID=" + collection;
+      var c = collection;
+      $.getJSON(url, {}, function(j) {
+        var checksumErrors = 0;
+        var missingFiles = 0;
+        var pillarCount = 0;
+        for(stat in j) {
+          pillarCount += 1;
+          checksumErrors += j[stat].checksumErrorCount;
+          missingFiles += j[stat].missingFilesCount;
+        }
+        collections[c].pillars = pillarCount;
+        collections[c].numChecksumErrors = checksumErrors;
+        collections[c].numMissingFiles = missingFiles;
+      }).done(function(){updateCollectionRow(collections[c])}).always(function() {finishUpdate(c, "stats");}); 
+    }
   }
 
   function updateStatistics() {
@@ -156,4 +163,31 @@
       updateInfo();
       updateStatistics();
   }
+
+  function scheduleUpdate(collection, type) {
+    if(updateLock[collection][type]) {
+      updateLock[collection][type] = false;
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
+  function finishUpdate(collection, type) {
+    return updateLock[collection][type] = true;
+  }
+
+  function initStatusUpdate(updateInterval) {
+    // Init update locks
+    updateLock = new Array();
+    for(c in collections) {
+      updateLock[collections[c]]["status"] = true;
+      updateLock[collections[c]]["info"] = true;
+      updateLock[collections[c]]["stats"] = true;
+    }
+    refreshContent();
+    update_page = setInterval(function() { refreshContent(); }, updateInterval);
+  }
+
+
 
