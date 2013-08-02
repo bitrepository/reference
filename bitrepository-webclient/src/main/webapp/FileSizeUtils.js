@@ -41,7 +41,7 @@
     }
 
     this.getByteSize = function(unit) {
-      if (exaPostfix.equals(unit)) {
+      if (exaPostfix == unit) {
         return exaSize;
       } else if (petaPostfix == unit) {
         return petaSize;
