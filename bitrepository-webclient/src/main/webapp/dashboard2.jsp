@@ -138,6 +138,7 @@
         });
       }
 
+      $.ajaxSetup({cache: false}});
       $(document).ready(function(){
         makeMenu("dashboard2", "#pageMenu");
         init();
