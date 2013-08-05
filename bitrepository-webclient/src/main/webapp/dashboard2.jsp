@@ -35,7 +35,7 @@
     <div class="container-fluid">
       <div class="row-fluid">
         <div class="">
-          <h2>Overview of your bitpreservation solution</h2>
+          <h2 id="pageHeader">Overview</h2>
         </div>
         <div class="collectionStatus" id="statusDiv">
           <table class="table table-hover table-condensed">
@@ -117,6 +117,9 @@
 
       function init() {
         setIntegrityServiceUrl("<%= su.getIntegrityServiceUrl() %>");
+        $.get("repo/reposervice/getRepositoryName/", {}, function(j) {
+          $("#pageHeader").heml("Overview of " + j);
+        }, "html");
         $.getJSON("repo/reposervice/getCollectionIDs/", {}, function(collections) {
           colorMapper = new ColorMapper(collections);
           nameMapper = new CollectionNameMapper(collections, function(collection, mapper) {updateCheckboxLabel(collection, mapper)});
