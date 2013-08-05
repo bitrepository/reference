@@ -118,7 +118,7 @@
       function init() {
         setIntegrityServiceUrl("<%= su.getIntegrityServiceUrl() %>");
         $.get("repo/reposervice/getRepositoryName/", {}, function(j) {
-          $("#pageHeader").heml("Overview of " + j);
+          $("#pageHeader").html("Overview of " + j);
         }, "html");
         $.getJSON("repo/reposervice/getCollectionIDs/", {}, function(collections) {
           colorMapper = new ColorMapper(collections);
@@ -141,7 +141,7 @@
         });
       }
 
-      $.ajaxSetup({cache: false}});
+      $.ajaxSetup({cache: false});
       $(document).ready(function(){
         makeMenu("dashboard2", "#pageMenu");
         init();
