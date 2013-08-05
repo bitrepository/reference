@@ -181,9 +181,11 @@
     // Init update locks
     updateLock = new Array();
     for(c in collections) {
-      updateLock[collections[c]]["status"] = true;
-      updateLock[collections[c]]["info"] = true;
-      updateLock[collections[c]]["stats"] = true;
+      var row = new Array();
+      row["status"] = true;
+      row["info"] = true;
+      row["stats"] = true;
+      updateLock[c] = row;
     }
     refreshContent();
     update_page = setInterval(function() { refreshContent(); }, updateInterval);
