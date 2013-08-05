@@ -22,9 +22,11 @@
   }
 
   function makeCollectionSelectionCheckbox(collectionID, elementID, color, name) {
-    var html = "<div class=\"collectionCheckBoxes\"><input type=\"checkbox\" id=\"" + elementID + "\" value=\"" + collectionID + "\" checked>";
-    html += "<div class=\"checkboxLegendWrap\"><div class=\"checkboxLegend\" style=\"background-color: " + color + "\"></div></div>";
-    html += "<div id=\"" + elementID + "-name\">" + name + "</div></div>";
+    var html = "<div class=\"collectionCheckBoxes\">";
+    html += "<input style=\"margin-right:4px;\" type=\"checkbox\" id=\"" + elementID + "\" value=\"" + collectionID + "\" checked>";
+    html += "<div class=\"checkboxLegendWrap\" style=\"margin-right:2px;\">";
+    html += "<div class=\"checkboxLegend\" style=\"background-color: " + color + "\"></div></div>";
+    html += "<div  style=\"display:inline-block; margin-left:2px;\" id=\"" + elementID + "-name\">" + name + "</div></div>";
     return html;
   }
 

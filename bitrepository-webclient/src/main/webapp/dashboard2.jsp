@@ -44,12 +44,12 @@
                 <th class="collectionName">Collection name</th>
                 <th>Number of files</th>
                 <th>Latest Ingest</th>
-                <th>Size of collection</th>
+                <th>Collection size</th>
                 <th>Pillars</th>
                 <th>Latest check</th>
-                <th>Number of checksum errors</th>
-                <th>Number of missing files</th>
-                <th>Next scheduled check</th>
+                <th>Checksum errors</th>
+                <th>Missing files</th>
+                <th>Next check</th>
               </tr>
             </thead>
             <tbody id="collectionStatusBody"></tbody>
