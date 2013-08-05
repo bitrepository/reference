@@ -64,6 +64,13 @@ public class Reposervice {
     public String getCollectionName(@QueryParam("collectionID") String collectionID) {
         return SettingsUtils.getCollectionName(collectionID);
     }
+    
+    @GET
+    @Path("getRepositoryName")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getRepositoryName() {
+        return SettingsUtils.getRepositoryName();
+    }
 
     /**
      * getSettingsSummary provides a summary of some important settings of the Bitrepository collection, herein:

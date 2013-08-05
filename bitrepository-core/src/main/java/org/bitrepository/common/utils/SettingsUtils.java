@@ -93,6 +93,14 @@ public class SettingsUtils {
     }
     
     /**
+     * Get the name of the repository
+     * @return The name of the repository 
+     */
+    public static String getRepositoryName() {
+        return settings.getRepositorySettings().getName();
+    }
+    
+    /**
      * Retrieves all the different pillar ids defined across all collections (without duplicates).
      * @return The list of pillar ids. 
      */

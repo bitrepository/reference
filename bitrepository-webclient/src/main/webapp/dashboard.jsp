@@ -19,19 +19,74 @@
   <http://www.gnu.org/licenses/lgpl-2.1.html>.
   #L%
   --%>
-<%@page pageEncoding="UTF-8"%>
-<%@page import="java.util.*,
-        org.bitrepository.common.utils.FileSizeUtils,
-        org.bitrepository.dashboard.*,
-        org.bitrepository.common.webobjects.*" %>
-
+<%@page import="org.bitrepository.webservice.ServiceUrlFactory" %>
+<%@page import="org.bitrepository.webservice.ServiceUrl" %>
 <!DOCTYPE html>
 <html>
-<head>
+  <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
+  <head>
     <title>Bitrepository dashboard</title>
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="css/dashboard.css" rel="stylesheet" media="screen">
-    <meta http-equiv="refresh" content="300"/>
+    <link href="css/zoombutton.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+    <div id="pageMenu"></div>
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="">
+          <h2 id="pageHeader">Overview</h2>
+        </div>
+        <div class="collectionStatus" id="statusDiv">
+          <table class="table table-hover table-condensed">
+            <thead>
+              <tr>
+                <th class="collectionName">Collection name</th>
+                <th>Number of files</th>
+                <th>Latest Ingest</th>
+                <th>Collection size</th>
+                <th>Pillars</th>
+                <th>Latest check</th>
+                <th>Checksum errors</th>
+                <th>Missing files</th>
+                <th>Next check</th>
+              </tr>
+            </thead>
+            <tbody id="collectionStatusBody"></tbody>
+          </table>
+        </div>
+        <div id="dataSizeGraphContainer" class="dataSizeGraph">
+          <form class="dashboardForm">
+            <div style="float:left;"> 
+              <select id="graphType">
+                <option value="growth" selected>Growth</option>
+                <option value="delta">Rate of growth</option>
+              </select>
+            </div>
+            <div id="dataSizeGraphCollectionSelection"></div>
+          </form>
+          <div id="dataSizeGraphPlaceholder" style="height:300px;"></div>
+        </div>
+        <div id="collectionPieBoxContainer" class="collectionPieBox">
+          <h3>Data distributed on collections</h3>
+          <div class="collectionPie">
+            <div id="collection">
+              <div id="flotcontainer_collection" style="width: 280px;height:280px; text-align: left;"></div>
+            </div>
+          </div>
+          <div id=collectionLegendDiv></div>
+        </div>
+        <div id="legPieBoxContainer" class="legPieBox">
+          <h3>Data distributed on pillars</h3>
+          <div class="legPie">
+            <div id="data_pillar">
+              <div id="flotcontainer_data_pillar" style="width: 280px;height:280px; text-align: left;"></div>
+            </div>
+          </div>
+          <div id=pillarLegendDiv></div>
+        </div>
+      </div>
+    </div>
 
     <!-- Javascript -->
     <script src="jquery/jquery-1.9.0.min.js"></script>
@@ -44,56 +99,53 @@
     <script src="flot/jquery.flot.resize.js"></script>
 
     <script type="text/javascript" src="menu.js"></script>
+    <script type="text/javascript" src="FileSizeUtils.js"></script>
+    <script type="text/javascript" src="momentjs/moment.min.js"></script>
+    <script type="text/javascript" src="dashboard_components/ColorMapper.js"></script>
+    <script type="text/javascript" src="dashboard_components/CollectionNameMapper.js"></script>
+    <script type="text/javascript" src="dashboard_components/collectionStatus.js"></script>
+    <script type="text/javascript" src="dashboard_components/legsSizePie.js"></script>
+    <script type="text/javascript" src="dashboard_components/collectionSizePie.js"></script>
+    <script type="text/javascript" src="dashboard_components/dataSizeGraph.js"></script>
+    <script type="text/javascript" src="dashboard_components/dataSizeGraphController.js"></script>
 
     <script>
-        $(document).ready(function(){
-            makeMenu("dashboardServlet", "#pageMenu");
+      var update_data_size_graph;
+      var colorMapper;
+      var nameMapper;
+      var dsGraph;
+
+      function init() {
+        setIntegrityServiceUrl("<%= su.getIntegrityServiceUrl() %>");
+        $.get("repo/reposervice/getRepositoryName/", {}, function(j) {
+          $("#pageHeader").html("Overview of " + j);
+        }, "html");
+        $.getJSON("repo/reposervice/getCollectionIDs/", {}, function(collections) {
+          colorMapper = new ColorMapper(collections);
+          nameMapper = new CollectionNameMapper(collections, function(collection, mapper) {updateCheckboxLabel(collection, mapper)});
+          setNameMapper(nameMapper);
+          initiateCollectionStatus(collections, "#collectionStatusBody", 10000);
+          var dataUrl = "<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getDataSizeHistory/?collectionID=";
+          dsGraph = new dataSizeGraph(collections, colorMapper, nameMapper, new FileSizeUtils(), dataUrl, "#graphType", "#dataSizeGraphPlaceholder");
+          makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph, colorMapper, nameMapper);
+          drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
+          drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
+          $("#graphType").change(function(event) {event.preventDefault(); dsGraph.graphTypeChanged();});
+          dsGraph.updateData();
+          // Update graphs every hour
+          update_data_size_graph = setInterval(function() {
+            dsGraph.updateData();
+            drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
+            drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
+          }, 3600000);
         });
+      }
+
+      $.ajaxSetup({cache: false});
+      $(document).ready(function(){
+        makeMenu("dashboard", "#pageMenu");
+        init();
+      });
     </script>
-</head>
-<body>
-<div id="pageMenu"></div>
-<div class="container-fluid">
-    <div class="row-fluid">
-        <div class="">
-            <!--<div class="controlLink"><a href="#myModal" role="button" data-toggle="modal">Procedurer for kontrol</a></div>-->
-            <h2>Overblik over din bitbevaringsløsning</h2>
-        </div>
-
-        <div class="collectionStatus">
-            <%@ include file="dashboard_components/collections_status.jsp"%>
-        </div>
-
-
-        <div class="dataSizeGraph">
-            <%@ include file="dashboard_components/data_size_graph.jsp"%>
-        </div>
-
-
-        <div class="collectionPieBox">
-            <%@ include file="dashboard_components/collections_size_pie.jsp"%>
-        </div>
-
-        <div class="legPieBox">
-            <%@ include file="dashboard_components/legs_size_pie.jsp"%>
-        </div>
-
-
-    </div>
-</div>
-<!-- Modal -->
-<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel">Procedurer for kontrol</h3>
-    </div>
-    <div class="modal-body">
-        <p><%@ include file="dashboard_components/procedure_for_control_text.jsp"%></p>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    </div>
-</div>
-
-</body>
+  </body>
 </html>
