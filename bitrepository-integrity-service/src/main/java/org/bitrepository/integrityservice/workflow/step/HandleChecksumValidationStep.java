@@ -24,8 +24,10 @@ package org.bitrepository.integrityservice.workflow.step;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -33,8 +35,8 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.FileState;
-import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
+import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,9 +77,7 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
             Collection<FileInfo> infos = store.getFileInfos(file, reporter.getCollectionID());
             Set<String> checksums = getUniqueChecksums(infos);
             if(checksums.size() > 1) {
-                auditManager.addAuditEvent(reporter.getCollectionID(), file, "IntegrityService", 
-                        "Checksum inconsistency for file '" + file + "'. The pillar have more than one unique checksum.",
-                        "IntegrityService validating the checksums.", FileAction.INCONSISTENCY);
+                createAuditForInconsistentChecksum(infos, file);
                 for(FileInfo info : infos) {
                     try {
                         reporter.reportChecksumIssue(file, info.getPillarId());
@@ -94,7 +94,6 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
         }
         
         store.setFilesWithConsistentChecksumToValid(reporter.getCollectionID());
-        
     }
     
     /**
@@ -131,8 +130,75 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
         
         return res;
     }
-
-    public static String getDescription() {
-        return "Validates checksum consistency, and updates database to reflect the situation.";
+    
+    /**
+     * Creates a audit-trail for inconsistency between checksums.
+     * If only one pillar is alone with a checksum compared to all the others, then it is pointed out at the possible 
+     * cause.
+     * @param infos The information about the file at all the pillars.
+     * @param fileId The id of the file.
+     */
+    private void createAuditForInconsistentChecksum(Collection<FileInfo> infos, String fileId) {
+        String auditText;
+        Map<String, List<String>> checksumMap = getChecksumMapping(infos);
+        String pillarId = findSingleInconsistentPillar(checksumMap);
+        
+        if(pillarId != null) {
+            auditText = "Checksum inconsistency for the file '" + fileId + "'. Possibly corrupt at pillar '" + pillarId
+                    + "', since all the other pillars agree upon another checksum.";
+        } else {
+            auditText = "Checksum inconsistency for the file '" + fileId + "'. The pillars have registered more than "
+                    + "one unique checksum for the file.";
+        }
+        auditManager.addAuditEvent(reporter.getCollectionID(), fileId, "IntegrityService", 
+                auditText, "IntegrityService validating the checksums.", FileAction.INCONSISTENCY);
+    }
+    
+    /**
+     * Retrieves the mapping between the checksums and the pillars, e.g. which pillars have a given checksum.
+     * @param infos The information about a given file at all the pillars. 
+     * @return The mapping between checksums and the pillars with that checksum.
+     */
+    private Map<String, List<String>> getChecksumMapping(Collection<FileInfo> infos) {
+        Map<String, List<String>> checksumMap = new HashMap<String, List<String>>();
+        for(FileInfo info : infos) {
+            List<String> pillarIdsForChecksum;
+            if(checksumMap.containsKey(info.getChecksum())) {
+                pillarIdsForChecksum = checksumMap.get(info.getChecksum());
+            } else {
+                pillarIdsForChecksum = new ArrayList<String>();
+            }
+            pillarIdsForChecksum.add(info.getPillarId());
+            checksumMap.put(info.getChecksum(), pillarIdsForChecksum);
+        }
+        
+        return checksumMap;
+    }
+    
+    /**
+     * Tries to find a single pillar, who causes the inconsistency, otherwise a null is returned.
+     * This pillar must be alone with its checksum, whereas all the other pillars (minimum 2 other pillars) must 
+     * agree upon another checksum. 
+     * @param checksumMap The mapping between checksums and the pillars with that checksum.
+     * @return The id of the pillar possibly causing the inconsistency, or null if no single pillar can be found.
+     */
+    private String findSingleInconsistentPillar(Map<String, List<String>> checksumMap) {
+        if(checksumMap.size() != 2) {
+            return null;
+        }
+        List<List<String>> pillarLists = new ArrayList<List<String>>(checksumMap.values());
+        
+        if((pillarLists.get(0).size() > 1) && (pillarLists.get(1).size() > 1)) {
+            return null;
+        }
+        if((pillarLists.get(0).size() == 1) && (pillarLists.get(1).size() == 1)) {
+            return null;
+        }
+        
+        if(pillarLists.get(0).size() == 1) {
+            return pillarLists.get(0).get(0);
+        } else {
+            return pillarLists.get(1).get(0);
+        }
     }
 }
