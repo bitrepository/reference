@@ -139,7 +139,7 @@ public abstract class IntegrityDAO {
     /**
      *  @return The list of collections defined in the database.
      */
-    private List<String> retrieveCollectionsInDatabase() {
+    public List<String> retrieveCollectionsInDatabase() {
         String selectSql = "SELECT " + COLLECTION_ID + " FROM " + COLLECTIONS_TABLE;
         return DatabaseUtils.selectStringList(dbConnector, selectSql, new Object[0]);
     }
