@@ -57,15 +57,11 @@ import static org.bitrepository.integrityservice.cache.database.DatabaseConstant
 /**
  * Handles the communication with the integrity database.
  */
-public abstract class IntegrityDAO {
+public abstract class IntegrityDAO extends IntegrityDAOUtils{
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    /** The connector to the database.*/
-    private final DBConnector dbConnector;
     /** Mapping from collectionID to the list of pillars in it */
     private final Map<String, List<String>> collectionPillarsMap;
-    /** Caching of CollectionKeys (mapping from ID to Key) */
-    private final Map<String, Long> collectionKeyCache;
     /** Caching of PillarKeys (mapping from ID to Key) */
     private final Map<String, Long> pillarKeyCache;
     
@@ -75,14 +71,11 @@ public abstract class IntegrityDAO {
      * @param collections The collections object from the settings, to define the set of pillars and collections
      */
     public IntegrityDAO(DBConnector dbConnector, Collections collections) {
-        ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
-        
-        this.dbConnector = dbConnector;
+        super(dbConnector);
         collectionPillarsMap = new HashMap<String, List<String>>();
         for(org.bitrepository.settings.repositorysettings.Collection collection : collections.getCollection()) {
             collectionPillarsMap.put(collection.getID(), new ArrayList<String>(collection.getPillarIDs().getPillarID()));
         }
-        collectionKeyCache = new HashMap<String, Long>();
         pillarKeyCache = new HashMap<String, Long>();
         initialisePillars();
         initializeCollections();
@@ -134,14 +127,6 @@ public abstract class IntegrityDAO {
             String sql = "INSERT INTO " + PILLAR_TABLE +" ( " + PILLAR_ID + " ) VALUES ( ? )";
             DatabaseUtils.executeStatement(dbConnector, sql, pillarId);
         }
-    }
-    
-    /**
-     *  @return The list of collections defined in the database.
-     */
-    public List<String> retrieveCollectionsInDatabase() {
-        String selectSql = "SELECT " + COLLECTION_ID + " FROM " + COLLECTIONS_TABLE;
-        return DatabaseUtils.selectStringList(dbConnector, selectSql, new Object[0]);
     }
     
     /**
@@ -1509,23 +1494,6 @@ public abstract class IntegrityDAO {
                 + " WHERE " + FILES_ID + " = ?" 
                 + " AND " + COLLECTION_KEY + " = ?";
         return DatabaseUtils.selectLongValue(dbConnector, sql, fileId, collectionKey);
-    }
-    
-    /**
-     * Method to retrieve the database key for the given collectionId
-     * @param collectionId The ID of the collection 
-     */
-    private Long retrieveCollectionKey(String collectionId) {
-        Long key = collectionKeyCache.get(collectionId);
-        if(key == null) {
-            log.trace("Retrieving key for collection '{}'.", collectionId);
-            String sql = "SELECT " + COLLECTION_KEY + " FROM " + COLLECTIONS_TABLE 
-                    + " WHERE " + COLLECTION_ID + "= ?";
-            key = DatabaseUtils.selectLongValue(dbConnector, sql, collectionId);
-            collectionKeyCache.put(collectionId, key);
-        }
-        return key;
-        
     }
     
     /**

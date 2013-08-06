@@ -17,13 +17,10 @@ import java.util.List;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 
-public class IntegrityDBTools {
-
-    /** The connector to the database.*/
-    private final DBConnector dbConnector;
+public class IntegrityDBTools extends IntegrityDAOUtils {
     
     public IntegrityDBTools(DBConnector dbConnector) {
-        this.dbConnector = dbConnector;
+        super(dbConnector);
     }
    
     /**
@@ -32,7 +29,7 @@ public class IntegrityDBTools {
      * @throws IntegrityDBStateException if the collectionID already exist in the DB.  
      */
     public void addCollection(String collectionID) throws IntegrityDBStateException {
-        List<String> existingCollections = getCollectionList();
+        List<String> existingCollections = retrieveCollectionsInDatabase();
         if(existingCollections.contains(collectionID)) {
             throw new IntegrityDBStateException("Collection '" + collectionID +"' already exists in integrityDB, can't add.");
         }
@@ -49,12 +46,12 @@ public class IntegrityDBTools {
      * @throws IntegrityDBStateException if the collectionID does not already exist in the database
      */
     public void removeCollection(String collectionID) throws IntegrityDBStateException {
-        List<String> existingCollections = getCollectionList();
+        List<String> existingCollections = retrieveCollectionsInDatabase();
         if(!existingCollections.contains(collectionID)) {
             throw new IntegrityDBStateException("Collection '" + collectionID +"' is not present in collection, can't remove.");
         }
         
-        Long collectionKey = getCollectionKey(collectionID);
+        Long collectionKey = retrieveCollectionKey(collectionID);
         
         String purgeFileInfoForCollectionSql = "DELETE FROM " + FILE_INFO_TABLE
                 + " WHERE " + FI_FILE_KEY + " = ANY( SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
@@ -80,19 +77,6 @@ public class IntegrityDBTools {
         String removeCollectionIDSql = "DELETE FROM " + COLLECTIONS_TABLE + " WHERE " + COLLECTION_ID + " = ?";
         DatabaseUtils.executeStatement(dbConnector, removeCollectionIDSql, collectionID);;
         
-    }
-    
-    private List<String> getCollectionList() {
-        String selectSql = "SELECT " + COLLECTION_ID + " FROM " + COLLECTIONS_TABLE;
-        return DatabaseUtils.selectStringList(dbConnector, selectSql, new Object[0]);
-    }
-    
-    private Long getCollectionKey(String collectionID) {
-        Long key;
-        String sql = "SELECT " + COLLECTION_KEY + " FROM " + COLLECTIONS_TABLE 
-                + " WHERE " + COLLECTION_ID + "= ?";
-        key = DatabaseUtils.selectLongValue(dbConnector, sql, collectionID);
-        return key;
     }
     
 }
