@@ -26,7 +26,7 @@ public class CollectionsAdminLauncher {
     }
     
     private static void printUsage() {
-        System.out.println("Usage: collectionAdmin <method> <collectionID> <path-to-settings>");
+        System.out.println("Usage: collectionAdmin.sh <method> <collectionID> <path-to-settings>");
         System.out.println("Supported methods: add | remove");
     }
 }
