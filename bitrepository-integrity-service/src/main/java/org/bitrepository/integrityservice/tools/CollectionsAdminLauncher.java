@@ -15,9 +15,9 @@ public class CollectionsAdminLauncher {
         String collectionID = args[1];
         String settingsPath = args[2];
         
-        CollectionsAdmin ca = new CollectionsAdmin(method, collectionID, settingsPath);
+        CollectionsAdmin ca = new CollectionsAdmin(collectionID, settingsPath);
         try {
-            ca.invoke();
+            ca.invoke(method);
         } catch (UnknownCollectionException e) {
             System.out.println(e.getMessage());
         } catch (InvalidMethodException e) {
