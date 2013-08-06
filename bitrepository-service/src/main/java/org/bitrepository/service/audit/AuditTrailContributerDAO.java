@@ -101,6 +101,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
 
     @Override
     public void addAuditEvent(String collectionId, String fileId, String actor, String info, String auditTrail, FileAction operation) {
+        ArgumentValidator.checkNotNull(collectionId, "String collectionId");
         ArgumentValidator.checkNotNull(operation, "FileAction operation");
         log.trace("Inserting an audit event for file '" + fileId + "', from actor '" + actor
                 + "' performing operation '" + operation + "', with the audit trail information '" + auditTrail + "'");
@@ -118,20 +119,11 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
             actorGuid = retrieveActorGuid(actor);
         }
 
-        // TODO BITMAG-646
         if(auditTrail == null) {
             auditTrail = "";
-        } else if(auditTrail.length() > 255) {
-            log.warn("The current audit trail is too large (more than 255 characters). It will be reduced to "
-                    + "only 255 characters:\n" + auditTrail);
-            auditTrail = auditTrail.substring(0, 255);
         }
         if(info == null) {
             info = "";
-        } else if(info.length() > 255) {
-            log.warn("The current info is too large (more than 255 characters). It will be reduced to only 255 "
-                    + "characters:\n" + info);
-            info = info.substring(0, 255);
         }
 
         synchronized(this) {

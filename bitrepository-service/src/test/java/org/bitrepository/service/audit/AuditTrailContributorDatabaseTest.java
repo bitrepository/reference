@@ -108,6 +108,78 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         
         dbConnector.destroy();
     }
+    
+    @Test(groups = {"regressiontest", "databasetest"})
+    public void testAuditTrailDatabaseIngest() throws Exception {
+        addDescription("Testing the ingest of data.");
+        addStep("Setup varibles and the database connection.", "No errors.");
+        String fileId1 = "FILE-ID-1";
+        String actor = "ACTOR";
+        String info = "Adding a info";
+        String auditTrail = "AuditTrail";
+        String veryLongString = "";
+        for(int i = 0; i < 255; i++) {
+            veryLongString += i;
+        }
+
+        DBConnector dbConnector = new DBConnector(databaseSpecifics);
+        AuditTrailContributerDAO daba = new AuditTrailContributerDAO(settings, dbConnector);
+        
+        addStep("Test with all data.", "No failures");
+        daba.addAuditEvent(firstCollectionID, fileId1, actor, info, auditTrail, FileAction.FAILURE);
+        
+        addStep("Test with no collection", "Throws exception");
+        try {
+            daba.addAuditEvent(null, fileId1, actor, info, auditTrail, FileAction.FAILURE);
+            Assert.fail("Should throw an exception");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+        
+        addStep("Test with with no file id.", "No failures");
+        daba.addAuditEvent(firstCollectionID, null, actor, info, auditTrail, FileAction.FAILURE);
+
+        addStep("Test with with no actor.", "No failures");
+        daba.addAuditEvent(firstCollectionID, fileId1, null, info, auditTrail, FileAction.FAILURE);
+
+        addStep("Test with with no info.", "No failures");
+        daba.addAuditEvent(firstCollectionID, fileId1, actor, null, auditTrail, FileAction.FAILURE);
+
+        addStep("Test with with no audittrail.", "No failures");
+        daba.addAuditEvent(firstCollectionID, fileId1, actor, info, null, FileAction.FAILURE);
+
+        addStep("Test with with no action.", "Throws exception");
+        try {
+            daba.addAuditEvent(firstCollectionID, fileId1, actor, info, auditTrail, null);
+            Assert.fail("Should throw an exception");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+
+        addStep("Test with with very large file id.", "Throws exception");
+        try {
+            daba.addAuditEvent(firstCollectionID, veryLongString, actor, info, auditTrail, FileAction.FAILURE);
+            Assert.fail("Should throw an exception");
+        } catch (IllegalStateException e) {
+            // expected
+        }
+
+        addStep("Test with with very large actor name.", "Throws exception");
+        try {
+            daba.addAuditEvent(firstCollectionID, fileId1, veryLongString, info, auditTrail, FileAction.FAILURE);
+            Assert.fail("Should throw an exception");
+        } catch (IllegalStateException e) {
+            // expected
+        }
+
+        addStep("Test with with very large info.", "No failures");
+        daba.addAuditEvent(firstCollectionID, fileId1, actor, veryLongString, auditTrail, FileAction.FAILURE);
+
+        addStep("Test with with very large audittrail.", "No failures");
+        daba.addAuditEvent(firstCollectionID, fileId1, actor, info, veryLongString, FileAction.FAILURE);
+        
+        dbConnector.destroy();
+    }
 
     private class TestAuditTrailContributorDBCreator extends DatabaseCreator {
         public static final String DEFAULT_AUDIT_TRAIL_DB_SCRIPT = "sql/derby/auditContributorDBCreation.sql";

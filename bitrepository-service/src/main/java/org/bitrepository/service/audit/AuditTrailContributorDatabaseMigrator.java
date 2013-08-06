@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_COLLECTIONID;
 import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.DATABASE_VERSION_ENTRY;
 
 /**
  * Migration class for the ChecksumDatabase of the ReferencePillar and ChecksumPillar.
@@ -60,7 +61,11 @@ public class AuditTrailContributorDatabaseMigrator extends DatabaseMigrator {
                     + "' table as required.");
         }
         if(versions.get(FILE_TABLE) == 1) {
-            migrateFileTableFromVersion1To2();
+            upgradeFromVersion1To2();
+        }
+        
+        if(!versions.containsKey(DATABASE_VERSION_ENTRY) || versions.get(DATABASE_VERSION_ENTRY) < 3) {
+            upgradeFromVersion2To3();
         }
     }
     
@@ -68,7 +73,7 @@ public class AuditTrailContributorDatabaseMigrator extends DatabaseMigrator {
      * Migrate the 'file' table from version 1 to 2.
      * Just adds the column 'collectionid', which will be set to the current (or first) collection id.
      */
-    private void migrateFileTableFromVersion1To2() {
+    private void upgradeFromVersion1To2() {
         log.warn("Migrating the " + FILE_TABLE + " table from version 1 to 2 in the AuditTrailContributorDatabase.");
         
         String alterSql = "ALTER TABLE " + FILE_TABLE + " ADD COLUMN " + FILE_COLLECTIONID + " VARCHAR(255)";
@@ -77,5 +82,12 @@ public class AuditTrailContributorDatabaseMigrator extends DatabaseMigrator {
         String updateAfterwards = "UPDATE " + FILE_TABLE + " SET " + FILE_COLLECTIONID + " = ? WHERE " 
                 + FILE_COLLECTIONID + " IS NULL";
         DatabaseUtils.executeStatement(connector, updateAfterwards, settings.getCollections().get(0).getID());
+    }
+    
+    /**
+     * Method for upgrading the database from version 2 to 3.
+     */
+    private void upgradeFromVersion2To3() {
+        throw new IllegalStateException("The database needs to be updated to version 3. This must be done manually.");
     }
 }

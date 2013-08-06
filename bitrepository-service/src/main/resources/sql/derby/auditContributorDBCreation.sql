@@ -36,12 +36,10 @@ create table tableversions (
     version int not null             -- version of table
 );
 
-insert into tableversions ( tablename, version )
-            values ( 'audit', 2);
-insert into tableversions ( tablename, version )
-            values ( 'file', 2);
-insert into tableversions ( tablename, version )
-            values ( 'actor', 1);
+insert into tableversions ( tablename, version ) values ( 'audit', 3);
+insert into tableversions ( tablename, version ) values ( 'file', 2);
+insert into tableversions ( tablename, version ) values ( 'actor', 1);
+insert into tableversions ( tablename, version ) values ( 'auditcontributordb', 3);
 
 --*************************************************************************--
 -- Name:     file
@@ -88,8 +86,8 @@ create table audittrail (
                                     -- Used for looking up in the 
     operation varchar(100),         -- The name of the action behind the audit.
     operation_date timestamp,       -- The date when the action was performed.
-    audit varchar(255),             -- The audit trail delivered from the actor. 
-    information varchar(255),       -- The information about the audit.
+    audit CLOB,                     -- The audit trail delivered from the actor. 
+    information CLOB,               -- The information about the audit.
     FOREIGN KEY ( file_guid ) REFERENCES file ( file_guid ),
                                     -- Foreign key constraint for enforcing relationship
     FOREIGN KEY ( actor_guid ) REFERENCES actor ( actor_guid )
