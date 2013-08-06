@@ -93,5 +93,5 @@ public final class AuditDatabaseConstants {
     public final static String PRESERVATION_SEQ = "preserved_seq_number";
 
     /** The name of the version table entry for the database.*/
-    public final static String DATABASE_VERSION_ENTRY = "database";
+    public final static String DATABASE_VERSION_ENTRY = "auditservicedb";
 }

@@ -42,8 +42,8 @@ import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
 public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase {
     protected Settings settings;
     
-    static final String PATH_TO_DATABASE_UNPACKED = "target/test/audits/auditcontributerdb-version1";
-    static final String PATH_TO_DATABASE_JAR_FILE = "src/test/resources/auditcontributerdb-version1.jar";
+    static final String PATH_TO_DATABASE_UNPACKED = "target/test/audits/auditcontributerdb-v1";
+    static final String PATH_TO_DATABASE_JAR_FILE = "src/test/resources/auditcontributerdb-v1.jar";
     
     static final String FILE_ID = "default-file-id";
 
@@ -66,7 +66,7 @@ public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase
         FileUtils.deleteDirIfExists(new File(PATH_TO_DATABASE_UNPACKED));
     }
     
-    @Test( groups = {"regressiontest", "databasetest"})
+//    @Test( groups = {"regressiontest", "databasetest"})
     public void testMigratingDatabaseAuditTrailsContributorFileTable() {
         addDescription("Tests that the file table can be migrated from version 1 to 2, e.g. getting the column "
                 + "collectionid, which should be set to the default in settings.");

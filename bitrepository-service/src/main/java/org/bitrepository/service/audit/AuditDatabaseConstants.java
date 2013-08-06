@@ -62,4 +62,7 @@ public final class AuditDatabaseConstants {
     public final static String ACTOR_GUID = "actor_guid";
     /** The name of the actor name field in the actor table.*/
     public final static String ACTOR_NAME = "actor_name";
+    
+    /** The name of the version table entry for the database.*/
+    public final static String DATABASE_VERSION_ENTRY = "auditcontributordb";
 }

@@ -79,6 +79,9 @@ public class AuditTrailServiceDatabaseMigrator extends DatabaseMigrator {
         if(!versions.containsKey(DATABASE_VERSION_ENTRY) || versions.get(DATABASE_VERSION_ENTRY) < 2) {
             migrateVersion1To2();
         }
+        if(!versions.containsKey(DATABASE_VERSION_ENTRY) || versions.get(DATABASE_VERSION_ENTRY) < 3) {
+            migrateVersion2To3();
+        }
     }
     
     /**
@@ -93,6 +96,17 @@ public class AuditTrailServiceDatabaseMigrator extends DatabaseMigrator {
                 + "the collection '" + defaultCollection + "'");
 
         // How to do this?
-        throw new IllegalStateException("Not implemented!!!");
+        throw new IllegalStateException("Must update database from version 1 to 2, but this has "
+                + "not been implemented!!!");
+    }
+    
+    /**
+     * Migrate from version 2 to version 3 with the appropriate script.
+     * ...
+     */
+    private void migrateVersion2To3() {
+        // How to do this?
+        throw new IllegalStateException("Must update database from version 2 to 3, but this has "
+                + "not been implemented!!!");
     }
 }
