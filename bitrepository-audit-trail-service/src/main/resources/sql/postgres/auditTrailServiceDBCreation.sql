@@ -34,12 +34,12 @@ CREATE TABLE tableversions (
     version SMALLINT NOT NULL        -- version of table
 );
 
-INSERT INTO tableversions ( tablename, version ) VALUES ( 'audittrail', 2);
+INSERT INTO tableversions ( tablename, version ) VALUES ( 'audittrail', 3);
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'file', 2);
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'contributor', 2);
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'actor', 2);
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'collection', 1);
-INSERT INTO tableversions ( tablename, version ) VALUES ( 'auditservicedb', 2);
+INSERT INTO tableversions ( tablename, version ) VALUES ( 'auditservicedb', 3);
 
 --*************************************************************************--
 -- Name:     collection
