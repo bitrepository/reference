@@ -5,9 +5,12 @@ import static org.bitrepository.integrityservice.cache.database.DatabaseConstant
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_KEY;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILE_INFO_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_KEY;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_STATS_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_STATS_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_KEY;
 
 import java.util.List;
 
@@ -54,20 +57,20 @@ public class IntegrityDBTools {
         Long collectionKey = getCollectionKey(collectionID);
         
         String purgeFileInfoForCollectionSql = "DELETE FROM " + FILE_INFO_TABLE
-                + " WHERE EXISTS ( SELECT 1 FROM " + FILES_TABLE 
-                    + " WHERE " + COLLECTION_KEY + " = ?)";
+                + " WHERE " + FI_FILE_KEY + " = ANY( SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                    + " WHERE " + COLLECTION_KEY + " = ? )";
         DatabaseUtils.executeStatement(dbConnector, purgeFileInfoForCollectionSql, collectionKey);
                 
         String purgeFilesForCollectionSql = "DELETE FROM files WHERE collection_key = ?";
         DatabaseUtils.executeStatement(dbConnector, purgeFilesForCollectionSql, collectionKey);
         
         String purgeCollectionStatsSql = "DELETE FROM " + COLLECTION_STATS_TABLE
-                + " WHERE EXISTS (SELECT 1 FROM " + STATS_TABLE 
+                + " WHERE " + STATS_KEY + " = ANY(SELECT " + STATS_KEY + " FROM " + STATS_TABLE 
                     + " WHERE " + COLLECTION_KEY + " = ?)";
         DatabaseUtils.executeStatement(dbConnector, purgeCollectionStatsSql, collectionKey);
                 
         String purgePillarStatsSql = "DELETE FROM " + PILLAR_STATS_TABLE
-                + " WHERE EXISTS (SELECT 1 FROM " + STATS_TABLE 
+                + " WHERE " + STATS_KEY + " = ANY(SELECT " + STATS_KEY + " FROM " + STATS_TABLE 
                 + " WHERE " + COLLECTION_KEY + " = ?)";
         DatabaseUtils.executeStatement(dbConnector, purgePillarStatsSql, collectionKey);
 

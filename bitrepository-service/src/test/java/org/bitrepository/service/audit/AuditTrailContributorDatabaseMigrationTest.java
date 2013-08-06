@@ -66,6 +66,7 @@ public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase
         FileUtils.deleteDirIfExists(new File(PATH_TO_DATABASE_UNPACKED));
     }
     
+    // Not possible, since upgrading from 2 to 3 must be performed manually.
 //    @Test( groups = {"regressiontest", "databasetest"})
     public void testMigratingDatabaseAuditTrailsContributorFileTable() {
         addDescription("Tests that the file table can be migrated from version 1 to 2, e.g. getting the column "
