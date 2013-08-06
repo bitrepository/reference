@@ -9,6 +9,7 @@ public class CollectionsAdminLauncher {
     public static void main(String[] args) {
         if(!(args.length == 3)) {
             printUsage();
+            System.exit(1);
         }
         String method = args[0];
         String collectionID = args[1];
