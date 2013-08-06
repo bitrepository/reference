@@ -53,7 +53,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         org.bitrepository.settings.repositorysettings.PillarIDs pids 
             = new org.bitrepository.settings.repositorysettings.PillarIDs();
         pids.getPillarID().add(TEST_PILLAR_1);
-        pids.getPillarID().add(EXTRA_PILLAR);
+        pids.getPillarID().add(TEST_PILLAR_2);
         extraCollection.setPillarIDs(pids);
         settings.getRepositorySettings().getCollections().getCollection().add(extraCollection);
     }
@@ -139,15 +139,31 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         Assert.assertTrue(collections.contains(TEST_COLLECTIONID));
         Assert.assertTrue(collections.contains(EXTRA_COLLECTION));
         
-        addStep("Populate the database", "The databse contains entries for the collection that is to be removed");
-        populateDatabase(integrityDAO);       
+        addStep("Populate the database", 
+                "The databse contains entries for the collection that is to be removed, and the one that stays.");
+        populateCollection(integrityDAO, TEST_COLLECTIONID);
+        populateCollection(integrityDAO, EXTRA_COLLECTION);
+        
         Long collectionFileCount = integrityDAO.getNumberOfFilesInCollection(TEST_COLLECTIONID);
         Assert.assertNotNull("Number of files for the collection", collectionFileCount);
         Assert.assertTrue(collectionFileCount > 0);
         Assert.assertNotNull(integrityDAO.getLatestPillarStats(TEST_COLLECTIONID));
+        Assert.assertFalse(integrityDAO.getLatestPillarStats(TEST_COLLECTIONID).isEmpty());
         Assert.assertNotNull(integrityDAO.getLatestCollectionStats(TEST_COLLECTIONID, 1L));
+        Assert.assertFalse(integrityDAO.getLatestCollectionStats(TEST_COLLECTIONID, 1L).isEmpty());
+
+        collectionFileCount = integrityDAO.getNumberOfFilesInCollection(EXTRA_COLLECTION);
+        Assert.assertNotNull("Number of files for the collection", collectionFileCount);
+        Assert.assertTrue(collectionFileCount > 0);
+        Assert.assertNotNull(integrityDAO.getLatestPillarStats(EXTRA_COLLECTION));
+        Assert.assertFalse(integrityDAO.getLatestPillarStats(EXTRA_COLLECTION).isEmpty());
+        Assert.assertNotNull(integrityDAO.getLatestCollectionStats(EXTRA_COLLECTION, 1L));
+        Assert.assertFalse(integrityDAO.getLatestCollectionStats(EXTRA_COLLECTION, 1L).isEmpty());
         
-        addStep("Remove the collection", "The collection is removed, references to the collection does not exist anymore");
+        
+        addStep("Remove the collection TEST_COLLECTIONID", 
+                "The collection is removed, references to the collection does not exist anymore. "
+                + "The other collection is untouched");
         tool.removeCollection(TEST_COLLECTIONID);
         collections = integrityDAO.retrieveCollectionsInDatabase();
         Assert.assertFalse(collections.contains(TEST_COLLECTIONID));
@@ -158,9 +174,17 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         Assert.assertTrue(collectionFileCount == 0);
         Assert.assertTrue(integrityDAO.getLatestPillarStats(TEST_COLLECTIONID).isEmpty());
         Assert.assertTrue(integrityDAO.getLatestCollectionStats(TEST_COLLECTIONID, 1L).isEmpty());
+        
+        collectionFileCount = integrityDAO.getNumberOfFilesInCollection(EXTRA_COLLECTION);
+        Assert.assertNotNull("Number of files for the collection", collectionFileCount);
+        Assert.assertTrue(collectionFileCount > 0);
+        Assert.assertNotNull(integrityDAO.getLatestPillarStats(EXTRA_COLLECTION));
+        Assert.assertFalse(integrityDAO.getLatestPillarStats(EXTRA_COLLECTION).isEmpty());
+        Assert.assertNotNull(integrityDAO.getLatestCollectionStats(EXTRA_COLLECTION, 1L));
+        Assert.assertFalse(integrityDAO.getLatestCollectionStats(EXTRA_COLLECTION, 1L).isEmpty());
     }
     
-    private void populateDatabase(IntegrityDAO dao) {
+    private void populateCollection(IntegrityDAO dao, String collectionID) {
         String file2 = TEST_FILE_ID + "-2";
         String file3 = TEST_FILE_ID + "-3";
         String file4 = TEST_FILE_ID + "-4";
@@ -198,24 +222,22 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         csDataPillar2.addAll(csData2);
         csDataPillar2.addAll(csData3);
         csDataPillar2.addAll(csData4);
-        dao.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
-        dao.updateFileIDs(data3, TEST_PILLAR_1, TEST_COLLECTIONID);
-        dao.updateFileIDs(data4, TEST_PILLAR_1, TEST_COLLECTIONID);
-        dao.updateFileIDs(data5, TEST_PILLAR_1, TEST_COLLECTIONID);
-        dao.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
-        dao.updateFileIDs(data2, TEST_PILLAR_2, TEST_COLLECTIONID);
-        dao.updateFileIDs(data3, TEST_PILLAR_2, TEST_COLLECTIONID);
-        dao.updateFileIDs(data4, TEST_PILLAR_2, TEST_COLLECTIONID);
+        dao.updateFileIDs(data1, TEST_PILLAR_1, collectionID);
+        dao.updateFileIDs(data3, TEST_PILLAR_1, collectionID);
+        dao.updateFileIDs(data4, TEST_PILLAR_1, collectionID);
+        dao.updateFileIDs(data5, TEST_PILLAR_1, collectionID);
+        dao.updateFileIDs(data1, TEST_PILLAR_2, collectionID);
+        dao.updateFileIDs(data2, TEST_PILLAR_2, collectionID);
+        dao.updateFileIDs(data3, TEST_PILLAR_2, collectionID);
+        dao.updateFileIDs(data4, TEST_PILLAR_2, collectionID);
 
-        insertChecksumDataForDAO(dao, csDataPillar1, TEST_PILLAR_1, TEST_COLLECTIONID);
-        insertChecksumDataForDAO(dao, csDataPillar2, TEST_PILLAR_2, TEST_COLLECTIONID);
-        dao.updateFileIDs(data1, TEST_PILLAR_1, EXTRA_COLLECTION);
-        dao.updateFileIDs(data1, EXTRA_PILLAR, EXTRA_COLLECTION);
+        insertChecksumDataForDAO(dao, csDataPillar1, TEST_PILLAR_1, collectionID);
+        insertChecksumDataForDAO(dao, csDataPillar2, TEST_PILLAR_2, collectionID);
         
-        dao.setOldUnknownFilesToMissing(new Date(), TEST_COLLECTIONID);
-        dao.setFilesWithConsistentChecksumsToValid(TEST_COLLECTIONID);
-        dao.setChecksumError(file3, TEST_PILLAR_1, TEST_COLLECTIONID);
-        dao.makeStatisticsEntry(TEST_COLLECTIONID);
+        dao.setOldUnknownFilesToMissing(new Date(), collectionID);
+        dao.setFilesWithConsistentChecksumsToValid(collectionID);
+        dao.setChecksumError(file3, TEST_PILLAR_1, collectionID);
+        dao.makeStatisticsEntry(collectionID);
     }
     
     private FileIDsData makeFileIDsDataWithGivenFileSize(String fileID, Long size) {
