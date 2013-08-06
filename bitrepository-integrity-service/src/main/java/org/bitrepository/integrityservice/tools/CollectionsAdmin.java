@@ -15,9 +15,9 @@ import org.bitrepository.settings.referencesettings.ServiceType;
  */
 public class CollectionsAdmin {
 
-    final String method;
-    final String collectionID;
-    final Settings settings;
+    private final String method;
+    private final String collectionID;
+    private final Settings settings;
     IntegrityDBTools tools;
     
     public CollectionsAdmin(String method, String collectionID, String pathToSettings) {
