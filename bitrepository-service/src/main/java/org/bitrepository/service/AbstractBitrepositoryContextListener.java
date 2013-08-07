@@ -68,8 +68,13 @@ public abstract class AbstractBitrepositoryContextListener implements ServletCon
         } catch (Exception e) {
             log.info("Failed to read log configuration file. Falling back to default.");
         } 
-        initialize(confDir);
-        getService();
+        try {
+            initialize(confDir);
+            getService();
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw e;
+        }
         log.debug("Servlet context initialized");
         
     }
