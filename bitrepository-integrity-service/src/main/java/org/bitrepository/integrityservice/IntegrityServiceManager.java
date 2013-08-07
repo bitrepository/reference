@@ -79,8 +79,6 @@ public final class IntegrityServiceManager {
     private static final String CONFIGFILE = "integrity.properties";
     /** Property key to tell where to locate the path and filename to the private key file. */
     private static final String PRIVATE_KEY_FILE = "org.bitrepository.integrity-service.privateKeyFile";
-    /** Property key to tell where to locate the path to the dir to store integrity reports in. */
-    private static final String INTEGRITY_REPORT_STORE = "org.bitrepository.integrity-service.integrityreportstore";
     private static Settings settings;
     private static BasicSecurityManager securityManager;
     private static IntegrityWorkflowManager workFlowManager;
@@ -145,6 +143,14 @@ public final class IntegrityServiceManager {
                 new ServiceSettingsProvider(new XMLFileSettingsLoader(confDir), ServiceType.INTEGRITY_SERVICE);
         settings = settingsLoader.getSettings();
         SettingsUtils.initialize(settings);
+        integrityReportStorageDir = new File(
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityReportsDir());
+        if(!(integrityReportStorageDir.isDirectory() 
+                && integrityReportStorageDir.canRead() 
+                && integrityReportStorageDir.canWrite())) {
+            throw new IllegalStateException(integrityReportStorageDir.getAbsolutePath() 
+                    + " is either not a directory, can't be read or written to.");
+        }        
     }
 
     /**
@@ -155,26 +161,13 @@ public final class IntegrityServiceManager {
             Properties properties = new Properties();
             String propertiesFile = confDir + "/" + CONFIGFILE;
             BufferedReader propertiesReader = null;
-            String integrityReportDir;
             try {
                 propertiesReader = new BufferedReader(new FileReader(propertiesFile));
                 properties.load(propertiesReader);
                 privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);
-                integrityReportDir = properties.getProperty(INTEGRITY_REPORT_STORE);
             } finally {
                 if(propertiesReader != null) {
                     propertiesReader.close();
-                }
-            }
-            if(integrityReportDir == null) {
-                throw new IllegalStateException(INTEGRITY_REPORT_STORE + " is missing or has an empty value");
-            } else {
-                integrityReportStorageDir = new File(integrityReportDir);
-                if(!(integrityReportStorageDir.isDirectory() 
-                        && integrityReportStorageDir.canRead() 
-                        && integrityReportStorageDir.canWrite())) {
-                    throw new IllegalStateException(integrityReportStorageDir.getAbsolutePath() 
-                            + " is either not a directory, can't be read or written to.");
                 }
             }
         } catch (IOException e) {
