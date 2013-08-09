@@ -72,16 +72,17 @@ public class RestMonitoringService {
     
     private JSONObject makeJSONStatusObject(String componentID, ComponentStatus status) {
         JSONObject obj = new JSONObject();
-        String timestamp = "N/A";
         try {
             obj.put("componentID", componentID);
             obj.put("status", status.getStatus());
             obj.put("info", status.getInfo());
             XMLGregorianCalendar cal = status.getLastReply();
             if(cal != null) {
-                timestamp = TimeUtils.shortDate(cal.toGregorianCalendar().getTime());
+                obj.put("timeStamp", TimeUtils.shortDate(cal));
+            } else {
+                obj.put("timeStamp", "N/A");    
             }
-            obj.put("timeStamp", timestamp);
+            
             return obj;
         } catch (JSONException e) {
             return (JSONObject) JSONObject.NULL;

@@ -595,6 +595,14 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element name="IntegrityReportsDir" type="xs:string" minOccurs="1" maxOccurs="1">
+          <xs:annotation xml:lang="en">
+            <xs:documentation>
+              The directory where to write and store integrity reports. Directory must exists, and be read- and writable
+              E.g. /home/webservices/var/integrity-reports/
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

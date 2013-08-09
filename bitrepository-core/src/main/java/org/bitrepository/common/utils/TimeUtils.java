@@ -25,6 +25,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 /**
  * Util class to handle the presentation of time in a human readable form 
  */
@@ -137,5 +139,9 @@ public final class TimeUtils {
 
     public static String shortDate(Date date) {
         return formatter.format(date);
+    }
+    
+    public static String shortDate(XMLGregorianCalendar cal) {
+        return formatter.format(cal.toGregorianCalendar().getTime());
     }
 }

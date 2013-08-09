@@ -15,13 +15,11 @@ import org.bitrepository.settings.referencesettings.ServiceType;
  */
 public class CollectionsAdmin {
 
-    final String method;
-    final String collectionID;
-    final Settings settings;
+    private final String collectionID;
+    private final Settings settings;
     IntegrityDBTools tools;
     
-    public CollectionsAdmin(String method, String collectionID, String pathToSettings) {
-        this.method = method;
+    public CollectionsAdmin(String collectionID, String pathToSettings) {
         this.collectionID = collectionID;
         
         ServiceSettingsProvider settingsLoader =
@@ -34,10 +32,11 @@ public class CollectionsAdmin {
     /**
      * Method to run the requested action on the database. Checks to see if the requested actions is supported.
      * And if we can operate on the requested collectionID
+     * @param method The method to invoke, allowed values 'add' or 'remove'
      * @throws InvalidMethodException if the method/action is not supported
      * @throws UnknownCollectionException if the requested collectionID is not found in settings. 
      */
-    public void invoke() throws InvalidMethodException, UnknownCollectionException {
+    public void invoke(String method) throws InvalidMethodException, UnknownCollectionException {
         hasCollection();
         if(method.equals("add")) {
             tools.addCollection(collectionID);

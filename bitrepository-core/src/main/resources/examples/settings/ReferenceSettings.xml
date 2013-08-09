@@ -401,6 +401,11 @@
         -->
       <DatabaseURL>jdbc:derby:auditcontributerdb</DatabaseURL>
     </AuditTrailContributerDatabase>
+    <!--
+      Path to the directory that should store integrity reports. 
+      Directory must be write and readable by integrity service.
+     -->
+    <IntegrityReportsDir>/var/integrity-reports/</IntegrityReportsDir>
   </IntegrityServiceSettings>
 
   <!-- Settings for the Monitoring / Status service -->

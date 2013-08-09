@@ -93,6 +93,7 @@
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:target/test/integrityservice/auditcontributerdb</DatabaseURL>
     </AuditTrailContributerDatabase>
+    <IntegrityReportsDir>target/</IntegrityReportsDir>
   </IntegrityServiceSettings>
   <MonitoringServiceSettings>
     <ID>monitoring-service</ID>

@@ -36,7 +36,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
 
     @Test(groups = {"regressiontest"})
     public void deletedFilesTest() throws Exception {
-        addDescription("Verifies that the hasIntegrityIssues() reports deleted correctly");
+        addDescription("Verifies that the hasIntegrityIssues() reports deleted files correctly");
         addStep("Report a delete file for a new Reporter", "hasIntegrityIssues() should return false and the summary " +
                 "report should inform that no issues where found.");
         BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues", "test", new File("target/"));

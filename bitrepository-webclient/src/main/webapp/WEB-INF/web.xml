@@ -25,7 +25,7 @@
   <display-name>Bitrepository webservice</display-name>
 
   <welcome-file-list>
-    <welcome-file>bitrepository-frontpage.jsp</welcome-file>
+    <welcome-file>bitrepository-frontpage.html</welcome-file>
   </welcome-file-list>
 
   <servlet>

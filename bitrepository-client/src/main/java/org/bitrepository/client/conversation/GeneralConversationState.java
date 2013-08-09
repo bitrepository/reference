@@ -46,12 +46,8 @@ public abstract class GeneralConversationState implements ConversationState {
     private final Logger log = LoggerFactory.getLogger(getClass());
     /** Defines that the timer is a daemon thread. */
     private static final Boolean TIMER_IS_DAEMON = true;
-    /** The name of the timer.*/
-    private static final String NAME_OF_TIMER = "Timer for the general conversation state";
     /** The timer used for timeout checks. */
-    private final Timer timer = new Timer(NAME_OF_TIMER, TIMER_IS_DAEMON);
-    /** The timer task for timeout of identify in this conversation. */
-    private  TimerTask stateTimeoutTask;
+    private final Timer timer;
     /** For response bookkeeping */
     private final ContributorResponseStatus responseStatus;
 
@@ -62,6 +58,8 @@ public abstract class GeneralConversationState implements ConversationState {
      */
     protected GeneralConversationState(Collection<String> expectedContributors) {
         responseStatus = new ContributorResponseStatus(expectedContributors);
+        timer = new Timer(getClass().getSimpleName() + " conversation state " + "timer",
+                TIMER_IS_DAEMON);
     }
 
     /**
@@ -72,7 +70,7 @@ public abstract class GeneralConversationState implements ConversationState {
      */
     public void start() {
         if (!responseStatus.getOutstandComponents().isEmpty()) {
-            timer.schedule(stateTimeoutTask = new StateTimerTask(), getTimeoutValue());
+            timer.schedule(new StateTimerTask(), getTimeoutValue());
             sendRequest();
         } else {
             // No contributors need to be called for the operation to finish.
@@ -106,7 +104,7 @@ public abstract class GeneralConversationState implements ConversationState {
             if(processMessage(response)) {
                 responseStatus.responseReceived(response);
                 if (responseStatus.haveAllComponentsResponded()) {
-                    stateTimeoutTask.cancel();
+                    timer.cancel();
                     changeState();
                 }
             }
@@ -150,7 +148,7 @@ public abstract class GeneralConversationState implements ConversationState {
     }
 
     private void failConversation(String message) {
-        stateTimeoutTask.cancel();
+        timer.cancel();
         getContext().getMonitor().operationFailed(message);
         getContext().setState(new FinishedState(getContext()));
     }
