@@ -26,9 +26,12 @@ import static org.mockito.Mockito.mock;
 import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
@@ -46,6 +49,7 @@ import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.reports.BasicIntegrityReporter;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
+import org.bitrepository.service.audit.AuditTrailDatabaseResults;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.database.DBConnector;
 import org.testng.Assert;
@@ -61,6 +65,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     public static final String TEST_PILLAR_3 = "test-pillar-3";
     
     public static final String FILE_1 = "test-file-1";
+    public static final String FILE_2 = "test-file-2";
     
     String TEST_COLLECTION;
     
@@ -183,7 +188,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
 
     @Test(groups = {"regressiontest", "integritytest"})
     public void testUpdatingFileIDsForValidChecksum() {
-        addDescription("Test the checksum integrity validator when two pillars agreee about the checksum, but the third does not.");
+        addDescription("Test that a file is set to having ChecksumState UNKNOWN, when it has a file-update.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
         HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter);
@@ -216,6 +221,52 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         }
     }
     
+    @Test(groups = {"regressiontest", "integritytest"})
+    public void testAuditTrailsForChecksumErrors() {
+        addDescription("Test audit trails for checksum errors. Verify that a pillar with a single checksum will"
+                + " be pointed out as the possible cause.");
+        IntegrityModel cache = getIntegrityModel();
+        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
+        TestAuditTrailManager auditManager = new TestAuditTrailManager();
+        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter);
+        
+        addStep("Test step on data without checksum error", "No audit trails.");
+        List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
+        insertChecksumDataForModel(cache, csData, TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData, TEST_PILLAR_2, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, csData, TEST_PILLAR_3, TEST_COLLECTION);
+        step.performStep();
+        Assert.assertNull(auditManager.latestAuditInfo);
+        
+        addStep("Test step on data where only two pillars have the file and they disagree about the checksum.",
+                "An audit trail with fileId and collectionId, but no pillar pointed out as cause");
+        insertChecksumDataForModel(cache, createChecksumData("1234cccc4321", FILE_2), TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, createChecksumData("cc12344321cc", FILE_2), TEST_PILLAR_2, TEST_COLLECTION);
+        step.performStep();
+        Assert.assertNotNull(auditManager.latestAuditInfo);
+        Assert.assertFalse(auditManager.latestAuditInfo.contains(TEST_PILLAR_1), auditManager.latestAuditInfo);
+        Assert.assertFalse(auditManager.latestAuditInfo.contains(TEST_PILLAR_2), auditManager.latestAuditInfo);
+        Assert.assertFalse(auditManager.latestAuditInfo.contains(TEST_PILLAR_3), auditManager.latestAuditInfo);
+        Assert.assertTrue(auditManager.latestAuditInfo.contains(FILE_2), auditManager.latestAuditInfo);
+        Assert.assertTrue(auditManager.latestAuditInfo.contains(TEST_COLLECTION), auditManager.latestAuditInfo);
+        
+        addStep("remove the last auditinfo", "");
+        auditManager.latestAuditInfo = null;
+        
+        addStep("Test step on data where two pillars have one checksum and the last pillar has a different one",
+                "An audit trail with fileId and collectionId, and the lone pillar is pointed out as possible cause");
+        insertChecksumDataForModel(cache, createChecksumData("1234cccc4321", FILE_2), TEST_PILLAR_1, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, createChecksumData("cc12344321cc", FILE_2), TEST_PILLAR_2, TEST_COLLECTION);
+        insertChecksumDataForModel(cache, createChecksumData("cc12344321cc", FILE_2), TEST_PILLAR_3, TEST_COLLECTION);
+        step.performStep();
+        Assert.assertNotNull(auditManager.latestAuditInfo);
+        Assert.assertTrue(auditManager.latestAuditInfo.contains(TEST_PILLAR_1), auditManager.latestAuditInfo);
+        Assert.assertFalse(auditManager.latestAuditInfo.contains(TEST_PILLAR_2), auditManager.latestAuditInfo);
+        Assert.assertFalse(auditManager.latestAuditInfo.contains(TEST_PILLAR_3), auditManager.latestAuditInfo);
+        Assert.assertTrue(auditManager.latestAuditInfo.contains(FILE_2), auditManager.latestAuditInfo);
+        Assert.assertTrue(auditManager.latestAuditInfo.contains(TEST_COLLECTION), auditManager.latestAuditInfo);
+    }
+    
     private FileIDsData createFileIdData(String ... fileids) {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems items = new FileIDsDataItems();
@@ -244,5 +295,23 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
 
     private IntegrityModel getIntegrityModel() {
         return new IntegrityDatabase(settings);
+    }
+    
+    private class TestAuditTrailManager implements AuditTrailManager {
+        String latestAuditInfo;
+
+        @Override
+        public void addAuditEvent(String collectionId, String fileId,
+                String actor, String info, String auditTrail,
+                FileAction operation) {
+            latestAuditInfo = info;
+        }
+
+        @Override
+        public AuditTrailDatabaseResults getAudits(String collectionId,
+                String fileId, Long minSeqNumber, Long maxSeqNumber,
+                Date minDate, Date maxDate, Long maxNumberOfResults) {
+            return null;
+        }
     }
 }
