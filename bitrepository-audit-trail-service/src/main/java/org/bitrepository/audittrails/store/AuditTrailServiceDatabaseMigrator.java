@@ -29,7 +29,6 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_TA
 
 import java.util.Map;
 
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseMigrator;
 import org.bitrepository.service.database.DatabaseUtils;
@@ -38,21 +37,23 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Migration class for the AuditTrailDatabase of the AuditTrailService.
+ * Will only try to perform the migration on an embedded derby database.
  */
 public class AuditTrailServiceDatabaseMigrator extends DatabaseMigrator {
     /** The log.*/
     private static Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
-    /** The settings.*/
-    private final Settings settings;
+    
+    /** The name of the update script for version 1 to 2.*/
+    private static final String UPDATE_SCRIPT_VERSION_1_TO_2 = "sql/derby/auditTrailServiceDBUpdate1to2.sql";
+    /** The name of the update script for version 2 to 3.*/
+    private static final String UPDATE_SCRIPT_VERSION_2_TO_3 = "sql/derby/auditTrailServiceDBUpdate2to3.sql";
     
     /**
      * Constructor.
      * @param connector connection to the database.
-     * @param settings The settings.
      */
-    public AuditTrailServiceDatabaseMigrator(DBConnector connector, Settings settings) {
+    public AuditTrailServiceDatabaseMigrator(DBConnector connector) {
         super(connector);
-        this.settings = settings;
     }
     
     @Override
@@ -77,36 +78,12 @@ public class AuditTrailServiceDatabaseMigrator extends DatabaseMigrator {
         }
         
         if(!versions.containsKey(DATABASE_VERSION_ENTRY) || versions.get(DATABASE_VERSION_ENTRY) < 2) {
-            migrateVersion1To2();
+            log.warn("Migrating AuditServiceDB from version 1 to 2.");
+            migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_1_TO_2);
         }
         if(!versions.containsKey(DATABASE_VERSION_ENTRY) || versions.get(DATABASE_VERSION_ENTRY) < 3) {
-            migrateVersion2To3();
+            log.warn("Migrating AuditServiceDB from version 2 to 3.");
+            migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_2_TO_3);
         }
-    }
-    
-    /**
-     * Migrate from version 1 to version 2 with the appropriate script.
-     * 
-     * The script contains a placeholder for the default collection (e.g. first defined collection). 
-     * This placeholder must be replaced according to the script.
-     */
-    private void migrateVersion1To2() {
-        String defaultCollection = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-        log.warn("Database outdated. Updating from version 1 to version 2, where all entries are set as belonging to "
-                + "the collection '" + defaultCollection + "'");
-
-        // How to do this?
-        throw new IllegalStateException("Must update database from version 1 to 2, but this has "
-                + "not been implemented!!!");
-    }
-    
-    /**
-     * Migrate from version 2 to version 3 with the appropriate script.
-     * ...
-     */
-    private void migrateVersion2To3() {
-        // How to do this?
-        throw new IllegalStateException("Must update database from version 2 to 3, but this has "
-                + "not been implemented!!!");
     }
 }

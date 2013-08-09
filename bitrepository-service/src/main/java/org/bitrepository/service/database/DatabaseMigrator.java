@@ -39,7 +39,7 @@ import java.util.Map;
  *   version int not null             -- version of table
  * );
  */
-public abstract class DatabaseMigrator {
+public abstract class DatabaseMigrator extends DatabaseMaintainer {
     /** The connection to the database.*/
     protected final DBConnector connector;
     
@@ -113,6 +113,27 @@ public abstract class DatabaseMigrator {
         
         DatabaseUtils.executeStatement(connector, updateSql, args);
         DatabaseUtils.executeStatement(connector, migrateSql, newVersion, tablename);
+    }
+    
+    /**
+     * Method for running a specific migrate script on the embedded database.
+     * Will throw an exception if the migration is tried to be performed on another type of database.
+     * @param migrateScriptName The name of the migrate script to run.
+     */
+    protected void migrateDerbyDatabase(String migrateScriptName) {
+        if(connector.getDatabaseDriverClass().equals(DatabaseUtils.DERBY_EMBEDDED_DRIVER)) {
+            try {
+                runScript(connector, migrateScriptName);
+            } catch (Exception e) {
+                throw new IllegalStateException("Cannot migrate the database with the script '" + migrateScriptName 
+                        + "'. It is very possible that the database has to be migrated by manually running "
+                        + "migrate-scripts.", e);
+            }
+        } else {
+            throw new IllegalStateException("Can only perform database migrations on embedded derby databases. "
+                    + "Migration of other databases must be performed manually. Your database had the drivers: "
+                    + connector.getDatabaseDriverClass());
+        }
     }
     
     /**

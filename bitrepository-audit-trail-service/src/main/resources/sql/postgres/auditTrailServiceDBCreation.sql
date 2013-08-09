@@ -143,8 +143,8 @@ CREATE TABLE audittrail (
                                     -- Used for looking up in the actor table.
     operation VARCHAR(100),         -- The name of the action behind the audit.
     operation_date TIMESTAMP,       -- The date when the action was performed.
-    audit VARCHAR(255),             -- The audit trail delivered from the actor. 
-    information VARCHAR(255),       -- The information about the audit.
+    audit TEXT,                     -- The audit trail delivered from the actor. 
+    information TEXT,               -- The information about the audit.
     
     FOREIGN KEY (contributor_key) REFERENCES contributor(contributor_key),
                                  -- Foreign key constraint on pillar_key, enforcing the presence of the referred id
@@ -152,7 +152,6 @@ CREATE TABLE audittrail (
                                  -- Foreign key constraint on file_key, enforcing the presence of the referred id                                 
     FOREIGN KEY (actor_key) REFERENCES actor(actor_key)
                                  -- Foreign key constraint on pillar_key, enforcing the presence of the referred id
-
 );
 
 CREATE INDEX dateindex ON audittrail ( operation_date );

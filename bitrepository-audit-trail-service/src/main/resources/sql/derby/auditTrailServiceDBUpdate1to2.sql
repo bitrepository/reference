@@ -76,4 +76,4 @@ rename column audittrail.audit_guid to audit_key;
 rename column audittrail.contributor_guid to contributor_key;
 rename column audittrail.file_guid to file_key;
 rename column audittrail.actor_guid to actor_key;
-update tableversions set version = 2 where tablename = 'auditauditservicedb'
+update tableversions set version = 2 where tablename = 'auditauditservicedb';
