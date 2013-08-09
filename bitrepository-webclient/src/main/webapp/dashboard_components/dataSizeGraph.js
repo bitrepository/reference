@@ -74,7 +74,7 @@
             var y = item.datapoint[1];
             var d = new moment.utc(x);
             var localDate = d.local();
-            var formated_date = localDate.format("YYYY/MM/DD HH:mm");
+            var formated_date = localDate.tz("Europe/Copenhagen").format("YYYY/MM/DD HH:mm");
             showTooltip(item.pageX, 
                         item.pageY,
                         formated_date  + "<br/><strong>" + y.toFixed(4) + " " + yAxisText +  "</strong>");
