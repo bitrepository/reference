@@ -42,5 +42,6 @@
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/integrityservice/auditcontributerdb</DatabaseURL>
     </AuditTrailContributerDatabase>
+    <IntegrityReportsDir>conf/integrityservice/reportdir</IntegrityReportsDir>
   </IntegrityServiceSettings>
 </ReferenceSettings>

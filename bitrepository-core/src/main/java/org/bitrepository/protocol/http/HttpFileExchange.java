@@ -30,10 +30,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -202,7 +204,7 @@ public class HttpFileExchange implements FileExchange {
             
             // HTTP code >= 300 means error!
             if(response.getStatusLine().getStatusCode() >= HTTP_ERROR_CODE_BARRIER) {
-                throw new IOException("Could not upload file, got status code '" 
+                throw new IOException("Could not upload file to URL '" + url.toExternalForm() + "'. got status code '" 
                         + response.getStatusLine() + "'");
             }
             log.debug("Uploaded datastream to url '" + url.toString() + "' and "
@@ -220,11 +222,16 @@ public class HttpFileExchange implements FileExchange {
         ArgumentValidator.checkNotNull(settings.getReferenceSettings().getFileExchangeSettings(), 
                 "The ReferenceSettings are missing the settings for the file exchange.");
         FileExchangeSettings feSettings = settings.getReferenceSettings().getFileExchangeSettings();
-        
-        // create the URL based on hardcoded values (change to using settings!)
-        URL res = new URL(feSettings.getProtocolType().value(), feSettings.getServerName(), 
-                feSettings.getPort().intValue(), feSettings.getPath()+ "/" + filename);
-        return res;
+        try {
+            String urlEncodedFilename = URLEncoder.encode(filename, "UTF-8");
+
+            // create the URL based on hardcoded values (change to using settings!)
+            URL res = new URL(feSettings.getProtocolType().value(), feSettings.getServerName(), 
+                    feSettings.getPort().intValue(), feSettings.getPath() + "/" + urlEncodedFilename);
+            return res;
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("Cannot create the URL.", e);
+        }
     }
     
     /**
