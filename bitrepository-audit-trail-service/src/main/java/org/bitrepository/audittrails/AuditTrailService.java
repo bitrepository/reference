@@ -26,11 +26,9 @@ package org.bitrepository.audittrails;
 
 import java.util.Collection;
 import java.util.Date;
-
 import javax.jms.JMSException;
 
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
-import org.bitrepository.audittrails.preserver.AuditTrailPreserver;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -55,8 +53,6 @@ public class AuditTrailService implements LifeCycledService {
     private final AuditTrailCollector collector;
     /** The mediator for handling the messages.*/
     private final ContributorMediator mediator;
-    /** The preserver of audit trails.*/
-    private final AuditTrailPreserver preserver;
     /** The settings.*/
     private final Settings settings;
 
@@ -65,29 +61,24 @@ public class AuditTrailService implements LifeCycledService {
      * @param store The store for the audit trail data.
      * @param collector The collector of new audit trail data.
      * @param mediator The mediator for the communication of this contributor.
-     * @param preserver Instance for handling the preservation of audit trails.
      * @param settings The AuditTrailService settings.
      */
     public AuditTrailService(
             AuditTrailStore store,
             AuditTrailCollector collector,
             ContributorMediator mediator,
-            AuditTrailPreserver preserver,
             Settings settings) {
         ArgumentValidator.checkNotNull(collector, "AuditTrailCollector collector");
         ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
         ArgumentValidator.checkNotNull(mediator, "ContributorMediator mediator");
-        ArgumentValidator.checkNotNull(preserver, "AuditTrailPreserver preserver");
         ArgumentValidator.checkNotNull(settings, "Settings settings");
 
         this.store = store;
         this.collector = collector;
         this.mediator = mediator;
-        this.preserver = preserver;
         this.settings = settings;
 
         mediator.start();
-        preserver.start();
     }
 
     /**
@@ -116,13 +107,6 @@ public class AuditTrailService implements LifeCycledService {
                 : settings.getRepositorySettings().getCollections().getCollection()) {
             collector.collectNewestAudits(c.getID());
         }
-    }
-
-    /**
-     * Performs the preservation of audit trails.
-     */
-    public void preserveAuditTrailsNow() {
-        preserver.preserveRepositoryAuditTrails();
     }
 
     @Override

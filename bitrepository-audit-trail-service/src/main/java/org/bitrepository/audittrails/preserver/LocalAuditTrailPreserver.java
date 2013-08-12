@@ -34,13 +34,12 @@ import java.util.TimerTask;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.settings.repositorysettings.Collection;
+import org.bitrepository.settings.referencesettings.AuditTrailPreservation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,25 +61,29 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
     private AuditPreservationTimerTask auditTask = null;
     /** The mapping between collection and the Audit trail packer for packing and compressing the audit trails.*/
     Map<String, AuditPacker> auditPackers = new HashMap<String, AuditPacker>();
-    /** The settings for the local audit trail preserver.*/
-    private final Settings settings;
+    /** The preservationSettings for the local audit trail preserver.*/
+    private final AuditTrailPreservation preservationSettings;
+    /** The fileexchange to use for uploading files which should be put to the preservation collection */
+    private final FileExchange exchange;
     
     /**
      * Constructor.
-     * @param settings The settings for the audit trail service.
+     * @param settings The preservationSettings for the audit trail service.
      * @param store The storage of the audit trails, which should be preserved.
      * @param client The PutFileClient for putting the audit trail packages to the collection.
      */
-    public LocalAuditTrailPreserver(Settings settings, AuditTrailStore store, PutFileClient client) {
-        ArgumentValidator.checkNotNull(settings, "Settings settings");
+    public LocalAuditTrailPreserver(AuditTrailPreservation settings, AuditTrailStore store, PutFileClient client,
+                                    FileExchange exchange) {
+        ArgumentValidator.checkNotNull(settings, "Settings preservationSettings");
         ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
         ArgumentValidator.checkNotNull(client, "PutFileClient client");
         
-        this.settings = settings;
+        this.preservationSettings = settings;
         this.store = store;
         this.client = client;
-        for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
-            this.auditPackers.put(c.getID(), new AuditPacker(store, settings, c.getID()));
+        this.exchange = exchange;
+        for(String collectionID : SettingsUtils.getAllCollectionsIDs()) {
+            this.auditPackers.put(collectionID, new AuditPacker(store, settings, collectionID));
         }
     }
     
@@ -93,11 +96,10 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         
         log.info("Instantiating the preservation of workflows.");
         timer = new Timer();
-        auditTask = new AuditPreservationTimerTask(
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservationInterval());
-        timer.scheduleAtFixedRate(auditTask, 
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getTimerTaskCheckInterval(), 
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getTimerTaskCheckInterval());
+        auditTask = new AuditPreservationTimerTask(preservationSettings.getAuditTrailPreservationInterval());
+        timer.scheduleAtFixedRate(auditTask,
+                preservationSettings.getAuditTrailPreservationInterval()/10,
+                preservationSettings.getAuditTrailPreservationInterval()/10);
     }
 
     @Override
@@ -114,8 +116,8 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         } else {
             auditTask.resetTime();
         }
-        for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
-            performAuditTrailPreservation(c.getID());
+        for(String collectionID : SettingsUtils.getAllCollectionsIDs()) {
+            performAuditTrailPreservation(collectionID);
         }
     }
     
@@ -135,8 +137,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
             
             EventHandler eventHandler = new AuditPreservationEventHandler(
                     auditPackers.get(collectionId).getSequenceNumbersReached(), store);
-            client.putFile(settings.getReferenceSettings().getAuditTrailServiceSettings()
-                    .getAuditTrailPreservationCollection(), url,
+            client.putFile(preservationSettings.getAuditTrailPreservationCollection(), url,
                     auditPackage.getName(), auditPackage.length(), null, null, eventHandler,
                     "Preservation of audit trails from the AuditTrail service.");
 
@@ -154,7 +155,6 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
      * @throws IOException If any issues occur with uploading the file.
      */
     private URL uploadFile(File file) throws IOException {
-        FileExchange exchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
         return exchange.uploadToServer(new FileInputStream(file), file.getName());
     }
     

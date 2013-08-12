@@ -42,9 +42,6 @@
     </AuditTrailServiceDatabase>
     <CollectAuditInterval>3600000</CollectAuditInterval> 
     <TimerTaskCheckInterval>2000</TimerTaskCheckInterval>
-    <AuditTrailPreservationInterval>604800000</AuditTrailPreservationInterval>
-    <AuditTrailPreservationCollection>books</AuditTrailPreservationCollection>
-    <AuditTrailPreservationTemporaryDirectory>/tmp/</AuditTrailPreservationTemporaryDirectory>
   </AuditTrailServiceSettings>
   <FileExchangeSettings>
     <ProtocolType>HTTP</ProtocolType>

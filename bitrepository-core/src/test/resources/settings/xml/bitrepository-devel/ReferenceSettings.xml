@@ -73,9 +73,11 @@
     </AuditTrailServiceDatabase>
     <CollectAuditInterval>3600000</CollectAuditInterval>
     <TimerTaskCheckInterval>60000</TimerTaskCheckInterval>
-    <AuditTrailPreservationInterval>604800000</AuditTrailPreservationInterval>
-    <AuditTrailPreservationCollection>TwoPillarCollection</AuditTrailPreservationCollection>
-    <AuditTrailPreservationTemporaryDirectory>${build.dir}/test/audittrailservice//tmpDir</AuditTrailPreservationTemporaryDirectory>
+    <AuditTrailPreservation>
+      <AuditTrailPreservationInterval>604800000</AuditTrailPreservationInterval>
+      <AuditTrailPreservationCollection>TwoPillarCollection</AuditTrailPreservationCollection>
+      <AuditTrailPreservationTemporaryDirectory>${build.dir}/test/audittrailservice//tmpDir</AuditTrailPreservationTemporaryDirectory>
+    </AuditTrailPreservation>
   </AuditTrailServiceSettings>
   <IntegrityServiceSettings>
     <ID>integrity-service</ID>

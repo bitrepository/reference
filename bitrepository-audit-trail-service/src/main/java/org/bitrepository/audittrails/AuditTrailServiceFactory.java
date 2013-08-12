@@ -121,12 +121,17 @@ public final class AuditTrailServiceFactory {
                 AuditTrailStore store = new AuditTrailServiceDAO(settings);
                 AuditTrailClient client = AccessComponentFactory.getInstance().createAuditTrailClient(settings, 
                         securityManager, settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
-                //Fixme Support for multiple collections.
-                String collectionID = settings.getCollections().get(0).getID();
+
                 AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
-                AuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, putClient);
+                AuditTrailPreserver preserver;
+                if (settings.getReferenceSettings().getAuditTrailServiceSettings().isSetAuditTrailPreservation()) {
+                    preserver = new LocalAuditTrailPreserver(
+                            settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation(),
+                            store, putClient, ProtocolComponentFactory.getInstance().getFileExchange(settings));
+                    preserver.start();
+                }
                 
-                auditTrailService = new AuditTrailService(store, collector, mediator, preserver, settings);
+                auditTrailService = new AuditTrailService(store, collector, mediator, settings);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

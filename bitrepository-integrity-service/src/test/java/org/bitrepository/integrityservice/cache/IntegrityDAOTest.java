@@ -42,16 +42,12 @@ import org.bitrepository.integrityservice.cache.database.ChecksumState;
 import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
-import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.database.DBConnector;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.mockito.Mockito.mock;
-
 public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
-    AuditTrailManager auditManager;
     String TEST_PILLAR_1 = "MY-TEST-PILLAR-1";
     String TEST_PILLAR_2 = "MY-TEST-PILLAR-2";
     String EXTRA_PILLAR = "MY-EXTRA-PILLAR";
@@ -67,8 +63,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     public void setup() throws Exception {
         super.setup();
         TEST_COLLECTIONID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-        auditManager = mock(AuditTrailManager.class);
-    }
+   }
     
     @Override 
     protected void customizeSettings() {

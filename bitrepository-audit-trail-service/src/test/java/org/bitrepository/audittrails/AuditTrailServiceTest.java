@@ -69,7 +69,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
         
         addStep("Instantiate the service.", "Should work.");
-        AuditTrailService service = new AuditTrailService(store, collector, mediator, preserver, settings);
+        AuditTrailService service = new AuditTrailService(store, collector, mediator, settings);
         Assert.assertEquals(client.getCallsToGetAuditTrails(), 0);
         service.start();
         
