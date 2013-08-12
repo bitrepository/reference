@@ -30,9 +30,9 @@ public class ReplaceFileEventHandler extends CompleteEventAwaiter {
         
         ReplaceFileCompletePillarEvent pillarEvent = (ReplaceFileCompletePillarEvent) event;
         StringBuilder componentText = new StringBuilder();
-        if(pillarEvent.getChecksumForDeletedFile() != null) {
-            componentText.append("Checksum for delete: " 
-                    + Base16Utils.decodeBase16(pillarEvent.getChecksumForDeletedFile().getChecksumValue()) + "\t");
+        if(pillarEvent.getChecksumForReplacedFile() != null) {
+            componentText.append("Checksum for replaced file: " 
+                    + Base16Utils.decodeBase16(pillarEvent.getChecksumForReplacedFile().getChecksumValue()) + "\t");
         }
         
         if(pillarEvent.getChecksumForNewFile() != null) {

@@ -32,7 +32,7 @@ import org.bitrepository.client.eventhandler.ContributorCompleteEvent;
 */
 public class ReplaceFileCompletePillarEvent extends ContributorCompleteEvent {
     /** @see #getChecksumForDeletedFile(). */
-    private final ChecksumDataForFileTYPE deletedFileChecksum;
+    private final ChecksumDataForFileTYPE replacedFileChecksum;
     /** @see #getChecksumForNewFile(). */
     private final ChecksumDataForFileTYPE newFileChecksum;
     
@@ -45,14 +45,14 @@ public class ReplaceFileCompletePillarEvent extends ContributorCompleteEvent {
             String pillarID, String collectionID, ChecksumDataForFileTYPE deletedFile, ChecksumDataForFileTYPE newFile) {
         super(pillarID, collectionID);
         this.newFileChecksum = newFile;
-        this.deletedFileChecksum = deletedFile;
+        this.replacedFileChecksum = deletedFile;
     }
 
     /** 
      * @return The checksum result for the deleted file from a single pillar. 
      */
-    public ChecksumDataForFileTYPE getChecksumForDeletedFile() {
-        return deletedFileChecksum;
+    public ChecksumDataForFileTYPE getChecksumForReplacedFile() {
+        return replacedFileChecksum;
     }
     
     /** 
@@ -65,6 +65,6 @@ public class ReplaceFileCompletePillarEvent extends ContributorCompleteEvent {
     @Override 
     public String additionalInfo() {
         return super.additionalInfo() + ", checksum for new file: '" + newFileChecksum + "'," +
-                "checksum for deleted file: '" + deletedFileChecksum + "' ";
+                "checksum for replaced file: '" + replacedFileChecksum + "' ";
     }
 }
