@@ -500,6 +500,13 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element name="AuditTrailPreservation" type="AuditTrailPreservation" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            The settings to use for audit trail preservation, eg. backup of audit trails..
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
         <xs:element name="MaxNumberOfEventsInRequest" type="xs:positiveInteger" minOccurs="0">
           <xs:annotation>
             <xs:documentation xml:lang="en">
@@ -507,30 +514,35 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="AuditTrailPreservationInterval" type="xs:long">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              The amount of milliseconds between each preservation of audit trails.
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="AuditTrailPreservationCollection" type="xs:string">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              The collection the audit trail should be backup to.
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="AuditTrailPreservationTemporaryDirectory" type="xs:string">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              Path to the directory where the temporary audit trail preservation files are stored.
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+
+  <xs:complexType name="AuditTrailPreservation">
+    <xs:sequence>
+      <xs:element name="AuditTrailPreservationInterval" type="xs:long">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            The amount of milliseconds between each preservation of audit trails.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="AuditTrailPreservationCollection" type="xs:string">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            The collection the audit trail should be backup to.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="AuditTrailPreservationTemporaryDirectory" type="xs:string">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Path to the directory where the temporary audit trail preservation files are stored.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
 
   <xs:element name="IntegrityServiceSettings">
     <xs:complexType>

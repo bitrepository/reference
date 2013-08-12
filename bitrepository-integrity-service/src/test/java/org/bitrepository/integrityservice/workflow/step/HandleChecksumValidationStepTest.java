@@ -21,8 +21,6 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import static org.mockito.Mockito.mock;
-
 import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -39,21 +37,19 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
-import org.bitrepository.integrityservice.TestIntegrityModel;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.ChecksumState;
-import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.FileState;
-import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.reports.BasicIntegrityReporter;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.service.audit.AuditTrailDatabaseResults;
 import org.bitrepository.service.audit.AuditTrailManager;
-import org.bitrepository.service.database.DBConnector;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * Performs the validation of the integrity for the checksums.
@@ -65,6 +61,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     public static final String TEST_PILLAR_3 = "test-pillar-3";
     
     public static final String FILE_1 = "test-file-1";
+    private AuditTrailManager auditManager;
     public static final String FILE_2 = "test-file-2";
     
     String TEST_COLLECTION;

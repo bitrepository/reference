@@ -33,9 +33,9 @@ import java.util.Map;
 
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.settings.referencesettings.AuditTrailPreservation;
 
 /**
  * Performs the extraction and packaging of audit trails for preservation for a specific collection.
@@ -61,11 +61,10 @@ public class AuditPacker {
      * Constructor.
      * @param store The audit trail store
      */
-    public AuditPacker(AuditTrailStore store, Settings settings, String collectionId) {
+    public AuditPacker(AuditTrailStore store, AuditTrailPreservation settings, String collectionId) {
         this.store = store;
         this.collectionId = collectionId;
-        this.directory = FileUtils.retrieveDirectory(settings.getReferenceSettings().getAuditTrailServiceSettings()
-                .getAuditTrailPreservationTemporaryDirectory());
+        this.directory = FileUtils.retrieveDirectory(settings.getAuditTrailPreservationTemporaryDirectory());
         this.contributors.addAll(SettingsUtils.getAuditContributorsForCollection(collectionId));
         
         initialiseReachedSequenceNumbers();

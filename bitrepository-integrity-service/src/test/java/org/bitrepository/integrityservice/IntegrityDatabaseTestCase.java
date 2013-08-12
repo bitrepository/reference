@@ -21,15 +21,6 @@
  */
 package org.bitrepository.integrityservice;
 
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTIONS_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_STATS_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILE_INFO_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_STATS_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TABLE;
-import static org.mockito.Mockito.mock;
-
 import java.math.BigInteger;
 import java.util.List;
 
@@ -42,7 +33,6 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityDatabaseCreator;
-import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
@@ -50,8 +40,9 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.*;
+
 public abstract class IntegrityDatabaseTestCase extends ExtendedTestCase {
-    protected AuditTrailManager auditManager;
     protected Settings settings;
     
     @BeforeMethod (alwaysRun = true)
@@ -63,7 +54,6 @@ public abstract class IntegrityDatabaseTestCase extends ExtendedTestCase {
 
         IntegrityDatabaseCreator integrityDatabaseCreator = new IntegrityDatabaseCreator();
         integrityDatabaseCreator.createIntegrityDatabase(settings, null);
-        auditManager = mock(AuditTrailManager.class);
     }
     
     @AfterMethod (alwaysRun = true)

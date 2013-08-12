@@ -299,22 +299,26 @@
       Timeunit in milliseconds
     -->
     <TimerTaskCheckInterval>2000</TimerTaskCheckInterval>
-    
-    <!-- 
-      The interval at which collected AuditTrails are backedup / preserved. 
-      Timeunit in milliseconds
-    -->
-    <AuditTrailPreservationInterval>604800000</AuditTrailPreservationInterval>
 
-    <!--
-      The collection to use for storing the audit trail backup.
-    -->
-    <AuditTrailPreservationCollection>SomeCollection</AuditTrailPreservationCollection>
+    <!-- Defines the configuration for audit trail preservation. If undefined no audit trail preservation
+    will be performed.-->
+    <AuditTrailPreservation>
+      <!--
+        The interval at which collected AuditTrails are backedup / preserved.
+        Timeunit in milliseconds
+      -->
+      <AuditTrailPreservationInterval>604800000</AuditTrailPreservationInterval>
 
-    <!-- 
-      Directory for temporary storage of AuditTrails for preservation.
-    -->
-    <AuditTrailPreservationTemporaryDirectory>/tmp/</AuditTrailPreservationTemporaryDirectory>
+      <!--
+        The collection to use for storing the audit trail backup.
+      -->
+      <AuditTrailPreservationCollection>SomeCollection</AuditTrailPreservationCollection>
+
+      <!--
+        Directory for temporary storage of AuditTrails for preservation.
+      -->
+      <AuditTrailPreservationTemporaryDirectory>/tmp/</AuditTrailPreservationTemporaryDirectory>
+    </AuditTrailPreservation>
   </AuditTrailServiceSettings>
 
   <!-- Settings for the IntegrityService -->

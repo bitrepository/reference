@@ -24,11 +24,9 @@
  */
 package org.bitrepository.integrityservice.component;
 
-import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /**
  * Contains the generic parts for tests integrating to the message bus. 
