@@ -131,6 +131,8 @@ public class PutFile extends CommandLineClient {
         CompleteEventAwaiter eventHandler = new PutFileEventHandler(settings, output, printChecksums);
         client.putFile(getCollectionID(), url, fileId, f.length(), validationChecksum, requestChecksum, eventHandler, null);
 
+        OperationEvent finalEvent = eventHandler.getFinish(); 
+        
         if(cmdHandler.hasOption(Constants.DELETE_FILE_ARG)) {
             try {
                 fileexchange.deleteFromServer(url);
@@ -140,7 +142,7 @@ public class PutFile extends CommandLineClient {
             }
         }
 
-        return eventHandler.getFinish();
+        return finalEvent;
     }
 
 
