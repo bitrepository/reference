@@ -36,4 +36,4 @@ RENAME COLUMN audittrail.NEW_audit TO audit;
 
 -- Set the table versions
 insert into tableversions ( tablename, version ) values ( 'auditcontributordb', 3);
-update tableversions set version = 3 where tablename = 'audittrail';
+update tableversions set version = 3 where tablename = 'audit';

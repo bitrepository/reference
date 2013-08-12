@@ -24,10 +24,9 @@
 connect 'jdbc:derby:auditcontributerdb';
 
 -- Update table versions.
-UPDATE tableversions SET version=2 WHERE tablename='audit';
+UPDATE tableversions SET version=2 WHERE tablename = 'audit';
+UPDATE tableversions SET version=2 WHERE tablename = 'file';
 
 -- Add constraints to audittrail table.
-ALTER TABLE audittrail (
-    ADD FOREIGN KEY ( file_guid ) REFERENCES file ( file_guid ),
-    ADD FOREIGN KEY ( actor_guid ) REFERENCES actor ( actor_guid )
-);
+ALTER TABLE audittrail ADD FOREIGN KEY ( file_guid ) REFERENCES file ( file_guid );
+ALTER TABLE audittrail ADD FOREIGN KEY ( actor_guid ) REFERENCES actor ( actor_guid );

@@ -45,6 +45,9 @@ public class DatabaseUtils {
     /** The log.*/
     private static Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
 
+    /** The name of the embedded derby driver.*/
+    public static final String DERBY_EMBEDDED_DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
+    
     /** Private constructor to prevent instantiation of this utility class.*/
     private DatabaseUtils() { }
     

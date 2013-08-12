@@ -144,11 +144,13 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
         String pillarId = findSingleInconsistentPillar(checksumMap);
         
         if(pillarId != null) {
-            auditText = "Checksum inconsistency for the file '" + fileId + "'. Possibly corrupt at pillar '" + pillarId
+            auditText = "Checksum inconsistency for the file '" + fileId + "' at collection '" 
+                    + reporter.getCollectionID() + "'. Possibly corrupt at pillar '" + pillarId 
                     + "', since all the other pillars agree upon another checksum.";
         } else {
-            auditText = "Checksum inconsistency for the file '" + fileId + "'. The pillars have registered more than "
-                    + "one unique checksum for the file.";
+            auditText = "Checksum inconsistency for the file '" + fileId + "' at collection '" 
+                    + reporter.getCollectionID() + "'. The pillars have registered more than one unique "
+                    + "checksum for the file.";
         }
         auditManager.addAuditEvent(reporter.getCollectionID(), fileId, "IntegrityService", 
                 auditText, "IntegrityService validating the checksums.", FileAction.INCONSISTENCY);

@@ -149,8 +149,8 @@ create table audittrail (
                                     -- Used for looking up in the actor table.
     operation varchar(100),         -- The name of the action behind the audit.
     operation_date timestamp,       -- The date when the action was performed.
-    audit CLOB,             -- The audit trail delivered from the actor. 
-    information CLOB,       -- The information about the audit.
+    audit CLOB,                     -- The audit trail delivered from the actor. 
+    information CLOB,               -- The information about the audit.
     
     FOREIGN KEY (contributor_key) REFERENCES contributor(contributor_key),
                                  -- Foreign key constraint on pillar_key, enforcing the presence of the referred id

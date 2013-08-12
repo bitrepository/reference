@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.service.audit;
+package org.bitrepository.audittrails.store;
 
 import java.io.File;
 import org.bitrepository.common.settings.Settings;
@@ -35,16 +35,16 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_FILEID;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.DATABASE_VERSION_ENTRY;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_AUDIT;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.DATABASE_VERSION_ENTRY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_TABLE;
 
-public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase {
+// TODO: cannot test migration of version 1 to 2, since it requires a collection id.
+// Therefore this is only tested with version 2 of the database.
+public class AuditServiceDatabaseMigrationTest extends ExtendedTestCase {
     protected Settings settings;
     
-    static final String PATH_TO_DATABASE_UNPACKED = "target/test/audits/auditcontributerdb-v1";
-    static final String PATH_TO_DATABASE_JAR_FILE = "src/test/resources/auditcontributerdb-v1.jar";
+    static final String PATH_TO_DATABASE_UNPACKED = "target/test/audits/auditservicedb-v2";
+    static final String PATH_TO_DATABASE_JAR_FILE = "src/test/resources/auditservicedb-v2.jar";
     
     static final String FILE_ID = "default-file-id";
 
@@ -52,11 +52,11 @@ public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("ReferencePillarTest");
         
-        settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase().setDatabaseURL(
-                "jdbc:derby:" + PATH_TO_DATABASE_UNPACKED + "/auditcontributerdb");
+        settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase().setDatabaseURL(
+                "jdbc:derby:" + PATH_TO_DATABASE_UNPACKED + "/auditservicedb");
 
         DatabaseSpecifics auditDB =
-                settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase();
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase();
         DerbyDatabaseDestroyer.deleteDatabase(auditDB);
 
         FileUtils.unzip(new File(PATH_TO_DATABASE_JAR_FILE), FileUtils.retrieveDirectory(PATH_TO_DATABASE_UNPACKED));
@@ -68,28 +68,22 @@ public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase
     }
     
     @Test( groups = {"regressiontest", "databasetest"})
-    public void testMigratingAuditContributorDatabase() {
+    public void testMigratingAuditServiceDatabase() {
         addDescription("Tests that the database can be migrated to latest version with the provided scripts.");
         DBConnector connector = new DBConnector(
-                settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase());
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
 
-        addStep("Validate setup", "File table and audit table has version 1 ");
+        addStep("Validate setup", "audit table has version 2 and database version 2");
         String extractVersionSql = "SELECT version FROM tableversions WHERE tablename = ?";
-        int fileTableVersionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, FILE_TABLE);
-        Assert.assertEquals(fileTableVersionBefore, 1, "File table before migration");
-        int auditTableVersionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, AUDITTRAIL_AUDIT);
-        Assert.assertEquals(auditTableVersionBefore, 1, "Table version before migration");
+        int auditTableVersionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, AUDITTRAIL_TABLE);
+        Assert.assertEquals(auditTableVersionBefore, 2, "Table version before migration");
+        int dbTableVersionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, DATABASE_VERSION_ENTRY);
+        Assert.assertEquals(dbTableVersionBefore, 2, "Table version before migration");
         
-        addStep("Ingest a entry to the database without the collection id", "works only in version 1.");
-        String sqlInsert = "INSERT INTO " + FILE_TABLE + " ( " + FILE_FILEID + " ) VALUES ( ? )";
-        DatabaseUtils.executeStatement(connector, sqlInsert, FILE_ID);
-        
-        addStep("Perform migration", "File table has version 2, audit table version 3 and database-version is 3");
-        AuditTrailContributorDatabaseMigrator migrator = new AuditTrailContributorDatabaseMigrator(connector);
+        addStep("Perform migration", "audit table version 3 and database-version is 3");
+        AuditTrailServiceDatabaseMigrator migrator = new AuditTrailServiceDatabaseMigrator(connector);
         migrator.migrate();
-        int fileTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, FILE_TABLE);
-        Assert.assertEquals(fileTableVersionAfter, 2, "Table version after migration");
-        int auditTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, AUDITTRAIL_AUDIT);
+        int auditTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, AUDITTRAIL_TABLE);
         Assert.assertEquals(auditTableVersionAfter, 3, "Table version after migration");
         int dbTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, DATABASE_VERSION_ENTRY);
         Assert.assertEquals(dbTableVersionAfter, 3, "Table version after migration");

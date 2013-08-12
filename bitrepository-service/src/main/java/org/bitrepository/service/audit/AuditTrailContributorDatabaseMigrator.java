@@ -21,35 +21,37 @@
  */
 package org.bitrepository.service.audit;
 
+import static org.bitrepository.service.audit.AuditDatabaseConstants.DATABASE_VERSION_ENTRY;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
+
 import java.util.Map;
-import org.bitrepository.common.settings.Settings;
+
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseMigrator;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_COLLECTIONID;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.DATABASE_VERSION_ENTRY;
-
 /**
- * Migration class for the ChecksumDatabase of the ReferencePillar and ChecksumPillar.
+ * Migration class for the AuditTrailContributorDatabase of the ReferencePillar, ChecksumPillar 
+ * and the IntegrityService.
+ * Will only try to perform the migration on an embedded derby database.
  */
 public class AuditTrailContributorDatabaseMigrator extends DatabaseMigrator {
     /** The log.*/
     private static Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
-    /** The settings.*/
-    private final Settings settings;
     
+    /** The name of the script for updating the database from version 1 to 2.*/
+    private static final String UPDATE_SCRIPT_VERSION_1_TO_2 = "sql/derby/auditContributorDBUpdate1to2.sql";
+    /** The name of the script for updating the database from version 2 to 3.*/
+    private static final String UPDATE_SCRIPT_VERSION_2_TO_3 = "sql/derby/auditContributorDBUpdate2to3.sql";
+
     /**
      * Constructor.
      * @param connector connection to the database.
-     * @param settings The settings.
      */
-    public AuditTrailContributorDatabaseMigrator(DBConnector connector, Settings settings) {
+    public AuditTrailContributorDatabaseMigrator(DBConnector connector) {
         super(connector);
-        this.settings = settings;
     }
     
     @Override
@@ -61,33 +63,13 @@ public class AuditTrailContributorDatabaseMigrator extends DatabaseMigrator {
                     + "' table as required.");
         }
         if(versions.get(FILE_TABLE) == 1) {
-            upgradeFromVersion1To2();
+            log.warn("Migrating AuditContributorDB from version 1 to 2.");
+            migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_1_TO_2);
         }
         
         if(!versions.containsKey(DATABASE_VERSION_ENTRY) || versions.get(DATABASE_VERSION_ENTRY) < 3) {
-            upgradeFromVersion2To3();
+            log.warn("Migrating AuditContributorDB from version 2 to 3.");
+            migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_2_TO_3);
         }
-    }
-    
-    /**
-     * Migrate the 'file' table from version 1 to 2.
-     * Just adds the column 'collectionid', which will be set to the current (or first) collection id.
-     */
-    private void upgradeFromVersion1To2() {
-        log.warn("Migrating the " + FILE_TABLE + " table from version 1 to 2 in the AuditTrailContributorDatabase.");
-        
-        String alterSql = "ALTER TABLE " + FILE_TABLE + " ADD COLUMN " + FILE_COLLECTIONID + " VARCHAR(255)";
-        updateTable(FILE_TABLE, 2, alterSql, new Object[0]);
-        
-        String updateAfterwards = "UPDATE " + FILE_TABLE + " SET " + FILE_COLLECTIONID + " = ? WHERE " 
-                + FILE_COLLECTIONID + " IS NULL";
-        DatabaseUtils.executeStatement(connector, updateAfterwards, settings.getCollections().get(0).getID());
-    }
-    
-    /**
-     * Method for upgrading the database from version 2 to 3.
-     */
-    private void upgradeFromVersion2To3() {
-        throw new IllegalStateException("The database needs to be updated to version 3. This must be done manually.");
     }
 }

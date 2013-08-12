@@ -38,9 +38,29 @@ public class DatabaseMaintainer {
      */
     protected static void runScript(DatabaseSpecifics databaseSpecifics, String scriptName) throws Exception {
         Connection connection = getDBConnection(databaseSpecifics);
+        runScript(connection, scriptName);
+        connection.close();
+    }
+    
+    /**
+     * Attempts to find a script with the indicated name in the classpath and run it.
+     * @param scriptName The name of the script in the classpath.
+     */
+    protected static void runScript(DBConnector connector, String scriptName) throws Exception {
+        Connection connection = connector.getConnection();
+        runScript(connection, scriptName);
+        connection.close();
+    }
+    
+    /**
+     * 
+     * @param connection
+     * @param scriptName
+     * @throws Exception
+     */
+    private static void runScript(Connection connection, String scriptName) throws Exception {
         SqlScriptRunner scriptRunner = new SqlScriptRunner(connection, false, true);
         scriptRunner.runScript(getReaderForFile(scriptName));
-        connection.close();
     }
 
     /**
