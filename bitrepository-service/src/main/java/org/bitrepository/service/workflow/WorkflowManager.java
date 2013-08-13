@@ -75,7 +75,8 @@ public abstract class WorkflowManager {
     public WorkflowStatistic getLastCompleteStatistics(JobID workflowID) {
         getWorkflow(workflowID);
         if (statistics.containsKey(workflowID)) {
-            return statistics.get(workflowID).get(0);
+            List<WorkflowStatistic> stats = statistics.get(workflowID);
+            return stats.get(stats.size()-1);
         } else return null;
     }
 
@@ -188,7 +189,7 @@ public abstract class WorkflowManager {
                 List<WorkflowStatistic> workflowStatistics = statistics.get(job.getJobID());
                 workflowStatistics.add((((Workflow)job).getWorkflowStatistics()));
                 if (workflowStatistics.size() > MAX_NUMBER_OF_STATISTISCS_FOR_A_WORKFLOW) {
-                    workflowStatistics.remove(workflowStatistics.size()-1);
+                    workflowStatistics.remove(0);
                 }
             }
         }
