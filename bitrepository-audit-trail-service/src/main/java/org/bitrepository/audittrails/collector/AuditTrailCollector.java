@@ -66,7 +66,7 @@ public class AuditTrailCollector {
 
         this.settings = settings;
         this.timer = new Timer(true);
-        long collectionInterval = settings.getReferenceSettings().getAuditTrailServiceSettings().getTimerTaskCheckInterval();
+        long collectionInterval = settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectAuditInterval();
         
         for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
             IncrementalCollector collector = new IncrementalCollector(c.getID(),
@@ -74,11 +74,10 @@ public class AuditTrailCollector {
                     client, store,
                     settings.getReferenceSettings().getAuditTrailServiceSettings().getMaxNumberOfEventsInRequest());
             AuditTrailCollectionTimerTask collectorTask = new AuditTrailCollectionTimerTask( 
-                    collector, settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectAuditInterval());
+                    collector, collectionInterval);
             log.debug("Will start collection of audit trail every  " + collectionInterval + " ms, " +
                     "after a grace period of " + getGracePeriod() + " ms");
-            timer.scheduleAtFixedRate(collectorTask, getGracePeriod(), collectionInterval);
-            
+            timer.scheduleAtFixedRate(collectorTask, getGracePeriod(), collectionInterval/10);
             collectorTasks.put(c.getID(), collectorTask);
         }
     }
@@ -138,6 +137,7 @@ public class AuditTrailCollector {
         public synchronized void runCollection() {
             collector.performCollection(SettingsUtils.getAuditContributorsForCollection(collector.getCollectionID()));
             nextRun = new Date(System.currentTimeMillis() + interval);
+            log.debug("Scheduled next collection of audit trails for " + nextRun);
         }
 
         @Override
