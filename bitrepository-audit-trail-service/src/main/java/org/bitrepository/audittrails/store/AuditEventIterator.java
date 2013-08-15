@@ -20,12 +20,16 @@ import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class to iterate over the set of AuditTrailEvents produced by a resultset.  
  */
 public class AuditEventIterator {
 
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
     /** Position of the FileId in the extraction.*/
     private static final int POSITION_FILE_KEY = 1;
     /** Position of the ContributorId in the extraction.*/
@@ -83,7 +87,10 @@ public class AuditEventIterator {
             AuditTrailEvent event = null;
             try {
                 if(auditResultSet == null) {
+                    long tStart = System.currentTimeMillis();
+                    log.debug("Executing query to get AuditTrailEvents resultset");
                     auditResultSet = ps.executeQuery();
+                    log.debug("Finished executing AuditTrailEvents query, it took: " + (System.currentTimeMillis() - tStart));
                 }
                 if(!ps.isClosed() && !auditResultSet.isClosed()) {
                     if(auditResultSet.next()) {

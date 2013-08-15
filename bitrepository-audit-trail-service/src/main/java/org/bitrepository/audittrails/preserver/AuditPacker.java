@@ -152,6 +152,7 @@ public class AuditPacker {
         long interval = 1000;
         
         AuditTrailEvent event;
+        log.debug("AuditEventIterator created");
         while((event = iterator.getNextAuditTrailEvent()) != null) {
             numPackedAudits++;
             if(largestSeqNumber < event.getSequenceNumber().longValue()) {
