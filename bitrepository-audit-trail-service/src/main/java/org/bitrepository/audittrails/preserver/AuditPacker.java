@@ -36,6 +36,8 @@ import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.settings.referencesettings.AuditTrailPreservation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Performs the extraction and packaging of audit trails for preservation for a specific collection.
@@ -43,6 +45,8 @@ import org.bitrepository.settings.referencesettings.AuditTrailPreservation;
  * contributor.
  */
 public class AuditPacker {
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
     /** The audit trail store.*/
     private final AuditTrailStore store;
     /** The id of the collection to pack audits for.*/
@@ -140,16 +144,23 @@ public class AuditPacker {
     private Long packContributor(String contributorId, PrintWriter writer) {
         long nextSeqNumber = store.getPreservationSequenceNumber(contributorId, collectionId);
         long largestSeqNumber = -1;
-        
+        long numPackedAudits = 0;
         AuditEventIterator iterator = store.getAuditTrailsByIterator(null, null, contributorId, nextSeqNumber, 
                 null, null, null, null, null, null);
+        Long timeStart = System.currentTimeMillis();
+        long interval = 1000;
         
         AuditTrailEvent event;
         while((event = iterator.getNextAuditTrailEvent()) != null) {
+            numPackedAudits++;
             if(largestSeqNumber < event.getSequenceNumber().longValue()) {
                 largestSeqNumber = event.getSequenceNumber().longValue();
             }
             writer.println(event.toString());
+            
+            if((numPackedAudits % interval) == 0) {
+                log.debug("Packed " + numPackedAudits + " audittrails in: " + (System.currentTimeMillis() - timeStart) + " ms");
+            }
         }
         
         return largestSeqNumber + 1;
