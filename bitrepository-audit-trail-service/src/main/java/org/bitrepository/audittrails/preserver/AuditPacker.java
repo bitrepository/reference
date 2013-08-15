@@ -26,11 +26,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bitrepository.audittrails.store.AuditEventIterator;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.common.utils.FileUtils;
@@ -141,6 +141,19 @@ public class AuditPacker {
         long nextSeqNumber = store.getPreservationSequenceNumber(contributorId, collectionId);
         long largestSeqNumber = -1;
         
+        AuditEventIterator iterator = store.getAuditTrailsByIterator(null, null, contributorId, nextSeqNumber, 
+                null, null, null, null, null, null);
+        
+        AuditTrailEvent event;
+        while((event = iterator.getNextAuditTrailEvent()) != null) {
+            if(largestSeqNumber < event.getSequenceNumber().longValue()) {
+                largestSeqNumber = event.getSequenceNumber().longValue();
+            }
+            writer.println(event.toString());
+        }
+        
+        return largestSeqNumber + 1;
+        /*
         Collection<AuditTrailEvent> events = store.getAuditTrails(null, null, contributorId, nextSeqNumber, 
                 null, null, null, null, null, null);
         
@@ -151,7 +164,7 @@ public class AuditPacker {
             writer.println(event.toString());            
         }
         
-        return largestSeqNumber + 1;
+        return largestSeqNumber + 1;*/
     }
     
     /**

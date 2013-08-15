@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.bitrepository.audittrails.store.AuditEventIterator;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
@@ -98,5 +99,13 @@ public class MockAuditStore implements AuditTrailStore {
     }
     public int getCallsToSetPreservationSequenceNumber() {
         return callsToSetPreservationSequenceNumber;
+    }
+    @Override
+    public AuditEventIterator getAuditTrailsByIterator(String fileId,
+            String collectionID, String contributorId, Long minSeqNumber,
+            Long maxSeqNumber, String actorName, FileAction operation,
+            Date startDate, Date endDate, Integer maxResults) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

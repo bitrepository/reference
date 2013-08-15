@@ -152,6 +152,22 @@ public class AuditDatabaseExtractor {
     }
     
     /**
+     * Method to extract the requested audit trails
+     * @return {@link AuditEventIterator} Iterator for extracting the Audittrails 
+     */
+    public AuditEventIterator extractAuditEventsByIterator() {
+        String sql = createSelectString() + " FROM " + AUDITTRAIL_TABLE + joinTables() + createRestriction();
+        try {
+            PreparedStatement ps = DatabaseUtils.createPreparedStatement(dbConnector.getConnection(), 
+                    sql, extractArgumentsFromModel());
+            return new AuditEventIterator(ps, dbConnector);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to retrieve the audit trails from the database", e);
+        }
+        
+    }
+    
+    /**
      * Extracts a single AuditEvent from a single result set.
      * TODO this makes several calls to be database to extract the file id, actor name and contributor id. It could be
      * reduced by joining the tables in the database in the request.

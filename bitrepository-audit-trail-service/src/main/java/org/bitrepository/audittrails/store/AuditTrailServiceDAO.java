@@ -97,6 +97,30 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     }
     
     @Override
+    public AuditEventIterator getAuditTrailsByIterator(String fileId, String collectionID, String contributorId, 
+            Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation, Date startDate, 
+            Date endDate, Integer maxResults) {
+        ExtractModel model = new ExtractModel();
+        model.setFileId(fileId);
+        model.setCollectionId(collectionID);
+        model.setContributorId(contributorId);
+        model.setMinSeqNumber(minSeqNumber);
+        model.setMaxSeqNumber(maxSeqNumber);
+        model.setActorName(actorName);
+        model.setOperation(operation);
+        model.setStartDate(startDate);
+        model.setEndDate(endDate);
+        if(maxResults != null) {
+            model.setMaxCount(maxResults);
+        }
+
+        AuditDatabaseExtractor extractor = new AuditDatabaseExtractor(model, dbConnector);
+        return extractor.extractAuditEventsByIterator();
+    }
+    
+    
+    
+    @Override
     public void addAuditTrails(AuditTrailEvents newAuditTrails, String collectionId) {
         ArgumentValidator.checkNotNull(newAuditTrails, "AuditTrailEvents newAuditTrails");
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
@@ -207,4 +231,5 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
             log.warn("Cannot close the database properly.", e);
         }
     }
+
 }
