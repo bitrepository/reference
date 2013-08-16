@@ -164,7 +164,7 @@ public class AuditPacker {
                 log.debug("Packed " + numPackedAudits + " audittrails in: " + (System.currentTimeMillis() - timeStart) + " ms");
             }
         }
-        
+        log.debug("Packed a total of: " + numPackedAudits + " audittrails in: " + (System.currentTimeMillis() - timeStart) + " ms");
         return largestSeqNumber + 1;
         /*
         Collection<AuditTrailEvent> events = store.getAuditTrails(null, null, contributorId, nextSeqNumber, 
