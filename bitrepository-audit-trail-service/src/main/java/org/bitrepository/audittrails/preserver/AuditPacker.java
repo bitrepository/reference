@@ -166,18 +166,6 @@ public class AuditPacker {
         }
         log.debug("Packed a total of: " + numPackedAudits + " audittrails in: " + (System.currentTimeMillis() - timeStart) + " ms");
         return largestSeqNumber + 1;
-        /*
-        Collection<AuditTrailEvent> events = store.getAuditTrails(null, null, contributorId, nextSeqNumber, 
-                null, null, null, null, null, null);
-        
-        for(AuditTrailEvent event : events) {
-            if(largestSeqNumber < event.getSequenceNumber().longValue()) {
-                largestSeqNumber = event.getSequenceNumber().longValue();
-            }
-            writer.println(event.toString());            
-        }
-        
-        return largestSeqNumber + 1;*/
     }
     
     /**

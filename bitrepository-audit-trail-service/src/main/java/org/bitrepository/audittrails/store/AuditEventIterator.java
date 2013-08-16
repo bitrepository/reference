@@ -91,9 +91,9 @@ public class AuditEventIterator {
                 auditResultSet = ps.executeQuery();
                 log.debug("Finished executing AuditTrailEvents query, it took: " + (System.currentTimeMillis() - tStart) + "ms");
             }
-            if(!ps.isClosed() && !auditResultSet.isClosed()) {
+            if(!auditResultSet.isClosed()) {
                 if(auditResultSet.next()) {
-                     event = new AuditTrailEvent();
+                    event = new AuditTrailEvent();
                     
                     Long actorKey = auditResultSet.getLong(POSITION_ACTOR_KEY);
                     String actorName = retrieveActorName(actorKey);
