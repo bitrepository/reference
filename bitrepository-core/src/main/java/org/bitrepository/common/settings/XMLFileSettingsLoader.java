@@ -71,7 +71,7 @@ public class XMLFileSettingsLoader implements SettingsLoader {
      */
     public <T> T loadSettings(Class<T> settingsClass) {
         StringBuilder fileLocationBuilder = new StringBuilder();
-        if (pathToSettingsFiles != null || !pathToSettingsFiles.equals("")) {
+        if (pathToSettingsFiles != null && !pathToSettingsFiles.equals("")) {
             fileLocationBuilder.append(pathToSettingsFiles + DIRECTORY_SEPERATOR);
         }
         fileLocationBuilder.append(settingsClass.getSimpleName() + XML_FILE_EXTENSION);
