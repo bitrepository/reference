@@ -67,9 +67,7 @@ public class AuditEventIterator {
      */
     public void close() throws SQLException {
         if(auditResultSet != null) {
-            if(!auditResultSet.isClosed()) {
-                auditResultSet.close();
-            }    
+            auditResultSet.close();
         }
         if(ps != null) {
             ps.close();
