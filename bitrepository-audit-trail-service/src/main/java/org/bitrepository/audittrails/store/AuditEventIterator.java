@@ -85,47 +85,47 @@ public class AuditEventIterator {
     public AuditTrailEvent getNextAuditTrailEvent() {
         try {
             AuditTrailEvent event = null;
-            try {
-                if(auditResultSet == null) {
-                    long tStart = System.currentTimeMillis();
-                    log.debug("Executing query to get AuditTrailEvents resultset");
-                    auditResultSet = ps.executeQuery();
-                    log.debug("Finished executing AuditTrailEvents query, it took: " + (System.currentTimeMillis() - tStart));
+            if(auditResultSet == null) {
+                long tStart = System.currentTimeMillis();
+                log.debug("Executing query to get AuditTrailEvents resultset");
+                auditResultSet = ps.executeQuery();
+                log.debug("Finished executing AuditTrailEvents query, it took: " + (System.currentTimeMillis() - tStart));
+            }
+            if(!ps.isClosed() && !auditResultSet.isClosed()) {
+                if(auditResultSet.next()) {
+                     event = new AuditTrailEvent();
+                    
+                    Long actorKey = auditResultSet.getLong(POSITION_ACTOR_KEY);
+                    String actorName = retrieveActorName(actorKey);
+                    
+                    Long fileKey = auditResultSet.getLong(POSITION_FILE_KEY);
+                    String fileId = retrieveFileId(fileKey);
+                    
+                    Long contributorKey = auditResultSet.getLong(POSITION_CONTRIBUTOR_KEY);
+                    String contributorId = retrieveContributorId(contributorKey);
+                    
+                    event.setActionDateTime(CalendarUtils.getFromMillis(auditResultSet.getTimestamp(POSITION_OPERATION_DATE).getTime()));
+                    event.setActionOnFile(FileAction.fromValue(auditResultSet.getString(POSITION_OPERATION)));
+                    event.setAuditTrailInformation(auditResultSet.getString(POSITION_AUDIT_TRAIL));
+                    event.setActorOnFile(actorName);
+                    event.setFileID(fileId);
+                    event.setInfo(auditResultSet.getString(POSITION_INFORMATION));
+                    event.setReportingComponent(contributorId);
+                    event.setSequenceNumber(BigInteger.valueOf(auditResultSet.getLong(POSITION_SEQUENCE_NUMBER)));
+                } else {
+                    close();
                 }
-                if(!ps.isClosed() && !auditResultSet.isClosed()) {
-                    if(auditResultSet.next()) {
-                         event = new AuditTrailEvent();
-                        
-                        Long actorKey = auditResultSet.getLong(POSITION_ACTOR_KEY);
-                        String actorName = retrieveActorName(actorKey);
-                        
-                        Long fileKey = auditResultSet.getLong(POSITION_FILE_KEY);
-                        String fileId = retrieveFileId(fileKey);
-                        
-                        Long contributorKey = auditResultSet.getLong(POSITION_CONTRIBUTOR_KEY);
-                        String contributorId = retrieveContributorId(contributorKey);
-                        
-                        event.setActionDateTime(CalendarUtils.getFromMillis(auditResultSet.getTimestamp(POSITION_OPERATION_DATE).getTime()));
-                        event.setActionOnFile(FileAction.fromValue(auditResultSet.getString(POSITION_OPERATION)));
-                        event.setAuditTrailInformation(auditResultSet.getString(POSITION_AUDIT_TRAIL));
-                        event.setActorOnFile(actorName);
-                        event.setFileID(fileId);
-                        event.setInfo(auditResultSet.getString(POSITION_INFORMATION));
-                        event.setReportingComponent(contributorId);
-                        event.setSequenceNumber(BigInteger.valueOf(auditResultSet.getLong(POSITION_SEQUENCE_NUMBER)));
-                    } else {
-                        close();
-                    }
-                }
-            } finally {
-                close();
             }
     
             return event;
         } catch (Exception e) {
+            try {
+                close();
+            } catch (SQLException e1) {
+                throw new RuntimeException("Failed to close ResultSet or PreparedStatement", e1);
+            }
             throw new IllegalStateException("Could not extract the wanted audittrails", e);
-        }
-
+        } 
     }
     
     /**
