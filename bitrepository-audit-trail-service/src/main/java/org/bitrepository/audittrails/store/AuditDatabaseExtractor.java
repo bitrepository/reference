@@ -73,13 +73,13 @@ public class AuditDatabaseExtractor {
     private Logger log = LoggerFactory.getLogger(getClass());
     
     /** Position of the FileId in the extraction.*/
-    private static final int POSITION_FILE_KEY = 1;
+    private static final int POSITION_FILE_ID = 1;
     /** Position of the ContributorId in the extraction.*/
-    private static final int POSITION_CONTRIBUTOR_KEY = 2;
+    private static final int POSITION_CONTRIBUTOR_ID = 2;
     /** Position of the SequenceNumber in the extraction.*/
     private static final int POSITION_SEQUENCE_NUMBER = 3;
     /** Position of the ActorName in the extraction.*/
-    private static final int POSITION_ACTOR_KEY = 4;
+    private static final int POSITION_ACTOR_NAME = 4;
     /** Position of the Operation in the extraction.*/
     private static final int POSITION_OPERATION = 5;
     /** Position of the OperationDate in the extraction.*/
@@ -112,8 +112,9 @@ public class AuditDatabaseExtractor {
      * @return The audit trails requested through the ExtractModel.
      */
     public List<AuditTrailEvent> extractAuditEvents() {
-        String sql = createSelectString() + " FROM " + AUDITTRAIL_TABLE + joinTables() + createRestriction();
-        
+        String sql = createSelectString() + " FROM " + AUDITTRAIL_TABLE + joinWithFileTable() + joinWithActorTable() 
+                + joinWithContributorTable() + createRestriction();
+        System.err.println(sql);
         try {
             Connection conn = null;
             PreparedStatement ps = null;
@@ -156,7 +157,8 @@ public class AuditDatabaseExtractor {
      * @return {@link AuditEventIterator} Iterator for extracting the Audittrails 
      */
     public AuditEventIterator extractAuditEventsByIterator() {
-        String sql = createSelectString() + " FROM " + AUDITTRAIL_TABLE + joinTables() + createRestriction();
+        String sql = createSelectString() + " FROM " + AUDITTRAIL_TABLE + joinWithFileTable() + joinWithActorTable() 
+                + joinWithContributorTable() + createRestriction();
         try {
             PreparedStatement ps = DatabaseUtils.createPreparedStatement(dbConnector.getConnection(), 
                     sql, extractArgumentsFromModel());
@@ -177,22 +179,13 @@ public class AuditDatabaseExtractor {
     private AuditTrailEvent extractEvent(ResultSet resultSet) throws SQLException {
         AuditTrailEvent event = new AuditTrailEvent();
         
-        Long actorKey = resultSet.getLong(POSITION_ACTOR_KEY);
-        String actorName = retrieveActorName(actorKey);
-        
-        Long fileKey = resultSet.getLong(POSITION_FILE_KEY);
-        String fileId = retrieveFileId(fileKey);
-        
-        Long contributorKey = resultSet.getLong(POSITION_CONTRIBUTOR_KEY);
-        String contributorId = retrieveContributorId(contributorKey);
-        
         event.setActionDateTime(CalendarUtils.getFromMillis(resultSet.getTimestamp(POSITION_OPERATION_DATE).getTime()));
         event.setActionOnFile(FileAction.fromValue(resultSet.getString(POSITION_OPERATION)));
         event.setAuditTrailInformation(resultSet.getString(POSITION_AUDIT_TRAIL));
-        event.setActorOnFile(actorName);
-        event.setFileID(fileId);
+        event.setActorOnFile(resultSet.getString(POSITION_ACTOR_NAME));
+        event.setFileID(resultSet.getString(POSITION_FILE_ID));
         event.setInfo(resultSet.getString(POSITION_INFORMATION));
-        event.setReportingComponent(contributorId);
+        event.setReportingComponent(resultSet.getString(POSITION_CONTRIBUTOR_ID));
         event.setSequenceNumber(BigInteger.valueOf(resultSet.getLong(POSITION_SEQUENCE_NUMBER)));
         
         return event;
@@ -207,10 +200,10 @@ public class AuditDatabaseExtractor {
         StringBuilder res = new StringBuilder();
         
         res.append("SELECT ");
-        res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_FILE_KEY + ", ");
+        res.append(FILE_TABLE + "." + FILE_FILEID + ", ");
         res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_CONTRIBUTOR_KEY + ", ");
         res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_SEQUENCE_NUMBER + ", ");
-        res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_ACTOR_KEY + ", ");
+        res.append(ACTOR_TABLE + "." + ACTOR_NAME + ", ");
         res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_OPERATION + ", ");
         res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_OPERATION_DATE + ", ");
         res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_AUDIT + ", ");
@@ -220,17 +213,33 @@ public class AuditDatabaseExtractor {
     }
     
     /**
-     * If either the file id or the collection is given as argument, then the audittrail table should be joined with 
-     * the file table.
+     * Joining the AuditTrail table with the File table.
      * 
      * @return The sql for joining the tables.
      */
-    private String joinTables() {
-        if(model.getCollectionId() == null && model.getFileId() == null) {
-            return "";
-        }
+    private String joinWithFileTable() {
         return " JOIN " + FILE_TABLE + " ON " + AUDITTRAIL_TABLE + "." + AUDITTRAIL_FILE_KEY + " = " + FILE_TABLE + "."
                 + FILE_KEY + " "; 
+    }
+
+    /**
+     * Joining the AuditTrail table with the Actor table.
+     * 
+     * @return The sql for joining the tables.
+     */
+    private String joinWithActorTable() {
+        return " JOIN " + ACTOR_TABLE + " ON " + AUDITTRAIL_TABLE + "." + AUDITTRAIL_ACTOR_KEY + " = " + ACTOR_TABLE 
+                + "." + ACTOR_KEY + " "; 
+    }
+    
+    /**
+     * Joining the AuditTrail table with the Contributor table.
+     * 
+     * @return The sql for joining the tables.
+     */
+    private String joinWithContributorTable() {
+        return " JOIN " + CONTRIBUTOR_TABLE + " ON " + AUDITTRAIL_TABLE + "." + AUDITTRAIL_CONTRIBUTOR_KEY + " = " 
+                + CONTRIBUTOR_TABLE + "." + CONTRIBUTOR_KEY + " "; 
     }
     
     /**
