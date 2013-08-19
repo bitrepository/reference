@@ -149,8 +149,8 @@ public class AuditPacker {
         AuditEventIterator iterator = store.getAuditTrailsByIterator(null, null, contributorId, nextSeqNumber, 
                 null, null, null, null, null, null);
         Long timeStart = System.currentTimeMillis();
-        long interval = 1000;
-        
+        long logInterval = 1000;
+
         AuditTrailEvent event;
         log.debug("AuditEventIterator created");
         while((event = iterator.getNextAuditTrailEvent()) != null) {
@@ -160,7 +160,7 @@ public class AuditPacker {
             }
             writer.println(event.toString());
             
-            if((numPackedAudits % interval) == 0) {
+            if((numPackedAudits % logInterval) == 0) {
                 log.debug("Packed " + numPackedAudits + " audittrails in: " + (System.currentTimeMillis() - timeStart) + " ms");
             }
         }

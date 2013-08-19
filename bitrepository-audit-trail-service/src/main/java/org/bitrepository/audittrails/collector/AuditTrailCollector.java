@@ -76,7 +76,7 @@ public class AuditTrailCollector {
                     settings.getReferenceSettings().getAuditTrailServiceSettings().getMaxNumberOfEventsInRequest());
             AuditTrailCollectionTimerTask collectorTask = new AuditTrailCollectionTimerTask( 
                     collector, collectionInterval);
-            log.info("Will start collection of audit trail every  " +
+            log.info("Will start collection of audit trail every " +
                     TimeUtils.millisecondsToHuman(collectionInterval) + ", " +
                     "after a grace period of " + TimeUtils.millisecondsToHuman(getGracePeriod()));
             timer.scheduleAtFixedRate(collectorTask, getGracePeriod(), collectionInterval/10);
