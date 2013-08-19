@@ -129,7 +129,7 @@
       for(i in collectionIDs) {
         var collectionID = i;
         if(collectionIDs[i].state == "active" && graphDataPool[collectionID] != null) {
-          var dataArray          ;
+          var dataArray;
           //Avoid scaling y-axis data when working with filecount.
           if($(graphType).val() == "filecount") {
             dataArray = graphDataPool[collectionID][dataField];
@@ -147,7 +147,7 @@
       } else if($(graphType).val() == "delta") {
         yAxisText = unitSuffix + " per day";
       } else if($(graphType).val() == "filecount") {
-        yAxisText = unitSuffix.substr(0,1) + " files";
+        yAxisText = "Number of files";
       }
 
       var options = {
@@ -204,11 +204,11 @@
               deltaCollectionData.push([data[i].dateMillis - timeOffset, growthPerDay]);
             }
  
-            var c = new Array(data[i].dateMillis - timeOffset, data[i].fileCount);
+            var fc = new Array(data[i].dateMillis - timeOffset, data[i].fileCount);
             if(data[i].fileCount > fileCountDataMax) {
               fileCountDataMax = data[i].fileCount;
             }
-            fileCountData.push(c);
+            fileCountData.push(fc);
           }
           graphDataPool[c] = {data: collectionData, dataMax: dMax, 
                               deltaData: deltaCollectionData, deltaMax: deltaDataMax,
