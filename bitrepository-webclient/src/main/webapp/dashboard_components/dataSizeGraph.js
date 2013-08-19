@@ -106,9 +106,12 @@
       if($(graphType).val() == "growth") {
         dataField = "data";
         dMaxField = "dataMax";
-      } else {
+      } else if($(graphType).val() == "delta") {
         dataField = "deltaData";
         dMaxField = "deltaMax";       
+      } else if($(graphType).val() == "filecount") {
+        dataField = "fileCount";
+        dMaxField = "fileCountMax";       
       }
 
       for(i in collectionIDs) {
@@ -121,12 +124,19 @@
       }
   
       var unitSuffix = sizeUtils.toHumanUnit(dMax);
-      var byteUnit = sizeUtils.getByteSize(unitSuffix);
+      var scale = sizeUtils.getByteSize(unitSuffix);
       
       for(i in collectionIDs) {
         var collectionID = i;
         if(collectionIDs[i].state == "active" && graphDataPool[collectionID] != null) {
-          var dataArray = scaleAndCopyData(graphDataPool[collectionID][dataField], byteUnit);
+          var dataArray          ;
+          //Avoid scaling y-axis data when working with filecount.
+          if($(graphType).val() == "filecount") {
+            dataArray = graphDataPool[collectionID][dataField];
+          } else {
+            dataArray = scaleAndCopyData(graphDataPool[collectionID][dataField], scale);          
+          }
+
           var collectionObj = {data: dataArray, color: colorMapper.getCollectionColor(collectionID)};
           dataObj.push(collectionObj);
         }
@@ -134,8 +144,10 @@
 
       if($(graphType).val() == "growth") {
         yAxisText = unitSuffix;
-      } else {
+      } else if($(graphType).val() == "delta") {
         yAxisText = unitSuffix + " per day";
+      } else if($(graphType).val() == "filecount") {
+        yAxisText = unitSuffix.substr(0,1) + " files";
       }
 
       var options = {
@@ -169,6 +181,8 @@
           var deltaCollectionData = new Array();
           var dMax = 0;
           var deltaDataMax = 0;
+          var fileCountData = new Array();
+          var fileCountDataMax = 0;
           // Get the timezone offset in milliseconds
           var timeOffset = moment().tz("Europe/Copenhagen")._offset * 1000 * 60;
           for(i=0; i<data.length; i++) {
@@ -176,7 +190,7 @@
             if(data[i].dataSize > dMax) {
               dMax = data[i].dataSize;
             }
-            collectionData[i] = a;
+            collectionData.push(a);
 
             if(i == 0) {
               deltaCollectionData.push([data[i].dateMillis - timeOffset, 0]);
@@ -189,8 +203,16 @@
               }
               deltaCollectionData.push([data[i].dateMillis - timeOffset, growthPerDay]);
             }
+ 
+            var c = new Array(data[i].dateMillis - timeOffset, data[i].fileCount);
+            if(data[i].fileCount > fileCountDataMax) {
+              fileCountDataMax = data[i].fileCount;
+            }
+            fileCountData.push(c);
           }
-          graphDataPool[c] = {data: collectionData, dataMax: dMax, deltaData: deltaCollectionData, deltaMax: deltaDataMax};
+          graphDataPool[c] = {data: collectionData, dataMax: dMax, 
+                              deltaData: deltaCollectionData, deltaMax: deltaDataMax,
+                              fileCount: fileCountData, fileCountMax: fileCountDataMax};
         }).done(function() {mySelf.renderGraph()});
     }
 

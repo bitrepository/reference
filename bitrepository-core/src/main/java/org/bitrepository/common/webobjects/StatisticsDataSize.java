@@ -29,6 +29,7 @@ public class StatisticsDataSize {
     private Long dateMillis; 
     private String dateString;
     private Long dataSize;
+    private Long fileCount;
     
     public StatisticsDataSize() { }
 
@@ -54,6 +55,14 @@ public class StatisticsDataSize {
 
     public void setDataSize(Long dataSize) {
         this.dataSize = dataSize;
+    }
+
+    public Long getFileCount() {
+        return fileCount;
+    }
+
+    public void setFileCount(Long fileCount) {
+        this.fileCount = fileCount;
     }
     
     

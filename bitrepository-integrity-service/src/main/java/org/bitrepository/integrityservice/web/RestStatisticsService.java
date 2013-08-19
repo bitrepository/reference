@@ -66,6 +66,7 @@ public class RestStatisticsService {
             obj.setDateMillis(statTime.getTime());
             obj.setDateString(TimeUtils.shortDate(statTime));
             obj.setDataSize(stat.getDataSize());
+            obj.setFileCount(stat.getFileCount());
             data.add(obj);
         }
         
