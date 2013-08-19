@@ -36,6 +36,7 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
@@ -93,11 +94,11 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
             log.debug("Cancelling old timer.");
             timer.cancel();
         }
-        
+        long preservationInterval = preservationSettings.getAuditTrailPreservationInterval();
         log.info("Instantiating the preservation of workflows every " +
-                preservationSettings.getAuditTrailPreservationInterval());
+                TimeUtils.millisecondsToHuman(preservationInterval));
         timer = new Timer();
-        auditTask = new AuditPreservationTimerTask(preservationSettings.getAuditTrailPreservationInterval());
+        auditTask = new AuditPreservationTimerTask(preservationInterval);
         timer.scheduleAtFixedRate(auditTask,
                 preservationSettings.getAuditTrailPreservationInterval()/10,
                 preservationSettings.getAuditTrailPreservationInterval()/10);
