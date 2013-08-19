@@ -32,8 +32,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.bitrepository.audittrails.store.AuditTrailStore;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.Base16Utils;
+import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
@@ -64,6 +70,8 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
     Map<String, AuditPacker> auditPackers = new HashMap<String, AuditPacker>();
     /** The preservationSettings for the local audit trail preserver.*/
     private final AuditTrailPreservation preservationSettings;
+    /** The full settings (needed for checksum calculation) */
+    private final Settings settings;
     /** The fileexchange to use for uploading files which should be put to the preservation collection */
     private final FileExchange exchange;
     
@@ -73,18 +81,19 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
      * @param store The storage of the audit trails, which should be preserved.
      * @param client The PutFileClient for putting the audit trail packages to the collection.
      */
-    public LocalAuditTrailPreserver(AuditTrailPreservation settings, AuditTrailStore store, PutFileClient client,
+    public LocalAuditTrailPreserver(Settings settings, AuditTrailStore store, PutFileClient client,
                                     FileExchange exchange) {
         ArgumentValidator.checkNotNull(settings, "Settings preservationSettings");
         ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
         ArgumentValidator.checkNotNull(client, "PutFileClient client");
         
-        this.preservationSettings = settings;
+        this.settings = settings;
+        this.preservationSettings = settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation();
         this.store = store;
         this.client = client;
         this.exchange = exchange;
         for(String collectionID : SettingsUtils.getAllCollectionsIDs()) {
-            this.auditPackers.put(collectionID, new AuditPacker(store, settings, collectionID));
+            this.auditPackers.put(collectionID, new AuditPacker(store, preservationSettings, collectionID));
         }
     }
     
@@ -137,10 +146,12 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
             URL url = uploadFile(auditPackage);
             log.info("Uploaded the file '" + auditPackage + "' to '" + url.toExternalForm() + "'");
             
+            ChecksumDataForFileTYPE checksumData = getValidationChecksumDataForFile(auditPackage);
+            
             EventHandler eventHandler = new AuditPreservationEventHandler(
                     auditPackers.get(collectionId).getSequenceNumbersReached(), store);
             client.putFile(preservationSettings.getAuditTrailPreservationCollection(), url,
-                    auditPackage.getName(), auditPackage.length(), null, null, eventHandler,
+                    auditPackage.getName(), auditPackage.length(), checksumData, null, eventHandler,
                     "Preservation of audit trails from the AuditTrail service.");
 
             log.debug("Cleanup of the uploaded audit trail package.");
@@ -149,6 +160,21 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
             throw new CoordinationLayerException("Cannot perform the preservation of audit trails.", e);
         }
     }
+    
+    /**
+     * Helper method to make a checksum for the putfile call. 
+     */
+    private ChecksumDataForFileTYPE getValidationChecksumDataForFile(File file) {
+        ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settings);
+        String checksum = ChecksumUtils.generateChecksum(file, csSpec);
+
+        ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
+        res.setCalculationTimestamp(CalendarUtils.getNow());
+        res.setChecksumSpec(csSpec);
+        res.setChecksumValue(Base16Utils.encodeBase16(checksum));
+
+        return res;
+    } 
     
     /**
      * Uploads the file to a server.

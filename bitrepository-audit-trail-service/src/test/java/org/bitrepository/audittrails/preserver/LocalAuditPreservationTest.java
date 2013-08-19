@@ -94,9 +94,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         AuditTrailStore store = mock(AuditTrailStore.class);
         final AuditEventIterator iterator = mock(AuditEventIterator.class);
         
-        LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation(),
-                store, client, fileExchangeMock);
+        LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, client, fileExchangeMock);
         
         /*Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
         Assert.assertEquals(store.getCallsToGetAuditTrails(), 0);
@@ -154,9 +152,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         final AuditEventIterator iterator = new StubAuditEventIterator();
         FileExchange fileExchange = mock(FileExchange.class);
 
-        LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation(),
-                store, client, fileExchange);
+        LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, client, fileExchange);
         
         verify(store).getPreservationSequenceNumber(PILLARID, collectionId);
         verifyNoMoreInteractions(store);
