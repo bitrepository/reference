@@ -226,7 +226,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
     private class StubAuditEventIterator extends AuditEventIterator {
         boolean called = false;
         public StubAuditEventIterator() {
-            super(null, null);
+            super(null);
         }
         
         @Override

@@ -72,9 +72,7 @@
             $("#tooltip").remove();
             var x = item.datapoint[0];
             var y = item.datapoint[1];
-            var d = new moment.utc(x);
-            var localDate = d.local();
-            var formated_date = localDate.tz("Europe/Copenhagen").format("YYYY/MM/DD HH:mm");
+            var formated_date = moment.utc(x).format("YYYY/MM/DD HH:mm");
             showTooltip(item.pageX, 
                         item.pageY,
                         formated_date  + "<br/><strong>" + y.toFixed(4) + " " + yAxisText +  "</strong>");
@@ -171,15 +169,17 @@
           var deltaCollectionData = new Array();
           var dMax = 0;
           var deltaDataMax = 0;
+          // Get the timezone offset in milliseconds
+          var timeOffset = moment().tz("Europe/Copenhagen")._offset * 1000 * 60;
           for(i=0; i<data.length; i++) {
-            var a = new Array(data[i].dateMillis, data[i].dataSize);
+            var a = new Array(data[i].dateMillis - timeOffset, data[i].dataSize);
             if(data[i].dataSize > dMax) {
               dMax = data[i].dataSize;
             }
             collectionData[i] = a;
 
             if(i == 0) {
-              deltaCollectionData.push([data[i].dateMillis, 0]);
+              deltaCollectionData.push([data[i].dateMillis - timeOffset, 0]);
             } else {
               var deltaBytes = data[i].dataSize - data[i-1].dataSize;
               var deltaMs = data[i].dateMillis - data[i-1].dateMillis;
@@ -187,7 +187,7 @@
               if(growthPerDay > deltaDataMax) {
                 deltaDataMax = growthPerDay;
               }
-              deltaCollectionData.push([data[i].dateMillis, growthPerDay]);
+              deltaCollectionData.push([data[i].dateMillis - timeOffset, growthPerDay]);
             }
           }
           graphDataPool[c] = {data: collectionData, dataMax: dMax, deltaData: deltaCollectionData, deltaMax: deltaDataMax};
