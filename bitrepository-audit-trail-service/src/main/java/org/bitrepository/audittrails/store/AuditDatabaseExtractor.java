@@ -110,6 +110,8 @@ public class AuditDatabaseExtractor {
     /**
      * Extracts the requested audit trails.
      * @return The audit trails requested through the ExtractModel.
+     * @deprecated Dangerous as lists may be long if the extraction model is not limited. 
+     * The method is replaced by @link{ #extractAuditEventsByIterator}
      */
     public List<AuditTrailEvent> extractAuditEvents() {
         String sql = createSelectString() + " FROM " + AUDITTRAIL_TABLE + joinWithFileTable() + joinWithActorTable() 
