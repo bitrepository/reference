@@ -186,8 +186,6 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         
         @Override
         public void run() {
-            //FIXME Delete below 'checking...' log statement
-            log.debug("Checking if we need to preserve audit trails");
             if(nextRun.getTime() < System.currentTimeMillis()) {
                 log.debug("Time to preserve the audit trails.");
                 preserveRepositoryAuditTrails();
