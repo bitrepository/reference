@@ -79,7 +79,7 @@ public class AuditPreservationEventHandler implements EventHandler {
         updated = true;
         
         for(Map.Entry<String, Long> entry : seqNumbers.entrySet()) {
-            store.setPreservationSequenceNumber(collectionId, entry.getKey(), entry.getValue());
+            store.setPreservationSequenceNumber(entry.getKey(), collectionId, entry.getValue());
         }
     }
 }
