@@ -187,9 +187,13 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         @Override
         public void run() {
             if(nextRun.getTime() < System.currentTimeMillis()) {
-                log.debug("Time to preserve the audit trails.");
-                preserveRepositoryAuditTrails();
-                resetTime();
+                try {
+                    log.debug("Time to preserve the audit trails.");
+                    preserveRepositoryAuditTrails();
+                    resetTime();
+                } catch (Exception e) {
+                    log.error("Caught exception while attempting to preserve audittrails", e);
+                }
             }
         }
     }
