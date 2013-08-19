@@ -55,7 +55,6 @@ public class AuditPreservationEventHandler implements EventHandler {
     public AuditPreservationEventHandler(Map<String, Long> preservationSequenceNumber, AuditTrailStore store) {
         this.seqNumbers = preservationSequenceNumber;
         this.store = store;
-        this.updated = false;
     }
     
     @Override
@@ -72,12 +71,6 @@ public class AuditPreservationEventHandler implements EventHandler {
      * @param collectionId The id of the collection.
      */
     private void updateStoreWithResults(String collectionId) {
-        if(updated) {
-            log.debug("Have already updated the store with the new preservation sequence number.");
-            return;
-        }
-        updated = true;
-        
         for(Map.Entry<String, Long> entry : seqNumbers.entrySet()) {
             store.setPreservationSequenceNumber(entry.getKey(), collectionId, entry.getValue());
         }
