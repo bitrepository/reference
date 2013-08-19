@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bitrepository.audittrails.MockAuditStore;
-import org.bitrepository.client.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -46,7 +46,7 @@ public class AuditPreservationEventHandlerTest extends ExtendedTestCase {
         Assert.assertEquals(store.getCallsToSetPreservationSequenceNumber(), 0);
         
         addStep("Test the handling of another complete event.", "Should make a call");
-        eventHandler.handleEvent(new ContributorEvent(PILLARID, TEST_COLLECTION));
+        eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
         Assert.assertEquals(store.getCallsToSetPreservationSequenceNumber(), 1);
     }
 }
