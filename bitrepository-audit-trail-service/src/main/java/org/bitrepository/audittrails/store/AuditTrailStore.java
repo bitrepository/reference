@@ -105,6 +105,14 @@ public interface AuditTrailStore {
     public void setPreservationSequenceNumber(String contributorId, String collectionId, long seqNumber);
 
     /**
+     * Check to see if the database knows a contributor
+     * 
+     *  @param contributorID The ID of the contributor
+     *  @return boolean true, if the contributor is known by the database, false otherwise.
+     */
+    boolean haveContributor(String contributorID);
+    
+    /**
      * Closes the store.
      */
     public void close();

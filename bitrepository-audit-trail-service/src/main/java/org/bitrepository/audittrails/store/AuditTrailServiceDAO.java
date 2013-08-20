@@ -187,6 +187,18 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         DatabaseUtils.executeStatement(dbConnector, sqlUpdate, seqNumber, preservationKey);
     }
     
+    public boolean haveContributor(String contributorID) {
+        String sql = "SELECT " + CONTRIBUTOR_KEY + " FROM " + CONTRIBUTOR_TABLE
+                        + "WHERE " + CONTRIBUTOR_ID + " = ?";
+        Long contributorKey = DatabaseUtils.selectLongValue(dbConnector, sql, contributorID);
+        if(contributorKey == null) {
+            return false;    
+        } else {
+            return true;
+        }
+        
+    }
+    
     /**
      * Retrieves the key of the preservation table entry for the given collection and contributor.
      * 

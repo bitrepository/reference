@@ -116,7 +116,6 @@ public class AuditDatabaseExtractor {
     public List<AuditTrailEvent> extractAuditEvents() {
         String sql = createSelectString() + " FROM " + AUDITTRAIL_TABLE + joinWithFileTable() + joinWithActorTable() 
                 + joinWithContributorTable() + createRestriction();
-        System.err.println(sql);
         try {
             Connection conn = null;
             PreparedStatement ps = null;
