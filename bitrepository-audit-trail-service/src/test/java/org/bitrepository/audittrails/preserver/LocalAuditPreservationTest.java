@@ -26,7 +26,6 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.sql.Date;
 
-import org.bitrepository.audittrails.MockAuditStore;
 import org.bitrepository.audittrails.store.AuditEventIterator;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
@@ -34,6 +33,7 @@ import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -201,22 +201,22 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
     }
 
     private class MockPutClient implements PutFileClient {
-        private URL url = null;
-        public URL getUrl() {
-            return url;
-        }
         private int callsToPutFile = 0;
         @Override
         public void putFile(String collectionID, URL url, String fileId, long sizeOfFile,
                 ChecksumDataForFileTYPE checksumForValidationAtPillar, ChecksumSpecTYPE checksumRequestsForValidation,
-                EventHandler eventHandler, String auditTrailInformation) {
-            this.url = url;
+                final EventHandler eventHandler, String auditTrailInformation) {
             callsToPutFile++;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    eventHandler.handleEvent(new CompleteEvent(null, null));
+                }
+            }).start();
         }
         public int getCallsToPutFile() {
             return callsToPutFile;
         }
-        
     }
     
     private class StubAuditEventIterator extends AuditEventIterator {

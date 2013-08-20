@@ -36,6 +36,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.exceptions.OperationFailedException;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -43,6 +44,7 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
+import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
@@ -60,7 +62,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
     /** The audit trails store, where the audit trails can be extracted.*/
     private final AuditTrailStore store;
     /** The put file client for sending the resulting files. */
-    private final PutFileClient client;
+    private final BlockingPutFileClient client;
 
     /** The timer for scheduling the preservation of audit trails.*/
     private Timer timer;
@@ -90,7 +92,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         this.settings = settings;
         this.preservationSettings = settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation();
         this.store = store;
-        this.client = client;
+        this.client = new BlockingPutFileClient(client);
         this.exchange = exchange;
         for(String collectionID : SettingsUtils.getAllCollectionsIDs()) {
             this.auditPackers.put(collectionID, new AuditPacker(store, preservationSettings, collectionID));
@@ -158,6 +160,8 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
             FileUtils.delete(auditPackage);
         } catch (IOException e) {
             throw new CoordinationLayerException("Cannot perform the preservation of audit trails.", e);
+        } catch (OperationFailedException e) {
+            throw new CoordinationLayerException("Failed to put the packed audit trails.", e);
         }
     }
     
@@ -217,10 +221,10 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
                 try {
                     log.debug("Time to preserve the audit trails.");
                     preserveRepositoryAuditTrails();
-                    resetTime();
                 } catch (Exception e) {
                     log.error("Caught exception while attempting to preserve audittrails", e);
                 }
+                resetTime();
             }
         }
     }
