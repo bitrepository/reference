@@ -124,8 +124,7 @@ public class AuditPacker {
         try {
             writer = new PrintWriter(new FileOutputStream(container, APPEND));
             for(String contributor : contributors) {
-                Long seq = packContributor(contributor, writer);
-                seqReached.put(contributor, seq);
+                packContributor(contributor, writer);
             }
         } finally {
             if(writer != null) {
@@ -141,7 +140,7 @@ public class AuditPacker {
      * @param writer The PrinterWriter where the output will be written.
      * @return The sequence number reached +1 (to tell which sequence number is next).
      */
-    private Long packContributor(String contributorId, PrintWriter writer) {
+    private void packContributor(String contributorId, PrintWriter writer) {
         long nextSeqNumber = store.getPreservationSequenceNumber(contributorId, collectionId);
         long largestSeqNumber = -1;
         long numPackedAudits = 0;
@@ -165,7 +164,9 @@ public class AuditPacker {
             }
         }
         log.debug("Packed a total of: " + numPackedAudits + " audittrails in: " + (System.currentTimeMillis() - timeStart) + " ms");
-        return largestSeqNumber + 1;
+        if(numPackedAudits > 0) {
+            seqReached.put(contributorId, largestSeqNumber);
+        }
     }
     
     /**
