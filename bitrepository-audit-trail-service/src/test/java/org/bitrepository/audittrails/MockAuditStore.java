@@ -109,7 +109,7 @@ public class MockAuditStore implements AuditTrailStore {
         return null;
     }
     @Override
-    public boolean haveContributor(String contributorID) {
+    public boolean havePreservationKey(String contributorID, String collectionID) {
         return true;
     }
 }

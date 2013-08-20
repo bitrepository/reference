@@ -108,9 +108,10 @@ public interface AuditTrailStore {
      * Check to see if the database knows a contributor
      * 
      *  @param contributorID The ID of the contributor
+     *  @param collectionID The ID of the collection;
      *  @return boolean true, if the contributor is known by the database, false otherwise.
      */
-    boolean haveContributor(String contributorID);
+    boolean havePreservationKey(String contributorID, String collectionID);
     
     /**
      * Closes the store.

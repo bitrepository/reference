@@ -188,11 +188,18 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         DatabaseUtils.executeStatement(dbConnector, sqlUpdate, seqNumber, preservationKey);
     }
     
-    public boolean haveContributor(String contributorID) {
-        String sql = "SELECT " + CONTRIBUTOR_KEY + " FROM " + CONTRIBUTOR_TABLE
-                        + " WHERE " + CONTRIBUTOR_ID + " = ?";
-        Long contributorKey = DatabaseUtils.selectLongValue(dbConnector, sql, contributorID);
-        if(contributorKey == null) {
+    @Override
+    public boolean havePreservationKey(String contributorID, String collectionID) {
+        String sql = "SELECT " + PRESERVATION_KEY + " FROM " + PRESERVATION_TABLE 
+                + " WHERE " + PRESERVATION_CONTRIBUTOR_KEY + " = (" 
+                    + " SELECT " + CONTRIBUTOR_KEY + " FROM " + CONTRIBUTOR_TABLE 
+                    + " WHERE " + CONTRIBUTOR_ID + " = ? ) "
+                + "AND " + PRESERVATION_COLLECTION_KEY + " = ("
+                    + " SELECT " + COLLECTION_KEY + " FROM " + COLLECTION_TABLE
+                    + " WHERE " + COLLECTION_ID + " = ? )";
+        
+        Long preservationKey = DatabaseUtils.selectLongValue(dbConnector, sql, contributorID, collectionID);
+        if(preservationKey == null) {
             return false;    
         } else {
             return true;
@@ -231,6 +238,11 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
             DatabaseUtils.executeStatement(dbConnector, sqlInsert, contributorId, collectionId);
             
             guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, contributorId, collectionId);
+        }
+        
+        if(guid == null) {
+            throw new IllegalStateException("PreservationKey cannot be obtained for contributor: " + contributorId +
+                    " in collection: " + collectionId);
         }
         
         return guid;

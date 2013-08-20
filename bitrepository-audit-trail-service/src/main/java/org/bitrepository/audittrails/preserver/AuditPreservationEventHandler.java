@@ -64,7 +64,7 @@ public class AuditPreservationEventHandler implements EventHandler {
     @Override
     public void handleEvent(OperationEvent event) {
         if(event.getEventType() == OperationEventType.COMPLETE) {
-            updateStoreWithResults(collectionID);
+            updateStoreWithResults();
         } else {
             log.debug("Event for preservation of audit trails: " + event.toString());
         }
@@ -74,10 +74,10 @@ public class AuditPreservationEventHandler implements EventHandler {
      * Update the store with the results.
      * @param collectionId The id of the collection.
      */
-    private void updateStoreWithResults(String collectionId) {
+    private void updateStoreWithResults() {
         for(Map.Entry<String, Long> entry : seqNumbers.entrySet()) {
-            if(store.haveContributor(entry.getKey())) {
-                store.setPreservationSequenceNumber(entry.getKey(), collectionId, entry.getValue());
+            if(store.havePreservationKey(entry.getKey(), collectionID)) {
+                store.setPreservationSequenceNumber(entry.getKey(), collectionID, entry.getValue());
             } else {
                 log.debug("Contributor: " + entry.getKey() + " is not known by the database.");
             }
