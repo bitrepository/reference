@@ -221,10 +221,10 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
                 try {
                     log.debug("Time to preserve the audit trails.");
                     preserveRepositoryAuditTrails();
-                    resetTime();
                 } catch (Exception e) {
                     log.error("Caught exception while attempting to preserve audittrails", e);
                 }
+                resetTime();
             }
         }
     }
