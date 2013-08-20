@@ -46,21 +46,25 @@ public class AuditPreservationEventHandler implements EventHandler {
     private final AuditTrailStore store;
     /** Whether the store has been updated with the values.*/
     private boolean updated;
+    /** The collection which preservation sequence number needs to be updated. */
+    private final String collectionID;
     
     /**
      * Constructor.
      * @param preservationSequenceNumber The map between the contributor ids and their respective sequence number.
      * @param store The store which should be updated with these sequence numbers.
+     * @param collectionID The ID of the collection that needs to have it's sequence number updated. 
      */
-    public AuditPreservationEventHandler(Map<String, Long> preservationSequenceNumber, AuditTrailStore store) {
+    public AuditPreservationEventHandler(Map<String, Long> preservationSequenceNumber, AuditTrailStore store, String collectionID) {
         this.seqNumbers = preservationSequenceNumber;
         this.store = store;
+        this.collectionID = collectionID;
     }
     
     @Override
     public void handleEvent(OperationEvent event) {
         if(event.getEventType() == OperationEventType.COMPLETE) {
-            updateStoreWithResults(event.getCollectionID());
+            updateStoreWithResults(collectionID);
         } else {
             log.debug("Event for preservation of audit trails: " + event.toString());
         }

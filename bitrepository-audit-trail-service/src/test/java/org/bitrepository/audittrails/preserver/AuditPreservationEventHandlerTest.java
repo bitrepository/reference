@@ -42,7 +42,7 @@ public class AuditPreservationEventHandlerTest extends ExtendedTestCase {
         map.put(PILLARID, 1L);
         MockAuditStore store = new MockAuditStore();
         
-        AuditPreservationEventHandler eventHandler = new AuditPreservationEventHandler(map, store);
+        AuditPreservationEventHandler eventHandler = new AuditPreservationEventHandler(map, store, TEST_COLLECTION);
         Assert.assertEquals(store.getCallsToSetPreservationSequenceNumber(), 0);
         
         addStep("Test the handling of another complete event.", "Should make a call");

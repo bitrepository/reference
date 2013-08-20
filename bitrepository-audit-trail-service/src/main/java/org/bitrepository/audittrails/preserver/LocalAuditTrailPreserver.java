@@ -151,7 +151,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
             ChecksumDataForFileTYPE checksumData = getValidationChecksumDataForFile(auditPackage);
             
             EventHandler eventHandler = new AuditPreservationEventHandler(
-                    auditPackers.get(collectionId).getSequenceNumbersReached(), store);
+                    auditPackers.get(collectionId).getSequenceNumbersReached(), store, collectionId);
             client.putFile(preservationSettings.getAuditTrailPreservationCollection(), url,
                     auditPackage.getName(), auditPackage.length(), checksumData, null, eventHandler,
                     "Preservation of audit trails from the AuditTrail service.");
