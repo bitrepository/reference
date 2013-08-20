@@ -10,6 +10,7 @@ import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITIO
 import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_SEQUENCE_NUMBER;
 
 import java.math.BigInteger;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,6 +29,7 @@ public class AuditEventIterator {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     private ResultSet auditResultSet = null;
+    private Connection conn = null;
     private final PreparedStatement ps;
     
     /**
@@ -47,8 +49,13 @@ public class AuditEventIterator {
         if(auditResultSet != null) {
             auditResultSet.close();
         }
+        
         if(ps != null) {
             ps.close();
+        }
+        
+        if(conn != null) {
+            conn.close();
         }
     }
     
@@ -62,6 +69,7 @@ public class AuditEventIterator {
         try {
             AuditTrailEvent event = null;
             if(auditResultSet == null) {
+                conn = ps.getConnection();
                 long tStart = System.currentTimeMillis();
                 log.debug("Executing query to get AuditTrailEvents resultset");
                 auditResultSet = ps.executeQuery();

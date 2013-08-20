@@ -161,6 +161,8 @@ public class AuditDatabaseExtractor {
         String sql = createSelectString() + " FROM " + AUDITTRAIL_TABLE + joinWithFileTable() + joinWithActorTable() 
                 + joinWithContributorTable() + createRestriction();
         try {
+            log.debug("Creating prepared statement with sql '" + sql + "' and arguments '" 
+                    + Arrays.asList(extractArgumentsFromModel()) + " for AuditEventIterator");
             PreparedStatement ps = DatabaseUtils.createPreparedStatement(dbConnector.getConnection(), 
                     sql, extractArgumentsFromModel());
             return new AuditEventIterator(ps);

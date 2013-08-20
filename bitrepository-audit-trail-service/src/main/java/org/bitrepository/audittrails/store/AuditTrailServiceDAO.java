@@ -181,7 +181,8 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         ArgumentValidator.checkNotNullOrEmpty(contributorId, "String contributorId");
         ArgumentValidator.checkNotNegative(seqNumber, "int seqNumber");
         long preservationKey = retrievePreservationKey(contributorId, collectionId);
-        
+        log.debug("Updateing preservation sequence number for contributor: " + contributorId 
+                + " in collection: " + collectionId + " to seq: " + seqNumber);
         String sqlUpdate = "UPDATE " + PRESERVATION_TABLE + " SET " + PRESERVATION_SEQ + " = ?"
                 + " WHERE " + PRESERVATION_KEY + " = ? ";
         DatabaseUtils.executeStatement(dbConnector, sqlUpdate, seqNumber, preservationKey);
@@ -189,7 +190,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     
     public boolean haveContributor(String contributorID) {
         String sql = "SELECT " + CONTRIBUTOR_KEY + " FROM " + CONTRIBUTOR_TABLE
-                        + "WHERE " + CONTRIBUTOR_ID + " = ?";
+                        + " WHERE " + CONTRIBUTOR_ID + " = ?";
         Long contributorKey = DatabaseUtils.selectLongValue(dbConnector, sql, contributorID);
         if(contributorKey == null) {
             return false;    

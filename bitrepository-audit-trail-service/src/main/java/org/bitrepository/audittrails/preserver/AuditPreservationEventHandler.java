@@ -74,6 +74,8 @@ public class AuditPreservationEventHandler implements EventHandler {
         for(Map.Entry<String, Long> entry : seqNumbers.entrySet()) {
             if(store.haveContributor(entry.getKey())) {
                 store.setPreservationSequenceNumber(entry.getKey(), collectionId, entry.getValue());
+            } else {
+                log.debug("Contributor: " + entry.getKey() + " is not knwon by the database.");
             }
         }
     }
