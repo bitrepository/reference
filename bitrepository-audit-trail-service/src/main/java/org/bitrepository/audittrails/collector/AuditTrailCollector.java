@@ -35,6 +35,7 @@ import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,8 +76,9 @@ public class AuditTrailCollector {
                     settings.getReferenceSettings().getAuditTrailServiceSettings().getMaxNumberOfEventsInRequest());
             AuditTrailCollectionTimerTask collectorTask = new AuditTrailCollectionTimerTask( 
                     collector, collectionInterval);
-            log.debug("Will start collection of audit trail every  " + collectionInterval + " ms, " +
-                    "after a grace period of " + getGracePeriod() + " ms");
+            log.info("Will start collection of audit trail every " +
+                    TimeUtils.millisecondsToHuman(collectionInterval) + ", " +
+                    "after a grace period of " + TimeUtils.millisecondsToHuman(getGracePeriod()));
             timer.scheduleAtFixedRate(collectorTask, getGracePeriod(), collectionInterval/10);
             collectorTasks.put(c.getID(), collectorTask);
         }
@@ -128,7 +130,7 @@ public class AuditTrailCollector {
             this.collector = collector;
             this.interval = interval;
             nextRun = new Date(System.currentTimeMillis() + getGracePeriod());
-            log.debug("Scheduled next collection of audit trails for " + nextRun);
+            log.info("Scheduled next collection of audit trails for " + nextRun);
         }
         
         /**
@@ -137,7 +139,7 @@ public class AuditTrailCollector {
         public synchronized void runCollection() {
             collector.performCollection(SettingsUtils.getAuditContributorsForCollection(collector.getCollectionID()));
             nextRun = new Date(System.currentTimeMillis() + interval);
-            log.debug("Scheduled next collection of audit trails for " + nextRun);
+            log.info("Scheduled next collection of audit trails for " + nextRun);
         }
 
         @Override

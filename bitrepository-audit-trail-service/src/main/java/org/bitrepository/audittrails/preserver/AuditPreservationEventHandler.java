@@ -46,23 +46,25 @@ public class AuditPreservationEventHandler implements EventHandler {
     private final AuditTrailStore store;
     /** Whether the store has been updated with the values.*/
     private boolean updated;
+    /** The collection which preservation sequence number needs to be updated. */
+    private final String collectionID;
     
     /**
      * Constructor.
      * @param preservationSequenceNumber The map between the contributor ids and their respective sequence number.
      * @param store The store which should be updated with these sequence numbers.
+     * @param collectionID The ID of the collection that needs to have it's sequence number updated. 
      */
-    public AuditPreservationEventHandler(Map<String, Long> preservationSequenceNumber, AuditTrailStore store) {
+    public AuditPreservationEventHandler(Map<String, Long> preservationSequenceNumber, AuditTrailStore store, String collectionID) {
         this.seqNumbers = preservationSequenceNumber;
         this.store = store;
-        this.updated = false;
+        this.collectionID = collectionID;
     }
     
     @Override
     public void handleEvent(OperationEvent event) {
-        if(event.getEventType() == OperationEventType.COMPLETE
-                || event.getEventType() == OperationEventType.COMPONENT_COMPLETE) {
-            updateStoreWithResults(event.getCollectionID());
+        if(event.getEventType() == OperationEventType.COMPLETE) {
+            updateStoreWithResults();
         } else {
             log.debug("Event for preservation of audit trails: " + event.toString());
         }
@@ -72,15 +74,14 @@ public class AuditPreservationEventHandler implements EventHandler {
      * Update the store with the results.
      * @param collectionId The id of the collection.
      */
-    private void updateStoreWithResults(String collectionId) {
-        if(updated) {
-            log.debug("Have already updated the store with the new preservation sequence number.");
-            return;
-        }
-        updated = true;
-        
+    private void updateStoreWithResults() {
         for(Map.Entry<String, Long> entry : seqNumbers.entrySet()) {
-            store.setPreservationSequenceNumber(collectionId, entry.getKey(), entry.getValue());
+            if(store.havePreservationKey(entry.getKey(), collectionID)) {
+                store.setPreservationSequenceNumber(entry.getKey(), collectionID, entry.getValue());
+            } else {
+                log.debug("Preservation key for contributor: " + entry.getKey() + " in collection: "
+                        + collectionID + " is not known by the database.");
+            }
         }
     }
 }

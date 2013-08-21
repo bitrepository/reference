@@ -26,7 +26,6 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.sql.Date;
 
-import org.bitrepository.audittrails.MockAuditStore;
 import org.bitrepository.audittrails.store.AuditEventIterator;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
@@ -34,6 +33,7 @@ import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -94,9 +94,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         AuditTrailStore store = mock(AuditTrailStore.class);
         final AuditEventIterator iterator = mock(AuditEventIterator.class);
         
-        LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation(),
-                store, client, fileExchangeMock);
+        LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, client, fileExchangeMock);
         
         /*Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
         Assert.assertEquals(store.getCallsToGetAuditTrails(), 0);
@@ -154,9 +152,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         final AuditEventIterator iterator = new StubAuditEventIterator();
         FileExchange fileExchange = mock(FileExchange.class);
 
-        LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation(),
-                store, client, fileExchange);
+        LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, client, fileExchange);
         
         verify(store).getPreservationSequenceNumber(PILLARID, collectionId);
         verifyNoMoreInteractions(store);
@@ -181,7 +177,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         // getPreservationSequenceNumber should be called twice, first to 'initialize' auditpacker, and second to 
         // run the preserver/packer...
         verify(store, times(2)).getPreservationSequenceNumber(PILLARID, collectionId);
-        verify(store).getAuditTrailsByIterator(null, null, PILLARID, 0L, 
+        verify(store).getAuditTrailsByIterator(null, collectionId, PILLARID, 0L, 
                 null, null, null, null, null, null);
         
         Assert.assertEquals(client.getCallsToPutFile(), 1);
@@ -205,28 +201,28 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
     }
 
     private class MockPutClient implements PutFileClient {
-        private URL url = null;
-        public URL getUrl() {
-            return url;
-        }
         private int callsToPutFile = 0;
         @Override
         public void putFile(String collectionID, URL url, String fileId, long sizeOfFile,
                 ChecksumDataForFileTYPE checksumForValidationAtPillar, ChecksumSpecTYPE checksumRequestsForValidation,
-                EventHandler eventHandler, String auditTrailInformation) {
-            this.url = url;
+                final EventHandler eventHandler, String auditTrailInformation) {
             callsToPutFile++;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    eventHandler.handleEvent(new CompleteEvent(null, null));
+                }
+            }).start();
         }
         public int getCallsToPutFile() {
             return callsToPutFile;
         }
-        
     }
     
     private class StubAuditEventIterator extends AuditEventIterator {
         boolean called = false;
         public StubAuditEventIterator() {
-            super(null, null);
+            super(null);
         }
         
         @Override

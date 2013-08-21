@@ -124,8 +124,7 @@ public class AuditPacker {
         try {
             writer = new PrintWriter(new FileOutputStream(container, APPEND));
             for(String contributor : contributors) {
-                Long seq = packContributor(contributor, writer);
-                seqReached.put(contributor, seq);
+                packContributor(contributor, writer);
             }
         } finally {
             if(writer != null) {
@@ -141,16 +140,16 @@ public class AuditPacker {
      * @param writer The PrinterWriter where the output will be written.
      * @return The sequence number reached +1 (to tell which sequence number is next).
      */
-    private Long packContributor(String contributorId, PrintWriter writer) {
+    private void packContributor(String contributorId, PrintWriter writer) {
         long nextSeqNumber = store.getPreservationSequenceNumber(contributorId, collectionId);
         long largestSeqNumber = -1;
         long numPackedAudits = 0;
         log.debug("Starting to pack audittrails for contributor: " + contributorId + " for collection: " + collectionId);
-        AuditEventIterator iterator = store.getAuditTrailsByIterator(null, null, contributorId, nextSeqNumber, 
+        AuditEventIterator iterator = store.getAuditTrailsByIterator(null, collectionId, contributorId, nextSeqNumber, 
                 null, null, null, null, null, null);
         Long timeStart = System.currentTimeMillis();
-        long interval = 1000;
-        
+        long logInterval = 1000;
+
         AuditTrailEvent event;
         log.debug("AuditEventIterator created");
         while((event = iterator.getNextAuditTrailEvent()) != null) {
@@ -160,12 +159,14 @@ public class AuditPacker {
             }
             writer.println(event.toString());
             
-            if((numPackedAudits % interval) == 0) {
+            if((numPackedAudits % logInterval) == 0) {
                 log.debug("Packed " + numPackedAudits + " audittrails in: " + (System.currentTimeMillis() - timeStart) + " ms");
             }
         }
         log.debug("Packed a total of: " + numPackedAudits + " audittrails in: " + (System.currentTimeMillis() - timeStart) + " ms");
-        return largestSeqNumber + 1;
+        if(numPackedAudits > 0) {
+            seqReached.put(contributorId, largestSeqNumber);
+        }
     }
     
     /**

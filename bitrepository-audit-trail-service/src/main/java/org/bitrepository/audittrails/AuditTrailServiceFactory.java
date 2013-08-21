@@ -54,11 +54,15 @@ import org.bitrepository.service.ServiceSettingsProvider;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
 import org.bitrepository.settings.referencesettings.ServiceType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Factory class for accessing the AuditTrailService 
  */
 public final class AuditTrailServiceFactory {
+
+    private static Logger log = LoggerFactory.getLogger(AuditTrailServiceFactory.class);
     /** The audit trail service. 
      * @see #getAuditTrailService().*/
     private static AuditTrailService auditTrailService;
@@ -126,9 +130,10 @@ public final class AuditTrailServiceFactory {
                 AuditTrailPreserver preserver;
                 if (settings.getReferenceSettings().getAuditTrailServiceSettings().isSetAuditTrailPreservation()) {
                     preserver = new LocalAuditTrailPreserver(
-                            settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation(),
-                            store, putClient, ProtocolComponentFactory.getInstance().getFileExchange(settings));
+                            settings, store, putClient, ProtocolComponentFactory.getInstance().getFileExchange(settings));
                     preserver.start();
+                } else {
+                    log.info("Audit trail preservation disabled, no configuration defined.");
                 }
                 
                 auditTrailService = new AuditTrailService(store, collector, mediator, settings);

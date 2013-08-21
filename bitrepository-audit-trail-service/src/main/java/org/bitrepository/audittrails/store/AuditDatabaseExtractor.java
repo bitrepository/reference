@@ -73,21 +73,21 @@ public class AuditDatabaseExtractor {
     private Logger log = LoggerFactory.getLogger(getClass());
     
     /** Position of the FileId in the extraction.*/
-    private static final int POSITION_FILE_ID = 1;
+    public static final int POSITION_FILE_ID = 1;
     /** Position of the ContributorId in the extraction.*/
-    private static final int POSITION_CONTRIBUTOR_ID = 2;
+    public static final int POSITION_CONTRIBUTOR_ID = 2;
     /** Position of the SequenceNumber in the extraction.*/
-    private static final int POSITION_SEQUENCE_NUMBER = 3;
+    public static final int POSITION_SEQUENCE_NUMBER = 3;
     /** Position of the ActorName in the extraction.*/
-    private static final int POSITION_ACTOR_NAME = 4;
+    public static final int POSITION_ACTOR_NAME = 4;
     /** Position of the Operation in the extraction.*/
-    private static final int POSITION_OPERATION = 5;
+    public static final int POSITION_OPERATION = 5;
     /** Position of the OperationDate in the extraction.*/
-    private static final int POSITION_OPERATION_DATE = 6;
+    public static final int POSITION_OPERATION_DATE = 6;
     /** Position of the AuditTrail in the extraction.*/
-    private static final int POSITION_AUDIT_TRAIL = 7;
+    public static final int POSITION_AUDIT_TRAIL = 7;
     /** Position of the Information in the extraction.*/
-    private static final int POSITION_INFORMATION = 8;
+    public static final int POSITION_INFORMATION = 8;
     
     /** The model containing the elements for the restriction.*/
     private final ExtractModel model;
@@ -110,11 +110,12 @@ public class AuditDatabaseExtractor {
     /**
      * Extracts the requested audit trails.
      * @return The audit trails requested through the ExtractModel.
+     * @deprecated Dangerous as lists may be long if the extraction model is not limited. 
+     * The method is replaced by @link{ #extractAuditEventsByIterator}
      */
     public List<AuditTrailEvent> extractAuditEvents() {
         String sql = createSelectString() + " FROM " + AUDITTRAIL_TABLE + joinWithFileTable() + joinWithActorTable() 
                 + joinWithContributorTable() + createRestriction();
-        System.err.println(sql);
         try {
             Connection conn = null;
             PreparedStatement ps = null;
@@ -160,9 +161,11 @@ public class AuditDatabaseExtractor {
         String sql = createSelectString() + " FROM " + AUDITTRAIL_TABLE + joinWithFileTable() + joinWithActorTable() 
                 + joinWithContributorTable() + createRestriction();
         try {
+            log.debug("Creating prepared statement with sql '" + sql + "' and arguments '" 
+                    + Arrays.asList(extractArgumentsFromModel()) + " for AuditEventIterator");
             PreparedStatement ps = DatabaseUtils.createPreparedStatement(dbConnector.getConnection(), 
                     sql, extractArgumentsFromModel());
-            return new AuditEventIterator(ps, dbConnector);
+            return new AuditEventIterator(ps);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to retrieve the audit trails from the database", e);
         }

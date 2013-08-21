@@ -108,4 +108,8 @@ public class MockAuditStore implements AuditTrailStore {
         // TODO Auto-generated method stub
         return null;
     }
+    @Override
+    public boolean havePreservationKey(String contributorID, String collectionID) {
+        return true;
+    }
 }

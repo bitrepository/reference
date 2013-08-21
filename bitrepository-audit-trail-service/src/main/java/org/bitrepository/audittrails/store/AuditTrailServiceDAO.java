@@ -181,10 +181,30 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         ArgumentValidator.checkNotNullOrEmpty(contributorId, "String contributorId");
         ArgumentValidator.checkNotNegative(seqNumber, "int seqNumber");
         long preservationKey = retrievePreservationKey(contributorId, collectionId);
-        
+        log.debug("Updating preservation sequence number for contributor: " + contributorId 
+                + " in collection: " + collectionId + " to seq: " + seqNumber);
         String sqlUpdate = "UPDATE " + PRESERVATION_TABLE + " SET " + PRESERVATION_SEQ + " = ?"
                 + " WHERE " + PRESERVATION_KEY + " = ? ";
         DatabaseUtils.executeStatement(dbConnector, sqlUpdate, seqNumber, preservationKey);
+    }
+    
+    @Override
+    public boolean havePreservationKey(String contributorID, String collectionID) {
+        String sql = "SELECT " + PRESERVATION_KEY + " FROM " + PRESERVATION_TABLE 
+                + " WHERE " + PRESERVATION_CONTRIBUTOR_KEY + " = (" 
+                    + " SELECT " + CONTRIBUTOR_KEY + " FROM " + CONTRIBUTOR_TABLE 
+                    + " WHERE " + CONTRIBUTOR_ID + " = ? ) "
+                + "AND " + PRESERVATION_COLLECTION_KEY + " = ("
+                    + " SELECT " + COLLECTION_KEY + " FROM " + COLLECTION_TABLE
+                    + " WHERE " + COLLECTION_ID + " = ? )";
+        
+        Long preservationKey = DatabaseUtils.selectLongValue(dbConnector, sql, contributorID, collectionID);
+        if(preservationKey == null) {
+            return false;    
+        } else {
+            return true;
+        }
+        
     }
     
     /**
@@ -218,6 +238,11 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
             DatabaseUtils.executeStatement(dbConnector, sqlInsert, contributorId, collectionId);
             
             guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, contributorId, collectionId);
+        }
+        
+        if(guid == null) {
+            throw new IllegalStateException("PreservationKey cannot be obtained for contributor: " + contributorId +
+                    " in collection: " + collectionId);
         }
         
         return guid;

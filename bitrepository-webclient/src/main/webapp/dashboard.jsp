@@ -61,6 +61,7 @@
               <select id="graphType">
                 <option value="growth" selected>Growth</option>
                 <option value="delta">Rate of growth</option>
+                <option value="filecount">Number of files</option>
               </select>
             </div>
             <div id="dataSizeGraphCollectionSelection"></div>
