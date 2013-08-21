@@ -166,7 +166,6 @@ public class AuditDatabaseExtractor {
         } catch (Exception e) {
             throw new IllegalStateException("Failed to retrieve the audit trails from the database", e);
         }
-        
     }
     
     /**
@@ -201,7 +200,7 @@ public class AuditDatabaseExtractor {
         
         res.append("SELECT ");
         res.append(FILE_TABLE + "." + FILE_FILEID + ", ");
-        res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_CONTRIBUTOR_KEY + ", ");
+        res.append(CONTRIBUTOR_TABLE + "." + CONTRIBUTOR_ID + ", ");
         res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_SEQUENCE_NUMBER + ", ");
         res.append(ACTOR_TABLE + "." + ACTOR_NAME + ", ");
         res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_OPERATION + ", ");
