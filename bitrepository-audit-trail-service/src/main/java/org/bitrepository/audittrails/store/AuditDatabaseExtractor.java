@@ -358,38 +358,4 @@ public class AuditDatabaseExtractor {
         
         return res.toArray();
     }
-    
-    /**
-     * Retrieves a id of a contributor based on the guid. 
-     * @param contributorGuid The guid of the contributor.
-     * @return The id of the contributor corresponding to guid.
-     */
-    private String retrieveContributorId(long contributorGuid) {
-        String sqlRetrieve = "SELECT " + CONTRIBUTOR_ID + " FROM " + CONTRIBUTOR_TABLE + " WHERE " + CONTRIBUTOR_KEY 
-                + " = ?";
-        
-        return DatabaseUtils.selectStringValue(dbConnector, sqlRetrieve, contributorGuid);        
-    }
-    
-    /**
-     * Retrieves a id of a file based on the guid. 
-     * @param fileGuid The guid of the file.
-     * @return The id of the file corresponding to guid.
-     */
-    private String retrieveFileId(long fileGuid) {
-        String sqlRetrieve = "SELECT " + FILE_FILEID + " FROM " + FILE_TABLE + " WHERE " + FILE_KEY + " = ?";
-        
-        return DatabaseUtils.selectStringValue(dbConnector, sqlRetrieve, fileGuid);        
-    }
-    
-    /**
-     * Retrieves a name of an actor based on the guid. 
-     * @param actorGuid The guid of the actor.
-     * @return The name of the actor corresponding to guid.
-     */
-    private String retrieveActorName(long actorGuid) {
-        String sqlRetrieve = "SELECT " + ACTOR_NAME + " FROM " + ACTOR_TABLE + " WHERE " + ACTOR_KEY + " = ?";
-        
-        return DatabaseUtils.selectStringValue(dbConnector, sqlRetrieve, actorGuid);        
-    }
 }
