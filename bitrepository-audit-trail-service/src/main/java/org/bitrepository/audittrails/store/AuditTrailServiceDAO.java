@@ -42,7 +42,6 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.PRESERV
 
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
@@ -75,31 +74,9 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     }
     
     @Override
-    public List<AuditTrailEvent> getAuditTrails(String fileId, String collectionID, String contributorId, 
-            Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation, Date startDate, 
-            Date endDate, Integer maxResults) {
-        ExtractModel model = new ExtractModel();
-        model.setFileId(fileId);
-        model.setCollectionId(collectionID);
-        model.setContributorId(contributorId);
-        model.setMinSeqNumber(minSeqNumber);
-        model.setMaxSeqNumber(maxSeqNumber);
-        model.setActorName(actorName);
-        model.setOperation(operation);
-        model.setStartDate(startDate);
-        model.setEndDate(endDate);
-        if(maxResults != null) {
-            model.setMaxCount(maxResults);
-        }
-
-        AuditDatabaseExtractor extractor = new AuditDatabaseExtractor(model, dbConnector);
-        return extractor.extractAuditEvents();
-    }
-    
-    @Override
     public AuditEventIterator getAuditTrailsByIterator(String fileId, String collectionID, String contributorId, 
             Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation, Date startDate, 
-            Date endDate, Integer maxResults) {
+            Date endDate) {
         ExtractModel model = new ExtractModel();
         model.setFileId(fileId);
         model.setCollectionId(collectionID);
@@ -110,9 +87,6 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         model.setOperation(operation);
         model.setStartDate(startDate);
         model.setEndDate(endDate);
-        if(maxResults != null) {
-            model.setMaxCount(maxResults);
-        }
 
         AuditDatabaseExtractor extractor = new AuditDatabaseExtractor(model, dbConnector);
         return extractor.extractAuditEventsByIterator();

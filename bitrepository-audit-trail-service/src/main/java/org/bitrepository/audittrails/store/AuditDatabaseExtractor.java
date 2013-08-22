@@ -44,19 +44,12 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_FI
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_KEY;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_TABLE;
 
-import java.math.BigInteger;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
-import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
@@ -108,52 +101,6 @@ public class AuditDatabaseExtractor {
     }
     
     /**
-     * Extracts the requested audit trails.
-     * @return The audit trails requested through the ExtractModel.
-     * @deprecated Dangerous as lists may be long if the extraction model is not limited. 
-     * The method is replaced by @link{ #extractAuditEventsByIterator}
-     */
-    public List<AuditTrailEvent> extractAuditEvents() {
-        String sql = createSelectString() + " FROM " + AUDITTRAIL_TABLE + joinWithFileTable() + joinWithActorTable() 
-                + joinWithContributorTable() + createRestriction();
-        try {
-            Connection conn = null;
-            PreparedStatement ps = null;
-            ResultSet result = null;
-            List<AuditTrailEvent> res = new ArrayList<AuditTrailEvent>();
-            long starttime = System.currentTimeMillis();
-            try {
-                conn = dbConnector.getConnection();
-                log.debug("Extracting sql '" + sql + "' with arguments '" + Arrays.asList(extractArgumentsFromModel()));
-                ps = DatabaseUtils.createPreparedStatement(conn, sql, extractArgumentsFromModel());
-                result = ps.executeQuery();
-                
-                int i = 0;
-                while(result.next() && i < model.getMaxCount()) {
-                    res.add(extractEvent(result));
-                    i++;
-                }
-            } finally {
-                if(result != null) {
-                    result.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
-            }
-            log.debug("Read " + res.size() + " audit trails in " + (System.currentTimeMillis() - starttime) + " ms");
-            
-            return res;
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not retrieve the wanted data from the database with the sql '" 
-                    + sql + "'", e);
-        }
-    }
-    
-    /**
      * Method to extract the requested audit trails
      * @return {@link AuditEventIterator} Iterator for extracting the Audittrails 
      */
@@ -169,28 +116,6 @@ public class AuditDatabaseExtractor {
         } catch (Exception e) {
             throw new IllegalStateException("Failed to retrieve the audit trails from the database", e);
         }
-    }
-    
-    /**
-     * Extracts a single AuditEvent from a single result set.
-     * TODO this makes several calls to be database to extract the file id, actor name and contributor id. It could be
-     * reduced by joining the tables in the database in the request.
-     * @param resultSet The result set to extract the AuditEvent from.
-     * @return The extracted AuditEvent.
-     */
-    private AuditTrailEvent extractEvent(ResultSet resultSet) throws SQLException {
-        AuditTrailEvent event = new AuditTrailEvent();
-        
-        event.setActionDateTime(CalendarUtils.getFromMillis(resultSet.getTimestamp(POSITION_OPERATION_DATE).getTime()));
-        event.setActionOnFile(FileAction.fromValue(resultSet.getString(POSITION_OPERATION)));
-        event.setAuditTrailInformation(resultSet.getString(POSITION_AUDIT_TRAIL));
-        event.setActorOnFile(resultSet.getString(POSITION_ACTOR_NAME));
-        event.setFileID(resultSet.getString(POSITION_FILE_ID));
-        event.setInfo(resultSet.getString(POSITION_INFORMATION));
-        event.setReportingComponent(resultSet.getString(POSITION_CONTRIBUTOR_ID));
-        event.setSequenceNumber(BigInteger.valueOf(resultSet.getLong(POSITION_SEQUENCE_NUMBER)));
-        
-        return event;
     }
     
     /**

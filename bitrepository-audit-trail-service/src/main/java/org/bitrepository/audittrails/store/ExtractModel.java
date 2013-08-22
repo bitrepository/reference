@@ -47,14 +47,12 @@ class ExtractModel {
     private Date startDate;
     /** @see #getEndDate(). */
     private Date endDate;
-    /** @see #getMaxCount(). */
-    private int maxCount;
     
     /**
      * Constructor, with no arguments. All variables are set to null.
      */
     public ExtractModel() {
-        this.maxCount = Integer.MAX_VALUE;
+        
     }
     
     /**
@@ -190,20 +188,5 @@ class ExtractModel {
      */
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
-    }
-
-    /**
-     * @return The maxCount; 
-     */
-    public int getMaxCount() {
-        return maxCount;
-    }
-
-    /**
-     * @see getMaxCount();
-     * @param maxCount The maximum allowed results 
-     */
-    public void setMaxCount(int maxCount) {
-        this.maxCount = maxCount;
     }
 }

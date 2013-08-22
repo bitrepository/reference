@@ -24,8 +24,9 @@
  */
 package org.bitrepository.audittrails.webservice;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 
 import javax.ws.rs.Consumes;
@@ -34,14 +35,18 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.bitrepository.audittrails.AuditTrailService;
 import org.bitrepository.audittrails.AuditTrailServiceFactory;
+import org.bitrepository.audittrails.store.AuditEventIterator;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.TimeUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -53,16 +58,19 @@ public class RestAuditTrailService {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     private AuditTrailService service;
+    private final static String JSON_LIST_START = "[";
+    private final static String JSON_LIST_END = "]";
+    private final static String JSON_LIST_SEPERATOR = ",";
     
     public RestAuditTrailService() {
         service = AuditTrailServiceFactory.getAuditTrailService();	
     }
-    
+        
     @POST
     @Path("/queryAuditTrailEvents/")
     @Consumes("application/x-www-form-urlencoded")
     @Produces("application/json")
-    public String queryAuditTrailEvents(
+    public StreamingOutput queryAuditTrailEvents(
             @FormParam("fromDate") String fromDate,
             @FormParam("toDate") String toDate,
             @FormParam("fileID") String fileID,
@@ -74,21 +82,45 @@ public class RestAuditTrailService {
         Date from = makeDateObject(fromDate);
         Date to = makeDateObject(toDate);
         
-        Collection<AuditTrailEvent> events = service.queryAuditTrailEvents(from, to, contentOrNull(fileID),
-                collectionID, contentOrNull(reportingComponent), contentOrNull(actor), filterAction(action), maxResults);
-        
-        JSONArray array = new JSONArray();
-        if(events != null) {
-            log.debug("Got " + events.size() + " AuditTrailEvents!");
-            for(AuditTrailEvent event : events) {
-                array.put(makeJSONEntry(event));
-            }
+        final int maxAudits = maxResults;
+        final AuditEventIterator it = service.queryAuditTrailEventsByIterator(from, to, contentOrNull(fileID),
+                collectionID, contentOrNull(reportingComponent), contentOrNull(actor), filterAction(action));
+        if(it != null) {     
+            return new StreamingOutput() {
+                public void write(OutputStream output) throws IOException, WebApplicationException {
+                    try {
+                        AuditTrailEvent event;
+                        int numAudits = 0;
+                        output.write(JSON_LIST_START.getBytes());
+                        while((event = it.getNextAuditTrailEvent()) != null && numAudits < maxAudits) {
+                            if(numAudits >= 1) {
+                                output.write(JSON_LIST_SEPERATOR.getBytes());
+                            }
+                            output.write(makeJSONEntry(event).toString().getBytes());
+                            numAudits++;
+                        }
+                        output.write(JSON_LIST_END.getBytes());
+                    } catch (Exception e) {
+                        throw new WebApplicationException(e);
+                    } finally {
+                        try {
+                            if(it != null) {
+                                it.close();
+                            }
+                        } catch (Exception e) {
+                            throw new WebApplicationException(e);
+                        }
+                    }
+                }
+            };
         } else {
-            log.debug("Got null queryAuditTrailEvents call!");
+            throw new WebApplicationException(Response.status(Response.Status.NO_CONTENT)
+                    .entity("Failed to get audit trails from database")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build());
         }
-        return array.toString();
     }
-    
+
     @POST
     @Path("/collectAuditTrails/")
     @Produces("text/html")

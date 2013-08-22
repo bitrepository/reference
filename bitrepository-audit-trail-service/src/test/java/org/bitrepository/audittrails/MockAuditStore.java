@@ -35,17 +35,6 @@ import org.bitrepository.bitrepositoryelements.FileAction;
 public class MockAuditStore implements AuditTrailStore {
     List<AuditTrailEvent> events = new ArrayList<AuditTrailEvent>();
     
-    private int callsToGetAuditTrails = 0;
-    @Override
-    public Collection<AuditTrailEvent> getAuditTrails(String fileId, String collectionID, String contributorId, Long minSeqNumber,
-            Long maxSeqNumber, String actorName, FileAction operation, Date startDate, Date endDate, Integer maxResults) {
-        callsToGetAuditTrails++;
-        return events;
-    }
-    public int getCallsToGetAuditTrails() {
-        return callsToGetAuditTrails;
-    }
-    
     private int callsToAddAuditTrails = 0;
     @Override
     public void addAuditTrails(AuditTrailEvents newAuditTrails, String collectionId) {
@@ -74,7 +63,7 @@ public class MockAuditStore implements AuditTrailStore {
     
     @Override
     public void close() {
-        callsToGetAuditTrails = 0;
+        callsToGetAuditTrailsByIterator = 0;
         callsToAddAuditTrails = 0;
         callsToLargestSequenceNumber = 0;
         largestSequenceNumber = 0;
@@ -100,13 +89,17 @@ public class MockAuditStore implements AuditTrailStore {
     public int getCallsToSetPreservationSequenceNumber() {
         return callsToSetPreservationSequenceNumber;
     }
+    private int callsToGetAuditTrailsByIterator = 0;
     @Override
     public AuditEventIterator getAuditTrailsByIterator(String fileId,
             String collectionID, String contributorId, Long minSeqNumber,
             Long maxSeqNumber, String actorName, FileAction operation,
-            Date startDate, Date endDate, Integer maxResults) {
-        // TODO Auto-generated method stub
+            Date startDate, Date endDate) {
+        callsToGetAuditTrailsByIterator++;
         return null;
+    }
+    public int getCallsToGetAuditTrailsByIterator() {
+        return callsToGetAuditTrailsByIterator;
     }
     @Override
     public boolean havePreservationKey(String contributorID, String collectionID) {

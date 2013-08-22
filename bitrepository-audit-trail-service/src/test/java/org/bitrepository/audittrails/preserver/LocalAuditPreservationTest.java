@@ -112,7 +112,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
                 return iterator;
             }
         }).when(store).getAuditTrailsByIterator(anyString(), anyString(), anyString(), any(Long.class), 
-                any(Long.class), anyString(), any(FileAction.class), any(Date.class), any(Date.class), any(Integer.class));
+                any(Long.class), anyString(), any(FileAction.class), any(Date.class), any(Date.class));
         
         preserver.start();
         
@@ -126,7 +126,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         // run the preserver/packer...
         verify(store, times(2)).getPreservationSequenceNumber(PILLARID, collectionId);
         verify(store).getAuditTrailsByIterator(null, null, PILLARID, 0L, 
-                null, null, null, null, null, null);
+                null, null, null, null, null);
         verify(iterator).getNextAuditTrailEvent();
         //Assert.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().size());
         
@@ -165,7 +165,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
                 return iterator;
             }
         }).when(store).getAuditTrailsByIterator(anyString(), anyString(), anyString(), any(Long.class), 
-                any(Long.class), anyString(), any(FileAction.class), any(Date.class), any(Date.class), any(Integer.class));
+                any(Long.class), anyString(), any(FileAction.class), any(Date.class), any(Date.class));
         
         doAnswer(new Answer() {
             public URL answer(InvocationOnMock invocation) {
@@ -178,7 +178,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         // run the preserver/packer...
         verify(store, times(2)).getPreservationSequenceNumber(PILLARID, collectionId);
         verify(store).getAuditTrailsByIterator(null, collectionId, PILLARID, 0L, 
-                null, null, null, null, null, null);
+                null, null, null, null, null);
         
         Assert.assertEquals(client.getCallsToPutFile(), 1);
 

@@ -24,13 +24,11 @@
  */
 package org.bitrepository.audittrails;
 
-import java.util.Collection;
 import java.util.Date;
 import javax.jms.JMSException;
 
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
 import org.bitrepository.audittrails.store.AuditTrailStore;
-import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
@@ -38,6 +36,7 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.contributor.ContributorMediator;
+import org.bitrepository.audittrails.store.AuditEventIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,9 +79,9 @@ public class AuditTrailService implements LifeCycledService {
 
         mediator.start();
     }
-
+    
     /**
-     * Retrieve all AuditTrailEvents matching the criteria from the parameters.
+     * Retrieve an iterator to all AuditTrailEvents matching the criteria from the parameters.
      * All parameters are allowed to be null, meaning that the parameter imposes no restriction on the result
      * @param fromDate Restrict the results to only provide events after this point in time
      * @param toDate Restrict the results to only provide events up till this point in time
@@ -91,10 +90,10 @@ public class AuditTrailService implements LifeCycledService {
      * @param actor Restrict the results to only be events caused by this actor
      * @param action Restrict the results to only be about this type of action
      */
-    public Collection<AuditTrailEvent> queryAuditTrailEvents(Date fromDate, Date toDate, String fileID, 
-            String collectionID, String reportingComponent, String actor, FileAction action, Integer maxResults) {
-        return store.getAuditTrails(fileID, collectionID, reportingComponent, null, null, actor, action, 
-                fromDate, toDate, maxResults);
+    public AuditEventIterator queryAuditTrailEventsByIterator(Date fromDate, Date toDate, String fileID, 
+            String collectionID, String reportingComponent, String actor, FileAction action) {
+        return store.getAuditTrailsByIterator(fileID, collectionID, reportingComponent, null, null, actor, action, 
+                fromDate, toDate);
     }
 
     /**

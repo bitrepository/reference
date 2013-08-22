@@ -85,11 +85,11 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         
         addStep("Retrieve audit trails with and without an action", "Should work.");
         Assert.assertEquals(store.getCallsToAddAuditTrails(), 1);
-        Assert.assertEquals(store.getCallsToGetAuditTrails(), 0);        
-        service.queryAuditTrailEvents(null, null, null, null, null, null, null, null);
-        Assert.assertEquals(store.getCallsToGetAuditTrails(), 1);        
-        service.queryAuditTrailEvents(null, null, null, null, null, null, FileAction.FAILURE, null);
-        Assert.assertEquals(store.getCallsToGetAuditTrails(), 2);        
+        Assert.assertEquals(store.getCallsToGetAuditTrailsByIterator(), 0);        
+        service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, null);
+        Assert.assertEquals(store.getCallsToGetAuditTrailsByIterator(), 1);        
+        service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, FileAction.FAILURE);
+        Assert.assertEquals(store.getCallsToGetAuditTrailsByIterator(), 2);        
         
         addStep("Shutdown", "");
         service.shutdown();
