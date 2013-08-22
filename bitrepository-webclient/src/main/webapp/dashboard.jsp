@@ -146,7 +146,7 @@
 
       $.ajaxSetup({cache: false});
       $(document).ready(function(){
-        makeMenu("dashboard", "#pageMenu");
+        makeMenu("dashboard.jsp", "#pageMenu");
         init();
       });
     </script>

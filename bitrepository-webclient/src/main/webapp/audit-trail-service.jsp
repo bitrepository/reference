@@ -65,7 +65,7 @@
                 <button class="btn" id="fileIDClearButton" type="button"><i class="icon-remove"></i></button>
               </div>
             </label>              
-            <label> Reporting component: <br>
+            <label> Component: <br>
               <div class="input-append">
                 <input class="input-medium" id="componentFilter" type="text" placeholder="ComponentID">
                 <button class="btn" id="componentIDClearButton" type="button"><i class="icon-remove"></i></button>
@@ -172,7 +172,7 @@
            htmlTable = "<table class=\"table table-bordered table-striped\">";
            htmlTable += "<thead> <tr>";
            htmlTable += "<th style=\"min-width: 100px\">FileID</th>";
-           htmlTable += "<th style=\"min-width: 160px\">Reporting component</th>";
+           htmlTable += "<th style=\"min-width: 160px\">Component</th>";
            htmlTable += "<th style=\"min-width: 70px\">Actor</th>";
            htmlTable += "<th style=\"min-width: 70px\">Action</th>";
            htmlTable += "<th style=\"min-width: 120px\">Timestamp</th>";

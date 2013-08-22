@@ -58,7 +58,7 @@
                 <button class="btn" id="fileIDClearButton" type="button"><i class="icon-remove"></i></button>
               </div>
             </label>              
-            <label> Reporting component: <br>
+            <label> Component: <br>
               <div class="input-append">
                 <input id="componentFilter" type="text" placeholder="ComponentID">
                 <button class="btn" id="componentIDClearButton" type="button"><i class="icon-remove"></i></button>
@@ -105,7 +105,7 @@
             <thead>
               <tr>
                 <th>Date</th>
-                <th>Raiser</th>
+                <th>Component</th>
                 <th>CollectionID</th>
                 <th>Alarm code</th>
                 <th>Description</th>
