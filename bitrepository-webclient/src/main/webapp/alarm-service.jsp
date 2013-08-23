@@ -122,8 +122,13 @@
   <script type="text/javascript" src="datepicker/js/bootstrap-datepicker.js"></script>
   <script type="text/javascript" src="menu.js"></script>
   <script type="text/javascript" src="utils.js"></script>
+  <script type="text/javascript" src="CollectionNameMapper.js"></script>
 
   <script>
+
+    var nameMapper;
+    var auto_getalarms;
+
     function clearElement(element) {
       $(element).val("");
     }
@@ -151,7 +156,7 @@
           for (var i = 0; i < j.length; i++) {
             htmlTableBody += "<tr><td>" + j[i].OrigDateTime + 
                              "</td><td>" + j[i].AlarmRaiser +
-                             "</td><td>" + j[i].CollectionID +
+                             "</td><td>" + nameMapper.getName(j[i].CollectionID) +
                              "</td> <td>" + j[i].AlarmCode + 
                              "</td> <td>" + nl2br(j[i].AlarmText) +
                              "</td></tr>";
@@ -161,25 +166,27 @@
       })
     }
 
-    function getCollectionIDs() {
-      $.getJSON('repo/reposervice/getCollectionIDs/', {}, function(j){
-        for(var i = 0; i < j.length; i++) {
-          $("#collectionIDFilter").append('<option value="' + j[i] + '">' + j[i] + '</option>');
+    function init() {
+      $.getJSON('repo/reposervice/getCollections/', {}, function(collections){
+        nameMapper = new CollectionNameMapper(collections);
+        var colls = nameMapper.getCollectionIDs();
+        for(i in colls) {
+          $("#collectionIDFilter").append('<option value="' + colls[i] + '">' + nameMapper.getName(colls[i]) + '</option>');
         }
+        updateAlarms();
+        auto_getalarms = setInterval(function() {updateAlarms();}, 2500);
       });
     }
 
     $(document).ready(function(){
       makeMenu("alarm-service.jsp", "#pageMenu");
-      getCollectionIDs();
-      updateAlarms();
+      init();
       $("#fromDate").datepicker();
       $("#toDate").datepicker();
       $("#toDateClearButton").click(function(event) {event.preventDefault(); clearElement("#toDate")});
       $("#fromDateClearButton").click(function(event) {event.preventDefault(); clearElement("#fromDate")});
       $("#fileIDClearButton").click(function(event) {event.preventDefault(); clearElement("#fileIDFilter")});
       $("#componentIDClearButton").click(function(event) {event.preventDefault(); clearElement("#componentFilter")});
-      var auto_getalarms = setInterval(function() {updateAlarms();}, 2500);
     }); 
 
     </script>
