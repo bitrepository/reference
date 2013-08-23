@@ -42,16 +42,6 @@
     <url-pattern>/repo/*</url-pattern>
   </servlet-mapping>
 
-  <servlet>
-    <servlet-name>dashboardServlet</servlet-name>
-    <servlet-class>org.bitrepository.dashboard.DashboardServlet</servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>dashboardServlet</servlet-name>
-    <url-pattern>/dashboardServlet</url-pattern>
-  </servlet-mapping>
-
   <listener>
     <listener-class>org.bitrepository.webservice.WebclientContextListener</listener-class>
   </listener>

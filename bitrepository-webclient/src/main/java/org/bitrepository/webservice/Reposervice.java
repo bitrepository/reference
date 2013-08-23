@@ -24,9 +24,9 @@ package org.bitrepository.webservice;
 import org.bitrepository.BasicClient;
 import org.bitrepository.BasicClientFactory;
 import org.bitrepository.common.utils.SettingsUtils;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -61,28 +61,30 @@ public class Reposervice {
     }
     
     @GET
-    @Path("getCollectionName")
+    @Path("/getCollectionName")
     @Produces(MediaType.APPLICATION_JSON)
     public String getCollectionName(@QueryParam("collectionID") String collectionID) {
         return SettingsUtils.getCollectionName(collectionID);
     }
     
     @GET
-    @Path("getCollections")
+    @Path("/getCollections")
     @Produces(MediaType.APPLICATION_JSON)
     public String getCollections() throws JSONException {
         JSONArray array = new JSONArray();
+        JSONObject obj;
         for(String collectionID : client.getCollectionIDs()) {
-            JSONObject obj = new JSONObject();
+            obj = new JSONObject();
             obj.put("collectionID", collectionID);
             obj.put("collectionName", SettingsUtils.getCollectionName(collectionID));
+            array.put((JSONObject) obj);
         }
         
         return array.toString();
     }
     
     @GET
-    @Path("getRepositoryName")
+    @Path("/getRepositoryName")
     @Produces(MediaType.APPLICATION_JSON)
     public String getRepositoryName() {
         return SettingsUtils.getRepositoryName();
