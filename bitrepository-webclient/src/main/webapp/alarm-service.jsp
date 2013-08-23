@@ -80,7 +80,7 @@
                 </select>
               </div>
             </label>
-            <label> CollectionID: <br>
+            <label> Collection: <br>
               <div class="input-append">
                 <select class="input-medium" id="collectionIDFilter">
                   <option>ALL</option>
@@ -106,7 +106,7 @@
               <tr>
                 <th>Date</th>
                 <th>Component</th>
-                <th>CollectionID</th>
+                <th>Collection</th>
                 <th>Alarm code</th>
                 <th>Description</th>
               </tr>

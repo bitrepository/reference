@@ -96,7 +96,7 @@
                 </select>
               </div>
             </label>
-            <label> CollectionID: <br>
+            <label> Collection: <br>
               <div class="input-append">
                 <select class="input-medium" id="collectionIDFilter"></select>
               </div>
