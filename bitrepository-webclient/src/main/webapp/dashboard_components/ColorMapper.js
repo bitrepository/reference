@@ -10,7 +10,7 @@
     var colorMap = new Object();
 
     for(i=0; i<collections.length; i++) {
-      colorMap[collections[i]] = colorList[i % colorList.length];
+      colorMap[collections[i].collectionID] = colorList[i % colorList.length];
     }
 
     this.getCollectionColor = function(collectionID) {

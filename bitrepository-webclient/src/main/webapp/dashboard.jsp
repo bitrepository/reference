@@ -105,7 +105,7 @@
     <script type="text/javascript" src="momentjs/moment-timezone.min.js"></script>
     <script type="text/javascript" src="momentjs/moment-timezone-data.js"></script>
     <script type="text/javascript" src="dashboard_components/ColorMapper.js"></script>
-    <script type="text/javascript" src="dashboard_components/CollectionNameMapper.js"></script>
+    <script type="text/javascript" src="CollectionNameMapper.js"></script>
     <script type="text/javascript" src="dashboard_components/collectionStatus.js"></script>
     <script type="text/javascript" src="dashboard_components/legsSizePie.js"></script>
     <script type="text/javascript" src="dashboard_components/collectionSizePie.js"></script>
@@ -123,13 +123,13 @@
         $.get("repo/reposervice/getRepositoryName/", {}, function(j) {
           $("#pageHeader").html("Overview of " + j);
         }, "html");
-        $.getJSON("repo/reposervice/getCollectionIDs/", {}, function(collections) {
+        $.getJSON("repo/reposervice/getCollections/", {}, function(collections) {
           colorMapper = new ColorMapper(collections);
-          nameMapper = new CollectionNameMapper(collections, function(collection, mapper) {updateCheckboxLabel(collection, mapper)});
+          nameMapper = new CollectionNameMapper(collections);
           setNameMapper(nameMapper);
           initiateCollectionStatus(collections, "#collectionStatusBody", 10000);
           var dataUrl = "<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getDataSizeHistory/?collectionID=";
-          dsGraph = new dataSizeGraph(collections, colorMapper, nameMapper, new FileSizeUtils(), dataUrl, "#graphType", "#dataSizeGraphPlaceholder");
+          dsGraph = new dataSizeGraph(collections, colorMapper, new FileSizeUtils(), dataUrl, "#graphType", "#dataSizeGraphPlaceholder");
           makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph, colorMapper, nameMapper);
           drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
           drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);

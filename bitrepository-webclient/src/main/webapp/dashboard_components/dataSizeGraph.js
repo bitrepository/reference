@@ -1,10 +1,9 @@
 
 
-  function dataSizeGraph(collections, colorMapper, nameMapper, fileSizeUtils, dataUrl, graphTypeSelector, graphPlaceholder) {
+  function dataSizeGraph(collections, colorMapper, fileSizeUtils, dataUrl, graphTypeSelector, graphPlaceholder) {
  
     var collectionIDs = new Object();
     var colerMap = colorMapper;
-    var nameMap = nameMapper;
     var sizeUtils = fileSizeUtils;
     var graphType = graphTypeSelector;
     var placeholder = graphPlaceholder;
@@ -15,7 +14,7 @@
     var msPerDay = 86400 * 1000;
 
     for(i=0; i<collections.length; i++) {
-      collectionIDs[collections[i]] = {state : "active" };
+      collectionIDs[collections[i].collectionID] = {state : "active" };
     }
 
     this.enableCollection = function(collectionID) {

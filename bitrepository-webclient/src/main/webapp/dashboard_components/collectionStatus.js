@@ -17,8 +17,8 @@
 
   function initiateCollectionStatus(collectionIDs, tableBody, updateInterval) {
     for(var i = 0; i < collectionIDs.length; i++) {
-        collections[collectionIDs[i]] = {collectionID: collectionIDs[i],
-                                         collectionName: collectionIDs[i],
+        collections[collectionIDs[i].collectionID] = {collectionID: collectionIDs[i].collectionID,
+                                         collectionName: collectionIDs[i].collectionName,
                                          numFiles: '-', 
                                          latestIngest: "Fetching",
                                          collectionSize: '-',
@@ -27,29 +27,10 @@
                                          numChecksumErrors: '-',
                                          numMissingFiles: '-',
                                          nextCheck: "Fetching"};
-        $(tableBody).append(makeCollectionRow(collections[collectionIDs[i]]));
+        $(tableBody).append(makeCollectionRow(collections[collectionIDs[i].collectionID]));
       }
       readyForRefresh = true;
-      loadCollectionNames();
       initStatusUpdate(updateInterval);
-  }
-
-
-  function loadCollectionName(collection) {
-    url = "repo/reposervice/getCollectionName/?collectionID=" + collection;
-    var c = collection;
-    $.get(url, {}, function(j) {
-      collections[c].collectionName = j;
-      myNameMapper.setName(c, j);
-    }, "html").done(function(){updateCollectionRow(collections[c])});
-  }
-
-  function loadCollectionNames() {
-    if(readyForRefresh) {
-      for(c in collections) {
-        loadCollectionName(c);
-      }
-    }
   }
 
   function updateWorkflowStatus(collection) {

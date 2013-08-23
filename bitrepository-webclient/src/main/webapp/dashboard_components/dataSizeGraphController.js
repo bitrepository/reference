@@ -30,7 +30,3 @@
     return html;
   }
 
-  function updateCheckboxLabel(collectionID, nameMapper) {
-    var elementID = "#" + collectionID + "-selector-name";
-    $(elementID).html(nameMapper.getName(collectionID));
-  }
