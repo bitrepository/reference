@@ -110,6 +110,7 @@
   <script type="text/javascript" src="menu.js"></script>
   <script type="text/javascript" src="pager.js"></script>
   <script type="text/javascript" src="utils.js"></script>
+  <script type="text/javascript" src="CollectionNameMapper.js"></script>
 
   <script>
     
@@ -117,6 +118,7 @@
     var workflows = new Object();
     var pager;
     var update_page;
+    var nameMapper;
 
     function loadWorkflows() {
       $.getJSON("<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getWorkflowList/?collectionID=" 
@@ -316,18 +318,20 @@
     }
 
     function initializePage() {
-      $.getJSON('repo/reposervice/getCollectionIDs/', {}, function(j) {
-        for(var i = 0; i < j.length; i++) {
-           $("#collectionChooser").append('<option value="' + j[i] + '">' + j[i] + '</option>');
+      $.getJSON('repo/reposervice/getCollections/', {}, function(collections) {
+        nameMapper = new CollectionNameMapper(collections);
+        var colls = nameMapper.getCollectionIDs();
+        for(i in colls) {
+          $("#collectionChooser").append('<option value="' + colls[i] + '">' + nameMapper.getName(colls[i]) + '</option>');
         }
-        
+       
         collectionChanged();        
       });
     }
 
     function collectionChanged() {
         clearContent();
-        $("#integrityLegend").html("Integrity information for collection " + getCollectionID());
+        $("#integrityLegend").html("Integrity information for collection " + nameMapper.getName(getCollectionID()));
         reportUrl =  "<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getLatestIntegrityReport/";
         reportUrl += "?collectionID=" + getCollectionID();
         reportUrl += "&workflowID=" + "CompleteIntegrityCheck";

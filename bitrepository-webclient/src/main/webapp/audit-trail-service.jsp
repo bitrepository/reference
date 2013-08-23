@@ -198,9 +198,9 @@
     }
 
     function getCollectionIDs() {
-      $.getJSON('repo/reposervice/getCollectionIDs/', {}, function(j){
+      $.getJSON('repo/reposervice/getCollections/', {}, function(j){
         for(var i = 0; i < j.length; i++) {
-          $("#collectionIDFilter").append('<option value="' + j[i] + '">' + j[i] + '</option>');
+          $("#collectionIDFilter").append('<option value="' + j[i].collectionID + '">' + j[i].collectionName + '</option>');
         }
       });
     }
