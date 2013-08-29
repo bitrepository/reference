@@ -80,12 +80,12 @@ public class AuditServiceDatabaseMigrationTest extends ExtendedTestCase {
         int dbTableVersionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, DATABASE_VERSION_ENTRY);
         Assert.assertEquals(dbTableVersionBefore, 2, "Table version before migration");
         
-        addStep("Perform migration", "audit table version 3 and database-version is 3");
+        addStep("Perform migration", "audit table version 4 and database-version is 4");
         AuditTrailServiceDatabaseMigrator migrator = new AuditTrailServiceDatabaseMigrator(connector);
         migrator.migrate();
         int auditTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, AUDITTRAIL_TABLE);
-        Assert.assertEquals(auditTableVersionAfter, 3, "Table version after migration");
+        Assert.assertEquals(auditTableVersionAfter, 4, "Table version after migration");
         int dbTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, DATABASE_VERSION_ENTRY);
-        Assert.assertEquals(dbTableVersionAfter, 3, "Table version after migration");
+        Assert.assertEquals(dbTableVersionAfter, 4, "Table version after migration");
     }
 }
