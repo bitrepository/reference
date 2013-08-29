@@ -448,7 +448,7 @@
   </profiles>
 
   <properties>
-    <message.xml.version>24</message.xml.version>
+    <message.xml.version>25-SNAPSHOT</message.xml.version>
     <repository.settings.version>10</repository.settings.version>
     <activemq.version>5.8.0</activemq.version>
     <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
