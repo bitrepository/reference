@@ -29,6 +29,8 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTR
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_CONTRIBUTOR_KEY;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_FILE_KEY;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_INFORMATION;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_OPERATION_ID;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_FINGERPRINT;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_OPERATION;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_OPERATION_DATE;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_SEQUENCE_NUMBER;
@@ -81,6 +83,10 @@ public class AuditDatabaseExtractor {
     public static final int POSITION_AUDIT_TRAIL = 7;
     /** Position of the Information in the extraction.*/
     public static final int POSITION_INFORMATION = 8;
+    /** Position of the OperationID in the extraction.*/
+    public static final int POSITION_OPERATION_ID = 9;
+    /** Position of the fingerprint in the extraction.*/
+    public static final int POSITION_FINGERPRINT = 10;
     
     /** The model containing the elements for the restriction.*/
     private final ExtractModel model;
@@ -134,7 +140,9 @@ public class AuditDatabaseExtractor {
         res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_OPERATION + ", ");
         res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_OPERATION_DATE + ", ");
         res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_AUDIT + ", ");
-        res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_INFORMATION + " ");
+        res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_INFORMATION + ", ");
+        res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_OPERATION_ID + ", ");
+        res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_FINGERPRINT + " ");
         
         return res.toString();
     }

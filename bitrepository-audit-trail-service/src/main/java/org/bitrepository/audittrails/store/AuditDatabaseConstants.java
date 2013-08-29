@@ -50,6 +50,10 @@ public final class AuditDatabaseConstants {
     public final static String AUDITTRAIL_AUDIT = "audit";
     /** The name of the information field in the audit trail table. */
     public final static String AUDITTRAIL_INFORMATION = "information";
+    /** The name of the operationID field in the audit trail table. */
+    public final static String AUDITTRAIL_OPERATION_ID = "operationID";
+    /** The name of the fingerprint field in the audit trail table. */
+    public final static String AUDITTRAIL_FINGERPRINT = "fingerprint";
     
     /** The name of the file table.*/
     public final static String FILE_TABLE = "file";

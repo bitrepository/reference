@@ -45,6 +45,8 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.*;
  *  AUDITTRAIL_OPERATION 
  *  AUDITTRAIL_OPERATION_DATE 
  *  AUDITTRAIL_SEQUENCE_NUMBER 
+ *  AUDITTRAIL_OPERATION_ID 
+ *  AUDITTRAIL_FINGERPRINT
  */
 public class AuditDatabaseIngestor {
     /** The log.*/
@@ -89,6 +91,8 @@ public class AuditDatabaseIngestor {
         addElement(res, event.getActionOnFile(), AUDITTRAIL_OPERATION);
         addElement(res, event.getActionDateTime(), AUDITTRAIL_OPERATION_DATE);
         addElement(res, event.getSequenceNumber(), AUDITTRAIL_SEQUENCE_NUMBER);
+        addElement(res, event.getOperationID(), AUDITTRAIL_OPERATION_ID);
+        addElement(res, event.getCertificateID(), AUDITTRAIL_FINGERPRINT);
         
         return res.toString();
     }
@@ -128,6 +132,8 @@ public class AuditDatabaseIngestor {
         addArgument(res, event.getActionOnFile());
         addArgument(res, event.getActionDateTime());
         addArgument(res, event.getSequenceNumber());
+        addArgument(res, event.getOperationID());
+        addArgument(res, event.getCertificateID());
         
         return res.toString();
     }
@@ -192,6 +198,14 @@ public class AuditDatabaseIngestor {
         
         if(event.getSequenceNumber() != null) {
             res.add(event.getSequenceNumber().longValue());
+        }
+        
+        if(event.getOperationID() != null) {
+            res.add(event.getOperationID());
+        }
+        
+        if(event.getCertificateID() != null) {
+            res.add(event.getCertificateID());
         }
         
         return res.toArray();

@@ -8,6 +8,9 @@ import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITIO
 import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_OPERATION;
 import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_OPERATION_DATE;
 import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_SEQUENCE_NUMBER;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_OPERATION_ID;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_FINGERPRINT;
+
 
 import java.math.BigInteger;
 import java.sql.Connection;
@@ -85,6 +88,8 @@ public class AuditEventIterator {
                 event.setInfo(auditResultSet.getString(POSITION_INFORMATION));
                 event.setReportingComponent(auditResultSet.getString(POSITION_CONTRIBUTOR_ID));
                 event.setSequenceNumber(BigInteger.valueOf(auditResultSet.getLong(POSITION_SEQUENCE_NUMBER)));
+                event.setOperationID(auditResultSet.getString(POSITION_OPERATION_ID));
+                event.setCertificateID(auditResultSet.getString(POSITION_FINGERPRINT));
             } else {
                 close();
             }
