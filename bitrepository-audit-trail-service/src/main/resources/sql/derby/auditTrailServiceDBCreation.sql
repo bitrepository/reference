@@ -36,12 +36,12 @@ create table tableversions (
     version int not null             -- version of table
 );
 
-insert into tableversions ( tablename, version ) values ( 'audittrail', 3);
+insert into tableversions ( tablename, version ) values ( 'audittrail', 4);
 insert into tableversions ( tablename, version ) values ( 'file', 2);
 insert into tableversions ( tablename, version ) values ( 'contributor', 2);
 insert into tableversions ( tablename, version ) values ( 'actor', 2);
 insert into tableversions ( tablename, version ) values ( 'collection', 1);
-insert into tableversions ( tablename, version ) values ( 'auditservicedb', 3);
+insert into tableversions ( tablename, version ) values ( 'auditservicedb', 4);
 
 --*************************************************************************--
 -- Name:     collection
@@ -151,6 +151,8 @@ create table audittrail (
     operation_date timestamp,       -- The date when the action was performed.
     audit CLOB,                     -- The audit trail delivered from the actor. 
     information CLOB,               -- The information about the audit.
+    operationID VARCHAR(100),       -- The conversation/operation ID the the audit belongs to.
+    fingerprint VARCHAR(100),       -- The fingerprint (SHA-1 sum) for the certificate used in the operation.
     
     FOREIGN KEY (contributor_key) REFERENCES contributor(contributor_key),
                                  -- Foreign key constraint on pillar_key, enforcing the presence of the referred id
