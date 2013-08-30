@@ -178,12 +178,16 @@
            htmlTable += "<th style=\"min-width: 120px\">Timestamp</th>";
            htmlTable += "<th style=\"min-width: 120px\">Info</th>";
            htmlTable += "<th style=\"min-width: 150px\">Message from client</th>";
+           htmlTable += "<th style=\"min-width: 150px\">Certificate fingerprint</th>";
+           htmlTable += "<th style=\"min-width: 150px\">OperationID</th>";
            htmlTable += "</tr></thead><tbody>";
            for (var i = 0; i < j.length; i++) {
              htmlTable += "<tr><td>" + j[i].fileID + "</td><td>" + j[i].reportingComponent 
                        + "</td><td>" + j[i].actor + "</td><td>" + j[i].action
                        + "</td><td>" + j[i].timeStamp + "</td><td>" + j[i].info
-                       + "</td> <td>" + j[i].auditTrailInfo + "</td></tr>";
+                       + "</td> <td>" + j[i].auditTrailInfo + "</td>"
+                       + "<td>" + j[i].fingerprint + "</td>"
+                       + "<td>" + j[i].operationID + "</td></tr>";
            }
            htmlTable += "</tbody></table>"; 
            $("#auditTrailsTableDiv").html(htmlTable);

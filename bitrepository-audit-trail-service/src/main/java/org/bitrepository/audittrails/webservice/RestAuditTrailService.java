@@ -140,6 +140,8 @@ public class RestAuditTrailService {
                     CalendarUtils.convertFromXMLGregorianCalendar(event.getActionDateTime())));
             obj.put("info", contentOrEmptyString(event.getInfo()));
             obj.put("auditTrailInfo", contentOrEmptyString(event.getAuditTrailInformation()));
+            obj.put("fingerprint", contentOrEmptyString(event.getCertificateID()));
+            obj.put("operationID", contentOrEmptyString(event.getOperationID()));
             return obj;
         } catch (JSONException e) {
             return (JSONObject) JSONObject.NULL;
