@@ -134,12 +134,12 @@ public class RestAuditTrailService {
         try {
             obj.put("fileID", event.getFileID());
             obj.put("reportingComponent", event.getReportingComponent());
-            obj.put("actor", event.getActorOnFile());
+            obj.put("actor", contentOrEmptyString(event.getActorOnFile()));
             obj.put("action", event.getActionOnFile());
             obj.put("timeStamp", TimeUtils.shortDate(
                     CalendarUtils.convertFromXMLGregorianCalendar(event.getActionDateTime())));
-            obj.put("info", event.getInfo());
-            obj.put("auditTrailInfo", event.getAuditTrailInformation());
+            obj.put("info", contentOrEmptyString(event.getInfo()));
+            obj.put("auditTrailInfo", contentOrEmptyString(event.getAuditTrailInformation()));
             return obj;
         } catch (JSONException e) {
             return (JSONObject) JSONObject.NULL;
@@ -166,6 +166,14 @@ public class RestAuditTrailService {
             time.set(year, (month - 1), day);
             
             return time.getTime();
+        }
+    }
+    
+    private String contentOrEmptyString(String input) {
+        if(input == null) {
+            return "";
+        } else {
+            return input.trim();
         }
     }
     
