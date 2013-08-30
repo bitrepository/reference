@@ -23,6 +23,7 @@ package org.bitrepository.protocol.messagebus.logger;
  */
 
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -36,6 +37,9 @@ public class PutFileMessageLogger extends DefaultMessagingLogger {
         if (message instanceof IdentifyPillarsForPutFileRequest) {
             IdentifyPillarsForPutFileRequest request = (IdentifyPillarsForPutFileRequest) message;
             messageSB.append(" FileID=" + request.getFileID());
+        } else if (message instanceof IdentifyPillarsForPutFileResponse) {
+            IdentifyPillarsForPutFileResponse response = (IdentifyPillarsForPutFileResponse) message;
+            messageSB.append(" ChecksumDataForExistingFileID=" + response.getChecksumDataForExistingFile());
         }
 
         else if (message instanceof PutFileRequest) {
