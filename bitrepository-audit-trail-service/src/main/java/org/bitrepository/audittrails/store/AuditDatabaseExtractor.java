@@ -60,8 +60,14 @@ import org.slf4j.LoggerFactory;
 /**
  * Extractor for the audit trail events from the AuditTrailServiceDatabase.
  * 
+ * The actual extraction is delegated to the class AuditEventIterator.
+ * As such any change in extraction model should be reflected in the AuditEventIterator. 
+ * For futher details @see {@link org.bitrepository.audittrails.store.AuditEventIterator}
+ * 
+ * 
  * Order of extraction:
- * FileId, ContributorId, SequenceNumber, SeqNumber, ActorName, Operation, OperationDate, AuditTrail, Information
+ * FileId, ContributorId, SequenceNumber, SeqNumber, ActorName, Operation, OperationDate, 
+ * AuditTrail, Information, OperationID, Certificate fingerprint
  */
 public class AuditDatabaseExtractor {
     /** The log.*/
