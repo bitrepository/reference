@@ -45,7 +45,9 @@ public class AuditTrailContributorDatabaseMigrator extends DatabaseMigrator {
     private static final String UPDATE_SCRIPT_VERSION_1_TO_2 = "sql/derby/auditContributorDBUpdate1to2.sql";
     /** The name of the script for updating the database from version 2 to 3.*/
     private static final String UPDATE_SCRIPT_VERSION_2_TO_3 = "sql/derby/auditContributorDBUpdate2to3.sql";
-
+    /** The current version of the database. */
+    private final Integer currentVersion = 3;
+    
     /**
      * Constructor.
      * @param connector connection to the database.
@@ -70,6 +72,21 @@ public class AuditTrailContributorDatabaseMigrator extends DatabaseMigrator {
         if(!versions.containsKey(DATABASE_VERSION_ENTRY) || versions.get(DATABASE_VERSION_ENTRY) < 3) {
             log.warn("Migrating AuditContributorDB from version 2 to 3.");
             migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_2_TO_3);
+        }
+    }
+
+    @Override
+    public boolean needsMigration() {
+        Map<String, Integer> versions = getTableVersions();
+        
+        if(!versions.containsKey(DATABASE_VERSION_ENTRY)) {
+            throw new IllegalStateException("The database does not contain '" + DATABASE_VERSION_ENTRY 
+                    + "' table as required.");
+        }
+        if(versions.get(DATABASE_VERSION_ENTRY) < currentVersion) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

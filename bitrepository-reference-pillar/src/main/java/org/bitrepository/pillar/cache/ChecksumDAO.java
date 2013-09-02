@@ -32,6 +32,7 @@ import org.bitrepository.pillar.cache.database.ChecksumIngestor;
 import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
 import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseMigrator;
 
 /**
@@ -51,15 +52,12 @@ public class ChecksumDAO implements ChecksumStore {
      * @param settings The settings.
      */
     public ChecksumDAO(Settings settings) {
-        connector = new DBConnector(
-                settings.getReferenceSettings().getPillarSettings().getChecksumDatabase());
-        
+        DatabaseManager dm = new ChecksumDatabaseManager(settings);
+        connector = dm.getConnector();
+
         synchronized(this) {
             this.ingestor = new ChecksumIngestor(connector);
             this.extractor = new ChecksumExtractor(connector);
-        
-            DatabaseMigrator migrator = new ChecksumDBMigrator(connector, settings);
-            migrator.migrate();
         }
     }
     

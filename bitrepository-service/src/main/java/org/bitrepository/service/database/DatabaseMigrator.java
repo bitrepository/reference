@@ -140,4 +140,11 @@ public abstract class DatabaseMigrator extends DatabaseMaintainer {
      * Perform the migration for the given database.
      */
     abstract public void migrate();
+    
+    /**
+     * Method to determine if migration is needed.
+     * @return true if migration is needed, false otherwise. 
+     */
+    public abstract boolean needsMigration();
+    
 }

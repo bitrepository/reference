@@ -40,6 +40,9 @@ public class ChecksumDBMigrator extends DatabaseMigrator {
     private static Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
     /** The settings.*/
     private final Settings settings;
+    /** The current version of the database. */
+    private final Integer currentVersion = 2;
+    
     
     /**
      * Constructor.
@@ -77,5 +80,21 @@ public class ChecksumDBMigrator extends DatabaseMigrator {
         String updateAfterwards = "UPDATE " + CHECKSUM_TABLE + " SET " + CS_COLLECTION_ID + " = ? WHERE " 
                 + CS_COLLECTION_ID + " IS NULL";
         DatabaseUtils.executeStatement(connector, updateAfterwards, settings.getCollections().get(0).getID());
+    }
+
+    @Override
+    public boolean needsMigration() {
+        Map<String, Integer> versions = getTableVersions();
+        
+        if(!versions.containsKey(CHECKSUM_TABLE)) {
+            throw new IllegalStateException("The database does not contain '" + CHECKSUM_TABLE 
+                    + "' table as required.");
+        }
+        
+        if(versions.get(CHECKSUM_TABLE) < currentVersion) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -49,6 +49,8 @@ public class AuditTrailServiceDatabaseMigrator extends DatabaseMigrator {
     private static final String UPDATE_SCRIPT_VERSION_2_TO_3 = "sql/derby/auditTrailServiceDBUpdate2to3.sql";
     /** The name of the update script for version 3 to 4.*/
     private static final String UPDATE_SCRIPT_VERSION_3_TO_4 = "sql/derby/auditTrailServiceDBUpdate3to4.sql";
+    /** The current version of the database. */
+    private final Integer currentVersion = 4;
     
     /**
      * Constructor.
@@ -75,7 +77,7 @@ public class AuditTrailServiceDatabaseMigrator extends DatabaseMigrator {
                     + "' table as required.");
         }
         if(!versions.containsKey(ACTOR_TABLE)) {
-            throw new IllegalStateException("The database does not contain '" + AUDITTRAIL_TABLE 
+            throw new IllegalStateException("The database does not contain '" + ACTOR_TABLE 
                     + "' table as required.");
         }
         
@@ -90,6 +92,22 @@ public class AuditTrailServiceDatabaseMigrator extends DatabaseMigrator {
         if(!versions.containsKey(DATABASE_VERSION_ENTRY) || versions.get(DATABASE_VERSION_ENTRY) < 4) {
             log.warn("Migrating AuditServiceDB from version 3 to 4.");
             migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_3_TO_4);
+        }
+    }
+
+    @Override
+    public boolean needsMigration() {
+        Map<String, Integer> versions = getTableVersions();
+        
+        if(!versions.containsKey(DATABASE_VERSION_ENTRY)) {
+            throw new IllegalStateException("The database does not contain '" + DATABASE_VERSION_ENTRY 
+                    + "' table as required.");
+        }
+        
+        if(versions.get(DATABASE_VERSION_ENTRY) < currentVersion) {
+            return true;
+        } else {
+            return false;
         }
     }
 }
