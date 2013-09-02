@@ -111,11 +111,6 @@
                 </select>
               </div>
             </label>
-            <label> <br>
-              <div class="input-append">
-                <button class="btn" id="queryAuditTrails">Filter</button>
-              </div>
-            </label>
             <label> Certificate fingerprint: <br>
               <div class="input-append" style="padding: 0px"> 
                 <input class="input-medium" id="fingerprintFilter" type="text" placeholder="Fingerprint">
@@ -126,6 +121,11 @@
               <div class="input-append" style="padding: 0px"> 
                 <input class="input-medium" id="operationIDFilter" type="text" placeholder="OperationID">
                 <button class="btn" id="operationIDClearButton" type="button"><i class="icon-remove"></i></button>
+              </div>
+            </label>
+            <label> <br>
+              <div class="input-append">
+                <button class="btn" id="queryAuditTrails">Filter</button>
               </div>
             </label>
           </form>
