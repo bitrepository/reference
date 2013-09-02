@@ -30,5 +30,8 @@ connect 'jdbc:derby:auditservicedb';
 ALTER TABLE audittrail ADD COLUMN operationID VARCHAR(100);
 ALTER TABLE audittrail ADD COLUMN fingerprint VARCHAR(100);
 
+CREATE INDEX fingerprintindex ON audittrail ( fingerprint );
+CREATE INDEX operationidindex ON audittrail ( operationID );
+
 UPDATE tableversions SET version = 4 WHERE tablename = 'auditservicedb';
 UPDATE tableversions SET version = 4 WHERE tablename = 'audittrail';

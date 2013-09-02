@@ -165,3 +165,5 @@ create table audittrail (
 
 create index dateindex on audittrail ( operation_date );
 create index auditindex on audittrail ( contributor_key, file_key, actor_key );
+CREATE INDEX fingerprintindex ON audittrail ( fingerprint );
+CREATE INDEX operationidindex ON audittrail ( operationID );
