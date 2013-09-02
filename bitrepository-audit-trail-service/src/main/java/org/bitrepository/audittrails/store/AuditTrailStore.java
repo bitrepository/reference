@@ -34,7 +34,8 @@ import org.bitrepository.bitrepositoryelements.FileAction;
  */
 public interface AuditTrailStore {
     /** 
-     * Extract audit trails from the store.
+     * Obtain AuditEventIterator for extracting audit trails from the store.
+     * When done with the iterator, the user should ensure that it is closed. 
      * @param fileId [OPTIONAL] The id of the file for restricting the extraction.
      * @param collectionID [OPTIONAL] The id of the collection from which to retrieve audit trails. 
      * @param contributorId [OPTIONAL] The id of the contributor for restricting the extraction.

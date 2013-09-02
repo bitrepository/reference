@@ -111,6 +111,7 @@ public class RestAuditTrailService {
                                 it.close();
                             }
                         } catch (Exception e) {
+                            log.error("Caught execption when closing AuditEventIterator", e);
                             throw new WebApplicationException(e);
                         }
                     }
