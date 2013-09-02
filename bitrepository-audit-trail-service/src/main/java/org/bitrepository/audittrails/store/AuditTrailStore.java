@@ -44,11 +44,13 @@ public interface AuditTrailStore {
      * @param operation [OPTIONAL] The FileAction operation for restricting the extraction.
      * @param startDate [OPTIONAL] The earliest date for the audits for restricting the extraction.
      * @param endDate [OPTIONAL] The latest date for the audits for restricting the extraction.
+     * @param fingerprint [OPTIONAL] The fingerprint of the certificate for the audits
+     * @param operationID [OPTIONAL] The ID of the operation (conversationID) for the audits
      * @return The requested audit trails from the store.
      */
     public AuditEventIterator getAuditTrailsByIterator(String fileId, String collectionID, String contributorId, 
             Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation, Date startDate, 
-            Date endDate);
+            Date endDate, String fingerprint, String operationID);
     
     /**
      * ingest audit trails into the store. 

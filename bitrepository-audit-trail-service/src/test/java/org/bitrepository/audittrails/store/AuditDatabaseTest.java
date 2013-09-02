@@ -49,9 +49,12 @@ public class AuditDatabaseTest extends ExtendedTestCase {
     String actor1 = "ACTOR-1";
     String actor2 = "ACTOR-2";
     String collectionId;
-    static final String fingerprint = "abab";
-    static final String operationID = "1234";
+    static final String fingerprint1 = "abab";
+    static final String operationID1 = "1234";
+    static final String fingerprint2 = "baba";
+    static final String operationID2 = "4321";
 
+    
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("AuditDatabaseUnderTest");
@@ -81,82 +84,98 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         
         addStep("Extract the audit trails", "");
         List<AuditTrailEvent> res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, 
-                null, null, null, null, null));
+                null, null, null, null, null, null, null));
         Assert.assertEquals(res.size(), 2, res.toString());
         
         addStep("Test the extraction of FileID", "Should be able to extract the audit of each file individually.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(fileId, null, null, null, null, null, null, 
-                null, null));
+                null, null, null, null));
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getFileID(), fileId);
         
         res = getEventsFromIterator(database.getAuditTrailsByIterator(fileId2, null, null, null, null, null, null, 
-                null, null));
+                null, null, null, null));
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getFileID(), fileId2);
         
         addStep("Test the extraction of CollectionID", "Only results when the defined collection is used");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, collectionId, null, null, null, null, null, 
-                null, null));
+                null, null, null, null));
         Assert.assertEquals(res.size(), 2, res.toString());
         
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, 
                 "NOT-THE-CORRECT-COLLECTION-ID" + System.currentTimeMillis(), null, null, null, null, null, 
-                null, null));
+                null, null, null, null));
         Assert.assertEquals(res.size(), 0, res.toString());
         
         addStep("Perform extraction based on the component id.", "");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, pillarId, null, null, null, null, 
-                null, null));
+                null, null, null, null));
         Assert.assertEquals(res.size(), 2, res.toString());
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, "NO COMPONENT", null, null, null, null, 
-                null, null));
+                null, null, null, null));
         Assert.assertEquals(res.size(), 0, res.toString());
         
         addStep("Perform extraction based on the sequence number restriction", 
                 "Should be possible to have both lower and upper sequence number restrictions.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, 5L, null, null, null, null, 
-                null));
+                null, null, null));
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getFileID(), fileId2);
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, 5L, null, null, null, 
-                null));
+                null, null, null));
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getFileID(), fileId);
         
         addStep("Perform extraction based on actor id restriction.", 
                 "Should be possible to restrict on the id of the actor.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, actor1, null, 
-                null, null));
+                null, null, null, null));
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getActorOnFile(), actor1);
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, actor2, null, 
-                null, null));
+                null, null, null, null));
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getActorOnFile(), actor2);
         
         addStep("Perform extraction based on operation restriction.", 
                 "Should be possible to restrict on the FileAction operation.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, null, 
-                FileAction.INCONSISTENCY, null, null));
+                FileAction.INCONSISTENCY, null, null, null, null));
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getActionOnFile(), FileAction.INCONSISTENCY);
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, null, 
-                FileAction.FAILURE, null, null));
+                FileAction.FAILURE, null, null, null, null));
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getActionOnFile(), FileAction.FAILURE);
         
         addStep("Perform extraction based on date restriction.", 
                 "Should be possible to restrict on the date of the audit.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, null, null, 
-                restrictionDate, null));
+                restrictionDate, null, null, null));
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getFileID(), fileId2);
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, null, null, 
-                null, restrictionDate));
+                null, restrictionDate, null, null));
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(res.get(0).getFileID(), fileId);
 
+        addStep("Perform extraction based on fingerprint restriction.", 
+                "Should be possible to restrict on the fingerprint of the audit.");
+        res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, null, null, 
+                null, null, fingerprint1, null));
+        Assert.assertEquals(res.size(), 1, res.toString());
+        Assert.assertEquals(res.get(0).getFileID(), fileId);
+        Assert.assertEquals(res.get(0).getCertificateID(), fingerprint1);
+        
+        addStep("Perform extraction based on operationID restriction.", 
+                "Should be possible to restrict on the operationID of the audit.");
+                res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, null, null, 
+                null, null, null, operationID2));
+        Assert.assertEquals(res.size(), 1, res.toString());
+        Assert.assertEquals(res.get(0).getFileID(), fileId2);
+        Assert.assertEquals(res.get(0).getOperationID(), operationID2);
+        
         database.close();
     }
 
@@ -198,25 +217,25 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         addStep("Test ingesting with all data", "No failure");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID, fingerprint));
+                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
         database.addAuditTrails(events, collectionId);
         
         addStep("Test ingesting with no timestamp", "No failure");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(null, FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID, fingerprint));
+                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
         database.addAuditTrails(events, collectionId);
 
         addStep("Test ingesting with no file action", "No failure");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), null, 
-                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID, fingerprint));
+                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
         database.addAuditTrails(events, collectionId);
 
         addStep("Test ingesting with no actor", "Throws exception");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                null, "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID, fingerprint));
+                null, "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
         try {
             database.addAuditTrails(events, collectionId);
             Assert.fail("Should throw an exception.");
@@ -227,13 +246,13 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         addStep("Test ingesting with no audit info", "No failure");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", null, "fileId", "info", pillarId, BigInteger.ONE, operationID, fingerprint));
+                "actor", null, "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
         database.addAuditTrails(events, collectionId);
 
         addStep("Test ingesting with no file id", "Throws exception");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", null, "info", pillarId, BigInteger.ONE, operationID, fingerprint));
+                "actor", "auditInfo", null, "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
         try {
             database.addAuditTrails(events, collectionId);
             Assert.fail("Should throw an exception.");
@@ -244,13 +263,13 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         addStep("Test ingesting with no info", "No failure");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", null, pillarId, BigInteger.ONE, operationID, fingerprint));
+                "actor", "auditInfo", "fileId", null, pillarId, BigInteger.ONE, operationID1, fingerprint1));
         database.addAuditTrails(events, collectionId);
 
         addStep("Test ingesting with no component id", "Throws exception");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", "info", null, BigInteger.ONE, operationID, fingerprint));
+                "actor", "auditInfo", "fileId", "info", null, BigInteger.ONE, operationID1, fingerprint1));
         try {
             database.addAuditTrails(events, collectionId);
             Assert.fail("Should throw an exception.");
@@ -261,7 +280,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         addStep("Test ingesting with no sequence number", "Throws exception");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", "info", pillarId, null, operationID, fingerprint));
+                "actor", "auditInfo", "fileId", "info", pillarId, null, operationID1, fingerprint1));
         try {
             database.addAuditTrails(events, collectionId);
             Assert.fail("Should throw an exception.");
@@ -272,13 +291,13 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         addStep("Test ingest with very long auditInfo (255+)", "Not failing any more");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", veryLongString, "fileId", "info", pillarId, BigInteger.ONE, operationID, fingerprint));
+                "actor", veryLongString, "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
         database.addAuditTrails(events, collectionId);
         
         addStep("Test ingest with very long info (255+)", "Not failing any more");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", veryLongString, pillarId, BigInteger.ONE, operationID, fingerprint));
+                "actor", "auditInfo", "fileId", veryLongString, pillarId, BigInteger.ONE, operationID1, fingerprint1));
         database.addAuditTrails(events, collectionId);
     }
 
@@ -286,11 +305,11 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         AuditTrailEvents events = new AuditTrailEvents();
         
         AuditTrailEvent event1 = createSingleEvent(CalendarUtils.getEpoch(), FileAction.INCONSISTENCY, actor1, 
-                "I AM AUDIT", fileId, null, pillarId, BigInteger.ONE, operationID, fingerprint);
+                "I AM AUDIT", fileId, null, pillarId, BigInteger.ONE, operationID1, fingerprint1);
         events.getAuditTrailEvent().add(event1);
         
         AuditTrailEvent event2 = createSingleEvent(CalendarUtils.getNow(), FileAction.FAILURE, actor2, null, fileId2, 
-                "WHAT AM I DOING?", pillarId, BigInteger.TEN, operationID, fingerprint);
+                "WHAT AM I DOING?", pillarId, BigInteger.TEN, operationID2, fingerprint2);
         events.getAuditTrailEvent().add(event2);
 
         return events;

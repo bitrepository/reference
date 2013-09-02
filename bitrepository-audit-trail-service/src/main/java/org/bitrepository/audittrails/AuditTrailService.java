@@ -91,9 +91,10 @@ public class AuditTrailService implements LifeCycledService {
      * @param action Restrict the results to only be about this type of action
      */
     public AuditEventIterator queryAuditTrailEventsByIterator(Date fromDate, Date toDate, String fileID, 
-            String collectionID, String reportingComponent, String actor, FileAction action) {
+            String collectionID, String reportingComponent, String actor, FileAction action, 
+            String fingerprint, String operationID) {
         return store.getAuditTrailsByIterator(fileID, collectionID, reportingComponent, null, null, actor, action, 
-                fromDate, toDate);
+                fromDate, toDate, fingerprint, operationID);
     }
 
     /**

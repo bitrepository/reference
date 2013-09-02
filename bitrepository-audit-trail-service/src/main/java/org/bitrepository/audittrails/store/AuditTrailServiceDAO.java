@@ -76,7 +76,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     @Override
     public AuditEventIterator getAuditTrailsByIterator(String fileId, String collectionID, String contributorId, 
             Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation, Date startDate, 
-            Date endDate) {
+            Date endDate, String fingerprint, String operationID) {
         ExtractModel model = new ExtractModel();
         model.setFileId(fileId);
         model.setCollectionId(collectionID);
@@ -87,6 +87,8 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         model.setOperation(operation);
         model.setStartDate(startDate);
         model.setEndDate(endDate);
+        model.setFingerprint(fingerprint);
+        model.setOperationID(operationID);
 
         AuditDatabaseExtractor extractor = new AuditDatabaseExtractor(model, dbConnector);
         return extractor.extractAuditEventsByIterator();

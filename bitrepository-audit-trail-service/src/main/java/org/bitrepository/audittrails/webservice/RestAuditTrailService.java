@@ -77,14 +77,17 @@ public class RestAuditTrailService {
             @FormParam("reportingComponent") String reportingComponent,
             @FormParam("actor") String actor,
             @FormParam("action") String action,
-            @FormParam("collectionID") String collectionID, 
+            @FormParam("collectionID") String collectionID,
+            @FormParam("fingerprint") String fingerprint,
+            @FormParam("operationID") String operationID,
             @DefaultValue("1000") @FormParam("maxAudittrails") Integer maxResults) {
         Date from = makeDateObject(fromDate);
         Date to = makeDateObject(toDate);
         
         final int maxAudits = maxResults;
         final AuditEventIterator it = service.queryAuditTrailEventsByIterator(from, to, contentOrNull(fileID),
-                collectionID, contentOrNull(reportingComponent), contentOrNull(actor), filterAction(action));
+                collectionID, contentOrNull(reportingComponent), contentOrNull(actor), filterAction(action), 
+                contentOrNull(fingerprint), contentOrNull(operationID));
         if(it != null) {     
             return new StreamingOutput() {
                 public void write(OutputStream output) throws IOException, WebApplicationException {

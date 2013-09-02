@@ -232,6 +232,16 @@ public class AuditDatabaseExtractor {
             res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_OPERATION_DATE + " <= ?");
         }
         
+        if(model.getFingerprint() != null) {
+            nextArgument(res);
+            res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_FINGERPRINT + " = ?");
+        }
+        
+        if(model.getOperationID() != null) {
+            nextArgument(res);
+            res.append(AUDITTRAIL_TABLE + "." + AUDITTRAIL_OPERATION_ID + " = ?");
+        }
+        
         return res.toString();
     }
     
@@ -287,6 +297,14 @@ public class AuditDatabaseExtractor {
         
         if(model.getEndDate() != null) {
             res.add(model.getEndDate());
+        }
+        
+        if(model.getFingerprint() != null) {
+            res.add(model.getFingerprint());
+        }
+        
+        if(model.getOperationID() != null) {
+            res.add(model.getOperationID());
         }
         
         return res.toArray();

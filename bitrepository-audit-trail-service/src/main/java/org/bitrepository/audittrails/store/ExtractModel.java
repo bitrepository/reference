@@ -47,6 +47,10 @@ class ExtractModel {
     private Date startDate;
     /** @see #getEndDate(). */
     private Date endDate;
+    /** @see #getFingerprint(). */
+    private String fingerprint;
+    /** @see #getOperationID(). */
+    private String operationID;
     
     /**
      * Constructor, with no arguments. All variables are set to null.
@@ -188,5 +192,35 @@ class ExtractModel {
      */
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    /**
+     * @return The fingerprint of the certificate 
+     */
+    public String getFingerprint() {
+        return fingerprint;
+    }
+
+    /**
+     * @see getFingerprint();
+     * @param fingerprint
+     */
+    public void setFingerprint(String fingerprint) {
+        this.fingerprint = fingerprint;
+    }
+
+    /**
+     * @return The ID of the operation
+     */
+    public String getOperationID() {
+        return operationID;
+    }
+
+    /**
+     * @see getOperationID();
+     * @param operationID The ID of the operation
+     */
+    public void setOperationID(String operationID) {
+        this.operationID = operationID;
     }
 }

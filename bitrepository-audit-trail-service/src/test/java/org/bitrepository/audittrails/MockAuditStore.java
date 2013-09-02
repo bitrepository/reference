@@ -94,7 +94,7 @@ public class MockAuditStore implements AuditTrailStore {
     public AuditEventIterator getAuditTrailsByIterator(String fileId,
             String collectionID, String contributorId, Long minSeqNumber,
             Long maxSeqNumber, String actorName, FileAction operation,
-            Date startDate, Date endDate) {
+            Date startDate, Date endDate, String fingerprint, String operationID) {
         callsToGetAuditTrailsByIterator++;
         return null;
     }

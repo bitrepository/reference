@@ -116,6 +116,18 @@
                 <button class="btn" id="queryAuditTrails">Filter</button>
               </div>
             </label>
+            <label> Certificate fingerprint: <br>
+              <div class="input-append" style="padding: 0px"> 
+                <input class="input-medium" id="fingerprintFilter" type="text" placeholder="Fingerprint">
+                <button class="btn" id="fingerprintClearButton" type="button"><i class="icon-remove"></i></button>
+              </div>
+            </label>
+            <label> OperationID: <br>
+              <div class="input-append" style="padding: 0px"> 
+                <input class="input-medium" id="operationIDFilter" type="text" placeholder="OperationID">
+                <button class="btn" id="operationIDClearButton" type="button"><i class="icon-remove"></i></button>
+              </div>
+            </label>
           </form>
         </div>         
         <div class="span11">
@@ -155,6 +167,8 @@
       var actionStr = $("#actionFilter").val();
       var collectionIDStr = $("#collectionIDFilter").val();
       var maxAudittrailsStr = $("#maxAuditTrails").val();
+      var fingerprintStr = $("#fingerprintFilter").val();
+      var operationIDStr = $("#operationIDFilter").val();
 
       $("#auditTrailsTableDiv").html("Loading audit trails...");
 
@@ -166,7 +180,9 @@
          actor: actorStr,
          action: actionStr,
          collectionID: collectionIDStr,
-         maxAudittrails: maxAudittrailsStr}, 
+         maxAudittrails: maxAudittrailsStr,
+         fingerprint: fingerprintStr,
+         operationID: operationIDStr}, 
          function(j){
            var htmlTable;
            htmlTable = "<table class=\"table table-bordered table-striped\">";
@@ -221,6 +237,8 @@
       $("#fileIDClearButton").click(function(event) {event.preventDefault(); clearElement("#fileIDFilter")});
       $("#componentIDClearButton").click(function(event) {event.preventDefault(); clearElement("#componentFilter")});
       $("#actorClearButton").click(function(event) {event.preventDefault(); clearElement("#actorFilter")});
+      $("#fingerprintClearButton").click(function(event) {event.preventDefault(); clearElement("#fingerprintFilter")});
+      $("#operationIDClearButton").click(function(event) {event.preventDefault(); clearElement("#operationIDFilter")});
       $("#queryAuditTrails").click(function(event) {event.preventDefault(); getAuditTrails()});
     }); 
 
