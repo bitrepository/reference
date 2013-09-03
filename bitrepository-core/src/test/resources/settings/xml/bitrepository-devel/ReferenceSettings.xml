@@ -76,7 +76,7 @@
     <AuditTrailPreservation>
       <AuditTrailPreservationInterval>604800000</AuditTrailPreservationInterval>
       <AuditTrailPreservationCollection>TwoPillarCollection</AuditTrailPreservationCollection>
-      <AuditTrailPreservationTemporaryDirectory>${build.dir}/test/audittrailservice//tmpDir</AuditTrailPreservationTemporaryDirectory>
+      <AuditTrailPreservationTemporaryDirectory>target/test/audittrailservice/tmpDir</AuditTrailPreservationTemporaryDirectory>
     </AuditTrailPreservation>
   </AuditTrailServiceSettings>
   <IntegrityServiceSettings>
