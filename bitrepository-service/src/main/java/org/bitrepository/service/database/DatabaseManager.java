@@ -18,6 +18,7 @@ public abstract class DatabaseManager {
     private Logger log = LoggerFactory.getLogger(getClass());
     private static final String derbyDriver = "org.apache.derby.jdbc.EmbeddedDriver";
     private static final String postgressDriver = "org.postgresql.Driver";
+    protected DBConnector connector = null;
     
     /**
      * Method to obtain the DBConnector for the concrete instance of the database. 
@@ -46,8 +47,9 @@ public abstract class DatabaseManager {
      * @return {@link DBConnector} The connector to the database
      */
     private DBConnector getPostgresConnection() {
-        DBConnector connector = obtainConnection();
-        
+        if(connector == null) {
+            obtainConnection();
+        }
         if(needsMigration()) {
             throw new IllegalStateException("Automatic migration of postgres databases are not supported. "+ 
                     "The database on: " + getDatabaseSpecifics().getDatabaseURL() +  
@@ -63,21 +65,21 @@ public abstract class DatabaseManager {
      * @return {@link DBConnector} The connector to the database 
      */
     private DBConnector getDerbyConnection() {
-        DBConnector connector = null;
-        try {
-            connector = obtainConnection();
-        } catch (IllegalStateException e) {
-            log.warn("Failed to connect to database, attempting to create it");
-            createDatabase();
-        }
         if(connector == null) {
-            connector = obtainConnection();
+            try {
+                obtainConnection();
+            } catch (IllegalStateException e) {
+                log.warn("Failed to connect to database, attempting to create it");
+                createDatabase();
+            }
+            if(connector == null) {
+                obtainConnection();
+            }
+            if(needsMigration()) {
+                log.warn("Database needs to be migrated, attempting to automigrate.");
+                migrateDatabase();
+            }
         }
-        if(needsMigration()) {
-            log.warn("Database needs to be migrated, attempting to automigrate.");
-            migrateDatabase();
-        }
-        
         return connector;
     }
     
@@ -110,9 +112,9 @@ public abstract class DatabaseManager {
      * Connect to a database using the database specifics from the implementing class. 
      * @throws IllegalStateException if connection cannot be obtained.
      */
-    protected DBConnector obtainConnection() throws IllegalStateException {
+    protected void obtainConnection() throws IllegalStateException {
         log.debug("Obtaining db connection.");
-        return new DBConnector(getDatabaseSpecifics());
+        connector = new DBConnector(getDatabaseSpecifics()); 
     }
     
     /**

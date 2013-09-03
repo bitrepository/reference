@@ -32,10 +32,10 @@ import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_
 import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_OPERATION_DATE;
 import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_SEQUENCE_NUMBER;
 import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_TABLE;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_COLLECTIONID;
 import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_FILEID;
 import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_GUID;
 import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_COLLECTIONID;
 
 import java.math.BigInteger;
 import java.sql.Connection;
@@ -51,6 +51,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,16 +73,16 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
      * Constructor.
      * @param settings The settings.
      */
-    public AuditTrailContributerDAO(Settings settings, DBConnector dbConnector) {
+    public AuditTrailContributerDAO(Settings settings, DatabaseManager manager) {
         ArgumentValidator.checkNotNull(settings, "settings");
-
+        
         this.componentID = settings.getComponentID();
-        this.dbConnector = dbConnector;
+        this.dbConnector = manager.getConnector();
         
         getConnection();
         
-        AuditTrailContributorDatabaseMigrator migrator = new AuditTrailContributorDatabaseMigrator(dbConnector);
-        migrator.migrate();
+        /*AuditTrailContributorDatabaseMigrator migrator = new AuditTrailContributorDatabaseMigrator(dbConnector);
+        migrator.migrate();*/
     }
 
     /**

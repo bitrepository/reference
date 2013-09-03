@@ -31,13 +31,17 @@ import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.SettingsHelper;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.service.audit.AuditDatabaseManager;
 import org.bitrepository.service.audit.AuditTrailContributerDAO;
+import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
+
 import java.util.Arrays;
 
 /**
@@ -69,12 +73,14 @@ public class ChecksumPillar implements Pillar {
         this.cache = refCache;
         
         log.info("Starting the ChecksumPillar");
+        DatabaseManager auditDatabaseManager = new AuditDatabaseManager(
+                settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase());
+        AuditTrailManager audits = new AuditTrailContributerDAO(settings, auditDatabaseManager);
         MessageHandlerContext context = new MessageHandlerContext(settings,
                 SettingsHelper.getPillarCollections(settings.getComponentID(), settings.getCollections()),
             new ResponseDispatcher(settings, messageBus),
             new PillarAlarmDispatcher(settings, messageBus),
-            new AuditTrailContributerDAO(settings, new DBConnector(
-                settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase())));
+            audits);
         messageBus.setCollectionFilter(Arrays.asList(context.getPillarCollections()));
         mediator = new ChecksumPillarMediator(messageBus, context, cache);
         mediator.start();

@@ -40,10 +40,12 @@ import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMe
 import org.bitrepository.pillar.referencepillar.scheduler.RecalculateChecksumJob;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.service.audit.AuditDatabaseManager;
 import org.bitrepository.service.audit.AuditTrailContributerDAO;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.scheduler.JobScheduler;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
 import org.bitrepository.service.workflow.SchedulableJob;
@@ -51,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
+
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 
@@ -95,8 +98,9 @@ public class ReferencePillar implements Pillar {
         csStore = new ChecksumDAO(settings);
         PillarAlarmDispatcher alarmDispatcher = new PillarAlarmDispatcher(settings, messageBus);
         manager = new ReferenceChecksumManager(archiveManager, csStore, alarmDispatcher, settings);
-        AuditTrailManager audits = new AuditTrailContributerDAO(settings, new DBConnector(
-                settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase()));
+        DatabaseManager auditDatabaseManager = new AuditDatabaseManager(
+                settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase());
+        AuditTrailManager audits = new AuditTrailContributerDAO(settings, auditDatabaseManager);
         MessageHandlerContext context = new MessageHandlerContext(
                 settings,
                 SettingsHelper.getPillarCollections(settings.getComponentID(), settings.getCollections()),

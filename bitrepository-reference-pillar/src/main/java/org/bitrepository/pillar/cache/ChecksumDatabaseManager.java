@@ -26,7 +26,7 @@ public class ChecksumDatabaseManager extends DatabaseManager {
     @Override
     protected synchronized DatabaseMigrator getMigrator() {
         if(migrator == null) {
-            migrator = new ChecksumDBMigrator(obtainConnection(), settings);
+            migrator = new ChecksumDBMigrator(connector, settings);
         }
         return migrator;
     }

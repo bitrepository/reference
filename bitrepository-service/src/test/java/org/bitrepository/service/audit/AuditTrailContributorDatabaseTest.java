@@ -24,8 +24,8 @@ package org.bitrepository.service.audit;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseCreator;
+import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.jaccept.structure.ExtendedTestCase;
@@ -62,8 +62,8 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         String actor = "ACTOR";
         String info = "Adding a info";
         String auditTrail = "AuditTrail";
-        DBConnector dbConnector = new DBConnector(databaseSpecifics);
-        AuditTrailContributerDAO daba = new AuditTrailContributerDAO(settings, dbConnector);
+        DatabaseManager dm = new AuditDatabaseManager(databaseSpecifics);
+        AuditTrailContributerDAO daba = new AuditTrailContributerDAO(settings, dm);
         
         addStep("Populate the database.", "Should be inserted into database.");
         daba.addAuditEvent(firstCollectionID, fileId1, actor, info, auditTrail, FileAction.PUT_FILE);
@@ -106,7 +106,7 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         events = daba.getAudits(firstCollectionID, null, null, null, null, null, 1000L);
         Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().size(), 5);
         
-        dbConnector.destroy();
+        dm.getConnector().destroy();
     }
     
     @Test(groups = {"regressiontest", "databasetest"})
@@ -122,8 +122,8 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
             veryLongString += i;
         }
 
-        DBConnector dbConnector = new DBConnector(databaseSpecifics);
-        AuditTrailContributerDAO daba = new AuditTrailContributerDAO(settings, dbConnector);
+        DatabaseManager dm = new AuditDatabaseManager(databaseSpecifics);
+        AuditTrailContributerDAO daba = new AuditTrailContributerDAO(settings, dm);
         
         addStep("Test with all data.", "No failures");
         daba.addAuditEvent(firstCollectionID, fileId1, actor, info, auditTrail, FileAction.FAILURE);
@@ -178,7 +178,7 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         addStep("Test with with very large audittrail.", "No failures");
         daba.addAuditEvent(firstCollectionID, fileId1, actor, info, veryLongString, FileAction.FAILURE);
         
-        dbConnector.destroy();
+        dm.getConnector().destroy();
     }
 
     private class TestAuditTrailContributorDBCreator extends DatabaseCreator {
