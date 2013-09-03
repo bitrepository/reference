@@ -25,6 +25,7 @@ package org.bitrepository.pillar.integration;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.Pillar;
 import org.bitrepository.pillar.cache.ChecksumDAO;
+import org.bitrepository.pillar.cache.ChecksumDatabaseManager;
 import org.bitrepository.pillar.checksumpillar.ChecksumPillar;
 import org.bitrepository.pillar.referencepillar.ReferencePillar;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -55,7 +56,7 @@ public class EmbeddedPillar implements LifeCycledService {
     public static EmbeddedPillar createChecksumPillar(Settings pillarSettings) {
         MessageBus messageBus = initialize(pillarSettings);
         return new EmbeddedPillar(new ChecksumPillar(messageBus, pillarSettings,
-                new ChecksumDAO(pillarSettings)));
+                new ChecksumDAO(new ChecksumDatabaseManager(pillarSettings))));
     }
 
     private static MessageBus initialize(Settings pillarSettings) {

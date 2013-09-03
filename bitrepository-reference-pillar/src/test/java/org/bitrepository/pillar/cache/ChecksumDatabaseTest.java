@@ -23,6 +23,7 @@ package org.bitrepository.pillar.cache;
 
 import java.util.Date;
 import java.util.List;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -211,7 +212,7 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
     }
 
     private ChecksumDAO getCacheWithData() {
-        ChecksumDAO res = new ChecksumDAO(settings);
+        ChecksumDAO res = new ChecksumDAO(new ChecksumDatabaseManager(settings));
         res.insertChecksumCalculation(DEFAULT_FILE_ID, collectionID, DEFAULT_CHECKSUM, DEFAULT_DATE);
         return res;
     }

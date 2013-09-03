@@ -30,6 +30,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.pillar.Pillar;
 import org.bitrepository.pillar.cache.ChecksumDAO;
+import org.bitrepository.pillar.cache.ChecksumDatabaseManager;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
@@ -95,7 +96,8 @@ public class ReferencePillar implements Pillar {
 
         log.info("Starting the ReferencePillar");
         archiveManager = getFileStore(settings);
-        csStore = new ChecksumDAO(settings);
+        DatabaseManager checksumDatabaseManager = new ChecksumDatabaseManager(settings);
+        csStore = new ChecksumDAO(checksumDatabaseManager);
         PillarAlarmDispatcher alarmDispatcher = new PillarAlarmDispatcher(settings, messageBus);
         manager = new ReferenceChecksumManager(archiveManager, csStore, alarmDispatcher, settings);
         DatabaseManager auditDatabaseManager = new AuditDatabaseManager(

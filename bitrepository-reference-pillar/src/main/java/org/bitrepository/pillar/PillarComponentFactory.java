@@ -27,6 +27,7 @@ package org.bitrepository.pillar;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.pillar.cache.ChecksumDAO;
+import org.bitrepository.pillar.cache.ChecksumDatabaseManager;
 import org.bitrepository.pillar.checksumpillar.ChecksumPillar;
 import org.bitrepository.pillar.referencepillar.ReferencePillar;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -40,6 +41,7 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.service.database.DatabaseManager;
 
 /**
  * Component factory for this module.
@@ -96,8 +98,8 @@ public final class PillarComponentFactory {
         SecurityManager securityManager = loadSecurityManager(pathToKeyFile, settings);
 
         MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
-        
-        return new ChecksumPillar(messageBus, settings, new ChecksumDAO(settings));
+        DatabaseManager checksumDatabaseManager = new ChecksumDatabaseManager(settings);
+        return new ChecksumPillar(messageBus, settings, new ChecksumDAO(checksumDatabaseManager));
     }
 
     /** The default path for the settings in the development.*/

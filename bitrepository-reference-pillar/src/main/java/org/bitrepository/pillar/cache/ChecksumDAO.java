@@ -50,10 +50,9 @@ public class ChecksumDAO implements ChecksumStore {
      * Constructor.
      * @param settings The settings.
      */
-    public ChecksumDAO(Settings settings) {
-        DatabaseManager dm = new ChecksumDatabaseManager(settings);
+    public ChecksumDAO(DatabaseManager databaseManager) {
         synchronized(this) {
-            connector = dm.getConnector();
+            connector = databaseManager.getConnector();
             this.ingestor = new ChecksumIngestor(connector);
             this.extractor = new ChecksumExtractor(connector);
         }

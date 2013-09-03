@@ -33,6 +33,7 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.cache.ChecksumDAO;
+import org.bitrepository.pillar.cache.ChecksumDatabaseManager;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.cache.MemoryCacheMock;
 import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
@@ -82,7 +83,7 @@ public class ReferenceChecksumManagerTest extends DefaultFixturePillarTest {
         checksumDatabaseCreator.createChecksumDatabase(settingsForCUT, null);
 
         CollectionArchiveManager archives = new CollectionArchiveManager(settingsForCUT);
-        ChecksumStore csCache = new ChecksumDAO(settingsForCUT);
+        ChecksumStore csCache = new ChecksumDAO(new ChecksumDatabaseManager(settingsForCUT));
         ReferenceChecksumManager csManager = new ReferenceChecksumManager(archives, csCache, 
                 new AlarmDispatcher(settingsForCUT, messageBus), settingsForCUT);
 
