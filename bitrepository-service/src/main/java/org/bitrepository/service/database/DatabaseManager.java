@@ -122,6 +122,8 @@ public abstract class DatabaseManager {
         DatabaseMigrator migrator = getMigrator();
         if(migrator != null) {
             migrator.migrate();
+        } else {
+            log.warn("The database was attempted migrated, but no migrator was available.");
         }
     }
     
