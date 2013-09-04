@@ -26,8 +26,8 @@ import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseManager;
 
 /**
  * The interface to the database for storing the Alarms.
@@ -40,9 +40,8 @@ public class AlarmServiceDAO implements AlarmStore {
      * Constructor.
      * @param settings The settings.
      */
-    public AlarmServiceDAO(Settings settings) {
-        dbConnector = new DBConnector(
-                settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
+    public AlarmServiceDAO(DatabaseManager databaseManager) {
+        dbConnector = databaseManager.getConnector();
     }
     
     @Override
