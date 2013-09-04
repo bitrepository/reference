@@ -55,12 +55,15 @@ fi
 cd $quickstartdir
 
 #Setup configuration files, this includes:
-# - Create symlinks for CollectionSettings files in relevant configuration folders
+# - Create symlinks for RepositorySettings files in relevant configuration folders
 # - Setup paths to configs in relevant config files 
 #for directory in $(ls -l conf | grep "^d" | cut -d " " -f10) 
 for directory in $(find conf -maxdepth 1 -mindepth 1 -type d)
 do
         cd "$directory"
+        if [ $(basename $directory) = "integrityservice" ]; then
+          mkdir "reportdir"
+        fi
         ln -sf ../RepositorySettings.xml .
         sed -i'' -e s%\<\!--foobarpattern--\>%$quickstartdir/% ReferenceSettings.xml > /dev/null
         sed -i'' -e s%\$\{user.home\}%$quickstartdir% logback.xml
