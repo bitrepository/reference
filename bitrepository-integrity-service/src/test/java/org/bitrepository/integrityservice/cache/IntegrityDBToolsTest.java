@@ -17,6 +17,7 @@ import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityDBStateException;
 import org.bitrepository.integrityservice.cache.database.IntegrityDBTools;
 import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseManager;
 import org.junit.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -62,8 +63,10 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
     public void testAddCollectionSuccess() {
         addDescription("Tests that a new collection can be added to the integrity database");
         String newCollectionID = "new-collectionid";
+        DatabaseManager dm = new IntegrityDatabaseManager(
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         DBConnector dbCon = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dbCon, settings.getRepositorySettings().getCollections());
+        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm, settings.getRepositorySettings().getCollections());
         IntegrityDBTools tool = new IntegrityDBTools(dbCon);
         List<String> collections = integrityDAO.retrieveCollectionsInDatabase();
         addStep("Extract initial list of collections", "The list contains the expected collections");
@@ -82,8 +85,10 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void testAddExistingCollection() {
         addDescription("Tests that an existing collectionID cannot be added to the integrity database.");
+        DatabaseManager dm = new IntegrityDatabaseManager(
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         DBConnector dbCon = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dbCon, settings.getRepositorySettings().getCollections());
+        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm, settings.getRepositorySettings().getCollections());
         IntegrityDBTools tool = new IntegrityDBTools(dbCon);
         List<String> collections = integrityDAO.retrieveCollectionsInDatabase();
         addStep("Extract initial list of collections.", "The list contains the expected collections.");
@@ -106,8 +111,10 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
     public void testRemoveNonExistingCollection() {
         addDescription("Tests that a non existing collection can't be removed from the integrity database.");
         String nonExistingCollectionID = "non-existing-collectionid";
+        DatabaseManager dm = new IntegrityDatabaseManager(
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         DBConnector dbCon = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dbCon, settings.getRepositorySettings().getCollections());
+        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm, settings.getRepositorySettings().getCollections());
         IntegrityDBTools tool = new IntegrityDBTools(dbCon);
         List<String> collections = integrityDAO.retrieveCollectionsInDatabase();
         addStep("Extract initial list of collections.", "The list contains the expected collections.");
@@ -130,8 +137,10 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void testRemoveExistingCollection() {
         addDescription("Tests the removal of an existing collection and references to it in the integrity database");
+        DatabaseManager dm = new IntegrityDatabaseManager(
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         DBConnector dbCon = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dbCon, settings.getRepositorySettings().getCollections());
+        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm, settings.getRepositorySettings().getCollections());
         IntegrityDBTools tool = new IntegrityDBTools(dbCon);
         
         List<String> collections = integrityDAO.retrieveCollectionsInDatabase();

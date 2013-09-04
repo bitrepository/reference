@@ -24,6 +24,43 @@
  */
 package org.bitrepository.integrityservice.cache.database;
 
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTIONS_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_ID;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_STATS_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.CS_CHECKSUM_ERRORS;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.CS_FILECOUNT;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.CS_FILESIZE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.CS_STAT_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_CREATION_DATE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_ID;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILE_INFO_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_CHECKSUM;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_CHECKSUM_STATE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_SIZE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_STATE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_LAST_CHECKSUM_UPDATE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_LAST_FILE_UPDATE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_PILLAR_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_ID;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_STATS_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_CHECKSUM_ERRORS;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_FILE_COUNT;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_FILE_SIZE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_MISSING_FILES_COUNT;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_PILLAR_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PS_STAT_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_COLLECTION_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_KEY;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_LAST_UPDATE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TIME;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -46,18 +83,16 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.PillarStat;
-import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.settings.repositorysettings.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.*;
-
 /**
  * Handles the communication with the integrity database.
  */
-public abstract class IntegrityDAO extends IntegrityDAOUtils{
+public abstract class IntegrityDAO extends IntegrityDAOUtils {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** Mapping from collectionID to the list of pillars in it */
@@ -70,8 +105,8 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils{
      * @param dbConnector The connector to the database, where the cache is stored.
      * @param collections The collections object from the settings, to define the set of pillars and collections
      */
-    public IntegrityDAO(DBConnector dbConnector, Collections collections) {
-        super(dbConnector);
+    public IntegrityDAO(DatabaseManager databaseManager, Collections collections) {
+        super(databaseManager.getConnector());
         collectionPillarsMap = new HashMap<String, List<String>>();
         for(org.bitrepository.settings.repositorysettings.Collection collection : collections.getCollection()) {
             collectionPillarsMap.put(collection.getID(), new ArrayList<String>(collection.getPillarIDs().getPillarID()));

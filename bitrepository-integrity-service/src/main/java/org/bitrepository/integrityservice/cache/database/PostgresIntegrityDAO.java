@@ -11,7 +11,7 @@ import static org.bitrepository.integrityservice.cache.database.DatabaseConstant
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TIME;
 
-import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.settings.repositorysettings.Collections;
 
 /**
@@ -19,8 +19,8 @@ import org.bitrepository.settings.repositorysettings.Collections;
  */
 public class PostgresIntegrityDAO extends IntegrityDAO {
 
-    public PostgresIntegrityDAO(DBConnector dbConnector, Collections collections) {
-        super(dbConnector, collections);
+    public PostgresIntegrityDAO(DatabaseManager databaseManager, Collections collections) {
+        super(databaseManager, collections);
     }
 
     @Override

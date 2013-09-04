@@ -43,6 +43,7 @@ import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseManager;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -128,22 +129,24 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     public void reinitialiseDatabaseTest() throws Exception {
         addDescription("Testing the connection to the integrity database.");
         addStep("Setup manually.", "Should be created.");
-        DBConnector connector = new DBConnector(
+        DatabaseManager dm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
                         
-        IntegrityDAO cache = new DerbyIntegrityDAO(connector, settings.getRepositorySettings().getCollections());
+        IntegrityDAO cache = new DerbyIntegrityDAO(dm, settings.getRepositorySettings().getCollections());
         Assert.assertNotNull(cache);
 
         addStep("Close the connection and create another one.", "Should not fail");
-        connector.getConnection().close();
+        dm.getConnector().getConnection().close();
+        dm.getConnector().destroy();
 
         synchronized(this) {
             wait(100);
         }
         
-        DBConnector reconnector = new DBConnector(
+        DatabaseManager newdm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        cache = new DerbyIntegrityDAO(reconnector, settings.getRepositorySettings().getCollections());
+         
+        cache = new DerbyIntegrityDAO(newdm, settings.getRepositorySettings().getCollections());
     }
 
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
@@ -1218,8 +1221,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     }
     
     private IntegrityDAO createDAO() {
-        return new DerbyIntegrityDAO(new DBConnector(
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase()),
-                settings.getRepositorySettings().getCollections());
+        DatabaseManager dm = new IntegrityDatabaseManager(
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
+        return new DerbyIntegrityDAO(dm, settings.getRepositorySettings().getCollections());
     }
 }
