@@ -12,7 +12,7 @@ import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 public class ChecksumDatabaseManager extends DatabaseManager {
 
     private final Settings settings;
-    private DatabaseMigrator migrator;
+    private DatabaseMigrator migrator = null;
     
     public ChecksumDatabaseManager(Settings settings) {
         this.settings = settings;

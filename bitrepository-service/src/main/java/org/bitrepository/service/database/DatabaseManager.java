@@ -1,5 +1,8 @@
 package org.bitrepository.service.database;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,9 +78,12 @@ public abstract class DatabaseManager {
             if(connector == null) {
                 obtainConnection();
             }
+            log.info("Checking if the database needs to be migrated.");
             if(needsMigration()) {
                 log.warn("Database needs to be migrated, attempting to automigrate.");
                 migrateDatabase();
+            } else {
+                log.info("Database migration was not needed.");
             }
         }
         return connector;
@@ -115,6 +121,13 @@ public abstract class DatabaseManager {
     protected void obtainConnection() throws IllegalStateException {
         log.debug("Obtaining db connection.");
         connector = new DBConnector(getDatabaseSpecifics()); 
+        Connection connection = connector.getConnection();
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            log.warn("Connection opened for testing connectivaty failed to close", e);
+        }
+        log.debug("Obtained db connection.");
     }
     
     /**

@@ -80,10 +80,9 @@ public class AuditTrailContributorDatabaseMigrator extends DatabaseMigrator {
         Map<String, Integer> versions = getTableVersions();
         
         if(!versions.containsKey(DATABASE_VERSION_ENTRY)) {
-            throw new IllegalStateException("The database does not contain '" + DATABASE_VERSION_ENTRY 
-                    + "' table as required.");
-        }
-        if(versions.get(DATABASE_VERSION_ENTRY) < currentVersion) {
+            // Special case, as the first version of the database did not have DATABASE_VERSION_ENTRY!
+            return true;
+        } else if(versions.get(DATABASE_VERSION_ENTRY) < currentVersion) {
             return true;
         } else {
             return false;
