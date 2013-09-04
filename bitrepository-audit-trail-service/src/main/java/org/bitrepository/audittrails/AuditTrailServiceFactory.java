@@ -29,11 +29,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
+
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
 import org.bitrepository.audittrails.preserver.AuditTrailPreserver;
 import org.bitrepository.audittrails.preserver.LocalAuditTrailPreserver;
+import org.bitrepository.audittrails.store.AuditTrailDatabaseManager;
 import org.bitrepository.audittrails.store.AuditTrailServiceDAO;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.common.settings.Settings;
@@ -53,6 +55,7 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.ServiceSettingsProvider;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
+import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.settings.referencesettings.ServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,7 +125,9 @@ public final class AuditTrailServiceFactory {
                 PutFileClient putClient = ModifyComponentFactory.getInstance().retrievePutClient(settings, 
                         securityManager, "audit-trail-preserver");
                 
-                AuditTrailStore store = new AuditTrailServiceDAO(settings);
+                DatabaseManager auditTrailServiceDatabaseManager = new AuditTrailDatabaseManager(
+                        settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
+                AuditTrailStore store = new AuditTrailServiceDAO(auditTrailServiceDatabaseManager);
                 AuditTrailClient client = AccessComponentFactory.getInstance().createAuditTrailClient(settings, 
                         securityManager, settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
 

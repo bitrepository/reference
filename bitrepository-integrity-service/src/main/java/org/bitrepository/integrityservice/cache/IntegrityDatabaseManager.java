@@ -20,11 +20,13 @@ public class IntegrityDatabaseManager extends DatabaseManager {
 
     @Override
     protected DatabaseMigrator getMigrator() {
+        // FIXME Attach IntegrityDatabaseMigrator here when that's implemented
         return null;
     }
 
     @Override
     protected boolean needsMigration() {
+        // FIXME Reference getMigrator().needsMigration() when migrator is added.
         return false;
     }
 

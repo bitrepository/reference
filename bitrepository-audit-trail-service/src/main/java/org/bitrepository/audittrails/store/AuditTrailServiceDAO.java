@@ -47,8 +47,8 @@ import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,13 +64,10 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     
     /** 
      * Constructor.
-     * @param settings The settings.
+     * @param databaseManager The database manager
      */
-    public AuditTrailServiceDAO(Settings settings) {
-        ArgumentValidator.checkNotNull(settings, "settings");
-        
-        dbConnector = new DBConnector(
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
+    public AuditTrailServiceDAO(DatabaseManager databaseManager) {
+        dbConnector = databaseManager.getConnector();
     }
     
     @Override

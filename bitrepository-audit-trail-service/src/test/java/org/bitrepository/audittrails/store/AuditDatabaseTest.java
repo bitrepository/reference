@@ -34,6 +34,7 @@ import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -75,7 +76,9 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         Date restrictionDate = new Date(123456789); // Sometime between epoch and now!
         
         addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
-        AuditTrailServiceDAO database = new AuditTrailServiceDAO(settings);
+        DatabaseManager dm = new AuditTrailDatabaseManager(
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
+        AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
 
         addStep("Validate that the database is empty and then populate it.", "Should be possible.");
         Assert.assertEquals(database.largestSequenceNumber(pillarId, collectionId), 0);
@@ -183,7 +186,9 @@ public class AuditDatabaseTest extends ExtendedTestCase {
     public void AuditDatabasePreservationTest() throws Exception {
         addDescription("Tests the functions related to the preservation of the database.");
         addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
-        AuditTrailServiceDAO database = new AuditTrailServiceDAO(settings);
+        DatabaseManager dm = new AuditTrailDatabaseManager(
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
+        AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
 
         Assert.assertEquals(database.largestSequenceNumber(pillarId, collectionId), 0);
         database.addAuditTrails(createEvents(), collectionId);
@@ -207,7 +212,9 @@ public class AuditDatabaseTest extends ExtendedTestCase {
     public void AuditDatabaseIngestTest() throws Exception {
         addDescription("Testing ingest of audittrails into the database");
         addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
-        AuditTrailServiceDAO database = new AuditTrailServiceDAO(settings);
+        DatabaseManager dm = new AuditTrailDatabaseManager(
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
+        AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
         AuditTrailEvents events;
         String veryLongString = "";
         for(int i = 0; i < 255; i++) {
