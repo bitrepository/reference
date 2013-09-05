@@ -138,7 +138,7 @@ public abstract class DatabaseManager {
         if(migrator != null) {
             migrator.migrate();
         } else {
-            log.warn("The database was attempted migrated, but no migrator was available.");
+            throw new IllegalStateException("The database was attempted migrated, but no migrator was available.");
         }
     }
     
