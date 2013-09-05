@@ -19,12 +19,10 @@
 -- <http://www.gnu.org/licenses/lgpl-2.1.html>.
 -- #L%
 ---
--- Integrity DB migration from version 2 to 3
+-- Integrity DB migration from version 3 to 4
 
 connect 'jdbc:derby:integritydb';
 
--- Update table versions.
-UPDATE tableversions SET version=3 WHERE tablename='fileinfo';
+-- Update table versions, that was forgotten in 2 to 3 update.
+UPDATE tableversions SET version=4 WHERE tablename='integritydb';
 
--- Set the version 2 unknown to version 3 unknown.
-UPDATE fileinfo SET file_state=3 WHERE file_state=2;

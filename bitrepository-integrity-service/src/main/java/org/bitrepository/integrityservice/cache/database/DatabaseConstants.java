@@ -123,5 +123,11 @@ public final class DatabaseConstants {
     public static final String PS_MISSING_FILES_COUNT = "missing_files_count";
     /** The number of files with checksum errors on the pillar in the collection. A long/bigint value. */
     public static final String PS_CHECKSUM_ERRORS = "checksum_errors_count";
+    
+    /** The name of the version table entry for the database.*/
+    public final static String DATABASE_VERSION_ENTRY = "integritydb";
+    /** The name of the version entry for the fileinfo table.*/
+    public final static String FILEINFO_TABLE_VERSION_ENTRY = "fileinfo";
+    
 }
 

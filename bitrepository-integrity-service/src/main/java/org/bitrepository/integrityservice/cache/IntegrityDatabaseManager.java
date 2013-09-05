@@ -8,6 +8,7 @@ public class IntegrityDatabaseManager extends DatabaseManager {
 
     private static final String INTEGRITY_SERVICE_DATABASE_SCHEMA = "sql/derby/integrityDBCreation.sql";
     private final DatabaseSpecifics databaseSpecifics;
+    private DatabaseMigrator migrator = null;
         
     public IntegrityDatabaseManager(DatabaseSpecifics databaseSpecifics) {
         this.databaseSpecifics = databaseSpecifics;
@@ -19,15 +20,16 @@ public class IntegrityDatabaseManager extends DatabaseManager {
     }
 
     @Override
-    protected DatabaseMigrator getMigrator() {
-        // FIXME Attach IntegrityDatabaseMigrator here when that's implemented
-        return null;
+    protected synchronized DatabaseMigrator getMigrator() {
+        if(migrator == null) {
+            migrator = new IntegrityDatabaseMigrator(connector);
+        }
+        return migrator;
     }
 
     @Override
     protected boolean needsMigration() {
-        // FIXME Reference getMigrator().needsMigration() when migrator is added.
-        return false;
+        return getMigrator().needsMigration();
     }
 
     @Override
