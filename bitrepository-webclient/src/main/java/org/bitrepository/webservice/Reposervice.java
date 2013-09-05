@@ -21,9 +21,14 @@
  */
 package org.bitrepository.webservice;
 
+import java.util.List;
+
 import org.bitrepository.BasicClient;
 import org.bitrepository.BasicClientFactory;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.settings.repositorysettings.Collection;
+import org.bitrepository.settings.repositorysettings.ProtocolSettings;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -89,7 +94,48 @@ public class Reposervice {
     public String getRepositoryName() {
         return SettingsUtils.getRepositoryName();
     }
+    
+    @GET
+    @Path("/getConfigurationOverview")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getConfigurationOverview() throws JSONException {
+        JSONObject config = new JSONObject();
+        config.put("repositoryName", SettingsUtils.getRepositoryName());
+        config.put("collections", makeCollectionsArray());
+        config.put("protocolSettings", makeProtocolSettingsObj());
+        return config.toString();
+    }
+    
+    private JSONObject makeProtocolSettingsObj() throws JSONException {
+        JSONObject obj = new JSONObject();
+        ProtocolSettings protocolSettings = client.getSettings().getRepositorySettings().getProtocolSettings();
+        obj.put("allowedFileIDPattern", protocolSettings.getAllowedFileIDPattern());
+        obj.put("defaultChecksumType", protocolSettings.getDefaultChecksumType());
+        obj.put("requireMessageAuth", protocolSettings.isRequireMessageAuthentication());
+        obj.put("requireOperationAuth", protocolSettings.isRequireOperationAuthorization());
+        obj.put("requireChecksumForDestructiveReq", protocolSettings.isRequireChecksumForDestructiveRequests());
+        obj.put("requireChecksumForNewFile", protocolSettings.isRequireChecksumForNewFileRequests());
+        return obj; 
+    }
 
+    private JSONArray makeCollectionsArray() throws JSONException {
+        JSONArray array = new JSONArray();
+        Settings settings = client.getSettings();
+        List<Collection> collections = settings.getRepositorySettings().getCollections().getCollection();
+        for(Collection c : collections) {
+            JSONObject obj = new JSONObject();
+            obj.put("collectionID", c.getID());
+            obj.put("collectionName", c.getName());
+            JSONArray pillarArray = new JSONArray();
+            List<String> pillars = c.getPillarIDs().getPillarID();
+            for(String p : pillars) {
+                pillarArray.put(p);
+            }
+            array.put(obj);
+        }
+        return array;
+    }
+    
     /**
      * getSettingsSummary provides a summary of some important settings of the Bitrepository collection, herein:
      * - The message bus which that is communicated with

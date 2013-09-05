@@ -76,4 +76,8 @@ public class BasicClient {
         sb.append(repositorySettings.getProtocolSettings().getMessageBusConfiguration().getURL() + "</i><br>");
         return sb.toString();
     }
+    
+    public Settings getSettings() {
+        return settings;
+    }
 }
