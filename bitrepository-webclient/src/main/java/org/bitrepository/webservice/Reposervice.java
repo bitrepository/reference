@@ -131,6 +131,7 @@ public class Reposervice {
             for(String p : pillars) {
                 pillarArray.put(p);
             }
+            array.put(pillars);
             array.put(obj);
         }
         return array;
