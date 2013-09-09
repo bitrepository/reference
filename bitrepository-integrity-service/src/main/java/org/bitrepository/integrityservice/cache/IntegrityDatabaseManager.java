@@ -4,6 +4,9 @@ import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseMigrator;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 
+/**
+ * Manager for the database of the IntegrityService. For usage, see @DatabaseManager. 
+ */
 public class IntegrityDatabaseManager extends DatabaseManager {
 
     private static final String INTEGRITY_SERVICE_DATABASE_SCHEMA = "sql/derby/integrityDBCreation.sql";

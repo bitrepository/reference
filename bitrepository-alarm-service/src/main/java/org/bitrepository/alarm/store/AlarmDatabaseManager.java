@@ -4,6 +4,9 @@ import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseMigrator;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 
+/**
+ * Manager for the database of the AlarmService. For usage, see @DatabaseManager.
+ */
 public class AlarmDatabaseManager extends DatabaseManager {
 
     public final static String ALARM_SERVICE_DATABASE_SCHEMA = "sql/derby/alarmServiceDBCreation.sql";

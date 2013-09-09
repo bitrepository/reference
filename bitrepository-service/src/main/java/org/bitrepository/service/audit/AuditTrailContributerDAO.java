@@ -80,9 +80,6 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         this.dbConnector = manager.getConnector();
         
         getConnection();
-        
-        /*AuditTrailContributorDatabaseMigrator migrator = new AuditTrailContributorDatabaseMigrator(dbConnector);
-        migrator.migrate();*/
     }
 
     /**

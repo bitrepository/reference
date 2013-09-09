@@ -4,6 +4,9 @@ import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseMigrator;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 
+/**
+ * Manager for the database of the AuditTrailService. For usage, see @DatabaseManager. 
+ */
 public class AuditTrailDatabaseManager extends DatabaseManager {
 
     private final DatabaseSpecifics databaseSpecifics;
