@@ -63,22 +63,20 @@
       }
 
       $("#collectionsListingsDiv").append(html);
-
-
-      /*  var collection = {"collectionID":"netarkiv",
-                          "collectionName":"Netarkivet",
-                          "pillars": ["pillar1", "pillar2", "pillar3", "pillar4"]};
-        var html = "<h3>Collections:</h3>"
-        html += "<pre><dl>";
-        html += "<dt><b>" + collection.collectionName + "</b> <small><i>(ID: " + collection.collectionID + ")</i></small></dt>";
-        for(var i=0; i< collection.pillars.length; i++) {
-          html += "<dd>" + collection.pillars[i] + "</dd>";
-        }
-        html += "</dl></pre>";
-  */
     }
 
     function displayProtocolSettings(settings) {
+      var html = "<h3>Protocol settings</h3>";
+
+      html += "<dl class=\"dl-horizontal\">";
+      for(s in settings) {
+        html += "<dt>" + s + "</dt>";
+        html += "<dd>" + settings[s] + "</dd>";   
+      }
+      html += "</dl>";
+
+
+    
     }
 
     function getConfiguration() {
