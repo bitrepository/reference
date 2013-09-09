@@ -19,16 +19,83 @@
   <http://www.gnu.org/licenses/lgpl-2.1.html>.
   #L%
   -->
-<link type="text/css" href="css/ui-lightness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" />	
-<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
-<script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
-<html>
 
-    <script>
-    	$('#configuration').load('repo/reposervice/getSettingsSummary/');
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bitrepository configuration</title>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+  
+  <div id="pageMenu"></div>
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span10"> 
+        <div class="span10" style="height:0px; min-height:0px"></div>
+        <div class="span10" id="headlineDiv"><h2>Configuration</h2></div>
+        <div class="span10">
+          <div class="row">
+            <div class="span5" id="collectionsListingsDiv"></div>
+            <div class="span5" id="protocolSettingsDiv"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript" src="jquery/jquery-1.9.0.min.js"></script>
+  <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="menu.js"></script>
+
+  <script>
+
+    function displayCollectionsListing(collections) {
+      var html = "<h3>Collections:</h3>"
+      
+      for(i=0; i<collections.length; i++) {
+        var collection = collections[i];
+        html += "<pre><dl>";
+        html += "<dt><b>" + collection.collectionName + "</b> <small><i>(ID: " + collection.collectionID + ")</i></small></dt>";
+        for(var j=0; j< collection.pillars.length; j++) {
+          html += "<dd>" + collection.pillars[j] + "</dd>";
+        }
+        html += "</dl></pre>";
+      }
+
+      $("#collectionsListingsDiv").append(html);
+
+
+      /*  var collection = {"collectionID":"netarkiv",
+                          "collectionName":"Netarkivet",
+                          "pillars": ["pillar1", "pillar2", "pillar3", "pillar4"]};
+        var html = "<h3>Collections:</h3>"
+        html += "<pre><dl>";
+        html += "<dt><b>" + collection.collectionName + "</b> <small><i>(ID: " + collection.collectionID + ")</i></small></dt>";
+        for(var i=0; i< collection.pillars.length; i++) {
+          html += "<dd>" + collection.pillars[i] + "</dd>";
+        }
+        html += "</dl></pre>";
+  */
+    }
+
+    function displayProtocolSettings(settings) {
+    }
+
+    function getConfiguration() {
+      $.getJSON('repo/reposervice/getConfigurationOverview/', {}, function(j) {
+        $("#headlineDiv").html("<h2>Configuration for " + j["repositoryName"] + "</h2>");
+        displayCollectionsListing(j["collections"]);
+        displayProtocolSettings(j["protocolSettings"]);
+      });
+    }
+        
+    $(document).ready(function(){
+      makeMenu("configuration.html", "#pageMenu");
+      getConfiguration();
+    }); 
+
     </script>
-    <div>
-        <p><b>Collection summary:</b></p>
-            <div id=configuration> <div>
-    </div>	
+  </body>
 </html>
+
+

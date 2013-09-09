@@ -131,7 +131,7 @@ public class Reposervice {
             for(String p : pillars) {
                 pillarArray.put(p);
             }
-            array.put(pillars);
+            obj.put("pillars", pillarArray);
             array.put(obj);
         }
         return array;
