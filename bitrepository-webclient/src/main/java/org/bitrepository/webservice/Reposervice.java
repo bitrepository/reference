@@ -125,7 +125,7 @@ public class Reposervice {
         for(Collection c : collections) {
             JSONObject obj = new JSONObject();
             obj.put("collectionID", c.getID());
-            obj.put("collectionName", c.getName());
+            obj.put("collectionName", SettingsUtils.getCollectionName(c.getName()));
             JSONArray pillarArray = new JSONArray();
             List<String> pillars = c.getPillarIDs().getPillarID();
             for(String p : pillars) {
