@@ -68,12 +68,17 @@
     function displayProtocolSettings(settings) {
       var html = "<h3>Protocol settings</h3>";
 
-      html += "<dl class=\"dl-horizontal\">";
+      html += "<table class=\"table table-hover table-condensed table-bordered\">";
+      html += "<thead><tr>";
+      html += "<th>Settings key</th>";
+      html += "<th>Value</th>";
+      html += "</tr></thead>";
+      html += "<tbody>"
       for(s in settings) {
-        html += "<dt>" + s + "</dt>";
-        html += "<dd>" + settings[s] + "</dd>";   
+        html += "<tr><td>" + s + "</td>";
+        html += "<td>" + settings[s] + "</td><tr>";   
       }
-      html += "</dl>";
+      html += "</tbody></table>";
 
       $("#protocolSettingsDiv").append(html);
     
