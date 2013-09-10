@@ -110,8 +110,8 @@
     html += "<td id=\""+ id + "-collectionSize\"></td>";
     html += "<td id=\""+ id + "-pillars\"></td>";
     html += "<td id=\""+ id + "-latestCheck\"></td>";
-    html += "<td id=\""+ id + "-numChecksumErrors\"></td>";
-    html += "<td id=\""+ id + "-numMissingFiles\"></td>";
+    html += "<td> <span id=\""+ id + "-numChecksumErrors\"></span></td>";
+    html += "<td> <span id=\""+ id + "-numMissingFiles\"></span></td>";
     html += "<td id=\""+ id + "-nextCheck\"></td></tr>";
     return html;
   }
@@ -126,23 +126,15 @@
     $("#" + id + "-latestCheck").html(collection.lastCheck);
     $("#" + id + "-numChecksumErrors").html(collection.numChecksumErrors);
     if(collection.numChecksumErrors > 0) {
-      $("#" + id + "-numChecksumErrors").addClass("badge");
-      $("#" + id + "-numChecksumErrors").addClass("badge-important");
-      $("#" + id + "-numChecksumErrors").addClass("pull-right");
+      $("#" + id + "-numChecksumErrors").addClass("badge badge-important pull-right");
     } else {
-      $("#" + id + "-numChecksumErrors").removeClass("badge");
-      $("#" + id + "-numChecksumErrors").removeClass("badge-important");
-      $("#" + id + "-numChecksumErrors").removeClass("pull-right");
+      $("#" + id + "-numChecksumErrors").removeClass("badge badge-important pull-right");
     }
     $("#" + id + "-numMissingFiles").html(collection.numMissingFiles);
     if(collection.numMissingFiles > 0) {
-      $("#" + id + "-numChecksumErrors").addClass("badge");
-      $("#" + id + "-numChecksumErrors").addClass("badge-important");
-      $("#" + id + "-numChecksumErrors").addClass("pull-right");
+      $("#" + id + "-numMissingFiles").addClass("badge badge-important pull-right");
     } else {
-      $("#" + id + "-numChecksumErrors").removeClass("badge");
-      $("#" + id + "-numChecksumErrors").removeClass("badge-important");
-      $("#" + id + "-numChecksumErrors").removeClass("pull-right");
+      $("#" + id + "-numMissingFiles").removeClass("badge badge-important pull-right");
     }
     $("#" + id + "-nextCheck").html(collection.nextCheck);
   }

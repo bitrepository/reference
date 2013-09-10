@@ -109,12 +109,12 @@ public class Reposervice {
     private JSONObject makeProtocolSettingsObj() throws JSONException {
         JSONObject obj = new JSONObject();
         ProtocolSettings protocolSettings = client.getSettings().getRepositorySettings().getProtocolSettings();
-        obj.put("allowedFileIDPattern", protocolSettings.getAllowedFileIDPattern());
-        obj.put("defaultChecksumType", protocolSettings.getDefaultChecksumType());
-        obj.put("requireMessageAuth", protocolSettings.isRequireMessageAuthentication());
-        obj.put("requireOperationAuth", protocolSettings.isRequireOperationAuthorization());
-        obj.put("requireChecksumForDestructiveReq", protocolSettings.isRequireChecksumForDestructiveRequests());
-        obj.put("requireChecksumForNewFile", protocolSettings.isRequireChecksumForNewFileRequests());
+        obj.put("Allowed fileID pattern", protocolSettings.getAllowedFileIDPattern());
+        obj.put("Default checksum type", protocolSettings.getDefaultChecksumType());
+        obj.put("Require message authentication", protocolSettings.isRequireMessageAuthentication());
+        obj.put("Require operation authutorization", protocolSettings.isRequireOperationAuthorization());
+        obj.put("Require checksum for destructive reqests", protocolSettings.isRequireChecksumForDestructiveRequests());
+        obj.put("Require checksum for new file", protocolSettings.isRequireChecksumForNewFileRequests());
         return obj; 
     }
 
