@@ -804,6 +804,22 @@
           </xs:documentation>
         </xs:annotation>
       </xs:element>
+      <xs:element name="AllowAutoMigrate" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            OPTIONAL. Setting for disallowing/allowing automigration of supported databases.
+            Defaults to true.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+            <xs:element name="AllowAutoCreate" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            OPTIONAL. Setting for disallowing/allowing auto creation of supported databases.
+            Defaults to true.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
     </xs:sequence>
   </xs:complexType>
 

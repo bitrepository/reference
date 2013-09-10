@@ -72,16 +72,26 @@ public abstract class DatabaseManager {
             try {
                 obtainConnection();
             } catch (IllegalStateException e) {
-                log.warn("Failed to connect to database, attempting to create it");
-                createDatabase();
+                if(allowAutoCreate()) {
+                    log.warn("Failed to connect to database, attempting to create it");
+                    createDatabase();
+                } else {
+                    log.error("Failed to connect to database, autocreation is disabled");
+                    throw e;
+                }
             }
             if(connector == null) {
                 obtainConnection();
             }
             log.info("Checking if the database needs to be migrated.");
             if(needsMigration()) {
-                log.warn("Database needs to be migrated, attempting to automigrate.");
-                migrateDatabase();
+                if(allowAutoMigrate()) {
+                    log.warn("Database needs to be migrated, attempting to automigrate.");
+                    migrateDatabase();
+                } else {
+                    log.error("Database needs migration, automigrations is disabled.");
+                    throw new IllegalStateException("Database needs migration, automigrations is disabled.");
+                }
             } else {
                 log.info("Database migration was not needed.");
             }
@@ -141,6 +151,23 @@ public abstract class DatabaseManager {
             throw new IllegalStateException("The database was attempted migrated, but no migrator was available.");
         }
     }
+    
+    private boolean allowAutoMigrate() {
+        DatabaseSpecifics ds = getDatabaseSpecifics();
+        if(ds.isSetAllowAutoMigrate()) {
+            return ds.isAllowAutoMigrate();
+        } else {
+            return true;
+        }
+    }
+    
+    private boolean allowAutoCreate() {
+        DatabaseSpecifics ds = getDatabaseSpecifics();
+        if(ds.isSetAllowAutoCreate()) {
+            return ds.isAllowAutoCreate();
+        } else {
+            return true;
+        }    }
     
     /**
      * Create the database on the given database specifics.  
