@@ -126,15 +126,23 @@
     $("#" + id + "-latestCheck").html(collection.lastCheck);
     $("#" + id + "-numChecksumErrors").html(collection.numChecksumErrors);
     if(collection.numChecksumErrors > 0) {
-      $("#" + id + "-numChecksumErrors").addClass("error");
+      $("#" + id + "-numChecksumErrors").addClass("badge");
+      $("#" + id + "-numChecksumErrors").addClass("badge-important");
+      $("#" + id + "-numChecksumErrors").addClass("pull-right");
     } else {
-      $("#" + id + "-numChecksumErrors").removeClass("error");
+      $("#" + id + "-numChecksumErrors").removeClass("badge");
+      $("#" + id + "-numChecksumErrors").removeClass("badge-important");
+      $("#" + id + "-numChecksumErrors").removeClass("pull-right");
     }
     $("#" + id + "-numMissingFiles").html(collection.numMissingFiles);
     if(collection.numMissingFiles > 0) {
-      $("#" + id + "-numMissingFiles").addClass("error");
+      $("#" + id + "-numChecksumErrors").addClass("badge");
+      $("#" + id + "-numChecksumErrors").addClass("badge-important");
+      $("#" + id + "-numChecksumErrors").addClass("pull-right");
     } else {
-      $("#" + id + "-numMissingFiles").removeClass("error");
+      $("#" + id + "-numChecksumErrors").removeClass("badge");
+      $("#" + id + "-numChecksumErrors").removeClass("badge-important");
+      $("#" + id + "-numChecksumErrors").removeClass("pull-right");
     }
     $("#" + id + "-nextCheck").html(collection.nextCheck);
   }
