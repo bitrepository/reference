@@ -1005,6 +1005,13 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         }
     }
     
+    
+    /**
+     * Method to acquire the sql for selecting missing files on a pillar in a collection
+     * with a limited number of results.  
+     */
+    protected abstract String getMissingFilesOnPillarSql();
+    
     /**
      * Retrieves IntegrityIssueIterator for the missing files on a pillar, within the defined range.
      * @param pillarId The id of the pillar.
@@ -1016,7 +1023,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
     public IntegrityIssueIterator getMissingFilesOnPillarByIterator(String pillarId, long min, long max, String collectionId) {
         log.trace("Locating missing files for pillar '" + pillarId + "' from number " + min + " to " + max + ".");
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
+        /*String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
                 + " JOIN " + FILE_INFO_TABLE 
                 + " ON " + FILES_TABLE + "." + FILES_KEY + "=" + FILE_INFO_TABLE + "." + FI_FILE_KEY 
                 + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
@@ -1025,7 +1032,8 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                     + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
                     + " WHERE " + PILLAR_ID + " = ? )"
                 + " ORDER BY " + FILES_TABLE + "." + FILES_KEY;
-        
+        */
+        String selectSql = getMissingFilesOnPillarSql();
         PreparedStatement ps = null;
         Connection conn = dbConnector.getConnection();
         
@@ -1034,7 +1042,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                     + FileState.MISSING.ordinal() + ", " + collectionKey + ", " + pillarId 
                     + " for AuditEventIterator");
             ps = DatabaseUtils.createPreparedStatement(conn, selectSql, FileState.MISSING.ordinal(), 
-                    collectionKey, pillarId);
+                    collectionKey, pillarId, min, max);
             return new IntegrityIssueIterator(ps);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to retrieve the integrity issues from the database", e);
