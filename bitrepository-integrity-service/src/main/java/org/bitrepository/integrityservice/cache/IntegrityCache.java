@@ -26,6 +26,7 @@ import org.apache.jcs.JCS;
 import org.apache.jcs.access.exception.CacheException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
+import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,6 +135,11 @@ public class IntegrityCache implements IntegrityModel {
     @Override
     public List<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId, String collectionId) {
         return integrityModel.getMissingFilesAtPillar(pillarId, minId, maxId, collectionId);
+    }
+    
+    @Override
+    public IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarId, long minId, long maxId, String collectionId) {
+        return integrityModel.getMissingFilesAtPillarByIterator(pillarId, minId, maxId, collectionId);
     }
 
     @Override

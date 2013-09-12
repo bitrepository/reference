@@ -24,6 +24,7 @@
  */
 package org.bitrepository.integrityservice.web;
 
+import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.common.utils.FileSizeUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
@@ -31,6 +32,7 @@ import org.bitrepository.integrityservice.IntegrityServiceManager;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.PillarStat;
+import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.workflow.IntegrityCheckWorkflow;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.Workflow;
@@ -59,6 +61,10 @@ public class RestIntegrityService {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private IntegrityModel model;
     private WorkflowManager workflowManager;
+    
+    private final static String JSON_LIST_START = "[";
+    private final static String JSON_LIST_END = "]";
+    private final static String JSON_LIST_SEPERATOR = ",";
 
     public RestIntegrityService() {
         this.model = IntegrityServiceManager.getIntegrityModel();
@@ -95,9 +101,9 @@ public class RestIntegrityService {
      * @param pageSize, the number of checksum errors per page. 
      */
     @GET
-    @Path("/getMissingFileIDs/")
+    @Path("/getMissingFileIDs-old/")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getMissingFileIDs(
+    public List<String> getMissingFileIDsold(
             @QueryParam("collectionID") String collectionID,
             @QueryParam("pillarID") String pillarID,
             @QueryParam("pageNumber") int pageNumber,
@@ -108,6 +114,65 @@ public class RestIntegrityService {
         
         List<String> ids = model.getMissingFilesAtPillar(pillarID, firstID, lastID, collectionID);
         return ids;
+    }
+    
+    /**
+     * Method to get the list of missing files per pillar in a given collection. 
+     * @param collectionID, the collectionID from which to return missing files
+     * @param pillarID, the ID of the pillar in the collection from which to return missing files
+     * @param pageNumber, the page number for calculating offsets (@see pageSize)
+     * @param pageSize, the number of checksum errors per page. 
+     */
+    @GET
+    @Path("/getMissingFileIDs/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public StreamingOutput getMissingFileIDs(
+            @QueryParam("collectionID") String collectionID,
+            @QueryParam("pillarID") String pillarID,
+            @QueryParam("pageNumber") int pageNumber,
+            @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
+        
+        int firstID = (pageNumber - 1) * pageSize;
+        int lastID = (pageNumber * pageSize) - 1;
+        
+        final IntegrityIssueIterator it = model.getMissingFilesAtPillarByIterator(pillarID, 
+                firstID, lastID, collectionID);
+        
+        if(it != null) {     
+            return new StreamingOutput() {
+                public void write(OutputStream output) throws IOException, WebApplicationException {
+                    try {
+                        boolean firstIssueWritten = false;
+                        String issue;
+                        output.write(JSON_LIST_START.getBytes());
+                        while((issue = it.getNextIntegrityIssue()) != null) {
+                            if(firstIssueWritten) {
+                                output.write(JSON_LIST_SEPERATOR.getBytes());
+                            }
+                            output.write(issue.getBytes());
+                            firstIssueWritten = true;
+                        }
+                        output.write(JSON_LIST_END.getBytes());
+                    } catch (Exception e) {
+                        throw new WebApplicationException(e);
+                    } finally {
+                        try {
+                            if(it != null) {
+                                it.close();
+                            }
+                        } catch (Exception e) {
+                            log.error("Caught execption when closing IntegrityIssueIterator", e);
+                            throw new WebApplicationException(e);
+                        }
+                    }
+                }
+            };
+        } else {
+            throw new WebApplicationException(Response.status(Response.Status.NO_CONTENT)
+                    .entity("Failed to get missing files from database")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build());
+        }
     }
     
     /**

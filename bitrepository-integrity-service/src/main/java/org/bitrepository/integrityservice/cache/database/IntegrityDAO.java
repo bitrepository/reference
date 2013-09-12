@@ -954,7 +954,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
      * @return The list of file ids between the two counts.
      */
     public List<String> getMissingFilesOnPillar(String pillarId, long min, long max, String collectionId) {
-        log.trace("Locating all existing files for pillar '" + pillarId + "' from number " + min + " to " + max + ".");
+        log.trace("Locating all missing files for pillar '" + pillarId + "' from number " + min + " to " + max + ".");
         Long collectionKey = retrieveCollectionKey(collectionId);
         String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
                 + " JOIN " + FILE_INFO_TABLE 
@@ -1004,7 +1004,43 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                     + min + " and " + max + " with the SQL '" + selectSql + "'.", e);
         }
     }
-
+    
+    /**
+     * Retrieves IntegrityIssueIterator for the missing files on a pillar, within the defined range.
+     * @param pillarId The id of the pillar.
+     * @param min The minimum count.
+     * @param max The maximum count.
+     * @param collectionId The ID of the collection to get list of missing files from
+     * @return The IntegrityIssueIterator of fileids between the two counts.
+     */
+    public IntegrityIssueIterator getMissingFilesOnPillarByIterator(String pillarId, long min, long max, String collectionId) {
+        log.trace("Locating missing files for pillar '" + pillarId + "' from number " + min + " to " + max + ".");
+        Long collectionKey = retrieveCollectionKey(collectionId);
+        String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
+                + " JOIN " + FILE_INFO_TABLE 
+                + " ON " + FILES_TABLE + "." + FILES_KEY + "=" + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
+                + " AND "+ FILES_TABLE + "." + COLLECTION_KEY + "= ?" 
+                + " AND " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ("
+                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
+                    + " WHERE " + PILLAR_ID + " = ? )"
+                + " ORDER BY " + FILES_TABLE + "." + FILES_KEY;
+        
+        PreparedStatement ps = null;
+        Connection conn = dbConnector.getConnection();
+        
+        try {
+            log.debug("Creating prepared statement with sql '" + selectSql + "' and arguments '" 
+                    + FileState.MISSING.ordinal() + ", " + collectionKey + ", " + pillarId 
+                    + " for AuditEventIterator");
+            ps = DatabaseUtils.createPreparedStatement(conn, selectSql, FileState.MISSING.ordinal(), 
+                    collectionKey, pillarId);
+            return new IntegrityIssueIterator(ps);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to retrieve the integrity issues from the database", e);
+        }
+    }
+    
     /**
      * Retrieves list of existing files on a pillar, within the defined range.
      * @param pillarId The id of the pillar.

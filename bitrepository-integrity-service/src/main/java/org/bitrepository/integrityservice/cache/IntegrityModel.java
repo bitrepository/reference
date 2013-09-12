@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
+import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 
 /**
  * Store of cached integrity information.
@@ -107,6 +108,17 @@ public interface IntegrityModel {
      * @return The list of missing file ids for the pillar, between min and max.
      */
     List<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId, String collectionId);
+    
+    /**
+     * An IntegrityIssueIterator for missing files for a given pillar, restricted by min and max ids.
+     * @param pillarId The id of the pillar.
+     * @param minId The minimum result number.
+     * @param maxId The maximum result number.
+     * @param collectionId The ID of the collection to get missing files from
+     * @return The IntegrityIssueIterator for missing file ids for the pillar, between min and max.
+     */
+    IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarId, long minId, long maxId, 
+            String collectionId);
     
     /**
      * @param pillarId The pillar.

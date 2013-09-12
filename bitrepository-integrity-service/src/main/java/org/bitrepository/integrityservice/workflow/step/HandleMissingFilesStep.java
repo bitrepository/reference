@@ -22,17 +22,12 @@
 package org.bitrepository.integrityservice.workflow.step;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import org.bitrepository.integrityservice.cache.FileInfo;
-import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
-import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,9 +63,11 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
     public synchronized void performStep() {
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
         for(String pillar : pillars) {
-            List<String> missingFiles = 
-                    store.getMissingFilesAtPillar(pillar, 0, Integer.MAX_VALUE, reporter.getCollectionID());
-            for(String missingFile : missingFiles) {
+            IntegrityIssueIterator issueIterator = store.getMissingFilesAtPillarByIterator(pillar, 0, 
+                    Integer.MAX_VALUE, reporter.getCollectionID());
+            
+            String missingFile;
+            while((missingFile = issueIterator.getNextIntegrityIssue()) != null) {
                 try {
                     reporter.reportMissingFile(missingFile, pillar);
                 } catch (IOException e) {

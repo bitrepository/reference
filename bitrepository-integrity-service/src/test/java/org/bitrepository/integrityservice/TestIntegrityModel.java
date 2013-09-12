@@ -46,6 +46,7 @@ import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.PillarStat;
 import org.bitrepository.integrityservice.cache.database.ChecksumState;
 import org.bitrepository.integrityservice.cache.database.FileState;
+import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -683,6 +684,12 @@ public class TestIntegrityModel implements IntegrityModel {
     @Override
     public List<String> findOrphanFiles(String collectionID) {
         // TODO Fix this
+        return null;
+    }
+
+    @Override
+    public IntegrityIssueIterator getMissingFilesAtPillarByIterator(
+            String pillarId, long minId, long maxId, String collectionId) {
         return null;
     }
 }

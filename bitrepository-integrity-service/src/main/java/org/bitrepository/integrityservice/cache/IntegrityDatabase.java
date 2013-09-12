@@ -34,6 +34,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAOFactory;
+import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -218,6 +219,11 @@ public class IntegrityDatabase implements IntegrityModel {
     @Override
     public List<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId, String collectionId) {
         return store.getMissingFilesOnPillar(pillarId, minId, maxId, collectionId);
+    }
+    
+    @Override
+    public IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarId, long minId, long maxId, String collectionId) {
+        return store.getMissingFilesOnPillarByIterator(pillarId, minId, maxId, collectionId);
     }
 
     @Override
