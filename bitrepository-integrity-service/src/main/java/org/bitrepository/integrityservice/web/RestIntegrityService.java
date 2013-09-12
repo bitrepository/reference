@@ -24,7 +24,30 @@
  */
 package org.bitrepository.integrityservice.web;
 
-import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
+
 import org.bitrepository.common.utils.FileSizeUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
@@ -44,18 +67,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.*;
-
 @Path("/IntegrityService")
 public class RestIntegrityService {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -65,6 +76,7 @@ public class RestIntegrityService {
     private final static String JSON_LIST_START = "[";
     private final static String JSON_LIST_END = "]";
     private final static String JSON_LIST_SEPERATOR = ",";
+    private final static String JSON_DELIMITER = "\"";
 
     public RestIntegrityService() {
         this.model = IntegrityServiceManager.getIntegrityModel();
@@ -149,7 +161,8 @@ public class RestIntegrityService {
                             if(firstIssueWritten) {
                                 output.write(JSON_LIST_SEPERATOR.getBytes());
                             }
-                            output.write(issue.getBytes());
+                            String issueStr = JSON_DELIMITER + issue + JSON_DELIMITER;
+                            output.write(issueStr.getBytes());
                             firstIssueWritten = true;
                         }
                         output.write(JSON_LIST_END.getBytes());
