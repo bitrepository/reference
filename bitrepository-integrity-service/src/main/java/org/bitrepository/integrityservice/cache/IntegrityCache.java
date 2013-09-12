@@ -131,11 +131,6 @@ public class IntegrityCache implements IntegrityModel {
         }
         return numberOfMissingFiles.longValue();
     }
-
-    @Override
-    public List<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId, String collectionId) {
-        return integrityModel.getMissingFilesAtPillar(pillarId, minId, maxId, collectionId);
-    }
     
     @Override
     public IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarId, long minId, long maxId, String collectionId) {

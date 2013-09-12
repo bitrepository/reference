@@ -104,29 +104,6 @@ public class RestIntegrityService {
         List<String> ids = model.getFilesWithChecksumErrorsAtPillar(pillarID, firstID, lastID, collectionID);
         return ids;
     }
-
-    /**
-     * Method to get the list of missing files per pillar in a given collection. 
-     * @param collectionID, the collectionID from which to return missing files
-     * @param pillarID, the ID of the pillar in the collection from which to return missing files
-     * @param pageNumber, the page number for calculating offsets (@see pageSize)
-     * @param pageSize, the number of checksum errors per page. 
-     */
-    @GET
-    @Path("/getMissingFileIDs-old/")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getMissingFileIDsold(
-            @QueryParam("collectionID") String collectionID,
-            @QueryParam("pillarID") String pillarID,
-            @QueryParam("pageNumber") int pageNumber,
-            @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
-        
-        int firstID = (pageNumber - 1) * pageSize;
-        int lastID = (pageNumber * pageSize) - 1;
-        
-        List<String> ids = model.getMissingFilesAtPillar(pillarID, firstID, lastID, collectionID);
-        return ids;
-    }
     
     /**
      * Method to get the list of missing files per pillar in a given collection. 

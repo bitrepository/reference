@@ -944,67 +944,6 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                     + min + " and " + max + " with the SQL '" + selectSql + "'.", e);
         }
     }
-
-    /**
-     * Retrieves list of missing files on a pillar, within the defined range.
-     * @param pillarId The id of the pillar.
-     * @param min The minimum count.
-     * @param max The maximum count.
-     * @param collectionId The ID of the collection to get list of missing files from
-     * @return The list of file ids between the two counts.
-     */
-    public List<String> getMissingFilesOnPillar(String pillarId, long min, long max, String collectionId) {
-        log.trace("Locating all missing files for pillar '" + pillarId + "' from number " + min + " to " + max + ".");
-        Long collectionKey = retrieveCollectionKey(collectionId);
-        String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
-                + " JOIN " + FILE_INFO_TABLE 
-                + " ON " + FILES_TABLE + "." + FILES_KEY + "=" + FILE_INFO_TABLE + "." + FI_FILE_KEY 
-                + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
-                + " AND "+ FILES_TABLE + "." + COLLECTION_KEY + "= ?" 
-                + " AND " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ("
-                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
-                    + " WHERE " + PILLAR_ID + " = ? )"
-                + " ORDER BY " + FILES_TABLE + "." + FILES_KEY;
-        
-        try {
-            ResultSet dbResult = null;
-            PreparedStatement ps = null;
-            Connection conn = null;
-            try {
-                conn = dbConnector.getConnection();
-                ps = DatabaseUtils.createPreparedStatement(conn, selectSql, FileState.MISSING.ordinal(), 
-                        collectionKey, pillarId);
-                dbResult = ps.executeQuery();
-                
-                List<String> res = new ArrayList<String>();
-                
-                int i = 0;
-                while(dbResult.next()) {
-                    if(i >= min && i < max) {
-                        res.add(dbResult.getString(1));
-                        
-                    }
-                    i++;
-                }
-                
-                return res;
-            } finally {
-                if(dbResult != null) {
-                    dbResult.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Could not retrieve the file ids for '" + pillarId + "' between counts "
-                    + min + " and " + max + " with the SQL '" + selectSql + "'.", e);
-        }
-    }
-    
     
     /**
      * Method to acquire the sql for selecting missing files on a pillar in a collection
@@ -1015,15 +954,23 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
     /**
      * Retrieves IntegrityIssueIterator for the missing files on a pillar, within the defined range.
      * @param pillarId The id of the pillar.
-     * @param min The minimum count.
-     * @param max The maximum count.
+     * @param firstIndex OPTIONAL. The index to start from, if null, start index will be 0
+     * @param maxResults The maximum number of results.
      * @param collectionId The ID of the collection to get list of missing files from
      * @return The IntegrityIssueIterator of fileids between the two counts.
      */
-    public IntegrityIssueIterator getMissingFilesOnPillarByIterator(String pillarId, long min, long max, String collectionId) {
-        log.trace("Locating missing files for pillar '" + pillarId + "' from number " + min + " to " + max + ".");
+    public IntegrityIssueIterator getMissingFilesOnPillarByIterator(String pillarId, Long firstIndex, 
+            Long maxResults, String collectionId) {
+        ArgumentValidator.checkPositive(maxResults, "maxResults");
+        long first;
+        if(firstIndex == null) {
+            first = 0;
+        } else {
+            first = firstIndex;
+        }
+        log.trace("Locating missing files for pillar '" + pillarId + "' from index " + first + " and maxResults " 
+                + maxResults + ".");
         Long collectionKey = retrieveCollectionKey(collectionId);
-        long numRows = max - min;
         String selectSql = getMissingFilesOnPillarSql();
         PreparedStatement ps = null;
         Connection conn = dbConnector.getConnection();
@@ -1031,9 +978,9 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         try {
             log.debug("Creating prepared statement with sql '" + selectSql + "' and arguments '" 
                     + FileState.MISSING.ordinal() + ", " + collectionKey + ", " + pillarId 
-                    + ", " + min + ", " + numRows + " for IntegrityIssueIterator");
+                    + ", " + first + ", " + maxResults + " for IntegrityIssueIterator");
             ps = DatabaseUtils.createPreparedStatement(conn, selectSql, FileState.MISSING.ordinal(), 
-                    collectionKey, pillarId, min, numRows);
+                    collectionKey, pillarId, first, maxResults);
             return new IntegrityIssueIterator(ps);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to retrieve the integrity issues from the database", e);

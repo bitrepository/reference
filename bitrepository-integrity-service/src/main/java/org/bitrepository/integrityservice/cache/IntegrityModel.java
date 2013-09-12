@@ -100,16 +100,6 @@ public interface IntegrityModel {
     long getNumberOfMissingFiles(String pillarId, String collectionId);
     
     /**
-     * A list of missing files for a given pillar, restricted by min and max ids.
-     * @param pillarId The id of the pillar.
-     * @param minId The minimum result number.
-     * @param maxId The maximum result number.
-     * @param collectionId The ID of the collection to get missing files from
-     * @return The list of missing file ids for the pillar, between min and max.
-     */
-    List<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId, String collectionId);
-    
-    /**
      * An IntegrityIssueIterator for missing files for a given pillar, restricted by min and max ids.
      * @param pillarId The id of the pillar.
      * @param minId The minimum result number.

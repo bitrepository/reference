@@ -42,6 +42,7 @@ import org.bitrepository.integrityservice.cache.database.ChecksumState;
 import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
+import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
 import org.testng.Assert;
@@ -843,21 +844,24 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         cache.setFileMissing(file3, TEST_PILLAR_1, EXTRA_COLLECTION);
         
         addStep("Extract all the missing file ids for the pillar", "Both file ids is found.");
-        Collection<String> fileIds = cache.getMissingFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        IntegrityIssueIterator it = cache.getMissingFilesOnPillarByIterator(TEST_PILLAR_1, 0L, Long.MAX_VALUE, TEST_COLLECTIONID);
+        Collection<String> fileIds = getIssuesFromIterator(it);
         Assert.assertTrue(fileIds.size() == 2, "Number of files: " + fileIds.size());
         Assert.assertTrue(fileIds.contains(TEST_FILE_ID));
         Assert.assertTrue(fileIds.contains(file2));
         Assert.assertFalse(fileIds.contains(file3));
         
         addStep("Ensure extract the one missing file from the extra collection", "The file exists");
-        fileIds = cache.getMissingFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE, EXTRA_COLLECTION);
+        it = cache.getMissingFilesOnPillarByIterator(TEST_PILLAR_1, 0L, Long.MAX_VALUE, EXTRA_COLLECTION);
+        fileIds = getIssuesFromIterator(it);
         Assert.assertTrue(fileIds.size() == 1, "Number of files: " + fileIds.size());
         Assert.assertFalse(fileIds.contains(TEST_FILE_ID));
         Assert.assertFalse(fileIds.contains(file2));
         Assert.assertTrue(fileIds.contains(file3));
 
         addStep("Extract all the missing file ids for another pillar", "No files are found.");
-        fileIds = cache.getMissingFilesOnPillar(TEST_PILLAR_2, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        it = cache.getMissingFilesOnPillarByIterator(TEST_PILLAR_2, 0L, Long.MAX_VALUE, TEST_COLLECTIONID);
+        fileIds = getIssuesFromIterator(it);
         Assert.assertTrue(fileIds.isEmpty());
     }
     
@@ -872,24 +876,26 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1, TEST_COLLECTIONID);
         cache.setFileMissing(TEST_FILE_ID, TEST_PILLAR_1, TEST_COLLECTIONID);
         cache.setFileMissing(file2, TEST_PILLAR_1, TEST_COLLECTIONID);
-        
-        addStep("Extract with a maximum of 0", "No files");
-        Collection<String> fileIds = cache.getMissingFilesOnPillar(TEST_PILLAR_1, 0, 0, TEST_COLLECTIONID);
-        Assert.assertTrue(fileIds.isEmpty());
 
         addStep("Extract with a maximum of 1", "The first file.");
-        fileIds = cache.getMissingFilesOnPillar(TEST_PILLAR_1, 0, 1, TEST_COLLECTIONID);
+        IntegrityIssueIterator it = cache.getMissingFilesOnPillarByIterator(TEST_PILLAR_1, 0L, 1L, TEST_COLLECTIONID);
+        Collection<String> fileIds = getIssuesFromIterator(it);
         Assert.assertTrue(fileIds.size() == 1);
         Assert.assertTrue(fileIds.contains(TEST_FILE_ID));
         
         addStep("Extract with a minimum of 1 and maximum of infinite", "The last file.");
-        fileIds = cache.getMissingFilesOnPillar(TEST_PILLAR_1, 1, Long.MAX_VALUE, TEST_COLLECTIONID);
+        it = cache.getMissingFilesOnPillarByIterator(TEST_PILLAR_1, 1L, Long.MAX_VALUE, TEST_COLLECTIONID);
+        fileIds = getIssuesFromIterator(it);
         Assert.assertTrue(fileIds.size() == 1);
         Assert.assertTrue(fileIds.contains(file2));
 
         addStep("Extract with a minimum of 1 and maximum of 0", "No files.");
-        fileIds = cache.getMissingFilesOnPillar(TEST_PILLAR_1, 1, 0, TEST_COLLECTIONID);
-        Assert.assertTrue(fileIds.isEmpty());
+        try {
+            it = cache.getMissingFilesOnPillarByIterator(TEST_PILLAR_1, 1L, 0L, TEST_COLLECTIONID);
+            Assert.fail("Should have gotten an exception.");
+        } catch(IllegalArgumentException e) {
+            //Expected behavior.  
+        }
     }
 
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
@@ -904,7 +910,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         cache.setFileMissing(file2, TEST_PILLAR_1, TEST_COLLECTIONID);
         
         addStep("Extract all the missing file ids for the pillar", "Only one file id is found.");
-        Collection<String> fileIds = cache.getMissingFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        IntegrityIssueIterator it = cache.getMissingFilesOnPillarByIterator(TEST_PILLAR_1, 0L, Long.MAX_VALUE, TEST_COLLECTIONID);
+        Collection<String> fileIds = getIssuesFromIterator(it);
         Assert.assertTrue(fileIds.size() == 1, "Number of files: " + fileIds.size());
         Assert.assertFalse(fileIds.contains(TEST_FILE_ID));
         Assert.assertTrue(fileIds.contains(file2));
@@ -1224,5 +1231,15 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         DatabaseManager dm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         return new DerbyIntegrityDAO(dm, settings.getRepositorySettings().getCollections());
+    }
+    
+    private List<String> getIssuesFromIterator(IntegrityIssueIterator it) {
+        List<String> issues = new ArrayList<String>();
+        String issue = null;
+        while((issue = it.getNextIntegrityIssue()) != null) {
+            issues.add(issue);
+        }
+        
+        return issues;
     }
 }

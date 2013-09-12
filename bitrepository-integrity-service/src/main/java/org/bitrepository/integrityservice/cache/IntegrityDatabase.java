@@ -215,11 +215,6 @@ public class IntegrityDatabase implements IntegrityModel {
     public List<String> getFilesOnPillar(String pillarId, long minId, long maxId, String collectionId) {
         return store.getFilesOnPillar(pillarId, minId, maxId, collectionId);
     }
-
-    @Override
-    public List<String> getMissingFilesAtPillar(String pillarId, long minId, long maxId, String collectionId) {
-        return store.getMissingFilesOnPillar(pillarId, minId, maxId, collectionId);
-    }
     
     @Override
     public IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarId, long minId, long maxId, String collectionId) {
