@@ -1023,16 +1023,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
     public IntegrityIssueIterator getMissingFilesOnPillarByIterator(String pillarId, long min, long max, String collectionId) {
         log.trace("Locating missing files for pillar '" + pillarId + "' from number " + min + " to " + max + ".");
         Long collectionKey = retrieveCollectionKey(collectionId);
-        /*String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
-                + " JOIN " + FILE_INFO_TABLE 
-                + " ON " + FILES_TABLE + "." + FILES_KEY + "=" + FILE_INFO_TABLE + "." + FI_FILE_KEY 
-                + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
-                + " AND "+ FILES_TABLE + "." + COLLECTION_KEY + "= ?" 
-                + " AND " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ("
-                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
-                    + " WHERE " + PILLAR_ID + " = ? )"
-                + " ORDER BY " + FILES_TABLE + "." + FILES_KEY;
-        */
+        long numRows = max - min;
         String selectSql = getMissingFilesOnPillarSql();
         PreparedStatement ps = null;
         Connection conn = dbConnector.getConnection();
@@ -1040,9 +1031,9 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         try {
             log.debug("Creating prepared statement with sql '" + selectSql + "' and arguments '" 
                     + FileState.MISSING.ordinal() + ", " + collectionKey + ", " + pillarId 
-                    + " for AuditEventIterator");
+                    + ", " + min + ", " + numRows + " for IntegrityIssueIterator");
             ps = DatabaseUtils.createPreparedStatement(conn, selectSql, FileState.MISSING.ordinal(), 
-                    collectionKey, pillarId, min, max);
+                    collectionKey, pillarId, min, numRows);
             return new IntegrityIssueIterator(ps);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to retrieve the integrity issues from the database", e);
