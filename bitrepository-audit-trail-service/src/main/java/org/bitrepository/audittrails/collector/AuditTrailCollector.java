@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.bitrepository.access.getaudittrails.AuditTrailClient;
+import access.getaudittrails.AuditTrailClient;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;

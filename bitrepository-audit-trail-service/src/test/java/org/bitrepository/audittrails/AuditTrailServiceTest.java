@@ -21,7 +21,7 @@
  */
 package org.bitrepository.audittrails;
 
-import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
+import access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;

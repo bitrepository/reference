@@ -24,7 +24,7 @@
  */
 package org.bitrepository.integrityservice;
 
-import org.bitrepository.access.AccessComponentFactory;
+import access.AccessComponentFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -54,7 +54,6 @@ import org.bitrepository.service.audit.AuditTrailContributerDAO;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
-import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
 import org.bitrepository.service.workflow.WorkflowManager;

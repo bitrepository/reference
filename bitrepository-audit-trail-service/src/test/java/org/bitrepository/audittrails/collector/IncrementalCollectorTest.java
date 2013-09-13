@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
-import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
+import access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.audittrails.MockAuditClient;
 import org.bitrepository.audittrails.MockAuditStore;
 import org.bitrepository.bitrepositoryelements.ResponseCode;

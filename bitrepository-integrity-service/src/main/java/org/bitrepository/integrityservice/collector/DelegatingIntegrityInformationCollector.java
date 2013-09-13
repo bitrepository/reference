@@ -24,9 +24,9 @@
  */
 package org.bitrepository.integrityservice.collector;
 
-import org.bitrepository.access.ContributorQuery;
-import org.bitrepository.access.getchecksums.GetChecksumsClient;
-import org.bitrepository.access.getfileids.GetFileIDsClient;
+import access.ContributorQuery;
+import access.getchecksums.GetChecksumsClient;
+import access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.slf4j.Logger;

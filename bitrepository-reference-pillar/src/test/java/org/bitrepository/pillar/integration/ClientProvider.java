@@ -20,12 +20,12 @@ package org.bitrepository.pillar.integration;/*
  * #L%
  */
 
-import org.bitrepository.access.AccessComponentFactory;
+import access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.AuditTrailClientTestWrapper;
-import org.bitrepository.access.getaudittrails.BlockingAuditTrailClient;
-import org.bitrepository.access.getchecksums.BlockingGetChecksumsClient;
+import access.getaudittrails.BlockingAuditTrailClient;
+import access.getchecksums.BlockingGetChecksumsClient;
 import org.bitrepository.access.getchecksums.GetChecksumsClientTestWrapper;
-import org.bitrepository.access.getfileids.BlockingGetFileIDsClient;
+import access.getfileids.BlockingGetFileIDsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClientTestWrapper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.ModifyComponentFactory;
