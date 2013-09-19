@@ -37,11 +37,11 @@ CREATE TABLE tableversions (
     version INT NOT NULL             -- version of table
 );
 
-INSERT INTO tableversions (tablename, version) VALUES ('fileinfo', 2);
+INSERT INTO tableversions (tablename, version) VALUES ('fileinfo', 3);
 INSERT INTO tableversions (tablename, version) VALUES ('files', 2);
 INSERT INTO tableversions (tablename, version) VALUES ('pillar', 2);
 INSERT INTO tableversions (tablename, version) VALUES ('collections' ,1);
-INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 2);
+INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 4);
 INSERT INTO tableversions (tablename, version) VALUES ('stats', 1);
 INSERT INTO tableversions (tablename, version) VALUES ('collectionstats', 1);
 INSERT INTO tableversions (tablename, version) VALUES ('pillarstats', 1);
