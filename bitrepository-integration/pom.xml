@@ -14,18 +14,6 @@
     <!-- THE TEST SCOPE -->
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
-      <artifactId>bitrepository-access-client</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.bitrepository.reference</groupId>
-      <artifactId>bitrepository-modifying-client</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.bitrepository.reference</groupId>
       <artifactId>bitrepository-client</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
@@ -72,7 +60,7 @@
     </dependency>
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
-      <artifactId>bitrepository-command-line</artifactId>
+      <artifactId>bitrepository-client</artifactId>
       <version>${project.version}</version>
       <classifier>distribution</classifier>
       <type>tar.gz</type>

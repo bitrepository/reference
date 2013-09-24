@@ -23,8 +23,8 @@ package org.bitrepository.monitoringservice;
 
 import java.util.Map;
 import javax.jms.JMSException;
-import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.access.getstatus.GetStatusClient;
+import access.AccessComponentFactory;
+import access.getstatus.GetStatusClient;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.monitoringservice.alarm.BasicMonitoringServiceAlerter;

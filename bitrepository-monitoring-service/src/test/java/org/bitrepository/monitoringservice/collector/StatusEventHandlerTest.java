@@ -21,7 +21,7 @@
  */
 package org.bitrepository.monitoringservice.collector;
 
-import org.bitrepository.access.getstatus.conversation.StatusCompleteContributorEvent;
+import access.getstatus.conversation.StatusCompleteContributorEvent;
 import org.bitrepository.client.eventhandler.AbstractOperationEvent;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.DefaultEvent;

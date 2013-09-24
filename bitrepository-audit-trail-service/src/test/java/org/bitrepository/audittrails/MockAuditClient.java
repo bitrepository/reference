@@ -21,10 +21,8 @@
  */
 package org.bitrepository.audittrails;
 
-import java.util.Arrays;
-
-import org.bitrepository.access.getaudittrails.AuditTrailQuery;
-import org.bitrepository.access.getaudittrails.AuditTrailClient;
+import access.getaudittrails.AuditTrailQuery;
+import access.getaudittrails.AuditTrailClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 
 public class MockAuditClient implements AuditTrailClient {

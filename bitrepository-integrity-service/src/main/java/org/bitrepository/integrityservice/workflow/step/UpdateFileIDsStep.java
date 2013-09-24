@@ -22,7 +22,7 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import org.bitrepository.access.ContributorQuery;
+import access.ContributorQuery;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;

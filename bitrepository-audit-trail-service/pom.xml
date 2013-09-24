@@ -19,12 +19,7 @@
     </dependency>
     <dependency>
       <groupId>org.bitrepository.reference</groupId>
-      <artifactId>bitrepository-access-client</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.bitrepository.reference</groupId>
-      <artifactId>bitrepository-modifying-client</artifactId>
+      <artifactId>bitrepository-client</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
