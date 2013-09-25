@@ -67,7 +67,7 @@ public class PillarFileManager {
      * Deletes the files one by one on the pillar.
      */
     public void deleteAllFiles() {
-        List<ChecksumDataForChecksumSpecTYPE> filesWithChecksums = getChecksums(null, null);
+        List<ChecksumDataForChecksumSpecTYPE> filesWithChecksums = getChecksums(null, null, null);
         for (ChecksumDataForChecksumSpecTYPE checksumData: filesWithChecksums) {
             ChecksumDataForFileTYPE checksumDataForFile = new ChecksumDataForFileTYPE();
             checksumDataForFile.setCalculationTimestamp(checksumData.getCalculationTimestamp());
@@ -132,7 +132,8 @@ public class PillarFileManager {
     }
 
     public List<ChecksumDataForChecksumSpecTYPE> getChecksums(ChecksumSpecTYPE checksumSpec,
-                                                              ContributorQuery query) {
+                                                              ContributorQuery query,
+                                                              String fileID) {
         if (checksumSpec == null) {
             checksumSpec = ChecksumUtils.getDefault(mySettings);
         }
@@ -143,7 +144,7 @@ public class PillarFileManager {
 
         try {
             List<ContributorEvent> result = clientProvider.getGetChecksumsClient().getChecksums(collectionID,
-                new ContributorQuery[]{query}, null, checksumSpec,  null, null, null);
+                new ContributorQuery[]{query}, fileID, checksumSpec,  null, null, null);
             ChecksumsCompletePillarEvent pillarResult = (ChecksumsCompletePillarEvent)result.get(0);
             return pillarResult.getChecksums().getChecksumDataItems();
         } catch (Exception e) {
