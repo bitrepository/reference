@@ -30,9 +30,10 @@ import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertTrue;
 
 public class GetChecksumTest extends PillarFunctionTest {
 
@@ -51,8 +52,8 @@ public class GetChecksumTest extends PillarFunctionTest {
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.MD5);
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(checksumSpec,
-                null);
-        Assert.assertTrue(checksums.size() >= 2, "The length of the returned checksums were less that 2");
+                null, null);
+        assertTrue(checksums.size() >= 2, "The length of the returned checksums were less that 2");
 
         addStep("Retrieve the first two files and verify that the checksums are correct",
             "Not implemented");
@@ -60,56 +61,45 @@ public class GetChecksumTest extends PillarFunctionTest {
     }
     
     @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST} )
-    public void sha1ChecksumsForAllFilesTest() throws NegativeResponseException {
+    public void sha1ChecksumsForDefaultTest() throws NegativeResponseException {
         addDescription("Test the pillar support for SHA1 type checksums");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
-        addStep("Request SHA1 checksums for all files on the pillar",
-            "A list (at least 2 long) of SHA1 checksums should be returned.");
+        addStep("Request SHA1 checksums for the DefaultFile on the pillar",
+            "The SHA1 checksum for the default file should be returned should be returned (Not checked yet).");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.SHA1);
-        List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(checksumSpec, null);
-        Assert.assertTrue(checksums.size() >= 2, "The length of the returned checksums were less that 2");
-
-        addStep("Retrieve the first two files and verify that the checksums are correct",
-            "Not implemented");
-        // ToDo implement this
+        List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
+                checksumSpec, null, DEFAULT_FILE_ID);
+        //assertEquals(checksums.get(0), );
     }
 
     @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST} )
-    public void md5SaltChecksumsForAllFilesTest() throws NegativeResponseException {
+    public void md5SaltChecksumsForDefaultTest() throws NegativeResponseException {
         addDescription("Test the pillar support for MD5 type checksums with a salt");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
-        addStep("Request salted MD5 checksums for all files on the pillar",
-            "A list (at least 2 long) of MD5 checksums should be returned.");
+        addStep("Request salted MD5 checksums for the default on the pillar",
+            "The correct of SHA1 checksum should be returned (Not checked yet).");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.HMAC_MD5);
         checksumSpec.setChecksumSalt(Base16Utils.encodeBase16("abab"));
-        List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(checksumSpec, null);
-        Assert.assertTrue(checksums.size() >= 2, "The length of the returned checksums were less that 2");
-
-        addStep("Retrieve the first two files and verify that the checksums are correct",
-            "Not implemented");
-        // ToDo implement this
+        List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
+                checksumSpec, null, DEFAULT_FILE_ID);
     }
     
     @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST} )
-    public void sha1SaltChecksumsForAllFilesTest() throws NegativeResponseException {
+    public void sha1SaltChecksumsForDefaultTest() throws NegativeResponseException {
         addDescription("Test the pillar support for SHA1 type checksums with a salt");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
-        addStep("Request salted SHA1 checksums for all files on the pillar",
-            "A list (at least 2 long) of SHA1 checksums should be returned.");
+        addStep("Request salted SHA1 checksums for the default on the pillar",
+            "The correct of SHA1 checksum should be returned (Not checked yet).");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.HMAC_SHA1);
         checksumSpec.setChecksumSalt(Base16Utils.encodeBase16("abab"));
-        List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(checksumSpec, null);
-        Assert.assertTrue(checksums.size() >= 2, "The length of the returned checksums were less that 2");
-
-        addStep("Retrieve the first two files and verify that the checksums are correct",
-            "Not implemented");
-        // ToDo implement this
+        List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
+                checksumSpec, null, DEFAULT_FILE_ID);
     }
     
 }
