@@ -37,6 +37,7 @@ public class IntegrityIssueIterator {
         }
         
         if(conn != null) {
+            conn.setAutoCommit(true);
             conn.close();
         }
     }
@@ -52,6 +53,8 @@ public class IntegrityIssueIterator {
             String issue = null;
             if(issueResultSet == null) {
                 conn = ps.getConnection();
+                conn.setAutoCommit(false);
+                ps.setFetchSize(100);
                 long tStart = System.currentTimeMillis();
                 log.debug("Executing query to get issues resultset");
                 issueResultSet = ps.executeQuery();

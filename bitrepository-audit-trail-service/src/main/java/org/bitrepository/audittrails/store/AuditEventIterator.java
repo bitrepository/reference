@@ -46,6 +46,7 @@ public class AuditEventIterator {
         }
         
         if(conn != null) {
+            conn.setAutoCommit(true);
             conn.close();
         }
     }
@@ -61,6 +62,8 @@ public class AuditEventIterator {
             AuditTrailEvent event = null;
             if(auditResultSet == null) {
                 conn = ps.getConnection();
+                conn.setAutoCommit(false);
+                ps.setFetchSize(100);
                 long tStart = System.currentTimeMillis();
                 log.debug("Executing query to get AuditTrailEvents resultset");
                 auditResultSet = ps.executeQuery();
