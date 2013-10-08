@@ -1,17 +1,5 @@
 package org.bitrepository.audittrails.store;
 
-import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_ACTOR_NAME;
-import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_AUDIT_TRAIL;
-import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_CONTRIBUTOR_ID;
-import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_FILE_ID;
-import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_INFORMATION;
-import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_OPERATION;
-import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_OPERATION_DATE;
-import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_SEQUENCE_NUMBER;
-import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_OPERATION_ID;
-import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_FINGERPRINT;
-
-
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,6 +11,8 @@ import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.*;
 
 /**
  * Class to iterate over the set of AuditTrailEvents produced by a resultset.  
@@ -36,9 +26,7 @@ public class AuditEventIterator {
     private final PreparedStatement ps;
     
     /**
-     * Constructor
-     * @param auditResultSet The ResultSet of audit trails from the database
-     * @param dbConnector The database connection, for looking up foreign keys in the auditResultSet 
+     * @param ps The prepare statement to execute and iterate over.
      */
     public AuditEventIterator(PreparedStatement ps) {
         this.ps = ps;

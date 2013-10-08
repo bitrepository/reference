@@ -100,9 +100,8 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
     /** Caching of PillarKeys (mapping from ID to Key) */
     private final Map<String, Long> pillarKeyCache;
     
-    /** 
-     * Constructor.
-     * @param dbConnector The connector to the database, where the cache is stored.
+    /**
+     * @param databaseManager Supplies the connector to the database, where the cache is stored.
      * @param collections The collections object from the settings, to define the set of pillars and collections
      */
     public IntegrityDAO(DatabaseManager databaseManager, Collections collections) {

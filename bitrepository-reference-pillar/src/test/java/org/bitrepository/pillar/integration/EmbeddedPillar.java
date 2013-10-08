@@ -22,14 +22,17 @@ package org.bitrepository.pillar.integration;
  */
 
 
+import java.util.Arrays;
+
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.Pillar;
 import org.bitrepository.pillar.cache.ChecksumDAO;
 import org.bitrepository.pillar.cache.ChecksumDatabaseManager;
 import org.bitrepository.pillar.checksumpillar.ChecksumPillar;
 import org.bitrepository.pillar.referencepillar.ReferencePillar;
-import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.service.LifeCycledService;
 
@@ -62,6 +65,9 @@ public class EmbeddedPillar implements LifeCycledService {
     private static MessageBus initialize(Settings pillarSettings) {
         ReferencePillarDerbyDBTestUtils dbUtils = new ReferencePillarDerbyDBTestUtils(pillarSettings);
         dbUtils.createEmptyDatabases();
-        return ProtocolComponentFactory.getInstance().getMessageBus(pillarSettings, new DummySecurityManager());
+        ActiveMQMessageBus messageBus = new ActiveMQMessageBus(pillarSettings.getMessageBusConfiguration(), new DummySecurityManager());
+        messageBus.setComponentFilter(Arrays.asList(new String[]{pillarSettings.getComponentID()}));
+        MessageBusManager.injectCustomMessageBus(pillarSettings.getComponentID(), messageBus);
+        return messageBus;
     }
 }

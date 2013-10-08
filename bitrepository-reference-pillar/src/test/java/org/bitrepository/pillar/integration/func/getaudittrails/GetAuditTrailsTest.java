@@ -21,6 +21,8 @@
  */
 package org.bitrepository.pillar.integration.func.getaudittrails;
 
+import java.util.List;
+
 import access.getaudittrails.AuditTrailQuery;
 import access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
@@ -30,7 +32,8 @@ import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.testng.annotations.Test;
 
-import java.util.List;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 public class GetAuditTrailsTest extends PillarFunctionTest {
     @Override
@@ -42,16 +45,17 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
     @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
     public void eventSortingTest() throws NegativeResponseException{
         addDescription("Test whether the checksum result is sorted oldest to newest.");
-        addFixtureSetup("Ensure at least two files are present on the pillar");
+        addFixtureSetup("Ensure at least two files are present on the pillar.");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
-        addStep("Retrieve a list of all audit trails.",
+        addStep("Retrieve a list of all audit trails. The list should be at least 2 elements long",
             "Run through the list and verify each element sequence number is lower than the following elements.");
-
         List<AuditTrailEvent> auditTrailEvents = getAuditTrails(null, null, false);
+        assertTrue(auditTrailEvents.size() >= 2,
+                "Only " + auditTrailEvents.size() + " audit events returned, need at least 2");
         
         for (int counter = 0 ; counter < auditTrailEvents.size() - 1 ; counter ++) {
-            Assert.assertTrue(auditTrailEvents.get(counter).getSequenceNumber().compareTo(
+            assertTrue(auditTrailEvents.get(counter).getSequenceNumber().compareTo(
                     auditTrailEvents.get(counter + 1).getSequenceNumber()) < 0,
                     "Event (" + counter + ") " + auditTrailEvents.get(counter) + " has higher sequence number" +
                             " than following event(" + counter + ") " + auditTrailEvents.get(counter + 1));
@@ -67,14 +71,16 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         addStep("Retrieve a list of all audittrails by setting maxSequece to null.",
                 "At 2 audit trails should be returned");
         List<AuditTrailEvent> originalAuditTrailEventList = getAuditTrails(null, null, false);
+        assertTrue(originalAuditTrailEventList.size() >= 2,
+                "Only " + originalAuditTrailEventList.size() + " audit events returned, need at least 2");
         
         addStep("Repeat the audit trail request, this time with maxNumberOfResult set to one",
                 "A result with a single audit event should be returned. The event should be the first " +
                         "audit event in the full list.");
         AuditTrailQuery singleEventQuery = new AuditTrailQuery(getPillarID(), null, null, 1);
         List<AuditTrailEvent> singleEventList = getAuditTrails(singleEventQuery, null, false);
-        Assert.assertEquals(singleEventList.size(), 1, "The result didn't contain a single event");
-        Assert.assertEquals(singleEventList.get(0), originalAuditTrailEventList.get(0),
+        assertEquals(singleEventList.size(), 1, "The result didn't contain a single event");
+        assertEquals(singleEventList.get(0), originalAuditTrailEventList.get(0),
                 "The returned event wasn't equal to the first event");
     }
     
@@ -89,7 +95,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         addStep("Request audit trails for all files on the pillar",
                 "A list with at least 2 events is returned.");
         List<AuditTrailEvent> originalAuditTrailEventList = getAuditTrails(null, null, true);
-        Assert.assertTrue(originalAuditTrailEventList.size() > 1,
+        assertTrue(originalAuditTrailEventList.size() > 1,
                 "The size of the returned list is only " + originalAuditTrailEventList.size() + ", " +
                         "should be at least 2");
         
@@ -99,7 +105,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         AuditTrailQuery firstSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
                 new Integer(smallestSequenceNumber), null, null);
         List<AuditTrailEvent> limitedEventList = getAuditTrails(firstSequenceNumberQuery, null, true);
-        Assert.assertEquals(limitedEventList, originalAuditTrailEventList,
+        assertEquals(limitedEventList, originalAuditTrailEventList,
                 "Different list return when MinSequenceNumber set to first event");
         
         addStep("Request audit trail with MinSequenceNumber set to the SequenceNumber of the last event",
@@ -109,9 +115,9 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         AuditTrailQuery lastSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
                 new Integer(largestSequenceNumber), null, null);
         limitedEventList = getAuditTrails(lastSequenceNumberQuery, null, true);
-        Assert.assertEquals(limitedEventList.size(), 1, "Received list with size of " + limitedEventList.size() +
+        assertEquals(limitedEventList.size(), 1, "Received list with size of " + limitedEventList.size() +
                 " when requesting audit trail with MinSequenceNumber set to latest event");
-        Assert.assertTrue(limitedEventList.get(0).equals(originalAuditTrailEventList.get(originalAuditTrailEventList.size()-1)),
+        assertTrue(limitedEventList.get(0).equals(originalAuditTrailEventList.get(originalAuditTrailEventList.size() - 1)),
                 "The single event in audit trail result for MinSequenceNumber set to latest are different." +
                         limitedEventList);
         
@@ -133,7 +139,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         addStep("Request audit trails for all files on the pillar",
                 "A list with at least 2 events is returned.");
         List<AuditTrailEvent> originalAuditTrailEventList = getAuditTrails(null, null, false);
-        Assert.assertTrue(originalAuditTrailEventList.size() > 1,
+        assertTrue(originalAuditTrailEventList.size() > 1,
                 "The size of the returned list is only " + originalAuditTrailEventList.size() + ", " +
                         "should be at least 2");
 
@@ -144,7 +150,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         AuditTrailQuery lastSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
                 null, new Integer(largestSequenceNumber), null);
         List<AuditTrailEvent> limitedEventList = getAuditTrails(lastSequenceNumberQuery, null, false);
-        Assert.assertEquals(limitedEventList, originalAuditTrailEventList,
+        assertEquals(limitedEventList, originalAuditTrailEventList,
                 "Different list return when MaxSequenceNumber set to last event");
 
         addStep("Request audit trail with MaxSequenceNumber set to the SequenceNumber of the first event",
@@ -153,9 +159,9 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         AuditTrailQuery firstSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
                 null, new Integer(smallestSequenceNumber), null);
         limitedEventList = getAuditTrails(firstSequenceNumberQuery, null, false);
-        Assert.assertEquals(limitedEventList.size(), 1, "Received list with size of " + limitedEventList.size() + " " +
+        assertEquals(limitedEventList.size(), 1, "Received list with size of " + limitedEventList.size() + " " +
                 "when requesting audit trail with MaxSequenceNumber set to first event (expected 1 event)");
-        Assert.assertEquals(limitedEventList.get(0),
+        assertEquals(limitedEventList.get(0),
                 originalAuditTrailEventList.get(0),
                 "Different events in the set of first events.");
     }

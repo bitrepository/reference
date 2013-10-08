@@ -116,7 +116,7 @@
             <configuration>
               <suiteXmlFiles>
                 <suiteXmlFile>src/test/resources/testprops/full-pillar-test.xml</suiteXmlFile>
-                <suiteXmlFile>src/test/resources/testprops/checksum-pillar-test.xml</suiteXmlFile>
+                <!--suiteXmlFile>src/test/resources/testprops/checksum-pillar-test.xml</suiteXmlFile-->
               </suiteXmlFiles>
               <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -139,6 +139,13 @@
               </execution>
             </executions>
           </plugin>
+          <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <!-- skips surefire tests without skipping failsafe tests. -->
+            <skipTests>true</skipTests>
+          </configuration>
+        </plugin>
         </plugins>
       </build>
     </profile>
