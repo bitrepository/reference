@@ -48,6 +48,7 @@ public class AuditEventIterator {
         if(conn != null) {
             conn.setAutoCommit(true);
             conn.close();
+            conn = null;
         }
     }
     
