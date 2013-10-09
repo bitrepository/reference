@@ -172,11 +172,10 @@ public class GetFileOnReferencePillarTest extends ReferencePillarTest {
                 DEFAULT_UPLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, getPillarID(), clientDestinationId);
         identifyRequest.setCollectionID(collectionID + "ERROR");
         messageBus.sendMessage(identifyRequest);
-        
-        // TODO fix this!
-//      addStep("Validate that the pillar has sent an Alarm.", 
-//              "Only one alarm should have been sent.");
-//      Assert.assertEquals(alarmDispatcher.getCallsForSendAlarm(), 1);
+
+        addStep("Validate that the pillar has sent an Alarm.",
+              "Only one alarm should have been sent.");
+        alarmReceiver.waitForMessage(AlarmMessage.class);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
