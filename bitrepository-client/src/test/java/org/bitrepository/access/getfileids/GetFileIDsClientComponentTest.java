@@ -349,7 +349,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
     @Test(groups={"regressiontest"})
     public void getFileIDsFromOtherCollection() throws Exception {
         addDescription("Tests the getFileIDs client will correctly try to get from a second collection if required");
-        addFixtureSetup("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");
+        addFixture("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");
         settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);

@@ -24,6 +24,12 @@
  */
 package org.bitrepository.protocol;
 
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
+import javax.jms.JMSException;
+
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
 import org.bitrepository.common.settings.Settings;
@@ -41,27 +47,21 @@ import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
-import org.jaccept.gui.ComponentTestFrame;
 import org.jaccept.structure.ExtendedTestCase;
-import org.jaccept.testreport.ReportGenerator;
 import org.slf4j.LoggerFactory;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
-import org.testng.annotations.*;
-
-import javax.jms.JMSException;
-import javax.swing.*;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Arrays;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
 
 /**
  * Contains the generic parts for integration testing.
  */
 public abstract class IntegrationTest extends ExtendedTestCase {
     protected static TestEventManager testEventManager = TestEventManager.getInstance();
-    private static ReportGenerator reportGenerator;
     public static LocalActiveMQBroker broker;
     public static EmbeddedHttpServer server;
     public static HttpServerConnector httpServer;
@@ -100,7 +100,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         securityManager = createSecurityManager();
         setupMessageBus();
         setupHttpServer();
-        startReportGenerator();
         DEFAULT_FILE_ID = "DefaultFile";
         try {
             DEFAULT_FILE_URL = httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID);
@@ -207,24 +206,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
                 settings.getAlarmDestination() + getTopicPostfix());
     }
 
-    // Experimental, use at own risk.
-    @BeforeTest (alwaysRun = true)
-    public void startTestGUI() {
-        if (System.getProperty("enableTestGUI", "false").equals("true") ) {
-            JFrame hmi = new ComponentTestFrame();
-            hmi.pack();
-            hmi.setVisible(true);
-        }
-    }
-    // Experimental, use at own risk.
-    @BeforeSuite (alwaysRun = true)
-    public void startReportGenerator() {
-        if (System.getProperty("enableTestReport", "false").equals("true") ) {
-            reportGenerator = new ReportGenerator();
-            reportGenerator.projectStarted("Bitrepository test");
-            //ToBeFinished
-        }
-    }
     @BeforeTest (alwaysRun = true)
     public void writeLogStatus() {
         if (System.getProperty("enableLogStatus", "false").equals("true")) {
@@ -315,10 +296,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     protected String getComponentID() {
         return getClass().getSimpleName();
-    }
-
-    protected void addFixtureSetup(String setupDescription) {
-        addStep(setupDescription, "");
     }
 
     protected String createDate() {

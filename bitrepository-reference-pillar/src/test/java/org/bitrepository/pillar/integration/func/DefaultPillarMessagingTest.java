@@ -52,7 +52,7 @@ public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
     @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
     public void otherCollectionTest() {
         addDescription("Verifies identification works correctly for a second collection defined for pillar");
-        addStep("Sending a identify request with a non-default collectionID (not the first collection) where " +
+        addStep("Sending a identify request with a non-default collectionID (not the first collection) " +
                 "the pillar is part of",
                 "The pillar under test should make a positive response");
         MessageRequest request = createRequest();

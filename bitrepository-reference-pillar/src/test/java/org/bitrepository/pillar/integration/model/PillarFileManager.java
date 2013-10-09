@@ -95,8 +95,6 @@ public class PillarFileManager {
 
         if (desiredNumberOfFiles >= knownNumberOfFilesOnPillar) {
             int numberOfFilesToAdd = desiredNumberOfFiles - knownNumberOfFilesOnPillar;
-            addFixtureSetup("Putting " + numberOfFilesToAdd + " files to the pillar to ensuring at least " +
-                "" + desiredNumberOfFiles + " files are present on the pillar " + pillarID);
 
             addFilesToPillar(collectionID, numberOfFilesToAdd, newFileIDPrefix);
         }
@@ -150,9 +148,5 @@ public class PillarFileManager {
         } catch (Exception e) {
             throw new RuntimeException("Failed to fileIDs from pillar " + pillarID, e);
         }
-    }
-
-    private void addFixtureSetup(String setupDescription) {
-        testEventManager.addStep(setupDescription, "");
     }
 }

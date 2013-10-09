@@ -39,6 +39,12 @@
  */
 package org.bitrepository.access.getchecksums;
 
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedList;
+
 import access.AccessComponentFactory;
 import access.ContributorQuery;
 import access.getchecksums.ConversationBasedGetChecksumsClient;
@@ -62,12 +68,6 @@ import org.bitrepository.protocol.bus.MessageReceiver;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedList;
 
 import static org.testng.Assert.assertEquals;
 
@@ -322,7 +322,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
     @Test(groups={"regressiontest"})
     public void getChecksumsFromOtherCollection() throws Exception {
         addDescription("Tests the getChecksums client will correctly try to get from a second collection if required");
-        addFixtureSetup("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");
+        addFixture("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");
         settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);

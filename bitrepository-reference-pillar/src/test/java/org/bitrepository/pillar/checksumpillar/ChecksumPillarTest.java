@@ -66,7 +66,7 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
      */
     protected void createChecksumPillar() {
         shutdownMediator();
-        addFixtureSetup("Initialize a new checksumPillar.");
+        addFixture("Initialize a new checksumPillar.");
         context = new MessageHandlerContext(settingsForCUT,
                 SettingsHelper.getPillarCollections(settingsForCUT.getComponentID(), settingsForCUT.getCollections()),
                 new ResponseDispatcher(settingsForCUT, messageBus),
@@ -104,7 +104,7 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
     }
     
     protected void initializeCacheWithMD5ChecksummedFile() {
-        addFixtureSetup("Initialize the cache with the default file with default checksum");
+        addFixture("Initialize the cache with the default file with default checksum");
         cache.insertChecksumCalculation(DEFAULT_FILE_ID, collectionID, DEFAULT_MD5_CHECKSUM, new Date());
     }
 }

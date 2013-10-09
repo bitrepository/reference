@@ -45,7 +45,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
     @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
     public void eventSortingTest() throws NegativeResponseException{
         addDescription("Test whether the checksum result is sorted oldest to newest.");
-        addFixtureSetup("Ensure at least two files are present on the pillar.");
+        addFixture("Ensure at least two files are present on the pillar.");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
         addStep("Retrieve a list of all audit trails. The list should be at least 2 elements long",
@@ -65,7 +65,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
     @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
     public void maxNumberOfResultTest() {
         addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter.");
-        addFixtureSetup("Ensure at least two files are present on the pillar");
+        addFixture("Ensure at least two files are present on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
         
         addStep("Retrieve a list of all audittrails by setting maxSequece to null.",

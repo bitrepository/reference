@@ -21,6 +21,9 @@ package org.bitrepository.client;
  * #L%
  */
 
+import java.math.BigInteger;
+import java.util.concurrent.TimeUnit;
+
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
@@ -29,9 +32,6 @@ import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.math.BigInteger;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Tests the general client functionality. A number of abstract methods with needs to be implemented with concrete
@@ -127,7 +127,7 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
     public void oneContributorNotRespondingTest() throws Exception {
         addDescription("Verify that the client works correct without receiving identification responses from all " +
                 "contributors.");
-        addFixtureSetup("Set the a identification timeout to 3 second.");
+        addFixture("Set the a identification timeout to 3 second.");
         settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
 
         addStep("Start the operation.",

@@ -119,7 +119,7 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     }
 
     private void initializeArchiveWithEmptyFile() throws IOException {
-        addFixtureSetup("Initialize the Reference pillar cache with an empty file in default collection " +
+        addFixture("Initialize the Reference pillar cache with an empty file in default collection " +
                 collectionID);
         archives.downloadFileForValidation(DEFAULT_FILE_ID, collectionID, new ByteArrayInputStream(new byte[0]));
         archives.moveToArchive(DEFAULT_FILE_ID, collectionID);

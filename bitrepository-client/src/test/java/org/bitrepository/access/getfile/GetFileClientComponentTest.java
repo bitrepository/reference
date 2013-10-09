@@ -24,6 +24,10 @@
  */
 package org.bitrepository.access.getfile;
 
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
+
 import access.AccessComponentFactory;
 import access.getfile.ConversationBasedGetFileClient;
 import access.getfile.GetFileClient;
@@ -42,10 +46,6 @@ import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.concurrent.TimeUnit;
 
 import static org.testng.Assert.assertEquals;
 
@@ -268,7 +268,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
     @Test(groups = {"regressiontest"})
     public void getFileClientWithIdentifyTimeout() throws Exception {
         addDescription("Verify that the GetFile works correct without receiving responses from all pillars.");
-        addFixtureSetup("Set the a identification timeout to 3 seconds ");
+        addFixture("Set the identification timeout to 3 seconds ");
         settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
 
 
@@ -589,7 +589,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
     @Test(groups={"regressiontest"})
     public void getFileFromOtherCollection() throws Exception {
         addDescription("Tests the getFiles client will correctly try to get from a second collection if required");
-        addFixtureSetup("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");
+        addFixture("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");
         settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);

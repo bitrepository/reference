@@ -72,7 +72,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     @Test(groups={"regressiontest"})
     public void normalPutFile() throws Exception {
         addDescription("Tests the PutClient. Makes a whole conversation for the put client for a 'good' scenario.");
-        addFixtureSetup("Initialise the number of pillars to one");
+        addFixture("Initialise the number of pillars to one");
 
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
@@ -141,7 +141,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     @Test(groups={"regressiontest"})
     public void noPillarsResponding() throws Exception {
         addDescription("Tests the handling of missing identification responses from all pillar");
-        addFixtureSetup("Sets the identification timeout to 1 sec.");
+        addFixture("Sets the identification timeout to 1 sec.");
 
         settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(1000L));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
@@ -168,7 +168,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                 "BITMAG-598 It should be possible to putFiles, even though only a subset of the pillars are available</a>");
         addDescription("Tests the handling of missing identification responses from one pillar, " +
                 "when partial put are allowed");
-        addFixtureSetup("Sets the identification timeout to 3 sec and allow partial puts.");
+        addFixture("Sets the identification timeout to 3 sec and allow partial puts.");
 
         settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000L));
         settingsForCUT.getReferenceSettings().getPutFileSettings().setPartialPutsAllow(true);
@@ -214,7 +214,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     public void onePillarRespondingWithPartialPutDisallowed() throws Exception {
         addDescription("Tests the handling of missing identification responses from one pillar, " +
                 "when partial put are allowed");
-        addFixtureSetup("Sets the identification timeout to 3 sec and disallow partial puts.");
+        addFixture("Sets the identification timeout to 3 sec and disallow partial puts.");
 
         settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000L));
         settingsForCUT.getReferenceSettings().getPutFileSettings().setPartialPutsAllow(false);
@@ -652,7 +652,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addReference("<a href=https://sbforge.org/jira/browse/BITMAG-810>" +
                 "BITMAG-810 Reference client should be able to retry failed file transfers</a>");
         addDescription("Tests the handling of a failed transmission when retry is allowed");
-        addFixtureSetup("Sets the identification timeout to 3 sec, allow two retries and only register one pillar.");
+        addFixture("Sets the identification timeout to 3 sec, allow two retries and only register one pillar.");
 
         settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
@@ -705,7 +705,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                 "BITMAG-810 Reference client should be able to retry failed file transfers</a>");
         addDescription("Tests that a putfile attempt failing due to FILE_TRANSFER_FAILURE " +
         		"is only attempted the maximum allowed attempts");
-        addFixtureSetup("Sets the identification timeout to 3 sec, allow two retries and only register one pillar.");
+        addFixture("Sets the identification timeout to 3 sec, allow two retries and only register one pillar.");
 
         settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
@@ -767,9 +767,9 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addReference("<a href=https://sbforge.org/jira/browse/BITMAG-925>" +
                 "BITMAG-925 Client will always try to put to the pillars defined in the first collection</a>");
         addDescription("Tests the putFIle client will correctly try to put to a second collection if required");
-        addFixtureSetup("Sets the identification timeout to 3 sec, allow two retries and only register one pillar.");
+        addFixture("Sets the identification timeout to 3 sec, allow two retries and only register one pillar.");
 
-        addFixtureSetup("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");
+        addFixture("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");
         settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);

@@ -39,7 +39,7 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
     @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
     public void fileidsSortingTest() {
         addDescription("Test whether the file id result is sorted oldest to newest.");
-        addFixtureSetup("Ensure at least two files are present on the pillar");
+        addFixture("Ensure at least two files are present on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
         addStep("Retrieve a list of all file ids.", "Run through the list and verify each element is older or the " +
@@ -60,7 +60,7 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
     @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
     public void maxNumberOfResultTest() {
         addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter.");
-        addFixtureSetup("Ensure at least two files are present on the pillar");
+        addFixture("Ensure at least two files are present on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
         addStep("Retrieve a list of all file ids by setting maxNumberOfResult to null.", "At least 2 file ids " +
