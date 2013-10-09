@@ -25,4 +25,5 @@ package org.bitrepository.pillar;
 public class PillarTestGroups {
     public static final String CHECKSUM_PILLAR_TEST = "checksumPillarTest";
     public static final String FULL_PILLAR_TEST = "fullPillarTest";
+    public static final String OPERATION_ACCEPTED_PROGRESS = "operationAcceptedProgress";
 }

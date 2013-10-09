@@ -46,7 +46,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
     public void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for putFile identification");
         addStep("Sending a putFile identification request.",
-            "The pillar under test should make a response with the following elements. <ol>" +
+            "The pillar under test should make a response with the following elements: <ol>" +
                     "<li>'CollectionID' element corresponding to the supplied value</li>" +
                     "<li>'CorrelationID' element corresponding to the supplied value</li>" +
                     "<li>'From' element corresponding to the pillars component ID</li>" +

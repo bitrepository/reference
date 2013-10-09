@@ -442,6 +442,20 @@
         </plugins>
       </build>
     </profile>
+      <profile>
+        <id>skip-unit-tests</id>
+        <build>
+          <plugins>
+            <plugin>
+              <artifactId>maven-surefire-plugin</artifactId>
+              <configuration>
+                <!-- skips surefire tests without skipping failsafe tests. -->
+                <skipTests>true</skipTests>
+              </configuration>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
   </profiles>
 
   <properties>
