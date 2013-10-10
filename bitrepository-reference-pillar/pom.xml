@@ -104,23 +104,33 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <suiteXmlFiles>
-            <suiteXmlFile>src/test/resources/testprops/full-pillar-test.xml</suiteXmlFile>
-            <suiteXmlFile>src/test/resources/testprops/checksum-pillar-test.xml</suiteXmlFile>
-          </suiteXmlFiles>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <!-- This will fail on Jenkins, blovking after the integration tests have been run??-->
+      <id>integration-test</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <suiteXmlFiles>
+                <suiteXmlFile>src/test/resources/testprops/full-pillar-test.xml</suiteXmlFile>
+                <suiteXmlFile>src/test/resources/testprops/checksum-pillar-test.xml</suiteXmlFile>
+              </suiteXmlFiles>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
