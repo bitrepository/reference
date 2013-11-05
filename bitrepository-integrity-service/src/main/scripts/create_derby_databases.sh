@@ -25,7 +25,7 @@
 CONFDIR="../../src/test/conf"
 FINAL_DIR="../.."
 CLASSPATH="-classpath ./:WEB-INF/lib/*:WEB-INF/classes"
-INTEGRITY_DB_SCRIPT="sql/derby/IntegrityDBCreation.sql";
+INTEGRITY_DB_SCRIPT="sql/derby/integrityDBCreation.sql";
 AUDIT_CONTRIBUTOR_DB_SCRIPT="sql/derby/auditContributorDBCreation.sql";
 JAVA="/usr/bin/java"
 
