@@ -22,8 +22,9 @@ package org.bitrepository.pillar.integration;
  */
 
 import java.util.Collection;
-import access.AccessComponentFactory;
-import access.getfileids.GetFileIDsClient;
+
+import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.deletefile.DeleteFileClient;

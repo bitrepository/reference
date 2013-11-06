@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import access.ContributorQuery;
-import access.getfileids.GetFileIDsClient;
+import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.commandline.eventhandler.GetFileIDsEventHandler;
 import org.bitrepository.commandline.output.OutputHandler;

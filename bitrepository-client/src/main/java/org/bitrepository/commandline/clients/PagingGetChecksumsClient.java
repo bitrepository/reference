@@ -21,8 +21,8 @@
  */
 package org.bitrepository.commandline.clients;
 
-import access.ContributorQuery;
-import access.getchecksums.GetChecksumsClient;
+import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.commandline.eventhandler.GetChecksumsEventHandler;

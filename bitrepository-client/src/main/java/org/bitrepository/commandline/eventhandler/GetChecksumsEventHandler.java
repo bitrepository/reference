@@ -21,7 +21,7 @@
  */
 package org.bitrepository.commandline.eventhandler;
 
-import access.getchecksums.conversation.ChecksumsCompletePillarEvent;
+import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.resultmodel.GetChecksumsResultModel;

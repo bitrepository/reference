@@ -26,8 +26,9 @@ package org.bitrepository.access.getchecksums;
 
 import java.net.URL;
 import java.util.Arrays;
-import access.ContributorQuery;
-import access.getchecksums.GetChecksumsClient;
+
+import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.jaccept.TestEventManager;

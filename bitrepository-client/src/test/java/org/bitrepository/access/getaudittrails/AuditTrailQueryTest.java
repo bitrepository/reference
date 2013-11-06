@@ -21,9 +21,9 @@
  */
 package org.bitrepository.access.getaudittrails;
 
-import access.getaudittrails.AuditTrailQuery;
 import junit.framework.Assert;
 
+import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
 

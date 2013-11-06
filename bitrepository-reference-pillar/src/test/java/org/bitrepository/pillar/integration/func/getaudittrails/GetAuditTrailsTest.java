@@ -23,8 +23,8 @@ package org.bitrepository.pillar.integration.func.getaudittrails;
 
 import java.util.List;
 
-import access.getaudittrails.AuditTrailQuery;
-import access.getaudittrails.client.AuditTrailResult;
+import org.bitrepository.access.getaudittrails.AuditTrailQuery;
+import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.pillar.PillarTestGroups;

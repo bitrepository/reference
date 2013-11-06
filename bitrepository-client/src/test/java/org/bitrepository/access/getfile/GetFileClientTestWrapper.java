@@ -26,7 +26,7 @@ package org.bitrepository.access.getfile;
 
 import java.net.URL;
 
-import access.getfile.GetFileClient;
+import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.jaccept.TestEventManager;

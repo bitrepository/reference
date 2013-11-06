@@ -28,9 +28,9 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
-import access.AccessComponentFactory;
-import access.getfile.ConversationBasedGetFileClient;
-import access.getfile.GetFileClient;
+import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getfile.ConversationBasedGetFileClient;
+import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;

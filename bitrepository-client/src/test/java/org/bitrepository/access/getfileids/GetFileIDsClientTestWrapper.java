@@ -26,8 +26,9 @@ package org.bitrepository.access.getfileids;
 
 import java.net.URL;
 import java.util.Arrays;
-import access.ContributorQuery;
-import access.getfileids.GetFileIDsClient;
+
+import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.jaccept.TestEventManager;
 

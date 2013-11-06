@@ -26,10 +26,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import access.getaudittrails.AuditTrailClient;
-import access.getaudittrails.AuditTrailQuery;
-import access.getaudittrails.BlockingAuditTrailClient;
-import access.getaudittrails.client.AuditTrailResult;
+
+import org.bitrepository.access.getaudittrails.AuditTrailClient;
+import org.bitrepository.access.getaudittrails.AuditTrailQuery;
+import org.bitrepository.access.getaudittrails.BlockingAuditTrailClient;
+import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.client.eventhandler.EventHandler;

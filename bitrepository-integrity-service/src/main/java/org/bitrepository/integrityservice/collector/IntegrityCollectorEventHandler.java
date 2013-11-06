@@ -27,8 +27,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import access.getchecksums.conversation.ChecksumsCompletePillarEvent;
-import access.getfileids.conversation.FileIDsCompletePillarEvent;
+import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
+import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;

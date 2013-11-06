@@ -21,10 +21,10 @@
  */
 package org.bitrepository.integrityservice.collector;
 
-import access.ContributorQuery;
-import access.ContributorQueryUtils;
-import access.getchecksums.GetChecksumsClient;
-import access.getfileids.GetFileIDsClient;
+import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.access.ContributorQueryUtils;
+import org.bitrepository.access.getchecksums.GetChecksumsClient;
+import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.eventhandler.EventHandler;

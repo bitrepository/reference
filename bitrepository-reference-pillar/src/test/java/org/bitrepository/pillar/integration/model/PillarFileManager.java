@@ -23,9 +23,10 @@
 package org.bitrepository.pillar.integration.model;
 
 import java.util.List;
-import access.ContributorQuery;
-import access.getchecksums.conversation.ChecksumsCompletePillarEvent;
-import access.getfileids.conversation.FileIDsCompletePillarEvent;
+
+import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
+import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;

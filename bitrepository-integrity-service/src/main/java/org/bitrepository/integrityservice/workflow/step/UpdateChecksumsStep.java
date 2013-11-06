@@ -24,7 +24,8 @@ package org.bitrepository.integrityservice.workflow.step;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import access.ContributorQuery;
+
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.settings.Settings;

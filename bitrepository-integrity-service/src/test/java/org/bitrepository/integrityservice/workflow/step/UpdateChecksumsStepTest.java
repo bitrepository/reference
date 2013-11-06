@@ -34,8 +34,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import access.ContributorQuery;
-import access.getchecksums.conversation.ChecksumsCompletePillarEvent;
+import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;

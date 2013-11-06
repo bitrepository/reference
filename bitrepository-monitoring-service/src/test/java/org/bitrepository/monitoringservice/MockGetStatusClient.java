@@ -21,7 +21,7 @@
  */
 package org.bitrepository.monitoringservice;
 
-import access.getstatus.GetStatusClient;
+import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 
 public class MockGetStatusClient implements GetStatusClient {

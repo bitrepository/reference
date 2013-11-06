@@ -30,8 +30,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
-import access.AccessComponentFactory;
-import access.getaudittrails.AuditTrailClient;
+import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
 import org.bitrepository.audittrails.preserver.AuditTrailPreserver;
 import org.bitrepository.audittrails.preserver.LocalAuditTrailPreserver;

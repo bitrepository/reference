@@ -22,8 +22,8 @@
 package org.bitrepository.commandline;
 
 import org.apache.commons.cli.Option;
-import access.AccessComponentFactory;
-import access.getchecksums.GetChecksumsClient;
+import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.commandline.clients.PagingGetChecksumsClient;
 import org.bitrepository.commandline.outputformatter.GetChecksumDistributionFormatter;

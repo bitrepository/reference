@@ -23,11 +23,12 @@ package org.bitrepository.access.getaudittrails;
 
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
-import access.AccessComponentFactory;
-import access.getaudittrails.AuditTrailClient;
-import access.getaudittrails.AuditTrailQuery;
-import access.getaudittrails.ConversationBasedAuditTrailClient;
-import access.getaudittrails.client.AuditTrailResult;
+
+import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getaudittrails.AuditTrailClient;
+import org.bitrepository.access.getaudittrails.AuditTrailQuery;
+import org.bitrepository.access.getaudittrails.ConversationBasedAuditTrailClient;
+import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;

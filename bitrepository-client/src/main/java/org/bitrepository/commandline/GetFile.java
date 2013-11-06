@@ -22,8 +22,8 @@
 package org.bitrepository.commandline;
 
 import org.apache.commons.cli.Option;
-import access.AccessComponentFactory;
-import access.getfile.GetFileClient;
+import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;

@@ -26,7 +26,7 @@ package org.bitrepository.integrityservice.collector;
 
 import java.util.Collection;
 
-import access.ContributorQuery;
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
 

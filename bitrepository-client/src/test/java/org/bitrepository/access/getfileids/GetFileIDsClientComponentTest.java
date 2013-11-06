@@ -24,11 +24,11 @@
  */
 package org.bitrepository.access.getfileids;
 
-import access.AccessComponentFactory;
-import access.ContributorQuery;
-import access.getfileids.ConversationBasedGetFileIDsClient;
-import access.getfileids.GetFileIDsClient;
-import access.getfileids.conversation.FileIDsCompletePillarEvent;
+import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.access.getfileids.ConversationBasedGetFileIDsClient;
+import org.bitrepository.access.getfileids.GetFileIDsClient;
+import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;

@@ -24,7 +24,7 @@ package org.bitrepository.monitoringservice.collector;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import access.getstatus.GetStatusClient;
+import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.monitoringservice.alarm.MonitorAlerter;

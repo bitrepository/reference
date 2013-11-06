@@ -21,9 +21,9 @@ package org.bitrepository.pillar.integration.perf;
  * #L%
  */
 
-import access.AccessComponentFactory;
-import access.getfile.BlockingGetFileClient;
-import access.getfile.GetFileClient;
+import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getfile.BlockingGetFileClient;
+import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;

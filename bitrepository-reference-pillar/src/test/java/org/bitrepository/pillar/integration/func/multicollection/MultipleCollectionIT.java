@@ -24,7 +24,7 @@ package org.bitrepository.pillar.integration.func.multicollection;
 import java.util.Arrays;
 import java.util.Collection;
 
-import access.ContributorQuery;
+import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;

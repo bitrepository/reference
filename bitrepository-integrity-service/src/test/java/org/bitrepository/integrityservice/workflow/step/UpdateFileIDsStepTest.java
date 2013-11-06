@@ -21,8 +21,8 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import access.ContributorQuery;
-import access.getfileids.conversation.FileIDsCompletePillarEvent;
+import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;

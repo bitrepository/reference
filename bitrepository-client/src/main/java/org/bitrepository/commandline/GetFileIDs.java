@@ -21,8 +21,8 @@
  */
 package org.bitrepository.commandline;
 
-import access.AccessComponentFactory;
-import access.getfileids.GetFileIDsClient;
+import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.commandline.clients.PagingGetFileIDsClient;
 import org.bitrepository.commandline.outputformatter.GetFileIDsInfoFormatter;
 import org.bitrepository.commandline.outputformatter.GetFileIDsOutputFormatter;

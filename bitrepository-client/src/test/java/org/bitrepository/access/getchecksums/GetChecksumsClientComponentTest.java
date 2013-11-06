@@ -45,10 +45,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 
-import access.AccessComponentFactory;
-import access.ContributorQuery;
-import access.getchecksums.ConversationBasedGetChecksumsClient;
-import access.getchecksums.GetChecksumsClient;
+import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.access.getchecksums.ConversationBasedGetChecksumsClient;
+import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;

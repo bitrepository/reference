@@ -24,7 +24,7 @@
  */
 package org.bitrepository.integrityservice;
 
-import access.AccessComponentFactory;
+import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.common.utils.SettingsUtils;
