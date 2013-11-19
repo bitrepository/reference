@@ -659,8 +659,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
      * 4. Select the respective file ids for the remaining file keys.
      *   Though only for those, where the creation date for the file is older than the given argument.
      * This is all combined into one single SQL statement for optimisation.
-     * 
-     * @param maxCreationDate The maximum date for the validation
+     *
      * @param collectionId The ID of the collection to find inconsistent checksums in
      * @return The list of file ids for the files with inconsistent checksums.
      */

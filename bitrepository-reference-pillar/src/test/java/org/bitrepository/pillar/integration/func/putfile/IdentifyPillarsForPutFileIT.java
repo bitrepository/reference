@@ -63,16 +63,25 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
 
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForPutFileResponse.class);
-        Assert.assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID());
-        Assert.assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID());
-        Assert.assertEquals(receivedIdentifyResponse.getFrom(), getPillarID());
-        Assert.assertEquals(receivedIdentifyResponse.getTo(), identifyRequest.getFrom());
-        Assert.assertNull(receivedIdentifyResponse.getChecksumDataForExistingFile());
-        Assert.assertNull(receivedIdentifyResponse.getPillarChecksumSpec());
-        Assert.assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
+        Assert.assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID(),
+                "Received unexpected CollectionID");
+        Assert.assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID(),
+                "Received unexpected CorrelationID");
+        Assert.assertEquals(receivedIdentifyResponse.getFrom(), getPillarID(),
+                "Received unexpected PillarID");
+        Assert.assertEquals(receivedIdentifyResponse.getTo(), identifyRequest.getFrom(),
+                "Received unexpected 'To'elements");
+        Assert.assertNull(receivedIdentifyResponse.getChecksumDataForExistingFile(),
+                "Received unexpected ChecksumDataForExistingFile");
+        Assert.assertNull(receivedIdentifyResponse.getPillarChecksumSpec(),
+                "Received unexpected PillarChecksumSpec");
+        Assert.assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID() +"!",
+                "Unexpected 'From' element in the received response:\n" + receivedIdentifyResponse + "\n");
         Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.IDENTIFICATION_POSITIVE);
-        Assert.assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
+                ResponseCode.IDENTIFICATION_POSITIVE,
+                "Received unexpected ResponseCode");
+        Assert.assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo(),
+                "Received unexpected ReplyTo");
     }
 
     @Test( groups = {PillarTestGroups.CHECKSUM_PILLAR_TEST})

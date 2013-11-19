@@ -25,11 +25,12 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.pillar.PillarTestGroups;
-import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
 
 public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
     protected GetFileMessageFactory msgFactory;
@@ -52,14 +53,14 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
-        Assert.assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID());
-        Assert.assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID());
-        Assert.assertEquals(receivedIdentifyResponse.getFrom(), getPillarID());
-        Assert.assertEquals(receivedIdentifyResponse.getFileID(), DEFAULT_FILE_ID);
-        Assert.assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
-        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+        assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID());
+        assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID());
+        assertEquals(receivedIdentifyResponse.getFrom(), getPillarID());
+        assertEquals(receivedIdentifyResponse.getFileID(), DEFAULT_FILE_ID);
+        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
+        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.IDENTIFICATION_POSITIVE);
-        Assert.assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
+        assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
     }
 
     @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST})
@@ -77,7 +78,7 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
-        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.FILE_NOT_FOUND_FAILURE);
     }
 }
