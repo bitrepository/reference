@@ -165,7 +165,7 @@
     <dependency>
       <groupId>org.jaccept</groupId>
       <artifactId>jaccept-core</artifactId>
-      <version>0.4-SNAPSHOT</version>
+      <version>0.4</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
