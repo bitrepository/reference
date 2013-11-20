@@ -111,13 +111,13 @@ fi
 
 rm -r $refpillardistdir
 
-commandlinetarfile=$(ls bitrepository-clint*.tar.gz)
+commandlinetarfile=$(ls bitrepository-client*.tar.gz)
 if [ ! -z $commandlinetarfile ]; then
         tar xf $commandlinetarfile > /dev/null
         rm $commandlinetarfile
 fi
 
-commandlinedistdir=$(ls -t | grep bitrepository-clint* | head -1)
+commandlinedistdir=$(ls -t | grep bitrepository-client* | head -1)
 if [ ! -d "commandline" ]; then
     mv $commandlinedistdir "commandline"
     cd commandline
