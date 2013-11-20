@@ -39,6 +39,7 @@ public class IntegrityIssueIterator {
         if(conn != null) {
             conn.setAutoCommit(true);
             conn.close();
+            conn = null;
         }
     }
     
