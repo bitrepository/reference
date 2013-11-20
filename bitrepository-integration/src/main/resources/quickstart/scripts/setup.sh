@@ -111,7 +111,7 @@ fi
 
 rm -r $refpillardistdir
 
-commandlinetarfile=$(ls bitrepository-clint*.tar.gz)
+commandlinetarfile=$(ls bitrepository-client*.tar.gz)
 if [ ! -z $commandlinetarfile ]; then
         tar xf $commandlinetarfile > /dev/null
         rm $commandlinetarfile
