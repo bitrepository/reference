@@ -108,8 +108,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         long preservationInterval = preservationSettings.getAuditTrailPreservationInterval();
         long timerCheckInterval = preservationInterval/10;
         log.info("Instantiating the preservation of audit trails every " +
-                TimeUtils.millisecondsToHuman(preservationInterval) + ", starting in " +
-                TimeUtils.millisecondsToHuman(timerCheckInterval));
+                TimeUtils.millisecondsToHuman(preservationInterval));
         timer = new Timer();
         auditTask = new AuditPreservationTimerTask(preservationInterval);
         timer.scheduleAtFixedRate(auditTask, timerCheckInterval, timerCheckInterval);
