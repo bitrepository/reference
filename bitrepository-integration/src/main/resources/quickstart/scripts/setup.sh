@@ -117,7 +117,7 @@ if [ ! -z $commandlinetarfile ]; then
         rm $commandlinetarfile
 fi
 
-commandlinedistdir=$(ls -t | grep bitrepository-clint* | head -1)
+commandlinedistdir=$(ls -t | grep bitrepository-client* | head -1)
 if [ ! -d "commandline" ]; then
     mv $commandlinedistdir "commandline"
     cd commandline
