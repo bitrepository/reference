@@ -108,7 +108,7 @@
   </build>
   <profiles>
     <profile>
-      <!-- This will fail on Jenkins, blovking after the integration tests have been run??-->
+      <!-- This will fail on Jenkins, blocking after the integration tests have been run??-->
       <id>integration-test</id>
       <build>
         <plugins>

@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.sbforge</groupId>
     <artifactId>sbforge-parent</artifactId>
-    <version>15</version>
+    <version>16-SNAPSHOT</version>
   </parent>
 
   <name>Bitrepository</name>
@@ -174,7 +174,7 @@
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
-          <artifactId>license-maven-plugin</artifactId>
+        <artifactId>license-maven-plugin</artifactId>
         <configuration>
           <generateBundle>true</generateBundle>
           <failIfWarning>true</failIfWarning>
@@ -218,7 +218,7 @@
             </manifestEntries>
           </archive>
           <excludes>
-              <exclude>**/logback*.xml</exclude>
+            <exclude>**/logback*.xml</exclude>
           </excludes>
         </configuration>
         <executions>
@@ -299,8 +299,8 @@
           <version>2.6</version>
         </plugin>
         <plugin>
-            <artifactId>maven-remote-resources-plugin</artifactId>
-          <version>1.4</version>
+          <artifactId>maven-remote-resources-plugin</artifactId>
+          <version>1.5</version>
         </plugin>
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
@@ -326,7 +326,12 @@
         <plugin>
           <groupId>org.apache.tomcat.maven</groupId>
           <artifactId>tomcat7-maven-plugin</artifactId>
-          <version>2.1</version>
+          <version>2.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>1.2.1</version>
         </plugin>
 
       </plugins>
@@ -340,63 +345,9 @@
   <reporting>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.6</version>
         <configuration>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.9.1</version>
-        <!--configuration> <configLocation> https://sbforge.org/sonar/profiles/export?format=checkstyle&amp;language=java&amp;name=SBForge%2520way 
-          </configLocation> </configuration -->
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-report-plugin</artifactId>
-        <version>2.13</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.3</version>
-        <configuration>
-          <aggregate>true</aggregate>
-          <linkJavadoc>true</linkJavadoc>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.8</version>
-        <configuration>
-          <aggregate>true</aggregate>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <version>2.7.1</version>
-        <configuration>
-          <aggregate>true</aggregate>
-          <linkXRef>true</linkXRef>
-          <targetJdk>1.6</targetJdk>
-          <!--rulesets> <ruleset> https://sbforge.org/sonar/profiles/export?format=pmd&amp;language=java&amp;name=SBForge%2520way 
-            </ruleset> </rulesets -->
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.5.2</version>
-        <configuration>
-          <aggregate>true</aggregate>
-          <xmlOutput>true</xmlOutput>
-          <effort>Max</effort>
-          <!--includeFilterFile> https://sbforge.org/sonar/profiles/export?format=findbugs&amp;language=java&amp;name=SBForge%2520way 
-            </includeFilterFile -->
+          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
         </configuration>
       </plugin>
     </plugins>
@@ -408,7 +359,6 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
             <executions>
               <execution>
@@ -420,7 +370,6 @@
             </executions>
           </plugin>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <executions>
               <execution>
@@ -434,20 +383,20 @@
         </plugins>
       </build>
     </profile>
-      <profile>
-        <id>skip-unit-tests</id>
-        <build>
-          <plugins>
-            <plugin>
-              <artifactId>maven-surefire-plugin</artifactId>
-              <configuration>
-                <!-- skips surefire tests without skipping failsafe tests. -->
-                <skipTests>true</skipTests>
-              </configuration>
-            </plugin>
-          </plugins>
-        </build>
-      </profile>
+    <profile>
+      <id>skip-unit-tests</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <!-- skips surefire tests without skipping failsafe tests. -->
+              <skipTests>true</skipTests>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
   <properties>
