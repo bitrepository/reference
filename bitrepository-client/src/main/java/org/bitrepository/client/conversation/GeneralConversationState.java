@@ -104,7 +104,6 @@ public abstract class GeneralConversationState implements ConversationState {
             if(processMessage(response)) {
                 responseStatus.responseReceived(response);
                 if (responseStatus.haveAllComponentsResponded()) {
-                    timer.cancel();
                     changeState();
                 }
             }
@@ -139,6 +138,7 @@ public abstract class GeneralConversationState implements ConversationState {
      */
     private void changeState() {
         try {
+            timer.cancel();
             GeneralConversationState nextState = completeState();
             getContext().setState(nextState);
             nextState.start();
