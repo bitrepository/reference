@@ -47,7 +47,7 @@ public abstract class GeneralConversationState implements ConversationState {
     /** Defines that the timer is a daemon thread. */
     private static final Boolean TIMER_IS_DAEMON = true;
     /** The timer used for timeout checks. */
-    private final Timer timer;
+    protected final Timer timer;
     /** For response bookkeeping */
     private final ContributorResponseStatus responseStatus;
 

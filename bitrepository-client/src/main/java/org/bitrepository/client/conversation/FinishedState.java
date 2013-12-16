@@ -46,7 +46,8 @@ public class FinishedState extends GeneralConversationState {
 
     @Override
     public void start(){
-        // Nothing to do.
+        // Stop the timer, so we won't leak threads.
+        timer.cancel();
     }
 
     @Override
