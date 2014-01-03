@@ -54,6 +54,11 @@ public class MessageBusWrapper implements MessageBus {
     }
 
     @Override
+    public void addListener(String destinationId, MessageListener listener, boolean durable) {
+        messageBus.addListener(destinationId, listener, durable);
+    }
+
+    @Override
     public void removeListener(String destinationId, MessageListener listener) {
         messageBus.removeListener(destinationId, listener);
     }

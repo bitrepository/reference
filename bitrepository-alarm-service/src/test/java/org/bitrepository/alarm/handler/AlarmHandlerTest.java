@@ -84,5 +84,4 @@ public class AlarmHandlerTest extends IntegrationTest {
     protected String getComponentID() {
         return "AlarmHandlerUnderTest";
     }
-
 }
