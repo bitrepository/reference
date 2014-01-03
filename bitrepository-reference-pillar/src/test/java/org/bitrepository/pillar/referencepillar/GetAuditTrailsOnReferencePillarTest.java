@@ -53,7 +53,8 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
                 + "where all audit trails are requested.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String auditTrail = "";
-        audits.addAuditEvent(collectionID, "fileid", "actor", "info", "auditTrail", FileAction.OTHER);
+        audits.addAuditEvent(collectionID, "fileid", "actor", "info", "auditTrail", FileAction.OTHER,
+                "operationID", "certificateID");
 
         addStep("Send the identification request", "Should be caught and handled by the pillar.");
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest = msgFactory.createIdentifyContributorsForGetAuditTrailsRequest(
@@ -97,8 +98,12 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
         String ACTOR = "ACTOR";
         String INFO = "InFo";
         String AUDITTRAIL = "auditTrails";
-        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.OTHER);
-        audits.addAuditEvent(collectionID, "notThisFile", "UnknownActor", "badInfo", "WrongAuditTrail", FileAction.FAILURE);
+        final String OPERATIONID = "operationID";
+        final String CERTIFICATEID = "certificateid";
+        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.OTHER,
+                OPERATIONID, CERTIFICATEID);
+        audits.addAuditEvent(collectionID, "notThisFile", "UnknownActor", "badInfo", "WrongAuditTrail", FileAction.FAILURE,
+                OPERATIONID, CERTIFICATEID);
         XMLGregorianCalendar minDate = CalendarUtils.getFromMillis(System.currentTimeMillis() - 10000);
         XMLGregorianCalendar maxDate = CalendarUtils.getFromMillis(System.currentTimeMillis() + 10000);
 
@@ -167,19 +172,33 @@ public class GetAuditTrailsOnReferencePillarTest extends ReferencePillarTest {
         String ACTOR = "ACTOR";
         String INFO = "InFo";
         String AUDITTRAIL = "auditTrails";
+        final String OPERATIONID = "operationID";
+        final String CERTIFICATEID = "certificateid";
         long maxNumberOfResults = 5L;
-        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.CHECKSUM_CALCULATED);
-        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.DELETE_FILE);
-        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.FAILURE);
-        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.FILE_MOVED);
-        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.GET_CHECKSUMS);
-        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.GET_FILE);
-        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.GET_FILEID);
-        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.INCONSISTENCY);
-        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.INTEGRITY_CHECK);
-        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.OTHER);
-        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.PUT_FILE);
-        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.REPLACE_FILE);
+        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.CHECKSUM_CALCULATED,
+                OPERATIONID, CERTIFICATEID);
+        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.DELETE_FILE,
+                OPERATIONID, CERTIFICATEID);
+        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.FAILURE,
+                OPERATIONID, CERTIFICATEID);
+        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.FILE_MOVED,
+                OPERATIONID, CERTIFICATEID);
+        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.GET_CHECKSUMS,
+                OPERATIONID, CERTIFICATEID);
+        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.GET_FILE,
+                OPERATIONID, CERTIFICATEID);
+        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.GET_FILEID,
+                OPERATIONID, CERTIFICATEID);
+        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.INCONSISTENCY,
+                OPERATIONID, CERTIFICATEID);
+        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.INTEGRITY_CHECK,
+                OPERATIONID, CERTIFICATEID);
+        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.OTHER,
+                OPERATIONID, CERTIFICATEID);
+        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.PUT_FILE,
+                OPERATIONID, CERTIFICATEID);
+        audits.addAuditEvent(collectionID, FILE_ID, ACTOR, INFO, AUDITTRAIL, FileAction.REPLACE_FILE,
+                OPERATIONID, CERTIFICATEID);
 
         addStep("Send the request for the limited amount of audit trails to the pillar.", 
                 "The pillar handles the request and responds.");

@@ -34,6 +34,7 @@ import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
@@ -63,7 +64,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
     }
 
     @Override
-    public void processRequest(IdentifyPillarsForGetFileIDsRequest message) throws RequestHandlerException {
+    public void processRequest(IdentifyPillarsForGetFileIDsRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateCollectionID(message);
         checkThatAllRequestedFilesAreAvailable(message);
         respondSuccesfullIdentification(message);

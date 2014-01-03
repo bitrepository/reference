@@ -153,7 +153,7 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
                     + "checksum for the file.";
         }
         auditManager.addAuditEvent(reporter.getCollectionID(), fileId, "IntegrityService", 
-                auditText, "IntegrityService validating the checksums.", FileAction.INCONSISTENCY);
+                auditText, "IntegrityService validating the checksums.", FileAction.INCONSISTENCY, null, null);
     }
     
     /**

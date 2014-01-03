@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.bus.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
@@ -306,7 +307,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         }
 
         @Override
-        public void onMessage(Message message) {
+        public void onMessage(Message message, MessageContext messageContext) {
             count++;
             int receivedId = Integer.parseInt(message.getCorrelationID());
             handleMessageDistribution(receivedId);

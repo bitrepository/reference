@@ -37,6 +37,7 @@ import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.pillar.integration.perf.metrics.ConsoleMetricAppender;
 import org.bitrepository.pillar.integration.perf.metrics.MetricAppender;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.messagebus.MessageListener;
@@ -166,7 +167,7 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
         }
 
         @Override
-        public void onMessage(Message message) {
+        public void onMessage(Message message, MessageContext messageContext) {
             if (message instanceof MessageResponse) {
                 MessageResponse response = (MessageResponse)message;
                 if (response.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_COMPLETED)) {

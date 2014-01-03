@@ -31,6 +31,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.MessageHandlerContext;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 
@@ -53,7 +54,7 @@ public class IdentifyPillarsForGetFileRequestHandler extends ChecksumPillarMessa
     }
 
     @Override
-    public void processRequest(IdentifyPillarsForGetFileRequest message) throws RequestHandlerException {
+    public void processRequest(IdentifyPillarsForGetFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         ResponseInfo ri = new ResponseInfo();
         ri.setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);
         ri.setResponseText("The ChecksumPillar '" 

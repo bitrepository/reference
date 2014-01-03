@@ -28,6 +28,7 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.protocol.*;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.contributor.AbstractContributorMediator;
 import org.bitrepository.service.contributor.ContributorContext;
@@ -57,10 +58,10 @@ public abstract class PillarMediator extends AbstractContributorMediator {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    protected void handleRequest(MessageRequest request, RequestHandler handler) {
+    protected void handleRequest(MessageRequest request, MessageContext messageContext, RequestHandler handler) {
         try {
             log.debug("Receiving request: " + request.getClass().getSimpleName());
-            handler.processRequest(request);
+            handler.processRequest(request, messageContext);
         } catch (IllegalArgumentException e) {
             getAlarmDispatcher().handleIllegalArgumentException(e);
             ResponseInfo responseInfo = new ResponseInfo();

@@ -23,6 +23,7 @@ package org.bitrepository.service.contributor;
 
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.utils.MessageUtils;
@@ -84,20 +85,21 @@ public abstract class AbstractContributorMediator implements ContributorMediator
      * Make the inheriting class create the environment for safely handling the request. 
      * E.g. creating the specific fault barrier.
      * @param request The request to handle.
+     * @param messageContext
      * @param handler The handler for the request.
      */
-    protected abstract void handleRequest(MessageRequest request, RequestHandler handler);
+    protected abstract void handleRequest(MessageRequest request, MessageContext messageContext, RequestHandler handler);
 
     /**
      * The message listener, which delegates the request-messages to the request handlers.
      */
     private class GeneralRequestHandler implements MessageListener {
         @Override
-        public void onMessage(Message message) {
+        public void onMessage(Message message, MessageContext messageContext) {
             if (message instanceof MessageRequest) {
                 RequestHandler handler = handlerMap.get(message.getClass().getSimpleName());
                 if (handler != null) {
-                    handleRequest((MessageRequest) message, handler);
+                    handleRequest((MessageRequest) message, messageContext, handler);
                 } else {
                     if (MessageUtils.isIdentifyRequest(message)) {
                         log.trace("Received unhandled identity request: \n{}", message);

@@ -25,10 +25,10 @@
 package org.bitrepository.protocol.messagebus;
 
 import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.protocol.MessageContext;
 
 
-/** This interface defines a consumer of messages in the bitrepository
- * org.bitrepository.org.bitrepository.protocol.
+/** Defines a consumer of messages.
  *
  * If an implementation does not support a method, it may throw {@link UnsupportedOperationException}
  */
@@ -37,6 +37,7 @@ public interface MessageListener {
      * Action to perform upon receiving a general message.
      *
      * @param message The message received.
+     * @param messageContext Includes information about the message not already included in the message object.
      */
-    void onMessage(Message message);
+    void onMessage(Message message, MessageContext messageContext);
 }

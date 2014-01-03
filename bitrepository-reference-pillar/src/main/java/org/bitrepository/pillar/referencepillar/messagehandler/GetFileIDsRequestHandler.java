@@ -51,8 +51,7 @@ import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
@@ -82,7 +81,7 @@ public class GetFileIDsRequestHandler extends ReferencePillarMessageHandler<GetF
     }
 
     @Override
-    public void processRequest(GetFileIDsRequest message) throws RequestHandlerException {
+    public void processRequest(GetFileIDsRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateMessage(message);
         sendInitialProgressMessage(message);
         ExtractedFileIDsResultSet extractedFileIDs = retrieveFileIDsData(message);

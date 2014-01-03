@@ -28,6 +28,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusR
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.ResponseInfoUtils;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.contributor.ContributorContext;
 
 /**
@@ -50,7 +51,7 @@ public class IdentifyContributorsForGetStatusRequestHandler
     }
 
     @Override
-    public void processRequest(IdentifyContributorsForGetStatusRequest request) {
+    public void processRequest(IdentifyContributorsForGetStatusRequest request, MessageContext messageContext) {
         IdentifyContributorsForGetStatusResponse response = new IdentifyContributorsForGetStatusResponse();
         response.setContributor(getContext().getSettings().getComponentID());
         response.setResponseInfo(ResponseInfoUtils.getPositiveIdentification());

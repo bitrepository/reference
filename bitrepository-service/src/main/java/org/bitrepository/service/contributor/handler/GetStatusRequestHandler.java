@@ -31,7 +31,7 @@ import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ResponseInfoUtils;
-import org.bitrepository.protocol.MessageVersionValidator;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.contributor.ContributorContext;
 
 /**
@@ -52,7 +52,7 @@ public class GetStatusRequestHandler extends AbstractRequestHandler<GetStatusReq
     }
 
     @Override
-    public void processRequest(GetStatusRequest request) {
+    public void processRequest(GetStatusRequest request, MessageContext messageContext) {
         validateMessage(request);
         responseProgress(request);
         sendFinalSuccess(request);

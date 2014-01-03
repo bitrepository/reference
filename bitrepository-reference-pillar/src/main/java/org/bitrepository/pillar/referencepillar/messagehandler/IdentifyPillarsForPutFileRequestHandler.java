@@ -36,6 +36,7 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
@@ -65,7 +66,7 @@ public class IdentifyPillarsForPutFileRequestHandler
     }
     
     @Override
-    public void processRequest(IdentifyPillarsForPutFileRequest message) throws RequestHandlerException {
+    public void processRequest(IdentifyPillarsForPutFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateCollectionID(message);
         validateFileID(message.getFileID());
         if(checkThatTheFileDoesNotAlreadyExist(message)) {

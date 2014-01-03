@@ -30,6 +30,7 @@ import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.MessageVersionValidator;
 import org.bitrepository.protocol.OperationType;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -423,7 +424,8 @@ public class ActiveMQMessageBus implements MessageBus {
                 }
                 MessageVersionValidator.validateMessageVersion(content);
                 MessageLoggerProvider.getInstance().logMessageReceived(content);
-                threadMessageHandling(content);
+                MessageContext messageContext = new MessageContext(signature);
+                threadMessageHandling(content, messageContext);
             } catch (SAXException e) {
                 log.error("Error validating message " + jmsMessage, e);
             } catch (Exception e) {
@@ -435,8 +437,8 @@ public class ActiveMQMessageBus implements MessageBus {
          * Making the handling of the message be performed in parallel.
          * @param message The message to be handled by the MessageListener.
          */
-        private void threadMessageHandling(Message message) {
-            MessageListenerThread mlt = new MessageListenerThread(messageListener, message);
+        private void threadMessageHandling(Message message, MessageContext messageContext) {
+            MessageListenerThread mlt = new MessageListenerThread(messageListener, message, messageContext);
             executor.execute(mlt);
             log.trace("Adding a new message handling thread. Currently number of running threads: " + threadQueue.size());
         }
@@ -449,20 +451,22 @@ public class ActiveMQMessageBus implements MessageBus {
         /** The message listener.*/
         private final MessageListener listener;
         /** The message for the listener to handle.*/
-        private Message message;
+        private final Message message;
+        private final MessageContext messageContext;
         
         /**
          * @param listener The MessageListener to handle the message.
          * @param message The message to be handled by the MessageListener.
          */
-        MessageListenerThread(MessageListener listener, Message message) {
+        MessageListenerThread(MessageListener listener, Message message, MessageContext messageContext) {
             this.listener = listener;
             this.message = message;
+            this.messageContext = messageContext;
         }
         
         @Override
         public void run() {
-            listener.onMessage(message);
+            listener.onMessage(message, messageContext);
         }
     }
 

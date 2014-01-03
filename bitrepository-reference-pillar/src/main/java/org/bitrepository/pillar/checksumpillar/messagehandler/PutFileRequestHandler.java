@@ -38,8 +38,7 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -73,10 +72,10 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
     }
 
     @Override
-    public void processRequest(PutFileRequest message) throws RequestHandlerException {
+    public void processRequest(PutFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateMessage(message);
         tellAboutProgress(message);
-        retrieveChecksum(message);
+        retrieveChecksum(message, messageContext);
         sendFinalResponse(message);
     }
 
@@ -137,7 +136,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
      * @param message The PutFileRequest message.
      * @throws RequestHandlerException If the checksum cannot be retrieved.
      */
-    private void retrieveChecksum(PutFileRequest message) throws RequestHandlerException {
+    private void retrieveChecksum(PutFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         String calculatedChecksum;
         switch(getChecksumPillarFileDownload()) {
             case ALWAYS_DOWNLOAD:
@@ -157,7 +156,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         
         getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
                 "Putting the checksum of the file into archive.", message.getAuditTrailInformation(), 
-                FileAction.PUT_FILE);
+                FileAction.PUT_FILE, message.getCorrelationID(), messageContext.getCertificateSignature());
         getCache().insertChecksumCalculation(message.getFileID(), message.getCollectionID(), calculatedChecksum, 
                 new Date());
     }

@@ -21,22 +21,6 @@
  */
 package org.bitrepository.service.audit;
 
-import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_GUID;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_NAME;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_TABLE;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_ACTOR_GUID;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_AUDIT;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_FILE_GUID;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_INFORMATION;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_OPERATION;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_OPERATION_DATE;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_SEQUENCE_NUMBER;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_TABLE;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_COLLECTIONID;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_FILEID;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_GUID;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
-
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -55,6 +39,8 @@ import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.bitrepository.service.audit.AuditDatabaseConstants.*;
 
 /**
  * Access interface for communication with the audit trail database.
@@ -97,7 +83,8 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     }
 
     @Override
-    public void addAuditEvent(String collectionId, String fileId, String actor, String info, String auditTrail, FileAction operation) {
+    public void addAuditEvent(String collectionId, String fileId, String actor, String info, String auditTrail,
+                              FileAction operation, String operationID, String fingerprint) {
         ArgumentValidator.checkNotNull(collectionId, "String collectionId");
         ArgumentValidator.checkNotNull(operation, "FileAction operation");
         log.trace("Inserting an audit event for file '" + fileId + "', from actor '" + actor
@@ -122,13 +109,20 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         if(info == null) {
             info = "";
         }
+        if(operationID == null) {
+            operationID = "";
+        }
+        if(fingerprint == null) {
+            fingerprint = "";
+        }
 
         synchronized(this) {
             String insertSql = "INSERT INTO " + AUDITTRAIL_TABLE + " ( " + AUDITTRAIL_FILE_GUID + " , "
                     + AUDITTRAIL_ACTOR_GUID + " , " + AUDITTRAIL_OPERATION + " , " + AUDITTRAIL_OPERATION_DATE + " , "
-                    + AUDITTRAIL_AUDIT + " , " + AUDITTRAIL_INFORMATION + " ) VALUES ( ? , ? , ? , ? , ? , ? )";
+                    + AUDITTRAIL_AUDIT + " , " + AUDITTRAIL_INFORMATION + " , " + AUDITTRAIL_OPERATIONID + " , " +
+                    AUDITTRAIL_FINGERPRINT + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ?)";
             DatabaseUtils.executeStatement(dbConnector, insertSql, fileGuid, actorGuid, operation.toString(),
-                    new Date(), auditTrail, info);
+                    new Date(), auditTrail, info, operationID, fingerprint);
         }
     }
 
@@ -192,10 +186,13 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         final int operationPosition = 5;
         final int auditTrailInformationPosition = 6;
         final int infoPosition = 7;
+        final int operationIDPosition = 8;
+        final int fingerprintPosition = 9;
         
         String sql = "SELECT " + AUDITTRAIL_SEQUENCE_NUMBER + ", " + AUDITTRAIL_FILE_GUID + " , "
                 + AUDITTRAIL_ACTOR_GUID + " , " + AUDITTRAIL_OPERATION_DATE + " , " + AUDITTRAIL_OPERATION + " , "
-                + AUDITTRAIL_AUDIT + " , " + AUDITTRAIL_INFORMATION + " FROM " + AUDITTRAIL_TABLE + " "
+                + AUDITTRAIL_AUDIT + " , " + AUDITTRAIL_INFORMATION + " , " + AUDITTRAIL_OPERATIONID + " , "
+                + AUDITTRAIL_FINGERPRINT + " FROM " + AUDITTRAIL_TABLE + " "
                 + extractor.createRestriction();
 
         AuditTrailDatabaseResults res = new AuditTrailDatabaseResults();
@@ -221,6 +218,8 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                     event.setAuditTrailInformation(results.getString(auditTrailInformationPosition));
                     event.setInfo(results.getString(infoPosition));
                     event.setReportingComponent(componentID);
+                    event.setOperationID(results.getString(operationIDPosition));
+                    event.setCertificateID(results.getString(fingerprintPosition));
                     res.addAuditTrailEvent(event);
                 }
                 

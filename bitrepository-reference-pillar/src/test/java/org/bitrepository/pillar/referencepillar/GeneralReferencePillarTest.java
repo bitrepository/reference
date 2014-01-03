@@ -33,6 +33,7 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
 import org.bitrepository.pillar.referencepillar.messagehandler.ReferencePillarMessageHandler;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -85,7 +86,7 @@ public class GeneralReferencePillarTest extends ReferencePillarTest {
         }
 
         @Override
-        public void processRequest(MessageRequest request) throws RequestHandlerException {}
+        public void processRequest(MessageRequest request, MessageContext messageContext) throws RequestHandlerException {}
         
         @Override
         public MessageResponse generateFailedResponse(MessageRequest request) {

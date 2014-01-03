@@ -35,8 +35,7 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -79,13 +78,13 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     }
 
     @Override
-    public void processRequest(ReplaceFileRequest message) throws RequestHandlerException {
+    public void processRequest(ReplaceFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateMessage(message);
         sendProgressMessageDownloadNewFile(message);
         String newChecksum = retrieveChecksum(message);
         sendProgressMessageDeleteOldFile(message);
         ChecksumDataForFileTYPE requestedOldChecksum = calculateChecksumOnOldFile(message);
-        replaceTheEntry(message, newChecksum);
+        replaceTheEntry(message, messageContext, newChecksum);
         ChecksumDataForFileTYPE requestedNewChecksum = calculateChecksumOnNewFile(message);
         sendFinalResponse(message, requestedOldChecksum, requestedNewChecksum);
     }
@@ -266,9 +265,10 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
      * @param message The request for replacing the entry.
      * @param newChecksum The new checksum to replace the old one with.
      */
-    private void replaceTheEntry(ReplaceFileRequest message, String newChecksum) {
+    private void replaceTheEntry(ReplaceFileRequest message, MessageContext messageContext, String newChecksum) {
         getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                "Replacing the file.", message.getAuditTrailInformation(), FileAction.REPLACE_FILE); 
+                "Replacing the file.", message.getAuditTrailInformation(), FileAction.REPLACE_FILE,
+                message.getCorrelationID(), messageContext.getCertificateSignature());
         getCache().insertChecksumCalculation(message.getFileID(), message.getCollectionID(), newChecksum, new Date());
     }
 

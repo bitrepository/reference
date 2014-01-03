@@ -32,6 +32,7 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.MessageHandlerContext;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.RequestHandlerException;
 
@@ -54,12 +55,13 @@ public class GetFileRequestHandler extends ChecksumPillarMessageHandler<GetFileR
     }
 
     @Override
-    public void processRequest(GetFileRequest message) throws RequestHandlerException {
+    public void processRequest(GetFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateCollectionID(message);
         validatePillarId(message.getPillarID());
 
         getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                "Failed getting file.", message.getAuditTrailInformation(), FileAction.FAILURE);
+                "Failed getting file.", message.getAuditTrailInformation(), FileAction.FAILURE,
+                message.getCorrelationID(), messageContext.getCertificateSignature());
 
         ResponseInfo ri = new ResponseInfo();
         ri.setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);

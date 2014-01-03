@@ -26,6 +26,7 @@ package org.bitrepository.client.conversation;
 
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
+import org.bitrepository.protocol.MessageContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +52,7 @@ public class StateBasedConversation implements Conversation {
     }
 
     @Override
-    public synchronized void onMessage(Message message) {
+    public synchronized void onMessage(Message message, MessageContext messageContext) {
         context.getState().handleMessage(message);
     }
 

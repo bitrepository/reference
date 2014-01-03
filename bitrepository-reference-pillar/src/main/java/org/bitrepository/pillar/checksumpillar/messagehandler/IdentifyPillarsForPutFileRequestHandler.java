@@ -38,6 +38,7 @@ import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.MessageHandlerContext;
+import org.bitrepository.protocol.*;
 import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
@@ -65,7 +66,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends ChecksumPillarMessa
     }
 
     @Override
-    public void processRequest(IdentifyPillarsForPutFileRequest message) throws RequestHandlerException {
+    public void processRequest(IdentifyPillarsForPutFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateCollectionID(message);
         if (!Arrays.asList(context.getPillarCollections()).contains(message.getCollectionID())) {
             return; // Irrelevant collection.
