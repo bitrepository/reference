@@ -30,6 +30,7 @@ import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.MessageVersionValidator;
 import org.bitrepository.protocol.OperationType;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -81,6 +82,7 @@ public class ActiveMQMessageBus implements MessageBus {
 
     /** The session for receiving messages. */
     private final Session consumerSession;
+    private final String clientID;
 
     /**
      * Map of the consumers, mapping from a hash of "destinations and listener" to consumer.
@@ -118,15 +120,18 @@ public class ActiveMQMessageBus implements MessageBus {
      */
     public ActiveMQMessageBus(
             MessageBusConfiguration messageBusConfiguration,
-            SecurityManager securityManager) {
+            SecurityManager securityManager,
+            String componentID) {
         log.info("Initializing ActiveMQMessageBus:'" + messageBusConfiguration + "'.");
         this.configuration = messageBusConfiguration;
         this.securityManager = securityManager;
+        clientID = componentID;
         jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getURL());
         registerCustomMessageLoggers();
         try {
             connection = connectionFactory.createConnection();
+            connection.setClientID(componentID);
             connection.setExceptionListener(new MessageBusExceptionListener());
 
             producerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
@@ -161,40 +166,31 @@ public class ActiveMQMessageBus implements MessageBus {
             }
         });
         connectionStarter.start();
-
     }
 
     @Override
     public synchronized void addListener(String destinationID, final MessageListener listener) {
-        log.info("Adding listener '{}' to destination: '{}' on message-bus '{}'.",
-                new Object[] {listener, destinationID, configuration.getURL()});
-        MessageConsumer consumer = getMessageConsumer(destinationID, listener);
-        try {
-            consumer.setMessageListener(new ActiveMQMessageListener(listener));
-        } catch (JMSException e) {
-            throw new CoordinationLayerException(
-                    "Unable to add listener '" + listener + "' to destinationID '" + destinationID + "'", e);
-        }
+        addListener(destinationID, listener, false);
     }
 
-    /*
-    public synchronized void addDurableListener(String destinationID, final MessageListener listener) {
-        log.debug("Adding durable listener '{}' to destination: '{}' on message-bus '{}'.",
+    @Override
+    public synchronized void addListener(String destinationID, final MessageListener listener, boolean durable) {
+        log.debug("Adding " + (durable?"durable ":"") + "listener '{}' to destination: '{}' on message-bus '{}'.",
                 new Object[] {listener, destinationID, configuration.getName()});
-        MessageConsumer consumer = getDurableMessageConsumer(destinationID, listener);
+        MessageConsumer consumer = getMessageConsumer(destinationID, listener, durable);
         try {
             consumer.setMessageListener(new ActiveMQMessageListener(listener));
         } catch (JMSException e) {
             throw new CoordinationLayerException(
                     "Unable to add durable listener '" + listener + "' to destinationID '" + destinationID + "'", e);
         }
-    }       */
+    }
 
     @Override
     public synchronized void removeListener(String destinationID, MessageListener listener) {
         log.debug("Removing listener '" + listener + "' from destination: '" + destinationID + "' " +
                 "on message-bus '" + configuration + "'.");
-        MessageConsumer consumer = getMessageConsumer(destinationID, listener);
+        MessageConsumer consumer = getMessageConsumer(destinationID, listener, false);
         try {
             // We need to set the listener to null to have the removeListerer take effect at once. 
             // If this isn't done the listener will continue to receive messages. Do we have a memory leak here? 
@@ -275,9 +271,11 @@ public class ActiveMQMessageBus implements MessageBus {
      *
      * @param destinationID The id of the destination to consume messages from.
      * @param listener      The listener to consume the messages.
+     * @param durable       Indicates whether the lister should use a durable subscriber. Only allowed for topics and
+     *                      only relevant if the consumer needs to be created.
      * @return The instance for consuming the messages.
      */
-    private MessageConsumer getMessageConsumer(String destinationID, MessageListener listener) {
+    private MessageConsumer getMessageConsumer(String destinationID, MessageListener listener, boolean durable) {
         String key = getConsumerHash(destinationID, listener);
         log.debug("Retrieving message consumer on destination '" + destinationID + "' for listener '" + listener
                 + "'. Key: '" + key + "'.");
@@ -286,7 +284,17 @@ public class ActiveMQMessageBus implements MessageBus {
             Destination destination = getDestination(destinationID, consumerSession);
             MessageConsumer consumer;
             try {
-                consumer = consumerSession.createConsumer(destination);
+                if (durable) {
+                    if (destination instanceof Topic) {
+                        Topic topic = (Topic)destination;
+                        consumer = consumerSession.createDurableSubscriber(topic, clientID);
+                    } else {
+                        throw new IllegalArgumentException("Can not create durable subscriber on " + destinationID +
+                                " is is not a topic");
+                    }
+                } else {
+                    consumer = consumerSession.createConsumer(destination);
+                }
             } catch (JMSException e) {
                 throw new CoordinationLayerException("Could not create message consumer for destination '" + destination + '"', e);
             }
@@ -304,24 +312,6 @@ public class ActiveMQMessageBus implements MessageBus {
      */
     private String getConsumerHash(String destinationID, MessageListener listener) {
         return destinationID + CONSUMER_KEY_SEPARATOR + listener.hashCode();
-    }
-
-    /**
-     * Method for retrieving the message producer for a specific queue.
-     *
-     * @param destinationID The id for the destination.
-     * @return The message producer for this destination.
-     */
-    private MessageProducer addDestinationMessageProducer(String destinationID) {
-        Destination destination = getDestination(destinationID, producerSession);
-        MessageProducer producer;
-        try {
-            producer = producerSession.createProducer(destination);
-        } catch (JMSException e) {
-            throw new CoordinationLayerException(
-                    "Could not create message producer for destination '" + destinationID + "'", e);
-        }
-        return producer;
     }
 
     /**
@@ -434,7 +424,8 @@ public class ActiveMQMessageBus implements MessageBus {
                 }
                 MessageVersionValidator.validateMessageVersion(content);
                 MessageLoggerProvider.getInstance().logMessageReceived(content);
-                threadMessageHandling(content);
+                MessageContext messageContext = new MessageContext(signature);
+                threadMessageHandling(content, messageContext);
             } catch (SAXException e) {
                 log.error("Error validating message " + jmsMessage, e);
             } catch (Exception e) {
@@ -446,8 +437,8 @@ public class ActiveMQMessageBus implements MessageBus {
          * Making the handling of the message be performed in parallel.
          * @param message The message to be handled by the MessageListener.
          */
-        private void threadMessageHandling(Message message) {
-            MessageListenerThread mlt = new MessageListenerThread(messageListener, message);
+        private void threadMessageHandling(Message message, MessageContext messageContext) {
+            MessageListenerThread mlt = new MessageListenerThread(messageListener, message, messageContext);
             executor.execute(mlt);
             log.trace("Adding a new message handling thread. Currently number of running threads: " + threadQueue.size());
         }
@@ -460,20 +451,22 @@ public class ActiveMQMessageBus implements MessageBus {
         /** The message listener.*/
         private final MessageListener listener;
         /** The message for the listener to handle.*/
-        private Message message;
+        private final Message message;
+        private final MessageContext messageContext;
         
         /**
          * @param listener The MessageListener to handle the message.
          * @param message The message to be handled by the MessageListener.
          */
-        MessageListenerThread(MessageListener listener, Message message) {
+        MessageListenerThread(MessageListener listener, Message message, MessageContext messageContext) {
             this.listener = listener;
             this.message = message;
+            this.messageContext = messageContext;
         }
         
         @Override
         public void run() {
-            listener.onMessage(message);
+            listener.onMessage(message, messageContext);
         }
     }
 

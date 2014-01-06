@@ -66,12 +66,10 @@ public class ReferenceChecksumManager {
     private final Settings settings;
 
     /**
-     * Constructor.
-     * @param archive The archive with the data.
+     * @param archives The archive with the data.
      * @param cache The storage for the checksums.
      * @param alarmDispatcher The alarm dispatcher.
-     * @param defaultChecksumSpec The default specifications for the checksums.
-     * @param maxAgeForChecksum The maximum age for the checksums.
+     * @param settings The configuration to use.
      */
     public ReferenceChecksumManager(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, 
             Settings settings) {
@@ -207,7 +205,7 @@ public class ReferenceChecksumManager {
      * @param maxNumberOfResults The maximum number of results.
      * @param collectionId The id of the collection.
      * @param spec The checksum specification.
-     * @return If default checksum, then the checksum entries from the store. Otherwise recalculate all the requested
+     * @return If default checksum, then the checksum entries from the store. Otherwise calculate all the requested
      * checksums.
      */
     public ExtractedChecksumResultSet getEntries(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
@@ -227,7 +225,7 @@ public class ReferenceChecksumManager {
 
                 String checksum = getChecksumForFile(fileId, collectionId, spec);
                 ChecksumEntry entry = new ChecksumEntry(fileId, checksum, new Date());
-                res.insertChecksumEntry(entry);    			
+                res.insertChecksumEntry(entry);
             }
 
             return res;
@@ -317,7 +315,7 @@ public class ReferenceChecksumManager {
     }
 
     /**
-     * Ensures that the cache has an non-deprecated checksum for the given file.
+     * Ensures that the cache has an non-obsolete checksum for the given file.
      * Also validates, that the checksum is up to date with the file.
      * @param fileId The id of the file.
      * @param collectionId The id of the collection of the file.
@@ -335,7 +333,7 @@ public class ReferenceChecksumManager {
                 log.info("The checksum for the file '" + fileId + "' is too old. Recalculating.");                
                 recalculateChecksum(fileId, collectionId);
             } else if(checksumDate < archives.getFileInfo(fileId, collectionId).getMdate()) {
-                log.info("The last modified date for the file is newer than the latest checksum.");                
+                log.info("The last modified date for the file is newer than the latest checksum.");
                 recalculateChecksum(fileId, collectionId);
             }
         }

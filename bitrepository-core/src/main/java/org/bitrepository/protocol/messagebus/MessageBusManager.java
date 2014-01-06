@@ -60,7 +60,7 @@ public final class MessageBusManager {
         if (!messageBusMap.containsKey(DEFAULT_MESSAGE_BUS)) {
             MessageBus messageBus = createMessageBus(
                     settings.getMessageBusConfiguration(),
-                    securityManager);
+                    securityManager, settings.getComponentID());
             messageBusMap.put(DEFAULT_MESSAGE_BUS, messageBus);
             messageBus.setComponentFilter(Arrays.asList(new String[] {settings.getComponentID()}));
         }
@@ -77,8 +77,9 @@ public final class MessageBusManager {
 
     private static MessageBus createMessageBus(
             MessageBusConfiguration settings,
-            SecurityManager securityManager) {
-        ActiveMQMessageBus messageBus = new ActiveMQMessageBus(settings, securityManager);
+            SecurityManager securityManager,
+            String componentID) {
+        ActiveMQMessageBus messageBus = new ActiveMQMessageBus(settings, securityManager, componentID);
         return messageBus;
     }
 

@@ -29,6 +29,8 @@ import org.bitrepository.protocol.IntegrationTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static org.testng.AssertJUnit.assertEquals;
+
 public class AlarmHandlerTest extends IntegrationTest {
     @Test(groups = {"regressiontest"})
     public void alarmMediatorTest() throws Exception {
@@ -42,13 +44,13 @@ public class AlarmHandlerTest extends IntegrationTest {
         
         addStep("Try giving it a non-alarm message", "Should not call the alarm handler.");
         Message msg = new Message();
-        mediator.onMessage(msg);
-        Assert.assertEquals(alarmHandler.getCallsForClose(), 0);
+        mediator.onMessage(msg, null);
+        assertEquals(alarmHandler.getCallsForClose(), 0);
         Assert.assertEquals(alarmHandler.getCallsForHandleAlarm(), 0);
         
         addStep("Giv the mediator an AlarmMessage", "Should be sent to the alarm handler");
         AlarmMessage alarmMsg = new AlarmMessage();
-        mediator.onMessage(alarmMsg);
+        mediator.onMessage(alarmMsg, null);
         Assert.assertEquals(alarmHandler.getCallsForClose(), 0);
         Assert.assertEquals(alarmHandler.getCallsForHandleAlarm(), 1);
         
@@ -84,5 +86,4 @@ public class AlarmHandlerTest extends IntegrationTest {
     protected String getComponentID() {
         return "AlarmHandlerUnderTest";
     }
-
 }

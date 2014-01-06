@@ -26,6 +26,7 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.*;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.audit.AuditTrailManager;
@@ -94,9 +95,9 @@ public class SimpleContributorMediator extends AbstractContributorMediator {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    protected void handleRequest(MessageRequest request, RequestHandler handler) {
+    protected void handleRequest(MessageRequest request, MessageContext messageContext, RequestHandler handler) {
         try {
-            handler.processRequest(request);
+            handler.processRequest(request, messageContext);
         } catch (RequestHandlerException e) {
             log.info("Invalid Message exception caught. Sending failed response.", e);
             MessageResponse response = handler.generateFailedResponse(request);

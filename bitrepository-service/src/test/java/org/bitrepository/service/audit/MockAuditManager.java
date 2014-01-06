@@ -36,7 +36,8 @@ public class MockAuditManager implements AuditTrailManager {
     
     private int callsForAuditEvent = 0;
     @Override
-    public void addAuditEvent(String collectionId, String fileId, String actor, String info, String auditTrail, FileAction operation) {
+    public void addAuditEvent(String collectionId, String fileId, String actor, String info, String auditTrail,
+                              FileAction operation, String operationID, String certificateID) {
         callsForAuditEvent++;
         AuditTrailEvent audit = new AuditTrailEvent();
         audit.setActionDateTime(CalendarUtils.getNow());
@@ -46,7 +47,9 @@ public class MockAuditManager implements AuditTrailManager {
         audit.setFileID(fileId);
         audit.setInfo(info);
         audit.setReportingComponent("MOCK-AUDIT-MANAGER");
-        audit.setSequenceNumber(BigInteger.valueOf(events.size()+1));
+        audit.setSequenceNumber(BigInteger.valueOf(events.size() + 1));
+        audit.setOperationID(operationID);
+        audit.setCertificateID(certificateID);
         events.add(audit);
     }
     public int getCallsForAuditEvent() {

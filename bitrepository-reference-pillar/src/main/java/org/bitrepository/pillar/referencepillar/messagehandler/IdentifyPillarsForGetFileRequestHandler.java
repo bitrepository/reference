@@ -33,6 +33,7 @@ import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
 
@@ -57,7 +58,7 @@ public class IdentifyPillarsForGetFileRequestHandler
     }
 
     @Override
-    public void processRequest(IdentifyPillarsForGetFileRequest message) throws RequestHandlerException {
+    public void processRequest(IdentifyPillarsForGetFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateCollectionID(message);
         checkThatFileIsAvailable(message);
         respondSuccesfullIdentification(message);

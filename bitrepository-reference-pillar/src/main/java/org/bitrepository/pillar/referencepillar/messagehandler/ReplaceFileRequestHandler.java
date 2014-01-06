@@ -33,8 +33,7 @@ import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -77,14 +76,14 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
     }
 
     @Override
-    public void processRequest(ReplaceFileRequest message) throws RequestHandlerException {
+    public void processRequest(ReplaceFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateMessage(message);
         try {
             sendProgressMessageDownloadNewFile(message);
             downloadTheNewFile(message);
             sendProgressMessageDeleteOldFile(message);
             ChecksumDataForFileTYPE requestedOldChecksum = calculateChecksumOnOldFile(message);
-            replaceTheFile(message);
+            replaceTheFile(message, messageContext);
             ChecksumDataForFileTYPE requestedNewChecksum = calculateChecksumOnNewFile(message);
             sendFinalResponse(message, requestedOldChecksum, requestedNewChecksum);
         } finally {
@@ -303,11 +302,12 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
      * directory, and then moving the new file from the temporary area into the archive.
      * @param message The message with the request for the file to be replaced.
      */
-    private void replaceTheFile(ReplaceFileRequest message) {
+    private void replaceTheFile(ReplaceFileRequest message, MessageContext messageContext) {
         log.info("Replacing the file '" + message.getFileID() + "' in the archive with the one in the "
                 + "temporary area.");
         getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                "Replacing the file.", message.getAuditTrailInformation(), FileAction.REPLACE_FILE); 
+                "Replacing the file.", message.getAuditTrailInformation(), FileAction.REPLACE_FILE,
+                message.getCorrelationID(), messageContext.getCertificateSignature());
         getArchives().replaceFile(message.getFileID(), message.getCollectionID());
         getCsManager().recalculateChecksum(message.getFileID(), message.getCollectionID());
     }

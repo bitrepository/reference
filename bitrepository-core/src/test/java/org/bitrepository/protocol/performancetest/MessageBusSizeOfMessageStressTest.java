@@ -30,6 +30,7 @@ import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.bus.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
@@ -201,7 +202,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
          * @param conf The configurations for declaring the messagebus.
          */
         public ResendMessageListener(MessageBusConfiguration conf) {
-            this.bus = new ActiveMQMessageBus(conf, securityManager);
+            this.bus = new ActiveMQMessageBus(conf, securityManager, getClass().getSimpleName());
             this.count = 0;
 
             bus.addListener(QUEUE, this);
@@ -232,7 +233,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
         }
 
         @Override
-        public void onMessage(Message message) {
+        public void onMessage(Message message, MessageContext messageContext) {
             count++;
             bus.sendMessage(message);
         }

@@ -75,7 +75,7 @@ public final class ChecksumUtils {
     /**
      * Calculates the checksum for a file based on the given checksum algorithm, where the calculation is salted.
      * 
-     * @param file The file to calculate the checksum for.
+     * @param fileInfo The file to calculate the checksum for.
      * @param csSpec The checksum specification for the calculation of the checksum. 
      * @return The checksum of the file in hexadecimal.
      */

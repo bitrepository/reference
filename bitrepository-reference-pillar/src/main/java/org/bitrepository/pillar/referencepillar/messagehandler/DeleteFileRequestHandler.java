@@ -37,6 +37,7 @@ import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -66,11 +67,11 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
     }
 
     @Override
-    public void processRequest(DeleteFileRequest message) throws RequestHandlerException {
+    public void processRequest(DeleteFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateMessage(message);
         sendProgressMessage(message);
         ChecksumDataForFileTYPE resultingChecksum = calculatedRequestedChecksum(message);
-        deleteTheFile(message);
+        deleteTheFile(message, messageContext);
         sendFinalResponse(message, resultingChecksum);
     }
 
@@ -171,9 +172,10 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
      * Performs the operation of deleting the file from the archive.
      * @param message The message requesting the file to be deleted.
      */
-    protected void deleteTheFile(DeleteFileRequest message) throws RequestHandlerException {
+    protected void deleteTheFile(DeleteFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                "Deleting the file.", message.getAuditTrailInformation(), FileAction.DELETE_FILE);
+                "Deleting the file.", message.getAuditTrailInformation(), FileAction.DELETE_FILE,
+                message.getCorrelationID(), messageContext.getCertificateSignature());
         getArchives().deleteFile(message.getFileID(), message.getCollectionID());
         getCsManager().deleteEntry(message.getFileID(), message.getCollectionID());
     }

@@ -25,6 +25,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMessageHandler;
 import org.bitrepository.pillar.common.MessageHandlerContext;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -72,7 +73,7 @@ public class ChecksumPillarMessageHandlerTest extends ChecksumPillarTest {
         }
 
         @Override
-        public void processRequest(MessageResponse request) throws RequestHandlerException {}
+        public void processRequest(MessageResponse request, MessageContext messageContext) throws RequestHandlerException {}
 
         @Override
         public MessageResponse generateFailedResponse(MessageResponse request) {

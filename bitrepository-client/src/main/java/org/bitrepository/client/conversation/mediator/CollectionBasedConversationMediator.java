@@ -33,6 +33,7 @@ import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.client.conversation.Conversation;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
@@ -119,11 +120,11 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     }
 
     @Override
-    public void onMessage(Message message) {
+    public void onMessage(Message message, MessageContext messageContext) {
         String messageCorrelationID = message.getCorrelationID();
         Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
-            conversation.onMessage(message);
+            conversation.onMessage(message, messageContext);
         } else {
             handleUnknownConversation(message);
         }

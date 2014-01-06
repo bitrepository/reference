@@ -50,8 +50,7 @@ import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.*;
 import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -82,7 +81,7 @@ public class GetChecksumsRequestHandler extends ReferencePillarMessageHandler<Ge
     }
 
     @Override
-    public void processRequest(GetChecksumsRequest message) throws RequestHandlerException {
+    public void processRequest(GetChecksumsRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateMessage(message);
         sendInitialProgressMessage(message);
         ExtractedChecksumResultSet extractedChecksums = extractChecksumResults(message);

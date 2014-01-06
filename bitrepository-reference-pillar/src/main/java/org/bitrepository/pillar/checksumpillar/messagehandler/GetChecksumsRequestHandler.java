@@ -53,8 +53,7 @@ import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
@@ -83,7 +82,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
     }
 
     @Override
-    public void processRequest(GetChecksumsRequest message) throws RequestHandlerException {
+    public void processRequest(GetChecksumsRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateMessage(message);
         sendInitialProgressMessage(message);
         ExtractedChecksumResultSet extractedChecksums = extractChecksumResults(message);

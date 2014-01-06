@@ -87,12 +87,12 @@ public class DefaultMessagingLogger implements MessageLogger {
     }
 
     /**
-     * Log the short version of the message at info level.
+     * Log the short version of the message at debug level.
      * May be overridden to log at a different level for concrete messages.
      * @param message The message string to log.
      */
     protected void logShortMessage(String message) {
-        log.info(message);
+        log.debug(message);
     }
     private StringBuilder appendShortRepresentation(StringBuilder messageSB, Message message) {
         if (message instanceof MessageResponse) {

@@ -42,9 +42,7 @@ import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.ProtocolVersionLoader;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.audit.AuditTrailDatabaseResults;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorContext;
@@ -78,7 +76,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
     }
 
     @Override
-    public void processRequest(GetAuditTrailsRequest message) throws RequestHandlerException {
+    public void processRequest(GetAuditTrailsRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateCollectionID(message);
         validateMessage(message);
         sendProgressMessage(message);

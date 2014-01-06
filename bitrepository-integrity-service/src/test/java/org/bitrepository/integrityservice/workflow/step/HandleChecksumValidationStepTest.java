@@ -300,7 +300,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         @Override
         public void addAuditEvent(String collectionId, String fileId,
                 String actor, String info, String auditTrail,
-                FileAction operation) {
+                FileAction operation, String operationID, String certificateID) {
             latestAuditInfo = info;
         }
 

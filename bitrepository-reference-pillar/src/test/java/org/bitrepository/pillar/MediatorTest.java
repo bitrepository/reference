@@ -34,6 +34,7 @@ import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.PillarMediator;
 import org.bitrepository.pillar.common.SettingsHelper;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.contributor.handler.RequestHandler;
@@ -115,7 +116,7 @@ public class MediatorTest extends DefaultFixturePillarTest {
         }
 
         @Override
-        public void processRequest(IdentifyContributorsForGetStatusRequest request) throws RequestHandlerException {
+        public void processRequest(IdentifyContributorsForGetStatusRequest request, MessageContext messageContext) throws RequestHandlerException {
             throw new RuntimeException("I am supposed to throw a RuntimeException");
         }
 

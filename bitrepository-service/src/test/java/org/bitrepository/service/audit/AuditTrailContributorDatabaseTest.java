@@ -62,15 +62,17 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         String actor = "ACTOR";
         String info = "Adding a info";
         String auditTrail = "AuditTrail";
+        String operationID = "op1";
+        String certificateID = "aa";
         DatabaseManager dm = new AuditDatabaseManager(databaseSpecifics);
         AuditTrailContributerDAO daba = new AuditTrailContributerDAO(settings, dm);
         
         addStep("Populate the database.", "Should be inserted into database.");
-        daba.addAuditEvent(firstCollectionID, fileId1, actor, info, auditTrail, FileAction.PUT_FILE);
-        daba.addAuditEvent(firstCollectionID, fileId1, actor, info, auditTrail, FileAction.CHECKSUM_CALCULATED);
-        daba.addAuditEvent(firstCollectionID, fileId2, actor, info, auditTrail, FileAction.FILE_MOVED);
-        daba.addAuditEvent(firstCollectionID, fileId2, actor, info, auditTrail, FileAction.FAILURE);
-        daba.addAuditEvent(firstCollectionID, fileId2, actor, info, auditTrail, FileAction.INCONSISTENCY);
+        daba.addAuditEvent(firstCollectionID, fileId1, actor, info, auditTrail, FileAction.PUT_FILE, operationID, certificateID);
+        daba.addAuditEvent(firstCollectionID, fileId1, actor, info, auditTrail, FileAction.CHECKSUM_CALCULATED, operationID, certificateID);
+        daba.addAuditEvent(firstCollectionID, fileId2, actor, info, auditTrail, FileAction.FILE_MOVED, operationID, certificateID);
+        daba.addAuditEvent(firstCollectionID, fileId2, actor, info, auditTrail, FileAction.FAILURE, operationID, certificateID);
+        daba.addAuditEvent(firstCollectionID, fileId2, actor, info, auditTrail, FileAction.INCONSISTENCY, operationID, certificateID);
         
         addStep("Test extracting all the events", "Should be all 5 events.");
         AuditTrailDatabaseResults events = daba.getAudits(firstCollectionID, null, null, null, null, null, null);
@@ -117,6 +119,8 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         String actor = "ACTOR";
         String info = "Adding a info";
         String auditTrail = "AuditTrail";
+        String operationID = "op1";
+        String certificateID = "aa";
         String veryLongString = "";
         for(int i = 0; i < 255; i++) {
             veryLongString += i;
@@ -126,31 +130,37 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         AuditTrailContributerDAO daba = new AuditTrailContributerDAO(settings, dm);
         
         addStep("Test with all data.", "No failures");
-        daba.addAuditEvent(firstCollectionID, fileId1, actor, info, auditTrail, FileAction.FAILURE);
+        daba.addAuditEvent(firstCollectionID, fileId1, actor, info, auditTrail, FileAction.FAILURE, operationID, certificateID);
         
         addStep("Test with no collection", "Throws exception");
         try {
-            daba.addAuditEvent(null, fileId1, actor, info, auditTrail, FileAction.FAILURE);
+            daba.addAuditEvent(null, fileId1, actor, info, auditTrail, FileAction.FAILURE, operationID, certificateID);
             Assert.fail("Should throw an exception");
         } catch (IllegalArgumentException e) {
             // expected
         }
         
         addStep("Test with with no file id.", "No failures");
-        daba.addAuditEvent(firstCollectionID, null, actor, info, auditTrail, FileAction.FAILURE);
+        daba.addAuditEvent(firstCollectionID, null, actor, info, auditTrail, FileAction.FAILURE, operationID, certificateID);
 
         addStep("Test with with no actor.", "No failures");
-        daba.addAuditEvent(firstCollectionID, fileId1, null, info, auditTrail, FileAction.FAILURE);
+        daba.addAuditEvent(firstCollectionID, fileId1, null, info, auditTrail, FileAction.FAILURE, operationID, certificateID);
 
         addStep("Test with with no info.", "No failures");
-        daba.addAuditEvent(firstCollectionID, fileId1, actor, null, auditTrail, FileAction.FAILURE);
+        daba.addAuditEvent(firstCollectionID, fileId1, actor, null, auditTrail, FileAction.FAILURE, operationID, certificateID);
 
         addStep("Test with with no audittrail.", "No failures");
-        daba.addAuditEvent(firstCollectionID, fileId1, actor, info, null, FileAction.FAILURE);
+        daba.addAuditEvent(firstCollectionID, fileId1, actor, info, null, FileAction.FAILURE, operationID, certificateID);
+
+        addStep("Test with with no operationID.", "No failures");
+        daba.addAuditEvent(firstCollectionID, fileId1, actor, info, auditTrail, FileAction.FAILURE, null, certificateID);
+
+        addStep("Test with with no certificateID.", "No failures");
+        daba.addAuditEvent(firstCollectionID, fileId1, actor, info, auditTrail, FileAction.FAILURE, operationID, null);
 
         addStep("Test with with no action.", "Throws exception");
         try {
-            daba.addAuditEvent(firstCollectionID, fileId1, actor, info, auditTrail, null);
+            daba.addAuditEvent(firstCollectionID, fileId1, actor, info, auditTrail, null, operationID, certificateID);
             Assert.fail("Should throw an exception");
         } catch (IllegalArgumentException e) {
             // expected
@@ -158,7 +168,7 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
 
         addStep("Test with with very large file id.", "Throws exception");
         try {
-            daba.addAuditEvent(firstCollectionID, veryLongString, actor, info, auditTrail, FileAction.FAILURE);
+            daba.addAuditEvent(firstCollectionID, veryLongString, actor, info, auditTrail, FileAction.FAILURE, operationID, certificateID);
             Assert.fail("Should throw an exception");
         } catch (IllegalStateException e) {
             // expected
@@ -166,17 +176,17 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
 
         addStep("Test with with very large actor name.", "Throws exception");
         try {
-            daba.addAuditEvent(firstCollectionID, fileId1, veryLongString, info, auditTrail, FileAction.FAILURE);
+            daba.addAuditEvent(firstCollectionID, fileId1, veryLongString, info, auditTrail, FileAction.FAILURE, operationID, certificateID);
             Assert.fail("Should throw an exception");
         } catch (IllegalStateException e) {
             // expected
         }
 
         addStep("Test with with very large info.", "No failures");
-        daba.addAuditEvent(firstCollectionID, fileId1, actor, veryLongString, auditTrail, FileAction.FAILURE);
+        daba.addAuditEvent(firstCollectionID, fileId1, actor, veryLongString, auditTrail, FileAction.FAILURE, operationID, certificateID);
 
         addStep("Test with with very large audittrail.", "No failures");
-        daba.addAuditEvent(firstCollectionID, fileId1, actor, info, veryLongString, FileAction.FAILURE);
+        daba.addAuditEvent(firstCollectionID, fileId1, actor, info, veryLongString, FileAction.FAILURE, operationID, certificateID);
         
         dm.getConnector().destroy();
     }

@@ -28,6 +28,7 @@ import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.client.conversation.StateBasedConversation;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.testng.annotations.Test;
@@ -77,6 +78,6 @@ public abstract class ConversationMediatorTest {
         @Override
         public void endConversation() {}
         @Override
-        public void onMessage(Message message) {}
+        public void onMessage(Message message, MessageContext messageContext) {}
     }
 }

@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.IntegrationTest;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.testng.Assert;
@@ -75,7 +76,7 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
         private BlockingQueue<String> queue = new LinkedBlockingQueue<String>(threadCount);
         
         @Override
-        public final void onMessage(Message message) {
+        public final void onMessage(Message message, MessageContext messageContext) {
             try {
                 testIfFinished();
                 Assert.assertNotNull(queue.poll(TIME_FOR_WAIT, TimeUnit.MILLISECONDS));

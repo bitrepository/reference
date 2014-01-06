@@ -44,6 +44,10 @@ public final class AuditDatabaseConstants {
     public final static String AUDITTRAIL_OPERATION_DATE = "operation_date";
     /** The name of the information field in the audit trail table. */
     public final static String AUDITTRAIL_INFORMATION = "information";
+    /** The name of the information field in the audit trail table. */
+    public final static String AUDITTRAIL_OPERATIONID = "operationID";
+    /** The name of the information field in the audit trail table. */
+    public final static String AUDITTRAIL_FINGERPRINT = "fingerprint";
     /** The name of the audit field in the audit trail table. */
     public final static String AUDITTRAIL_AUDIT = "audit";    
     

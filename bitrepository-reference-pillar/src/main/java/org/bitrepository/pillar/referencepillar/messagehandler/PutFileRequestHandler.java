@@ -36,8 +36,7 @@ import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -72,11 +71,11 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
     }
 
     @Override
-    public void processRequest(PutFileRequest message) throws RequestHandlerException {
+    public void processRequest(PutFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateMessage(message);
         try {
             dispatchInitialProgressResponse(message);
-            retrieveFile(message);
+            retrieveFile(message, messageContext);
             sendFinalResponse(message);
         } finally {
             getArchives().ensureFileNotInTmpDir(message.getFileID(), message.getCollectionID());
@@ -175,7 +174,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
      * @param message The request to for the file to put.
      * @throws RequestHandlerException If the retrival of the file fails.
      */
-    private void retrieveFile(PutFileRequest message) throws RequestHandlerException {
+    private void retrieveFile(PutFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
         
@@ -208,7 +207,8 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
             log.warn("No checksums for validating the retrieved file.");
         }
         getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                "Add file to archive.", message.getAuditTrailInformation(), FileAction.PUT_FILE);
+                "Add file to archive.", message.getAuditTrailInformation(), FileAction.PUT_FILE,
+                message.getCorrelationID(), messageContext.getCertificateSignature());
         getArchives().moveToArchive(message.getFileID(), message.getCollectionID());
         getCsManager().recalculateChecksum(message.getFileID(), message.getCollectionID());
     }

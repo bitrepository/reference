@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.bus.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
@@ -119,7 +120,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
             addStep("Start the broker and initialise the listeners.", 
             "Connections should be established.");
             broker.start();
-            bus = new ActiveMQMessageBus(conf, securityManager);
+            bus = new ActiveMQMessageBus(conf, securityManager, getClass().getSimpleName());
 
             testListeners(conf, securityManager);
         } finally {
@@ -151,7 +152,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
 
         addStep("Start the broker and initialise the listeners.", 
         "Connections should be established.");
-        bus = new ActiveMQMessageBus(conf, securityManager);
+        bus = new ActiveMQMessageBus(conf, securityManager, getClass().getSimpleName());
 
         testListeners(conf, securityManager);
     }
@@ -284,7 +285,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
          * @param conf The configuration for defining the message bus.
          */
         public NotificationMessageListener(MessageBusConfiguration conf, SecurityManager securityManager) {
-            this.bus = new ActiveMQMessageBus(conf, securityManager);
+            this.bus = new ActiveMQMessageBus(conf, securityManager, getClass().getSimpleName());
             this.count = 0;
 
             bus.addListener(QUEUE, this);
@@ -306,7 +307,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         }
 
         @Override
-        public void onMessage(Message message) {
+        public void onMessage(Message message, MessageContext messageContext) {
             count++;
             int receivedId = Integer.parseInt(message.getCorrelationID());
             handleMessageDistribution(receivedId);

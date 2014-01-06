@@ -3,12 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.bitrepository.reference</groupId>
   <artifactId>bitrepository-parent</artifactId>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.1.2-SNAPSHOT</version>
 
   <parent>
     <groupId>org.sbforge</groupId>
     <artifactId>sbforge-parent</artifactId>
-    <version>16-SNAPSHOT</version>
+    <version>15</version>
   </parent>
 
   <name>Bitrepository</name>
@@ -217,9 +217,6 @@
               <key>value</key>
             </manifestEntries>
           </archive>
-          <excludes>
-            <exclude>**/logback*.xml</exclude>
-          </excludes>
         </configuration>
         <executions>
           <execution>
@@ -402,7 +399,7 @@
   <properties>
     <message.xml.version>26</message.xml.version>
     <repository.settings.version>10</repository.settings.version>
-    <activemq.version>5.8.0</activemq.version>
+    <activemq.version>5.9.0</activemq.version>
     <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
     <slf4j.version>1.6.5</slf4j.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -42,8 +42,7 @@ import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.referencepillar.archive.ReferenceChecksumManager;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
@@ -72,10 +71,10 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
     }
 
     @Override
-    public void processRequest(GetFileRequest message) throws RequestHandlerException {
+    public void processRequest(GetFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateMessage(message);
         sendProgressMessage(message);
-        uploadToClient(message);
+        uploadToClient(message, messageContext);
         sendFinalResponse(message);
     }
 
@@ -126,7 +125,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
      * @param message The message requesting the GetFile operation.
      * @throws InvalidMessageException If the upload of the file fails.
      */
-    protected void uploadToClient(GetFileRequest message) throws InvalidMessageException {
+    protected void uploadToClient(GetFileRequest message, MessageContext messageContext) throws InvalidMessageException {
         FileInfo requestedFile = getArchives().getFileInfo(message.getFileID(), message.getCollectionID());
 
         try {
@@ -139,7 +138,8 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
 
             log.info("Uploading file: " + requestedFile.getFileID() + " to " + message.getFileAddress());
             getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                    "Failed identifying pillar.", message.getAuditTrailInformation(), FileAction.GET_FILE);
+                    "Failed identifying pillar.", message.getAuditTrailInformation(), FileAction.GET_FILE,
+                    message.getCorrelationID(), messageContext.getCertificateSignature());
             FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
             fe.uploadToServer(is, new URL(message.getFileAddress()));
         } catch (IOException e) {
@@ -153,7 +153,7 @@ public class GetFileRequestHandler extends ReferencePillarMessageHandler<GetFile
     
     /**
      * Extracts a given file part 
-     * @param requestedFile The requested file to extract the file part from.
+     * @param fileInfo The requested file to extract the file part from.
      * @param filePart The defined interval for the file part.
      * @return A InputStream with the requested file part.
      * @throws IOException If anything goes wrong.

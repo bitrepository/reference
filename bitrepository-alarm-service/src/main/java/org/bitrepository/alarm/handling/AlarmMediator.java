@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.slf4j.Logger;
@@ -56,7 +57,7 @@ public class AlarmMediator implements MessageListener {
         this.messageBus = messageBus;
         this.destination = listenerDestination;
         
-        messageBus.addListener(listenerDestination, this);
+        messageBus.addListener(listenerDestination, this, true);
         handlers = new ArrayList<AlarmHandler>();
     }
     
@@ -69,7 +70,7 @@ public class AlarmMediator implements MessageListener {
     }
 
     @Override
-    public void onMessage(Message msg) {
+    public void onMessage(Message msg, MessageContext messageContext) {
         if(msg instanceof AlarmMessage) {
             for(AlarmHandler handler : handlers) {
                 handler.handleAlarm((AlarmMessage) msg);

@@ -36,6 +36,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.MessageHandlerContext;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
 
@@ -60,7 +61,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
     }
 
     @Override
-    public void processRequest(IdentifyPillarsForGetChecksumsRequest message) throws RequestHandlerException {
+    public void processRequest(IdentifyPillarsForGetChecksumsRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateCollectionID(message);
         validateMessage(message);
         checkThatAllRequestedFilesAreAvailable(message);

@@ -22,6 +22,7 @@
 package org.bitrepository.service.contributor.handler;
 
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.RequestHandlerException;
 
 /**
@@ -33,10 +34,12 @@ public interface RequestHandler<T> {
 
     /**
      * Implements the concrete handling of a received request.
+     *
      * @param request The request to handle.
-     * @throws RequestHandlerException If something goes wrong while handling the 
+     * @param messageContext
+     * @throws RequestHandlerException If something goes wrong while handling the
      */
-    public void processRequest(T request) throws RequestHandlerException;
+    public void processRequest(T request, MessageContext messageContext) throws RequestHandlerException;
 
     /**
      * Used for creating responses signaling general failures to handle the request.

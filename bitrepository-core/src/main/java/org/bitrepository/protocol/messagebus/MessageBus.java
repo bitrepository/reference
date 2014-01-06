@@ -33,13 +33,24 @@ import java.util.List;
  */
 public interface MessageBus extends MessageSender {
     /**
-     * Adds the supplied listener to the indicated destination
+     * Adds the supplied listener to the indicated destination (non-durable).
      *
      * @param destinationId The destination to listen to
      * @param listener      The listener with should handle the messages
      *                      arriving on the destination
      */
     void addListener(String destinationId, MessageListener listener);
+
+    /**
+     * Adds the supplied listener to the indicated destination
+     *
+     * @param destinationID The destination to listen to
+     * @param listener      The listener with should handle the messages
+     *                      arriving on the destination
+     * @param durable       Indicates whether the lister should use a durable subscriber. Only allowed for topics and
+     *                      only relevant if the consumer needs to be created.
+     */
+    void addListener(String destinationID, MessageListener listener, boolean durable);
 
     /**
      * Removes the supplied listener from the indicated destination.

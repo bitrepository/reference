@@ -27,6 +27,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTr
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.ResponseInfoUtils;
+import org.bitrepository.protocol.*;
 import org.bitrepository.service.contributor.ContributorContext;
 
 /**
@@ -48,7 +49,7 @@ public class IdentifyContributorsForGetAuditTrailsRequestHandler
     }
 
     @Override
-    public void processRequest(IdentifyContributorsForGetAuditTrailsRequest message) {
+    public void processRequest(IdentifyContributorsForGetAuditTrailsRequest message, MessageContext messageContext) {
         ArgumentValidator.checkNotNull(message, "IdentifyContributorsForGetAuditTrailsRequest message");
 
         respondSuccessfulIdentification(message);

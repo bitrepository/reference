@@ -84,6 +84,8 @@ CREATE TABLE audittrail (
     operation_date TIMESTAMP,       -- The date when the action was performed.
     audit TEXT,                     -- The audit trail delivered from the actor. 
     information TEXT,               -- The information about the audit.
+    operationID VARCHAR(100),       -- The conversation/operation ID the the audit belongs to.
+    fingerprint VARCHAR(100),       -- The fingerprint (SHA-1 sum) for the certificate used in the operation.
     FOREIGN KEY ( file_guid ) REFERENCES file ( file_guid ),
                                     -- Foreign key constraint for enforcing relationship
     FOREIGN KEY ( actor_guid ) REFERENCES actor ( actor_guid )

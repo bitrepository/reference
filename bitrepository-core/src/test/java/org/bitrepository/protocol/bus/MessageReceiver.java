@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.jaccept.TestEventManager;
 import org.slf4j.Logger;
@@ -209,7 +210,7 @@ public class MessageReceiver {
             return "MessageReceiverListener(" + destination + ")";
         }
 
-        public void onMessage(Message message) {
+        public void onMessage(Message message, MessageContext messageContext) {
             messageModel.addMessage(message);
         }
 

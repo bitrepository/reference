@@ -65,7 +65,8 @@ public class EmbeddedPillar implements LifeCycledService {
     private static MessageBus initialize(Settings pillarSettings) {
         ReferencePillarDerbyDBTestUtils dbUtils = new ReferencePillarDerbyDBTestUtils(pillarSettings);
         dbUtils.createEmptyDatabases();
-        ActiveMQMessageBus messageBus = new ActiveMQMessageBus(pillarSettings.getMessageBusConfiguration(), new DummySecurityManager());
+        ActiveMQMessageBus messageBus = new ActiveMQMessageBus(
+                pillarSettings.getMessageBusConfiguration(), new DummySecurityManager(), pillarSettings.getComponentID());
         messageBus.setComponentFilter(Arrays.asList(new String[]{pillarSettings.getComponentID()}));
         MessageBusManager.injectCustomMessageBus(pillarSettings.getComponentID(), messageBus);
         return messageBus;
