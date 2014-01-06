@@ -79,7 +79,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     @Override
     protected void logStateTimeout() throws UnableToFinishException {
         throw new UnableToFinishException("Failed to receive responses from all contributors before timeout(" +
-                getTimeoutValue() + "ms)");
+                getTimeoutValue() + "ms). Missing contributors " + getOutstandingComponents());
     }
 
     @Override
@@ -93,7 +93,8 @@ public abstract class PerformingOperationState extends GeneralConversationState 
             getContext().getMonitor().complete();
             return new FinishedState(getContext());
         } else {
-            throw new UnableToFinishException("All contributors haven't responded");
+            throw new UnableToFinishException("All contributors haven't responded. Missing contributors " +
+                    getOutstandingComponents());
         }
     }
 
