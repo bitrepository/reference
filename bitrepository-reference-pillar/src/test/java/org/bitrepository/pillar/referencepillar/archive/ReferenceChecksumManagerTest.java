@@ -21,38 +21,29 @@
  */
 package org.bitrepository.pillar.referencepillar.archive;
 
-        import java.io.ByteArrayInputStream;
-        import java.io.File;
-        import java.io.FileOutputStream;
         import java.util.Arrays;
-        import java.util.Collection;
-        import java.util.Date;
-        import java.util.LinkedList;
+import java.util.Date;
+import java.util.LinkedList;
+import javax.xml.datatype.XMLGregorianCalendar;
 
-        import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-        import org.bitrepository.common.filestore.DefaultFileInfo;
-        import org.bitrepository.common.filestore.FileInfo;
-        import org.bitrepository.common.filestore.FileStore;
-        import org.bitrepository.common.settings.Settings;
-        import org.bitrepository.common.settings.TestSettingsProvider;
-        import org.bitrepository.common.utils.*;
-        import org.bitrepository.pillar.DefaultFixturePillarTest;
-        import org.bitrepository.pillar.cache.*;
-        import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
-        import org.bitrepository.pillar.common.ChecksumDatabaseCreator;
-        import org.bitrepository.service.AlarmDispatcher;
-        import org.bitrepository.service.database.DerbyDatabaseDestroyer;
-        import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
-        import org.jaccept.structure.ExtendedTestCase;
-        import org.testng.Assert;
-        import org.testng.annotations.BeforeMethod;
-        import org.testng.annotations.Test;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.common.filestore.FileInfo;
+import org.bitrepository.common.filestore.FileStore;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.ChecksumUtils;
+import org.bitrepository.pillar.cache.ChecksumEntry;
+import org.bitrepository.pillar.cache.ChecksumStore;
+import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
+import org.bitrepository.service.AlarmDispatcher;
+import org.jaccept.structure.ExtendedTestCase;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
-        import javax.xml.datatype.XMLGregorianCalendar;
-
-        import static org.mockito.Mockito.*;
-        import static org.testng.AssertJUnit.assertEquals;
-        import static org.testng.AssertJUnit.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.testng.AssertJUnit.assertTrue;
 
 public class ReferenceChecksumManagerTest extends ExtendedTestCase {
     private static final String DEFAULT_COLlECTION_ID = "defaultTestCollection";
@@ -132,5 +123,5 @@ public class ReferenceChecksumManagerTest extends ExtendedTestCase {
         public void recalculateChecksum(String fileId, String collectionId) {
             recalculateCheckSumCalled = true;
         }
-    };
+    }
 }
