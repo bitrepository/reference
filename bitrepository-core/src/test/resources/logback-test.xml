@@ -3,21 +3,31 @@
     <encoder>
       <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
     </encoder>
+    <target>System.err</target>
   </appender>
 
-  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+  <appender name="LOG-FILE" class="ch.qos.logback.core.FileAppender">
     <file>target/bitrepository.log</file>
     <encoder>
       <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
     </encoder>
   </appender>
 
+  <appender name="ERROR-FILE" class="ch.qos.logback.core.FileAppender">
+    <file>target/bitrepository-error.log</file>
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
   <root level="WARN">
-    <appender-ref ref="STDOUT" />
-    <appender-ref ref="FILE" />
+    <appender-ref ref="STDOUT"/>
+    <appender-ref ref="ERROR-FILE"/>
+    <appender-ref ref="LOG-FILE" />
   </root>
 
   <logger name="org.bitrepository" level="DEBUG" additivity="false">
-    <appender-ref ref="FILE" />
+    <appender-ref ref="LOG-FILE"/>
   </logger>
+
 </configuration>
