@@ -24,6 +24,10 @@
  */
 package org.bitrepository.pillar.checksumpillar.messagehandler;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Date;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -38,16 +42,14 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.protocol.*;
+import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.MessageContext;
+import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.Date;
 
 /**
  * Class for performing the PutFile operation.
@@ -245,7 +247,6 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
             response.setChecksumDataForNewFile(checksumForValidation);
         } else {
             // TODO is such a request required?
-            log.info("No checksum validation requested.");
         }
 
         dispatchResponse(response, message);

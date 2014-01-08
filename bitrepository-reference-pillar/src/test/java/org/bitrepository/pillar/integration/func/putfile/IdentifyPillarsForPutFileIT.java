@@ -72,7 +72,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
         assertEquals(receivedIdentifyResponse.getFrom(), getPillarID(),
                 "Received unexpected PillarID");
         assertEquals(receivedIdentifyResponse.getTo(), identifyRequest.getFrom(),
-                "Received unexpected 'To'elements");
+                "Received unexpected 'To' element.");
         assertNull(receivedIdentifyResponse.getChecksumDataForExistingFile(),
                 "Received unexpected ChecksumDataForExistingFile");
         assertNull(receivedIdentifyResponse.getPillarChecksumSpec(),
