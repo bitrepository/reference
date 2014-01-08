@@ -25,15 +25,18 @@ import org.bitrepository.protocol.security.exception.CertificateUseException;
 import org.bitrepository.protocol.security.exception.MessageAuthenticationException;
 import org.bitrepository.protocol.security.exception.MessageSigningException;
 import org.bitrepository.protocol.security.exception.OperationAuthorizationException;
+import org.bitrepository.protocol.security.exception.UnregisteredPermissionException;
+import org.bouncycastle.cms.SignerId;
 
 public interface SecurityManager {
     /**
      * Method to authenticate a message. 
      * @param message the message that needs to be authenticated.
      * @param signature the signature belonging to the message.
+     * @return The certificate used to sign the message
      * @throws MessageAuthenticationException in case of failure.
      */
-    void authenticateMessage(String message, String signature) throws MessageAuthenticationException;
+    SignerId authenticateMessage(String message, String signature) throws MessageAuthenticationException;
     
     /**
      * Method to sign a message
@@ -62,4 +65,12 @@ public interface SecurityManager {
      */
     void authorizeCertificateUse(String certificateUser, String messageData, String signature) 
             throws CertificateUseException;
+
+    /**
+     * Returns the fingerprint for the certificate.
+     * @param signer The signer to lookup the certificate fingerprint for.
+     * @return The fingerprint of the certificate used to sign a message .
+     * @throws UnregisteredPermissionException No permission has been registered for this signer.
+     */
+    String getCertificateFingerprint(SignerId signer) throws UnregisteredPermissionException;
 }

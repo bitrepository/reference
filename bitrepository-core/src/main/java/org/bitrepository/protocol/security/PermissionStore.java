@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.Provider;
 import java.security.Security;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -34,12 +35,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.bitrepository.protocol.security.exception.PermissionStoreException;
 import org.bitrepository.settings.repositorysettings.InfrastructurePermission;
 import org.bitrepository.settings.repositorysettings.Operation;
 import org.bitrepository.settings.repositorysettings.OperationPermission;
-import org.bitrepository.settings.repositorysettings.PermissionSet;
 import org.bitrepository.settings.repositorysettings.Permission;
+import org.bitrepository.settings.repositorysettings.PermissionSet;
 import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
@@ -151,6 +153,10 @@ public class PermissionStore {
         }
     }
 
+    public String getCertificateFingerprint(SignerId signer) {
+        return permissionMap.get(signer).getFingerprint();
+    }
+
     /**
      * Check to see if a certificate has the specified permission. The certificate is identified based 
      * on the SignerId of the signature. 
@@ -187,15 +193,15 @@ public class PermissionStore {
         private final Set<Operation> permissions;
         private final Set<String> allowedUsers;
         private final X509Certificate certificate;
+        private final String fingerprint;
 
         /**
-         * Constructor
          * @param certificate the certificate which permissions is to be represented.
          * @param allowedOperations the allowed operations related to the certificate.
          * @param allowedUsers the allowed users of this certificate, if users are not restricted provide null
          */
         public CertificatePermission(X509Certificate certificate, Collection<Operation> allowedOperations,
-                                     Collection<String> allowedUsers) {
+                                     Collection<String> allowedUsers) throws CertificateEncodingException {
             if(allowedUsers == null) {
                 this.allowedUsers = null;
             } else {
@@ -205,6 +211,7 @@ public class PermissionStore {
             this.permissions = new HashSet<Operation>();
             this.certificate = certificate;
             this.permissions.addAll(allowedOperations);
+            this.fingerprint = DigestUtils.shaHex(certificate.getEncoded());
         }
 
         /**
@@ -235,6 +242,13 @@ public class PermissionStore {
          */
         public X509Certificate getCertificate() {
             return certificate;
+        }
+
+        /**
+         * @return The certificate fingerprint
+         */
+        public String getFingerprint() {
+            return fingerprint;
         }
     }
 

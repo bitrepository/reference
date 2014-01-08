@@ -69,6 +69,7 @@ import org.bitrepository.protocol.messagebus.logger.MessageLoggerProvider;
 import org.bitrepository.protocol.messagebus.logger.PutFileMessageLogger;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
+import org.bouncycastle.cms.SignerId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -444,14 +445,20 @@ public class ActiveMQMessageBus implements MessageBus {
                         + type),
                         new ByteArrayInputStream(text.getBytes()));
                 log.trace("Checking signature " + signature);
-                securityManager.authenticateMessage(text, signature);
+                SignerId signer =
+                    securityManager.authenticateMessage(text, signature);
                 securityManager.authorizeCertificateUse((content).getFrom(), text, signature);
                 if (content instanceof MessageRequest) {
                     securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature);
                 }
                 MessageVersionValidator.validateMessageVersion(content);
                 MessageLoggerProvider.getInstance().logMessageReceived(content);
-                MessageContext messageContext = new MessageContext(signature);
+
+                String certificateFingerprint = null;
+                if (signer != null) {
+                    certificateFingerprint = securityManager.getCertificateFingerprint(signer);
+                }
+                MessageContext messageContext = new MessageContext(certificateFingerprint);
                 threadMessageHandling(content, messageContext);
             } catch (SAXException e) {
                 log.error("Error validating message " + jmsMessage, e);

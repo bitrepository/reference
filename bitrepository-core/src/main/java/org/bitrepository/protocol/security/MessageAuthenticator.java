@@ -22,6 +22,7 @@
 package org.bitrepository.protocol.security;
 
 import org.bitrepository.protocol.security.exception.MessageAuthenticationException;
+import org.bouncycastle.cms.SignerId;
 
 /**
  * Interface for classes to authenticate messages based on a CMS signature. 
@@ -32,7 +33,8 @@ public interface MessageAuthenticator {
      * Method to authenticate a message based on a signature.
      * @param messageData the data to authenticate
      * @param signatureData the signature to authenticate the message from
+     * @return The ID of the message signer
      * @throws MessageAuthenticationException in case authentication fails. 
      */
-    abstract void authenticateMessage(byte[] messageData, byte[] signatureData) throws MessageAuthenticationException;
+    abstract SignerId authenticateMessage(byte[] messageData, byte[] signatureData) throws MessageAuthenticationException;
 }

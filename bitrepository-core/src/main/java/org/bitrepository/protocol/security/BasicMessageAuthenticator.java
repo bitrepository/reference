@@ -29,6 +29,7 @@ import org.bitrepository.protocol.security.exception.SecurityException;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
@@ -50,15 +51,9 @@ public class BasicMessageAuthenticator implements MessageAuthenticator {
     public BasicMessageAuthenticator(PermissionStore permissionStore) {
         this.permissionStore = permissionStore;
     }
-    
-    /**
-     * Attempts to authenticate the message based on a signature. 
-     * @param messageData the data that is to be authenticated
-     * @param signatureData the signature that of the data to be authenticated.
-     * @throws MessageAuthenticationException in case authentication fails.  
-     */
+
     @Override
-    public void authenticateMessage(byte[] messageData, byte[] signatureData) throws MessageAuthenticationException {
+    public SignerId authenticateMessage(byte[] messageData, byte[] signatureData) throws MessageAuthenticationException {
         try {
             CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(messageData), signatureData);
             SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
@@ -72,6 +67,7 @@ public class BasicMessageAuthenticator implements MessageAuthenticator {
                         + signingCert.getIssuerX500Principal().getName() + ", serial: " 
                     + signingCert.getSerialNumber());  
             }
+            return signer.getSID();
         } catch (PermissionStoreException e) {
             throw new MessageAuthenticationException(e.getMessage(), e);
         } catch (CMSException e) {

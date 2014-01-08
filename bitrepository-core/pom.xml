@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.bitrepository.reference</groupId>
@@ -8,7 +9,7 @@
   </parent>
   <artifactId>bitrepository-core</artifactId>
   <name>Bitrepository Core</name>
-  <description>General functionality for working with the Bitrepository code. </description>
+  <description>General functionality for working with the Bitrepository code.</description>
   <dependencies>
     <dependency>
       <groupId>org.bitrepository</groupId>
@@ -49,11 +50,17 @@
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-client</artifactId>
       <version>${activemq.version}</version>
-    </dependency>          <dependency>
-    <groupId>org.apache.activemq</groupId>
-    <artifactId>activemq-openwire-legacy</artifactId>
-    <version>${activemq.version}</version>
-  </dependency>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-openwire-legacy</artifactId>
+      <version>${activemq.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.4</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-broker</artifactId>
@@ -106,7 +113,8 @@
               <attached>false</attached>
               <resourceBundles>
                 <resourceBundle>org.bitrepository:bitrepository-message-xml:${message.xml.version}</resourceBundle>
-                <resourceBundle>org.bitrepository:bitrepository-repository-settings:${repository.settings.version}</resourceBundle>
+                <resourceBundle>org.bitrepository:bitrepository-repository-settings:${repository.settings.version}
+                </resourceBundle>
               </resourceBundles>
             </configuration>
           </execution>

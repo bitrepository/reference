@@ -60,6 +60,7 @@ import org.bitrepository.settings.repositorysettings.PermissionSet;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMReader;
@@ -127,19 +128,14 @@ public class BasicSecurityManager implements SecurityManager {
         initialize();
     }
     
-    /**
-     * Method to authenticate a message. 
-     * @param message the message that needs to be authenticated.
-     * @param signature the signature belonging to the message.
-     * @throws MessageAuthenticationException in case of failure.
-     */
-    public void authenticateMessage(String message, String signature) throws MessageAuthenticationException {
+    @Override
+    public SignerId authenticateMessage(String message, String signature) throws MessageAuthenticationException {
         if(repositorySettings.getProtocolSettings().isRequireMessageAuthentication()) {
             if (signature != null) {
             try {
                 byte[] decodedSig = Base64.decode(signature.getBytes(SecurityModuleConstants.defaultEncodingType));
                 byte[] decodeMessage = message.getBytes(SecurityModuleConstants.defaultEncodingType);
-                authenticator.authenticateMessage(decodeMessage, decodedSig);
+                return authenticator.authenticateMessage(decodeMessage, decodedSig);
             } catch (UnsupportedEncodingException e) {
                 throw new SecurityException(SecurityModuleConstants.defaultEncodingType + " encoding not supported", e);
             }
@@ -147,6 +143,7 @@ public class BasicSecurityManager implements SecurityManager {
                 throw new MessageAuthenticationException("Received unsigned message, but authentication is required");
             }
         }
+        return null;
     }
     
     /**
@@ -190,7 +187,17 @@ public class BasicSecurityManager implements SecurityManager {
             authorizer.authorizeCertificateUse(certificateUser, signer.getSID());    
         }
     }
-    
+
+    @Override
+    public String getCertificateFingerprint(SignerId signer) throws UnregisteredPermissionException {
+        String fingerprint = permissionStore.getCertificateFingerprint(signer);
+        if (fingerprint != null) {
+            return permissionStore.getCertificateFingerprint(signer);
+        } else {
+            throw new UnregisteredPermissionException("No certificate fingerprint found for signer " + signer);
+        }
+    }
+
     /**
      * Method to authorize an operation 
      * @param operationType the type of operation that is to be authorized.

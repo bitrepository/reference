@@ -25,6 +25,8 @@ import org.bitrepository.protocol.security.exception.CertificateUseException;
 import org.bitrepository.protocol.security.exception.MessageAuthenticationException;
 import org.bitrepository.protocol.security.exception.MessageSigningException;
 import org.bitrepository.protocol.security.exception.OperationAuthorizationException;
+import org.bitrepository.protocol.security.exception.UnregisteredPermissionException;
+import org.bouncycastle.cms.SignerId;
 
 
 /**
@@ -35,8 +37,8 @@ import org.bitrepository.protocol.security.exception.OperationAuthorizationExcep
 public class DummySecurityManager implements SecurityManager {
 
     @Override
-    public void authenticateMessage(String message, String signature) throws MessageAuthenticationException {
-        // Safe empty implementation
+    public SignerId authenticateMessage(String message, String signature) throws MessageAuthenticationException {
+        return null;
     }
 
     @Override
@@ -57,4 +59,8 @@ public class DummySecurityManager implements SecurityManager {
         // Safe empty implementation
     }
 
+    @Override
+    public String getCertificateFingerprint(SignerId signer) throws UnregisteredPermissionException {
+        return null;
+    }
 }
