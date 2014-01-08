@@ -156,7 +156,7 @@ public class PutFileRequestHandler extends ChecksumPillarMessageHandler<PutFileR
         
         getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
                 "Putting the checksum of the file into archive.", message.getAuditTrailInformation(), 
-                FileAction.PUT_FILE, message.getCorrelationID(), messageContext.getCertificateSignature());
+                FileAction.PUT_FILE, message.getCorrelationID(), messageContext.getCertificateFingerprint());
         getCache().insertChecksumCalculation(message.getFileID(), message.getCollectionID(), calculatedChecksum, 
                 new Date());
     }

@@ -32,9 +32,10 @@ import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.util.encoders.Base64;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
 
 public class PermissionStoreTest extends ExtendedTestCase  {
     
@@ -62,7 +63,7 @@ public class PermissionStoreTest extends ExtendedTestCase  {
                 SecurityTestConstants.getPositiveCertificate().getBytes(SecurityModuleConstants.defaultEncodingType));
         X509Certificate positiveCertificate = (X509Certificate) CertificateFactory.getInstance(
                 SecurityModuleConstants.CertificateType).generateCertificate(bs);
-        Assert.assertEquals(positiveCertificate, certificateFromStore);
+        assertEquals(positiveCertificate, certificateFromStore);
     }
     
     @Test(groups = {"regressiontest"})
@@ -84,16 +85,34 @@ public class PermissionStoreTest extends ExtendedTestCase  {
                 SecurityTestConstants.getPositiveCertificate().getBytes(SecurityModuleConstants.defaultEncodingType));
         X509Certificate positiveCertificate = (X509Certificate) CertificateFactory.getInstance(
                 SecurityModuleConstants.CertificateType).generateCertificate(bs);
-        Assert.assertEquals(positiveCertificate, certificateFromStore);
+        assertEquals(positiveCertificate, certificateFromStore);
     }
     
-    @Test(groups = {"regressiontest"})
+    //@Test(groups = {"regressiontest"})
     public void certificatePermissionCheckTest() throws Exception {
         addDescription("Tests that a certificate only allows for the expected permission.");
     }
     
-    @Test(groups = {"regressiontest"})
+    //@Test(groups = {"regressiontest"})
     public void unknownCertificatePermissionCheckTest() throws Exception {
         addDescription("Tests that a unknown certificate results in expected refusal.");
-    }    
+    }
+
+    @Test(groups = {"regressiontest"})
+    public void certificateFingerprintTest() throws Exception {
+        addDescription("Tests that a certificate fingerprint can correctly be retrived for a signer.");
+        addFixture("Create signer to lookup fingerprint");
+        byte[] decodeSig =
+                Base64.decode(SecurityTestConstants.getSignature().getBytes(SecurityModuleConstants.defaultEncodingType));
+        CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
+                SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
+        SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
+
+        addStep("Lookup fingerprint based on signerId", "The correct finger print should be returned with openssl" +
+                "used to generate reference finger print");
+        String certificateFingerprintFromStore = permissionStore.getCertificateFingerprint(signer.getSID());
+        String referenceCertificateFingerprint =
+                "68:21:C4:C2:B9:AE:9F:AE:A1:F1:F9:93:35:3C:9F:C4:63:CC:92:59";
+        assertEquals(referenceCertificateFingerprint.toLowerCase().replaceAll(":", ""), certificateFingerprintFromStore);
+    }
 }

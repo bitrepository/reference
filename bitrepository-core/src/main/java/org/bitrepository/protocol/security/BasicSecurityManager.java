@@ -190,12 +190,7 @@ public class BasicSecurityManager implements SecurityManager {
 
     @Override
     public String getCertificateFingerprint(SignerId signer) throws UnregisteredPermissionException {
-        String fingerprint = permissionStore.getCertificateFingerprint(signer);
-        if (fingerprint != null) {
             return permissionStore.getCertificateFingerprint(signer);
-        } else {
-            throw new UnregisteredPermissionException("No certificate fingerprint found for signer " + signer);
-        }
     }
 
     /**

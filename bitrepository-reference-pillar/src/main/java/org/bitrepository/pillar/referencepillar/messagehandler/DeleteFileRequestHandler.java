@@ -175,7 +175,7 @@ public class DeleteFileRequestHandler extends ReferencePillarMessageHandler<Dele
     protected void deleteTheFile(DeleteFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
                 "Deleting the file.", message.getAuditTrailInformation(), FileAction.DELETE_FILE,
-                message.getCorrelationID(), messageContext.getCertificateSignature());
+                message.getCorrelationID(), messageContext.getCertificateFingerprint());
         getArchives().deleteFile(message.getFileID(), message.getCollectionID());
         getCsManager().deleteEntry(message.getFileID(), message.getCollectionID());
     }

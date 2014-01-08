@@ -307,7 +307,7 @@ public class ReplaceFileRequestHandler extends ReferencePillarMessageHandler<Rep
                 + "temporary area.");
         getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
                 "Replacing the file.", message.getAuditTrailInformation(), FileAction.REPLACE_FILE,
-                message.getCorrelationID(), messageContext.getCertificateSignature());
+                message.getCorrelationID(), messageContext.getCertificateFingerprint());
         getArchives().replaceFile(message.getFileID(), message.getCollectionID());
         getCsManager().recalculateChecksum(message.getFileID(), message.getCollectionID());
     }

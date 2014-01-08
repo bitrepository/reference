@@ -37,6 +37,7 @@ import java.util.Set;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.bitrepository.protocol.security.exception.PermissionStoreException;
+import org.bitrepository.protocol.security.exception.UnregisteredPermissionException;
 import org.bitrepository.settings.repositorysettings.InfrastructurePermission;
 import org.bitrepository.settings.repositorysettings.Operation;
 import org.bitrepository.settings.repositorysettings.OperationPermission;
@@ -153,8 +154,18 @@ public class PermissionStore {
         }
     }
 
-    public String getCertificateFingerprint(SignerId signer) {
-        return permissionMap.get(signer).getFingerprint();
+    /**
+     * Returns the store fingerprint for the signers certificate.
+     * @throws UnregisteredPermissionException No finger print could be found for the indicated signer.
+     */
+    public String getCertificateFingerprint(SignerId signer) throws UnregisteredPermissionException {
+        CertificateID certificateID = new CertificateID(signer.getIssuer(), signer.getSerialNumber());
+        CertificatePermission certificatePermission = permissionMap.get(certificateID);
+        if (certificatePermission != null) {
+            return certificatePermission.getFingerprint();
+        } else {
+            throw new UnregisteredPermissionException("No certificate fingerprint found for signer " + signer);
+        }
     }
 
     /**
@@ -251,5 +262,4 @@ public class PermissionStore {
             return fingerprint;
         }
     }
-
 }

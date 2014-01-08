@@ -268,7 +268,7 @@ public class ReplaceFileRequestHandler extends ChecksumPillarMessageHandler<Repl
     private void replaceTheEntry(ReplaceFileRequest message, MessageContext messageContext, String newChecksum) {
         getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
                 "Replacing the file.", message.getAuditTrailInformation(), FileAction.REPLACE_FILE,
-                message.getCorrelationID(), messageContext.getCertificateSignature());
+                message.getCorrelationID(), messageContext.getCertificateFingerprint());
         getCache().insertChecksumCalculation(message.getFileID(), message.getCollectionID(), newChecksum, new Date());
     }
 

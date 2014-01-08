@@ -208,7 +208,7 @@ public class PutFileRequestHandler extends ReferencePillarMessageHandler<PutFile
         }
         getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
                 "Add file to archive.", message.getAuditTrailInformation(), FileAction.PUT_FILE,
-                message.getCorrelationID(), messageContext.getCertificateSignature());
+                message.getCorrelationID(), messageContext.getCertificateFingerprint());
         getArchives().moveToArchive(message.getFileID(), message.getCollectionID());
         getCsManager().recalculateChecksum(message.getFileID(), message.getCollectionID());
     }

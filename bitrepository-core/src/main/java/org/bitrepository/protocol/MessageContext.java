@@ -1,16 +1,16 @@
 package org.bitrepository.protocol;
 
 /**
- * Contains information about the message, not contained in the message itself
+ * Contains information about the message, not contained in the message itself.
  */
 public class MessageContext {
-    private final String certificateSignature;
+    private final String certificateFingerprint;
 
-    public MessageContext(String certificateSignature) {
-        this.certificateSignature = certificateSignature;
+    public MessageContext(String certificateFingerprint) {
+        this.certificateFingerprint = certificateFingerprint;
     }
 
-    public String getCertificateSignature() {
-        return certificateSignature;
+    public String getCertificateFingerprint() {
+        return certificateFingerprint;
     }
 }
