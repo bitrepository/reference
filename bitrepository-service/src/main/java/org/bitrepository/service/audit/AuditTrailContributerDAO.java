@@ -331,8 +331,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         private Date maxDate;
 
         /**
-         * Constructor.
-         * @param collectionId The id of the collection.
+         * @param collectionId The id of the collection to retrieve the audit trails for.
          * @param fileId The file id limitation for the request.
          * @param minSeqNumber The minimum sequence number limitation for the request.
          * @param maxSeqNumber The maximum sequence number limitation for the request.

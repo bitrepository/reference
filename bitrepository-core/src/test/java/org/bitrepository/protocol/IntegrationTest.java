@@ -229,12 +229,12 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      */
     protected void setupMessageBus() {
         if (useEmbeddedMessageBus() && broker == null) {
-            broker = new LocalActiveMQBroker(settingsForCUT.getMessageBusConfiguration());
+            broker = new LocalActiveMQBroker(settingsForTestClient.getMessageBusConfiguration());
             broker.start();
         }
 
         messageBus = new MessageBusWrapper(
-                ProtocolComponentFactory.getInstance().getMessageBus(settingsForCUT, securityManager), testEventManager);
+                ProtocolComponentFactory.getInstance().getMessageBus(settingsForTestClient, securityManager), testEventManager);
     }
 
     /**
