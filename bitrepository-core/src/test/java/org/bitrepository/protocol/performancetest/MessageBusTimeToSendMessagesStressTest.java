@@ -27,6 +27,8 @@ package org.bitrepository.protocol.performancetest;
 import java.util.Date;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.bus.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
@@ -39,6 +41,7 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -58,6 +61,12 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
     /** The date for start sending the messages.*/
     private static Date startSending;
 
+    private Settings settings;
+
+    @BeforeMethod
+    public void initializeSettings() {
+        settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
+    }
     /**
      * Tests the amount of messages send over a message bus, which is not placed locally.
      * Requires to send at least five per second.
@@ -188,7 +197,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         private final String id;
 
         public MessageSenderThread(MessageBusConfiguration conf, SecurityManager securityManager, int numberOfMessages, String id) {
-            this.bus = new ActiveMQMessageBus(conf, securityManager, getClass().getSimpleName());
+            this.bus = new ActiveMQMessageBus(settings, securityManager);
             this.numberOfMessages = numberOfMessages;
             this.id = id;
         }
@@ -229,7 +238,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
          * @param conf The configurations for declaring the messagebus.
          */
         public CountMessagesListener(MessageBusConfiguration conf, SecurityManager securityManager) {
-            this.bus = new ActiveMQMessageBus(conf, securityManager, getClass().getSimpleName());
+            this.bus = new ActiveMQMessageBus(settings, securityManager);
             this.count = 0;
 
             bus.addListener(QUEUE, this);

@@ -33,7 +33,7 @@ import org.bitrepository.settings.repositorysettings.Permission;
 import org.bitrepository.settings.repositorysettings.RepositorySettings;
 
 /**
- * Contains the general configuration to be used by reference code components. Provides acces to both
+ * Contains the general configuration to be used by reference code components. Provides access to both
  * {@link ReferenceSettings} and {@link org.bitrepository.settings.repositorysettings.RepositorySettings}. Use a {@link SettingsProvider} to access settings create
  * <code>Settings</code> objects.
  */

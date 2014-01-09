@@ -29,6 +29,8 @@ import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.bus.LocalActiveMQBroker;
@@ -42,6 +44,7 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -65,6 +68,12 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
     /** The number of repeats by the buffer text in the message.*/
     private final int NUMBER_OF_REPEATS_OF_BUFFER_TEXT = 100;
 
+    private Settings settings;
+
+    @BeforeMethod
+    public void initializeSettings() {
+        settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
+    }
     /**
      * Tests the amount of messages send over a message bus, which is not placed locally.
      * Requires to send at least five per second.
@@ -202,7 +211,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
          * @param conf The configurations for declaring the messagebus.
          */
         public ResendMessageListener(MessageBusConfiguration conf) {
-            this.bus = new ActiveMQMessageBus(conf, securityManager, getClass().getSimpleName());
+            this.bus = new ActiveMQMessageBus(settings, securityManager);
             this.count = 0;
 
             bus.addListener(QUEUE, this);

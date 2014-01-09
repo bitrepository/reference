@@ -32,7 +32,6 @@ import javax.jms.JMSException;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,8 +58,7 @@ public final class MessageBusManager {
     public synchronized static MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
         if (!messageBusMap.containsKey(DEFAULT_MESSAGE_BUS)) {
             MessageBus messageBus = createMessageBus(
-                    settings.getMessageBusConfiguration(),
-                    securityManager, settings.getComponentID());
+                    settings, securityManager);
             messageBusMap.put(DEFAULT_MESSAGE_BUS, messageBus);
             messageBus.setComponentFilter(Arrays.asList(new String[] {settings.getComponentID()}));
         }
@@ -76,10 +74,9 @@ public final class MessageBusManager {
     }
 
     private static MessageBus createMessageBus(
-            MessageBusConfiguration settings,
-            SecurityManager securityManager,
-            String componentID) {
-        ActiveMQMessageBus messageBus = new ActiveMQMessageBus(settings, securityManager, componentID);
+            Settings settings,
+            SecurityManager securityManager) {
+        ActiveMQMessageBus messageBus = new ActiveMQMessageBus(settings, securityManager);
         return messageBus;
     }
 

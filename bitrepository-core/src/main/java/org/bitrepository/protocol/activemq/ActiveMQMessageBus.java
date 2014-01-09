@@ -31,11 +31,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
@@ -52,12 +47,14 @@ import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.common.JaxbHelper;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.MessageVersionValidator;
 import org.bitrepository.protocol.OperationType;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
+import org.bitrepository.protocol.messagebus.ReceivedMessageHandler;
 import org.bitrepository.protocol.messagebus.logger.AlarmMessageLogger;
 import org.bitrepository.protocol.messagebus.logger.DeleteFileMessageLogger;
 import org.bitrepository.protocol.messagebus.logger.GetAuditTrailsMessageLogger;
@@ -93,13 +90,6 @@ public class ActiveMQMessageBus implements MessageBus {
 
     /** The variable to separate the parts of the consumer key. */
     private static final String CONSUMER_KEY_SEPARATOR = "#";
-    
-    /** The initial number of threads running in the thread pool.*/
-    private static final int INIT_SIZE_OF_THREAD_POOL = 20;
-    /** The maximum number of threads in the pool.*/
-    private static final int MAX_SIZE_OF_THREAD_POOL = 20;
-    /** The number of seconds to keep the threads alive, when idle.*/
-    private static final long SECONDS_TO_KEEP_THREADS_ALIVE = 60;
 
     /** The session for sending messages. Should not be the same as the consumer session, 
      * as sessions are not thread safe. This also means the session should be used in a synchronized manor.
@@ -130,36 +120,32 @@ public class ActiveMQMessageBus implements MessageBus {
     private final Set<String> componentFilter = new HashSet<String>();
     private final Set<String> collectionFilter = new HashSet<String>();
 
-    /** The queue with the runnable threads for handling the received messages. */
-    private final BlockingQueue<Runnable> threadQueue;
-    /** The executor for threading of the message handling.*/
-    private final ExecutorService executor;
     /** The single producer used to send all messages. The destination need to be sent on the messages. */
     private final MessageProducer producer;
+    /** Takes care of handling the further processing by the listeners in separated thread. */
+    private final ReceivedMessageHandler receivedMessageHandler;
     
     /**
      * Use the {@link org.bitrepository.protocol.ProtocolComponentFactory} to get a handle on a instance of
      * MessageBusConnections. This constructor is for the
      * <code>ProtocolComponentFactory</code> eyes only.
      *
-     * @param messageBusConfiguration The properties for the connection.
+     * @param settings The settings to use.
      * @param securityManager The security manager to use for message authentication.
-     * @param componentID Used for identifying durable subscribers.
      */
     public ActiveMQMessageBus(
-            MessageBusConfiguration messageBusConfiguration,
-            SecurityManager securityManager,
-            String componentID) {
-        log.info("Initializing ActiveMQMessageBus:'" + messageBusConfiguration + "'.");
-        this.configuration = messageBusConfiguration;
+            Settings settings,
+            SecurityManager securityManager) {
+        configuration = settings.getMessageBusConfiguration();
+        log.info("Initializing ActiveMQMessageBus:'" + configuration + "'.");
         this.securityManager = securityManager;
-        clientID = componentID;
+        clientID = settings.getComponentID();
         jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getURL());
         registerCustomMessageLoggers();
         try {
             connection = connectionFactory.createConnection();
-            connection.setClientID(componentID);
+            connection.setClientID(clientID);
             connection.setExceptionListener(new MessageBusExceptionListener());
 
             producerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
@@ -172,10 +158,9 @@ public class ActiveMQMessageBus implements MessageBus {
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
         }
         log.debug("ActiveMQConnection initialized for '" + configuration + "'.");
-        
-        threadQueue = new LinkedBlockingQueue<Runnable>();
-        executor = new ThreadPoolExecutor(INIT_SIZE_OF_THREAD_POOL, MAX_SIZE_OF_THREAD_POOL, 
-                SECONDS_TO_KEEP_THREADS_ALIVE, TimeUnit.SECONDS, threadQueue);
+
+        receivedMessageHandler = new ReceivedMessageHandler(
+                settings.getReferenceSettings().getGeneralSettings().getMessageThreadPools());
     }
 
     /**
@@ -233,6 +218,7 @@ public class ActiveMQMessageBus implements MessageBus {
 
     @Override
     public void close() throws JMSException {
+        receivedMessageHandler.close();
         log.info("Closing message bus: " + configuration);
         producerSession.close();
         log.debug("Producer session closed.");
@@ -459,48 +445,12 @@ public class ActiveMQMessageBus implements MessageBus {
                     certificateFingerprint = securityManager.getCertificateFingerprint(signer);
                 }
                 MessageContext messageContext = new MessageContext(certificateFingerprint);
-                threadMessageHandling(content, messageContext);
+                receivedMessageHandler.deliver(messageListener, content, messageContext);
             } catch (SAXException e) {
                 log.error("Error validating message " + jmsMessage, e);
             } catch (Exception e) {
                 log.error("Error handling message. Received type was '" + type + "'.\n{}", text, e);
             }
-        }
-        
-        /**
-         * Making the handling of the message be performed in parallel.
-         * @param message The message to be handled by the MessageListener.
-         */
-        private void threadMessageHandling(Message message, MessageContext messageContext) {
-            MessageListenerThread mlt = new MessageListenerThread(messageListener, message, messageContext);
-            executor.execute(mlt);
-            log.trace("Adding a new message handling thread. Currently number of running threads: " + threadQueue.size());
-        }
-    }
-    
-    /**
-     * Simple class to thread the handling of messages by the message listener.
-     */
-    private class MessageListenerThread extends Thread {
-        /** The message listener.*/
-        private final MessageListener listener;
-        /** The message for the listener to handle.*/
-        private final Message message;
-        private final MessageContext messageContext;
-        
-        /**
-         * @param listener The MessageListener to handle the message.
-         * @param message The message to be handled by the MessageListener.
-         */
-        MessageListenerThread(MessageListener listener, Message message, MessageContext messageContext) {
-            this.listener = listener;
-            this.message = message;
-            this.messageContext = messageContext;
-        }
-        
-        @Override
-        public void run() {
-            listener.onMessage(message, messageContext);
         }
     }
 

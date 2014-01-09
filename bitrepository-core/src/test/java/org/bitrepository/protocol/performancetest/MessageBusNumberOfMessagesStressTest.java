@@ -25,31 +25,37 @@
 package org.bitrepository.protocol.performancetest;
 
 import java.util.Date;
+
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.MessageContext;
-import org.bitrepository.protocol.bus.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
+import org.bitrepository.protocol.bus.LocalActiveMQBroker;
 import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
  * Stress testing of the messagebus. 
  */
 public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
-    /** The time to wait when sending a message before it definitely should 
-     * have been consumed by a listener.*/
-    static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 500;
     /** The name of the queue to send the messages.*/
     private static String QUEUE = "TEST-QUEUE";
+    private Settings settings;
+
+    @BeforeMethod
+    public void initializeSettings() {
+        settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
+    }
 
     /**
      * Tests the amount of messages send over a message bus, which is not placed locally.
@@ -65,12 +71,11 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
         QUEUE += "-" + (new Date()).getTime();
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
-        MessageBusConfiguration conf = MessageBusConfigurationFactory.createDefaultConfiguration();
         ResendMessageListener listener = null;
 
         try {
             addStep("Initialise the messagelistener", "Should be allowed.");
-            listener = new ResendMessageListener(conf);
+            listener = new ResendMessageListener(settings);
 
             addStep("Start sending at '" + new Date() + "'", "Should just be waiting.");
             listener.startSending();
@@ -111,9 +116,10 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
         QUEUE += "-" + (new Date()).getTime();
 
         addStep("Make configuration for the messagebus and define the local broker.", "Both should be created.");
-        MessageBusConfiguration conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
-        Assert.assertNotNull(conf);
-        LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
+        settings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(
+                MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration()
+        );
+        LocalActiveMQBroker broker = new LocalActiveMQBroker(settings.getMessageBusConfiguration());
         Assert.assertNotNull(broker);
 
         ResendMessageListener listener = null;
@@ -123,7 +129,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
             broker.start();
 
             addStep("Initialise the messagelistener", "Should be allowed.");
-            listener = new ResendMessageListener(conf);
+            listener = new ResendMessageListener(settings);
 
             addStep("Start sending at '" + new Date() + "'", "Should just be waiting.");
             listener.startSending();
@@ -171,8 +177,8 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
          * Constructor.
          * @param conf The configurations for declaring the message bus.
          */
-        public ResendMessageListener(MessageBusConfiguration conf) {
-            this.bus = new ActiveMQMessageBus(conf, securityManager, getClass().getSimpleName());
+        public ResendMessageListener(Settings conf) {
+            this.bus = new ActiveMQMessageBus(conf, securityManager);
             this.count = 0;
 
             bus.addListener(QUEUE, this);

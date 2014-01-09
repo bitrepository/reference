@@ -31,6 +31,8 @@ import java.util.Date;
 import java.util.List;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.bus.LocalActiveMQBroker;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
@@ -43,6 +45,7 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -90,7 +93,12 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
 
     /** Whether more messages should be send.*/
     private static boolean sendMoreMessages = true;
+    private Settings settings;
 
+    @BeforeMethod
+    public void initializeSettings() {
+        settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
+    }
     /**
      * Tests the amount of messages send over a message bus, which is not placed locally.
      * Requires to send at least five per second.
@@ -111,18 +119,20 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         alarmMessage.setDestination(QUEUE);
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
-        MessageBusConfiguration conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+        settings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(
+                MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration()
+        );
         /** The mocked SecurityManager */
         SecurityManager securityManager = new DummySecurityManager();
-        LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
+        LocalActiveMQBroker broker = new LocalActiveMQBroker(settings.getMessageBusConfiguration());
 
         try {
             addStep("Start the broker and initialise the listeners.", 
             "Connections should be established.");
             broker.start();
-            bus = new ActiveMQMessageBus(conf, securityManager, getClass().getSimpleName());
+            bus = new ActiveMQMessageBus(settings, securityManager);
 
-            testListeners(conf, securityManager);
+            testListeners(settings.getMessageBusConfiguration(), securityManager);
         } finally {
             if(broker != null) {
                 broker.stop();
@@ -152,7 +162,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
 
         addStep("Start the broker and initialise the listeners.", 
         "Connections should be established.");
-        bus = new ActiveMQMessageBus(conf, securityManager, getClass().getSimpleName());
+        bus = new ActiveMQMessageBus(settings, securityManager);
 
         testListeners(conf, securityManager);
     }
@@ -164,7 +174,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         try {
             addStep("Initialise the message listeners.", "Should be created and connected to the message bus.");
             for(int i = 0; i < NUMBER_OF_LISTENERS; i++) {
-                listeners.add(new NotificationMessageListener(conf, securityManager));
+                listeners.add(new NotificationMessageListener(settings, securityManager));
             }
 
             addStep("Wait for setup", "We wait!");
@@ -282,10 +292,10 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
 
         /**
          * Constructor.
-         * @param conf The configuration for defining the message bus.
+         * @param settings The configuration for defining the message bus.
          */
-        public NotificationMessageListener(MessageBusConfiguration conf, SecurityManager securityManager) {
-            this.bus = new ActiveMQMessageBus(conf, securityManager, getClass().getSimpleName());
+        public NotificationMessageListener(Settings settings, SecurityManager securityManager) {
+            this.bus = new ActiveMQMessageBus(settings, securityManager);
             this.count = 0;
 
             bus.addListener(QUEUE, this);

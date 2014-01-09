@@ -55,7 +55,6 @@ public class GeneralMessageBusTest extends IntegrationTest {
     @Override
     protected void registerMessageReceivers() {
         super.registerMessageReceivers();
-
         collectionReceiver = new MessageReceiver(settingsForCUT.getCollectionDestination(), testEventManager);
         addReceiver(collectionReceiver);
     }

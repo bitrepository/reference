@@ -59,16 +59,100 @@
         <xs:documentation>General settings for a client</xs:documentation>
       </xs:annotation>
       <xs:sequence>
-        <xs:element name="ReceiverDestinationIDFactoryClass" minOccurs="0" type="xs:string">
+        <xs:element name="ReceiverDestinationIDFactoryClass" minOccurs="0" type="xs:string" />
+        <xs:element ref="MessageThreadPools" minOccurs="0">
           <xs:annotation>
-            <xs:documentation xml:lang="en">
-              Defines the class to construct receiver destination IDs. The DefaultReceiverDestinationIDFactory
-              will be used if undefined.
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="MessageThreadPools">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation xml:lang="en">
+          Defines the the thread pools to handle message.
+          A received message is check against the different message thread pools in the
+          following order:
+          1. Is there defined pools specific to collection for the received message.
+          2. Specific message type pools
+          2. Category pools
+          3. Default pool (no message filters defined). Note that this poolwill always be create. If undefined a pool
+          with ondemand creation of processing threads is created (using CachedThreadPool).
+        </xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element ref="MessageThreadPool" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="MessageThreadPool">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>Defines a thread pool to handle a set of message types. The pool can be restricted to only
+        be used on specific collections, message categories and specific messages</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="PoolSize" type="xs:positiveInteger" minOccurs="0" >
+          <xs:annotation>
+            <xs:documentation>The number of threads to use for processing. If undefined the pool thread limit is
+              unbound, but threads will be reused.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="Collection" type="xs:string" minOccurs="0" maxOccurs="unbounded" >
+          <xs:annotation>
+            <xs:documentation>
+              The collections filter to use the pool for. If undefined all collections are process via this pool.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="MessageCategory" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>
+              The category of messages to use the pool for. If undefined all message categories are process via this
+              pool.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="MessageName" type="xs:string" minOccurs="0" maxOccurs="unbounded" >
+          <xs:annotation>
+            <xs:documentation>
+              The specific messages to use the pool for. Overrides the MessageCategory setting.
+              If undefined all message names are process via this pool.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
       </xs:sequence>
     </xs:complexType>
+  </xs:element>
+
+  <xs:element name="MessageCategory">
+    <xs:simpleType>
+      <xs:annotation>
+        <xs:documentation xml:lang="en">
+          Defines a number of message category types which can be used to handle sets of messages in different ways.
+        </xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="FAST">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Messages which are typically fast to process. These are all Identification messages, progress responses
+              and status requests.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="SLOW">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Non-fast messages.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+      </xs:restriction>
+    </xs:simpleType>
   </xs:element>
 
   <xs:element name="ClientSettings">
@@ -100,7 +184,6 @@
               0 denotes that a operation should not be retried (only the initial operation attempt).
               1 or higher denotes the number of additional attempts of file transfer. I.e. if 2 up to 3
               attempts is allowed before the operation fails.
-
             </xs:documentation>
           </xs:annotation>
         </xs:element>
@@ -194,7 +277,7 @@
           <xs:annotation>
             <xs:documentation xml:lang="en">
               Classpath for the FileStore backend of the ReferencePillar.
-              Default value, when undefined is: 
+              Default value, when undefined is:
               'org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager'.
             </xs:documentation>
           </xs:annotation>
@@ -501,12 +584,12 @@
           </xs:annotation>
         </xs:element>
         <xs:element name="AuditTrailPreservation" type="AuditTrailPreservation" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation xml:lang="en">
-            The settings to use for audit trail preservation, eg. backup of audit trails..
-          </xs:documentation>
-        </xs:annotation>
-      </xs:element>
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The settings to use for audit trail preservation, eg. backup of audit trails..
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
         <xs:element name="MaxNumberOfEventsInRequest" type="xs:positiveInteger" minOccurs="0">
           <xs:annotation>
             <xs:documentation xml:lang="en">
@@ -619,14 +702,14 @@
     </xs:complexType>
   </xs:element>
 
-    <xs:complexType name="WorkflowSettings">
-      <xs:annotation>
-        <xs:documentation>List of Collections present in the repository.</xs:documentation>
-      </xs:annotation>
-      <xs:sequence>
-        <xs:element name="Workflow" type ="WorkflowConfiguration" minOccurs="0" maxOccurs="unbounded" />
-      </xs:sequence>
-    </xs:complexType>
+  <xs:complexType name="WorkflowSettings">
+    <xs:annotation>
+      <xs:documentation>List of Collections present in the repository.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Workflow" type ="WorkflowConfiguration" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
 
   <xs:complexType name="WorkflowConfiguration">
     <xs:annotation>
@@ -812,7 +895,7 @@
           </xs:documentation>
         </xs:annotation>
       </xs:element>
-            <xs:element name="AllowAutoCreate" type="xs:boolean" minOccurs="0" maxOccurs="1">
+      <xs:element name="AllowAutoCreate" type="xs:boolean" minOccurs="0" maxOccurs="1">
         <xs:annotation>
           <xs:documentation>
             OPTIONAL. Setting for disallowing/allowing auto creation of supported databases.
