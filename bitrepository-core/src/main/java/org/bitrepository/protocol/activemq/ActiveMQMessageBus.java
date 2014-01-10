@@ -65,6 +65,7 @@ import org.bitrepository.protocol.messagebus.logger.GetStatusMessageLogger;
 import org.bitrepository.protocol.messagebus.logger.MessageLoggerProvider;
 import org.bitrepository.protocol.messagebus.logger.PutFileMessageLogger;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.settings.referencesettings.MessageThreadPools;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.bouncycastle.cms.SignerId;
 import org.slf4j.Logger;
@@ -159,8 +160,11 @@ public class ActiveMQMessageBus implements MessageBus {
         }
         log.debug("ActiveMQConnection initialized for '" + configuration + "'.");
 
-        receivedMessageHandler = new ReceivedMessageHandler(
-                settings.getReferenceSettings().getGeneralSettings().getMessageThreadPools());
+        MessageThreadPools messageThreadPoolConfig = null;
+        if (settings.getReferenceSettings().getGeneralSettings() != null) {
+            messageThreadPoolConfig = settings.getReferenceSettings().getGeneralSettings().getMessageThreadPools();
+        }
+        receivedMessageHandler = new ReceivedMessageHandler(messageThreadPoolConfig);
     }
 
     /**
