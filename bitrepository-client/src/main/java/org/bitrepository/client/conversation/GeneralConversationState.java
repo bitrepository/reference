@@ -25,14 +25,17 @@
 package org.bitrepository.client.conversation;
 
 import java.util.Collection;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
+import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.protocol.ProtocolVersionLoader;
 import org.slf4j.Logger;
@@ -44,33 +47,32 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class GeneralConversationState implements ConversationState {
     private final Logger log = LoggerFactory.getLogger(getClass());
-    /** Defines that the timer is a daemon thread. */
-    private static final Boolean TIMER_IS_DAEMON = true;
-    /** The timer used for timeout checks. */
-    protected final Timer timer;
+    /** The scheduler used for timeout checks. */
+    private static final ScheduledExecutorService timer = Executors.newScheduledThreadPool(1,
+            new DefaultThreadFactory("Conversation" + "-Timeout-", Thread.NORM_PRIORITY));
+    private ScheduledFuture scheduledTimeout;
     /** For response bookkeeping */
     private final ContributorResponseStatus responseStatus;
 
     /**
-     *
      * @param expectedContributors The collection of components to monitor responses from. This conversation
      *                             phase is considered finished when all contributors have responded.
      */
     protected GeneralConversationState(Collection<String> expectedContributors) {
         responseStatus = new ContributorResponseStatus(expectedContributors);
-        timer = new Timer(getClass().getSimpleName() + " conversation state " + "timer",
-                TIMER_IS_DAEMON);
     }
 
     /**
      * Startes the state by: <ol>
-     *     <li>Starting the timeout timer.</li>
+     *     <li>Scheduling a timeout.</li>
      *     <li>Sends the request which triggers the responses for this state.</li>
      * </ol>
      */
     public void start() {
         if (!responseStatus.getOutstandComponents().isEmpty()) {
-            timer.schedule(new StateTimerTask(), getTimeoutValue());
+            if (getTimeoutValue() > 0) {
+                scheduledTimeout = timer.schedule(new TimeoutHandler(), getTimeoutValue(), TimeUnit.MILLISECONDS);
+            }
             sendRequest();
         } else {
             // No contributors need to be called for the operation to finish.
@@ -104,6 +106,7 @@ public abstract class GeneralConversationState implements ConversationState {
             if(processMessage(response)) {
                 responseStatus.responseReceived(response);
                 if (responseStatus.haveAllComponentsResponded()) {
+                    scheduledTimeout.cancel(true);
                     changeState();
                 }
             }
@@ -115,11 +118,11 @@ public abstract class GeneralConversationState implements ConversationState {
     }
 
     /**
-     * The timer task class for the outstanding identify requests.
+     * Handles timeouts for the outstanding requests.
      * When the time is reached the selected pillar should
      * be called requested for the delivery of the file.
      */
-    private class StateTimerTask extends TimerTask {
+    private class TimeoutHandler implements Runnable {
         @Override
         public void run() {
             try {
@@ -138,7 +141,6 @@ public abstract class GeneralConversationState implements ConversationState {
      */
     private void changeState() {
         try {
-            timer.cancel();
             GeneralConversationState nextState = completeState();
             getContext().setState(nextState);
             nextState.start();
@@ -148,7 +150,7 @@ public abstract class GeneralConversationState implements ConversationState {
     }
 
     private void failConversation(String message) {
-        timer.cancel();
+        scheduledTimeout.cancel(true);
         getContext().getMonitor().operationFailed(message);
         getContext().setState(new FinishedState(getContext()));
     }

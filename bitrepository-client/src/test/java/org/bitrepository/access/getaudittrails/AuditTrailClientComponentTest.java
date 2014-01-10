@@ -25,9 +25,6 @@ import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.access.getaudittrails.AuditTrailClient;
-import org.bitrepository.access.getaudittrails.AuditTrailQuery;
-import org.bitrepository.access.getaudittrails.ConversationBasedAuditTrailClient;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
@@ -48,7 +45,6 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.settings.repositorysettings.Collection;
-import org.bitrepository.settings.repositorysettings.GetAuditTrailSettings;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -462,36 +458,6 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         addStep("Wait for 2 seconds", "An failed event should be received");
         Assert.assertEquals(testEventHandler.waitForEvent( 2, TimeUnit.SECONDS).getEventType(),
                 OperationEvent.OperationEventType.FAILED);
-    }
-
-    //@Test(groups = {"regressiontest"})
-    // @Test(groups = {"failing"})
-    // We do no longer require the GetAuditTrailSettings...
-    public void badSettingsTest() throws Exception {
-        addDescription("Tests that the Audit Trail can handle missing Settings.");
-        addStep("Remove the GetAuditTrailSettings.", "Should fail.");
-        GetAuditTrailSettings auditSettings = settingsForCUT.getRepositorySettings().getGetAuditTrailSettings();
-        settingsForCUT.getRepositorySettings().setGetAuditTrailSettings(null);
-        AuditTrailClient client1 = createAuditTrailClient();
-
-        try {
-            client1.getAuditTrails(collectionID, null, null, null, null, null);
-            Assert.fail("Should throw an exception here.");
-        } catch(IllegalStateException e) {
-            // expected.
-        }
-        
-        addStep("Tests when the contributor list is emptied", "Should also fail.");
-        settingsForCUT.getRepositorySettings().setGetAuditTrailSettings(auditSettings);
-        settingsForCUT.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
-        AuditTrailClient client2 = createAuditTrailClient();
-
-        try {
-            client2.getAuditTrails(collectionID, null, null, null, null, null);
-            Assert.fail("Should throw an exception here.");
-        } catch(IllegalStateException e) {
-            // expected.
-        }
     }
 
     /**

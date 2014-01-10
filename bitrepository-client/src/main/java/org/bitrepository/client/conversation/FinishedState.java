@@ -45,10 +45,7 @@ public class FinishedState extends GeneralConversationState {
     }
 
     @Override
-    public void start(){
-        // Stop the timer, so we won't leak threads.
-        timer.cancel();
-    }
+    public void start(){}
 
     @Override
     protected GeneralConversationState completeState() throws UnableToFinishException {
@@ -56,8 +53,11 @@ public class FinishedState extends GeneralConversationState {
     }
 
     @Override
+    /**
+     * Never timeout.
+     */
     protected long getTimeoutValue() {
-        return context.getSettings().getReferenceSettings().getClientSettings().getConversationTimeout().longValue();
+        return 0;
     }
 
     @Override
@@ -71,9 +71,7 @@ public class FinishedState extends GeneralConversationState {
     }
 
     @Override
-    public void sendRequest() {
-        // Nothing to do.
-    }
+    public void sendRequest() {}
 
     @Override
     protected boolean processMessage(MessageResponse message) {

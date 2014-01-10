@@ -261,8 +261,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     /**
      * Initialises the connection to the file exchange server. Also starts an embedded http server 
-     * if this is going to be used, eg. if useEmbeddedHttpServer is true. 
-     * @throws Exception
+     * if this is going to be used, eg. if useEmbeddedHttpServer is true.
      */
     protected void setupHttpServer() {
         httpServerConfiguration =
@@ -276,8 +275,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     }
 
     /**
-     * Shutdown the embedded http server if any. 
-     * @throws Exception
+     * Shutdown the embedded http server if any.
      */
     protected void teardownHttpServer() {
         if (useEmbeddedHttpServer()) {
