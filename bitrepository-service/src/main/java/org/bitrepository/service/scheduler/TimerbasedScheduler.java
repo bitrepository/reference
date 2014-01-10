@@ -24,14 +24,20 @@
  */
 package org.bitrepository.service.scheduler;
 
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.JobTimerTask;
 import org.bitrepository.service.workflow.SchedulableJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 /**
  * Scheduler that uses Timer to run workflows.
@@ -48,7 +54,7 @@ public class TimerbasedScheduler implements JobScheduler {
     /** The name of the timer.*/
     private static final String TIMER_NAME = "Service Scheduler";
     /** Whether the timer is a daemon.*/
-    private static final boolean TIMER_IS_DEAMON = false;
+    private static final boolean TIMER_IS_DAEMON = true;
     /** A timer delay of 0 seconds.*/
     private static final Long NO_DELAY = 0L;
     private List<JobEventListener> jobListeners = new LinkedList<JobEventListener>();
@@ -56,7 +62,7 @@ public class TimerbasedScheduler implements JobScheduler {
     /** Setup a timer task for running the workflows at requested interval.
      */
     public TimerbasedScheduler() {
-        timer = new Timer(TIMER_NAME, TIMER_IS_DEAMON);
+        timer = new Timer(TIMER_NAME, TIMER_IS_DAEMON);
     }
 
     @Override
