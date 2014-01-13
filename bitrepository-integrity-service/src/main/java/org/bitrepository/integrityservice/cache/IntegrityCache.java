@@ -103,8 +103,8 @@ public class IntegrityCache implements IntegrityModel {
     }
 
     @Override
-    public IntegrityIssueIterator getFilesOnPillar(String pillarId, long minId, long maxId, String collectionId) {
-        return integrityModel.getFilesOnPillar(pillarId, minId, maxId, collectionId);
+    public IntegrityIssueIterator getFilesOnPillar(String pillarId, long firstIndex, long maxResults, String collectionId) {
+        return integrityModel.getFilesOnPillar(pillarId, firstIndex, maxResults, collectionId);
     }
     
     @Override
@@ -133,8 +133,9 @@ public class IntegrityCache implements IntegrityModel {
     }
     
     @Override
-    public IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarId, long minId, long maxId, String collectionId) {
-        return integrityModel.getMissingFilesAtPillarByIterator(pillarId, minId, maxId, collectionId);
+    public IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarId, long firstIndex, 
+            long maxResults, String collectionId) {
+        return integrityModel.getMissingFilesAtPillarByIterator(pillarId, firstIndex, maxResults, collectionId);
     }
 
     @Override
@@ -148,8 +149,8 @@ public class IntegrityCache implements IntegrityModel {
     }
 
     @Override
-    public List<String> getFilesWithChecksumErrorsAtPillar(String pillarId, long minId, long maxId, String collectionId) {
-        return integrityModel.getFilesWithChecksumErrorsAtPillar(pillarId, minId, maxId, collectionId);
+    public IntegrityIssueIterator getFilesWithChecksumErrorsAtPillar(String pillarId, long firstIndex, long maxResults, String collectionId) {
+        return integrityModel.getFilesWithChecksumErrorsAtPillar(pillarId, firstIndex, maxResults, collectionId);
     }
 
     @Override

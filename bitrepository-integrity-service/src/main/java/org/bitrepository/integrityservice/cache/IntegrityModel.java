@@ -85,12 +85,12 @@ public interface IntegrityModel {
     /**
      * Get an IntegrityIssueIterator for the files for a given pillar, restricted by min and max ids.
      * @param pillarId The id of the pillar.
-     * @param minId The minimum result number.
-     * @param maxId The maximum result number.
+     * @param firstIndex The index of the first result.
+     * @param maxResults The maximum number of results.
      * @param collectionId The ID of the collection to get files from
      * @return The list of file ids for the pillar, between min and max.
      */
-    IntegrityIssueIterator getFilesOnPillar(String pillarId, long minId, long maxId, String collectionId);
+    IntegrityIssueIterator getFilesOnPillar(String pillarId, long firstIndex, long maxResults, String collectionId);
     
     /**
      * @param pillarId The pillar.
@@ -102,12 +102,12 @@ public interface IntegrityModel {
     /**
      * An IntegrityIssueIterator for missing files for a given pillar, restricted by min and max ids.
      * @param pillarId The id of the pillar.
-     * @param minId The minimum result number.
-     * @param maxId The maximum result number.
+     * @param firstIndex The first index to get results from.
+     * @param maxResults The maximum number of results.
      * @param collectionId The ID of the collection to get missing files from
      * @return The IntegrityIssueIterator for missing file ids for the pillar, between min and max.
      */
-    IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarId, long minId, long maxId, 
+    IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarId, long firstIndex, long maxResults, 
             String collectionId);
     
     /**
@@ -121,12 +121,12 @@ public interface IntegrityModel {
     /**
      * A list of files with checksum error for a given pillar, restricted by min and max ids.
      * @param pillarId The id of the pillar.
-     * @param minId The minimum result number.
-     * @param maxId The maximum result number.
+     * @param firstIndex The first index to get results from.
+     * @param maxResults The maximum number of results.
      * @param collectionId The ID of the collection to get checksum errors from
-     * @return The list of ids for the files with checksum errors for the pillar, between min and max.
+     * @return An iterator for the ids of the files with checksum errors for the pillar, between min and max.
      */
-    List<String> getFilesWithChecksumErrorsAtPillar(String pillarId, long minId, long maxId, String collectionId);
+    IntegrityIssueIterator getFilesWithChecksumErrorsAtPillar(String pillarId, long firstIndex, long maxResults, String collectionId);
 
     /**
      * Sets the file to be missing at the given pillars.

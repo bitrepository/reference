@@ -10,6 +10,7 @@ import static org.bitrepository.integrityservice.cache.database.DatabaseConstant
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_KEY;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILE_INFO_TABLE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_CHECKSUM_STATE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_KEY;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_STATE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_PILLAR_KEY;
@@ -79,6 +80,23 @@ public class PostgresIntegrityDAO extends IntegrityDAO {
                 + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
                 + " AND " + FILES_TABLE + "." + COLLECTION_KEY + "= ?"
                 + " AND " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ("
+                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
+                    + " WHERE " + PILLAR_ID + " = ?)" 
+                + " ORDER BY " + FILES_TABLE + "." + FILES_KEY
+                + " OFFSET ?"
+                + " LIMIT ?";
+        
+        return selectSql;
+    }
+
+    @Override
+    protected String getFilesWithChecksumErrorsOnPillarSql() {
+        String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
+                + " JOIN " + FILE_INFO_TABLE 
+                + " ON " + FILES_TABLE + "." + FILES_KEY + "=" + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                + " WHERE " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ?"
+                + " AND "+ FILES_TABLE + "." + COLLECTION_KEY + "= ?"
+                + " AND " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = (" 
                     + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
                     + " WHERE " + PILLAR_ID + " = ?)" 
                 + " ORDER BY " + FILES_TABLE + "." + FILES_KEY

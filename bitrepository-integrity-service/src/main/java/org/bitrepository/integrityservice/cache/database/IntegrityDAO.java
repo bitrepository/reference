@@ -966,62 +966,41 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
     }
     
     /**
+     * Method to acquire the sql for selecting files with checksum errors on a pillar in a collection
+     * with a limited number of results. 
+     */
+    protected abstract String getFilesWithChecksumErrorsOnPillarSql();
+    
+    /**
      * Retrieves list of existing files on a pillar, within the defined range.
      * @param pillarId The id of the pillar.
-     * @param min The minimum count.
-     * @param max The maximum count.
+     * @param firstIndex The minimum count.
+     * @param maxResults The maximum count.
      * @param collectionId The ID of the collection to get list of checksum errors from
      * @return The list of file ids between the two counts.
      */
-    public List<String> getFilesWithChecksumErrorsOnPillar(String pillarId, long min, long max, String collectionId) {
-        log.trace("Locating all existing files for pillar '" + pillarId + "' from number " + min + " to " + max + ".");
+    public IntegrityIssueIterator getFilesWithChecksumErrorsOnPillar(String pillarId, Long firstIndex, Long maxResults, String collectionId) {
+        ArgumentValidator.checkPositive(maxResults, "maxResults");
+        long first;
+        if(firstIndex == null) {
+            first = 0;
+        } else {
+            first = firstIndex;
+        }
+        log.trace("Locating all existing files for pillar '" + pillarId + "' from number " + firstIndex + " to " + maxResults + ".");
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
-                + " JOIN " + FILE_INFO_TABLE 
-                + " ON " + FILES_TABLE + "." + FILES_KEY + "=" + FILE_INFO_TABLE + "." + FI_FILE_KEY 
-                + " WHERE " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ?"
-                + " AND "+ FILES_TABLE + "." + COLLECTION_KEY + "= ?"
-                + " AND " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = (" 
-                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
-                    + " WHERE " + PILLAR_ID + " = ?)" 
-                + " ORDER BY " + FILES_TABLE + "." + FILES_KEY;
+        String selectSql = getFilesWithChecksumErrorsOnPillarSql();
         
+        PreparedStatement ps = null;
+        Connection conn = null;
         try {
-            ResultSet dbResult = null;
-            PreparedStatement ps = null;
-            Connection conn = null;
-            try {
-                conn = dbConnector.getConnection();
-                ps = DatabaseUtils.createPreparedStatement(conn, selectSql, ChecksumState.ERROR.ordinal(), 
-                        collectionKey, pillarId);
-                dbResult = ps.executeQuery();
-                
-                List<String> res = new ArrayList<String>();
-                
-                int i = 0;
-                while(dbResult.next()) {
-                    if(i >= min && i < max) {
-                        res.add(dbResult.getString(1));
-                        
-                    }
-                    i++;
-                }
-                
-                return res;
-            } finally {
-                if(dbResult != null) {
-                    dbResult.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Could not retrieve the file ids for '" + pillarId + "' between counts "
-                    + min + " and " + max + " with the SQL '" + selectSql + "'.", e);
+            conn = dbConnector.getConnection();
+            ps = DatabaseUtils.createPreparedStatement(conn, selectSql, ChecksumState.ERROR.ordinal(), 
+                    collectionKey, pillarId, first, maxResults);
+            return new IntegrityIssueIterator(ps);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to retrieve files with checksum errors on pillar '" 
+                    + pillarId + "' from the database", e);
         }
     }
     

@@ -72,11 +72,6 @@ public class RestIntegrityService {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private IntegrityModel model;
     private WorkflowManager workflowManager;
-    
-    private final static String JSON_LIST_START = "[";
-    private final static String JSON_LIST_END = "]";
-    private final static String JSON_LIST_SEPERATOR = ",";
-    private final static String JSON_DELIMITER = "\"";
 
     public RestIntegrityService() {
         this.model = IntegrityServiceManager.getIntegrityModel();
@@ -93,16 +88,23 @@ public class RestIntegrityService {
     @GET
     @Path("/getChecksumErrorFileIDs/")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getChecksumErrors(
+    public StreamingOutput getChecksumErrors(
             @QueryParam("collectionID") String collectionID,
             @QueryParam("pillarID") String pillarID,
             @QueryParam("pageNumber") int pageNumber,
             @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
         
         int firstID = (pageNumber - 1) * pageSize;
-        int lastID = (pageNumber * pageSize) - 1;
-        List<String> ids = model.getFilesWithChecksumErrorsAtPillar(pillarID, firstID, lastID, collectionID);
-        return ids;
+        IntegrityIssueIterator it = model.getFilesWithChecksumErrorsAtPillar(pillarID, firstID, pageSize, collectionID);
+        
+        if(it != null) {
+            return JSONStreamingTools.StreamIntegrityIssues(it);
+        } else {
+            throw new WebApplicationException(Response.status(Response.Status.NO_CONTENT)
+                    .entity("Failed to get missing files from database")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build());
+        }
     }
     
     /**
@@ -122,10 +124,9 @@ public class RestIntegrityService {
             @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
         
         int firstID = (pageNumber - 1) * pageSize;
-        int lastID = (pageNumber * pageSize) - 1;
-        
+                
         IntegrityIssueIterator it = model.getMissingFilesAtPillarByIterator(pillarID, 
-                firstID, lastID, collectionID);
+                firstID, pageSize, collectionID);
         
         if(it != null) {
             return JSONStreamingTools.StreamIntegrityIssues(it);
@@ -154,9 +155,8 @@ public class RestIntegrityService {
             @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
         
         int firstID = (pageNumber - 1) * pageSize;
-        int lastID = (pageNumber * pageSize) - 1;
         
-        IntegrityIssueIterator it = model.getFilesOnPillar(pillarID, firstID, lastID, collectionID);
+        IntegrityIssueIterator it = model.getFilesOnPillar(pillarID, firstID, pageSize, collectionID);
         
         if(it != null) {
             return JSONStreamingTools.StreamIntegrityIssues(it);

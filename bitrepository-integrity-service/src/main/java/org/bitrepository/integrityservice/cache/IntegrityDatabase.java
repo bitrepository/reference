@@ -212,18 +212,21 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public IntegrityIssueIterator getFilesOnPillar(String pillarId, long minId, long maxId, String collectionId) {
-        return store.getFilesOnPillar(pillarId, minId, maxId, collectionId);
+    public IntegrityIssueIterator getFilesOnPillar(String pillarId, long firstIndex, 
+            long maxResults, String collectionId) {
+        return store.getFilesOnPillar(pillarId, firstIndex, maxResults, collectionId);
     }
     
     @Override
-    public IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarId, long minId, long maxId, String collectionId) {
-        return store.getMissingFilesOnPillarByIterator(pillarId, minId, maxId, collectionId);
+    public IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarId, long firstIndex, 
+            long maxResults, String collectionId) {
+        return store.getMissingFilesOnPillarByIterator(pillarId, firstIndex, maxResults, collectionId);
     }
 
     @Override
-    public List<String> getFilesWithChecksumErrorsAtPillar(String pillarId, long minId, long maxId, String collectionId) {
-        return store.getFilesWithChecksumErrorsOnPillar(pillarId, minId, maxId, collectionId);
+    public IntegrityIssueIterator getFilesWithChecksumErrorsAtPillar(String pillarId, long firstIndex, 
+            long maxResults, String collectionId) {
+        return store.getFilesWithChecksumErrorsOnPillar(pillarId, firstIndex, maxResults, collectionId);
     }
     
     @Override

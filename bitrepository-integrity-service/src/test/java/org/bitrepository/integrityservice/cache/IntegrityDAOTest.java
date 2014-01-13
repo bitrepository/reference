@@ -934,21 +934,24 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         cache.setChecksumError(file3, TEST_PILLAR_1, EXTRA_COLLECTION);
                 
         addStep("Extract all the files with checksum error for the pillar", "Both file ids is found.");
-        Collection<String> fileIds = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        IntegrityIssueIterator it = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_1, new Long(0), Long.MAX_VALUE, TEST_COLLECTIONID);
+        Collection<String> fileIds = getIssuesFromIterator(it); 
         Assert.assertTrue(fileIds.size() == 2, "Number of files: " + fileIds.size());
         Assert.assertTrue(fileIds.contains(TEST_FILE_ID));
         Assert.assertTrue(fileIds.contains(file2));
         Assert.assertFalse(fileIds.contains(file3));
 
         addStep("Extrat all files with checksum errors for the pillar in the extra collection", "Only one file is found");
-        fileIds = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE, EXTRA_COLLECTION);
+        it = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_1, new Long(0), Long.MAX_VALUE, EXTRA_COLLECTION);
+        fileIds = getIssuesFromIterator(it); 
         Assert.assertTrue(fileIds.size() == 1, "Number of files: " + fileIds.size());
         Assert.assertFalse(fileIds.contains(TEST_FILE_ID));
         Assert.assertFalse(fileIds.contains(file2));
         Assert.assertTrue(fileIds.contains(file3));
         
         addStep("Extract all the files with checksum error for another pillar", "No files are found.");
-        fileIds = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_2, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        it = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_2, new Long(0), Long.MAX_VALUE, TEST_COLLECTIONID);
+        fileIds = getIssuesFromIterator(it);
         Assert.assertTrue(fileIds.isEmpty());
     }
     
@@ -963,24 +966,18 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1, TEST_COLLECTIONID);
         cache.setChecksumError(TEST_FILE_ID, TEST_PILLAR_1, TEST_COLLECTIONID);
         cache.setChecksumError(file2, TEST_PILLAR_1, TEST_COLLECTIONID);
-        
-        addStep("Extract with a maximum of 0", "No files");
-        Collection<String> fileIds = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_1, 0, 0, TEST_COLLECTIONID);
-        Assert.assertTrue(fileIds.isEmpty());
 
         addStep("Extract with a maximum of 1", "The first file.");
-        fileIds = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_1, 0, 1, TEST_COLLECTIONID);
+        IntegrityIssueIterator it = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_1, new Long(0), new Long(1), TEST_COLLECTIONID);
+        Collection<String> fileIds = getIssuesFromIterator(it);
         Assert.assertTrue(fileIds.size() == 1);
         Assert.assertTrue(fileIds.contains(TEST_FILE_ID));
         
         addStep("Extract with a minimum of 1 and maximum of infinite", "The last file.");
-        fileIds = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_1, 1, Long.MAX_VALUE, TEST_COLLECTIONID);
+        it = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_1, new Long(1), Long.MAX_VALUE, TEST_COLLECTIONID);
+        fileIds = getIssuesFromIterator(it);
         Assert.assertTrue(fileIds.size() == 1);
         Assert.assertTrue(fileIds.contains(file2));
-
-        addStep("Extract with a minimum of 1 and maximum of 0", "No files.");
-        fileIds = cache.getFilesWithChecksumErrorsOnPillar(TEST_PILLAR_1, 1, 0, TEST_COLLECTIONID);
-        Assert.assertTrue(fileIds.isEmpty());
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
