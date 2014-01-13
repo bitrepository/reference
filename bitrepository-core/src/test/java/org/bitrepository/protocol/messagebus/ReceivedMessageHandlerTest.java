@@ -292,11 +292,7 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
     private void deliverAsynchronously(
             final ReceivedMessageHandler handler, final Message message, final MessageListener... listeners) {
         for (final MessageListener listener : listeners) {
-            new Thread(new Runnable() {
-                public void run() {
                     handler.deliver(listener, message, null);
-                }
-            }).start();
         }
         //Ensure the messages have time to be distributed before the new step.
         try { Thread.sleep(100); } catch (InterruptedException e) {}
