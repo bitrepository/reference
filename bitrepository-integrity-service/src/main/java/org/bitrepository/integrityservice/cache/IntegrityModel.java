@@ -83,14 +83,14 @@ public interface IntegrityModel {
     long getNumberOfFiles(String pillarId, String collectionId);
     
     /**
-     * A list of files for a given pillar, restricted by min and max ids.
+     * Get an IntegrityIssueIterator for the files for a given pillar, restricted by min and max ids.
      * @param pillarId The id of the pillar.
      * @param minId The minimum result number.
      * @param maxId The maximum result number.
      * @param collectionId The ID of the collection to get files from
      * @return The list of file ids for the pillar, between min and max.
      */
-    List<String> getFilesOnPillar(String pillarId, long minId, long maxId, String collectionId);
+    IntegrityIssueIterator getFilesOnPillar(String pillarId, long minId, long maxId, String collectionId);
     
     /**
      * @param pillarId The pillar.

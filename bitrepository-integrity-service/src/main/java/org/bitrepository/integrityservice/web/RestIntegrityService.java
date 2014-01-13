@@ -124,39 +124,11 @@ public class RestIntegrityService {
         int firstID = (pageNumber - 1) * pageSize;
         int lastID = (pageNumber * pageSize) - 1;
         
-        final IntegrityIssueIterator it = model.getMissingFilesAtPillarByIterator(pillarID, 
+        IntegrityIssueIterator it = model.getMissingFilesAtPillarByIterator(pillarID, 
                 firstID, lastID, collectionID);
         
-        if(it != null) {     
-            return new StreamingOutput() {
-                public void write(OutputStream output) throws IOException, WebApplicationException {
-                    try {
-                        boolean firstIssueWritten = false;
-                        String issue;
-                        output.write(JSON_LIST_START.getBytes());
-                        while((issue = it.getNextIntegrityIssue()) != null) {
-                            if(firstIssueWritten) {
-                                output.write(JSON_LIST_SEPERATOR.getBytes());
-                            }
-                            String issueStr = JSON_DELIMITER + issue + JSON_DELIMITER;
-                            output.write(issueStr.getBytes());
-                            firstIssueWritten = true;
-                        }
-                        output.write(JSON_LIST_END.getBytes());
-                    } catch (Exception e) {
-                        throw new WebApplicationException(e);
-                    } finally {
-                        try {
-                            if(it != null) {
-                                it.close();
-                            }
-                        } catch (Exception e) {
-                            log.error("Caught execption when closing IntegrityIssueIterator", e);
-                            throw new WebApplicationException(e);
-                        }
-                    }
-                }
-            };
+        if(it != null) {
+            return JSONStreamingTools.StreamIntegrityIssues(it);
         } else {
             throw new WebApplicationException(Response.status(Response.Status.NO_CONTENT)
                     .entity("Failed to get missing files from database")
@@ -175,7 +147,7 @@ public class RestIntegrityService {
     @GET
     @Path("/getAllFileIDs/")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getAllFileIDs(
+    public StreamingOutput getAllFileIDs(
             @QueryParam("collectionID") String collectionID,
             @QueryParam("pillarID") String pillarID,
             @QueryParam("pageNumber") int pageNumber,
@@ -184,8 +156,16 @@ public class RestIntegrityService {
         int firstID = (pageNumber - 1) * pageSize;
         int lastID = (pageNumber * pageSize) - 1;
         
-        List<String> ids = model.getFilesOnPillar(pillarID, firstID, lastID, collectionID);
-        return ids;
+        IntegrityIssueIterator it = model.getFilesOnPillar(pillarID, firstID, lastID, collectionID);
+        
+        if(it != null) {
+            return JSONStreamingTools.StreamIntegrityIssues(it);
+        } else {
+            throw new WebApplicationException(Response.status(Response.Status.NO_CONTENT)
+                    .entity("Failed to get missing files from database")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build());
+        }
     }
 
     /**

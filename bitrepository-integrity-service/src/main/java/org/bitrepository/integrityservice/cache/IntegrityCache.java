@@ -103,7 +103,7 @@ public class IntegrityCache implements IntegrityModel {
     }
 
     @Override
-    public List<String> getFilesOnPillar(String pillarId, long minId, long maxId, String collectionId) {
+    public IntegrityIssueIterator getFilesOnPillar(String pillarId, long minId, long maxId, String collectionId) {
         return integrityModel.getFilesOnPillar(pillarId, minId, maxId, collectionId);
     }
     

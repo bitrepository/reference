@@ -582,19 +582,8 @@ public class TestIntegrityModel implements IntegrityModel {
     }
 
     @Override
-    public List<String> getFilesOnPillar(String pillarId, long minId, long maxId, String collectionId) {
-        ArrayList<String> res = new ArrayList<String>();
-        for(Map.Entry<String, CollectionFileIDInfo> collectionInfo : cache.entrySet()) {
-            if(collectionInfo.getKey().endsWith("-" + collectionId)) {
-                for(FileInfo fileinfo : collectionInfo.getValue().getFileIDInfos()) {
-                    if(fileinfo.getPillarId().equals(pillarId) && fileinfo.getFileState() == FileState.EXISTING) {
-                        res.add(collectionInfo.getKey());
-                    }
-                }
-            }
-        }
-        
-        return res.subList((int) minId, (int) maxId);
+    public IntegrityIssueIterator getFilesOnPillar(String pillarId, long minId, long maxId, String collectionId) {
+        return null;
     }
 
     @Override

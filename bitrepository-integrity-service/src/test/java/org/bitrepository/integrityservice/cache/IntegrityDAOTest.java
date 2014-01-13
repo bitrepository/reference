@@ -762,21 +762,24 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         cache.updateFileIDs(getFileIDsData(file3), TEST_PILLAR_1, EXTRA_COLLECTION);
         
         addStep("Extract all the existing file ids for the pillar for collection '" + TEST_COLLECTIONID + "'", "Both file ids is found.");
-        Collection<String> fileIds = cache.getFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        IntegrityIssueIterator it = cache.getFilesOnPillar(TEST_PILLAR_1, new Long(0), Long.MAX_VALUE, TEST_COLLECTIONID);
+        Collection<String> fileIds = getIssuesFromIterator(it);
         Assert.assertTrue(fileIds.size() == 2, "Number of files: " + fileIds.size());
         Assert.assertTrue(fileIds.contains(TEST_FILE_ID));
         Assert.assertTrue(fileIds.contains(file2));
         Assert.assertFalse(fileIds.contains(file3));
 
         addStep("Extract the single fileID for the extra collection", "Only the one file id exists");
-        fileIds = cache.getFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE, EXTRA_COLLECTION);
+        it = cache.getFilesOnPillar(TEST_PILLAR_1,  new Long(0), Long.MAX_VALUE, EXTRA_COLLECTION);
+        fileIds = getIssuesFromIterator(it);
         Assert.assertTrue(fileIds.size() == 1, "Number of files: " + fileIds.size());
         Assert.assertTrue(fileIds.contains(file3));
         Assert.assertFalse(fileIds.contains(file2));
         Assert.assertFalse(fileIds.contains(TEST_FILE_ID));
-                
+               
         addStep("Extract all the existing file ids for another pillar", "No files are found.");
-        fileIds = cache.getFilesOnPillar(TEST_PILLAR_2, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        it = cache.getFilesOnPillar(TEST_PILLAR_2,  new Long(0), Long.MAX_VALUE, TEST_COLLECTIONID);
+        fileIds = getIssuesFromIterator(it);
         Assert.assertTrue(fileIds.isEmpty());
     }
     
@@ -788,24 +791,18 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         
         addStep("Insert two files into database for a pillar", "Ingesting the data into the database");
         cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1, TEST_COLLECTIONID);
-        
-        addStep("Extract with a maximum of 0", "No files");
-        Collection<String> fileIds = cache.getFilesOnPillar(TEST_PILLAR_1, 0, 0, TEST_COLLECTIONID);
-        Assert.assertTrue(fileIds.isEmpty());
 
         addStep("Extract with a maximum of 1", "The first file.");
-        fileIds = cache.getFilesOnPillar(TEST_PILLAR_1, 0, 1, TEST_COLLECTIONID);
+        IntegrityIssueIterator it = cache.getFilesOnPillar(TEST_PILLAR_1,  new Long(0),  new Long(1), TEST_COLLECTIONID);
+        Collection<String> fileIds = getIssuesFromIterator(it);
         Assert.assertTrue(fileIds.size() == 1);
         Assert.assertTrue(fileIds.contains(TEST_FILE_ID));
         
         addStep("Extract with a minimum of 1 and maximum of infinite", "The last file.");
-        fileIds = cache.getFilesOnPillar(TEST_PILLAR_1, 1, Long.MAX_VALUE, TEST_COLLECTIONID);
+        it = cache.getFilesOnPillar(TEST_PILLAR_1,  new Long(1), Long.MAX_VALUE, TEST_COLLECTIONID);
+        fileIds = getIssuesFromIterator(it);
         Assert.assertTrue(fileIds.size() == 1);
         Assert.assertTrue(fileIds.contains(file2));
-
-        addStep("Extract with a minimum of 1 and maximum of 0", "No files.");
-        fileIds = cache.getFilesOnPillar(TEST_PILLAR_1, 1, 0, TEST_COLLECTIONID);
-        Assert.assertTrue(fileIds.isEmpty());
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
@@ -820,7 +817,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         cache.setFileMissing(file2, TEST_PILLAR_1, TEST_COLLECTIONID);
         
         addStep("Extract all the existing file ids for the pillar", "Only one file id is found.");
-        Collection<String> fileIds = cache.getFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        IntegrityIssueIterator it = cache.getFilesOnPillar(TEST_PILLAR_1,  new Long(0), Long.MAX_VALUE, TEST_COLLECTIONID);
+        Collection<String> fileIds = getIssuesFromIterator(it);
         Assert.assertTrue(fileIds.size() == 1, "Number of files: " + fileIds.size());
         Assert.assertTrue(fileIds.contains(TEST_FILE_ID));
         Assert.assertFalse(fileIds.contains(file2));
@@ -1005,13 +1003,15 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         cache.updateFileIDs(data3, TEST_PILLAR_2, TEST_COLLECTIONID);
         
         addStep("Check that the data has been properly ingested into the database", "The data has been ingested");
-        List<String> pillar1Files = cache.getFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        IntegrityIssueIterator it = cache.getFilesOnPillar(TEST_PILLAR_1,  new Long(0), Long.MAX_VALUE, TEST_COLLECTIONID);
+        List<String> pillar1Files = getIssuesFromIterator(it);
         Assert.assertEquals(pillar1Files.size(), 2);
         Assert.assertTrue(pillar1Files.contains(TEST_FILE_ID));
         Assert.assertTrue(pillar1Files.contains(file2));
         Assert.assertFalse(pillar1Files.contains(file3));
         
-        List<String> pillar2Files = cache.getFilesOnPillar(TEST_PILLAR_2, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        it = cache.getFilesOnPillar(TEST_PILLAR_2,  new Long(0), Long.MAX_VALUE, TEST_COLLECTIONID);
+        List<String> pillar2Files = getIssuesFromIterator(it);
         Assert.assertEquals(pillar2Files.size(), 2);
         Assert.assertFalse(pillar2Files.contains(TEST_FILE_ID));
         Assert.assertTrue(pillar2Files.contains(file2));
@@ -1055,11 +1055,13 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         cache.updateFileIDs(data3, TEST_PILLAR_1, EXTRA_COLLECTION);
         
         addStep("Check that the data has been properly ingested into the database", "The data has been ingested");
-        List<String> collection1Files = cache.getFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        IntegrityIssueIterator it = cache.getFilesOnPillar(TEST_PILLAR_1, new Long(0), Long.MAX_VALUE, TEST_COLLECTIONID);
+        List<String> collection1Files = getIssuesFromIterator(it);
         Assert.assertEquals(collection1Files.size(), 2);
         Assert.assertTrue(collection1Files.contains(TEST_FILE_ID));
         Assert.assertTrue(collection1Files.contains(file2));
-        List<String> collection2Files = cache.getFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        it = cache.getFilesOnPillar(TEST_PILLAR_1, new Long(0), Long.MAX_VALUE, TEST_COLLECTIONID);
+        List<String> collection2Files = getIssuesFromIterator(it);
         Assert.assertEquals(collection2Files.size(), 1);
         Assert.assertTrue(collection2Files.contains(file3));
         
@@ -1144,13 +1146,15 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertEquals(cache.getNumberOfFilesWithFileStateForAPillar(TEST_PILLAR_2, TEST_COLLECTIONID,
                 FileState.PREVIOUSLY_SEEN, FileState.EXISTING), 4);
         Assert.assertEquals(cache.getNumberOfChecksumErrorsIncollection(TEST_COLLECTIONID), 1);
-        List<String> pillar1FileIDs = cache.getFilesOnPillar(TEST_PILLAR_1, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        IntegrityIssueIterator it = cache.getFilesOnPillar(TEST_PILLAR_1, new Long(0), Long.MAX_VALUE, TEST_COLLECTIONID);
+        List<String> pillar1FileIDs = getIssuesFromIterator(it);
         Assert.assertEquals(pillar1FileIDs.size(), 4);
         Assert.assertTrue(pillar1FileIDs.contains(TEST_FILE_ID));
         Assert.assertTrue(pillar1FileIDs.contains(file3));
         Assert.assertTrue(pillar1FileIDs.contains(file4));
         Assert.assertTrue(pillar1FileIDs.contains(file5));
-        List<String> pillar2FileIDs = cache.getFilesOnPillar(TEST_PILLAR_2, 0, Long.MAX_VALUE, TEST_COLLECTIONID);
+        it = cache.getFilesOnPillar(TEST_PILLAR_2, new Long(0), Long.MAX_VALUE, TEST_COLLECTIONID);
+        List<String> pillar2FileIDs = getIssuesFromIterator(it);
         Assert.assertEquals(pillar2FileIDs.size(), 4);
         Assert.assertTrue(pillar2FileIDs.contains(TEST_FILE_ID));
         Assert.assertTrue(pillar2FileIDs.contains(file2));

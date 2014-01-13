@@ -75,6 +75,23 @@ public class DerbyIntegrityDAO extends IntegrityDAO {
         return selectSql;
     }
     
+    @Override
+    protected String getFilesOnPillarSql() {
+        String selectSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
+                + " JOIN " + FILE_INFO_TABLE 
+                + " ON " + FILES_TABLE + "." + FILES_KEY + "=" + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
+                + " AND " + FILES_TABLE + "." + COLLECTION_KEY + "= ?"
+                + " AND " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ("
+                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
+                    + " WHERE " + PILLAR_ID + " = ?)" 
+                + " ORDER BY " + FILES_TABLE + "." + FILES_KEY
+                + " OFFSET ? ROWS"
+                + " FETCH FIRST ? ROWS ONLY";
+        
+        return selectSql;
+    }
+    
     
 
     
