@@ -4,6 +4,15 @@ import java.util.concurrent.ThreadFactory;
 
 import org.slf4j.LoggerFactory;
 
+/**
+ * Creates thread for executors enforcing the general bit repository guidelines. These include<ul>
+ *     <li>Setting thread priority factory configured value.</li>
+ *     <li>Setting the thread name to the indicated prefix + a counter indentifying the number of threads created by
+ *     this factory.</li>
+ *     <li>Adds a error handler logging to the bit repository logger.</li>
+ *     <li>Marks the thread as daemon thread.</li>
+ *     </ul>
+ */
 public class DefaultThreadFactory implements ThreadFactory {
     private final String prefix;
     private final int priority;
@@ -25,6 +34,7 @@ public class DefaultThreadFactory implements ThreadFactory {
                 LoggerFactory.getLogger(t.getName()).error(e.getMessage(), e);
             }
         });
+        counter++;
         return newThread;
     }
 }
