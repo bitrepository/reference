@@ -10,6 +10,9 @@ import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Class to handle streaming of different kinds of JSON data 
+ */
 public class JSONStreamingTools {
     private final static Logger log = LoggerFactory.getLogger(JSONStreamingTools.class);
     private final static String JSON_LIST_START = "[";
