@@ -36,14 +36,14 @@ public class ReceivedMessageHandler {
     public void deliver(MessageListener listener, Message message, MessageContext messageContext) {
         MessageProcessor processor = new MessageProcessor(listener, message, messageContext);
         executorModel.retrieveExecuter(message).execute(processor);
-    }
+            }
 
     /**
      * Use this to close down the running executors.
      */
     public void close() {
         log.debug("Shutting down handling of received messages");
-        executorModel.shutdownNow();
+        executorModel.shutdown();
     }
 
     /**
@@ -123,11 +123,13 @@ public class ReceivedMessageHandler {
             if (executor == null) {
                 executor = defaultCollectionExecutorModel.retrieveExecuter(message);
             }
-            System.out.print("Retrieved executor " + executor + " for message(colelction) " + message.getCollectionID());
             return executor;
         }
 
-        public void shutdownNow() {
+        public void shutdown() {
+            if (defaultCollectionExecutorModel != null) {
+                defaultCollectionExecutorModel.shutdown();
+            }
         }
 
         private ExecutorService createExecutorService(BigInteger poolSize) {
@@ -151,7 +153,7 @@ public class ReceivedMessageHandler {
             void addPool(MessageThreadPool messageThreadPool) {
                 List<String> messageNames = messageThreadPool.getMessageName();
                 MessageCategory messageCategory = messageThreadPool.getMessageCategory();
-                ExecutorService executor = createExecutorService(messageThreadPool.getPoolSize());;
+                ExecutorService executor = createExecutorService(messageThreadPool.getPoolSize());
                 if (messageNames != null && !messageNames.isEmpty()) {
                     for (String messageName : messageNames) {
                         messageExecutorMap.put(messageName, executor);
@@ -173,6 +175,16 @@ public class ReceivedMessageHandler {
                     executor = defaultexecutor;
                 }
                 return executor;
+            }
+
+            void shutdown() {
+                if (defaultexecutor != null) {
+                    defaultexecutor.shutdown();
+                }
+
+                for (ExecutorService executor : messageExecutorMap.values()) {
+                    executor.shutdown();
+                }
             }
         }
     }

@@ -33,7 +33,9 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
         addDescription("Tests that two messages can be handled in parallel in the default pool configuration.");
         addFixture("Create a ReceivedMessageHandler with a null configuration. This should create a " +
                 "ReceivedMessageHandler with a single CachedThreadPool.");
-        ReceivedMessageHandler handler = new ReceivedMessageHandler(null);
+        ReceivedMessageHandler handler = new ReceivedMessageHandler(createMessageThreadPools(
+                createMessageThreadPool(2, null, null, null)
+        ));
 
         addStep("Dispatch messages to two listeners, the first blocking.", "The second listener should be notified");
         BlockingMessageListener blockingListener = new BlockingMessageListener(mock(MessageListener.class));
@@ -82,12 +84,9 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
     public void singleThreadMessageDispatch() {
         addDescription("Tests that two messages will be handled in sequence if a singleThreaded pool is configured.");
         addFixture("Create a ReceivedMessageHandler with a single pool of size 1.");
-        MessageThreadPools poolsConfiguration = new MessageThreadPools();
-        MessageThreadPool singleThreadedPoolConfiguration = new MessageThreadPool();
-        poolsConfiguration.getMessageThreadPool().add(singleThreadedPoolConfiguration);
-        singleThreadedPoolConfiguration.setPoolSize(BigInteger.valueOf(1));
-
-        ReceivedMessageHandler handler = new ReceivedMessageHandler(poolsConfiguration);
+        ReceivedMessageHandler handler = new ReceivedMessageHandler(createMessageThreadPools(
+                createMessageThreadPool(1, null, null, null)
+        ));
 
         addStep("Dispatch messages to two listeners, the first blocking.", "The second listener should be not be notified");
         BlockingMessageListener blockingListener = new BlockingMessageListener(mock(MessageListener.class));
@@ -331,8 +330,8 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
     }
 
     private MessageThreadPool createMessageThreadPool(Integer poolSize,
-            String[] collections, MessageCategory messageCategory,String[] messageNames) {
-            MessageThreadPool poolConfiguration = new MessageThreadPool();
+                                                      String[] collections, MessageCategory messageCategory,String[] messageNames) {
+        MessageThreadPool poolConfiguration = new MessageThreadPool();
         if (poolSize != null) {
             poolConfiguration.setPoolSize(BigInteger.valueOf(poolSize));
         }
