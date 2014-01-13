@@ -60,7 +60,6 @@ public abstract class PillarMediator extends AbstractContributorMediator {
     @Override
     protected void handleRequest(MessageRequest request, MessageContext messageContext, RequestHandler handler) {
         try {
-            log.debug("Receiving request: " + request.getClass().getSimpleName());
             handler.processRequest(request, messageContext);
         } catch (IllegalArgumentException e) {
             getAlarmDispatcher().handleIllegalArgumentException(e);
