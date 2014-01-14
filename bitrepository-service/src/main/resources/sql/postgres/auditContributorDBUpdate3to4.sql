@@ -20,10 +20,8 @@
 -- #L%
 ---
 
-ALTER TABLE (
-  ADD COLUMN operationID VARCHAR(100),
-  ADD COLUMN fingerprint VARCHAR(100)
-);
+ALTER TABLE audittrail ADD operationID VARCHAR(100);
+ALTER TABLE audittrail ADD fingerprint VARCHAR(100);
 
 -- Set the table versions
 insert into tableversions ( tablename, version ) values ( 'auditcontributordb', 4);
