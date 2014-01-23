@@ -547,18 +547,6 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 + " AND " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ?";
         return makeIntegrityIssueIterator(requestSql, collectionKey, 
                 FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal());
-        
-        /*PreparedStatement ps = null;
-        Connection conn = null;
-        try {
-            conn = dbConnector.getConnection();
-            ps = DatabaseUtils.createPreparedStatement(conn, requestSql, collectionKey, 
-                    FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal());
-            return new IntegrityIssueIterator(ps);
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to retrieve missing checksums for collection '" 
-                    + collectionId + "' from the database", e);
-        }*/
     }
 
     /**
@@ -568,10 +556,9 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
      * @param collectionId The ID of the collection to find files with obsolete checksums in
      * @return The list of ids for the files which have a checksum older than the given date.
      */
-    public List<String> findFilesWithOldChecksum(Date date, String pillarID, String collectionId) {
+    public IntegrityIssueIterator findFilesWithOldChecksum(Date date, String pillarID, String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "String fileId");
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
-        long startTime = System.currentTimeMillis();
         log.trace("Locating files with obsolete checksums from pillar " + pillarID);
         Long pillarKey = retrievePillarKey(pillarID);
         Long collectionKey = retrieveCollectionKey(collectionId);
@@ -583,11 +570,8 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 + " AND " + FILE_INFO_TABLE + "." + FI_LAST_CHECKSUM_UPDATE + " < ?" 
                 + " AND " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
                 + " AND " + FI_PILLAR_KEY + " = ?";
-        List<String> result = DatabaseUtils.selectStringList(dbConnector, requestSql, collectionKey, date,
+        return makeIntegrityIssueIterator(requestSql, collectionKey, date, 
                 FileState.EXISTING.ordinal(), pillarKey);
-        log.debug("Located " + result.size() + " obsolete checksums on pillar " + pillarID + " in " +
-            (System.currentTimeMillis() - startTime) + "ms");
-        return result;
     }
     
     /**

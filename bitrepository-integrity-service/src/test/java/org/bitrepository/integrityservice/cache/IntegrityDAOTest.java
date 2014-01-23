@@ -156,7 +156,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         IntegrityDAO cache = createDAO();
         
         addStep("Test the 'findFilesWithOldChecksum'", "Should deliver an empty collection");
-        Collection<String> oldChecksums = cache.findFilesWithOldChecksum(new Date(0), TEST_PILLAR_1, TEST_COLLECTIONID);
+        Collection<String> oldChecksums = getIssuesFromIterator(
+                cache.findFilesWithOldChecksum(new Date(0), TEST_PILLAR_1, TEST_COLLECTIONID));
         Assert.assertNotNull(oldChecksums);
         Assert.assertEquals(oldChecksums.size(), 0);
         
@@ -1234,6 +1235,10 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         return new DerbyIntegrityDAO(dm, settings.getRepositorySettings().getCollections());
     }
     
+    /**
+     * This is not the way to handle the iterators, as the lists might grow really long. 
+     * It's here to make the tests simple, and can be done as there's only small amounts of test data in the tests. 
+     */
     private List<String> getIssuesFromIterator(IntegrityIssueIterator it) {
         List<String> issues = new ArrayList<String>();
         String issue = null;

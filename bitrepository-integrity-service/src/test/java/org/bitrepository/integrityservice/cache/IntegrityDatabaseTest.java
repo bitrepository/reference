@@ -90,8 +90,8 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         IntegrityModel model = new IntegrityDatabase(settings);
         
         addStep("Test the 'findChecksumsOlderThan'", "Should deliver an empty collection");
-        Collection<String> oldChecksums = model.findChecksumsOlderThan(
-            new Date(0), TEST_PILLAR_1, TEST_COLLECTIONID);
+        Collection<String> oldChecksums = getIssuesFromIterator(model.findChecksumsOlderThan(
+            new Date(0), TEST_PILLAR_1, TEST_COLLECTIONID));
         Assert.assertNotNull(oldChecksums);
         Assert.assertEquals(oldChecksums.size(), 0);
         
@@ -319,6 +319,10 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         return res;
     }
     
+    /**
+     * This is not the way to handle the iterators, as the lists might grow really long. 
+     * It's here to make the tests simple, and can be done as there's only small amounts of test data in the tests. 
+     */
     private List<String> getIssuesFromIterator(IntegrityIssueIterator it) {
         List<String> issues = new ArrayList<String>();
         String issue = null;

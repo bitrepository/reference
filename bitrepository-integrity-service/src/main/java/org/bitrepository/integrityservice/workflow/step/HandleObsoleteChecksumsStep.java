@@ -23,14 +23,12 @@ package org.bitrepository.integrityservice.workflow.step;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.checking.MaxChecksumAgeProvider;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
@@ -68,7 +66,7 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
      * Queries the IntegrityModel for files with obsolete checksums. Reports them if any is returned.
      */
     @Override
-    public synchronized void performStep() {
+    public synchronized void performStep() throws Exception {
         MaxChecksumAgeProvider maxChecksumAgeProvider = new MaxChecksumAgeProvider(DEFAULT_MAX_CHECKSUM_AGE,
                 settings.getReferenceSettings().getIntegrityServiceSettings().getObsoleteChecksumSettings());
         
@@ -76,15 +74,21 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
         
         for(String pillar : pillars) {
             Date outDated = new Date(System.currentTimeMillis() - maxChecksumAgeProvider.getMaxChecksumAge(pillar));
-            Set<String> filesWithObsoleteChecksums = 
-                    new HashSet<String>(store.findChecksumsOlderThan(outDated, pillar, reporter.getCollectionID()));
-            for(String file : filesWithObsoleteChecksums) {
-                try {
-                    reporter.reportObsoleteChecksum(file, pillar);
-                } catch (IOException e) {
-                    log.error("Failed to report file: " + file + " as having an obsolete checksum", e);
+            IntegrityIssueIterator obsoleteChecksumsIterator 
+                = store.findChecksumsOlderThan(outDated, pillar, reporter.getCollectionID());
+            String file;
+            try {
+                while((file = obsoleteChecksumsIterator.getNextIntegrityIssue()) != null) {
+                    try {
+                        reporter.reportObsoleteChecksum(file, pillar);
+                    } catch (IOException e) {
+                        log.error("Failed to report file: " + file + " as having an obsolete checksum", e);
+                    }
                 }
+            } finally {
+                obsoleteChecksumsIterator.close();
             }
+
         }
     }
 

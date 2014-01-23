@@ -155,7 +155,7 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public Collection<String> findChecksumsOlderThan(Date date, String pillarID, String collectionId) {
+    public IntegrityIssueIterator findChecksumsOlderThan(Date date, String pillarID, String collectionId) {
         return store.findFilesWithOldChecksum(date, pillarID, collectionId);
     }
 
