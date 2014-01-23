@@ -83,6 +83,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.PillarStat;
+import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.settings.repositorysettings.Collections;
@@ -544,7 +545,10 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ? " 
                 + " AND " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?" 
                 + " AND " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ?";
-        PreparedStatement ps = null;
+        return makeIntegrityIssueIterator(requestSql, collectionKey, 
+                FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal());
+        
+        /*PreparedStatement ps = null;
         Connection conn = null;
         try {
             conn = dbConnector.getConnection();
@@ -554,7 +558,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         } catch (Exception e) {
             throw new IllegalStateException("Failed to retrieve missing checksums for collection '" 
                     + collectionId + "' from the database", e);
-        }
+        }*/
     }
 
     /**
@@ -1541,5 +1545,18 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
      */
     public void close() {
         dbConnector.destroy();
+    }
+    
+    private IntegrityIssueIterator makeIntegrityIssueIterator(String query, Object... args) {
+        PreparedStatement ps = null;
+        Connection conn = null;
+        try {
+            conn = dbConnector.getConnection();
+            ps = DatabaseUtils.createPreparedStatement(conn, query, args);
+            return new IntegrityIssueIterator(ps);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to create IntegrityIssueIterator for query '" 
+                    + query + "' with arguments" + Arrays.asList(args), e);
+        }
     }
 }
