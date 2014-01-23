@@ -79,7 +79,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
-    public void testNoData() {
+    public void testNoData() throws Exception {
         addDescription("Test the checksum integrity validator without any data in the cache.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
@@ -92,7 +92,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
-    public void testSimilarData() {
+    public void testSimilarData() throws Exception {
         addDescription("Test the checksum integrity validator when all pillars have similar data.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
@@ -117,7 +117,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
-    public void testMissingAtOnePillar() {
+    public void testMissingAtOnePillar() throws Exception {
         addDescription("Test the checksum integrity validator when one pillar is missing the data.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
@@ -136,7 +136,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
-    public void testTwoDisagreeingChecksums() {
+    public void testTwoDisagreeingChecksums() throws Exception {
         addDescription("Test the checksum integrity validator when only two pillar has data, but it it different.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
@@ -159,7 +159,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
-    public void testThreeDisagreeingChecksums() {
+    public void testThreeDisagreeingChecksums() throws Exception {
         addDescription("Test the checksum integrity validator when all pillars have different checksums.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
@@ -184,7 +184,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
-    public void testUpdatingFileIDsForValidChecksum() {
+    public void testUpdatingFileIDsForValidChecksum() throws Exception {
         addDescription("Test that a file is set to having ChecksumState UNKNOWN, when it has a file-update.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
@@ -219,7 +219,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
-    public void testAuditTrailsForChecksumErrors() {
+    public void testAuditTrailsForChecksumErrors() throws Exception {
         addDescription("Test audit trails for checksum errors. Verify that a pillar with a single checksum will"
                 + " be pointed out as the possible cause.");
         IntegrityModel cache = getIntegrityModel();

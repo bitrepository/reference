@@ -35,6 +35,7 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.FileState;
+import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
@@ -70,29 +71,34 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
      * Queries the IntegrityModel for missing files on each pillar. Reports them if any is returned.
      */
     @Override
-    public synchronized void performStep() {
-        List<String> inconsistentFiles = store.getFilesWithInconsistentChecksums(reporter.getCollectionID());
+    public synchronized void performStep() throws Exception {
+        IntegrityIssueIterator inconsistentFilesIterator 
+            = store.getFilesWithInconsistentChecksums(reporter.getCollectionID());
         List<String> collectionPillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
-        for(String file : inconsistentFiles) {
-            Collection<FileInfo> infos = store.getFileInfos(file, reporter.getCollectionID());
-            Set<String> checksums = getUniqueChecksums(infos);
-            if(checksums.size() > 1) {
-                createAuditForInconsistentChecksum(infos, file);
-                for(FileInfo info : infos) {
-                    try {
-                        reporter.reportChecksumIssue(file, info.getPillarId());
-                    } catch (IOException e) {
-                        log.error("Failed to report file: " + file + " as having a checksum issue", e);
+        String file;
+        try {
+            while((file = inconsistentFilesIterator.getNextIntegrityIssue()) != null) {
+                Collection<FileInfo> infos = store.getFileInfos(file, reporter.getCollectionID());
+                Set<String> checksums = getUniqueChecksums(infos);
+                if(checksums.size() > 1) {
+                    createAuditForInconsistentChecksum(infos, file);
+                    for(FileInfo info : infos) {
+                        try {
+                            reporter.reportChecksumIssue(file, info.getPillarId());
+                        } catch (IOException e) {
+                            log.error("Failed to report file: " + file + " as having a checksum issue", e);
+                        }
                     }
+                    store.setChecksumError(file, getPillarsFileExisting(infos), reporter.getCollectionID());
+                } else {
+                    log.error("File with inconsistent checksums from SQL have apparently not inconsistency according to "
+                            + "Java! This is a scenario, which must never occur!!!");
+                    store.setChecksumAgreement(file, collectionPillars, reporter.getCollectionID());
                 }
-                store.setChecksumError(file, getPillarsFileExisting(infos), reporter.getCollectionID());
-            } else {
-                log.error("File with inconsistent checksums from SQL have apparently not inconsistency according to "
-                        + "Java! This is a scenario, which must never occur!!!");
-                store.setChecksumAgreement(file, collectionPillars, reporter.getCollectionID());
             }
+        } finally {
+            inconsistentFilesIterator.close();
         }
-        
         store.setFilesWithConsistentChecksumToValid(reporter.getCollectionID());
     }
     

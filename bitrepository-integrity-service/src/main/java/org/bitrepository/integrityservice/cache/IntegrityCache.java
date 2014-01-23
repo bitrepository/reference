@@ -204,7 +204,7 @@ public class IntegrityCache implements IntegrityModel {
     }
 
     @Override
-    public List<String> getFilesWithInconsistentChecksums(String collectionId) {
+    public IntegrityIssueIterator getFilesWithInconsistentChecksums(String collectionId) {
         return integrityModel.getFilesWithInconsistentChecksums(collectionId);
     }
 

@@ -655,10 +655,9 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
      * This is all combined into one single SQL statement for optimisation.
      *
      * @param collectionId The ID of the collection to find inconsistent checksums in
-     * @return The list of file ids for the files with inconsistent checksums.
+     * @return The IntegrityIssueIterator of file ids for the files with inconsistent checksums.
      */
-    public List<String> findFilesWithInconsistentChecksums(String collectionId) {
-        long startTime = System.currentTimeMillis();
+    public IntegrityIssueIterator findFilesWithInconsistentChecksums(String collectionId) {
         Long collectionKey = retrieveCollectionKey(collectionId);       
         log.trace("Localizing the file ids where the checksums are not consistent.");
         String findUniqueSql = "SELECT " + FI_CHECKSUM + " , " + FI_FILE_KEY + " FROM " + FILE_INFO_TABLE
@@ -672,10 +671,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 + " JOIN ( " + eliminateSql + " ) AS eliminate1"
                 + " ON " + FILES_TABLE + "." + FILES_KEY + " = eliminate1." + FI_FILE_KEY 
                 + " WHERE " + COLLECTION_KEY + " = ? ";
-        List<String> res = DatabaseUtils.selectStringList(dbConnector, selectSql,  
-                FileState.MISSING.ordinal(), collectionKey);
-        log.debug("Found " + res.size() + " inconsistencies in " + (System.currentTimeMillis() - startTime) + "ms");
-        return res;
+        return makeIntegrityIssueIterator(selectSql, FileState.MISSING.ordinal(), collectionKey);
     }
     
     /**

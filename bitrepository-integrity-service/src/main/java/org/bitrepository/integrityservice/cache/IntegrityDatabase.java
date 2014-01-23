@@ -160,7 +160,7 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public List<String> getFilesWithInconsistentChecksums(String collectionId) {
+    public IntegrityIssueIterator getFilesWithInconsistentChecksums(String collectionId) {
         return store.findFilesWithInconsistentChecksums(collectionId);
     }
 

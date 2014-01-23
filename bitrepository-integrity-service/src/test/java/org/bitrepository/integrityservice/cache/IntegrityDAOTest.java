@@ -533,7 +533,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         insertChecksumDataForDAO(cache, csData2_3, TEST_PILLAR_2, TEST_COLLECTIONID);
 
         addStep("Find the files with inconsistent checksums", "Bad file 1 and 2");
-        List<String> filesWithChecksumError = cache.findFilesWithInconsistentChecksums(TEST_COLLECTIONID);
+        List<String> filesWithChecksumError
+            = getIssuesFromIterator(cache.findFilesWithInconsistentChecksums(TEST_COLLECTIONID));
         Assert.assertEquals(filesWithChecksumError, Arrays.asList(BAD_FILE_ID_1, BAD_FILE_ID_2));
         
         addStep("Set the files with consistent checksums to valid.", 
@@ -584,7 +585,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertEquals(missingFiles, Arrays.asList(FILE_ID));
         
         addStep("Find the files with inconsistent checksums", "The file is found.");
-        List<String> filesWithChecksumError = cache.findFilesWithInconsistentChecksums(TEST_COLLECTIONID);
+        List<String> filesWithChecksumError 
+            = getIssuesFromIterator(cache.findFilesWithInconsistentChecksums(TEST_COLLECTIONID));
         Assert.assertEquals(filesWithChecksumError, Arrays.asList(FILE_ID));
         
         addStep("Set checksum error for all pillars", "");
@@ -617,7 +619,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         cache.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
 
         addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
-        List<String> filesWithChecksumError = cache.findFilesWithInconsistentChecksums(TEST_COLLECTIONID);
+        List<String> filesWithChecksumError
+            = getIssuesFromIterator(cache.findFilesWithInconsistentChecksums(TEST_COLLECTIONID));
         Assert.assertEquals(filesWithChecksumError, Arrays.asList());
     }
 
@@ -632,7 +635,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         insertChecksumDataForDAO(cache, getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM), TEST_PILLAR_2, TEST_COLLECTIONID);
 
         addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
-        List<String> filesWithChecksumError = cache.findFilesWithInconsistentChecksums(TEST_COLLECTIONID);      
+        List<String> filesWithChecksumError 
+            = getIssuesFromIterator(cache.findFilesWithInconsistentChecksums(TEST_COLLECTIONID));      
         Assert.assertEquals(filesWithChecksumError, Arrays.asList());
     }
 
