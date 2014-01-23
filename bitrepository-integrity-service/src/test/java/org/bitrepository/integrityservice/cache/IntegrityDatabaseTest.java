@@ -40,6 +40,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
 import org.bitrepository.integrityservice.cache.database.ChecksumState;
 import org.bitrepository.integrityservice.cache.database.FileState;
+import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -95,7 +96,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         Assert.assertEquals(oldChecksums.size(), 0);
         
         addStep("Test the 'findMissingChecksums'", "Should deliver an empty collection");
-        Collection<String> missingChecksums = model.findMissingChecksums(TEST_COLLECTIONID);
+        Collection<String> missingChecksums = getIssuesFromIterator(model.findMissingChecksums(TEST_COLLECTIONID));
         Assert.assertNotNull(missingChecksums);
         Assert.assertEquals(missingChecksums.size(), 0);
         
@@ -316,5 +317,15 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         
         res.setFileIDsDataItems(items);
         return res;
+    }
+    
+    private List<String> getIssuesFromIterator(IntegrityIssueIterator it) {
+        List<String> issues = new ArrayList<String>();
+        String issue = null;
+        while((issue = it.getNextIntegrityIssue()) != null) {
+            issues.add(issue);
+        }
+        
+        return issues;
     }
 }

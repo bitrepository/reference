@@ -184,7 +184,7 @@ public class IntegrityCache implements IntegrityModel {
     }
 
     @Override
-    public List<String> findMissingChecksums(String collectionId) {
+    public IntegrityIssueIterator findMissingChecksums(String collectionId) {
         return integrityModel.findMissingChecksums(collectionId);
     }
 

@@ -33,5 +33,5 @@ public interface WorkflowStep {
     /**
      * Perform the task wrapped in this step.
      */
-    void performStep();
+    void performStep() throws Exception;
 }

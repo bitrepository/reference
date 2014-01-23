@@ -132,7 +132,7 @@ public class IntegrityDatabase implements IntegrityModel {
     }
     
     @Override
-    public List<String> findMissingChecksums(String collectionId) {
+    public IntegrityIssueIterator findMissingChecksums(String collectionId) {
         return store.findMissingChecksums(collectionId);
     }
 

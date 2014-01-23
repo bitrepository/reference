@@ -534,8 +534,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
      * Finds the id of the files which at any pillar exists but is missing its checksum state.
      * @param collectionId The ID of the collection to find missing checksums in
      */
-    public List<String> findMissingChecksums(String collectionId) {
-        long startTime = System.currentTimeMillis();
+    public IntegrityIssueIterator findMissingChecksums(String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         log.trace("Locating files which are missing the checksum at any pillar.");
         Long collectionKey = retrieveCollectionKey(collectionId);
@@ -545,10 +544,17 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ? " 
                 + " AND " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?" 
                 + " AND " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ?";
-        List<String> result = DatabaseUtils.selectStringList(dbConnector, requestSql, collectionKey, 
-                FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal());
-        log.debug("Located " + result.size() + " missing checksums in " + (System.currentTimeMillis() - startTime) + "ms");
-        return result;
+        PreparedStatement ps = null;
+        Connection conn = null;
+        try {
+            conn = dbConnector.getConnection();
+            ps = DatabaseUtils.createPreparedStatement(conn, requestSql, collectionKey, 
+                    FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal());
+            return new IntegrityIssueIterator(ps);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to retrieve missing checksums for collection '" 
+                    + collectionId + "' from the database", e);
+        }
     }
 
     /**

@@ -23,11 +23,13 @@ package org.bitrepository.integrityservice.workflow.step;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.sql.SQLException;
 
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.ChecksumState;
 import org.bitrepository.integrityservice.cache.database.FileState;
+import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
@@ -57,20 +59,26 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
 
     /**
      * Queries the IntegrityModel for files with missing checksums. Reports them if any is returned.
+     * @throws SQLException 
      */
     @Override
-    public synchronized void performStep() {
-        Collection<String> filesWithMissingChecksums = store.findMissingChecksums(reporter.getCollectionID());
-        for(String file : filesWithMissingChecksums) {
-            for(FileInfo info : store.getFileInfos(file, reporter.getCollectionID())) {
-                if(info.getFileState() == FileState.EXISTING && info.getChecksumState() == ChecksumState.UNKNOWN) {
-                    try {
-                        reporter.reportMissingChecksum(file, info.getPillarId());
-                    } catch (IOException e) {
-                        log.error("Failed to report file: " + file + " as having a missing checksum", e);
+    public synchronized void performStep() throws Exception {
+        IntegrityIssueIterator missingChecksumsIterator = store.findMissingChecksums(reporter.getCollectionID());
+        String file;
+        try {
+            while((file = missingChecksumsIterator.getNextIntegrityIssue()) != null) {
+                for(FileInfo info : store.getFileInfos(file, reporter.getCollectionID())) {
+                    if(info.getFileState() == FileState.EXISTING && info.getChecksumState() == ChecksumState.UNKNOWN) {
+                        try {
+                            reporter.reportMissingChecksum(file, info.getPillarId());
+                        } catch (IOException e) {
+                            log.error("Failed to report file: " + file + " as having a missing checksum", e);
+                        }
                     }
                 }
             }
+        } finally {
+                missingChecksumsIterator.close();
         }
     }
 
