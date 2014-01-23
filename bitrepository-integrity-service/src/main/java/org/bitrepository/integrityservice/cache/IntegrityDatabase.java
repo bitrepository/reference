@@ -137,7 +137,7 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public List<String> findMissingFiles(String collectionId) {
+    public IntegrityIssueIterator findMissingFiles(String collectionId) {
         return store.findMissingFiles(collectionId);
     }
 

@@ -579,7 +579,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
      * @param collectionId The collection in which to look for missing files
      * @return The list of ids for the files which are missing at some pillar.
      */
-    public List<String> findMissingFiles(String collectionId) {
+    public IntegrityIssueIterator findMissingFiles(String collectionId) {
         Long collectionKey = retrieveCollectionKey(collectionId);
         log.trace("Locating files which are missing at any pillar.");
         String requestSql = "SELECT " + FILES_TABLE + "." + FILES_ID + " FROM " + FILES_TABLE 
@@ -587,7 +587,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 + " ON " + FILES_TABLE + "." + FILES_KEY + "=" + FILE_INFO_TABLE + "." + FI_FILE_KEY 
                 + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ? " 
                 + " AND " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " != ? ";
-        return DatabaseUtils.selectStringList(dbConnector, requestSql, collectionKey, FileState.EXISTING.ordinal());
+        return makeIntegrityIssueIterator(requestSql, collectionKey, FileState.EXISTING.ordinal());
     }
     
     /**

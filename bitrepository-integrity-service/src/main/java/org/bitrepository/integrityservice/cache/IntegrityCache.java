@@ -194,7 +194,7 @@ public class IntegrityCache implements IntegrityModel {
     }
 
     @Override
-    public List<String> findMissingFiles(String collectionId) {
+    public IntegrityIssueIterator findMissingFiles(String collectionId) {
         return integrityModel.findMissingFiles(collectionId);
     }
 

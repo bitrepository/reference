@@ -167,7 +167,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertEquals(missingChecksums.size(), 0);
         
         addStep("Test the 'findMissingFiles'", "Should deliver an empty collection");
-        Collection<String> missingFiles = cache.findMissingFiles(TEST_COLLECTIONID);
+        Collection<String> missingFiles = getIssuesFromIterator(cache.findMissingFiles(TEST_COLLECTIONID));
         Assert.assertNotNull(missingFiles);
         Assert.assertEquals(missingFiles.size(), 0);
         
@@ -580,7 +580,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         
         addStep("Set old unknown files to missing", "The file is missing at the third pillar");
         cache.setOldUnknownFilesToMissing(new Date(), TEST_COLLECTIONID);
-        List<String> missingFiles = cache.findMissingFiles(TEST_COLLECTIONID);
+        List<String> missingFiles = getIssuesFromIterator(cache.findMissingFiles(TEST_COLLECTIONID));
         Assert.assertEquals(missingFiles, Arrays.asList(FILE_ID));
         
         addStep("Find the files with inconsistent checksums", "The file is found.");
