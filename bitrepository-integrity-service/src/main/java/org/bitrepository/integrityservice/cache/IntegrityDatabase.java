@@ -260,7 +260,7 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public List<String> findOrphanFiles(String collectionID) {
+    public IntegrityIssueIterator findOrphanFiles(String collectionID) {
         return store.findOrphanFiles(collectionID);
     }
 }

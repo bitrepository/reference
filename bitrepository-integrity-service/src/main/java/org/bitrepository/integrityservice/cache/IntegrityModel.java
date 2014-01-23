@@ -187,7 +187,7 @@ public interface IntegrityModel {
      * @param collectionId, The ID of the collection in which to find orphan files.
      * @return The list of orphan files   
      */
-    List<String> findOrphanFiles(String collectionID);
+    IntegrityIssueIterator findOrphanFiles(String collectionID);
     
     /**
      * Checks whether a given file is missing and returns the list of pillars, where it is missing.

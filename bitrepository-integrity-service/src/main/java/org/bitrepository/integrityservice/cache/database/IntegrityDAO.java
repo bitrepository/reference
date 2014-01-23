@@ -595,7 +595,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
      * @param collectionId, The ID of the collection in which to find orphan files.
      * @return The list of orphan files   
      */
-    public List<String> findOrphanFiles(String collectionId) {
+    public IntegrityIssueIterator findOrphanFiles(String collectionId) {
         Long collectionKey = retrieveCollectionKey(collectionId);
         log.trace("Locating orphan files in collection '" + collectionId + "'.");
                 
@@ -615,7 +615,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 + " AS innerKeySelect)"
             + " AS keySelect"
             + " JOIN " + FILES_TABLE + " ON keySelect." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY;
-        return DatabaseUtils.selectStringList(dbConnector, requestSql, collectionKey, FileState.MISSING.ordinal());
+        return makeIntegrityIssueIterator(requestSql, collectionKey, FileState.MISSING.ordinal());
     }
     
     

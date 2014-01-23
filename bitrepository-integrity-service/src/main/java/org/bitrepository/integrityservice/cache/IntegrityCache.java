@@ -319,7 +319,7 @@ public class IntegrityCache implements IntegrityModel {
     }
 
     @Override
-    public List<String> findOrphanFiles(String collectionID) {
+    public IntegrityIssueIterator findOrphanFiles(String collectionID) {
         return integrityModel.findOrphanFiles(collectionID);
     }
 }

@@ -400,7 +400,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         cache.setFileMissing(orphanFile, TEST_PILLAR_2, TEST_COLLECTIONID);
         cache.setFileMissing(missingFile, TEST_PILLAR_1, TEST_COLLECTIONID);
         
-        List<String> orphanFiles = cache.findOrphanFiles(TEST_COLLECTIONID);
+        List<String> orphanFiles = getIssuesFromIterator(cache.findOrphanFiles(TEST_COLLECTIONID));
         Assert.assertNotNull(orphanFiles);
         Assert.assertEquals(orphanFiles.size(), 1);
         Assert.assertEquals(orphanFiles.get(0), orphanFile);

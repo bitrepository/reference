@@ -22,9 +22,9 @@
 package org.bitrepository.integrityservice.workflow.step;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
@@ -56,15 +56,20 @@ public class HandleDeletedFilesStep extends AbstractWorkFlowStep {
      * Queries the IntegrityModel for 'orphan files'. Reports and removes them if any is returned.
      */
     @Override
-    public synchronized void performStep() {
-        List<String> deletedFiles = store.findOrphanFiles(reporter.getCollectionID());
-        for(String deletedFile : deletedFiles) {
-            store.deleteFileIdEntry(deletedFile, reporter.getCollectionID());
-            try {
-                reporter.reportDeletedFile(deletedFile);
-            } catch (IOException e) {
-                log.error("Failed to report file: " + deletedFile + " as deleted", e);
+    public synchronized void performStep() throws Exception {
+        IntegrityIssueIterator deletedFilesIterator = store.findOrphanFiles(reporter.getCollectionID());
+        String deletedFile;
+        try {
+            while((deletedFile = deletedFilesIterator.getNextIntegrityIssue()) != null) {
+                store.deleteFileIdEntry(deletedFile, reporter.getCollectionID());
+                try {
+                    reporter.reportDeletedFile(deletedFile);
+                } catch (IOException e) {
+                    log.error("Failed to report file: " + deletedFile + " as deleted", e);
+                }
             }
+        } finally {
+            deletedFilesIterator.close();
         }
     }
 
