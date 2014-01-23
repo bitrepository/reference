@@ -899,17 +899,8 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 " in collection '" + collectionId + "'.");
         Long collectionKey = retrieveCollectionKey(collectionId);
         String selectSql = getFilesOnPillarSql();
-        PreparedStatement ps = null;
-        Connection conn = null;
-        try {
-            conn = dbConnector.getConnection();
-            ps = DatabaseUtils.createPreparedStatement(conn, selectSql, FileState.EXISTING.ordinal(), 
-                    collectionKey, pillarId, first, maxResults);
-            return new IntegrityIssueIterator(ps);
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to retrieve file list for pillar '" 
-                    + pillarId + "' from the database", e);
-        }
+        return makeIntegrityIssueIterator(selectSql, FileState.EXISTING.ordinal(), 
+                collectionKey, pillarId, first, maxResults);
     }
     
     /**
@@ -939,20 +930,8 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 + maxResults + ".");
         Long collectionKey = retrieveCollectionKey(collectionId);
         String selectSql = getMissingFilesOnPillarSql();
-        PreparedStatement ps = null;
-        Connection conn = dbConnector.getConnection();
-        
-        try {
-            log.debug("Creating prepared statement with sql '" + selectSql + "' and arguments '" 
-                    + FileState.MISSING.ordinal() + ", " + collectionKey + ", " + pillarId 
-                    + ", " + first + ", " + maxResults + " for IntegrityIssueIterator");
-            ps = DatabaseUtils.createPreparedStatement(conn, selectSql, FileState.MISSING.ordinal(), 
-                    collectionKey, pillarId, first, maxResults);
-            return new IntegrityIssueIterator(ps);
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to retrieve missing files on pillar '" 
-                    + pillarId + "' from the database", e);
-        }
+        return makeIntegrityIssueIterator(selectSql, FileState.MISSING.ordinal(), 
+                collectionKey, pillarId, first, maxResults);
     }
     
     /**
@@ -980,18 +959,8 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         log.trace("Locating all existing files for pillar '" + pillarId + "' from number " + firstIndex + " to " + maxResults + ".");
         Long collectionKey = retrieveCollectionKey(collectionId);
         String selectSql = getFilesWithChecksumErrorsOnPillarSql();
-        
-        PreparedStatement ps = null;
-        Connection conn = null;
-        try {
-            conn = dbConnector.getConnection();
-            ps = DatabaseUtils.createPreparedStatement(conn, selectSql, ChecksumState.ERROR.ordinal(), 
-                    collectionKey, pillarId, first, maxResults);
-            return new IntegrityIssueIterator(ps);
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to retrieve files with checksum errors on pillar '" 
-                    + pillarId + "' from the database", e);
-        }
+        return makeIntegrityIssueIterator(selectSql, ChecksumState.ERROR.ordinal(), 
+                collectionKey, pillarId, first, maxResults);
     }
     
     /**
