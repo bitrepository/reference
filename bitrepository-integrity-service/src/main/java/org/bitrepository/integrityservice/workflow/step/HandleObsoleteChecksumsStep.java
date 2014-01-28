@@ -64,6 +64,8 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
 
     /**
      * Queries the IntegrityModel for files with obsolete checksums. Reports them if any is returned.
+     * If a pillar is configured to never have it's checksums expire, it will be skipped. This is set 
+     * by having a maxChecksumAge of 0. 
      */
     @Override
     public synchronized void performStep() throws Exception {
@@ -73,22 +75,27 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
         
         for(String pillar : pillars) {
-            Date outDated = new Date(System.currentTimeMillis() - maxChecksumAgeProvider.getMaxChecksumAge(pillar));
-            IntegrityIssueIterator obsoleteChecksumsIterator 
-                = store.findChecksumsOlderThan(outDated, pillar, reporter.getCollectionID());
-            String file;
-            try {
-                while((file = obsoleteChecksumsIterator.getNextIntegrityIssue()) != null) {
-                    try {
-                        reporter.reportObsoleteChecksum(file, pillar);
-                    } catch (IOException e) {
-                        log.error("Failed to report file: " + file + " as having an obsolete checksum", e);
+            long maxAge = maxChecksumAgeProvider.getMaxChecksumAge(pillar);
+            if(maxAge == 0) {
+                // We will skip obsolete checks for this pillar as it's checksums will never expire. 
+                continue;
+            } else {
+                Date outDated = new Date(System.currentTimeMillis() - maxAge);
+                IntegrityIssueIterator obsoleteChecksumsIterator 
+                    = store.findChecksumsOlderThan(outDated, pillar, reporter.getCollectionID());
+                String file;
+                try {
+                    while((file = obsoleteChecksumsIterator.getNextIntegrityIssue()) != null) {
+                        try {
+                            reporter.reportObsoleteChecksum(file, pillar);
+                        } catch (IOException e) {
+                            log.error("Failed to report file: " + file + " as having an obsolete checksum", e);
+                        }
                     }
+                } finally {
+                    obsoleteChecksumsIterator.close();
                 }
-            } finally {
-                obsoleteChecksumsIterator.close();
             }
-
         }
     }
 
