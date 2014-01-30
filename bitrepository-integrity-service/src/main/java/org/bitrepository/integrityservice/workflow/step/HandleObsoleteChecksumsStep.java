@@ -77,7 +77,8 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
         for(String pillar : pillars) {
             long maxAge = maxChecksumAgeProvider.getMaxChecksumAge(pillar);
             if(maxAge == 0) {
-                // We will skip obsolete checks for this pillar as it's checksums will never expire. 
+                log.info("Skipping obsolete checksums check for pillar '" + pillar + "' as it has a "
+                        + "MaxChecksumAge of 0 (i.e. checksums don't expire).");
                 continue;
             } else {
                 Date outDated = new Date(System.currentTimeMillis() - maxAge);
