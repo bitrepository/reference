@@ -777,14 +777,14 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
      * @param pillarId The id of the pillar.
      */
     public void setFilesToUnknown(String pillarId, String collectionId) {
-        log.trace("Setting the file state for all " + FileState.EXISTING + " files to '" + FileState.PREVIOUSLY_SEEN 
+        log.trace("Setting the file state for all " + FileState.EXISTING + " files to '" + FileState.UNKNOWN 
                 + "'.");
         Long collectionKey = retrieveCollectionKey(collectionId);
         String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?"
-                + " WHERE " + FI_FILE_STATE + " = ? AND "
-                + FI_PILLAR_KEY + " = ? AND "
-                + "EXISTS ("
-                    + "SELECT 1 FROM " + FILES_TABLE 
+                + " WHERE " + FI_FILE_STATE + " = ?"
+                + " AND " + FI_PILLAR_KEY + " = ?"
+                + " AND " + FI_FILE_KEY + " IN ("
+                    + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
                     + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " + FILE_INFO_TABLE + "." + FI_FILE_KEY 
                     + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ?)";
         DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.UNKNOWN.ordinal(), 
@@ -800,9 +800,9 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 + "'.");
         Long collectionKey = retrieveCollectionKey(collectionId);
         String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?"
-                + " WHERE " + FI_FILE_STATE + " = ? AND "
-                + "EXISTS ("
-                    + "SELECT 1 FROM " + FILES_TABLE 
+                + " WHERE " + FI_FILE_STATE + " = ?"
+                + " AND " + FI_FILE_KEY + " IN ("
+                    + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
                     + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " + FILE_INFO_TABLE + "." + FI_FILE_KEY 
                     + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ?)";
         DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.PREVIOUSLY_SEEN.ordinal(), 
@@ -819,8 +819,8 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         Long collectionKey = retrieveCollectionKey(collectionId);
         String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?"
         		+ " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
-        		+ " AND " + " EXISTS ( " 
-        				+ "SELECT 1 FROM " + FILES_TABLE 
+        		+ " AND " + FI_FILE_KEY + " IN (" 
+        				+ " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
         				+ " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
         				        + FILE_INFO_TABLE + "." + FI_FILE_KEY 
         				+ " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ?" 
@@ -840,8 +840,8 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         Long collectionKey = retrieveCollectionKey(collectionId);
         String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?"
                               + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
-                              + " AND " + " EXISTS (" 
-                                  + " SELECT 1 FROM " + FILES_TABLE 
+                              + " AND " + FI_FILE_KEY + " IN (" 
+                                  + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
                                   + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
                                       + FILE_INFO_TABLE + "." + FI_FILE_KEY 
                                   + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
