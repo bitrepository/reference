@@ -862,8 +862,8 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?"
                               + " WHERE " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
                               + " AND " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ? "
-                              + " AND " + " EXISTS (" 
-                                  + " SELECT 1 FROM " + FILES_TABLE 
+                              + " AND " + FI_FILE_KEY + " IN (" 
+                                  + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
                                   + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
                                       + FILE_INFO_TABLE + "." + FI_FILE_KEY 
                                   + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
