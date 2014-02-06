@@ -255,6 +255,8 @@ public class ChecksumExtractor {
             try {
                 conn = connector.getConnection();
                 ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray());
+                conn.setAutoCommit(false);
+                ps.setFetchSize(100);
                 res = ps.executeQuery();
                 
                 int i = 0;
@@ -274,6 +276,7 @@ public class ChecksumExtractor {
                     ps.close();
                 }
                 if(conn != null) {
+                    conn.setAutoCommit(true);
                     conn.close();
                 }
             }
