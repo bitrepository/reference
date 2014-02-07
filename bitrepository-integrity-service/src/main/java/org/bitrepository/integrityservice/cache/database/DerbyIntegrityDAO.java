@@ -13,6 +13,8 @@ import static org.bitrepository.integrityservice.cache.database.DatabaseConstant
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_CHECKSUM_STATE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_KEY;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_STATE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_LAST_CHECKSUM_UPDATE;
+import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_LAST_FILE_UPDATE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_PILLAR_KEY;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_ID;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_KEY;
@@ -108,6 +110,48 @@ public class DerbyIntegrityDAO extends IntegrityDAO {
                 + " FETCH FIRST ? ROWS ONLY";
         
         return selectSql;
+    }
+
+    @Override
+    protected String getDateForNewestFileEntryForCollectionSql() {
+        String retrieveSql = "SELECT " + FI_LAST_FILE_UPDATE + " FROM " + FILE_INFO_TABLE 
+                + " JOIN " + FILES_TABLE 
+                + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?" 
+                + " AND " + FI_FILE_STATE + " = ?" 
+                + " ORDER BY " + FI_LAST_FILE_UPDATE + " DESC "
+                + " FETCH FIRST ROW ONLY";
+        return retrieveSql;
+    }
+
+    @Override
+    protected String getDateForNewestFileEntryForPillarSql() {
+        String retrieveSql = "SELECT " + FI_LAST_FILE_UPDATE + " FROM " + FILE_INFO_TABLE 
+                + " JOIN " + FILES_TABLE 
+                + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?" 
+                + " AND " + FI_FILE_STATE + " = ?" 
+                + " AND " + FI_PILLAR_KEY + " = (" 
+                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
+                    + " WHERE " + PILLAR_ID + " = ? )" 
+                + " ORDER BY " + FI_LAST_FILE_UPDATE + " DESC "
+                + " FETCH FIRST ROW ONLY";
+        return retrieveSql;
+    }
+
+    @Override
+    protected String getDateForNewestChecksumEntryForPillarSql() {
+        String retrieveSql = "SELECT " + FI_LAST_CHECKSUM_UPDATE + " FROM " + FILE_INFO_TABLE 
+                + " JOIN " + FILES_TABLE 
+                + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?"
+                + " AND " + FI_FILE_STATE + " = ?"
+                + " AND " + FI_PILLAR_KEY + " = ("
+                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
+                    + " WHERE " + PILLAR_ID + " = ? )"
+                + " ORDER BY " + FI_LAST_CHECKSUM_UPDATE + " DESC "
+                + " FETCH FIRST ROW ONLY";
+        return retrieveSql;
     }
 
     

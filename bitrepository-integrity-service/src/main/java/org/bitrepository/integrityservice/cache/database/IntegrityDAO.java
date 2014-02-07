@@ -710,6 +710,11 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
     }
 
     /**
+     * Method to acquire the sql for selecting the newest date of a file entry for a collection.  
+     */
+    protected abstract String getDateForNewestFileEntryForCollectionSql();
+    
+    /**
      * Retrieves the date for the latest file entry for a given collection.
      * E.g. the date for the latest file which has been positively identified as existing.  
      * @param collectionId The pillar whose latest file entry is requested.
@@ -717,15 +722,16 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
      */
     public Date getDateForNewestFileEntryForCollection(String collectionId) {
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String retrieveSql = "SELECT " + FI_LAST_FILE_UPDATE + " FROM " + FILE_INFO_TABLE 
-                + " JOIN " + FILES_TABLE 
-                + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
-                + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?" 
-                + " AND " + FI_FILE_STATE + " = ?" 
-                + " ORDER BY " + FI_LAST_FILE_UPDATE + " DESC ";
+        String retrieveSql = getDateForNewestFileEntryForCollectionSql();
         return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionKey, 
                 FileState.EXISTING.ordinal());
     }
+    
+    /**
+     * Method to acquire the sql for selecting the newest date of a file entry in a collection 
+     * for a given pillar.  
+     */
+    protected abstract String getDateForNewestFileEntryForPillarSql();
     
     /**
      * Retrieves the date for the latest file entry for a given pillar.
@@ -736,18 +742,16 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
      */
     public Date getDateForNewestFileEntryForPillar(String pillarId, String collectionId) {
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String retrieveSql = "SELECT " + FI_LAST_FILE_UPDATE + " FROM " + FILE_INFO_TABLE 
-                + " JOIN " + FILES_TABLE 
-                + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
-                + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?" 
-                + " AND " + FI_FILE_STATE + " = ?" 
-                + " AND " + FI_PILLAR_KEY + " = (" 
-                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
-                    + " WHERE " + PILLAR_ID + " = ? )" 
-                + " ORDER BY " + FI_LAST_FILE_UPDATE + " DESC ";
+        String retrieveSql = getDateForNewestFileEntryForPillarSql();
         return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionKey, 
                 FileState.EXISTING.ordinal(), pillarId);
     }
+    
+    /**
+     * Method to acquire the sql for selecting the newest date of a checksum entry in a collection 
+     * for a given pillar.  
+     */
+    protected abstract String getDateForNewestChecksumEntryForPillarSql();
     
     /**
      * Retrieves the date for the latest checksum entry for a given pillar.
@@ -758,15 +762,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
      */
     public Date getDateForNewestChecksumEntryForPillar(String pillarId, String collectionId) {
         Long collectionKey = retrieveCollectionKey(collectionId);
-        String retrieveSql = "SELECT " + FI_LAST_CHECKSUM_UPDATE + " FROM " + FILE_INFO_TABLE 
-                + " JOIN " + FILES_TABLE 
-                + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
-                + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?"
-                + " AND " + FI_FILE_STATE + " = ?"
-                + " AND " + FI_PILLAR_KEY + " = ("
-                    + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
-                    + " WHERE " + PILLAR_ID + " = ? )"
-                + " ORDER BY " + FI_LAST_CHECKSUM_UPDATE + " DESC ";
+        String retrieveSql = getDateForNewestChecksumEntryForPillarSql();
         return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionKey, 
                 FileState.EXISTING.ordinal(), pillarId);
     }
