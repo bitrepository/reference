@@ -28,10 +28,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -131,6 +133,13 @@ public class RestAuditTrailService {
     public String collectAuditTrails() {
         service.collectAuditTrails();
         return "Started audittrails collection";
+    }
+    
+    @GET
+    @Path("collectionSchedule")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<CollectorInfo> getCollectionSchedule() {
+        return service.getCollectorInfos();
     }
     
     private JSONObject makeJSONEntry(AuditTrailEvent event) {

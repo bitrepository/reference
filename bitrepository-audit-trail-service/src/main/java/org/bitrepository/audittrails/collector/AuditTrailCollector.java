@@ -28,15 +28,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.audittrails.store.AuditTrailStore;
+import org.bitrepository.audittrails.webservice.CollectorInfo;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.settings.repositorysettings.Collection;
+import org.bitrepository.audittrails.collector.AuditTrailCollectionTimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,13 +75,28 @@ public class AuditTrailCollector {
                     client, store,
                     settings.getReferenceSettings().getAuditTrailServiceSettings().getMaxNumberOfEventsInRequest());
             AuditTrailCollectionTimerTask collectorTask = new AuditTrailCollectionTimerTask( 
-                    collector, collectionInterval);
+                    collector, collectionInterval, getGracePeriod());
             log.info("Will start collection of audit trail every " +
                     TimeUtils.millisecondsToHuman(collectionInterval) + ", " +
                     "after a grace period of " + TimeUtils.millisecondsToHuman(getGracePeriod()));
             timer.scheduleAtFixedRate(collectorTask, getGracePeriod(), collectionInterval/10);
             collectorTasks.put(c.getID(), collectorTask);
         }
+    }
+    
+    public CollectorInfo getCollectorInfo(String collectionID) {
+        CollectorInfo info = new CollectorInfo();
+        info.setCollectionID(collectionID);
+        Date lastStart = collectorTasks.get(collectionID).getLastCollectionStart();
+        Date nextRun = collectorTasks.get(collectionID).getNextScheduledRun();
+        if(lastStart != null) {
+            info.setLastStart(TimeUtils.shortDate(lastStart));
+        } else {
+            info.setLastStart("Audit trail collection have not started");
+        }
+        info.setNextStart(TimeUtils.shortDate(nextRun));
+        
+        return info;
     }
     
     /**
@@ -113,40 +128,4 @@ public class AuditTrailCollector {
         timer.cancel();
     }
 
-    /**
-     * Timer task for keeping track of the automated collecting of audit trails.
-     */
-    private class AuditTrailCollectionTimerTask extends TimerTask {
-        /** The interval between running this timer task.*/
-        private final long interval;
-        /** The date for the next run.*/
-        private Date nextRun;
-        private final IncrementalCollector collector;
-        
-        /**
-         * @param interval The interval between running this timer task.
-         */
-        private AuditTrailCollectionTimerTask(IncrementalCollector collector, long interval) {
-            this.collector = collector;
-            this.interval = interval;
-            nextRun = new Date(System.currentTimeMillis() + getGracePeriod());
-            log.info("Scheduled next collection of audit trails for " + nextRun);
-        }
-        
-        /**
-         * Run the operation and when finished set the date for the next collection.
-         */
-        public synchronized void runCollection() {
-            collector.performCollection(SettingsUtils.getAuditContributorsForCollection(collector.getCollectionID()));
-            nextRun = new Date(System.currentTimeMillis() + interval);
-            log.info("Scheduled next collection of audit trails for " + nextRun);
-        }
-
-        @Override
-        public void run() {
-            if(nextRun.getTime() < System.currentTimeMillis()) {
-                runCollection();
-            }
-        }
-    }
 }

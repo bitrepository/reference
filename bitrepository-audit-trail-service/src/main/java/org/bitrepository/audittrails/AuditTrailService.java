@@ -24,7 +24,10 @@
  */
 package org.bitrepository.audittrails;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 import javax.jms.JMSException;
 
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
@@ -35,6 +38,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.service.LifeCycledService;
+import org.bitrepository.audittrails.webservice.CollectorInfo;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.audittrails.store.AuditEventIterator;
 import org.slf4j.Logger;
@@ -107,6 +111,16 @@ public class AuditTrailService implements LifeCycledService {
                 : settings.getRepositorySettings().getCollections().getCollection()) {
             collector.collectNewestAudits(c.getID());
         }
+    }
+    
+    public List<CollectorInfo> getCollectorInfos() {
+        List<CollectorInfo> infos = new ArrayList<CollectorInfo>();
+        for(org.bitrepository.settings.repositorysettings.Collection c 
+                : settings.getRepositorySettings().getCollections().getCollection()) {
+            infos.add(collector.getCollectorInfo(c.getID()));
+        }
+        
+        return infos;
     }
 
     @Override
