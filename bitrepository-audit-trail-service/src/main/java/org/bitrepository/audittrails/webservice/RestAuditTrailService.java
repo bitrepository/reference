@@ -136,7 +136,7 @@ public class RestAuditTrailService {
     }
     
     @GET
-    @Path("collectionSchedule")
+    @Path("/collectionSchedule")
     @Produces(MediaType.APPLICATION_JSON)
     public List<CollectorInfo> getCollectionSchedule() {
         return service.getCollectorInfos();
