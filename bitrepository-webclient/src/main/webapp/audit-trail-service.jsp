@@ -50,14 +50,6 @@
               </div>
           </div>
 
-          <!--<div class="span11"><h2>Audit-trail service</h2></div>
-          <div class="span11">
-            <form class="form-inline">
-              <button type="submit" class="btn" id="collectAuditTrails">Collect audit trails</button>
-              <div id="initiatorStatus"></div>
-            </form>
-          </div>-->
-
           <div class="span11"> 
             <div class="accordion" id="collection-schedule-accordion">             
               <div class="accordion-group">
@@ -195,12 +187,7 @@
 
     function startAuditTrailsCollection() {
       $.post('<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/collectAuditTrails/',
-            {}, function(d) {alert(d);});
-
-     /* $('#initiatorStatus').load(
-          '<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/collectAuditTrails/',
-          {}
-       ).fadeIn("slow");*/
+            {}, function(d) {console.log(d);});
     }    
 
     function getAuditTrails() {
