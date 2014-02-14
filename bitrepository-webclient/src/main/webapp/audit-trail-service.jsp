@@ -174,7 +174,7 @@
 
 
   <script>
-    var updateCollectionSchedule;
+    var collectionScheduleUpdater;
 
     function clearElement(element) {
       $(element).val("");
@@ -254,7 +254,7 @@
       });
     }
 
-    function addScheduleRow(schedule) {
+    function updateScheduleRow(schedule) {
       $("#" + schedule.collectionID + "-schedule-laststart").html(schedule.lastStart);
       $("#" + schedule.collectionID + "-schedule-nextstart").html(schedule.nextStart);
     }
@@ -282,7 +282,7 @@
           addScheduleRow(schedules[i]);
         }
       }).done(function() {  
-        updateCollectionSchedule = setInterval(function() {updateCollectionSchedule(); }, 5000);
+        collectionScheduleUpdater = setInterval(function() {updateCollectionSchedule(); }, 5000);
       });
     }    
 
