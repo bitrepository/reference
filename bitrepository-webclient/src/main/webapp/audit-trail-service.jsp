@@ -37,13 +37,26 @@
     <div class="row-fluid">
       <div class="span11">
           <div class="span11" style="height:0px; min-height:0px"></div>
-          <div class="span11"><h2>Audit-trail service</h2></div>
+          <div class="span11">
+              <div class="row-fluid">
+                  <div class="span6">
+                      <h2>Audit-trail service</h2>
+                  </div>
+                  <div class="span6">
+                      <h2 class="pull-right">
+                          <button type="submit" class="btn" id="collectAuditTrails">Collect audit trails</button>
+                      <h2>
+                  </div>
+              </div>
+          </div>
+
+          <!--<div class="span11"><h2>Audit-trail service</h2></div>
           <div class="span11">
             <form class="form-inline">
               <button type="submit" class="btn" id="collectAuditTrails">Collect audit trails</button>
               <div id="initiatorStatus"></div>
             </form>
-          </div>
+          </div>-->
 
           <div class="span11"> 
             <div class="accordion" id="collection-schedule-accordion">             
@@ -181,10 +194,13 @@
     }
 
     function startAuditTrailsCollection() {
-      $('#initiatorStatus').load(
+      $.post('<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/collectAuditTrails/',
+            {}, function(d) {alert(d);});
+
+     /* $('#initiatorStatus').load(
           '<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/collectAuditTrails/',
           {}
-        ).fadeIn("slow");
+       ).fadeIn("slow");*/
     }    
 
     function getAuditTrails() {
