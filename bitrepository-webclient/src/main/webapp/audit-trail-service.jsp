@@ -289,6 +289,7 @@
     $(document).ready(function(){
       makeMenu("audit-trail-service.jsp", "#pageMenu");
       getCollectionIDs();
+      loadCollectionSchedule();
       $("#collectAuditTrails").click(function(event) { event.preventDefault(); startAuditTrailsCollection(); });
       $("#fromDate").datepicker();
       $("#toDate").datepicker();
