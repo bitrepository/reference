@@ -7,6 +7,7 @@ public class CollectorInfo {
 
     String collectionID;
     String lastStart;
+    String lastDuration; 
     String nextStart;
     
     public String getCollectionID() {
@@ -26,6 +27,12 @@ public class CollectorInfo {
     }
     public void setNextStart(String nextStart) {
         this.nextStart = nextStart;
+    }
+    public String getLastDuration() {
+        return lastDuration;
+    }
+    public void setLastDuration(String lastDuration) {
+        this.lastDuration = lastDuration;
     }
     
     

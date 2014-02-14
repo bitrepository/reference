@@ -88,11 +88,19 @@ public class AuditTrailCollector {
         CollectorInfo info = new CollectorInfo();
         info.setCollectionID(collectionID);
         Date lastStart = collectorTasks.get(collectionID).getLastCollectionStart();
+        Date lastFinish = collectorTasks.get(collectionID).getLastCollectionFinish();
         Date nextRun = collectorTasks.get(collectionID).getNextScheduledRun();
         if(lastStart != null) {
             info.setLastStart(TimeUtils.shortDate(lastStart));
+            if(lastFinish != null) {
+                long duration = lastFinish.getTime() - lastStart.getTime();
+                info.setLastDuration(TimeUtils.millisecondsToHuman(duration));
+            } else {
+                info.setLastDuration("Collection has not finished yet");
+            }
         } else {
             info.setLastStart("Audit trail collection have not started");
+            info.setLastDuration("Not available");
         }
         info.setNextStart(TimeUtils.shortDate(nextRun));
         

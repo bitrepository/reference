@@ -40,6 +40,13 @@ public class AuditTrailCollectionTimerTask extends TimerTask {
     }
     
     /**
+     * Get the date of the last finished collection 
+     */
+    public Date getLastCollectionFinish() {
+        return schedule.getLastFinish();
+    }
+    
+    /**
      * Run the operation and when finished set the date for the next collection.
      */
     public synchronized void runCollection() {

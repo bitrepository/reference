@@ -65,6 +65,7 @@
                         <tr>
                           <th>Collection ID</th>
                           <th>Last start</th>
+                          <th>Last duration</th>
                           <th>Next start</th>
                         </tr>
                       </thead>
@@ -259,6 +260,7 @@
 
     function updateScheduleRow(schedule) {
       $("#" + schedule.collectionID + "-schedule-laststart").html(schedule.lastStart);
+      $("#" + schedule.collectionID + "-schedule-lastduration").html(schedule.lastDuration);
       $("#" + schedule.collectionID + "-schedule-nextstart").html(schedule.nextStart);
     }
 
@@ -274,6 +276,7 @@
       var html = "<tr>";
       html += "<td>" + schedule.collectionID + "</td>";
       html += "<td id='" + schedule.collectionID + "-schedule-laststart'>" + schedule.lastStart + "</td>";
+      html += "<td id='" + schedule.collectionID + "-schedule-lastduration'>" + schedule.lastDuration + "</td>";
       html += "<td id='" + schedule.collectionID + "-schedule-nextstart'>" + schedule.nextStart + "</td>";
       html += "</tr>";
       $("#collection-schedule-table-body").append(html);
