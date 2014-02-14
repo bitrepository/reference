@@ -44,6 +44,34 @@
               <div id="initiatorStatus"></div>
             </form>
           </div>
+
+          <div class="span11"> 
+            <div class="accordion" id="collection-schedule-accordion">             
+              <div class="accordion-group">
+                <div class="accordion-heading">
+                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#collection-schedule-accordion" href="#collapseOne">             
+                    Show collection schedule <i class="icon-chevron-down"></i>
+                  </a>
+                </div>
+                <div id="collapseOne" class="accordion-body collapse">
+                  <div class="accordion-inner" id="collection-schedule-table">
+                    <table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Collection ID</th>
+                          <th>Last start</th>
+                          <th>Next start</th>
+                        </tr>
+                      </thead>
+                      <tbody id="collection-schedule-table-body"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
           <div class="span11">
             <form class="form-inline">
             <legend>Audit trails display filters</legend>
@@ -146,6 +174,7 @@
 
 
   <script>
+    var updateCollectionSchedule;
 
     function clearElement(element) {
       $(element).val("");
@@ -224,7 +253,38 @@
         }
       });
     }
-  
+
+    function addScheduleRow(schedule) {
+      $("#" + schedule.collectionID + "-schedule-laststart").html(schedule.lastStart);
+      $("#" + schedule.collectionID + "-schedule-nextstart").html(schedule.nextStart);
+    }
+
+    function updateCollectionSchedule() {
+      $.getJSON('<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/collectionSchedule/', {}, function(schedules) {
+        for(var i = 0; i < schedules.length; i++) {
+          updateScheduleRow(schedules[i]);
+        }
+      });
+    }
+
+    function addScheduleRow(schedule) {
+      var html = "<tr>";
+      html += "<td>" + schedule.collectionID + "</td>";
+      html += "<td id='" + schedule.collectionID + "-schedule-laststart'>" + schedule.lastStart + "</td>";
+      html += "<td id='" + schedule.collectionID + "-schedule-nextstart'>" + schedule.nextStart + "</td>";
+      html += "</tr>";
+      $("#collection-schedule-table-body").append(html);
+    }
+
+    function loadCollectionSchedule() {
+      $.getJSON('<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/collectionSchedule/', {}, function(schedules) {
+        for(var i = 0; i < schedules.length; i++) {
+          addScheduleRow(schedules[i]);
+        }
+      }).done(function() {  
+        updateCollectionSchedule = setInterval(function() {updateCollectionSchedule(); }, 5000);
+      });
+    }    
 
     $(document).ready(function(){
       makeMenu("audit-trail-service.jsp", "#pageMenu");
