@@ -53,12 +53,43 @@ public interface AuditTrailStore {
             Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation, Date startDate, 
             Date endDate, String fingerprint, String operationID);
     
+    
+    /**
+     * Method to ensure that a given collection id exists in the database.
+     * Inserts the collectionID if it is not present.
+     * @param collectionID the ID of the collection
+     */
+    public void addCollectionID(String collectionID);
+    
+    /**
+     * Method to ensure that a given fileID in a collection exists in the database
+     * Inserts the fileID if it is not present
+     * @param fileID the ID of the file
+     * @param collectionID the ID of the collection
+     */
+    public void addFileID(String fileID, String collectionID);
+    
+    /**
+     * Method to ensure that a given contributorID exists in the database
+     * Inserts the contributorID if it is not present
+     * @param contributorID the ID of the contributor
+     */
+    public void addContributorID(String contributorID);
+
+    /**
+     * Method to ensure that a given actor exists in the database
+     * Inserts the actor if it is not present
+     * @param actorName the name of the actor
+     */
+    public void addActorName(String actorName);
+    
     /**
      * ingest audit trails into the store. 
      * @param newAuditTrails The audit trails to be ingested into the store.
      * @param collectionID The id of the collection, where the audit trail events belong.
      */
-    public void addAuditTrails(AuditTrailEvents newAuditTrails, String collectionID);
+    public void addAuditTrailsOld(AuditTrailEvents newAuditTrails, String collectionID);
+    public void addAuditTrails(AuditTrailEvents auditTrailsEvents, String collectionID);
     
     /**
      * Retrieves the largest sequence number for a given contributor.

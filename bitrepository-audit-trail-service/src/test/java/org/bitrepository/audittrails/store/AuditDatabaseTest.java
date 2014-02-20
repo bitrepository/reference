@@ -23,9 +23,11 @@ package org.bitrepository.audittrails.store;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.AssertTrue;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
@@ -82,7 +84,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
 
         addStep("Validate that the database is empty and then populate it.", "Should be possible.");
         Assert.assertEquals(database.largestSequenceNumber(pillarId, collectionId), 0);
-        database.addAuditTrails(createEvents(), collectionId);
+        database.addAuditTrailsOld(createEvents(), collectionId);
         Assert.assertEquals(database.largestSequenceNumber(pillarId, collectionId), 10);
         
         addStep("Extract the audit trails", "");
@@ -191,7 +193,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
 
         Assert.assertEquals(database.largestSequenceNumber(pillarId, collectionId), 0);
-        database.addAuditTrails(createEvents(), collectionId);
+        database.addAuditTrailsOld(createEvents(), collectionId);
         Assert.assertEquals(database.largestSequenceNumber(pillarId, collectionId), 10);
 
         addStep("Validate the preservation sequence number", 
@@ -225,20 +227,132 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
                 "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
-        database.addAuditTrails(events, collectionId);
+        database.addAuditTrailsOld(events, collectionId);
         
         addStep("Test ingesting with no timestamp", "No failure");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(null, FileAction.CHECKSUM_CALCULATED, 
                 "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
-        database.addAuditTrails(events, collectionId);
+        database.addAuditTrailsOld(events, collectionId);
 
         addStep("Test ingesting with no file action", "No failure");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), null, 
                 "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
-        database.addAuditTrails(events, collectionId);
+        database.addAuditTrailsOld(events, collectionId);
 
+        addStep("Test ingesting with no actor", "Throws exception");
+        events = new AuditTrailEvents();
+        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
+                null, "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
+        try {
+            database.addAuditTrailsOld(events, collectionId);
+            Assert.fail("Should throw an exception.");
+        } catch (IllegalStateException e) {
+            // expected
+        }
+
+        addStep("Test ingesting with no audit info", "No failure");
+        events = new AuditTrailEvents();
+        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
+                "actor", null, "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
+        database.addAuditTrailsOld(events, collectionId);
+
+        addStep("Test ingesting with no file id", "Throws exception");
+        events = new AuditTrailEvents();
+        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
+                "actor", "auditInfo", null, "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
+        try {
+            database.addAuditTrailsOld(events, collectionId);
+            Assert.fail("Should throw an exception.");
+        } catch (IllegalStateException e) {
+            // expected
+        } 
+
+        addStep("Test ingesting with no info", "No failure");
+        events = new AuditTrailEvents();
+        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
+                "actor", "auditInfo", "fileId", null, pillarId, BigInteger.ONE, operationID1, fingerprint1));
+        database.addAuditTrailsOld(events, collectionId);
+
+        addStep("Test ingesting with no component id", "Throws exception");
+        events = new AuditTrailEvents();
+        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
+                "actor", "auditInfo", "fileId", "info", null, BigInteger.ONE, operationID1, fingerprint1));
+        try {
+            database.addAuditTrailsOld(events, collectionId);
+            Assert.fail("Should throw an exception.");
+        } catch (IllegalStateException e) {
+            // expected
+        }
+        
+        addStep("Test ingesting with no sequence number", "Throws exception");
+        events = new AuditTrailEvents();
+        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
+                "actor", "auditInfo", "fileId", "info", pillarId, null, operationID1, fingerprint1));
+        try {
+            database.addAuditTrailsOld(events, collectionId);
+            Assert.fail("Should throw an exception.");
+        } catch (IllegalStateException e) {
+            // expected
+        }
+        
+        addStep("Test ingest with very long auditInfo (255+)", "Not failing any more");
+        events = new AuditTrailEvents();
+        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
+                "actor", veryLongString, "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
+        database.addAuditTrailsOld(events, collectionId);
+        
+        addStep("Test ingest with very long info (255+)", "Not failing any more");
+        events = new AuditTrailEvents();
+        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
+                "actor", "auditInfo", "fileId", veryLongString, pillarId, BigInteger.ONE, operationID1, fingerprint1));
+        database.addAuditTrailsOld(events, collectionId);
+    }
+    
+    
+    @Test(groups = {"regressiontest", "databasetest"})
+    public void AuditDatabaseIngest2Test() throws Exception {
+        addDescription("Testing ingest of audittrails into the database");
+        addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
+        DatabaseManager dm = new AuditTrailDatabaseManager(
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
+        AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
+        AuditTrailEvents events;
+        String veryLongString = "";
+        for(int i = 0; i < 255; i++) {
+            veryLongString += i;
+        }
+        
+        addStep("Test ingesting with all data", "No failure");
+        events = new AuditTrailEvents();
+        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
+                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
+        database.addAuditTrails(events, collectionId);
+        
+        
+        addStep("Test ingesting with no timestamp", "No failure");
+        events = new AuditTrailEvents();
+        events.getAuditTrailEvent().add(createSingleEvent(null, FileAction.CHECKSUM_CALCULATED, 
+                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
+        try {
+            database.addAuditTrails(events, collectionId);
+            Assert.fail("Should throw an exception.");
+        } catch  (IllegalArgumentException e) {
+            // expected
+        }
+        
+        addStep("Test ingesting with no file action", "No failure");
+        events = new AuditTrailEvents();
+        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), null, 
+                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
+        try {
+            database.addAuditTrails(events, collectionId);
+            Assert.fail("Should throw an exception.");
+        } catch (IllegalStateException e) {
+            //expected
+        }
+               
         addStep("Test ingesting with no actor", "Throws exception");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
@@ -284,6 +398,8 @@ public class AuditDatabaseTest extends ExtendedTestCase {
             // expected
         }
         
+        
+        // broken (null-pointer)
         addStep("Test ingesting with no sequence number", "Throws exception");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
@@ -307,7 +423,154 @@ public class AuditDatabaseTest extends ExtendedTestCase {
                 "actor", "auditInfo", "fileId", veryLongString, pillarId, BigInteger.ONE, operationID1, fingerprint1));
         database.addAuditTrails(events, collectionId);
     }
+    
+    
+    @Test(groups = {"regressiontest", "databasetest"})
+    public void AuditDatabaseGoodIngestTest() throws Exception {
+        addDescription("Testing good case ingest of audittrails into the database");
+        addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
+        DatabaseManager dm = new AuditTrailDatabaseManager(
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
+        AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
+        AuditTrailReadDAO readDao = new AuditTrailReadDAO(dm);
+        
+        addStep("Build test data", "No failure");
+        AuditTrailEvents events = new AuditTrailEvents();
+        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.PUT_FILE, 
+                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
+        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
+                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, null));
+        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.REPLACE_FILE, 
+                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, null, fingerprint1));
+        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
+                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, null, null));
+        
+        database.addAuditTrails(events, collectionId);
+        
+        
+        
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest"})
+    public void AuditDatabaseCreateCollectionIDTest() throws Exception {
+        addDescription("Test the conditional insert of collectionID into the database");
+        addStep("Sets up the test context", "Should not be a problem.");
+        DatabaseManager dm = new AuditTrailDatabaseManager(
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
+        AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
+        AuditTrailReadDAO readDao = new AuditTrailReadDAO(dm);
+        
+        addStep("check that database contains no collection ids", "database contains no collection ids");
+        List<String> initialIDs = readDao.getCollectionIDs();
+        Assert.assertTrue(initialIDs.isEmpty(), "The list of collectionIDs should be empty");
+        
+        addStep("insert a collectionID", "should go without a hitch");
+        String theCollectionID = "foo"; 
+        database.addCollectionID(theCollectionID);
+        List<String> collectionIDs = readDao.getCollectionIDs();
+        Assert.assertEquals(collectionIDs.size(), 1, "There should only be one collectionID");
+        Assert.assertEquals(collectionIDs, Arrays.asList(theCollectionID));
+        
+        addStep("insert the collectionID a second time", "should not change the list of collectionIDs");
+        database.addCollectionID(theCollectionID);
+        collectionIDs = readDao.getCollectionIDs();
+        Assert.assertEquals(collectionIDs.size(), 1, "There should only be one collectionID");
+        Assert.assertEquals(collectionIDs, Arrays.asList(theCollectionID));
+        
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest"})
+    public void AuditDatabaseCreateFileIDTest() throws Exception {
+        addDescription("Test the conditional insert of fileID into the database");
+        addStep("Sets up the test context", "Should not be a problem.");
+        DatabaseManager dm = new AuditTrailDatabaseManager(
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
+        AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
+        AuditTrailReadDAO readDao = new AuditTrailReadDAO(dm);
+        
+        addStep("Insert a collectionID", "Should go without a hitch");
+        String theCollectionID = "foo"; 
+        database.addCollectionID(theCollectionID);
+        
+        addStep("Ensure that the database contains no fileIDs", "The database contains no fileIDs");
+        List<String> initialFileIds = readDao.getFileIDs(theCollectionID);
+        Assert.assertTrue(initialFileIds.isEmpty(), "The list of fileIDs should be empty");
+        
+        addStep("Insert the fileID for the first time", "The fileID should appear in the database");
+        String theFileID = "bar";
+        database.addFileID(theFileID, theCollectionID);
+        List<String> fileIDs = readDao.getFileIDs(theCollectionID);
+        Assert.assertEquals(fileIDs.size(), 1, "There should only be one collectionID");
+        Assert.assertEquals(fileIDs, Arrays.asList(theFileID));
+        
+        addStep("insert the collectionID a second time", "should not change the list of collectionIDs");
+        database.addFileID(theFileID, theCollectionID);
+        fileIDs = readDao.getFileIDs(theCollectionID);
+        Assert.assertEquals(fileIDs.size(), 1, "There should only be one collectionID");
+        Assert.assertEquals(fileIDs, Arrays.asList(theFileID));
+        
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest"})
+    public void AuditDatabaseCreateContributorIDTest() throws Exception {
+        addDescription("Test the conditional insert of contributorID into the database");
+        addStep("Sets up the test context", "Should not be a problem.");
+        DatabaseManager dm = new AuditTrailDatabaseManager(
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
+        AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
+        AuditTrailReadDAO readDao = new AuditTrailReadDAO(dm);
+        
+        addStep("check that database contains no contributor ids", "database contains no contributor ids");
+        List<String> initialIDs = readDao.getContributorIDs();
+        Assert.assertTrue(initialIDs.isEmpty(), "The list of contributorIDs should be empty");
+        
+        addStep("insert a contributorID", "should go without a hitch");
+        String theContributorID = "foo"; 
+        database.addContributorID(theContributorID);
+        List<String> contributorIDs = readDao.getContributorIDs();
+        Assert.assertEquals(contributorIDs.size(), 1, "There should only be one contributorID");
+        Assert.assertEquals(contributorIDs, Arrays.asList(theContributorID));
+        
+        addStep("insert the contributorID a second time", "should not change the list of contributorIDs");
+        database.addContributorID(theContributorID);
+        contributorIDs = readDao.getContributorIDs();
+        Assert.assertEquals(contributorIDs.size(), 1, "There should only be one contributorID");
+        Assert.assertEquals(contributorIDs, Arrays.asList(theContributorID));
+    }
 
+    @Test(groups = {"regressiontest", "databasetest"})
+    public void AuditDatabaseCreateActorNameTest() throws Exception {
+        addDescription("Test the conditional insert of actorName into the database");
+        addStep("Sets up the test context", "Should not be a problem.");
+        DatabaseManager dm = new AuditTrailDatabaseManager(
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
+        AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
+        AuditTrailReadDAO readDao = new AuditTrailReadDAO(dm);
+        
+        addStep("check that database contains no actor names", "database contains no actor names");
+        List<String> initialNames = readDao.getActorNames();
+        Assert.assertTrue(initialNames.isEmpty(), "The list of actor names should be empty");
+        
+        addStep("insert an actorName", "should go without a hitch");
+        String theActorName = "foo"; 
+        database.addActorName(theActorName);
+        List<String> actorNames = readDao.getActorNames();
+        Assert.assertEquals(actorNames.size(), 1, "There should only be one contributorID");
+        Assert.assertEquals(actorNames, Arrays.asList(theActorName));
+        
+        addStep("insert the actorName a second time", "should not change the list of actorNames");
+        database.addContributorID(theActorName);
+        actorNames = readDao.getActorNames();
+        Assert.assertEquals(actorNames.size(), 1, "There should only be one actor name");
+        Assert.assertEquals(actorNames, Arrays.asList(theActorName));
+        
+        String theSecondActor = "baz";
+        database.addActorName(theSecondActor);
+        actorNames = readDao.getActorNames();
+        Assert.assertEquals(actorNames.size(), 2, "There should be two actor names");
+        Assert.assertEquals(actorNames, Arrays.asList(theSecondActor, theActorName));
+    }
+    
     private AuditTrailEvents createEvents() {
         AuditTrailEvents events = new AuditTrailEvents();
         

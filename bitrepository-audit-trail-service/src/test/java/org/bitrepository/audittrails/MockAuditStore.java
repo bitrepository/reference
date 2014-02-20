@@ -105,4 +105,30 @@ public class MockAuditStore implements AuditTrailStore {
     public boolean havePreservationKey(String contributorID, String collectionID) {
         return true;
     }
+    @Override
+    public void addCollectionID(String collectionID) {
+        // TODO Auto-generated method stub
+        
+    }
+    @Override
+    public void addFileID(String fileID, String collectionID) {
+        // TODO Auto-generated method stub
+        
+    }
+    @Override
+    public void addContributorID(String contributorID) {
+        // TODO Auto-generated method stub
+        
+    }
+    @Override
+    public void addActorName(String actorName) {
+        // TODO Auto-generated method stub
+        
+    }
+    @Override
+    public void addAuditTrailsOld(AuditTrailEvents auditTrailsEvents,
+            String collectionID) {
+        // TODO Auto-generated method stub
+        
+    }
 }

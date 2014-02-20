@@ -21,8 +21,18 @@
  */
 package org.bitrepository.audittrails.store;
 
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_NAME;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_TABLE;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_ACTOR_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_AUDIT;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_CONTRIBUTOR_KEY;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_FILE_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_FINGERPRINT;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_INFORMATION;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_OPERATION;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_OPERATION_DATE;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_OPERATION_ID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_SEQUENCE_NUMBER;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_TABLE;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.COLLECTION_ID;
@@ -32,6 +42,7 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIB
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_KEY;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_TABLE;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_COLLECTION_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_FILEID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_KEY;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_TABLE;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.PRESERVATION_COLLECTION_KEY;
@@ -40,13 +51,17 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.PRESERV
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.PRESERVATION_SEQ;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.PRESERVATION_TABLE;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseUtils;
@@ -91,10 +106,130 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         return extractor.extractAuditEventsByIterator();
     }
     
-    
+    @Override
+    public void addCollectionID(String collectionID) {       
+        String insertSql = "INSERT INTO " + COLLECTION_TABLE + " ( " + COLLECTION_ID + " ) "
+                + " ( SELECT ? FROM " + COLLECTION_TABLE 
+                + " WHERE " + COLLECTION_ID + " = ?"
+                + " HAVING count(*) = 0 )";
+        
+        DatabaseUtils.executeStatement(dbConnector, insertSql, collectionID, collectionID);
+    }
     
     @Override
-    public void addAuditTrails(AuditTrailEvents newAuditTrails, String collectionId) {
+    public void addFileID(String fileID, String collectionID) {
+        String insertSql = "INSERT INTO " + FILE_TABLE + " ( " + FILE_FILEID + ", " + FILE_COLLECTION_KEY + " )"
+                + " ( SELECT ?, ("
+                    + " SELECT " + COLLECTION_KEY 
+                    + " FROM " + COLLECTION_TABLE 
+                    + " WHERE " + COLLECTION_ID + " = ?)"
+                + " FROM " + FILE_TABLE
+                + " JOIN " + COLLECTION_TABLE 
+                + " ON " + FILE_TABLE + "." + FILE_COLLECTION_KEY + " = " + COLLECTION_TABLE + "." + COLLECTION_KEY
+                + " WHERE " + COLLECTION_ID + " = ?"
+                + " AND " + FILE_FILEID + " = ?"
+                + " HAVING count(*) = 0 )";
+        
+        DatabaseUtils.executeStatement(dbConnector, insertSql, fileID, collectionID, collectionID, fileID);
+    }
+    
+    @Override
+    public void addContributorID(String contributorID) {   
+        String insertSql = "INSERT INTO " + CONTRIBUTOR_TABLE + " ( " + CONTRIBUTOR_ID + " ) "
+                + " ( SELECT ? FROM " + CONTRIBUTOR_TABLE 
+                + " WHERE " + CONTRIBUTOR_ID + " = ?"
+                + " HAVING count(*) = 0 )";
+        
+        DatabaseUtils.executeStatement(dbConnector, insertSql, contributorID, contributorID);
+    }
+    
+    @Override
+    public void addActorName(String actorName) {   
+        String insertSql = "INSERT INTO " + ACTOR_TABLE + " ( " + ACTOR_NAME + " ) "
+                + " ( SELECT ? FROM " + ACTOR_TABLE 
+                + " WHERE " + ACTOR_NAME + " = ?"
+                + " HAVING count(*) = 0 )";
+        
+        DatabaseUtils.executeStatement(dbConnector, insertSql, actorName, actorName);
+    }
+    
+    public void addAuditTrails(AuditTrailEvents auditTrailEvents, String collectionID) {
+        ArgumentValidator.checkNotNull(auditTrailEvents, "AuditTrailEvents auditTrailEvents");
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
+        
+        for(AuditTrailEvent event : auditTrailEvents.getAuditTrailEvent()) {
+            addAuditTrail(event, collectionID);
+        }
+    }
+        
+    private void addAuditTrail(AuditTrailEvent event, String collectionID) {
+        addCollectionID(collectionID);
+        addActorName(event.getActorOnFile());
+        addContributorID(event.getReportingComponent());
+        addFileID(event.getFileID(), collectionID);
+        
+        String insertSql = "INSERT INTO " + AUDITTRAIL_TABLE 
+                + " ( " + AUDITTRAIL_SEQUENCE_NUMBER + ", " 
+                + AUDITTRAIL_CONTRIBUTOR_KEY + ", " 
+                + AUDITTRAIL_FILE_KEY + ", " 
+                + AUDITTRAIL_ACTOR_KEY + ", " 
+                + AUDITTRAIL_OPERATION + ", " 
+                + AUDITTRAIL_OPERATION_DATE + ", " 
+                + AUDITTRAIL_AUDIT + ", " 
+                + AUDITTRAIL_INFORMATION + ", " 
+                + AUDITTRAIL_OPERATION_ID + ", " 
+                + AUDITTRAIL_FINGERPRINT + ")"
+                + " VALUES ( ?," 
+                    + " (SELECT " + CONTRIBUTOR_KEY + " FROM " + CONTRIBUTOR_TABLE
+                    + " WHERE " + CONTRIBUTOR_ID + " = ?),"
+                    + " (SELECT " + FILE_KEY + " FROM " + FILE_TABLE
+                    + " JOIN " + COLLECTION_TABLE 
+                    + " ON " + FILE_TABLE + "." + FILE_COLLECTION_KEY + " = " + COLLECTION_TABLE + "." + COLLECTION_KEY  
+                    + " WHERE " + COLLECTION_ID + " = ?" 
+                    + " AND " + FILE_FILEID + " = ?),"
+                    + " (SELECT " + ACTOR_KEY + " FROM " + ACTOR_TABLE
+                    + " WHERE " + ACTOR_NAME + " = ?)," 
+                    + " ?, ?, ?, ?, ?, ? )";
+        
+        try {
+            PreparedStatement ps = null;
+            Connection conn = null;
+            try {
+                conn = dbConnector.getConnection();
+                ps = conn.prepareStatement(insertSql);
+                ps.setLong(1, event.getSequenceNumber().longValue());
+                ps.setString(2, event.getReportingComponent());
+                ps.setString(3, collectionID);
+                ps.setString(4, event.getFileID());
+                ps.setString(5, event.getActorOnFile());
+                ps.setString(6, event.getActionOnFile().toString());
+                ps.setTimestamp(7, new Timestamp(
+                        CalendarUtils.convertFromXMLGregorianCalendar(event.getActionDateTime()).getTime()));
+                ps.setString(8, event.getAuditTrailInformation());
+                ps.setString(9, event.getInfo());
+                ps.setString(10, event.getOperationID());
+                ps.setString(11, event.getCertificateID());
+        
+                ps.executeUpdate();
+            } finally {
+                if(ps != null) {
+                    ps.close();
+                }
+                if(conn != null) {
+                    conn.close();
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not insert audit trail event for event '" + event + "' with the SQL '"
+                    + insertSql + "'.", e);
+        } catch (NullPointerException e) {
+            throw new IllegalStateException("Got null input data, not allowed", e);
+        }
+        
+    }
+    
+    @Override
+    public void addAuditTrailsOld(AuditTrailEvents newAuditTrails, String collectionId) {
         ArgumentValidator.checkNotNull(newAuditTrails, "AuditTrailEvents newAuditTrails");
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         
