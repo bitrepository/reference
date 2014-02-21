@@ -58,6 +58,7 @@ public class IncrementalCollector {
     /** Will be used in case of no MaxNumberOfResult are provided */
     public static final int DEFAULT_MAX_NUMBER_OF_RESULTS = 10000;
     private final String collectionID;
+    private long collectedAudits = 0;
 
     /**
      * @param clientID The clientID to use for the requests.
@@ -84,11 +85,16 @@ public class IncrementalCollector {
         return collectionID;
     }
     
+    public long getNumberOfCollectedAudits() {
+        return collectedAudits;
+    }
+    
     /**
      * Setup and initiates the collection of audit trails through the client.
      * Adds one to the sequence number to request only newer audit trails.
      */
     public void performCollection(Collection<String> contributors) {
+        collectedAudits = 0;
         List<AuditTrailQuery> queries = new ArrayList<AuditTrailQuery>();
         
         for(String contributorId : contributors) {
@@ -130,6 +136,7 @@ public class IncrementalCollector {
                     contributorsWithPartialResults.add(auditResult.getContributorID());
                 }
                 AuditTrailEvents events = auditResult.getAuditTrailEvents().getAuditTrailEvents();
+                collectedAudits += events.getAuditTrailEvent().size();
                 store.addAuditTrails(events, collectionID);
                 if (events != null && events.getAuditTrailEvent() != null) {
                     log.debug("Collected and stored " + events.getAuditTrailEvent().size() +

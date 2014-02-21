@@ -103,7 +103,7 @@ public class AuditTrailCollector {
             info.setLastDuration("Not available");
         }
         info.setNextStart(TimeUtils.shortDate(nextRun));
-        
+        info.setCollectedAudits(collectorTasks.get(collectionID).getLastNumberOfCollectedAudits());
         return info;
     }
     

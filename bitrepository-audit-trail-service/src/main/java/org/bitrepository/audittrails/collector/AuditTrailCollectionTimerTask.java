@@ -46,6 +46,10 @@ public class AuditTrailCollectionTimerTask extends TimerTask {
         return schedule.getLastFinish();
     }
     
+    public long getLastNumberOfCollectedAudits() {
+        return collector.getNumberOfCollectedAudits();
+    }
+    
     /**
      * Run the operation and when finished set the date for the next collection.
      */

@@ -9,6 +9,7 @@ public class CollectorInfo {
     String lastStart;
     String lastDuration; 
     String nextStart;
+    long collectedAudits;
     
     public String getCollectionID() {
         return collectionID;
@@ -33,6 +34,12 @@ public class CollectorInfo {
     }
     public void setLastDuration(String lastDuration) {
         this.lastDuration = lastDuration;
+    }
+    public long getCollectedAudits() {
+        return collectedAudits;
+    }
+    public void setCollectedAudits(long collectedAudits) {
+        this.collectedAudits = collectedAudits;
     }
     
     
