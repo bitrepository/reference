@@ -136,9 +136,9 @@ public class IncrementalCollector {
                     contributorsWithPartialResults.add(auditResult.getContributorID());
                 }
                 AuditTrailEvents events = auditResult.getAuditTrailEvents().getAuditTrailEvents();
-                collectedAudits += events.getAuditTrailEvent().size();
                 store.addAuditTrails(events, collectionID);
                 if (events != null && events.getAuditTrailEvent() != null) {
+                    collectedAudits += events.getAuditTrailEvent().size();
                     log.debug("Collected and stored " + events.getAuditTrailEvent().size() +
                             " audit trail event from " + auditResult.getContributorID() + " in " +
                             TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime) 
