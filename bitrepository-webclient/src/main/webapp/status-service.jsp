@@ -83,7 +83,9 @@
 
   <script>
     var components = new Object();
-  
+    var monitoringServiceUrl;  
+    var update_component_status;
+
     function makeComponentRow(id, status, time) {
       var html = "";
       var classAttr = "class=\"success\"";
@@ -119,7 +121,8 @@
     }
         
     function populateStatusServiceConfiguration() {
-      $.getJSON('<%= su.getMonitoringServiceUrl() %>/monitoring/MonitoringService/getMonitoringConfiguration/', {}, function(j){
+      var url = monitoringServiceUrl + '/monitoring/MonitoringService/getMonitoringConfiguration/';
+      $.getJSON(url, {}, function(j){
         var htmlTableBody = "";
         for (var i = 0; i < j.length; i++) {
           htmlTableBody += "<tr><td>" + j[i].confOption + "</td><td>" + j[i].confValue + "</td></tr>";
@@ -143,7 +146,8 @@
     }
         
     function getStatuses() {
-      $.getJSON('<%= su.getMonitoringServiceUrl() %>/monitoring/MonitoringService/getComponentStatus/',{}, function(j){
+      var url = monitoringServiceUrl + '/monitoring/MonitoringService/getComponentStatus/';
+      $.getJSON(url, {}, function(j){
         for(var i = 0; i < j.length; i++) {
           if(components[j[i].componentID] == null) {
             $("#component-status-table-body").append(
@@ -157,12 +161,22 @@
         }
       });
     }
+
+    function initPage() {
+      $.get('repo/urlservice/monitoringService', {}, function(url) {
+        monitoringServiceUrl = url;
+        populateStatusServiceConfiguration();
+        getStatuses();
+        update_component_status = setInterval(function() {getStatuses(); }, 2500);
+      })
+    }
         
     $(document).ready(function(){
       makeMenu("status-service.jsp", "#pageMenu");
-      populateStatusServiceConfiguration();
+      initPage();
+      /*populateStatusServiceConfiguration();
       getStatuses();
-      var update_component_status = setInterval(function() {getStatuses(); }, 2500);
+      var update_component_status = setInterval(function() {getStatuses(); }, 2500);*/
     }); 
 
     </script>
