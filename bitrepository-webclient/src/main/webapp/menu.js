@@ -23,7 +23,7 @@
 
         var pages = [{page : "dashboard.jsp", title : "Dashboard"},
                      {page : "configuration.html", title : "Configuration"}, 
-                     {page : "alarm-service.jsp", title : "Alarm"},
+                     {page : "alarm-service.html", title : "Alarm"},
                      {page : "integrity-service.jsp", title : "Integrity"}, 
                      {page : "audit-trail-service.jsp", title : "Audit trail"}, 
                      {page : "status-service.html", title : "Status"}];

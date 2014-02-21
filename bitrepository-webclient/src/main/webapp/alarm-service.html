@@ -1,4 +1,4 @@
-<%--
+<!--
   #%L
   Bitrepository Webclient
   %%
@@ -18,12 +18,9 @@
   License along with this program.  If not, see
   <http://www.gnu.org/licenses/lgpl-2.1.html>.
   #L%
-  --%>
-<%@page import="org.bitrepository.webservice.ServiceUrlFactory" %>
-<%@page import="org.bitrepository.webservice.ServiceUrl" %>
+  -->
 <!DOCTYPE html>
 <html>
-  <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
   <head>
     <title>Bitrepository alarm service</title>
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
@@ -128,6 +125,7 @@
 
     var nameMapper;
     var auto_getalarms;
+    var alarmServiceUrl;
 
     function clearElement(element) {
       $(element).val("");
@@ -141,8 +139,9 @@
       var alarmCodeStr = $("#alarmCodeFilter").val();
       var maxAlarmStr = $("#maxAlarms").val();
       var collectionIDStr = $("#collectionIDFilter").val();
-            
-      $.post('<%= su.getAlarmServiceUrl() %>/alarm/AlarmService/queryAlarms/',
+           
+      var url = alarmServiceUrl + '/alarm/AlarmService/queryAlarms/';
+      $.post(url,
         {fromDate: fromDateStr,
          toDate: toDateStr,
          fileID: fileIDStr,
@@ -151,9 +150,9 @@
          maxAlarms: maxAlarmStr,
          collectionID: collectionIDStr,
          oldestAlarmFirst: false}, function(j){
-        var htmlTableBody = "";
-        if(j != null) {
-          for (var i = 0; i < j.length; i++) {
+         var htmlTableBody = "";
+         if(j != null) {
+           for (var i = 0; i < j.length; i++) {
             htmlTableBody += "<tr><td>" + j[i].OrigDateTime + 
                              "</td><td>" + j[i].AlarmRaiser +
                              "</td><td>" + nameMapper.getName(j[i].CollectionID) +
@@ -163,23 +162,27 @@
           }
         }
         $("#alarms-table-body").html(htmlTableBody);
-      })
+      });
     }
 
     function init() {
-      $.getJSON('repo/reposervice/getCollections/', {}, function(collections){
-        nameMapper = new CollectionNameMapper(collections);
-        var colls = nameMapper.getCollectionIDs();
-        for(i in colls) {
-          $("#collectionIDFilter").append('<option value="' + colls[i] + '">' + nameMapper.getName(colls[i]) + '</option>');
-        }
-        updateAlarms();
-        auto_getalarms = setInterval(function() {updateAlarms();}, 2500);
+      $.get('repo/urlservice/alarmService/', {}, function(url) {
+        alarmServiceUrl = url;
+      }, 'html').done(function() {
+        $.getJSON('repo/reposervice/getCollections/', {}, function(collections){
+          nameMapper = new CollectionNameMapper(collections);
+          var colls = nameMapper.getCollectionIDs();
+          for(i in colls) {
+            $("#collectionIDFilter").append('<option value="' + colls[i] + '">' + nameMapper.getName(colls[i]) + '</option>');
+          }
+          updateAlarms();
+          auto_getalarms = setInterval(function() {updateAlarms();}, 2500);
+        });  
       });
     }
 
     $(document).ready(function(){
-      makeMenu("alarm-service.jsp", "#pageMenu");
+      makeMenu("alarm-service.html", "#pageMenu");
       init();
       $("#fromDate").datepicker();
       $("#toDate").datepicker();
