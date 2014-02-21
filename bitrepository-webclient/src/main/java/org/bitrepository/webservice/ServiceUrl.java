@@ -26,9 +26,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Path("/urlservice")
 public class ServiceUrl {
     private static final String CONFIGFILE = "services.properties";
     private static final String ALARMURL = "org.bitrepository.webclient.alarmserviceurl"; 
@@ -96,18 +102,30 @@ public class ServiceUrl {
         configDir = confDir;
     }
 
+    @GET
+    @Path("/alarmService")
+    @Produces(MediaType.APPLICATION_JSON)
     public String getAlarmServiceUrl() {
         return alarmUrl;
     }
-
+    
+    @GET
+    @Path("/auditTrailService")
+    @Produces(MediaType.APPLICATION_JSON)
     public String getAuditTrailServiceUrl() {
         return auditTrailUrl;
     }
 
+    @GET
+    @Path("/integrityService")
+    @Produces(MediaType.APPLICATION_JSON)
     public String getIntegrityServiceUrl() {
         return integrityUrl;
     }
 
+    @GET
+    @Path("/monitoringService")
+    @Produces(MediaType.APPLICATION_JSON)
     public String getMonitoringServiceUrl() {
         return monitoringUrl;
     }
