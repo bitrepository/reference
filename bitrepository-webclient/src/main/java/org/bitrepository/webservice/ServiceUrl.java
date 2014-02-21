@@ -58,7 +58,7 @@ public class ServiceUrl {
     private static String configDir;
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    ServiceUrl() {
+    public ServiceUrl() {
         if(configDir == null) {
             log.debug("ServiceUrl constructor called before init!!");
             throw new RuntimeException("No configuration dir has been set!");
