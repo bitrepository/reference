@@ -1,9 +1,9 @@
-<%--
-  #%L
+<!--
+
   Bitrepository Webclient
-  %%
+
   Copyright (C) 2010 - 2013 The State and University Library, The Royal Library and The State Archives, Denmark
-  %%
+
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as 
   published by the Free Software Foundation, either version 2.1 of the 
@@ -17,13 +17,11 @@
   You should have received a copy of the GNU General Lesser Public 
   License along with this program.  If not, see
   <http://www.gnu.org/licenses/lgpl-2.1.html>.
-  #L%
-  --%>
-<%@page import="org.bitrepository.webservice.ServiceUrlFactory" %>
-<%@page import="org.bitrepository.webservice.ServiceUrl" %>
+
+  -->
 <!DOCTYPE html>
 <html>
-  <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
+
   <head>
     <title>Bitrepository status service</title>
     <!-- Bootstrap -->
@@ -168,15 +166,12 @@
         populateStatusServiceConfiguration();
         getStatuses();
         update_component_status = setInterval(function() {getStatuses(); }, 2500);
-      })
+      }, 'html');
     }
         
     $(document).ready(function(){
-      makeMenu("status-service.jsp", "#pageMenu");
+      makeMenu("status-service.html", "#pageMenu");
       initPage();
-      /*populateStatusServiceConfiguration();
-      getStatuses();
-      var update_component_status = setInterval(function() {getStatuses(); }, 2500);*/
     }); 
 
     </script>
