@@ -41,19 +41,11 @@ public class ServiceUrl {
     private static final String AUDITTRAILURL = "org.bitrepository.webclient.audittrailserviceurl"; 
     private static final String INTEGRITYURL = "org.bitrepository.webclient.integrityserviceurl"; 
     private static final String MONITORINGURL = "org.bitrepository.webclient.monitoringserviceurl";
-    private static final String WEBCLIENTURL = "org.bitrepository.webclient.webclientserviceurl";
-    private static final String WEBSERVERURL = "org.bigrepository.webclient.webserverurl";
-    private static final String DEFAULTHTTPURL = "org.bitrepository.webclient.defaulthttpserverurl"; 
-
-    
     
     private static String alarmUrl = "";
     private static String auditTrailUrl = "";
     private static String integrityUrl = "";
     private static String monitoringUrl = "";
-    private static String webclientUrl = "";
-    private static String webserverUrl = "";
-    private static String defaultHttpUrl = "";
     
     private static String configDir;
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -80,17 +72,10 @@ public class ServiceUrl {
             auditTrailUrl = properties.getProperty(AUDITTRAILURL);
             integrityUrl = properties.getProperty(INTEGRITYURL);
             monitoringUrl = properties.getProperty(MONITORINGURL);
-            defaultHttpUrl = properties.getProperty(DEFAULTHTTPURL);
-            webclientUrl = properties.getProperty(WEBCLIENTURL);
-            webserverUrl = properties.getProperty(WEBSERVERURL);
             log.debug("Properties has been loaded:");
             log.debug("alarm:" +alarmUrl);
             log.debug("auditTrail:" +auditTrailUrl);
             log.debug("integrity:" +integrityUrl);
-            log.debug("webclient:" +webclientUrl);
-            log.debug("webserverurl:" +webserverUrl );            
-            log.debug("http:" +defaultHttpUrl);
-            
         } catch (IOException e) {
             //will just fail setting keystore stuff and we won't be able to connect over ssl
             // not a big deal..
@@ -128,17 +113,5 @@ public class ServiceUrl {
     @Produces(MediaType.APPLICATION_JSON)
     public String getMonitoringServiceUrl() {
         return monitoringUrl;
-    }
-
-    public String getWebclientServiceUrl() {
-        return webclientUrl;
-    }
-    
-    public String getWebserverUrl() {
-        return webserverUrl;
-    }
-    
-    public String getDefaultHttpServerUrl() {
-        return defaultHttpUrl;
     }
 }
