@@ -34,10 +34,10 @@ CREATE TABLE tableversions (
     version INT NOT NULL             -- version of table
 );
 
-insert into tableversions ( tablename, version ) values ( 'audit', 3);
+insert into tableversions ( tablename, version ) values ( 'audit', 4);
 insert into tableversions ( tablename, version ) values ( 'file', 2);
 insert into tableversions ( tablename, version ) values ( 'actor', 1);
-insert into tableversions ( tablename, version ) values ( 'auditcontributordb', 3);
+insert into tableversions ( tablename, version ) values ( 'auditcontributordb', 4);
 
 --*************************************************************************--
 -- Name:     file

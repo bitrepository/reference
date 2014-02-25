@@ -25,4 +25,4 @@ ALTER TABLE audittrail ADD fingerprint VARCHAR(100);
 
 -- Set the table versions
 insert into tableversions ( tablename, version ) values ( 'auditcontributordb', 4);
-update tableversions set version = 4 where tablename = 'audittrail';
+update tableversions set version = 4 where tablename = 'audit';
