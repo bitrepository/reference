@@ -1,4 +1,4 @@
-<%--
+<!--
   #%L
   Bitrepository Webclient
   %%
@@ -18,12 +18,9 @@
   License along with this program.  If not, see
   <http://www.gnu.org/licenses/lgpl-2.1.html>.
   #L%
-  --%>
-<%@page import="org.bitrepository.webservice.ServiceUrlFactory" %>
-<%@page import="org.bitrepository.webservice.ServiceUrl" %>
+  -->
 <!DOCTYPE html>
 <html>
-  <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
   <head>
     <title>Bitrepository integrity service</title>
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
@@ -119,10 +116,11 @@
     var pager;
     var update_page;
     var nameMapper;
+    var integrityServiceUrl;
 
     function loadWorkflows() {
-      $.getJSON("<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getWorkflowList/?collectionID=" 
-            + getCollectionID(), {}, function(j) {
+      var url = integrityServiceUrl + '/integrity/IntegrityService/getWorkflowList/?collectionID=' + getCollectionID();
+      $.getJSON(url, {}, function(j) {
         for (var i = 0; i < j.length; i++) {
           $("#workflowSelector").append('<option value="' + j[i] + '">' + j[i] + '</option>');          
         }
@@ -173,8 +171,8 @@
     }
 
     function getWorkflowStatuses() {
-      $.getJSON("<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getWorkflowSetup/?collectionID=" 
-        + getCollectionID(), {}, function(j) {
+      var url = integrityServiceUrl + '/integrity/IntegrityService/getWorkflowSetup/?collectionID=' + getCollectionID();
+      $.getJSON(url, {}, function(j) {
         var htmlTableBody;
         for (var i = 0; i < j.length; i++) {
           if(workflows[j[i].workflowID] == null) {
@@ -218,7 +216,7 @@
       var element;
       var title;
       var member;
-      var url = "<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/";
+      var url = integrityServiceUrl + "/integrity/IntegrityService/";
       if(type == "Total files") {
         element = "#" + id + "-totalFileCount";
         title = type + " on " + id;
@@ -258,7 +256,7 @@
     }
 
     function getIntegrityStatus() {
-      var url = "<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getIntegrityStatus/?collectionID=" 
+      var url = integrityServiceUrl + "/integrity/IntegrityService/getIntegrityStatus/?collectionID=" 
             + getCollectionID();
       $.getJSON(url, {}, function(j){
         var htmlTable;
@@ -284,15 +282,14 @@
 
     function startWorkflow() {
       var ID = $("#workflowSelector option:selected").val();
-      $('#formStatus').load(
-                '<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/startWorkflow/',
-                {workflowID: ID,
-                 collectionID: getCollectionID() }).show().fadeOut({duration: 5000});
+      var url = integrityServiceUrl + '/integrity/IntegrityService/startWorkflow/';
+      $('#formStatus').load(url, {workflowID: ID,
+                                  collectionID: getCollectionID() }).show().fadeOut({duration: 5000});
 
     }
  
     function getCollectionInformation() {
-      var url = "<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getCollectionInformation/?collectionID=" + getCollectionID();
+      var url = integrityServiceUrl + "/integrity/IntegrityService/getCollectionInformation/?collectionID=" + getCollectionID();
       $.getJSON(url, {}, function(j) {
         var infoHtml = "<span><b> Latest ingest: " + j.lastIngest + " &nbsp; &nbsp; ";
         infoHtml += " Size: " + j.collectionSize + " &nbsp; &nbsp; ";
@@ -318,21 +315,24 @@
     }
 
     function initializePage() {
-      $.getJSON('repo/reposervice/getCollections/', {}, function(collections) {
-        nameMapper = new CollectionNameMapper(collections);
-        var colls = nameMapper.getCollectionIDs();
-        for(i in colls) {
-          $("#collectionChooser").append('<option value="' + colls[i] + '">' + nameMapper.getName(colls[i]) + '</option>');
-        }
-       
-        collectionChanged();        
+      $.get('repo/urlservice/integrityService/', {}, function(url) {
+        integrityServiceUrl = url;
+      }, 'html').done(function() {
+        $.getJSON('repo/reposervice/getCollections/', {}, function(collections) {
+          nameMapper = new CollectionNameMapper(collections);
+          var colls = nameMapper.getCollectionIDs();
+          for(i in colls) {
+            $("#collectionChooser").append('<option value="' + colls[i] + '">' + nameMapper.getName(colls[i]) + '</option>');
+          }
+          collectionChanged();        
+        });
       });
     }
 
     function collectionChanged() {
         clearContent();
         $("#integrityLegend").html("Integrity information for collection " + nameMapper.getName(getCollectionID()));
-        reportUrl =  "<%= su.getIntegrityServiceUrl() %>/integrity/IntegrityService/getLatestIntegrityReport/";
+        reportUrl =  integrityServiceUrl + "/integrity/IntegrityService/getLatestIntegrityReport/";
         reportUrl += "?collectionID=" + getCollectionID();
         reportUrl += "&workflowID=" + "CompleteIntegrityCheck";
         $("#integrityReportGetter").html("<a class=\"btn btn-link\" href=\"" + reportUrl + "\" target=\"_blank\">Get latest integrity report</a>");
@@ -350,7 +350,7 @@
 
     $(document).ready(function(){
       // Load page content
-      makeMenu("integrity-service.jsp", "#pageMenu");
+      makeMenu("integrity-service.html", "#pageMenu");
       initializePage();
     
       // Setup event / click handling
