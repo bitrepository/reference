@@ -1,4 +1,4 @@
-<%--
+<!--
   #%L
   Bitrepository Webclient
   %%
@@ -18,12 +18,9 @@
   License along with this program.  If not, see
   <http://www.gnu.org/licenses/lgpl-2.1.html>.
   #L%
-  --%>
-<%@page import="org.bitrepository.webservice.ServiceUrlFactory" %>
-<%@page import="org.bitrepository.webservice.ServiceUrl" %>
+  -->
 <!DOCTYPE html>
 <html>
-  <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
   <head>
     <title>Bitrepository audit-trail service</title>
     <!-- Bootstrap -->
@@ -44,7 +41,7 @@
                   </div>
                   <div class="span6">
                       <h2 class="pull-right">
-                          <button type="submit" class="btn" id="collectAuditTrails">Collect audit trails</button>
+                          <button type="submit" class="btn" id="collectAuditTrails" disabled="disabled">Collect audit trails</button>
                       <h2>
                   </div>
               </div>
@@ -160,7 +157,7 @@
             </label>
             <label> <br>
               <div class="input-append">
-                <button class="btn" id="queryAuditTrails">Filter</button>
+                <button class="btn" id="queryAuditTrails" disabled="disabled">Filter</button>
               </div>
             </label>
           </form>
@@ -182,14 +179,17 @@
 
   <script>
     var collectionScheduleUpdater;
+    var audittrailServiceUrl;
 
     function clearElement(element) {
       $(element).val("");
     }
 
     function startAuditTrailsCollection() {
-      $.post('<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/collectAuditTrails/',
-            {}, function(d) {console.log(d);});
+      var url = audittrailServiceUrl + '/audittrails/AuditTrailService/collectAuditTrails/';
+      $.post(url, {}, function(d) {
+        console.log(d);
+      });
     }    
 
     function getAuditTrails() {
@@ -206,7 +206,8 @@
 
       $("#auditTrailsTableDiv").html("Loading audit trails...");
 
-      $.post('<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/queryAuditTrailEvents/',
+      var url = audittrailServiceUrl + '/audittrails/AuditTrailService/queryAuditTrailEvents/';
+      $.post(url,
         {fromDate: fromDateStr,
          toDate: toDateStr,
          fileID: fileIDStr,
@@ -267,7 +268,8 @@
     }
 
     function updateCollectionSchedule() {
-      $.getJSON('<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/collectionSchedule/', {}, function(schedules) {
+      var url = audittrailServiceUrl + '/audittrails/AuditTrailService/collectionSchedule/';
+      $.getJSON(url, {}, function(schedules) {
         for(var i = 0; i < schedules.length; i++) {
           updateScheduleRow(schedules[i]);
         }
@@ -286,7 +288,8 @@
     }
 
     function loadCollectionSchedule() {
-      $.getJSON('<%= su.getAuditTrailServiceUrl() %>/audittrails/AuditTrailService/collectionSchedule/', {}, function(schedules) {
+      var url = audittrailServiceUrl + '/audittrails/AuditTrailService/collectionSchedule/';
+      $.getJSON(url, {}, function(schedules) {
         for(var i = 0; i < schedules.length; i++) {
           addScheduleRow(schedules[i]);
         }
@@ -295,11 +298,21 @@
       });
     }    
 
+    function initPage() {
+      $.get('repo/urlservice/auditTrailService', {}, function(url) {
+        audittrailServiceUrl = url;
+        $("#collectAuditTrails").click(function(event) { event.preventDefault(); startAuditTrailsCollection(); });
+        $("#collectAuditTrails").removeAttr("disabled");
+        $("#queryAuditTrails").click(function(event) {event.preventDefault(); getAuditTrails()});
+        $("#queryAuditTrails").removeAttr("disabled");
+        loadCollectionSchedule();
+      }, 'html');
+    }
+
     $(document).ready(function(){
-      makeMenu("audit-trail-service.jsp", "#pageMenu");
+      makeMenu("audit-trail-service.html", "#pageMenu");
+      initPage();
       getCollectionIDs();
-      loadCollectionSchedule();
-      $("#collectAuditTrails").click(function(event) { event.preventDefault(); startAuditTrailsCollection(); });
       $("#fromDate").datepicker();
       $("#toDate").datepicker();
       $("#toDateClearButton").click(function(event) {event.preventDefault(); clearElement("#toDate")});
@@ -309,7 +322,6 @@
       $("#actorClearButton").click(function(event) {event.preventDefault(); clearElement("#actorFilter")});
       $("#fingerprintClearButton").click(function(event) {event.preventDefault(); clearElement("#fingerprintFilter")});
       $("#operationIDClearButton").click(function(event) {event.preventDefault(); clearElement("#operationIDFilter")});
-      $("#queryAuditTrails").click(function(event) {event.preventDefault(); getAuditTrails()});
     }); 
 
     </script>

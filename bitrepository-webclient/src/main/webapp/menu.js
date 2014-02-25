@@ -25,7 +25,7 @@
                      {page : "configuration.html", title : "Configuration"}, 
                      {page : "alarm-service.html", title : "Alarm"},
                      {page : "integrity-service.jsp", title : "Integrity"}, 
-                     {page : "audit-trail-service.jsp", title : "Audit trail"}, 
+                     {page : "audit-trail-service.html", title : "Audit trail"}, 
                      {page : "status-service.html", title : "Status"}];
 
         function makeMenu(page, element) {
