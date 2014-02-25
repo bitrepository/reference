@@ -21,7 +21,7 @@
  */
 
 
-        var pages = [{page : "dashboard.jsp", title : "Dashboard"},
+        var pages = [{page : "dashboard.html", title : "Dashboard"},
                      {page : "configuration.html", title : "Configuration"}, 
                      {page : "alarm-service.html", title : "Alarm"},
                      {page : "integrity-service.html", title : "Integrity"}, 

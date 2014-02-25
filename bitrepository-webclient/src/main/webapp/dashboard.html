@@ -1,4 +1,4 @@
-<%--
+<!--
   #%L
   Bitrepository Webclient
   %%
@@ -18,12 +18,9 @@
   License along with this program.  If not, see
   <http://www.gnu.org/licenses/lgpl-2.1.html>.
   #L%
-  --%>
-<%@page import="org.bitrepository.webservice.ServiceUrlFactory" %>
-<%@page import="org.bitrepository.webservice.ServiceUrl" %>
+  -->
 <!DOCTYPE html>
 <html>
-  <% ServiceUrl su = ServiceUrlFactory.getInstance(); %>
   <head>
     <title>Bitrepository dashboard</title>
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
@@ -119,34 +116,36 @@
       var dsGraph;
 
       function init() {
-        setIntegrityServiceUrl("<%= su.getIntegrityServiceUrl() %>");
-        $.get("repo/reposervice/getRepositoryName/", {}, function(j) {
-          $("#pageHeader").html("Overview of " + j);
-        }, "html");
-        $.getJSON("repo/reposervice/getCollections/", {}, function(collections) {
-          colorMapper = new ColorMapper(collections);
-          nameMapper = new CollectionNameMapper(collections);
-          setNameMapper(nameMapper);
-          initiateCollectionStatus(collections, "#collectionStatusBody", 10000);
-          var dataUrl = "<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getDataSizeHistory/?collectionID=";
-          dsGraph = new dataSizeGraph(collections, colorMapper, new FileSizeUtils(), dataUrl, "#graphType", "#dataSizeGraphPlaceholder");
-          makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph, colorMapper, nameMapper);
-          drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
-          drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
-          $("#graphType").change(function(event) {event.preventDefault(); dsGraph.graphTypeChanged();});
-          dsGraph.updateData();
-          // Update graphs every hour
-          update_data_size_graph = setInterval(function() {
+        $.get('repo/urlservice/integrityService', {}, function(url) {
+          setIntegrityServiceUrl(url);
+          $.get("repo/reposervice/getRepositoryName/", {}, function(j) {
+            $("#pageHeader").html("Overview of " + j);
+          }, "html");
+          $.getJSON("repo/reposervice/getCollections/", {}, function(collections) {
+            colorMapper = new ColorMapper(collections);
+            nameMapper = new CollectionNameMapper(collections);
+            setNameMapper(nameMapper);
+            initiateCollectionStatus(collections, "#collectionStatusBody", 10000);
+            var dataUrl = url + "/integrity/Statistics/getDataSizeHistory/?collectionID=";
+            dsGraph = new dataSizeGraph(collections, colorMapper, new FileSizeUtils(), dataUrl, "#graphType", "#dataSizeGraphPlaceholder");
+            makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph, colorMapper, nameMapper);
+            drawPillarDataSizePieChart(url + "/integrity/Statistics/getLatestPillarDataSize/");
+            drawCollectionDataSizePieChart(url + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
+            $("#graphType").change(function(event) {event.preventDefault(); dsGraph.graphTypeChanged();});
             dsGraph.updateData();
-            drawPillarDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestPillarDataSize/");
-            drawCollectionDataSizePieChart("<%= su.getIntegrityServiceUrl() %>" + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
-          }, 3600000);
-        });
+            // Update graphs every hour
+            update_data_size_graph = setInterval(function() {
+              dsGraph.updateData();
+              drawPillarDataSizePieChart(url + "/integrity/Statistics/getLatestPillarDataSize/");
+              drawCollectionDataSizePieChart(url + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
+            }, 3600000);
+          });
+        }, 'html');
       }
 
       $.ajaxSetup({cache: false});
       $(document).ready(function(){
-        makeMenu("dashboard.jsp", "#pageMenu");
+        makeMenu("dashboard.html", "#pageMenu");
         init();
       });
     </script>
