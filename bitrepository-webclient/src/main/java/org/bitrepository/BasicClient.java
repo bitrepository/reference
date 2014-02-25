@@ -21,16 +21,14 @@
  */
 package org.bitrepository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.RepositorySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.jms.JMSException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class BasicClient {
     private Settings settings;
@@ -52,11 +50,7 @@ public class BasicClient {
     }
 
     public void shutdown() {
-        try {
-            MessageBusManager.getMessageBus().close();
-        } catch (JMSException e) {
-            log.warn("Failed to shutdown message bus cleanly, " + e.getMessage());
-        }
+        // currently nothing to do here
     }
 
     public String getSettingsSummary() {
