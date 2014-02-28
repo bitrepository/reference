@@ -256,8 +256,8 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         
         Long collectionKey = retrieveCollectionKey(collectionId);
         log.trace("Updating the checksum data '" + data + "' for pillar '" + pillarId + "' in collection " + collectionId + "'");
-        for(ChecksumDataForChecksumSpecTYPE csData : data) {
-            updateFileInfoWithChecksum2(csData, pillarId, collectionKey);
+        //for(ChecksumDataForChecksumSpecTYPE csData : data) {
+            updateFileInfoWithChecksum2(data, pillarId, collectionKey);
             /*
             if(hasFileIDAtCollection(csData.getFileID(), collectionId)) {
                 updateFileInfoWithChecksum(csData, pillarId, collectionId);
@@ -265,7 +265,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 log.info("New file entry for '" + csData.getFileID() + "' at '" + collectionId + "' found during "
                         + "updating the checksums. Will be ignored.");
             }*/
-        }
+        //}
     }
     
     /**
@@ -1449,7 +1449,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         log.debug("Updated fileInfo checksums in " + (System.currentTimeMillis() - startTime) + "ms");
     }
     
-    private void updateFileInfoWithChecksum2(ChecksumDataForChecksumSpecTYPE data, String pillarID, 
+    private void updateFileInfoWithChecksum2(List<ChecksumDataForChecksumSpecTYPE> data, String pillarID, 
             Long collectionKey) {
         String updateFileStateSql = "UPDATE " + FILE_INFO_TABLE 
                 + " SET " + FI_CHECKSUM_STATE + " = ?, " 
@@ -1489,23 +1489,26 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 updateFileStatePS = conn.prepareStatement(updateFileStateSql);
                 updateChecksumPS = conn.prepareStatement(updateChecksumSql);
                 
-                updateFileStatePS.setInt(1, FileState.UNKNOWN.ordinal());
-                updateFileStatePS.setInt(2, FileState.EXISTING.ordinal());
-                updateFileStatePS.setString(3, data.getFileID());
-                updateFileStatePS.setLong(4, collectionKey);
-                updateFileStatePS.setString(5, pillarID);
-                
-                Timestamp ts = new Timestamp(
-                        CalendarUtils.convertFromXMLGregorianCalendar(data.getCalculationTimestamp()).getTime());
-                updateChecksumPS.setTimestamp(1, ts);
-                updateChecksumPS.setString(2, Base16Utils.decodeBase16(data.getChecksumValue()));
-                updateChecksumPS.setString(3, data.getFileID());
-                updateChecksumPS.setLong(4, collectionKey);
-                updateChecksumPS.setString(5, pillarID);
-                updateChecksumPS.setTimestamp(6, ts);
-      
-                updateFileStatePS.execute();
-                updateChecksumPS.execute();
+                for(ChecksumDataForChecksumSpecTYPE csData : data) {
+                    updateFileStatePS.setInt(1, FileState.UNKNOWN.ordinal());
+                    updateFileStatePS.setInt(2, FileState.EXISTING.ordinal());
+                    updateFileStatePS.setString(3, csData.getFileID());
+                    updateFileStatePS.setLong(4, collectionKey);
+                    updateFileStatePS.setString(5, pillarID);
+                    updateFileStatePS.addBatch();
+                    
+                    Timestamp ts = new Timestamp(
+                            CalendarUtils.convertFromXMLGregorianCalendar(csData.getCalculationTimestamp()).getTime());
+                    updateChecksumPS.setTimestamp(1, ts);
+                    updateChecksumPS.setString(2, Base16Utils.decodeBase16(csData.getChecksumValue()));
+                    updateChecksumPS.setString(3, csData.getFileID());
+                    updateChecksumPS.setLong(4, collectionKey);
+                    updateChecksumPS.setString(5, pillarID);
+                    updateChecksumPS.setTimestamp(6, ts);
+                    updateChecksumPS.addBatch();
+                }
+                updateFileStatePS.executeBatch();
+                updateChecksumPS.executeBatch();
                 conn.commit();
             } finally {
                 if(updateFileStatePS != null) {
@@ -1520,7 +1523,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 }
             }            
         } catch (SQLException e) {
-            throw new IllegalStateException("Failed to update fileinfo for file: '" + data.getFileID() + "'. ", e);
+            throw new IllegalStateException("Failed to batch update fileinfo for pillar: '" + pillarID + "'. ", e);
         } catch (NullPointerException e) {
             throw new IllegalStateException("Got null input data, not allowed", e);
         }
