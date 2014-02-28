@@ -77,6 +77,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
@@ -252,14 +254,17 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         
+        Long collectionKey = retrieveCollectionKey(collectionId);
         log.trace("Updating the checksum data '" + data + "' for pillar '" + pillarId + "' in collection " + collectionId + "'");
         for(ChecksumDataForChecksumSpecTYPE csData : data) {
+            updateFileInfoWithChecksum2(csData, pillarId, collectionKey);
+            /*
             if(hasFileIDAtCollection(csData.getFileID(), collectionId)) {
                 updateFileInfoWithChecksum(csData, pillarId, collectionId);
             } else {
                 log.info("New file entry for '" + csData.getFileID() + "' at '" + collectionId + "' found during "
                         + "updating the checksums. Will be ignored.");
-            }
+            }*/
         }
     }
     
@@ -1442,6 +1447,83 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         DatabaseUtils.executeStatement(dbConnector, updateSql, csTimestamp, 
                 ChecksumState.UNKNOWN.ordinal(), checksum, filesKey, pillarKey, csTimestamp);
         log.debug("Updated fileInfo checksums in " + (System.currentTimeMillis() - startTime) + "ms");
+    }
+    
+    private void updateFileInfoWithChecksum2(ChecksumDataForChecksumSpecTYPE data, String pillarID, 
+            Long collectionKey) {
+        String updateFileStateSql = "UPDATE " + FILE_INFO_TABLE 
+                + " SET " + FI_CHECKSUM_STATE + " = ?, " 
+                + FI_FILE_STATE + " = ?"
+            + " WHERE " + FI_FILE_KEY + " = ("
+                + " SELECT " + FILES_KEY 
+                + " FROM " + FILES_TABLE
+                + " WHERE " + FILES_ID + " = ?"
+                + " AND " + COLLECTION_KEY + " = ?)"
+            + " AND " + FI_PILLAR_KEY + " = ("
+                + " SELECT " + PILLAR_KEY
+                + " FROM " + PILLAR_TABLE
+                + " WHERE " + PILLAR_ID + " = ?)";
+        
+        String updateChecksumSql = "UPDATE " + FILE_INFO_TABLE 
+                + " SET " + FI_LAST_CHECKSUM_UPDATE + " = ?, "
+                    + FI_CHECKSUM + " = ?"
+                + " WHERE " + FI_FILE_KEY + " = ("
+                    + " SELECT " + FILES_KEY 
+                    + " FROM " + FILES_TABLE
+                    + " WHERE " + FILES_ID + " = ?"
+                    + " AND " + COLLECTION_KEY + " = ?)"
+                + " AND " + FI_PILLAR_KEY + " = ("
+                    + " SELECT " + PILLAR_KEY
+                    + " FROM " + PILLAR_TABLE
+                    + " WHERE " + PILLAR_ID + " = ?)"
+                + " AND " + FI_LAST_CHECKSUM_UPDATE + " < ?";
+        
+        try {
+            Connection conn = null;
+            PreparedStatement updateFileStatePS = null;
+            PreparedStatement updateChecksumPS = null;
+        
+            try {
+                conn = dbConnector.getConnection();
+                conn.setAutoCommit(false);
+                updateFileStatePS = conn.prepareStatement(updateFileStateSql);
+                updateChecksumPS = conn.prepareStatement(updateChecksumSql);
+                
+                updateFileStatePS.setInt(1, FileState.UNKNOWN.ordinal());
+                updateFileStatePS.setInt(2, FileState.EXISTING.ordinal());
+                updateFileStatePS.setString(3, data.getFileID());
+                updateFileStatePS.setLong(4, collectionKey);
+                updateFileStatePS.setString(5, pillarID);
+                
+                Timestamp ts = new Timestamp(
+                        CalendarUtils.convertFromXMLGregorianCalendar(data.getCalculationTimestamp()).getTime());
+                updateChecksumPS.setTimestamp(1, ts);
+                updateChecksumPS.setString(2, Base16Utils.decodeBase16(data.getChecksumValue()));
+                updateChecksumPS.setString(3, data.getFileID());
+                updateChecksumPS.setLong(4, collectionKey);
+                updateChecksumPS.setString(5, pillarID);
+                updateChecksumPS.setTimestamp(6, ts);
+      
+                updateFileStatePS.execute();
+                updateChecksumPS.execute();
+                conn.commit();
+            } finally {
+                if(updateFileStatePS != null) {
+                    updateFileStatePS.close();
+                }
+                if(updateChecksumPS != null) {
+                    updateChecksumPS.close();
+                }
+                if(conn != null) {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                }
+            }            
+        } catch (SQLException e) {
+            throw new IllegalStateException("Failed to update fileinfo for file: '" + data.getFileID() + "'. ", e);
+        } catch (NullPointerException e) {
+            throw new IllegalStateException("Got null input data, not allowed", e);
+        }
     }
     
     /**
