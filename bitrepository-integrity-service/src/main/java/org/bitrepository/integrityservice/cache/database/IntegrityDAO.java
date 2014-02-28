@@ -61,10 +61,13 @@ import static org.bitrepository.integrityservice.cache.database.DatabaseConstant
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TIME;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -83,7 +86,6 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.PillarStat;
-import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.settings.repositorysettings.Collections;
@@ -225,14 +227,17 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         log.trace("Updating the file ids '" + data + "' for pillar '" + pillarId + "'");
         
+        Long collectionKey = retrieveCollectionKey(collectionId);
         for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
             Date modifyDate = CalendarUtils.convertFromXMLGregorianCalendar(dataItem.getLastModificationTime());
-            ensureFileIdExists(dataItem.getFileID(), modifyDate, collectionId);
+            ensureFileIDExists2(dataItem.getFileID(), modifyDate, collectionKey, collectionId);
             
-            updateFileInfoLastFileUpdateTimestamp(pillarId, dataItem.getFileID(), modifyDate, collectionId);
+            updateFileInfo(pillarId, dataItem.getFileID(), modifyDate, collectionKey, dataItem.getFileSize());
+            
+            /*updateFileInfoLastFileUpdateTimestamp(pillarId, dataItem.getFileID(), modifyDate, collectionId);
             if(dataItem.isSetFileSize()) {
                 updateFileInfoFileSize(pillarId, dataItem.getFileID(), collectionId, dataItem.getFileSize().longValue());
-            }
+            }*/
         }
     }
     
@@ -1324,6 +1329,86 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 (System.currentTimeMillis() - startTime) + "ms");
     }
     
+    private void updateFileInfo(String pillarID, String fileID, Date fileTimeStamp, 
+            Long collectionKey, BigInteger filesize) {
+        String updateFileInfoSql = "UPDATE " + FILE_INFO_TABLE 
+                + " SET " + FI_FILE_SIZE + " = ?, "
+                          + FI_FILE_STATE + " = ?"
+                + " WHERE " + FI_FILE_KEY + " = ("
+                    + " SELECT " + FILES_KEY 
+                    + " FROM " + FILES_TABLE
+                    + " WHERE " + FILES_ID + " = ?"
+                    + " AND " + COLLECTION_KEY + " = ?)"
+                + " AND " + FI_PILLAR_KEY + " = ("
+                    + " SELECT " + PILLAR_KEY
+                    + " FROM " + PILLAR_TABLE
+                    + " WHERE " + PILLAR_ID + " = ?)";
+        
+        String updateFileExistanceSql = "UPDATE " + FILE_INFO_TABLE 
+                + " SET " + FI_LAST_FILE_UPDATE + " = ?, "
+                          + FI_CHECKSUM_STATE + " = ? "
+                + " WHERE " + FI_FILE_KEY + " = ("
+                    + " SELECT " + FILES_KEY 
+                    + " FROM " + FILES_TABLE
+                    + " WHERE " + FILES_ID + " = ?"
+                    + " AND " + COLLECTION_KEY + " = ?)"
+                + " AND " + FI_PILLAR_KEY + " = ("
+                    + " SELECT " + PILLAR_KEY
+                    + " FROM " + PILLAR_TABLE
+                    + " WHERE " + PILLAR_ID + " = ?)"
+                + " AND " + FI_LAST_FILE_UPDATE + " < ?";
+        
+        try {
+            Connection conn = null;
+            PreparedStatement updateFileInfoPS = null;
+            PreparedStatement updateFileExistancePS = null;
+        
+            try {
+                conn = dbConnector.getConnection();
+                conn.setAutoCommit(false);
+                updateFileInfoPS = conn.prepareStatement(updateFileInfoSql);
+                updateFileExistancePS = conn.prepareStatement(updateFileExistanceSql);
+                
+                if(filesize == null) {
+                    updateFileInfoPS.setNull(1, Types.BIGINT);
+                } else {
+                    updateFileInfoPS.setLong(1, filesize.longValue());
+                }
+                updateFileInfoPS.setInt(2, FileState.EXISTING.ordinal());
+                updateFileInfoPS.setString(3, fileID);
+                updateFileInfoPS.setLong(4, collectionKey);
+                updateFileInfoPS.setString(5, pillarID);
+                
+                Timestamp ts = new Timestamp(fileTimeStamp.getTime());
+                updateFileExistancePS.setTimestamp(1, ts);
+                updateFileExistancePS.setInt(2, ChecksumState.UNKNOWN.ordinal());
+                updateFileExistancePS.setString(3, fileID);
+                updateFileExistancePS.setLong(4, collectionKey);
+                updateFileExistancePS.setString(5, pillarID);
+                updateFileExistancePS.setTimestamp(6, ts);
+                
+                updateFileInfoPS.execute();
+                updateFileExistancePS.execute();
+                conn.commit();
+            } finally {
+                if(updateFileInfoPS != null) {
+                    updateFileInfoPS.close();
+                }
+                if(updateFileExistancePS != null) {
+                    updateFileExistancePS.close();
+                }
+                if(conn != null) {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                }
+            }            
+        } catch (SQLException e) {
+            throw new IllegalStateException("Failed to update fileinfo for file: '" + fileID + "'. ", e);
+        } catch (NullPointerException e) {
+            throw new IllegalStateException("Got null input data, not allowed", e);
+        }
+    }
+    
     /**
      * Updates the entry in the file info table for the given pillar and the file with the checksum data, if it has a
      * newer timestamp than the existing entry.
@@ -1394,6 +1479,93 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
     private void ensureFileIdExists(String fileId, Date fileDate, String collectionId) {
         if(!hasFileIDAtCollection(fileId, collectionId)) {
             insertNewFileID(fileId, fileDate, collectionId);
+        }
+    }
+    
+    private void ensureFileIDExists2(String fileID, Date fileDate, Long collectionKey, String collectionID) {
+        String insertFileSql = "INSERT INTO " + FILES_TABLE + " ( "
+                + FILES_ID + ", " + FILES_CREATION_DATE + ", " + COLLECTION_KEY + " )"
+                + " (SELECT ?, ?, ?"
+                + " FROM " + FILES_TABLE
+                + " WHERE " + COLLECTION_KEY + " = ?"
+                + " AND " + FILES_ID + " = ?"
+                + " HAVING count(*) = 0 )";
+        
+        String insertFileInfoSql = "INSERT INTO " + FILE_INFO_TABLE
+                + " ( " + FI_FILE_KEY + ", " + FI_PILLAR_KEY + ", " + FI_CHECKSUM_STATE + ", " 
+                + FI_LAST_CHECKSUM_UPDATE + ", " + FI_FILE_STATE + ", " + FI_LAST_FILE_UPDATE + " )" 
+                + " (SELECT " 
+                    + "(SELECT " + FILES_KEY 
+                    + " FROM " + FILES_TABLE 
+                    + " WHERE " + FILES_ID + " = ?"
+                    + " AND " + COLLECTION_KEY + " = ? ), "
+                    + "(SELECT " + PILLAR_KEY 
+                    + " FROM " + PILLAR_TABLE 
+                    + " WHERE " + PILLAR_ID + " = ? )," 
+                    + " ?, ?, ?, ?"
+                + " FROM " + FILE_INFO_TABLE
+                + " JOIN " + FILES_TABLE
+                + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY
+                + " JOIN " + PILLAR_TABLE
+                + " ON " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = " + PILLAR_TABLE + "." + PILLAR_KEY
+                + " WHERE " + FILES_ID + " = ?"
+                + " AND " + COLLECTION_KEY + " = ?"
+                + " AND " + PILLAR_ID + " = ?"
+                + " HAVING count(*) = 0 )";
+           
+        try {
+            Connection conn = null;        
+            PreparedStatement filePS = null;
+            PreparedStatement fileInfoPS = null;
+            
+            try {
+                conn = dbConnector.getConnection();
+                conn.setAutoCommit(false);
+                filePS = conn.prepareStatement(insertFileSql);
+                fileInfoPS = conn.prepareStatement(insertFileInfoSql);
+                
+                filePS.setString(1, fileID);
+                filePS.setTimestamp(2, new Timestamp(fileDate.getTime()));
+                filePS.setLong(3, collectionKey);
+                filePS.setLong(4, collectionKey);
+                filePS.setString(5, fileID);
+                       
+                Date epoch = new Date(0);
+                for(String pillar : collectionPillarsMap.get(collectionID)) {
+                    fileInfoPS.setString(1, fileID);
+                    fileInfoPS.setLong(2, collectionKey);
+                    fileInfoPS.setString(3, pillar);
+                    fileInfoPS.setInt(4, ChecksumState.UNKNOWN.ordinal());
+                    fileInfoPS.setTimestamp(5, new Timestamp(epoch.getTime()));
+                    fileInfoPS.setInt(6, FileState.UNKNOWN.ordinal());
+                    fileInfoPS.setTimestamp(7, new Timestamp(epoch.getTime()));
+                    fileInfoPS.setString(8, fileID);
+                    fileInfoPS.setLong(9, collectionKey);
+                    fileInfoPS.setString(10, pillar);
+                    fileInfoPS.addBatch();
+                }
+                
+                filePS.execute();
+                fileInfoPS.executeBatch();
+                conn.commit();
+            } finally {
+                if(filePS != null) {
+                    filePS.close();
+                }
+                if(fileInfoPS != null) {
+                    fileInfoPS.close();
+                }
+                if(conn != null) {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                }
+            }            
+        } catch (SQLException e) {
+            throw new IllegalStateException("Failed to batch insert audit trail events. "
+                    + "FileInfoSQL: '" + insertFileInfoSql+ "'" 
+                    + "e.getMessage: '" + e.getMessage(), e);
+        } catch (NullPointerException e) {
+            throw new IllegalStateException("Got null input data, not allowed", e);
         }
     }
     
