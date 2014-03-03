@@ -34,7 +34,7 @@ CREATE TABLE tableversions (
     version INT NOT NULL             -- version of table
 );
 
-INSERT INTO tableversions ( tablename, version ) VALUES ( 'checksums', 2);
+INSERT INTO tableversions ( tablename, version ) VALUES ( 'checksums', 3);
 
 --*************************************************************************--
 -- Name:     checksums
@@ -54,3 +54,4 @@ CREATE TABLE checksums (
 
 CREATE INDEX fileindex ON checksums ( fileid, collectionid );
 CREATE INDEX filedateindex ON checksums ( fileid, calculationdate );
+CREATE INDEX calculationindex ON checksums ( calculationdate );

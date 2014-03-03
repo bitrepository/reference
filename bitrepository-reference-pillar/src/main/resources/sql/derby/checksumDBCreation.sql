@@ -37,7 +37,7 @@ create table tableversions (
 );
 
 insert into tableversions ( tablename, version )
-            values ( 'checksums', 2);
+            values ( 'checksums', 3);
 
 --*************************************************************************--
 -- Name:     checksums
@@ -58,3 +58,5 @@ create table checksums (
 
 create index fileindex on checksums ( fileid, collectionid );
 create index filedateindex on checksums ( fileid, calculationdate );
+CREATE INDEX calculationindex ON checksums ( calculationdate );
+
