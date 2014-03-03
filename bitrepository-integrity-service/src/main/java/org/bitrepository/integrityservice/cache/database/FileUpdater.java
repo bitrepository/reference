@@ -127,6 +127,7 @@ public class FileUpdater {
     public void updateFiles(FileIDsDataItems dataItems) {
         try {
             init();
+            log.debug("Initialized fileUpdater");
             try {
                 for(FileIDsDataItem item : dataItems.getFileIDsDataItem()) {
                     addFile(item);
@@ -134,7 +135,9 @@ public class FileUpdater {
                     addFileInfoUpdate(item);
                     updateFileExistance(item);
                 }
+                log.debug("Done building file update batch");
                 execute();
+                log.debug("Done executing file update batch");
             } finally {
                 close();
             }
