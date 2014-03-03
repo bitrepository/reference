@@ -61,13 +61,11 @@ import static org.bitrepository.integrityservice.cache.database.DatabaseConstant
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TIME;
 
-import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -77,11 +75,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
-import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -234,17 +229,6 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 dbConnector.getConnection(), collectionKey, pillarId);
       
         fu.updateFiles(data.getFileIDsDataItems());
-/*        for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
-            Date modifyDate = CalendarUtils.convertFromXMLGregorianCalendar(dataItem.getLastModificationTime());
-            ensureFileIDExists2(dataItem.getFileID(), modifyDate, collectionKey, collectionId);
-            
-            updateFileInfo(pillarId, dataItem.getFileID(), modifyDate, collectionKey, dataItem.getFileSize());
-  */          
-            /*updateFileInfoLastFileUpdateTimestamp(pillarId, dataItem.getFileID(), modifyDate, collectionId);
-            if(dataItem.isSetFileSize()) {
-                updateFileInfoFileSize(pillarId, dataItem.getFileID(), collectionId, dataItem.getFileSize().longValue());
-            }*/
-    //    }
     }
     
     /**
@@ -260,16 +244,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         
         Long collectionKey = retrieveCollectionKey(collectionId);
         log.trace("Updating the checksum data '" + data + "' for pillar '" + pillarId + "' in collection " + collectionId + "'");
-        //for(ChecksumDataForChecksumSpecTYPE csData : data) {
-            updateFileInfoWithChecksum2(data, pillarId, collectionKey);
-            /*
-            if(hasFileIDAtCollection(csData.getFileID(), collectionId)) {
-                updateFileInfoWithChecksum(csData, pillarId, collectionId);
-            } else {
-                log.info("New file entry for '" + csData.getFileID() + "' at '" + collectionId + "' found during "
-                        + "updating the checksums. Will be ignored.");
-            }*/
-        //}
+        updateFileInfoWithChecksum(data, pillarId, collectionKey);
     }
     
     /**
@@ -1271,153 +1246,6 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 missingFiles, checksumErrors);
     }
     
-    
-    /**
-     * Updates the file info for the given file at the given pillar.
-     * It is always set to 'EXISTING' and updates the filesize to the provided 
-     * @param pillarId The id for the pillar.
-     * @param fileId The id for the file.
-     * @param collectionId The id of the collection
-     * @param fileSize The size of the file. 
-     */
-    private void updateFileInfoFileSize(String pillarId, String fileId, String collectionId, Long fileSize) {
-        long startTime = System.currentTimeMillis();
-        Long collectionKey = retrieveCollectionKey(collectionId);
-        log.trace("Set file_size to '" + fileSize + "' for file '" + fileId + "' at pillar '" + pillarId 
-                + "' in collection '" + collectionId + "'.");
-        setFileExisting(fileId, pillarId, collectionId);
-        
-        Long pillarKey = retrievePillarKey(pillarId);
-        
-        String selectFilesKeySql = "SELECT " + FILES_KEY + " FROM " + FILES_TABLE
-                    + " WHERE " + FILES_ID + " = ?"
-                    + " AND " + COLLECTION_KEY + " = ?";
-        Long filesKey = DatabaseUtils.selectLongValue(dbConnector, selectFilesKeySql, fileId, collectionKey);
-        
-        String updateFileSizeSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_SIZE + " = ?" 
-                + " WHERE " + FI_FILE_KEY + " = ?"
-                + " AND " + FI_PILLAR_KEY + " = ?";        
-        
-        DatabaseUtils.executeStatement(dbConnector, updateFileSizeSql, fileSize, filesKey, pillarKey);
-        log.debug("Updated filesize to " + fileSize + " for file " + fileId + " on pillar " + pillarId + " in collection " + collectionId + " in " + (System.currentTimeMillis() - startTime) + "ms");
-    }
-    
-    /**
-     * Updates the file info for the given file at the given pillar.
-     * It is always set to 'EXISTING' and if the timestamp is new, then it is also updated along with setting the 
-     * checksum state to 'UNKNOWN'.
-     * @param pillarId The id for the pillar.
-     * @param fileId The id for the file.
-     * @param filelistTimestamp The timestamp for when the file was latest modified.
-     * @param collectionId The ID of the collection to update the timestamp in
-     */
-    private void updateFileInfoLastFileUpdateTimestamp(String pillarId, String fileId, Date filelistTimestamp, 
-            String collectionId) {
-        long startTime = System.currentTimeMillis();
-        Long collectionKey = retrieveCollectionKey(collectionId);
-        log.trace("Set Last_File_Update timestamp to '" + filelistTimestamp + "' for file '" + fileId
-                + "' at pillar '" + pillarId + "'.");
-        setFileExisting(fileId, pillarId, collectionId);
-        
-        Long pillarKey = retrievePillarKey(pillarId);
-        
-        String selectFilesKeySql = "SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
-                    + " WHERE " + FILES_ID + " = ? "
-                    + " AND " + COLLECTION_KEY + " = ?";
-        Long filesKey = DatabaseUtils.selectLongValue(dbConnector, selectFilesKeySql, fileId, collectionKey);
-        // If it is newer than current file_id_timestamp, then update it and set 'checksums' to unknown.
-        String updateTimestampSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_FILE_UPDATE + " = ?, " 
-                + FI_CHECKSUM_STATE + " = ? " 
-                + " WHERE " + FI_FILE_KEY + " = ?"  
-                + " AND " + FI_PILLAR_KEY + " = ?"
-                + " AND " + FI_LAST_FILE_UPDATE + " < ?";
-
-        DatabaseUtils.executeStatement(dbConnector, updateTimestampSql, filelistTimestamp, 
-                ChecksumState.UNKNOWN.ordinal(), filesKey, pillarKey, filelistTimestamp);
-        log.debug("Updated fileInfo timestamps for file " + fileId + " at pillar " + pillarId + " in " +
-                (System.currentTimeMillis() - startTime) + "ms");
-    }
-    
-    private void updateFileInfo(String pillarID, String fileID, Date fileTimeStamp, 
-            Long collectionKey, BigInteger filesize) {
-        String updateFileInfoSql = "UPDATE " + FILE_INFO_TABLE 
-                + " SET " + FI_FILE_SIZE + " = ?, "
-                          + FI_FILE_STATE + " = ?"
-                + " WHERE " + FI_FILE_KEY + " = ("
-                    + " SELECT " + FILES_KEY 
-                    + " FROM " + FILES_TABLE
-                    + " WHERE " + FILES_ID + " = ?"
-                    + " AND " + COLLECTION_KEY + " = ?)"
-                + " AND " + FI_PILLAR_KEY + " = ("
-                    + " SELECT " + PILLAR_KEY
-                    + " FROM " + PILLAR_TABLE
-                    + " WHERE " + PILLAR_ID + " = ?)";
-        
-        String updateFileExistanceSql = "UPDATE " + FILE_INFO_TABLE 
-                + " SET " + FI_LAST_FILE_UPDATE + " = ?, "
-                          + FI_CHECKSUM_STATE + " = ? "
-                + " WHERE " + FI_FILE_KEY + " = ("
-                    + " SELECT " + FILES_KEY 
-                    + " FROM " + FILES_TABLE
-                    + " WHERE " + FILES_ID + " = ?"
-                    + " AND " + COLLECTION_KEY + " = ?)"
-                + " AND " + FI_PILLAR_KEY + " = ("
-                    + " SELECT " + PILLAR_KEY
-                    + " FROM " + PILLAR_TABLE
-                    + " WHERE " + PILLAR_ID + " = ?)"
-                + " AND " + FI_LAST_FILE_UPDATE + " < ?";
-        
-        try {
-            Connection conn = null;
-            PreparedStatement updateFileInfoPS = null;
-            PreparedStatement updateFileExistancePS = null;
-        
-            try {
-                conn = dbConnector.getConnection();
-                conn.setAutoCommit(false);
-                updateFileInfoPS = conn.prepareStatement(updateFileInfoSql);
-                updateFileExistancePS = conn.prepareStatement(updateFileExistanceSql);
-                
-                if(filesize == null) {
-                    updateFileInfoPS.setNull(1, Types.BIGINT);
-                } else {
-                    updateFileInfoPS.setLong(1, filesize.longValue());
-                }
-                updateFileInfoPS.setInt(2, FileState.EXISTING.ordinal());
-                updateFileInfoPS.setString(3, fileID);
-                updateFileInfoPS.setLong(4, collectionKey);
-                updateFileInfoPS.setString(5, pillarID);
-                
-                Timestamp ts = new Timestamp(fileTimeStamp.getTime());
-                updateFileExistancePS.setTimestamp(1, ts);
-                updateFileExistancePS.setInt(2, ChecksumState.UNKNOWN.ordinal());
-                updateFileExistancePS.setString(3, fileID);
-                updateFileExistancePS.setLong(4, collectionKey);
-                updateFileExistancePS.setString(5, pillarID);
-                updateFileExistancePS.setTimestamp(6, ts);
-                
-                updateFileInfoPS.execute();
-                updateFileExistancePS.execute();
-                conn.commit();
-            } finally {
-                if(updateFileInfoPS != null) {
-                    updateFileInfoPS.close();
-                }
-                if(updateFileExistancePS != null) {
-                    updateFileExistancePS.close();
-                }
-                if(conn != null) {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                }
-            }            
-        } catch (SQLException e) {
-            throw new IllegalStateException("Failed to update fileinfo for file: '" + fileID + "'. ", e);
-        } catch (NullPointerException e) {
-            throw new IllegalStateException("Got null input data, not allowed", e);
-        }
-    }
-    
     /**
      * Updates the entry in the file info table for the given pillar and the file with the checksum data, if it has a
      * newer timestamp than the existing entry.
@@ -1426,34 +1254,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
      * @param pillarId The key of the pillar.
      * @param collectionId The ID of the collection to update the checksum in
      */
-    private void updateFileInfoWithChecksum(ChecksumDataForChecksumSpecTYPE data, String pillarId, String collectionId) {
-        long startTime = System.currentTimeMillis();
-        log.trace("Updating pillar '" + pillarId + "' with checksum data '" + data + "'");
-        Long collectionKey = retrieveCollectionKey(collectionId);
-        setFileExisting(data.getFileID(), pillarId, collectionId);
-        
-        Date csTimestamp = CalendarUtils.convertFromXMLGregorianCalendar(data.getCalculationTimestamp());
-        String checksum = Base16Utils.decodeBase16(data.getChecksumValue());
-        
-        Long pillarKey = retrievePillarKey(pillarId);
-        
-        String selectFilesKeySql = "SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
-                        + " WHERE " + FILES_ID + " = ?" 
-                        + " AND " + COLLECTION_KEY + " = ?";
-        Long filesKey = DatabaseUtils.selectLongValue(dbConnector, selectFilesKeySql, data.getFileID(), collectionKey);
-        
-        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_CHECKSUM_UPDATE + " = ?, "
-                + FI_CHECKSUM_STATE + " = ? , " + FI_CHECKSUM + " = ?"
-                + " WHERE " + FI_FILE_KEY + " = ?" 
-                + " AND " + FI_PILLAR_KEY  + " = ?" 
-                + " AND " + FI_LAST_CHECKSUM_UPDATE + " < ?";
-        
-        DatabaseUtils.executeStatement(dbConnector, updateSql, csTimestamp, 
-                ChecksumState.UNKNOWN.ordinal(), checksum, filesKey, pillarKey, csTimestamp);
-        log.debug("Updated fileInfo checksums in " + (System.currentTimeMillis() - startTime) + "ms");
-    }
-    
-    private void updateFileInfoWithChecksum2(List<ChecksumDataForChecksumSpecTYPE> data, String pillarID, 
+    private void updateFileInfoWithChecksum(List<ChecksumDataForChecksumSpecTYPE> data, String pillarID, 
             Long collectionKey) {
         String updateFileStateSql = "UPDATE " + FILE_INFO_TABLE 
                 + " SET " + FI_CHECKSUM_STATE + " = ?, " 
@@ -1534,131 +1335,6 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
     }
     
     /**
-     * Sets the file state to 'EXISTING' for a given file at a given pillar.
-     * @param fileId The id of the file.
-     * @param pillarId The id of the pillar.
-     * @param collectionId The ID of the collection
-     */
-    private void setFileExisting(String fileId, String pillarId, String collectionId) {
-        log.trace("Marked file " + fileId + " as existing on pillar " + pillarId);
-        Long collectionKey = retrieveCollectionKey(collectionId);
-        Long pillarKey = retrievePillarKey(pillarId);
-        
-        String selectFilesKeySql = "SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
-                    + " WHERE " + FILES_ID + " = ?" 
-                    + " AND " + COLLECTION_KEY + " = ?";
-        
-        Long filesKey = DatabaseUtils.selectLongValue(dbConnector, selectFilesKeySql, fileId, collectionKey);
-        
-        String updateExistenceSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_FILE_STATE + " = ?"
-                + " WHERE " + FI_FILE_KEY + " =  ?"
-                + " AND " + FI_PILLAR_KEY + " = ?";
-        
-        DatabaseUtils.executeStatement(dbConnector, updateExistenceSql, FileState.EXISTING.ordinal(),
-                filesKey, pillarKey);
-    }
-    
-    /**
-     * Ensures that the entries for the file with the given id exists (both in the 'files' table and 
-     * the 'file_info' table)
-     * @param fileId The id of the file to ensure the existence of.
-     * @param fileDate The date for the file.
-     * @param collectionId The ID of the collection
-     */
-    private void ensureFileIdExists(String fileId, Date fileDate, String collectionId) {
-        if(!hasFileIDAtCollection(fileId, collectionId)) {
-            insertNewFileID(fileId, fileDate, collectionId);
-        }
-    }
-    
-    private void ensureFileIDExists2(String fileID, Date fileDate, Long collectionKey, String collectionID) {
-        String insertFileSql = "INSERT INTO " + FILES_TABLE + " ( "
-                + FILES_ID + ", " + FILES_CREATION_DATE + ", " + COLLECTION_KEY + " )"
-                + " (SELECT ?, ?, ?"
-                + " FROM " + FILES_TABLE
-                + " WHERE " + COLLECTION_KEY + " = ?"
-                + " AND " + FILES_ID + " = ?"
-                + " HAVING count(*) = 0 )";
-        
-        String insertFileInfoSql = "INSERT INTO " + FILE_INFO_TABLE
-                + " ( " + FI_FILE_KEY + ", " + FI_PILLAR_KEY + ", " + FI_CHECKSUM_STATE + ", " 
-                + FI_LAST_CHECKSUM_UPDATE + ", " + FI_FILE_STATE + ", " + FI_LAST_FILE_UPDATE + " )" 
-                + " (SELECT " 
-                    + "(SELECT " + FILES_KEY 
-                    + " FROM " + FILES_TABLE 
-                    + " WHERE " + FILES_ID + " = ?"
-                    + " AND " + COLLECTION_KEY + " = ? ), "
-                    + "(SELECT " + PILLAR_KEY 
-                    + " FROM " + PILLAR_TABLE 
-                    + " WHERE " + PILLAR_ID + " = ? )," 
-                    + " ?, ?, ?, ?"
-                + " FROM " + FILE_INFO_TABLE
-                + " JOIN " + FILES_TABLE
-                + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY
-                + " JOIN " + PILLAR_TABLE
-                + " ON " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = " + PILLAR_TABLE + "." + PILLAR_KEY
-                + " WHERE " + FILES_ID + " = ?"
-                + " AND " + COLLECTION_KEY + " = ?"
-                + " AND " + PILLAR_ID + " = ?"
-                + " HAVING count(*) = 0 )";
-           
-        try {
-            Connection conn = null;        
-            PreparedStatement filePS = null;
-            PreparedStatement fileInfoPS = null;
-            
-            try {
-                conn = dbConnector.getConnection();
-                conn.setAutoCommit(false);
-                filePS = conn.prepareStatement(insertFileSql);
-                fileInfoPS = conn.prepareStatement(insertFileInfoSql);
-                
-                filePS.setString(1, fileID);
-                filePS.setTimestamp(2, new Timestamp(fileDate.getTime()));
-                filePS.setLong(3, collectionKey);
-                filePS.setLong(4, collectionKey);
-                filePS.setString(5, fileID);
-                       
-                Date epoch = new Date(0);
-                for(String pillar : collectionPillarsMap.get(collectionID)) {
-                    fileInfoPS.setString(1, fileID);
-                    fileInfoPS.setLong(2, collectionKey);
-                    fileInfoPS.setString(3, pillar);
-                    fileInfoPS.setInt(4, ChecksumState.UNKNOWN.ordinal());
-                    fileInfoPS.setTimestamp(5, new Timestamp(epoch.getTime()));
-                    fileInfoPS.setInt(6, FileState.UNKNOWN.ordinal());
-                    fileInfoPS.setTimestamp(7, new Timestamp(epoch.getTime()));
-                    fileInfoPS.setString(8, fileID);
-                    fileInfoPS.setLong(9, collectionKey);
-                    fileInfoPS.setString(10, pillar);
-                    fileInfoPS.addBatch();
-                }
-                
-                filePS.execute();
-                fileInfoPS.executeBatch();
-                conn.commit();
-            } finally {
-                if(filePS != null) {
-                    filePS.close();
-                }
-                if(fileInfoPS != null) {
-                    fileInfoPS.close();
-                }
-                if(conn != null) {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                }
-            }            
-        } catch (SQLException e) {
-            throw new IllegalStateException("Failed to batch insert audit trail events. "
-                    + "FileInfoSQL: '" + insertFileInfoSql+ "'" 
-                    + "e.getMessage: '" + e.getMessage(), e);
-        } catch (NullPointerException e) {
-            throw new IllegalStateException("Got null input data, not allowed", e);
-        }
-    }
-    
-    /**
      * Looksup whether a given file id for the given collection exists.
      * @param fileId The id of the file.
      * @param collectionId The id of the collection.
@@ -1684,38 +1360,6 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 + " WHERE " + FILES_ID + " = ?" 
                 + " AND " + COLLECTION_KEY + " = ?";
         return DatabaseUtils.selectLongValue(dbConnector, sql, fileId, collectionKey);
-    }
-    
-    /**
-     * Inserts a new file id into the 'files' table in the database.
-     * Also creates an entry in the 'fileinfo' table for every pillar.
-     * @param fileId The id of the file to insert.
-     * @param fileDate The date for the file.
-     * @param collectionId The ID of the collection
-     */
-    private synchronized void insertNewFileID(String fileId, Date fileDate, String collectionId) {
-        log.trace("Inserting the file '" + fileId + "' into the files table.");
-        Long collectionKey = retrieveCollectionKey(collectionId);
-        String fileSql = "INSERT INTO " + FILES_TABLE + " ( " 
-                + FILES_ID + ", " + FILES_CREATION_DATE + ", " + COLLECTION_KEY + " )" 
-                + " VALUES ( ?, ?, ?)";
-        DatabaseUtils.executeStatement(dbConnector, fileSql, fileId, fileDate, collectionKey);
-        
-        Date epoch = new Date(0);
-        for(String pillar : collectionPillarsMap.get(collectionId))  {
-            String fileinfoSql = "INSERT INTO " + FILE_INFO_TABLE 
-                    + " ( " + FI_FILE_KEY + ", " + FI_PILLAR_KEY + ", " + FI_CHECKSUM_STATE + ", " 
-                        + FI_LAST_CHECKSUM_UPDATE + ", " + FI_FILE_STATE + ", " + FI_LAST_FILE_UPDATE + " )" 
-                    + " VALUES ( "
-                        + "(SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
-                            + " WHERE " + FILES_ID + " = ?"
-                            + " AND " + COLLECTION_KEY + " = ? ), "
-                        + "(SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
-                            + " WHERE " + PILLAR_ID + " = ? )," 
-                        + " ?, ?, ?, ? )";
-            DatabaseUtils.executeStatement(dbConnector, fileinfoSql, fileId, collectionKey, pillar, 
-                    ChecksumState.UNKNOWN.ordinal(), epoch, FileState.UNKNOWN.ordinal(), epoch);
-        }
     }
     
     /**
