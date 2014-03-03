@@ -125,10 +125,4 @@ public class MockAuditStore implements AuditTrailStore {
         // TODO Auto-generated method stub
         
     }
-    @Override
-    public void addAuditTrailsOld(AuditTrailEvents auditTrailsEvents,
-            String collectionID) {
-        // TODO Auto-generated method stub
-        
-    }
 }

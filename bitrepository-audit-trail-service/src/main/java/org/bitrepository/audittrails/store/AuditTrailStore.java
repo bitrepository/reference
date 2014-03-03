@@ -88,7 +88,6 @@ public interface AuditTrailStore {
      * @param newAuditTrails The audit trails to be ingested into the store.
      * @param collectionID The id of the collection, where the audit trail events belong.
      */
-    public void addAuditTrailsOld(AuditTrailEvents newAuditTrails, String collectionID);
     public void addAuditTrails(AuditTrailEvents auditTrailsEvents, String collectionID);
     
     /**

@@ -84,7 +84,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
 
         addStep("Validate that the database is empty and then populate it.", "Should be possible.");
         Assert.assertEquals(database.largestSequenceNumber(pillarId, collectionId), 0);
-        database.addAuditTrailsOld(createEvents(), collectionId);
+        database.addAuditTrails(createEvents(), collectionId);
         Assert.assertEquals(database.largestSequenceNumber(pillarId, collectionId), 10);
         
         addStep("Extract the audit trails", "");
@@ -193,7 +193,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
 
         Assert.assertEquals(database.largestSequenceNumber(pillarId, collectionId), 0);
-        database.addAuditTrailsOld(createEvents(), collectionId);
+        database.addAuditTrails(createEvents(), collectionId);
         Assert.assertEquals(database.largestSequenceNumber(pillarId, collectionId), 10);
 
         addStep("Validate the preservation sequence number", 
@@ -209,110 +209,9 @@ public class AuditDatabaseTest extends ExtendedTestCase {
 
         database.close();
     }
-
+    
     @Test(groups = {"regressiontest", "databasetest"})
     public void AuditDatabaseIngestTest() throws Exception {
-        addDescription("Testing ingest of audittrails into the database");
-        addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
-        DatabaseManager dm = new AuditTrailDatabaseManager(
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
-        AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
-        AuditTrailEvents events;
-        String veryLongString = "";
-        for(int i = 0; i < 255; i++) {
-            veryLongString += i;
-        }
-        
-        addStep("Test ingesting with all data", "No failure");
-        events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
-        database.addAuditTrailsOld(events, collectionId);
-        
-        addStep("Test ingesting with no timestamp", "No failure");
-        events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(null, FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
-        database.addAuditTrailsOld(events, collectionId);
-
-        addStep("Test ingesting with no file action", "No failure");
-        events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), null, 
-                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
-        database.addAuditTrailsOld(events, collectionId);
-
-        addStep("Test ingesting with no actor", "Throws exception");
-        events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                null, "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
-        try {
-            database.addAuditTrailsOld(events, collectionId);
-            Assert.fail("Should throw an exception.");
-        } catch (IllegalStateException e) {
-            // expected
-        }
-
-        addStep("Test ingesting with no audit info", "No failure");
-        events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", null, "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
-        database.addAuditTrailsOld(events, collectionId);
-
-        addStep("Test ingesting with no file id", "Throws exception");
-        events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", null, "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
-        try {
-            database.addAuditTrailsOld(events, collectionId);
-            Assert.fail("Should throw an exception.");
-        } catch (IllegalStateException e) {
-            // expected
-        } 
-
-        addStep("Test ingesting with no info", "No failure");
-        events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", null, pillarId, BigInteger.ONE, operationID1, fingerprint1));
-        database.addAuditTrailsOld(events, collectionId);
-
-        addStep("Test ingesting with no component id", "Throws exception");
-        events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", "info", null, BigInteger.ONE, operationID1, fingerprint1));
-        try {
-            database.addAuditTrailsOld(events, collectionId);
-            Assert.fail("Should throw an exception.");
-        } catch (IllegalStateException e) {
-            // expected
-        }
-        
-        addStep("Test ingesting with no sequence number", "Throws exception");
-        events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", "info", pillarId, null, operationID1, fingerprint1));
-        try {
-            database.addAuditTrailsOld(events, collectionId);
-            Assert.fail("Should throw an exception.");
-        } catch (IllegalStateException e) {
-            // expected
-        }
-        
-        addStep("Test ingest with very long auditInfo (255+)", "Not failing any more");
-        events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", veryLongString, "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
-        database.addAuditTrailsOld(events, collectionId);
-        
-        addStep("Test ingest with very long info (255+)", "Not failing any more");
-        events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", veryLongString, pillarId, BigInteger.ONE, operationID1, fingerprint1));
-        database.addAuditTrailsOld(events, collectionId);
-    }
-    
-    
-    @Test(groups = {"regressiontest", "databasetest"})
-    public void AuditDatabaseIngest2Test() throws Exception {
         addDescription("Testing ingest of audittrails into the database");
         addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
         DatabaseManager dm = new AuditTrailDatabaseManager(

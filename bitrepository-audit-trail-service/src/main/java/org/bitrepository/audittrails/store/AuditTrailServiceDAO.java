@@ -169,10 +169,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         ArgumentValidator.checkNotNull(auditTrailEvents, "AuditTrailEvents auditTrailEvents");
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         
-        addAuditTrail3(auditTrailEvents, collectionID);
-        /*for(AuditTrailEvent event : auditTrailEvents.getAuditTrailEvent()) {
-            addAuditTrail2(event, collectionID);
-        }*/
+        addAuditTrail(auditTrailEvents, collectionID);
     }
         
     private String getAddAuditTrailSql() {
@@ -202,128 +199,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         return insertSql;
     }
     
-    private void addAuditTrail(AuditTrailEvent event, String collectionID) {
-        addCollectionID(collectionID);
-        addActorName(event.getActorOnFile());
-        addContributorID(event.getReportingComponent());
-        addFileID(event.getFileID(), collectionID);
-        String addAuditTrailSql = getAddAuditTrailSql();
-        try {
-            PreparedStatement ps = null;
-            Connection conn = null;
-            try {
-                conn = dbConnector.getConnection();
-                ps = conn.prepareStatement(addAuditTrailSql);
-                ps.setLong(1, event.getSequenceNumber().longValue());
-                ps.setString(2, event.getReportingComponent());
-                ps.setString(3, collectionID);
-                ps.setString(4, event.getFileID());
-                ps.setString(5, event.getActorOnFile());
-                ps.setString(6, event.getActionOnFile().toString());
-                ps.setTimestamp(7, new Timestamp(
-                        CalendarUtils.convertFromXMLGregorianCalendar(event.getActionDateTime()).getTime()));
-                ps.setString(8, event.getAuditTrailInformation());
-                ps.setString(9, event.getInfo());
-                ps.setString(10, event.getOperationID());
-                ps.setString(11, event.getCertificateID());
-        
-                ps.executeUpdate();
-            } finally {
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Could not insert audit trail event for event '" + event + "' with the SQL '"
-                    + addAuditTrailSql + "'.", e);
-        } catch (NullPointerException e) {
-            throw new IllegalStateException("Got null input data, not allowed", e);
-        }
-    }
-    
-    private void addAuditTrail2(AuditTrailEvent event, String collectionID) {
-        String addAuditTrailSql = getAddAuditTrailSql();
-        try {
-            PreparedStatement addCollectionIDPs = null;
-            PreparedStatement addActorNamePs = null;
-            PreparedStatement addContributorIDPs = null;
-            PreparedStatement addFileIDPs = null;
-            PreparedStatement addAuditTrailPs = null;
-            Connection conn = null;
-            try {
-                conn = dbConnector.getConnection();
-                conn.setAutoCommit(false);
-                addCollectionIDPs = conn.prepareStatement(getAddCollectionIDSql());
-                addActorNamePs = conn.prepareStatement(getAddActorNameSql());
-                addContributorIDPs = conn.prepareStatement(getAddContributorIDSql());
-                addFileIDPs = conn.prepareStatement(getAddFileIDSql());
-                addAuditTrailPs = conn.prepareStatement(addAuditTrailSql);
-                
-                addCollectionIDPs.setString(1, collectionID);
-                addCollectionIDPs.setString(2, collectionID);
-                
-                addActorNamePs.setString(1, event.getActorOnFile());
-                addActorNamePs.setString(2, event.getActorOnFile());
-                
-                addContributorIDPs.setString(1, event.getReportingComponent());
-                addContributorIDPs.setString(2, event.getReportingComponent());
-                
-                addFileIDPs.setString(1, event.getFileID());
-                addFileIDPs.setString(2, collectionID);
-                addFileIDPs.setString(3, collectionID);
-                addFileIDPs.setString(4, event.getFileID());
-                
-                addAuditTrailPs.setLong(1, event.getSequenceNumber().longValue());
-                addAuditTrailPs.setString(2, event.getReportingComponent());
-                addAuditTrailPs.setString(3, collectionID);
-                addAuditTrailPs.setString(4, event.getFileID());
-                addAuditTrailPs.setString(5, event.getActorOnFile());
-                addAuditTrailPs.setString(6, event.getActionOnFile().toString());
-                addAuditTrailPs.setTimestamp(7, new Timestamp(
-                        CalendarUtils.convertFromXMLGregorianCalendar(event.getActionDateTime()).getTime()));
-                addAuditTrailPs.setString(8, event.getAuditTrailInformation());
-                addAuditTrailPs.setString(9, event.getInfo());
-                addAuditTrailPs.setString(10, event.getOperationID());
-                addAuditTrailPs.setString(11, event.getCertificateID());
-        
-                addCollectionIDPs.executeUpdate();
-                addActorNamePs.executeUpdate();
-                addContributorIDPs.executeUpdate();
-                addFileIDPs.executeUpdate();
-                addAuditTrailPs.executeUpdate();
-            } finally {
-                if(addCollectionIDPs != null) {
-                    addCollectionIDPs.close();
-                }
-                if(addActorNamePs != null) {
-                    addActorNamePs.close();
-                }
-                if(addContributorIDPs != null) {
-                    addContributorIDPs.close();
-                }
-                if(addFileIDPs != null) {
-                    addFileIDPs.close();
-                }
-                if(addAuditTrailPs != null) {
-                    addAuditTrailPs.close();
-                }
-                if(conn != null) {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                }
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Could not insert audit trail event for event '" + event + "' with the SQL '"
-                    + addAuditTrailSql + "'.", e);
-        } catch (NullPointerException e) {
-            throw new IllegalStateException("Got null input data, not allowed", e);
-        }
-    }
-    
-    private void addAuditTrail3(AuditTrailEvents events, String collectionID) {
+    private void addAuditTrail(AuditTrailEvents events, String collectionID) {
         try {
             PreparedStatement addCollectionIDPs = null;
             PreparedStatement addActorNamePs = null;
@@ -406,17 +282,6 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
             throw new IllegalStateException("Failed to batch insert audit trail events.", e);
         } catch (NullPointerException e) {
             throw new IllegalStateException("Got null input data, not allowed", e);
-        }
-    }
-    
-    @Override
-    public void addAuditTrailsOld(AuditTrailEvents newAuditTrails, String collectionId) {
-        ArgumentValidator.checkNotNull(newAuditTrails, "AuditTrailEvents newAuditTrails");
-        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
-        
-        AuditDatabaseIngestor ingestor = new AuditDatabaseIngestor(dbConnector);
-        for(AuditTrailEvent event : newAuditTrails.getAuditTrailEvent()) {
-            ingestor.ingestAuditEvents(event, collectionId);
         }
     }
     
