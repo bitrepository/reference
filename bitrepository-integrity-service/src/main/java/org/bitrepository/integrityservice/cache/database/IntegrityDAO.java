@@ -230,17 +230,21 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         log.trace("Updating the file ids '" + data + "' for pillar '" + pillarId + "'");
         
         Long collectionKey = retrieveCollectionKey(collectionId);
-        for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
+        FileUpdater fu = new FileUpdater(collectionPillarsMap.get(collectionId), 
+                dbConnector.getConnection(), collectionKey, pillarId);
+      
+        fu.updateFiles(data.getFileIDsDataItems());
+/*        for(FileIDsDataItem dataItem : data.getFileIDsDataItems().getFileIDsDataItem()) {
             Date modifyDate = CalendarUtils.convertFromXMLGregorianCalendar(dataItem.getLastModificationTime());
             ensureFileIDExists2(dataItem.getFileID(), modifyDate, collectionKey, collectionId);
             
             updateFileInfo(pillarId, dataItem.getFileID(), modifyDate, collectionKey, dataItem.getFileSize());
-            
+  */          
             /*updateFileInfoLastFileUpdateTimestamp(pillarId, dataItem.getFileID(), modifyDate, collectionId);
             if(dataItem.isSetFileSize()) {
                 updateFileInfoFileSize(pillarId, dataItem.getFileID(), collectionId, dataItem.getFileSize().longValue());
             }*/
-        }
+    //    }
     }
     
     /**
