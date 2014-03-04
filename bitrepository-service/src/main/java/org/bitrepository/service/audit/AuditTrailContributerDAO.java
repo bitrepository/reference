@@ -195,7 +195,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                 + AUDITTRAIL_FINGERPRINT + " FROM " + AUDITTRAIL_TABLE + " "
                 + extractor.createRestriction();
 
-        AuditTrailDatabaseResults res = new AuditTrailDatabaseResults();
+        AuditTrailDatabaseResults auditResults = new AuditTrailDatabaseResults();
         try {
             PreparedStatement ps = null;
             ResultSet results = null;
@@ -220,15 +220,15 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                     event.setReportingComponent(componentID);
                     event.setOperationID(results.getString(operationIDPosition));
                     event.setCertificateID(results.getString(fingerprintPosition));
-                    res.addAuditTrailEvent(event);
+                    auditResults.addAuditTrailEvent(event);
                 }
                 
                 if(maxNumberOfResults != null && count >= maxNumberOfResults) {
                     log.debug("More than the maximum {} results found.", maxNumberOfResults);
-                    res.reportMoreResultsFound();
+                    auditResults.reportMoreResultsFound();
                 }
             } finally {
-                if(res != null) {
+                if(results != null) {
                     results.close();
                 }
                 if(ps != null) {
@@ -242,8 +242,8 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
             throw new IllegalStateException("Could not extract the audit trails events.", e);
         }
 
-        log.debug("Extracted audit trail events: {}", res);
-        return res;
+        log.debug("Extracted audit trail events: {}", auditResults);
+        return auditResults;
     }
 
     /**
