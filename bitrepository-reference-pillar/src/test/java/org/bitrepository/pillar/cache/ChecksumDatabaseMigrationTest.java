@@ -87,11 +87,11 @@ public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
                 + " ) VALUES ( ? , ? , ? )";
         DatabaseUtils.executeStatement(connector, insertSql, FILE_ID, CHECKSUM, new Date());
         
-        addStep("Perform migration", "Checksums table has version 2");
+        addStep("Perform migration", "Checksums table has version 3");
         ChecksumDBMigrator migrator = new ChecksumDBMigrator(connector, settings);
         migrator.migrate();
         int versionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
-        Assert.assertEquals(versionAfter, 2, "Table version after migration");
+        Assert.assertEquals(versionAfter, 3, "Table version after migration");
         
         addStep("Validate the entry", "The collection id has been set to the default collection id");
         String retrieveCollectionIdSql = "SELECT " + CS_COLLECTION_ID + " FROM " + CHECKSUM_TABLE + " WHERE " 

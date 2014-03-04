@@ -22,6 +22,7 @@
 package org.bitrepository.pillar.cache;
 
 import java.util.Map;
+
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseMigrator;
@@ -41,7 +42,9 @@ public class ChecksumDBMigrator extends DatabaseMigrator {
     /** The settings.*/
     private final Settings settings;
     /** The current version of the database. */
-    private final Integer currentVersion = 2;
+    private final Integer currentVersion = 3;
+    /** The name of the update script for version 2 to 3.*/
+    private static final String UPDATE_SCRIPT_VERSION_2_TO_3 = "sql/derby/checksumDB2to3Migration.sql";
     
     
     /**
@@ -64,6 +67,11 @@ public class ChecksumDBMigrator extends DatabaseMigrator {
         }
         if(versions.get(CHECKSUM_TABLE) == 1) {
             migrateChecksumsTableFromVersion1To2();
+        }
+
+        if(!versions.containsKey(CHECKSUM_TABLE) || versions.get(CHECKSUM_TABLE) < 3) {
+            log.warn("Migrating ChecksumDB from version 2 to 3.");
+            migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_2_TO_3);
         }
     }
     
@@ -90,7 +98,7 @@ public class ChecksumDBMigrator extends DatabaseMigrator {
             throw new IllegalStateException("The database does not contain '" + CHECKSUM_TABLE 
                     + "' table as required.");
         }
-        
+                
         if(versions.get(CHECKSUM_TABLE) < currentVersion) {
             return true;
         } else {
