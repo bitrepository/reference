@@ -21,7 +21,6 @@
  */
 package org.bitrepository.commandline;
 
-import java.io.File;
 import java.net.URL;
 
 import org.apache.commons.cli.Option;
@@ -33,8 +32,6 @@ import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
 import org.bitrepository.commandline.eventhandler.PutFileEventHandler;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.PutFileClient;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 
 /**
  * Putting a file to the collection.
@@ -53,8 +50,15 @@ public class PutFile extends CommandLineClient {
     }
 
     /**
+     * @param args The arguments:
+     * k = Location of file with private security key.
+     * s = Location of folder with setting files.
+     * c = ID of the Collection
+     * f = The actual file to put (Either this or the URL).
+     * u = The URL for the file (Either this or the actual file, though this requires both file id and checksum).
+     * i = The id of the file to put.
+     * C = The checksum of the file.
      * 
-     * @param args
      */
     private PutFile(String ... args) {
         super(args);
@@ -74,6 +78,7 @@ public class PutFile extends CommandLineClient {
     /**
      * Perform the PutFile operation.
      */
+    @Override
     public void performOperation() {
         output.startupInfo("Putting .");
         OperationEvent finalEvent = putTheFile();
@@ -90,15 +95,24 @@ public class PutFile extends CommandLineClient {
         super.createOptionsForCmdArgumentHandler();
 
         Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT,
-                "The path to the file, which is wanted to be put");
-        fileOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
+                "The path to the file, which is wanted to be put. Is required, unless a URL is given.");
+        fileOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(fileOption);
+        
+        Option urlOption = new Option(Constants.URL_ARG, Constants.HAS_ARGUMENT, 
+                "The URL for the file to be retreived. Is required, unless the actual file is given.");
+        urlOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(urlOption);
+
+        Option checksumOption = new Option(Constants.CHECKSUM_ARG, Constants.HAS_ARGUMENT, 
+                "The checksum for the file to be retreived. Required if using an URL.");
+        checksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(checksumOption);
 
         Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT, 
                 "[OPTIONAL] The algorithm of checksum to request in the response from the pillars.");
         checksumTypeOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumTypeOption);
-
         Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT, 
                 "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
         checksumSaltOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
@@ -110,6 +124,29 @@ public class PutFile extends CommandLineClient {
         deleteOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(deleteOption);
     }
+    
+    /**
+     * Run the default validation, and validates that only file or URL is given.
+     * Also, if it is an URL is given, then it must also be given the checksum and the file id.
+     */
+    @Override
+    protected void validateArguments() {
+        super.validateArguments();
+        
+        if(cmdHandler.hasOption(Constants.FILE_ARG) && cmdHandler.hasOption(Constants.URL_ARG)) {
+            throw new IllegalArgumentException("Cannot take both a file (-f) and an URL (-u) as argument.");
+        }
+        if(!cmdHandler.hasOption(Constants.FILE_ARG) && !cmdHandler.hasOption(Constants.URL_ARG)) {
+            throw new IllegalArgumentException("Requires either the file argument (-f) or the URL argument (-u).");
+        }
+        if(cmdHandler.hasOption(Constants.URL_ARG) && !cmdHandler.hasOption(Constants.CHECKSUM_ARG)) {
+            throw new IllegalArgumentException("The URL argument requires also the checksum argument (-c).");
+        }
+        if(cmdHandler.hasOption(Constants.URL_ARG) && !cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
+            throw new IllegalArgumentException("The URL argument requires also the argument for the ID of the "
+                    + "file (-i).");
+        }
+    }
 
     /**
      * Initiates the operation and waits for the results.
@@ -117,44 +154,39 @@ public class PutFile extends CommandLineClient {
      */
     private OperationEvent putTheFile() {
         output.debug("Uploading the file to the FileExchange.");
-        File f = findTheFile();
-        FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
-        URL url = fileexchange.uploadToServer(f);
-        String fileId = retrieveTheName(f);
+        URL url = getURLOrUploadFile();
+        String fileId = retrieveFileID();
 
         output.debug("Initiating the PutFile conversation.");
-        ChecksumDataForFileTYPE validationChecksum = getValidationChecksumDataForFile(f);
+        ChecksumDataForFileTYPE validationChecksum = getValidationChecksum();
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpecOrNull();
 
         boolean printChecksums = cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG);
         
         CompleteEventAwaiter eventHandler = new PutFileEventHandler(settings, output, printChecksums);
-        client.putFile(getCollectionID(), url, fileId, f.length(), validationChecksum, requestChecksum, eventHandler, null);
+        client.putFile(getCollectionID(), url, fileId, getSizeOfFileOrZero(), validationChecksum, requestChecksum, eventHandler, null);
 
         OperationEvent finalEvent = eventHandler.getFinish(); 
         
         if(cmdHandler.hasOption(Constants.DELETE_FILE_ARG)) {
-            try {
-                fileexchange.deleteFromServer(url);
-            } catch (Exception e) {
-                System.err.println("Issue regarding removing file from server: " + e.getMessage());
-                e.printStackTrace();
-            }
+            deleteFileAfterwards(url);
         }
 
         return finalEvent;
     }
 
-
+    
     /**
-     * Extracts the id of the file to be put.
-     * @return The either the value of the file id argument, or no such option, then the name of the file.
+     * Retrieves the Checksum for the pillars to validate, either taken from the actual file, 
+     * or from the checksum argument.
+     * It will be in the default checksum spec type from settings.
+     * @return The checksum validation type.
      */
-    private String retrieveTheName(File f) {
-        if(cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
-            return cmdHandler.getOptionValue(Constants.FILE_ID_ARG);
+    protected ChecksumDataForFileTYPE getValidationChecksum() {
+        if(cmdHandler.hasOption(Constants.FILE_ARG)) {
+            return getValidationChecksumDataForFile(findTheFile());            
         } else {
-            return f.getName();
+            return getValidationChecksumDataFromArgument(Constants.CHECKSUM_ARG);
         }
     }
 

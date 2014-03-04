@@ -56,12 +56,16 @@ public class Constants {
     public static final String PILLAR_ARG = "p";
     /** The checksum of the file.*/
     public static final String CHECKSUM_ARG = "C";
+    /** The checksum of the file to replace.*/
+    public static final String REPLACE_CHECKSUM_ARG = "r";
     /** The argument for the type of checksum to request.*/
     public static final String REQUEST_CHECKSUM_TYPE_ARG = "R";
     /** The argument for the salt of the checksum to request.*/
     public static final String REQUEST_CHECKSUM_SALT_ARG = "S";
     /** The argument for deleting files afterwards.*/
     public static final String DELETE_FILE_ARG = "d";
+    /** The argument for the URL of a file.*/
+    public static final String URL_ARG = "u";
     
     /** The argument for the location of the results.*/
     public static final String LOCATION = "l";
