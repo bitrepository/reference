@@ -85,6 +85,20 @@ public class GetChecksums extends CommandLineClient {
     }
 
     /**
+     * Run the default validation, and validates that only file or URL is given.
+     * Also, if it is an URL is given, then it must also be given the checksum and the file id.
+     */
+    @Override
+    protected void validateArguments() {
+        super.validateArguments();
+        
+        if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG) 
+                && !cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
+            throw new IllegalArgumentException("A salted checksum cannot be requested without providing the salt.");
+        }
+    }
+    
+    /**
      * Perform the GetChecksums operation.
      */
     @Override
