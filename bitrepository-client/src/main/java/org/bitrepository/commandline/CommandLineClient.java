@@ -318,6 +318,7 @@ public abstract class CommandLineClient {
     /**
      * Retrieves the URL for the PutFile operation.
      * Either uploads the actual file to a webserver, or takes the URL argument.
+     * Requires either the File argument or the URL argument.
      * @return The URL for the file.
      */
     protected URL getURLOrUploadFile() {
@@ -329,7 +330,7 @@ public abstract class CommandLineClient {
             try {
                 return new URL(cmdHandler.getOptionValue(Constants.URL_ARG));
             } catch (MalformedURLException e) {
-                throw new IllegalArgumentException("The URL argument is not a valid URL: " 
+                throw new IllegalArgumentException("The URL argument is either empty or not a valid URL: " 
                         + cmdHandler.getOptionValue(Constants.URL_ARG), e);
             }
         }
