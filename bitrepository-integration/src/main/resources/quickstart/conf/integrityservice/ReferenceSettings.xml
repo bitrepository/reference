@@ -33,6 +33,32 @@
 
   <IntegrityServiceSettings>
     <ID>integrity-service</ID>
+    <Workflows>
+      <Workflow>
+        <WorkflowClass>CompleteIntegrityCheck</WorkflowClass>
+        <Schedules>
+          <Schedule>
+            <WorkflowInterval>86400000</WorkflowInterval>  
+            <Collections>
+              <CollectionID>books</CollectionID>
+              <CollectionID>dvds</CollectionID>                          
+            </Collections>
+          </Schedule>
+        </Schedules>
+      </Workflow>      
+      <Workflow>
+        <WorkflowClass>IncrementalIntegrityCheck</WorkflowClass>
+        <Schedules>
+          <Schedule>
+            <WorkflowInterval>3600000</WorkflowInterval>  
+            <Collections>
+              <CollectionID>books</CollectionID>
+              <CollectionID>dvds</CollectionID>             
+            </Collections>
+          </Schedule>
+        </Schedules>
+      </Workflow>
+    </Workflows>
     <IntegrityDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/integrityservice/integritydb</DatabaseURL>

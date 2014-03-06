@@ -21,7 +21,6 @@
  */
 package org.bitrepository.commandline;
 
-import java.io.File;
 import java.net.URL;
 
 import org.apache.commons.cli.Option;
@@ -33,8 +32,6 @@ import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
 import org.bitrepository.commandline.eventhandler.ReplaceFileEventHandler;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.replacefile.ReplaceFileClient;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 
 /**
  * Replace a file from the collection.
@@ -80,9 +77,17 @@ public class ReplaceFile extends CommandLineClient {
         checksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumOption);
         Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT,
-                "The path to the new file for the replacement");
-        fileOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
+                "The path to the new file for the replacement. Required unless using the URL argument.");
+        fileOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(fileOption);
+        Option urlOption = new Option(Constants.URL_ARG, Constants.HAS_ARGUMENT, 
+                "The URL for the file to be retreived. Is required, unless the actual file is given.");
+        urlOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(urlOption);
+        Option replaceChecksumOption = new Option(Constants.REPLACE_CHECKSUM_ARG, Constants.HAS_ARGUMENT, 
+                "The checksum for the file to replace with. Required when using the URL argument.");
+        replaceChecksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(replaceChecksumOption);
 
         Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT,
                 "[OPTIONAL] The algorithm of checksum to request in the response from the pillars.");
@@ -92,19 +97,49 @@ public class ReplaceFile extends CommandLineClient {
                 "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
         checksumSaltOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
+        
+        Option deleteOption = new Option(Constants.DELETE_FILE_ARG, Constants.NO_ARGUMENT, 
+                "If this argument is present, then the file will be removed from the server, "
+                        + "when the operation is complete.");
+        deleteOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(deleteOption);
     }
 
+    /**
+     * Run the default validation, and the following replace-file specific validations.
+     * Requires the pillar argument, since the client only may replace at one pillar at the time.
+     * If settings require a checksum for "destructive requests" - like replace - then the checksum argument is 
+     * also required.
+     * 
+     * It must take either the actual file or an URL is given for the file to replace.
+     * Also, if it is an URL is given, then it must also be given the checksum and the file id.
+     */
     @Override
     protected void validateArguments() {
         super.validateArguments();
         if(!cmdHandler.hasOption(Constants.PILLAR_ARG)) {
-            throw new IllegalArgumentException("The pillar argument -p must defined for the Replace operation, " +
+            throw new IllegalArgumentException("The pillar argument (-p) must defined for the Replace operation, " +
                     "only single pillar Replaces are allowed");
         }
         if (!cmdHandler.hasOption(Constants.CHECKSUM_ARG) &&
                 settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
-            throw new IllegalArgumentException("Checksum argument (-C) are mandatory for Replace and replace operations" +
-                    "as defined in RepositorySettings.");
+            throw new IllegalArgumentException("Checksum argument (-C) are mandatory for Replace and replace "
+                    + "operations as defined in RepositorySettings.");
+        }
+        
+        if(cmdHandler.hasOption(Constants.FILE_ARG) && cmdHandler.hasOption(Constants.URL_ARG)) {
+            throw new IllegalArgumentException("Cannot take both a file (-f) and an URL (-u) as argument.");
+        }
+        if(!(cmdHandler.hasOption(Constants.FILE_ARG) && cmdHandler.hasOption(Constants.URL_ARG))) {
+            throw new IllegalArgumentException("Requires either the file argument (-f) or the URL argument (-u).");
+        }
+        if(cmdHandler.hasOption(Constants.URL_ARG) && !cmdHandler.hasOption(Constants.REPLACE_CHECKSUM_ARG)) {
+            throw new IllegalArgumentException("The URL argument requires also the checksum argument for the file "
+                    + "to replace with (-r).");
+        }
+        if(cmdHandler.hasOption(Constants.URL_ARG) && !cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
+            throw new IllegalArgumentException("The URL argument requires also the argument for the ID of the "
+                    + "file (-i).");
         }
     }
 
@@ -127,12 +162,11 @@ public class ReplaceFile extends CommandLineClient {
      * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
      */
     private OperationEvent replaceTheFile() {
-        File f = findTheFile();
-        FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
-        URL url = fileexchange.uploadToServer(f);
+        URL url = getURLOrUploadFile();
+        String fileId = retrieveFileID();
 
         ChecksumDataForFileTYPE replaceValidationChecksum = getChecksumDataForDeleteValidation();
-        ChecksumDataForFileTYPE newValidationChecksum = getValidationChecksumDataForFile(f);
+        ChecksumDataForFileTYPE newValidationChecksum = getValidationChecksum();
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpecOrNull();
 
         output.debug("Initiating the ReplaceFile conversation.");
@@ -143,22 +177,31 @@ public class ReplaceFile extends CommandLineClient {
             output.resultHeader("PillarId results");
         }
         
-        client.replaceFile(getCollectionID(), retrieveTheName(f), pillarId, replaceValidationChecksum, 
-                requestChecksum, url, f.length(), newValidationChecksum, 
+        client.replaceFile(getCollectionID(), fileId, pillarId, replaceValidationChecksum, 
+                requestChecksum, url, getSizeOfFileOrZero(), newValidationChecksum, 
                 requestChecksum, eventHandler, null);
 
-        return eventHandler.getFinish();
+        OperationEvent finalEvent = eventHandler.getFinish(); 
+        
+        if(cmdHandler.hasOption(Constants.DELETE_FILE_ARG)) {
+            deleteFileAfterwards(url);
+        }
+
+        return finalEvent;
     }
 
+    
     /**
-     * Extracts the id of the file to be replaced.
-     * @return The either the value of the file id argument, or no such option, then the name of the file.
+     * Retrieves the Checksum for the pillars to validate, either taken from the actual file, 
+     * or from the checksum argument.
+     * It will be in the default checksum spec type from settings.
+     * @return The checksum validation type.
      */
-    private String retrieveTheName(File f) {
-        if(cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
-            return cmdHandler.getOptionValue(Constants.FILE_ID_ARG);
+    protected ChecksumDataForFileTYPE getValidationChecksum() {
+        if(cmdHandler.hasOption(Constants.FILE_ARG)) {
+            return getValidationChecksumDataForFile(findTheFile());            
         } else {
-            return f.getName();
+            return getValidationChecksumDataFromArgument(Constants.REPLACE_CHECKSUM_ARG);
         }
     }
 }

@@ -37,6 +37,11 @@ import org.slf4j.LoggerFactory;
  */
 public class FileUpdater {
 
+    /**
+     * SQL for conditional insert of the fileID in the files table.
+     * The insert is only performed when the (file_id, collection_key) 
+     * tuple is not already found in the database  
+     */
     private final String insertFileSql = "INSERT INTO " + FILES_TABLE + " ( "
             + FILES_ID + ", " + FILES_CREATION_DATE + ", " + COLLECTION_KEY + " )"
             + " (SELECT ?, ?, ?"
@@ -45,6 +50,10 @@ public class FileUpdater {
             + " AND " + FILES_ID + " = ?"
             + " HAVING count(*) = 0 )";
     
+    /**
+     * SQL for conditional insert of the file information in the fileinfo table.
+     * The insert is only performed when no fileinfo for the given pillar exists in the table  
+     */
     private final String insertFileInfoSql = "INSERT INTO " + FILE_INFO_TABLE
             + " ( " + FI_FILE_KEY + ", " + FI_PILLAR_KEY + ", " + FI_CHECKSUM_STATE + ", " 
             + FI_LAST_CHECKSUM_UPDATE + ", " + FI_FILE_STATE + ", " + FI_LAST_FILE_UPDATE + " )" 
@@ -67,6 +76,9 @@ public class FileUpdater {
             + " AND " + PILLAR_ID + " = ?"
             + " HAVING count(*) = 0 )";
     
+    /**
+     * Update statements for filesize and file state fields.  
+     */
     private final String updateFileInfoSql = "UPDATE " + FILE_INFO_TABLE 
             + " SET " + FI_FILE_SIZE + " = ?, "
                       + FI_FILE_STATE + " = ?"
@@ -80,6 +92,11 @@ public class FileUpdater {
                 + " FROM " + PILLAR_TABLE
                 + " WHERE " + PILLAR_ID + " = ?)";
     
+    /**
+     * Conditional update statement for last file update and checksum state fields.
+     * The condition is that the updated information needs to be newer than that already 
+     * registered in the database. 
+     */
     private final String updateFileExistanceSql = "UPDATE " + FILE_INFO_TABLE 
             + " SET " + FI_LAST_FILE_UPDATE + " = ?, "
                       + FI_CHECKSUM_STATE + " = ? "

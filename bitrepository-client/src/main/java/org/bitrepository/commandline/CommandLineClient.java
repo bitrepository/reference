@@ -36,6 +36,8 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
@@ -43,6 +45,8 @@ import org.bitrepository.protocol.security.SecurityManager;
 import javax.jms.JMSException;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
@@ -296,6 +300,52 @@ public abstract class CommandLineClient {
 
         return res;
     }
+    
+    /**
+     * Removes the file at the webserver after the operation has finished..
+     * @param url The URL where the file should be removed from.
+     */
+    protected void deleteFileAfterwards(URL url) {
+        try {
+            FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
+            fileexchange.deleteFromServer(url);
+        } catch (Exception e) {
+            System.err.println("Issue regarding removing file from server: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Retrieves the URL for the PutFile operation.
+     * Either uploads the actual file to a webserver, or takes the URL argument.
+     * Requires either the File argument or the URL argument.
+     * @return The URL for the file.
+     */
+    protected URL getURLOrUploadFile() {
+        if(cmdHandler.hasOption(Constants.FILE_ARG)) {
+            File f = findTheFile();
+            FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
+            return fileexchange.uploadToServer(f);
+        } else {
+            try {
+                return new URL(cmdHandler.getOptionValue(Constants.URL_ARG));
+            } catch (MalformedURLException e) {
+                throw new IllegalArgumentException("The URL argument is either empty or not a valid URL: " 
+                        + cmdHandler.getOptionValue(Constants.URL_ARG), e);
+            }
+        }
+    }
+    
+    /**
+     * @return The size of the actual file, or 0 if no file argument is given.
+     */
+    protected long getSizeOfFileOrZero() {
+        if(cmdHandler.hasOption(Constants.FILE_ARG)) {
+            return findTheFile().length();
+        } else {
+            return 0L;
+        }
+    }
 
     /**
      * Creates the data structure for encapsulating the validation checksums for validation of the PutFile 
@@ -314,7 +364,40 @@ public abstract class CommandLineClient {
 
         return res;
     }
-    
+
+    /**
+     * Creates the data structure for encapsulating the validation checksums for validation of the PutFile 
+     * or ReplaceFile operations.
+     * @param arg The name of the argument to retrieve the checksum from 
+     * (must likely Constants.CHECKSUM_ARG or Constants.REPLACE_CHECKSUM_ARG)
+     * @return The ChecksumDataForFileTYPE for the pillars to validate the operations.
+     */
+    protected ChecksumDataForFileTYPE getValidationChecksumDataFromArgument(String arg) {
+        if(!cmdHandler.hasOption(arg)) {
+            return null;
+        }
+        ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settings);
+
+        ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
+        res.setCalculationTimestamp(CalendarUtils.getNow());
+        res.setChecksumSpec(csSpec);
+        res.setChecksumValue(Base16Utils.encodeBase16(cmdHandler.getOptionValue(arg)));
+
+        return res;
+    }
+
+    /**
+     * Extracts the id of the file to be put.
+     * @return The either the value of the file id argument, or no such option, then the name of the file.
+     */
+    protected String retrieveFileID() {
+        if(cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
+            return cmdHandler.getOptionValue(Constants.FILE_ID_ARG);
+        } else {
+            return findTheFile().getName();
+        }
+    }
+
     /**
      * Closes the connections, e.g. to the message-bus.
      * @throws JMSException If the message-bus cannot be closed.

@@ -23,11 +23,9 @@ package org.bitrepository.audittrails.store;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import javax.validation.constraints.AssertTrue;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
@@ -348,126 +346,6 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         
         
         
-    }
-    
-    @Test(groups = {"regressiontest", "databasetest"})
-    public void AuditDatabaseCreateCollectionIDTest() throws Exception {
-        addDescription("Test the conditional insert of collectionID into the database");
-        addStep("Sets up the test context", "Should not be a problem.");
-        DatabaseManager dm = new AuditTrailDatabaseManager(
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
-        AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
-        AuditTrailReadDAO readDao = new AuditTrailReadDAO(dm);
-        
-        addStep("check that database contains no collection ids", "database contains no collection ids");
-        List<String> initialIDs = readDao.getCollectionIDs();
-        Assert.assertTrue(initialIDs.isEmpty(), "The list of collectionIDs should be empty");
-        
-        addStep("insert a collectionID", "should go without a hitch");
-        String theCollectionID = "foo"; 
-        database.addCollectionID(theCollectionID);
-        List<String> collectionIDs = readDao.getCollectionIDs();
-        Assert.assertEquals(collectionIDs.size(), 1, "There should only be one collectionID");
-        Assert.assertEquals(collectionIDs, Arrays.asList(theCollectionID));
-        
-        addStep("insert the collectionID a second time", "should not change the list of collectionIDs");
-        database.addCollectionID(theCollectionID);
-        collectionIDs = readDao.getCollectionIDs();
-        Assert.assertEquals(collectionIDs.size(), 1, "There should only be one collectionID");
-        Assert.assertEquals(collectionIDs, Arrays.asList(theCollectionID));
-        
-    }
-    
-    @Test(groups = {"regressiontest", "databasetest"})
-    public void AuditDatabaseCreateFileIDTest() throws Exception {
-        addDescription("Test the conditional insert of fileID into the database");
-        addStep("Sets up the test context", "Should not be a problem.");
-        DatabaseManager dm = new AuditTrailDatabaseManager(
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
-        AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
-        AuditTrailReadDAO readDao = new AuditTrailReadDAO(dm);
-        
-        addStep("Insert a collectionID", "Should go without a hitch");
-        String theCollectionID = "foo"; 
-        database.addCollectionID(theCollectionID);
-        
-        addStep("Ensure that the database contains no fileIDs", "The database contains no fileIDs");
-        List<String> initialFileIds = readDao.getFileIDs(theCollectionID);
-        Assert.assertTrue(initialFileIds.isEmpty(), "The list of fileIDs should be empty");
-        
-        addStep("Insert the fileID for the first time", "The fileID should appear in the database");
-        String theFileID = "bar";
-        database.addFileID(theFileID, theCollectionID);
-        List<String> fileIDs = readDao.getFileIDs(theCollectionID);
-        Assert.assertEquals(fileIDs.size(), 1, "There should only be one collectionID");
-        Assert.assertEquals(fileIDs, Arrays.asList(theFileID));
-        
-        addStep("insert the collectionID a second time", "should not change the list of collectionIDs");
-        database.addFileID(theFileID, theCollectionID);
-        fileIDs = readDao.getFileIDs(theCollectionID);
-        Assert.assertEquals(fileIDs.size(), 1, "There should only be one collectionID");
-        Assert.assertEquals(fileIDs, Arrays.asList(theFileID));
-        
-    }
-    
-    @Test(groups = {"regressiontest", "databasetest"})
-    public void AuditDatabaseCreateContributorIDTest() throws Exception {
-        addDescription("Test the conditional insert of contributorID into the database");
-        addStep("Sets up the test context", "Should not be a problem.");
-        DatabaseManager dm = new AuditTrailDatabaseManager(
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
-        AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
-        AuditTrailReadDAO readDao = new AuditTrailReadDAO(dm);
-        
-        addStep("check that database contains no contributor ids", "database contains no contributor ids");
-        List<String> initialIDs = readDao.getContributorIDs();
-        Assert.assertTrue(initialIDs.isEmpty(), "The list of contributorIDs should be empty");
-        
-        addStep("insert a contributorID", "should go without a hitch");
-        String theContributorID = "foo"; 
-        database.addContributorID(theContributorID);
-        List<String> contributorIDs = readDao.getContributorIDs();
-        Assert.assertEquals(contributorIDs.size(), 1, "There should only be one contributorID");
-        Assert.assertEquals(contributorIDs, Arrays.asList(theContributorID));
-        
-        addStep("insert the contributorID a second time", "should not change the list of contributorIDs");
-        database.addContributorID(theContributorID);
-        contributorIDs = readDao.getContributorIDs();
-        Assert.assertEquals(contributorIDs.size(), 1, "There should only be one contributorID");
-        Assert.assertEquals(contributorIDs, Arrays.asList(theContributorID));
-    }
-
-    @Test(groups = {"regressiontest", "databasetest"})
-    public void AuditDatabaseCreateActorNameTest() throws Exception {
-        addDescription("Test the conditional insert of actorName into the database");
-        addStep("Sets up the test context", "Should not be a problem.");
-        DatabaseManager dm = new AuditTrailDatabaseManager(
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
-        AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
-        AuditTrailReadDAO readDao = new AuditTrailReadDAO(dm);
-        
-        addStep("check that database contains no actor names", "database contains no actor names");
-        List<String> initialNames = readDao.getActorNames();
-        Assert.assertTrue(initialNames.isEmpty(), "The list of actor names should be empty");
-        
-        addStep("insert an actorName", "should go without a hitch");
-        String theActorName = "foo"; 
-        database.addActorName(theActorName);
-        List<String> actorNames = readDao.getActorNames();
-        Assert.assertEquals(actorNames.size(), 1, "There should only be one contributorID");
-        Assert.assertEquals(actorNames, Arrays.asList(theActorName));
-        
-        addStep("insert the actorName a second time", "should not change the list of actorNames");
-        database.addContributorID(theActorName);
-        actorNames = readDao.getActorNames();
-        Assert.assertEquals(actorNames.size(), 1, "There should only be one actor name");
-        Assert.assertEquals(actorNames, Arrays.asList(theActorName));
-        
-        String theSecondActor = "baz";
-        database.addActorName(theSecondActor);
-        actorNames = readDao.getActorNames();
-        Assert.assertEquals(actorNames.size(), 2, "There should be two actor names");
-        Assert.assertEquals(actorNames, Arrays.asList(theSecondActor, theActorName));
     }
     
     private AuditTrailEvents createEvents() {
