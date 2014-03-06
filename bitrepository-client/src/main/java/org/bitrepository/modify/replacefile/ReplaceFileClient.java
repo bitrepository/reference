@@ -39,8 +39,8 @@ public interface ReplaceFileClient extends BitrepositoryClient {
      * Starts the conversation for replacing a file on a given pillar.
      * It is similar to performing the DeleteFile followed by the PutFile operations.
      * Since both of these takes two checksum arguments each, then this takes four!
-     * @param collectionID The collection to repæace the file in.
-     * @param fileId The id of the file to delete.
+     * @param collectionID The collection to replace the file in.
+     * @param fileId The id of the file to replace.
      * @param pillarId The id of the pillar, where the file should be replaced.
      * @param checksumForDeleteAtPillar The checksum of the file on the pillar which should be replaced. Used for 
      * validating at pillar-side.
