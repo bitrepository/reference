@@ -38,6 +38,8 @@ INSERT INTO tableversions ( tablename, version )
             VALUES ( 'alarm', 2);
 INSERT INTO tableversions ( tablename, version )
             VALUES ( 'component', 1);
+INSERT INTO tableversions (tablename, version) 
+            VALUES ('alarmservicedb', 3);
 
 --*************************************************************************--
 -- Name:     component
@@ -48,7 +50,8 @@ INSERT INTO tableversions ( tablename, version )
 CREATE TABLE component (
     component_guid SERIAL PRIMARY KEY,
                                     -- The guid for the component id.
-    component_id VARCHAR(255)       -- The actual component id.
+    component_id VARCHAR(255),      -- The actual component id.
+    UNIQUE(component_id)            -- Enforce that a component will only have one id.
 );
 
 CREATE INDEX componentindex ON component ( component_id );

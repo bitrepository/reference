@@ -52,6 +52,8 @@ public class AlarmDatabaseConstants {
     /** The name of the component id field in the component table.*/
     public static final String COMPONENT_ID = "component_id";
     
-    /** The name of the version table entry for the database.*/
+    /** The name of the version table entry for the alarm table.*/
     public final static String ALARM_TABLE_VERSION_ENTRY = "alarm";
+    /** The name of the version table entry for the database */
+    public final static String ALARM_DATABASE_VERSION_ENTRY = "alarmservicedb";
 }

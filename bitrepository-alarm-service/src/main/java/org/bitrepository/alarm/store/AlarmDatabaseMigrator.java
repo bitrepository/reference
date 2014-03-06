@@ -22,6 +22,7 @@
 package org.bitrepository.alarm.store;
 
 import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TABLE_VERSION_ENTRY;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_DATABASE_VERSION_ENTRY;
 
 import java.util.Map;
 
@@ -41,8 +42,9 @@ public class AlarmDatabaseMigrator extends DatabaseMigrator {
     
     /** The name of the script for updating the database from version 1 to 2.*/
     private static final String UPDATE_SCRIPT_VERSION_1_TO_2 = "sql/derby/alarmServiceDB1to2migration.sql";
+    private static final String UPDATE_SCRIPT_VERSION_2_TO_3 = "sql/derby/alarmServiceDB2to3migration.sql";
     /** The current version of the database. */
-    private final Integer currentVersion = 2;
+    private final Integer currentVersion = 3;
     
     /**
      * Constructor.
@@ -63,6 +65,12 @@ public class AlarmDatabaseMigrator extends DatabaseMigrator {
         if(versions.get(ALARM_TABLE_VERSION_ENTRY) == 1) {
             log.warn("Migrating AuditContributorDB from version 1 to 2.");
             migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_1_TO_2);
+        }
+        versions = getTableVersions();
+        
+        if(versions.get(ALARM_DATABASE_VERSION_ENTRY) == 2) {
+            log.warn("Migrating AuditContributorDB from version 2 to 3.");
+            migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_2_TO_3);
         }
     }
 
