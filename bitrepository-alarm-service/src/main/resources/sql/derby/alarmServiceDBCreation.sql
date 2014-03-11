@@ -37,9 +37,9 @@ CREATE TABLE tableversions (
 );
 
 INSERT INTO tableversions ( tablename, version )
-            VALUES ( 'alarm', 2);
+            VALUES ( 'alarm', 3);
 INSERT INTO tableversions ( tablename, version )
-            VALUES ( 'component', 2);
+            VALUES ( 'component', 3);
 INSERT INTO tableversions (tablename, version) 
             VALUES ('alarmservicedb', 3);
 

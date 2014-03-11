@@ -25,6 +25,7 @@ connect 'jdbc:derby:alarmservicedb';
 
 -- Update table versions.
 UPDATE tableversions SET version=3 WHERE tablename='component';
+UPDATE tableversions SET version=3 WHERE tablename='alarm';
 INSERT INTO tableversions (tablename, version) VALUES ('alarmservicedb', 3);
 
 
