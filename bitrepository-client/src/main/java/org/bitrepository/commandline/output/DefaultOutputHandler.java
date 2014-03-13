@@ -30,7 +30,8 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultOutputHandler implements OutputHandler {
     private final Logger log;
-
+    private boolean verbose = false;
+    
     /**
      * @param c The class for whom to handle the output.
      */
@@ -46,7 +47,9 @@ public class DefaultOutputHandler implements OutputHandler {
 
     @Override
     public void startupInfo(String s) {
-        System.err.println(s);
+        if(verbose) {
+            System.err.println(s);
+        }
     }
 
     @Override
@@ -69,7 +72,9 @@ public class DefaultOutputHandler implements OutputHandler {
 
     @Override
     public void completeEvent(String msg, OperationEvent event) {
-        System.err.println("Final Result: " + event.getEventType());
+        if(verbose) {
+            System.err.println("Final Result: " + event.getEventType());
+        }
         log.info(msg);
         log.debug(event.toString());
     }
@@ -83,4 +88,9 @@ public class DefaultOutputHandler implements OutputHandler {
     public void resultHeader(String header) {
         System.out.println(header);
     }
+    
+    public void setVerbosity(boolean verbose) {
+        this.verbose = verbose;
+    }
+
 }

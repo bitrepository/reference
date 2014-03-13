@@ -45,7 +45,9 @@ public class Constants {
     public static final String SETTINGS_ARG = "s";
     /** The path to the private key.*/
     public static final String PRIVATE_KEY_ARG = "k";
-
+    /** */
+    public static final String VERBOSITY_ARG = "v";
+    
     /** The collectionID argument */
     public static final String COLLECTION_ID_ARG = "c";
     /** The file argument.*/

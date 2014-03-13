@@ -94,6 +94,10 @@ public class CommandLineArgumentsHandler {
                 + "the private key.");
         privateKeyOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);        
         options.addOption(privateKeyOption);
+        
+        Option verbosity = new Option(Constants.VERBOSITY_ARG, false, "Makes the client more verbose");
+        verbosity.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        options.addOption(verbosity);
     }
     
     /**

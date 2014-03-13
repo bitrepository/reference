@@ -89,7 +89,6 @@ public abstract class CommandLineClient {
      * @param args The generic command line arguments for defining the operation.
      */
     protected CommandLineClient(String ... args) {
-        output.startupInfo("Initialising arguments...");
         cmdHandler = new CommandLineArgumentsHandler();
         createOptionsForCmdArgumentHandler();
         try {
@@ -98,6 +97,9 @@ public abstract class CommandLineClient {
             output.error(cmdHandler.listArguments() +
                     "Missing argument: " + pe.getMessage());
             System.exit(Constants.EXIT_ARGUMENT_FAILURE);
+        }
+        if(cmdHandler.hasOption(Constants.VERBOSITY_ARG)) {
+            output.setVerbosity(true);
         }
         settings = cmdHandler.loadSettings(getComponentID());
         securityManager = cmdHandler.loadSecurityManager(settings);

@@ -31,49 +31,54 @@ public interface OutputHandler {
      * Handles the debug information for the commandline client.
      * @param debug The debug information to be handled.
      */
-    public void debug(String debug);
+    void debug(String debug);
     
     /**
      * Handles the startup information for the commandline client.  
      * @param info The information to be handled.
      */
-    public void startupInfo(String info);
+    void startupInfo(String info);
     
     /**
      * Handles the complete events.
      * @param msg The message regarding the complete event.
      * @param event The final event to handle.
      */
-    public void completeEvent(String msg, OperationEvent event);
+    void completeEvent(String msg, OperationEvent event);
     
     /**
      * Handles a warning for the commandline client.
      * @param warning The warning to be handled.
      */
-    public void warn(String warning);
+    void warn(String warning);
     
     /** 
      * Handles an error.
      * @param error The message for the error.
      */
-    public void error(String error);
+    void error(String error);
 
     /**
      * Handles an error.
      * @param error The message for the error.
      * @param e The throwable for the error.
      */
-    public void error(String error, Throwable e);
+    void error(String error, Throwable e);
     
     /**
      * Handles the outputting of a line of results 
      * @param line, the line to output
      */
-    public void resultLine(String line);
+    void resultLine(String line);
     
     /**
      * Handles the outputting of the header (or ledgend) of the following lines
      * @param header, the header to output 
      */
-    public void resultHeader(String header);
+    void resultHeader(String header);
+    
+    /**
+     * To set or unset if the output handler should behave verbosely or not. 
+     */
+    void setVerbosity(boolean verbose);
 }
