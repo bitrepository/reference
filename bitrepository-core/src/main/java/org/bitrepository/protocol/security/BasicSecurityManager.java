@@ -29,12 +29,12 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.KeyStore.PrivateKeyEntry;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.security.UnrecoverableKeyException;
-import java.security.KeyStore.PrivateKeyEntry;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
@@ -53,17 +53,21 @@ import org.bitrepository.protocol.security.exception.MessageSigningException;
 import org.bitrepository.protocol.security.exception.OperationAuthorizationException;
 import org.bitrepository.protocol.security.exception.SecurityException;
 import org.bitrepository.protocol.security.exception.UnregisteredPermissionException;
-import org.bitrepository.settings.repositorysettings.RepositorySettings;
 import org.bitrepository.settings.repositorysettings.InfrastructurePermission;
 import org.bitrepository.settings.repositorysettings.Permission;
 import org.bitrepository.settings.repositorysettings.PermissionSet;
+import org.bitrepository.settings.repositorysettings.RepositorySettings;
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMReader;
+import org.bouncycastle.openssl.PEMParser;
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -257,11 +261,10 @@ public class BasicSecurityManager implements SecurityManager {
      * @param privateKeyFile, path to the file containing the components private key and certificate, may be null
      * @throws IOException if the file cannot be found or read. 
      * @throws KeyStoreException if there is problems with adding the privateKeyEntry to keyStore
-     * @throws CertificateExpiredException if the certificate has expired 
-     * @throws CertificateNotYetValidException if the certificate is not yet valid
+     * @throws CertificateException 
      */
     private void loadPrivateKey(String privateKeyFile) throws IOException, KeyStoreException, 
-            CertificateExpiredException, CertificateNotYetValidException {
+            CertificateException {
         PrivateKey privKey = null;
         X509Certificate privCert = null;
         if(!(new File(privateKeyFile)).isFile()) {
@@ -269,8 +272,8 @@ public class BasicSecurityManager implements SecurityManager {
             return;
         }
         BufferedReader bufferedReader = new BufferedReader(new FileReader(privateKeyFile));
-        PEMReader pemReader =  new PEMReader(bufferedReader);
-        Object pemObj = pemReader.readObject();
+        PEMParser pemParser = new PEMParser(bufferedReader);
+        Object pemObj = pemParser.readObject();
 
         while(pemObj != null) {
             if(pemObj instanceof X509Certificate) {
@@ -279,12 +282,20 @@ public class BasicSecurityManager implements SecurityManager {
             } else if(pemObj instanceof PrivateKey) {
                 log.debug("Key for PrivateKeyEntry found");
                 privKey = (PrivateKey) pemObj;
+            } else if(pemObj instanceof X509CertificateHolder ) {
+                    privCert = new JcaX509CertificateConverter().setProvider("BC")
+                            .getCertificate((X509CertificateHolder) pemObj);
+                } else if(pemObj instanceof PrivateKeyInfo) {
+                    PrivateKeyInfo pki = (PrivateKeyInfo) pemObj;
+                    JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
+                    privKey = converter.getPrivateKey(pki);
             } else {
                 log.debug("Got something, thats not X509Certificate or PrivateKey. Class: " + pemObj.getClass().getSimpleName());
             }
-            pemObj = pemReader.readObject();
+            pemObj = pemParser.readObject();
         }
-        pemReader.close();
+        
+        pemParser.close();
         if(privKey == null || privCert == null ) {
             log.info("No material to create private key entry found!");
         } else {
