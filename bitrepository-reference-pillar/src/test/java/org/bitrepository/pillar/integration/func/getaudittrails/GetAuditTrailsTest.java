@@ -44,7 +44,8 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
     
     @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
     public void eventSortingTest() throws NegativeResponseException{
-        addDescription("Test whether the checksum result is sorted oldest to newest.");
+        addDescription("Test whether the audit trails are sorted based on sequence numbers, with the largest " +
+                "sequence number last..");
         addFixture("Ensure at least two files are present on the pillar.");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 

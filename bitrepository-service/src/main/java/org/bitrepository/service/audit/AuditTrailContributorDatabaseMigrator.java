@@ -21,9 +21,6 @@
  */
 package org.bitrepository.service.audit;
 
-import static org.bitrepository.service.audit.AuditDatabaseConstants.DATABASE_VERSION_ENTRY;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
-
 import java.util.Map;
 
 import org.bitrepository.service.database.DBConnector;
@@ -31,6 +28,9 @@ import org.bitrepository.service.database.DatabaseMigrator;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.bitrepository.service.audit.AuditDatabaseConstants.DATABASE_VERSION_ENTRY;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
 
 /**
  * Migration class for the AuditTrailContributorDatabase of the ReferencePillar, ChecksumPillar 
@@ -45,8 +45,10 @@ public class AuditTrailContributorDatabaseMigrator extends DatabaseMigrator {
     private static final String UPDATE_SCRIPT_VERSION_1_TO_2 = "sql/derby/auditContributorDBUpdate1to2.sql";
     /** The name of the script for updating the database from version 2 to 3.*/
     private static final String UPDATE_SCRIPT_VERSION_2_TO_3 = "sql/derby/auditContributorDBUpdate2to3.sql";
+    /** The name of the script for updating the database from version 2 to 3.*/
+    private static final String UPDATE_SCRIPT_VERSION_3_TO_4 = "sql/derby/auditContributorDBUpdate3to4.sql";
     /** The current version of the database. */
-    private final Integer currentVersion = 3;
+    private final Integer currentVersion = 4;
     
     /**
      * Constructor.
@@ -72,6 +74,11 @@ public class AuditTrailContributorDatabaseMigrator extends DatabaseMigrator {
         if(!versions.containsKey(DATABASE_VERSION_ENTRY) || versions.get(DATABASE_VERSION_ENTRY) < 3) {
             log.warn("Migrating AuditContributorDB from version 2 to 3.");
             migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_2_TO_3);
+        }
+
+        if(!versions.containsKey(DATABASE_VERSION_ENTRY) || versions.get(DATABASE_VERSION_ENTRY) < 4) {
+            log.warn("Migrating AuditContributorDB from version 3 to 4.");
+            migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_3_TO_4);
         }
     }
 
