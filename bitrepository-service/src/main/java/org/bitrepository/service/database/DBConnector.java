@@ -77,7 +77,7 @@ public class DBConnector {
                 connectionPool.setPassword(databaseSpecifics.getPassword());
             }
         } catch (Exception e) {
-            throw new IllegalStateException("Could not connect to the database '" + databaseSpecifics + "'", e);
+            throw new IllegalStateException("Could not connect to the database '" +  DatabaseUtils.getDatabaseSpecificsDump(databaseSpecifics) + "'", e);
         }
     }
 
@@ -99,7 +99,7 @@ public class DBConnector {
         try {
             return connectionPool.getConnection();
         } catch (SQLException e) {
-            throw new IllegalStateException("Could not establish connection to the database: '" + databaseSpecifics 
+            throw new IllegalStateException("Could not establish connection to the database: '" +  DatabaseUtils.getDatabaseSpecificsDump(databaseSpecifics) 
                     + "'", e);
         }
     }
@@ -111,7 +111,7 @@ public class DBConnector {
         try {
             DataSources.destroy(connectionPool);
         } catch (SQLException e) {
-            log.error("Could not clean up the database '" + databaseSpecifics + "'.", e);
+            log.error("Could not clean up the database '" + DatabaseUtils.getDatabaseSpecificsDump(databaseSpecifics) + "'.", e);
         }
     }
 }

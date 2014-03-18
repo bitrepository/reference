@@ -40,7 +40,8 @@ public class DatabaseCreator extends DatabaseMaintainer {
      */
     protected void createDatabase(DatabaseSpecifics databaseSpecifics, String scriptName) {
         DatabaseSpecifics databaseCreationSpecifics = updateDatabaseSpecificsForDBCreation(databaseSpecifics);
-        log.info("Creating database in " + databaseCreationSpecifics + " from script " + scriptName);
+        log.info("Creating database in " +  DatabaseUtils.getDatabaseSpecificsDump(databaseCreationSpecifics) 
+                + " from script " + scriptName);
         try {
             runScript(databaseCreationSpecifics, scriptName);
         } catch (Exception e) {
