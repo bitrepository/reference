@@ -79,12 +79,6 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.jmeter</groupId>
-      <artifactId>ApacheJMeter_java</artifactId>
-      <version>2.8</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   <description>Here you can find the functionality for working with crosscutting module concerns.
     This is mainly the Quickstart bundle.</description>

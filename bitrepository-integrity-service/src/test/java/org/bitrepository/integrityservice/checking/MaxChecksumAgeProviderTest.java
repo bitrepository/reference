@@ -22,10 +22,12 @@
 package org.bitrepository.integrityservice.checking;
 
 import java.math.BigInteger;
-import junit.framework.Assert;
+
 import org.bitrepository.settings.referencesettings.ObsoleteChecksumSettings;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
 
 public class MaxChecksumAgeProviderTest extends ExtendedTestCase{
 
@@ -37,7 +39,7 @@ public class MaxChecksumAgeProviderTest extends ExtendedTestCase{
             "Test that the MaxAge for a random pillar is 100");
         long defaultMaxAge = 100;
         MaxChecksumAgeProvider maxChecksumAgeProvider = new MaxChecksumAgeProvider(defaultMaxAge, null);
-        Assert.assertEquals(defaultMaxAge, maxChecksumAgeProvider.getMaxChecksumAge(""));
+        assertEquals(defaultMaxAge, maxChecksumAgeProvider.getMaxChecksumAge(""));
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
@@ -51,7 +53,7 @@ public class MaxChecksumAgeProviderTest extends ExtendedTestCase{
         ObsoleteChecksumSettings settings = new ObsoleteChecksumSettings();
         settings.setDefaultMaxChecksumAge(BigInteger.TEN);
         MaxChecksumAgeProvider maxChecksumAgeProvider = new MaxChecksumAgeProvider(defaultMaxAge, settings);
-        Assert.assertEquals(10, maxChecksumAgeProvider.getMaxChecksumAge(""));
+        assertEquals(10, maxChecksumAgeProvider.getMaxChecksumAge(""));
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
@@ -75,8 +77,8 @@ public class MaxChecksumAgeProviderTest extends ExtendedTestCase{
         settings.getMaxChecksumAgeForPillar().add(
             MaxChecksumAgeProvider.createMaxChecksumAgeForPillar(PILLAR2, pillar2MaxAge));
         MaxChecksumAgeProvider maxChecksumAgeProvider = new MaxChecksumAgeProvider(defaultMaxAge, settings);
-        Assert.assertEquals(pillar1MaxAge, maxChecksumAgeProvider.getMaxChecksumAge(PILLAR1));
-        Assert.assertEquals(pillar2MaxAge, maxChecksumAgeProvider.getMaxChecksumAge(PILLAR2));
-        Assert.assertEquals(defaultMaxAgeinSettings, maxChecksumAgeProvider.getMaxChecksumAge(""));
+        assertEquals(pillar1MaxAge, maxChecksumAgeProvider.getMaxChecksumAge(PILLAR1));
+        assertEquals(pillar2MaxAge, maxChecksumAgeProvider.getMaxChecksumAge(PILLAR2));
+        assertEquals(defaultMaxAgeinSettings, maxChecksumAgeProvider.getMaxChecksumAge(""));
     }
 }
