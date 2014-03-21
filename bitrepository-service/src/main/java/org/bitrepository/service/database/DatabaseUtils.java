@@ -25,6 +25,7 @@
 package org.bitrepository.service.database;
 
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -505,4 +506,15 @@ public class DatabaseUtils {
         return new IllegalStateException("Could not execute the query '" + query + "' with the arguments '" 
                 + Arrays.asList(args) + "' on database '" + dbConnection + "'", e);
     }
+    
+    /**
+     * Method to provide safe dump of database specifics (so we won't leak passwords). 
+     */
+    public static String getDatabaseSpecificsDump(DatabaseSpecifics databaseSpecifics) {
+        return "DatabaseSpecifics [driverClass=" + databaseSpecifics.getDriverClass()
+                + ", databaseURL=" + databaseSpecifics.getDatabaseURL() 
+                + ", username=" + databaseSpecifics.getUsername()
+                + ", allowAutoMigrate=" + databaseSpecifics.isAllowAutoMigrate()
+                + ", allowAutoCreate=" + databaseSpecifics.isAllowAutoCreate() + "]";
+    } 
 }
