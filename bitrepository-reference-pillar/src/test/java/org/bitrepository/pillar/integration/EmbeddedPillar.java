@@ -22,9 +22,11 @@ package org.bitrepository.pillar.integration;
  */
 
 
+import java.io.File;
 import java.util.Arrays;
 
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.Pillar;
 import org.bitrepository.pillar.cache.ChecksumDAO;
 import org.bitrepository.pillar.cache.ChecksumDatabaseManager;
@@ -35,6 +37,7 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.service.LifeCycledService;
+import org.bitrepository.settings.referencesettings.CollectionDirs;
 
 public class EmbeddedPillar implements LifeCycledService {
     private final Pillar pillar;
@@ -65,8 +68,12 @@ public class EmbeddedPillar implements LifeCycledService {
     private static MessageBus initialize(Settings pillarSettings) {
         ReferencePillarDerbyDBTestUtils dbUtils = new ReferencePillarDerbyDBTestUtils(pillarSettings);
         dbUtils.createEmptyDatabases();
-        ActiveMQMessageBus messageBus = new ActiveMQMessageBus(
-                pillarSettings, new DummySecurityManager());
+        for (CollectionDirs collectionDir : pillarSettings.getReferenceSettings().getPillarSettings().getCollectionDirs()) {
+            for (String dir : collectionDir.getFileDirs() ) {
+                FileUtils.deleteDirIfExists(new File(dir));
+            }
+        }
+        ActiveMQMessageBus messageBus = new ActiveMQMessageBus(pillarSettings, new DummySecurityManager());
         messageBus.setComponentFilter(Arrays.asList(new String[]{pillarSettings.getComponentID()}));
         MessageBusManager.injectCustomMessageBus(pillarSettings.getComponentID(), messageBus);
         return messageBus;
