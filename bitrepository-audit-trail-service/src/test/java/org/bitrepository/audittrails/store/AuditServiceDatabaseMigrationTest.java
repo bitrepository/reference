@@ -22,6 +22,7 @@
 package org.bitrepository.audittrails.store;
 
 import java.io.File;
+
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.FileUtils;
@@ -30,13 +31,13 @@ import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.DATABASE_VERSION_ENTRY;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_TABLE;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.DATABASE_VERSION_ENTRY;
+import static org.testng.Assert.assertEquals;
 
 // TODO: cannot test migration of version 1 to 2, since it requires a collection id.
 // Therefore this is only tested with version 2 of the database.
@@ -76,16 +77,16 @@ public class AuditServiceDatabaseMigrationTest extends ExtendedTestCase {
         addStep("Validate setup", "audit table has version 2 and database version 2");
         String extractVersionSql = "SELECT version FROM tableversions WHERE tablename = ?";
         int auditTableVersionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, AUDITTRAIL_TABLE);
-        Assert.assertEquals(auditTableVersionBefore, 2, "Table version before migration");
+        assertEquals(auditTableVersionBefore, 2, "Table version before migration");
         int dbTableVersionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, DATABASE_VERSION_ENTRY);
-        Assert.assertEquals(dbTableVersionBefore, 2, "Table version before migration");
+        assertEquals(dbTableVersionBefore, 2, "Table version before migration");
         
         addStep("Perform migration", "audit table version 4 and database-version is 4");
         AuditTrailServiceDatabaseMigrator migrator = new AuditTrailServiceDatabaseMigrator(connector);
         migrator.migrate();
         int auditTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, AUDITTRAIL_TABLE);
-        Assert.assertEquals(auditTableVersionAfter, 4, "Table version after migration");
+        assertEquals(auditTableVersionAfter, 4, "Table version after migration");
         int dbTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, DATABASE_VERSION_ENTRY);
-        Assert.assertEquals(dbTableVersionAfter, 4, "Table version after migration");
+        assertEquals(dbTableVersionAfter, 4, "Table version after migration");
     }
 }

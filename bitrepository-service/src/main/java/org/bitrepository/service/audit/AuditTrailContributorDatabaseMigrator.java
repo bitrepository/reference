@@ -48,7 +48,7 @@ public class AuditTrailContributorDatabaseMigrator extends DatabaseMigrator {
     /** The name of the script for updating the database from version 2 to 3.*/
     private static final String UPDATE_SCRIPT_VERSION_3_TO_4 = "sql/derby/auditContributorDBUpdate3to4.sql";
     /** The current version of the database. */
-    private final Integer currentVersion = 4;
+    public static final int CURRENT_VERSION = 4;
     
     /**
      * Constructor.
@@ -89,7 +89,7 @@ public class AuditTrailContributorDatabaseMigrator extends DatabaseMigrator {
         if(!versions.containsKey(DATABASE_VERSION_ENTRY)) {
             // Special case, as the first version of the database did not have DATABASE_VERSION_ENTRY!
             return true;
-        } else if(versions.get(DATABASE_VERSION_ENTRY) < currentVersion) {
+        } else if(versions.get(DATABASE_VERSION_ENTRY) < CURRENT_VERSION) {
             return true;
         } else {
             return false;

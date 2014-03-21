@@ -22,6 +22,7 @@
 package org.bitrepository.service.audit;
 
 import java.io.File;
+
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.FileUtils;
@@ -30,15 +31,12 @@ import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_FILEID;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.DATABASE_VERSION_ENTRY;
-import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_AUDIT;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.*;
+import static org.testng.Assert.assertEquals;
 
 public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase {
     protected Settings settings;
@@ -76,22 +74,22 @@ public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase
         addStep("Validate setup", "File table and audit table has version 1 ");
         String extractVersionSql = "SELECT version FROM tableversions WHERE tablename = ?";
         int fileTableVersionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, FILE_TABLE);
-        Assert.assertEquals(fileTableVersionBefore, 1, "File table before migration");
+        assertEquals(fileTableVersionBefore, 1, "File table before migration");
         int auditTableVersionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, AUDITTRAIL_AUDIT);
-        Assert.assertEquals(auditTableVersionBefore, 1, "Table version before migration");
+        assertEquals(auditTableVersionBefore, 1, "Table version before migration");
         
         addStep("Ingest a entry to the database without the collection id", "works only in version 1.");
         String sqlInsert = "INSERT INTO " + FILE_TABLE + " ( " + FILE_FILEID + " ) VALUES ( ? )";
         DatabaseUtils.executeStatement(connector, sqlInsert, FILE_ID);
         
-        addStep("Perform migration", "File table has version 2, audit table version 3 and database-version is 3");
+        addStep("Perform migration", "File table has version 2, audit table version 4 and database-version is 4");
         AuditTrailContributorDatabaseMigrator migrator = new AuditTrailContributorDatabaseMigrator(connector);
         migrator.migrate();
         int fileTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, FILE_TABLE);
-        Assert.assertEquals(fileTableVersionAfter, 2, "Table version after migration");
+        assertEquals(fileTableVersionAfter, 2, "Table version after migration");
         int auditTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, AUDITTRAIL_AUDIT);
-        Assert.assertEquals(auditTableVersionAfter, 3, "Table version after migration");
+        assertEquals(auditTableVersionAfter, 4, "Table version after migration");
         int dbTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, DATABASE_VERSION_ENTRY);
-        Assert.assertEquals(dbTableVersionAfter, 3, "Table version after migration");
+        assertEquals(dbTableVersionAfter, AuditTrailContributorDatabaseMigrator.CURRENT_VERSION, "Table version after migration");
     }
 }
