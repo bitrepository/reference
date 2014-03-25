@@ -21,11 +21,12 @@
  */
 package org.bitrepository.service.database;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
-import com.mchange.v2.c3p0.DataSources;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
+
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.mchange.v2.c3p0.DataSources;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.slf4j.Logger;
@@ -67,7 +68,8 @@ public class DBConnector {
      */
     private void initialiseConnectionPool() {
         try {
-            log.info("Creating the connection to the database '" + databaseSpecifics + "'.");
+            log.info("Creating the connection to the database '" +
+                    DatabaseUtils.getDatabaseSpecificsDump(databaseSpecifics) + "'.");
             connectionPool.setDriverClass(databaseSpecifics.getDriverClass());
             connectionPool.setJdbcUrl(databaseSpecifics.getDatabaseURL());
             if(databaseSpecifics.isSetUsername()) {

@@ -33,7 +33,6 @@ import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 public class AuditTrailDatabaseCreator extends DatabaseCreator {
     public static final String DEFAULT_AUDIT_TRAIL_DB_SCRIPT = "sql/derby/auditTrailServiceDBCreation.sql";
 
-
     /**
      * @param args <ol>
      * <li> The path to the directory containing the settings. See
