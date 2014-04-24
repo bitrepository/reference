@@ -1,9 +1,9 @@
-rem @ECHO OFF
+@ECHO OFF
 
 set JAVA=c:\Program Files (x86)\Java\jre7\bin\java.exe
 
 set BASEDIR=%0%
-for %%x in ("%BASEDIR%") DO set BASEDIR=%%~dpx..
+for %%x in (%BASEDIR%) DO set BASEDIR=%%~dpx..
 set CONFDIR=%BASEDIR%\conf
 set KEYFILE=%CONFDIR%\mycert-key.pem
 set JAVA_OPTS=-classpath  "%BASEDIR%\lib\*"
@@ -30,5 +30,5 @@ echo.     replace-file
 goto :eof
 :run
 set CMD=org.bitrepository.commandline.%CMD%
-shift
+
 "%JAVA%" %JAVA_OPTS% %CMD% "-k%KEYFILE%" "-s%CONFDIR%" %*%
