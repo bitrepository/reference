@@ -64,7 +64,7 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
     
     @Override
     public String getName() {
-        return "Handle files missing at some pillars.";
+        return "Handle validation of checksums.";
     }
 
     /**

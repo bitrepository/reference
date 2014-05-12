@@ -15,7 +15,7 @@ public class BasicIntegrityReporter implements IntegrityReporter {
     private final String workflowType;
     /** Date of the report, use for identification and for placing it in time. */
     private final Date reportDate;
-    private static final String DATE_FORMAT = "yyyyMMDD-HHmmss"; 
+    private static final String DATE_FORMAT = "yyyyMMdd-HHmmss"; 
     private Long deletedFilesCount = 0L;
     //Treemaps ensures alphapetical sorting.
     private final Map<String, Long> missingFiles = new TreeMap<String, Long>();
