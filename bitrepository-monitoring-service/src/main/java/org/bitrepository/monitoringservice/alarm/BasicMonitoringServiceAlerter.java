@@ -74,7 +74,8 @@ public class BasicMonitoringServiceAlerter extends AlarmDispatcher implements Mo
         if(!nonRespondingComponents.isEmpty()) {
             Alarm alarm = new Alarm();
             alarm.setAlarmCode(AlarmCode.COMPONENT_FAILURE);
-            alarm.setAlarmText("The following components has become unresponsive: " 
+            alarm.setAlarmText("The following components have become " +
+                    "unresponsive: "
                     + nonRespondingComponents.toString());
             error(alarm);
         }

@@ -126,7 +126,7 @@ public class BasicIntegrityReporter implements IntegrityReporter {
         if(!hasIntegrityIssues()) {
             return "No integrity issues found";
         } else {
-            return "The following integrity issues where found:" +   generateSummary();
+            return "The following integrity issues were found:" +   generateSummary();
         }
     }
 
