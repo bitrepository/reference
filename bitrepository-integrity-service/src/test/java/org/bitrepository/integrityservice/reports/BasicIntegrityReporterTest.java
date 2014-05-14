@@ -32,7 +32,7 @@ import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertTrue;
 
 public class BasicIntegrityReporterTest extends ExtendedTestCase {
-    private static final String REPORT_SUMMARY_START = "The following integrity issues where found:\n";
+    private static final String REPORT_SUMMARY_START = "The following integrity issues were found:\n";
 
     @Test(groups = {"regressiontest"})
     public void deletedFilesTest() throws Exception {
