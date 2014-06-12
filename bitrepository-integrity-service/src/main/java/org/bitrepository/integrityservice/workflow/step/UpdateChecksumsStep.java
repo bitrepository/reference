@@ -41,14 +41,14 @@ import org.slf4j.LoggerFactory;
 /**
  * The step for collecting the checksums of all files from all pillars.
  */
-public class UpdateChecksumsStep extends AbstractWorkFlowStep {
+public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
     /** The collector for retrieving the checksums.*/
     private final IntegrityInformationCollector collector;
     /** The model where the integrity data is stored.*/
-    private final IntegrityModel store;
+    protected final IntegrityModel store;
     /** The checksum spec type.*/
     private final ChecksumSpecTYPE checksumType;
     /** The integrity alerter.*/
@@ -58,11 +58,11 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
     /** The maximum number of results for each conversation.*/
     private final Integer maxNumberOfResultsPerConversation;
     /** The collectionID */
-    private final String collectionId;
+    protected final String collectionId;
     private final Settings settings;
     
     /** The default value for the maximum number of results for each conversation. Is case the setting is missing.*/
-    private final Integer DEFAULT_MAX_RESULTS = 10000;
+    public static final Integer DEFAULT_MAX_RESULTS = 10000;
 
     /**
      * Constructor.
@@ -91,11 +91,6 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
     }
     
     @Override
-    public String getName() {
-        return "Collect new checksums from pillars";
-    }
-
-    @Override
     public synchronized void performStep() {
         try {
             List<String> pillarsToCollectFrom = new ArrayList<String>(
@@ -118,6 +113,11 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
     }
     
     /**
+     * Method to acquire the latest checksum entry for the given pillar 
+     */
+    protected abstract Date getLatestChecksumEntry(String pillar);
+    
+    /**
      * Define the queries for the collection of FileIDs for the given pillars.
      * @param pillars The pillars to collect from.
      * @return The queries for the pillars for collecting the file ids.
@@ -125,14 +125,11 @@ public class UpdateChecksumsStep extends AbstractWorkFlowStep {
     private ContributorQuery[] getQueries(List<String> pillars) {
         List<ContributorQuery> res = new ArrayList<ContributorQuery>();
         for(String pillar : pillars) {
-            Date latestChecksumEntry = store.getDateForNewestChecksumEntryForPillar(pillar, collectionId);
+            Date latestChecksumEntry = getLatestChecksumEntry(pillar);
             res.add(new ContributorQuery(pillar, latestChecksumEntry, null, maxNumberOfResultsPerConversation));
         }
         
         return res.toArray(new ContributorQuery[pillars.size()]);
     }
 
-    public static String getDescription() {
-        return "Contacts all pillar to retrieve the list of new checksums for the pillar";
-    }
 }

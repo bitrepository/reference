@@ -32,6 +32,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.access.ContributorQuery;
@@ -47,6 +48,7 @@ import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -70,7 +72,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
 
-        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
         step.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
@@ -89,7 +91,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
 
-        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
         step.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(alerter).operationFailed(anyString(), eq(TEST_COLLECTION));
@@ -112,7 +114,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
 
-        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
         step.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
                 any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
@@ -144,12 +146,62 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
 
-        UpdateChecksumsStep step = new UpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
 
         step.performStep();
         verify(model, times(2)).addChecksums(resultingChecksums.getChecksumDataItems(), TEST_PILLAR_1, TEST_COLLECTION);
         verify(collector, times(2)).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
                 any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+    }
+    
+    @Test(groups = {"regressiontest"})
+    public void testFullChecksumCollection() {
+        addDescription("Test that the full list of checksums is requested.");
+        
+        doAnswer(new Answer() {
+            public Void answer(InvocationOnMock invocation) {
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+                return null;
+            }
+        }).when(collector).getChecksums(
+                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
+                any(ContributorQuery[].class), any(EventHandler.class));
+
+        UpdateChecksumsStep step = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        step.performStep();
+        
+        ContributorQuery[] expectedContributorQueries = 
+        		getFullQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()); 
+        
+        verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), 
+        		anyString(), eq(expectedContributorQueries), any(EventHandler.class));
+        verifyNoMoreInteractions(alerter);
+    }
+    
+    @Test(groups = {"regressiontest"})
+    public void testIncrementalChecksumCollection() {
+        addDescription("Test that only the list of new checksums is requested.");
+        
+        doAnswer(new Answer() {
+            public Void answer(InvocationOnMock invocation) {
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+                return null;
+            }
+        }).when(collector).getChecksums(
+                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
+                any(ContributorQuery[].class), any(EventHandler.class));
+
+        UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        step.performStep();
+        
+        ContributorQuery[] expectedContributorQueries = 
+        		getIncrementalQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(), model); 
+        
+        verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), 
+        		anyString(), eq(expectedContributorQueries), any(EventHandler.class));
+        verifyNoMoreInteractions(alerter);
     }
     
     private class TestEventHandler implements Runnable {
@@ -181,6 +233,26 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
             eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
         }
     }
+    
+    private ContributorQuery[] getFullQueries(List<String> pillars) {
+        List<ContributorQuery> res = new ArrayList<ContributorQuery>();
+        for(String pillar : pillars) {
+            res.add(new ContributorQuery(pillar, null, null, UpdateChecksumsStep.DEFAULT_MAX_RESULTS));
+        }
+        
+        return res.toArray(new ContributorQuery[pillars.size()]);
+    }
+    
+    private ContributorQuery[] getIncrementalQueries(List<String> pillars, IntegrityModel store) {
+        List<ContributorQuery> res = new ArrayList<ContributorQuery>();
+        for(String pillar : pillars) {
+        	Date latestChecksumDate = store.getDateForNewestChecksumEntryForPillar(pillar, TEST_COLLECTION);
+            res.add(new ContributorQuery(pillar, null, latestChecksumDate, UpdateChecksumsStep.DEFAULT_MAX_RESULTS));
+        }
+        
+        return res.toArray(new ContributorQuery[pillars.size()]);
+    }
+    
 
     private ResultingChecksums createResultingChecksums(String checksum, String ... fileids) {
         ResultingChecksums res = new ResultingChecksums();

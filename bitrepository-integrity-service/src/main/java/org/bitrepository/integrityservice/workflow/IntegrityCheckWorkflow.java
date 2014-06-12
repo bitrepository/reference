@@ -23,7 +23,6 @@ package org.bitrepository.integrityservice.workflow;
 
 import java.io.IOException;
 
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.integrityservice.IntegrityServiceManager;
 import org.bitrepository.integrityservice.reports.BasicIntegrityReporter;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
@@ -67,6 +66,8 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
     
     protected abstract UpdateFileIDsStep getUpdateFileIDsStep();
     
+    protected abstract UpdateChecksumsStep getUpdateChecksumsStep();
+    
     public IntegrityReporter getLatestIntegrityReport() {
         return latestReport;
     }
@@ -86,9 +87,7 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             UpdateFileIDsStep updateFileIDsStep = getUpdateFileIDsStep();
             performStep(updateFileIDsStep);
             
-            UpdateChecksumsStep updateChecksumStep = new UpdateChecksumsStep(
-                    context.getCollector(), context.getStore(), context.getAlerter(),
-                    ChecksumUtils.getDefault(context.getSettings()), context.getSettings(), collectionID);
+            UpdateChecksumsStep updateChecksumStep = getUpdateChecksumsStep();
             performStep(updateChecksumStep);
 
             HandleDeletedFilesStep handleDeletedFilesStep = new HandleDeletedFilesStep(context.getStore(), reporter);

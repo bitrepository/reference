@@ -21,7 +21,10 @@
  */
 package org.bitrepository.integrityservice.workflow;
 
+import org.bitrepository.common.utils.ChecksumUtils;
+import org.bitrepository.integrityservice.workflow.step.FullUpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.FullUpdateFileIDsStep;
+import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
 
 /**
@@ -50,4 +53,12 @@ public class CompleteIntegrityCheck extends IntegrityCheckWorkflow {
         return new FullUpdateFileIDsStep(context.getCollector(), context.getStore(),
                 context.getAlerter(), context.getSettings(), collectionID);
     }
+
+
+	@Override
+	protected UpdateChecksumsStep getUpdateChecksumsStep() {
+		return  new FullUpdateChecksumsStep(
+                context.getCollector(), context.getStore(), context.getAlerter(),
+                ChecksumUtils.getDefault(context.getSettings()), context.getSettings(), collectionID);
+	}
 }
