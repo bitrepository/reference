@@ -183,6 +183,11 @@ public class IntegrityDatabase implements IntegrityModel {
     public Date getDateForNewestChecksumEntryForPillar(String pillarId, String collectionId) {
         return store.getDateForNewestChecksumEntryForPillar(pillarId, collectionId);
     }
+    
+    @Override 
+    public void setChecksumTimestampsToEpocForCollection(String collectionID) {
+    	store.setChecksumTimestampsToEpocForCollection(collectionID);
+    }
 
     @Override
     public void setExistingFilesToPreviouslySeenFileState(String collectionId) {

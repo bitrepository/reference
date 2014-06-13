@@ -757,6 +757,22 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
     }
     
     /**
+     * Sets the timestamps for checksums for the given collection to epoc, 
+     * to indicate that checksums are not collected.
+     * @param collectionID The ID of the collection to indicate non collected checksums for. 
+     */
+    public void setChecksumTimestampsToEpocForCollection(String collectionID) {
+        log.trace("Setting the checksum timestamp for all files in collection " + collectionID + " to NULL.");
+        Long collectionKey = retrieveCollectionKey(collectionID);
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_LAST_CHECKSUM_UPDATE + " = ?"
+                + " WHERE " + FI_FILE_KEY + " IN ("
+                    + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                    + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                    + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ?)";
+        DatabaseUtils.executeStatement(dbConnector, updateSql, new Date(0), collectionKey);
+    }
+    
+    /**
      * Set all files to unknown for the given pillar at the given collection.
      * @param collectionId The id of the collection.
      * @param pillarId The id of the pillar.

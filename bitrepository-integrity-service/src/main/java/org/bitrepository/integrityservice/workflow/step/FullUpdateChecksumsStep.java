@@ -1,7 +1,5 @@
 package org.bitrepository.integrityservice.workflow.step;
 
-import java.util.Date;
-
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
@@ -23,12 +21,10 @@ public class FullUpdateChecksumsStep extends UpdateChecksumsStep {
         return "Collect all checksums from pillars";
     }
     
-    @Override
-    protected Date getLatestChecksumEntry(String pillar) {
-    	return null;
+    protected void initialStepAction() {
+    	store.setChecksumTimestampsToEpocForCollection(collectionId);
     }
-
-
+    
     /**
      * @return Description of this step.
      */

@@ -322,4 +322,10 @@ public class IntegrityCache implements IntegrityModel {
     public IntegrityIssueIterator findOrphanFiles(String collectionID) {
         return integrityModel.findOrphanFiles(collectionID);
     }
+
+	@Override
+	public void setChecksumTimestampsToEpocForCollection(String collectionID) {
+		integrityModel.setChecksumTimestampsToEpocForCollection(collectionID);
+		
+	}
 }

@@ -90,6 +90,11 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
         }
     }
     
+    /**
+     * Method to implement early/pre-performStep action  
+     */
+    protected void initialStepAction() {}
+    
     @Override
     public synchronized void performStep() {
         try {
@@ -113,11 +118,6 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
     }
     
     /**
-     * Method to acquire the latest checksum entry for the given pillar 
-     */
-    protected abstract Date getLatestChecksumEntry(String pillar);
-    
-    /**
      * Define the queries for the collection of FileIDs for the given pillars.
      * @param pillars The pillars to collect from.
      * @return The queries for the pillars for collecting the file ids.
@@ -125,7 +125,7 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
     private ContributorQuery[] getQueries(List<String> pillars) {
         List<ContributorQuery> res = new ArrayList<ContributorQuery>();
         for(String pillar : pillars) {
-            Date latestChecksumEntry = getLatestChecksumEntry(pillar);
+            Date latestChecksumEntry = store.getDateForNewestChecksumEntryForPillar(pillar, collectionId);
             res.add(new ContributorQuery(pillar, latestChecksumEntry, null, maxNumberOfResultsPerConversation));
         }
         

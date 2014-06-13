@@ -25,6 +25,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -168,11 +169,13 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
 
+        when(model.getDateForNewestChecksumEntryForPillar(anyString(), anyString())).thenReturn(new Date(0));
+        
         UpdateChecksumsStep step = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
         step.performStep();
         
         ContributorQuery[] expectedContributorQueries = 
-        		getFullQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()); 
+                makeFullQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(), model); 
         
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), 
         		anyString(), eq(expectedContributorQueries), any(EventHandler.class));
@@ -197,7 +200,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         step.performStep();
         
         ContributorQuery[] expectedContributorQueries = 
-        		getIncrementalQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(), model); 
+                makeQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(), model); 
         
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), 
         		anyString(), eq(expectedContributorQueries), any(EventHandler.class));
@@ -234,20 +237,21 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         }
     }
     
-    private ContributorQuery[] getFullQueries(List<String> pillars) {
+    private ContributorQuery[] makeFullQueries(List<String> pillars, IntegrityModel store) {
         List<ContributorQuery> res = new ArrayList<ContributorQuery>();
         for(String pillar : pillars) {
-            res.add(new ContributorQuery(pillar, null, null, UpdateChecksumsStep.DEFAULT_MAX_RESULTS));
+            Date latestChecksumDate = new Date(0);
+            res.add(new ContributorQuery(pillar, latestChecksumDate, null, UpdateChecksumsStep.DEFAULT_MAX_RESULTS));
         }
         
         return res.toArray(new ContributorQuery[pillars.size()]);
     }
     
-    private ContributorQuery[] getIncrementalQueries(List<String> pillars, IntegrityModel store) {
+    private ContributorQuery[] makeQueries(List<String> pillars, IntegrityModel store) {
         List<ContributorQuery> res = new ArrayList<ContributorQuery>();
         for(String pillar : pillars) {
         	Date latestChecksumDate = store.getDateForNewestChecksumEntryForPillar(pillar, TEST_COLLECTION);
-            res.add(new ContributorQuery(pillar, null, latestChecksumDate, UpdateChecksumsStep.DEFAULT_MAX_RESULTS));
+            res.add(new ContributorQuery(pillar, latestChecksumDate, null, UpdateChecksumsStep.DEFAULT_MAX_RESULTS));
         }
         
         return res.toArray(new ContributorQuery[pillars.size()]);

@@ -986,6 +986,48 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testGetLatestChecksumDateEntryForCollection() throws Exception {
+        addDescription("Tests that checksum date entries can be retrieved and manipulated.");
+        IntegrityDAO cache = createDAO();
+
+        addStep("Create data", "Should be ingested into the database");
+        String TEST_FILE_ID2 = TEST_FILE_ID + "2";
+        //FileIDsData fileids = getFileIDsData(TEST_FILE_ID, TEST_FILE_ID2);
+        List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM); 
+        insertChecksumDataForDAO(cache, csData, TEST_PILLAR_1, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData, TEST_PILLAR_2, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData, TEST_PILLAR_1, EXTRA_COLLECTION);
+        insertChecksumDataForDAO(cache, csData, EXTRA_PILLAR, EXTRA_COLLECTION);
+        
+        
+        List<ChecksumDataForChecksumSpecTYPE> csData2 = getChecksumResults(TEST_FILE_ID2, TEST_CHECKSUM); 
+        insertChecksumDataForDAO(cache, csData2, TEST_PILLAR_1, TEST_COLLECTIONID);
+        insertChecksumDataForDAO(cache, csData2, TEST_PILLAR_2, TEST_COLLECTIONID);
+        
+        addStep("Check that checksums are newer than epoch", "checksums are newer than epoch");
+        Date epoch = new Date(0);
+        Date latestChecksumDatePillar1 = cache.getDateForNewestChecksumEntryForPillar(TEST_PILLAR_1, TEST_COLLECTIONID);
+        Assert.assertTrue(latestChecksumDatePillar1.after(epoch));
+        Date latestChecksumDatePillar2 = cache.getDateForNewestChecksumEntryForPillar(TEST_PILLAR_2, TEST_COLLECTIONID);
+        Assert.assertTrue(latestChecksumDatePillar2.after(epoch));
+        Date latestChecksumDatePillar1ExtraCollection = 
+        		cache.getDateForNewestChecksumEntryForPillar(TEST_PILLAR_1, EXTRA_COLLECTION);
+        Assert.assertTrue(latestChecksumDatePillar1ExtraCollection.after(epoch));
+        
+        addStep("Call the database to reset checksums timestamps", "Only timestamps for the specified collection are effected");
+        cache.setChecksumTimestampsToEpocForCollection(TEST_COLLECTIONID);
+        latestChecksumDatePillar1 = cache.getDateForNewestChecksumEntryForPillar(TEST_PILLAR_1, TEST_COLLECTIONID);
+        Assert.assertEquals(latestChecksumDatePillar1, epoch);
+        latestChecksumDatePillar2 = cache.getDateForNewestChecksumEntryForPillar(TEST_PILLAR_2, TEST_COLLECTIONID);
+        Assert.assertEquals(latestChecksumDatePillar2, epoch);
+        latestChecksumDatePillar1ExtraCollection = 
+        		cache.getDateForNewestChecksumEntryForPillar(TEST_PILLAR_1, EXTRA_COLLECTION);
+        Assert.assertTrue(latestChecksumDatePillar1ExtraCollection.after(epoch));
+        
+    }
+    
+    
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void testExtractCollectionFileSize() throws Exception {
         addDescription("Tests that the accumulated size of the collection can be extracted");
         IntegrityDAO cache = createDAO();

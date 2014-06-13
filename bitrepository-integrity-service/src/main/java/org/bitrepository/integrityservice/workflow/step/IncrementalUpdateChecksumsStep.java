@@ -1,7 +1,5 @@
 package org.bitrepository.integrityservice.workflow.step;
 
-import java.util.Date;
-
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
@@ -22,12 +20,6 @@ public class IncrementalUpdateChecksumsStep extends UpdateChecksumsStep {
     public String getName() {
         return "Collect new checksums from pillars";
     }
-    
-    @Override
-    protected Date getLatestChecksumEntry(String pillar) {
-    	return store.getDateForNewestChecksumEntryForPillar(pillar, collectionId);
-    }
-
 
     /**
      * @return Description of this step.

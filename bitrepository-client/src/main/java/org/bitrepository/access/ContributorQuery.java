@@ -56,7 +56,7 @@ public class ContributorQuery {
     public ContributorQuery(String componentID, Date minTimestamp, Date maxTimestamp, Integer maxNumberOfResults) {
         if (minTimestamp != null && maxTimestamp != null && minTimestamp.after(maxTimestamp)) {
             throw new IllegalArgumentException(
-                "minTimestamp=" + minTimestamp + " can not be later than " + "maxTimestamp=" + maxTimestamp);
+                    "minTimestamp=" + minTimestamp + " can not be later than " + "maxTimestamp=" + maxTimestamp);
         }
         this.componentID = componentID;
         this.maxNumberOfResults = maxNumberOfResults;
@@ -83,59 +83,59 @@ public class ContributorQuery {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "{" +
-            "componentID='" + componentID  +
-            ", minTimestamp=" + minTimestamp +
-            ", maxTimestamp=" + maxTimestamp +
-            ", maxNumberOfResults=" + maxNumberOfResults +
-            '}';
+                "componentID='" + componentID  +
+                ", minTimestamp=" + minTimestamp +
+                ", maxTimestamp=" + maxTimestamp +
+                ", maxNumberOfResults=" + maxNumberOfResults +
+                '}';
     }
-    
-    @Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((componentID == null) ? 0 : componentID.hashCode());
-		result = prime
-				* result
-				+ ((maxNumberOfResults == null) ? 0 : maxNumberOfResults
-						.hashCode());
-		result = prime * result
-				+ ((maxTimestamp == null) ? 0 : maxTimestamp.hashCode());
-		result = prime * result
-				+ ((minTimestamp == null) ? 0 : minTimestamp.hashCode());
-		return result;
-	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ContributorQuery other = (ContributorQuery) obj;
-		if (componentID == null) {
-			if (other.componentID != null)
-				return false;
-		} else if (!componentID.equals(other.componentID))
-			return false;
-		if (maxNumberOfResults == null) {
-			if (other.maxNumberOfResults != null)
-				return false;
-		} else if (!maxNumberOfResults.equals(other.maxNumberOfResults))
-			return false;
-		if (maxTimestamp == null) {
-			if (other.maxTimestamp != null)
-				return false;
-		} else if (!maxTimestamp.equals(other.maxTimestamp))
-			return false;
-		if (minTimestamp == null) {
-			if (other.minTimestamp != null)
-				return false;
-		} else if (!minTimestamp.equals(other.minTimestamp))
-			return false;
-		return true;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((componentID == null) ? 0 : componentID.hashCode());
+        result = prime
+                * result
+                + ((maxNumberOfResults == null) ? 0 : maxNumberOfResults
+                        .hashCode());
+        result = prime * result
+                + ((maxTimestamp == null) ? 0 : maxTimestamp.hashCode());
+        result = prime * result
+                + ((minTimestamp == null) ? 0 : minTimestamp.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ContributorQuery other = (ContributorQuery) obj;
+        if (componentID == null) {
+            if (other.componentID != null)
+                return false;
+        } else if (!componentID.equals(other.componentID))
+            return false;
+        if (maxNumberOfResults == null) {
+            if (other.maxNumberOfResults != null)
+                return false;
+        } else if (!maxNumberOfResults.equals(other.maxNumberOfResults))
+            return false;
+        if (maxTimestamp == null) {
+            if (other.maxTimestamp != null)
+                return false;
+        } else if (!maxTimestamp.equals(other.maxTimestamp))
+            return false;
+        if (minTimestamp == null) {
+            if (other.minTimestamp != null)
+                return false;
+        } else if (!minTimestamp.equals(other.minTimestamp))
+            return false;
+        return true;
+    }
 }
