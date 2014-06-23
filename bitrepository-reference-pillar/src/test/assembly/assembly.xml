@@ -66,9 +66,9 @@
     </fileSet>
     <fileSet>
       <outputDirectory>bin</outputDirectory>
+        <directory>src/test/bin</directory>
       <directoryMode>0755</directoryMode>
       <fileMode>0744</fileMode>
-      <directory>src/test/resources/bin</directory>
       <filtered>true</filtered>
     </fileSet>
   </fileSets>
