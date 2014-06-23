@@ -270,6 +270,13 @@ public interface IntegrityModel {
     Date getDateForNewestChecksumEntryForPillar(String pillarId, String collectionId);
 
     /**
+     * Sets the timestamp for checksums in a given collection to epoc to indicate that they are 
+     * not collected / should be collected
+     * @param collectionID the ID of the collection to mark the checksums for re-collection
+     */
+    void setChecksumTimestampsToEpocForCollection(String collectionID);
+    
+    /**
      * Retrieves the accumulated size of the files in the given collection
      * @param collectionId The ID of the collection
      * @return The accumulated size of the files in the collection.
