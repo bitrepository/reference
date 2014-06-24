@@ -24,10 +24,11 @@ package org.bitrepository.commandline;
 import org.apache.commons.cli.Option;
 import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class CommandLineTester extends ExtendedTestCase {
+import static org.testng.Assert.*;
+
+public class CommandLineTest extends ExtendedTestCase {
     private static final String SETTINGS_DIR = "SettingsDir";
     private static final String KEY_FILE = "KeyFile";
     private static final String DUMMY_DATA = "DummyData";
@@ -42,7 +43,7 @@ public class CommandLineTester extends ExtendedTestCase {
         
         try {
             clah.parseArguments("-Xunknown...");
-            Assert.fail("Should fail.");
+            fail("Should fail.");
         } catch (Exception e) {
             // expected.
         }
@@ -51,23 +52,14 @@ public class CommandLineTester extends ExtendedTestCase {
         clah = new CommandLineArgumentsHandler();
         clah.createDefaultOptions();
         clah.parseArguments("-s" + SETTINGS_DIR, "-k" + KEY_FILE);
-        Assert.assertEquals(clah.getOptionValue("s"), SETTINGS_DIR);
-        Assert.assertEquals(clah.getOptionValue("k"), KEY_FILE);
+        assertEquals(clah.getOptionValue("s"), SETTINGS_DIR);
+        assertEquals(clah.getOptionValue("k"), KEY_FILE);
         
         clah = new CommandLineArgumentsHandler();
         clah.createDefaultOptions();
         try {
-            clah.parseArguments("-s" + SETTINGS_DIR);
-            Assert.fail("Should throw exception, since missing argument.");
-        } catch(Exception e) {
-            // expected
-        }
-        
-        clah = new CommandLineArgumentsHandler();
-        clah.createDefaultOptions();
-        try {
-            clah.parseArguments("-k" + KEY_FILE);
-            Assert.fail("Should throw exception, since missing argument.");
+            clah.parseArguments();
+            fail("Should throw exception, since missing argument.");
         } catch(Exception e) {
             // expected
         }
@@ -84,9 +76,9 @@ public class CommandLineTester extends ExtendedTestCase {
         addStep("Test the option", "Works");
         clah.parseArguments("-" + argName + DUMMY_DATA);
         
-        Assert.assertTrue(clah.hasOption(argName));
-        Assert.assertEquals(clah.getOptionValue(argName), DUMMY_DATA);
+        assertTrue(clah.hasOption(argName));
+        assertEquals(clah.getOptionValue(argName), DUMMY_DATA);
         
-        Assert.assertNotNull(clah.listArguments());
+        assertNotNull(clah.listArguments());
     }
 }
