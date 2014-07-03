@@ -65,10 +65,10 @@ public class AlarmDatabaseMigrator extends DatabaseMigrator {
         if(versions.get(ALARM_TABLE_VERSION_ENTRY) == 1) {
             log.warn("Migrating AlarmServiceDB from version 1 to 2.");
             migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_1_TO_2);
+            versions = getTableVersions();
         }
-        versions = getTableVersions();
         
-        if(versions.get(ALARM_DATABASE_VERSION_ENTRY) == 2) {
+        if(!versions.containsKey(ALARM_DATABASE_VERSION_ENTRY) || versions.get(ALARM_DATABASE_VERSION_ENTRY) == 2) {
             log.warn("Migrating AlarmServiceDB from version 2 to 3.");
             migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_2_TO_3);
         }
