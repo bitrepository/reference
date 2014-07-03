@@ -68,7 +68,7 @@ public class AlarmDatabaseMigrator extends DatabaseMigrator {
         }
         versions = getTableVersions();
         
-        if(versions.get(ALARM_DATABASE_VERSION_ENTRY) == 2) {
+        if(!versions.containsKey(ALARM_DATABASE_VERSION_ENTRY) || versions.get(ALARM_DATABASE_VERSION_ENTRY) == 2) {
             log.warn("Migrating AuditContributorDB from version 2 to 3.");
             migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_2_TO_3);
         }

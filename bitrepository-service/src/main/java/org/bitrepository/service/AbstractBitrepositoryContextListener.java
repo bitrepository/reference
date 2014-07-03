@@ -75,7 +75,7 @@ public abstract class AbstractBitrepositoryContextListener implements ServletCon
             // This is to ensure the message of what went wrong will go into the service's own logfile
             // rather than just in Tomcat's localhost logfile where it can be hard to find. 
             // Rethrowing the exception makes the service shutdown again. 
-            log.error(e.getMessage());
+            log.error("Caught runtime exception", e);
             throw e;
         }
         log.debug("Servlet context initialized");
