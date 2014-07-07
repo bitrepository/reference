@@ -21,6 +21,8 @@
  */
 package org.bitrepository.pillar.integration.func.getfile;
 
+import static org.testng.Assert.assertEquals;
+
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
@@ -29,8 +31,6 @@ import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
 
 public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
     protected GetFileMessageFactory msgFactory;
@@ -53,14 +53,21 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
-        assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID());
-        assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID());
-        assertEquals(receivedIdentifyResponse.getFrom(), getPillarID());
-        assertEquals(receivedIdentifyResponse.getFileID(), DEFAULT_FILE_ID);
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
+        assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID(),
+                "Received unexpected 'CollectionID' in response.");
+        assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID(),
+                "Received unexpected 'CorrelationID' in response.");
+        assertEquals(receivedIdentifyResponse.getFrom(), getPillarID(),
+                "Received unexpected 'From' in response.");
+        assertEquals(receivedIdentifyResponse.getFileID(), DEFAULT_FILE_ID,
+                "Received unexpected 'FileID' in response.");
+        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID(),
+                "Received unexpected 'PillarID' in response.");
         assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.IDENTIFICATION_POSITIVE);
-        assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
+                ResponseCode.IDENTIFICATION_POSITIVE,
+                "Received unexpected 'ResponseCode' in response.");
+        assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo(),
+                "Received unexpected 'ReplyTo' in response.");
     }
 
     @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST})

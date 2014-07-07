@@ -22,6 +22,8 @@
 
 package org.bitrepository.pillar.integration.func.getstatus;
 
+import static org.testng.Assert.assertEquals;
+
 import java.lang.reflect.Method;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -30,7 +32,6 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusR
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
-import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -54,11 +55,16 @@ public class IdentifyContributorsForGetStatusIT extends PillarFunctionTest {
 
         IdentifyContributorsForGetStatusResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyContributorsForGetStatusResponse.class);
-        Assert.assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID());
-        Assert.assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID());
-        Assert.assertEquals(receivedIdentifyResponse.getFrom(), getPillarID());
-        Assert.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.IDENTIFICATION_POSITIVE);
-        Assert.assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
+        assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID(),
+                "Received unexpected 'CollectionID' in response.");
+        assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID(),
+                "Received unexpected 'CorrelationID' in response.");
+        assertEquals(receivedIdentifyResponse.getFrom(), getPillarID(),
+                "Received unexpected 'PillarID' in response.");
+        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+                ResponseCode.IDENTIFICATION_POSITIVE,
+                "Received unexpected 'ResponseCode' in response.");
+        assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo(),
+                "Received unexpected 'To' in response.");
     }
 }
