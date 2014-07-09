@@ -68,6 +68,7 @@ public class AlarmDatabaseMigrator extends DatabaseMigrator {
         }
         versions = getTableVersions();
         
+        // Needs to validate existence of database entry, since it otherwise can cause NullPointerExceptions.
         if(!versions.containsKey(ALARM_DATABASE_VERSION_ENTRY) || versions.get(ALARM_DATABASE_VERSION_ENTRY) == 2) {
             log.warn("Migrating AuditContributorDB from version 2 to 3.");
             migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_2_TO_3);
