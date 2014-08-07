@@ -21,6 +21,8 @@
  */
 package org.bitrepository.common.utils;
 
+import sun.nio.ch.DevPollSelectorProvider;
+
 /**
  * Util class for handling formatting of datasizes. 
  */
@@ -43,6 +45,8 @@ public class FileSizeUtils {
 	private static final String petaPostfix = " PB";
 	private static final String exaPostfix = " EB";
 
+	private static final String decimalFormat = "%.2f";
+	
 	/*
 	 * Returns the appropiate unit for a given byte size. Ie. MB or GB
 	 * 
@@ -98,7 +102,7 @@ public class FileSizeUtils {
 
 	/*
 	 * Formats bytes to standards. 
-	 * Ie 1024 bytes -> 1K 
+	 * Ie 1024 bytes -> 1KB 
 	 */	
 	public static String toHumanShort(Long size) {
 		if (size == null) {
@@ -120,37 +124,92 @@ public class FileSizeUtils {
 			return formatShortByte(size);
 		}
 	}
+	
+	/**
+	 * Formats bytes to standards
+	 * i.e. 2283 bytes -> 2.23 KB 
+	 */
+	public static String toHumanShortDecimal(Long size) {
+	    if (size == null) {
+            return "0 B";
+        }
+        if (size >= exaSize) {
+            return formatShortDecimalExa(size);
+        } else if (size >= petaSize) {
+            return formatShortDecimalPeta(size);
+        } else if (size >= teraSize) {
+            return formatShortDecimalTera(size);
+        } else if (size >= gigaSize) {
+            return formatShortDecimalGiga(size);
+        } else if (size >= megaSize) {
+            return formatShortDecimalMega(size);
+        } else if (size >= kiloSize) {
+            return formatShortDecimalKilo(size);
+        } else {
+            return formatShortByte(size);
+        }
+	}
 
 	private static String formatShortExa(long size) {
 		int wholeEB = (int) (size / exaSize);
 		return wholeEB + exaPostfix;
 	}
 
+	private static String formatShortDecimalExa(long size) {
+        double EB = ((double) size / exaSize);
+        return String.format(decimalFormat, EB) + exaPostfix;
+    }
+	
 	private static String formatShortPeta(long size) {
 		int wholePB = (int) (size / petaSize);
 		return wholePB + petaPostfix;
 	}
+	
+	private static String formatShortDecimalPeta(long size) {
+        double PB = ((double) size / petaSize);
+        return String.format(decimalFormat, PB) + petaPostfix;
+    }
 
 	private static String formatShortTera(long size) {
 		int wholeTB = (int) (size / teraSize);
 		return wholeTB + teraPostfix;
 	}
+	
+    private static String formatShortDecimalTera(long size) {
+        double TB = ((double) size / teraSize);
+        return String.format(decimalFormat, TB) + teraPostfix;
+    }	
 
 	private static String formatShortGiga(long size) {
 		int wholeGB = (int) (size / gigaSize);
 		return wholeGB + gigaPostfix;
 	}
 
+	private static String formatShortDecimalGiga(long size) {
+        double GB = ((double) size / gigaSize);
+        return String.format(decimalFormat, GB) + gigaPostfix;
+    }
+	
 	private static String formatShortMega(long size) {
 		int wholeMB = (int) (size / megaSize);
 		return wholeMB + megaPostfix;
 	}
 
+	private static String formatShortDecimalMega(long size) {
+        double MB = ((double) size / megaSize);
+        return String.format(decimalFormat, MB) + megaPostfix;
+    }
+	
 	private static String formatShortKilo(long size) {
 		int wholeKB = (int) (size / kiloSize);
 		return wholeKB + kiloPostfix;
 	}
 
+	private static String formatShortDecimalKilo(long size) {
+        double KB = ((double) size / kiloSize);
+        return String.format(decimalFormat, KB) + kiloPostfix;
+    }
+	
 	private static String formatShortByte(long size) {
 		return size + bytePostfix;
 	}
