@@ -33,9 +33,15 @@ import org.bitrepository.settings.repositorysettings.PermissionSet;
  */
 public class SecurityTestConstants {
 
+    
+    /*
+     * Notes about how to update the certificates, signature etc. 
+     * TBD..   
+     */
     private static final String DATA = "Hello world!";
     private static final String SIGNATURE = "MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgMFADCABgkqhkiG9w0BBwEAADGB1zCB1AIBATAuMCExCzAJBgNVBAYTAkRLMRIwEAYDVQQDDAljbGllbnQtMTMCCQDMZo0ssJ6s7zANBglghkgBZQMEAgMFADANBgkqhkiG9w0BAQEFAASBgHhp9p/wAHX8zAEIamAnyIywpI0wBYvR62pkLIrHwpTgsnjFpJRZPYYiF1egsIcy7ZjQrkh4UtMRLZyGbzk/GeuExdSrj66gAG4j8NeS7Ekp1zb16SUH8bKu/H83PqLxYBvIyEks3lMKu5T76Bmwa9x32H2zpzJjSqLRZCNgwQnBAAAAAAAA";
    
+    /* probably expired certificate */
     private static final String POSITIVECERT = "-----BEGIN CERTIFICATE-----\n" +
             "MIIBuTCCASICCQDMZo0ssJ6s7zANBgkqhkiG9w0BAQUFADAhMQswCQYDVQQG\n" +
             "EwJESzESMBAGA1UEAwwJY2xpZW50LTEzMB4XDTExMTAyMTA5MjAwMVoXDTE0\n" +
@@ -49,6 +55,7 @@ public class SecurityTestConstants {
             "me0coE/bZzOuq3gQ15XOkelIxmnrh2xnGotE6thmFFClT6VY8mqEFA==\n" +
             "-----END CERTIFICATE-----\n";
     
+    /* probably expired certificate */
     private static final String NEGATIVECERT =
             "-----BEGIN CERTIFICATE-----\n" +
             "MIICCzCCAXQCCQCHLeckUtZcJDANBgkqhkiG9w0BAQUFADBKMQswCQYDVQQGEwJESzEgMB4GA1UE\n" +
@@ -63,21 +70,34 @@ public class SecurityTestConstants {
             "77h9LapqyJ8S1GSKHr8=\n" +
             "-----END CERTIFICATE-----\n";
     
-    private static final String SIGNINGCERT = 
+    /* currently client100-certkey.pem */
+    private static final String SIGNINGCERT =
             "-----BEGIN CERTIFICATE-----\n" +
-            "MIIBuTCCASICCQDkYepx9PPiZTANBgkqhkiG9w0BAQUFADAhMQswCQYDVQQGEwJE\n" + 
-            "SzESMBAGA1UEAwwJY2xpZW50LTE5MB4XDTExMTAyMTA5MjAwMloXDTE0MDcxNzA5\n" +
-            "MjAwMlowITELMAkGA1UEBhMCREsxEjAQBgNVBAMMCWNsaWVudC0xOTCBnzANBgkq\n" +
-            "hkiG9w0BAQEFAAOBjQAwgYkCgYEAwEKO1j00Pqvjnz1vy1uYqvFfog9v0IRu4izw\n" +
-            "Iu08bJFg5t4fLWOyGHiVipf+gJNjGjnpEk1Hxw3by+g9WmGGkmbEg+7LNIpt6GYE\n" +
-            "U88WCobyZPnych7+WHMFSXgdboNfc7nay3h/KA4ugUE0fGSfJNtGizQEal/R/ZPQ\n" +
-            "aOGVu8cCAwEAATANBgkqhkiG9w0BAQUFAAOBgQCLQlPI6kQnwxk+BgwGaB7Lx880\n" +
-            "DCSOT5baDyyL+VsdoXN7vPuwYlZkMEfP3VcSM47gS2O6UglmuTKtYeWwpwGThyKx\n" +
-            "jjiq5zw/JpS9+0WT+rE9MR2havPycSOf8hYFBSqN3PSFMmIGWM1VaONa7mal9arh\n" +
-            "2LUhJmUulxjtOw4ZLA==\n" +
+            "MIIDkzCCAnugAwIBAgIJALlIlDh730tYMA0GCSqGSIb3DQEBBQUAMGAxCzAJBgNV\n" + 
+            "BAYTAkRLMRAwDgYDVQQIDAdEZW5tYXJrMQ8wDQYDVQQHDAZBYXJodXMxGjAYBgNV\n" +
+            "BAoMEUJpdHJlcG9zaXRvcnkub3JnMRIwEAYDVQQDDAljbGllbnQxMDAwHhcNMTQw\n" +
+            "NzI5MTQwMzEyWhcNMjQwNzI2MTQwMzEyWjBgMQswCQYDVQQGEwJESzEQMA4GA1UE\n" +
+            "CAwHRGVubWFyazEPMA0GA1UEBwwGQWFyaHVzMRowGAYDVQQKDBFCaXRyZXBvc2l0\n" +
+            "b3J5Lm9yZzESMBAGA1UEAwwJY2xpZW50MTAwMIIBIjANBgkqhkiG9w0BAQEFAAOC\n" +
+            "AQ8AMIIBCgKCAQEAr+8QNcRWPhyCmDt23K4WIRPLiwcu5jJHnopBWhQMp63K2ySX\n" +
+            "j4iHXc4Qd9Ug+vGh2Max39I1xPfKJ5WliddAzzwh69R3ICQ2fyESRlaDN5RP9ngC\n" +
+            "927CHbC2qgruVzM5AcsVWdv6NJi75peui0YkD2mYs8zKpgM4Ys5DeI6mfH9OAyvX\n" +
+            "nn0QOZW3gTazBQccxWgBAGbMpyKsfsEh4nP8BDJEO82znK61K4qJ2c1+tlTwg2Nt\n" +
+            "+aWz4mBiLnzZtZ8gJlspDMA0WpVgPlc6MU0kd+cJVCa4gbuWNoOm/ifoYS15RlWt\n" +
+            "vQhnqFK7d9UwBv/fVM8NfdbJaeooyWdobf24IQIDAQABo1AwTjAdBgNVHQ4EFgQU\n" +
+            "vFhO3LofBvKUKayjeLO4JCLxYewwHwYDVR0jBBgwFoAUvFhO3LofBvKUKayjeLO4\n" +
+            "JCLxYewwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQUFAAOCAQEABUjBPYK+6zWq\n" +
+            "IOx/Thhr8ccTHitBLIYlN8mOy5v6odYtJpVo4/EuBNSSrY9w6EZA7fpp8u8X3xhg\n" +
+            "Sp0Znd25SY6h1wWZztlP2RuPj1SI5pP10wEHD8sEUhimMnGbtxsEi6IaWRL9qki4\n" +
+            "uLwKg6OyL9lxduaElS1hUFYMU5LXs9HdRzz8JHmlb6SfWLTvi6TRUZjvEUQ11TGJ\n" +
+            "93qyZ0+1xJ9bKW3xB8yDybd67PkF7UYIyZXhGiMS9vlIeX7h107/4IT+EEe7vEyb\n" +
+            "XfmVbCmlkuHZwJPLwawmOUACfYUDsk0A7dB5cSaMwcxYi4TNZOYII7rrSZ85UCgP\n" +
+            "84Eon1U3cw==\n" +
             "-----END CERTIFICATE-----\n";
+    
+    
 
-    private static final String KEYFILE = "./target/test-classes/client-19.pem";
+    private static final String KEYFILE = "./target/test-classes/client100-certkey.pem";
     
     private static final String ALLOWEDCERTIFICATEUSER = "test-component";
 
