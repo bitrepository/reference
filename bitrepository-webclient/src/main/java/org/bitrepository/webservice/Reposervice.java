@@ -112,7 +112,7 @@ public class Reposervice {
         obj.put("Allowed fileID pattern", protocolSettings.getAllowedFileIDPattern());
         obj.put("Default checksum type", protocolSettings.getDefaultChecksumType());
         obj.put("Require message authentication", protocolSettings.isRequireMessageAuthentication());
-        obj.put("Require operation authutorization", protocolSettings.isRequireOperationAuthorization());
+        obj.put("Require operation authorization", protocolSettings.isRequireOperationAuthorization());
         obj.put("Require checksum for destructive reqests", protocolSettings.isRequireChecksumForDestructiveRequests());
         obj.put("Require checksum for new file", protocolSettings.isRequireChecksumForNewFileRequests());
         return obj; 
