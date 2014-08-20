@@ -24,6 +24,7 @@ package org.bitrepository.protocol.http;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.bitrepository.common.settings.Settings;
@@ -77,5 +78,26 @@ public class HttpFileExchangeTest extends ExtendedTestCase {
         } catch (IOException e) {
             // expected
         }
+    }
+    
+    @Test(groups = { "regressiontest" })
+    public void checkUrlEncodingOfFilenamesTest() throws MalformedURLException {
+        addDescription("Tests that the remote filename is url-encoded to ensure that filetransfers does not fail on that account");
+        Settings mySettings = TestSettingsProvider.reloadSettings("uploadTest");
+        HttpFileExchange fe = new HttpFileExchange(mySettings);
+        String serverPathPrefix = mySettings.getReferenceSettings().getFileExchangeSettings().getPath() + "/";
+        
+        addStep("Check plain filename (a filename that does not see any changes due to urlencoding", "The filename should be unmodified");
+        String plainFilename = "testfile";
+        URL plainFilenameUrl = fe.getURL(plainFilename);
+        
+        Assert.assertEquals(plainFilenameUrl.getFile(), serverPathPrefix + plainFilename);
+        
+        addStep("Check that + is encoded as expected", "Filenames with a + is correctly encoded");
+        String plusFilename = "test+file";
+        URL plusFilenameUrl = fe.getURL(plusFilename);
+        String expectedEncodedPlusFilename = "test%2Bfile";
+        Assert.assertEquals(plusFilenameUrl.getFile(), serverPathPrefix + expectedEncodedPlusFilename);
+        
     }
 }
