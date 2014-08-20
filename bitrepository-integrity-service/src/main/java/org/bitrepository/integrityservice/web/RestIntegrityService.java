@@ -319,7 +319,7 @@ public class RestIntegrityService {
         }
         try {
             obj.put("lastIngest", lastIngestStr);
-            obj.put("collectionSize", FileSizeUtils.toHumanShort(collectionSize));
+            obj.put("collectionSize", FileSizeUtils.toHumanShortDecimal(collectionSize));
             obj.put("numberOfFiles", numberOfFiles);
         } catch (JSONException e) {
             obj = (JSONObject) JSONObject.NULL;

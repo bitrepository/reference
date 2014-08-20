@@ -38,7 +38,7 @@
     </dependencySets>
     <fileSets>
         <fileSet>
-            <outputDirectory>.</outputDirectory>
+            <outputDirectory>bin</outputDirectory>
             <fileMode>0740</fileMode>
             <directoryMode>0740</directoryMode>
             <directory>src/main/resources/scripts</directory>

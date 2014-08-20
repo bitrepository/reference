@@ -35,7 +35,7 @@ import java.util.Collection;
 public class GetChecksumsInfoFormatter implements GetChecksumsOutputFormatter {
 
     private final OutputHandler outputHandler;
-    final static String header = "Count: \tFileID: \tChecksum:";
+    final static String header = "Checksum: \tCount: \tFileID:";
     
     public GetChecksumsInfoFormatter(OutputHandler outputHandler) {
         this.outputHandler = outputHandler;
@@ -57,7 +57,7 @@ public class GetChecksumsInfoFormatter implements GetChecksumsOutputFormatter {
             } else {
                 checksum = result.getChecksum(firstContributor);
             }
-            String line = result.getContributors().size() + " \t" + result.getID() + " \t" + checksum;
+            String line = checksum + " \t" + result.getContributors().size() + " \t" + result.getID();
             outputHandler.resultLine(line);
         }
     }

@@ -130,7 +130,7 @@ public class ReplaceFile extends CommandLineClient {
         if(cmdHandler.hasOption(Constants.FILE_ARG) && cmdHandler.hasOption(Constants.URL_ARG)) {
             throw new IllegalArgumentException("Cannot take both a file (-f) and an URL (-u) as argument.");
         }
-        if(!(cmdHandler.hasOption(Constants.FILE_ARG) && cmdHandler.hasOption(Constants.URL_ARG))) {
+        if(!cmdHandler.hasOption(Constants.FILE_ARG) && !cmdHandler.hasOption(Constants.URL_ARG)) {
             throw new IllegalArgumentException("Requires either the file argument (-f) or the URL argument (-u).");
         }
         if(cmdHandler.hasOption(Constants.URL_ARG) && !cmdHandler.hasOption(Constants.REPLACE_CHECKSUM_ARG)) {

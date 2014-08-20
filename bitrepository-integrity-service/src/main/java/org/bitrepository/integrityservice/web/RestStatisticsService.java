@@ -91,7 +91,7 @@ public class RestStatisticsService {
             obj.setCollectionID(stat.getCollectionID());
             obj.setCollectionName(SettingsUtils.getCollectionName(stat.getCollectionID()));
             obj.setDataSize(stat.getDataSize());
-            obj.setHumanSize(FileSizeUtils.toHumanShort(stat.getDataSize()));
+            obj.setHumanSize(FileSizeUtils.toHumanShortDecimal(stat.getDataSize()));
             data.add(obj);
         }
         return data;    
@@ -121,7 +121,7 @@ public class RestStatisticsService {
             for(PillarStat pillarStat : model.getLatestPillarStats(collection)) {
                 StatisticsPillarSize stat = stats.get(pillarStat.getPillarID());
                 stat.setDataSize(stat.getDataSize() + pillarStat.getDataSize());
-                stat.setHumanSize(FileSizeUtils.toHumanShort(stat.getDataSize()));
+                stat.setHumanSize(FileSizeUtils.toHumanShortDecimal(stat.getDataSize()));
                 stats.put(stat.getPillarID(), stat);
             }
         }

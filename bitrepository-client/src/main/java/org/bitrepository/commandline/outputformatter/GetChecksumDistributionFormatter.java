@@ -41,7 +41,7 @@ import java.util.Map;
 public class GetChecksumDistributionFormatter implements GetChecksumsOutputFormatter {
 
     private final OutputHandler outputHandler;
-    final static String header = "Count: \tFileID: \tChecksum: \t \t \tPillars:";
+    final static String header = "Count: \tChecksum: \tPillars: \tFileID: ";
     
     public GetChecksumDistributionFormatter(OutputHandler outputHandler) {
         this.outputHandler = outputHandler;
@@ -58,8 +58,8 @@ public class GetChecksumDistributionFormatter implements GetChecksumsOutputForma
             if(result.isDirty()) {
                 printInconsistency(result);
             } else {
-                outputHandler.resultLine(result.getContributors().size() + " \t" + result.getID() + " \t" 
-                        + result.getChecksum(result.getContributors().get(0)) + " \tAll");
+                outputHandler.resultLine(result.getContributors().size() + " \t" 
+                        + result.getChecksum(result.getContributors().get(0)) + " \tAll \t" + result.getID());
             }
         }
     }
@@ -70,8 +70,8 @@ public class GetChecksumDistributionFormatter implements GetChecksumsOutputForma
      */
     private void printInconsistency(ChecksumResult result) {
         for(Map.Entry<String, List<String>> checksumsDistribution : retrieveChecksumDistribution(result).entrySet()) {
-            outputHandler.resultLine(checksumsDistribution.getValue().size() + " \t" + result.getID() + " \t" 
-                    + checksumsDistribution.getKey() + " \t" + checksumsDistribution.getValue());                    
+            outputHandler.resultLine(checksumsDistribution.getValue().size()  + " \t" 
+                    + checksumsDistribution.getKey() + " \t" + checksumsDistribution.getValue()+ " \t" + result.getID());                    
         }
     }
     
