@@ -237,7 +237,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <!--
-                      Exclude JCL and LOG4J since all logging should go through SLF4J.
+                                               Exclude JCL and LOG4J since all logging should go through SLF4J.
                       Note that we're excluding log4j-<version>.jar but keeping
                       log4j-over-slf4j-<version>.jar
                     -->
@@ -405,3 +405,4 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 </project>
+
