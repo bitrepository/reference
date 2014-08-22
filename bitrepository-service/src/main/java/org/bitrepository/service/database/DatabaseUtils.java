@@ -433,7 +433,7 @@ public class DatabaseUtils {
                 conn = dbConnector.getConnection();
                 ps = createPreparedStatement(conn, query, args);
                 ps.executeUpdate();
-                conn.commit();
+                
             } finally {
                 if(res != null) {
                     res.close();
