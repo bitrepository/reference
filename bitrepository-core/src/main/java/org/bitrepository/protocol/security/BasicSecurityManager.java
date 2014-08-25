@@ -283,14 +283,16 @@ public class BasicSecurityManager implements SecurityManager {
                 log.debug("Key for PrivateKeyEntry found");
                 privKey = (PrivateKey) pemObj;
             } else if(pemObj instanceof X509CertificateHolder ) {
-                    privCert = new JcaX509CertificateConverter().setProvider("BC")
-                            .getCertificate((X509CertificateHolder) pemObj);
-                } else if(pemObj instanceof PrivateKeyInfo) {
-                    PrivateKeyInfo pki = (PrivateKeyInfo) pemObj;
-                    JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
-                    privKey = converter.getPrivateKey(pki);
+                log.debug("X509CertificateHolder found");
+                privCert = new JcaX509CertificateConverter().setProvider("BC")
+                        .getCertificate((X509CertificateHolder) pemObj);
+            } else if(pemObj instanceof PrivateKeyInfo) {
+                log.debug("PrivateKeyInfo found");
+                PrivateKeyInfo pki = (PrivateKeyInfo) pemObj;
+                JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
+                privKey = converter.getPrivateKey(pki);
             } else {
-                log.debug("Got something, thats not X509Certificate or PrivateKey. Class: " + pemObj.getClass().getSimpleName());
+                log.debug("Got something, that we don't (yet) recognize. Class: " + pemObj.getClass().getSimpleName());
             }
             pemObj = pemParser.readObject();
         }
