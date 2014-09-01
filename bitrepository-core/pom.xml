@@ -15,21 +15,21 @@
       <artifactId>repository-settings-xsd</artifactId>
       <version>${repository.settings.version}</version>
     </dependency>
-    <!-- <dependency>
+    <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>repository-settings-java</artifactId>
       <version>${repository.settings.version}</version>
-    </dependency> -->
+    </dependency> 
     <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>message-xml-xsd</artifactId>
       <version>${message.xml.version}</version>
     </dependency>
-    <!-- <dependency>
+    <dependency>
       <groupId>org.bitrepository</groupId>
       <artifactId>message-xml-java</artifactId>
       <version>${message.xml.version}</version>
-    </dependency> -->
+    </dependency> 
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
@@ -105,30 +105,6 @@
       </resource>
     </resources>
     <plugins>
-     <plugin>
-        <!-- Include remote resources -->
-        <artifactId>maven-remote-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>process-remote-resources</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>process</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}</outputDirectory>
-              <!-- If attached is true (the default) the copy-resources step
-                below will re-include the resources from the last build in the current. -->
-              <attached>false</attached>
-              <resourceBundles>
-                <resourceBundle>org.bitrepository:message-xml-xsd:${message.xml.version}</resourceBundle>
-                <resourceBundle>org.bitrepository:repository-settings-xsd:${repository.settings.version}
-                </resourceBundle>
-              </resourceBundles>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
@@ -145,9 +121,6 @@
                   <directory>src/main/resources/xsd</directory>
                   <filtering>true</filtering>
                 </resource>
-                <resource>
-                  <directory>${project.build.directory}/versioning</directory>
-                </resource>
               </resources>
             </configuration>
           </execution>
@@ -162,7 +135,7 @@
             <goals>
               <goal>generate</goal>
             </goals>
-            <phase>generate-resources</phase>
+            <phase>generate-sources</phase>
             <configuration>
               <schemaDirectory>${project.build.directory}/xsd</schemaDirectory>
               <schemaIncludes>

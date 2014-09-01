@@ -24,18 +24,19 @@
  */
 package org.bitrepository.protocol.message;
 
-import org.apache.activemq.util.ByteArrayInputStream;
-import org.bitrepository.common.JaxbHelper;
-
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
+
+import org.apache.activemq.util.ByteArrayInputStream;
+import org.apache.commons.io.IOUtils;
+import org.bitrepository.common.JaxbHelper;
 
 /** Used to create message objects based on the example xml found in the message-xml module. */
 public class ExampleMessageFactory {
-    public static final String XML_MESSAGE_DIR = "target/";
+    //public static final String XML_MESSAGE_DIR = "target/";
     public static final String SCHEMA_NAME = "BitRepositoryMessages.xsd";
     public static final String PATH_TO_SCHEMA = "xsd/";
-    public static final String PATH_TO_EXAMPLES = XML_MESSAGE_DIR + "examples/messages/";
+    public static final String PATH_TO_EXAMPLES = "examples/messages/";
     public static final String EXAMPLE_FILE_POSTFIX = ".xml";
 
     public static <T> T createMessage(Class<T> messageType) throws Exception {
@@ -55,9 +56,8 @@ public class ExampleMessageFactory {
      */
     private static String loadXMLExample(String messageName) throws Exception {
         String filePath = PATH_TO_EXAMPLES + messageName + EXAMPLE_FILE_POSTFIX;
-        byte[] buffer = new byte[(int) new File(filePath).length()];
-        FileInputStream f = new FileInputStream(filePath);
-        f.read(buffer);
-        return new String(buffer);
+        InputStream f = Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath);
+        return IOUtils.toString(f);
     }
+   
 }

@@ -44,8 +44,8 @@ public class ProtocolVersionLoader {
      */
     public static ProtocolVersionDefinition loadProtocolVersion() {
         if(protocolVersionDefinition == null) {
-            String fileLocation = "ProtocolVersionDefinition.xml";
-            String schemaLocation = "ProtocolVersionDefinition.xsd";
+            String fileLocation = "versioning/ProtocolVersionDefinition.xml";
+            String schemaLocation = "versioning/ProtocolVersionDefinition.xsd";
             JaxbHelper jaxbHelper = new JaxbHelper(null, schemaLocation);
 
             InputStream configStreamLoad = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileLocation);

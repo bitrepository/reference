@@ -25,6 +25,7 @@
 package org.bitrepository.protocol;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Iterator;
 
 import javax.xml.namespace.NamespaceContext;
@@ -66,10 +67,10 @@ public class MessageCreationTest extends ExtendedTestCase {
      * @return List of messages to test
      */
     private String[] getMessageNames() throws Exception {
-        File file = new File(ExampleMessageFactory.XML_MESSAGE_DIR + "xsd/BitRepositoryMessages.xsd");
+        InputStream f = Thread.currentThread().getContextClassLoader().getResourceAsStream("xsd/BitRepositoryMessages.xsd");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
-        Document doc = factory.newDocumentBuilder().parse(file);
+        Document doc = factory.newDocumentBuilder().parse(f);
 
         XPathFactory xPathFactory = XPathFactory.newInstance();
         XPath xpath = xPathFactory.newXPath();
