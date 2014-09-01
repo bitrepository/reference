@@ -12,14 +12,24 @@
   <dependencies>
     <dependency>
       <groupId>org.bitrepository</groupId>
-      <artifactId>bitrepository-repository-settings</artifactId>
+      <artifactId>repository-settings-xsd</artifactId>
       <version>${repository.settings.version}</version>
     </dependency>
+    <!-- <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>repository-settings-java</artifactId>
+      <version>${repository.settings.version}</version>
+    </dependency> -->
     <dependency>
       <groupId>org.bitrepository</groupId>
-      <artifactId>bitrepository-message-xml</artifactId>
+      <artifactId>message-xml-xsd</artifactId>
       <version>${message.xml.version}</version>
     </dependency>
+    <!-- <dependency>
+      <groupId>org.bitrepository</groupId>
+      <artifactId>message-xml-java</artifactId>
+      <version>${message.xml.version}</version>
+    </dependency> -->
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
@@ -95,7 +105,7 @@
       </resource>
     </resources>
     <plugins>
-      <plugin>
+     <plugin>
         <!-- Include remote resources -->
         <artifactId>maven-remote-resources-plugin</artifactId>
         <executions>
@@ -111,8 +121,8 @@
                 below will re-include the resources from the last build in the current. -->
               <attached>false</attached>
               <resourceBundles>
-                <resourceBundle>org.bitrepository:bitrepository-message-xml:${message.xml.version}</resourceBundle>
-                <resourceBundle>org.bitrepository:bitrepository-repository-settings:${repository.settings.version}
+                <resourceBundle>org.bitrepository:message-xml-xsd:${message.xml.version}</resourceBundle>
+                <resourceBundle>org.bitrepository:repository-settings-xsd:${repository.settings.version}
                 </resourceBundle>
               </resourceBundles>
             </configuration>
