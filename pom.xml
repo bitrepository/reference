@@ -16,6 +16,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>bitrepository-reference-settings</module>
         <module>bitrepository-core</module>
         <module>bitrepository-client</module>
         <module>bitrepository-service</module>
