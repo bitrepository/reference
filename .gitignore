@@ -5,6 +5,7 @@ checksumdb
 auditcontributerdb
 */.classpath
 */.project
+.settings/*
 */.settings/*
 */target/*
 */derby.log
