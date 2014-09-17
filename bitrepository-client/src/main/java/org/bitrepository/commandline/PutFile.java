@@ -62,12 +62,7 @@ public class PutFile extends CommandLineClient {
      */
     private PutFile(String ... args) {
         super(args);
-        client = ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager, COMPONENT_ID);
-    }
-
-    @Override
-    protected String getComponentID() {
-        return COMPONENT_ID;
+        client = ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager, getComponentID());
     }
 
     @Override

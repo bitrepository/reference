@@ -51,14 +51,9 @@ public class GetChecksums extends CommandLineClient {
     private GetChecksums(String ... args) {
         super(args);
         GetChecksumsClient client = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, 
-                securityManager, COMPONENT_ID);
+                securityManager, getComponentID());
         GetChecksumsOutputFormatter outputFormatter = retrieveOutputFormatter();
         pagingClient = new PagingGetChecksumsClient(client, getTimeout(), outputFormatter, output); 
-    }
-
-    @Override
-    protected String getComponentID() {
-        return COMPONENT_ID;
     }
 
     @Override

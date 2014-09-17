@@ -59,12 +59,7 @@ public class GetFile extends CommandLineClient {
     private GetFile(String ... args) {
         super(args);
         client = AccessComponentFactory.getInstance().createGetFileClient(settings, securityManager,
-                COMPONENT_ID);
-    }
-
-    @Override
-    protected String getComponentID() {
-        return COMPONENT_ID;
+                getComponentID());
     }
 
     @Override

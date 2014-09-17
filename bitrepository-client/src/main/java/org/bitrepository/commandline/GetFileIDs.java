@@ -49,17 +49,12 @@ public class GetFileIDs extends CommandLineClient {
         super(args);
         output.debug("Instantiation GetFileIDClient.");
         GetFileIDsClient client = AccessComponentFactory.getInstance().createGetFileIDsClient(settings, 
-                securityManager, COMPONENT_ID);
+                securityManager, getComponentID());
         output.debug("Instantiation GetFileID outputFormatter.");
         GetFileIDsOutputFormatter outputFormatter = new GetFileIDsInfoFormatter(output);
 
         output.debug("Instantiation GetFileID paging client.");
         pagingClient = new PagingGetFileIDsClient(client, getTimeout(), outputFormatter, output); 
-    }
-
-    @Override
-    protected String getComponentID() {
-        return COMPONENT_ID;
     }
 
     @Override

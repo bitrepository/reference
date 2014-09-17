@@ -29,6 +29,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.bitrepository.client.CommandLineSettingsProvider;
 import org.bitrepository.commandline.Constants;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
@@ -144,13 +145,11 @@ public class CommandLineArgumentsHandler {
      * @param componentId The id of the component.
      * @return The settings.
      */
-    public Settings loadSettings(String componentId) {
-        ArgumentValidator.checkNotNullOrEmpty(componentId, "String componentId");
+    public Settings loadSettings() {
         ensureThatCmdHasBeenInitialised();
         if(settings == null) {
             SettingsProvider settingsLoader =
-                new SettingsProvider(new XMLFileSettingsLoader(cmd.getOptionValue(Constants.SETTINGS_ARG)), 
-                        componentId);
+                new CommandLineSettingsProvider(new XMLFileSettingsLoader(cmd.getOptionValue(Constants.SETTINGS_ARG)));
             settings = settingsLoader.getSettings();
         }
         SettingsUtils.initialize(settings);

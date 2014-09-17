@@ -55,8 +55,7 @@ import java.util.List;
  * Defines the common functionality for command-line-clients.
  */
 public abstract class CommandLineClient {
-    protected final String COMPONENT_ID =
-            System.getProperty("user.name") + "'s cmdline client";
+    private final String componentID;
     /**
      * Runs a specific command-line-client operation. 
      * Handles also the closing of connections and deals with exceptions.
@@ -101,7 +100,8 @@ public abstract class CommandLineClient {
         if(cmdHandler.hasOption(Constants.VERBOSITY_ARG)) {
             output.setVerbosity(true);
         }
-        settings = cmdHandler.loadSettings(getComponentID());
+        settings = cmdHandler.loadSettings();
+        componentID = settings.getComponentID();
         securityManager = cmdHandler.loadSecurityManager(settings);
         fileIDValidator = new FileIDValidator(settings);
 
@@ -124,7 +124,9 @@ public abstract class CommandLineClient {
      * Defines the componentID of the concrete client. Must be specified by in the subclass.
      * @return The componentID of the concrete client.
      */
-    protected abstract String getComponentID();
+    protected String getComponentID() {
+        return componentID;
+    }
 
     /**
      * Used for determining whether the fileID Argument is required for the concrete operation.

@@ -72,17 +72,10 @@ public class SettingsProvider {
             RepositorySettings repositorySettings = settingsReader.loadSettings(RepositorySettings.class);
             ReferenceSettings referenceSettings = settingsReader.loadSettings(ReferenceSettings.class);
 
-            String receiverDestinationIDFactoryClass = null;
-            if (referenceSettings.getGeneralSettings() != null) {
-                receiverDestinationIDFactoryClass =
-                        referenceSettings.getGeneralSettings().getReceiverDestinationIDFactoryClass();
-            }
-
-            DestinationHelper dh = new DestinationHelper(
-                    getComponentID(referenceSettings),
-                    receiverDestinationIDFactoryClass,
-                    repositorySettings.getProtocolSettings().getCollectionDestination());
-            settings = new Settings(getComponentID(referenceSettings), dh.getReceiverDestinationID(), repositorySettings, referenceSettings);
+            String componentID = getComponentID(referenceSettings);
+            String receiverDestination = getReceiverDestination(referenceSettings, repositorySettings);
+            
+            settings = new Settings(componentID, receiverDestination, repositorySettings, referenceSettings);
         } catch (RuntimeException re) {
             // We need to ensure this is log, as the method caller may not have implemented a fault barrier and this
             // exception is properly fatal.
@@ -97,5 +90,23 @@ public class SettingsProvider {
      */
     protected String getComponentID(ReferenceSettings referenceSettings) {
         return componentID;
+    }
+    
+    /**
+     * Provides extension point for subclass receiver destination generation.
+     * @return generate receiver destination
+     */
+    protected String getReceiverDestination(ReferenceSettings referenceSettings, RepositorySettings repositorySettings) {
+        String receiverDestinationIDFactoryClass = null;
+        if (referenceSettings.getGeneralSettings() != null) {
+            receiverDestinationIDFactoryClass =
+                    referenceSettings.getGeneralSettings().getReceiverDestinationIDFactoryClass();
+        }
+        
+        DestinationHelper dh = new DestinationHelper(
+                getComponentID(referenceSettings),
+                receiverDestinationIDFactoryClass,
+                repositorySettings.getProtocolSettings().getCollectionDestination());
+        return dh.getReceiverDestinationID();
     }
 }

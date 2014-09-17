@@ -52,12 +52,7 @@ public class DeleteFile extends CommandLineClient {
     private DeleteFile(String ... args) {
         super(args);
         client = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, securityManager,
-                COMPONENT_ID);
-    }
-
-    @Override
-    protected String getComponentID() {
-        return COMPONENT_ID;
+                getComponentID());
     }
 
     @Override

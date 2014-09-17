@@ -55,12 +55,7 @@ public class ReplaceFile extends CommandLineClient {
     private ReplaceFile(String ... args) {
         super(args);
         client = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings, securityManager,
-                COMPONENT_ID);
-    }
-
-    @Override
-    protected String getComponentID() {
-        return COMPONENT_ID;
+                getComponentID());
     }
 
     @Override
