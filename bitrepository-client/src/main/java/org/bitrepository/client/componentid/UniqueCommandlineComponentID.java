@@ -22,9 +22,6 @@ public class UniqueCommandlineComponentID implements ComponentIDFactory {
         } catch (UnknownHostException e) {
             throw new RuntimeException("Failed to lookup hostname", e);
         }
-        
-        
-        
     }
 
 }

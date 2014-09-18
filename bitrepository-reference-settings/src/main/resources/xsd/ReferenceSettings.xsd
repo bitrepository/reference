@@ -190,7 +190,7 @@
         <xs:element name="ComponentIDFactoryClass" minOccurs="0" type="xs:string">
           <xs:annotation>
             <xs:documentation>
-              Class for overriding the standard generated ClientID
+              Class for overriding the standard generated ComponentID
             </xs:documentation>
           </xs:annotation> 
         </xs:element>
