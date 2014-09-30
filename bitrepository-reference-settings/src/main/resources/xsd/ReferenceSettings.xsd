@@ -289,6 +289,8 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element ref="VerifyAllData" minOccurs="0">
+        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -349,6 +351,35 @@
             <xs:documentation xml:lang="en">
               Sends an Alarm whenever an operation or identification fails (e.g. missing file,
               file already exist, etc.).
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="VerifyAllData">
+    <xs:simpleType>
+      <xs:annotation>
+        <xs:documentation xml:lang="en">
+          Decision for when the ReferencePillar should verify and ensure that all the files on the
+          backend matches the data in the database. 
+        </xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="SCHEDULAR_ONLY">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              All files are only ensured, whenever the schedular runs.
+              This is default.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="MESSAGES_AND_SCHEDULER">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              All files are ensured either whenever the schedular runs, or when receiving a message
+              for all checksums. 
             </xs:documentation>
           </xs:annotation>
         </xs:enumeration>

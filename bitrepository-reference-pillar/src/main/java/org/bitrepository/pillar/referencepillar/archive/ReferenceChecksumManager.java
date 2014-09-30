@@ -43,6 +43,7 @@ import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
 import org.bitrepository.service.AlarmDispatcher;
+import org.bitrepository.settings.referencesettings.VerifyAllData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -211,7 +212,7 @@ public class ReferenceChecksumManager {
     public ExtractedChecksumResultSet getEntries(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
             Long maxNumberOfResults, String collectionId, ChecksumSpecTYPE spec) {
         if(spec.equals(defaultChecksumSpec)) {
-            ensureStateOfAllData(collectionId);
+            checkWhetherToTraverseAllDataForMessage(collectionId);
             return cache.getEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults, collectionId);
         } else {
             ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
@@ -290,6 +291,19 @@ public class ReferenceChecksumManager {
 
         for(String fileId : archives.getAllFileIds(collectionId)) {
             ensureChecksumState(fileId, collectionId);
+        }
+    }
+    
+    /**
+     * Checks the settings for whether to traverse and ensure all the data, when dealing with a message 
+     * (unlike the scheduler). Default is not to ensure all data (thus if the setting is null).
+     * @param collectionId The ID of the collection to ensure all data of - if the settings allows.
+     */
+    protected void checkWhetherToTraverseAllDataForMessage(String collectionId) {
+        if(settings.getReferenceSettings().getPillarSettings().getVerifyAllData() != null &&
+                settings.getReferenceSettings().getPillarSettings().getVerifyAllData() 
+                == VerifyAllData.MESSAGES_AND_SCHEDULER) {
+            ensureStateOfAllData(collectionId);
         }
     }
 
