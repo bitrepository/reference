@@ -24,7 +24,7 @@ package org.bitrepository.common.utils;
 import org.bitrepository.common.ArgumentValidator;
 
 /**
- * Utility class for handling encoding and decoding of base64 bytes.
+ * Utility class for handling encoding and decoding of base16 bytes.
  */
 public class Base16Utils {
     /**
@@ -33,7 +33,7 @@ public class Base16Utils {
     private Base16Utils() {}
     
     /**
-     * Decodes a Base64 encoded byte set into a human readable string.
+     * Decodes a base16 encoded byte set into a human readable string.
      * @param data The data to decode.
      * @return The decoded data, or null if a null is given.
      */
@@ -54,10 +54,10 @@ public class Base16Utils {
     }
     
     /**
-     * Encoding a hex string to base64.
+     * Encoding a hex string to base16.
      * 
-     * @param hexString The string to encode to base64.
-     * @return The string encoded to base64.
+     * @param hexString The string to encode to base16.
+     * @return The string encoded to base16.
      */
     public static byte[] encodeBase16(String hexString) {
         ArgumentValidator.checkNotNullOrEmpty(hexString, "String hexString");
