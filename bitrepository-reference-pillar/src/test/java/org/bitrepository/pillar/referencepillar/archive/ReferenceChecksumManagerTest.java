@@ -21,7 +21,7 @@
  */
 package org.bitrepository.pillar.referencepillar.archive;
 
-        import java.util.Arrays;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -37,6 +37,7 @@ import org.bitrepository.pillar.cache.ChecksumEntry;
 import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
 import org.bitrepository.service.AlarmDispatcher;
+import org.bitrepository.settings.referencesettings.VerifyAllData;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -44,6 +45,7 @@ import org.testng.annotations.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.testng.AssertJUnit.assertTrue;
+import static org.testng.AssertJUnit.assertFalse;
 
 public class ReferenceChecksumManagerTest extends ExtendedTestCase {
     private static final String DEFAULT_COLlECTION_ID = "defaultTestCollection";
@@ -87,12 +89,46 @@ public class ReferenceChecksumManagerTest extends ExtendedTestCase {
     }
 
     @Test( groups = {"regressiontest"})
-    public void testChecksumRecalculation() {
-        addDescription("Verifies that the checksum is recalculated if the files has changed on disk, eg. the modified" +
-                "time stamp of the files has changed.");
+    public void testChecksumRecalculationWithoutVerifyAllData() {
+        addDescription("Verifies that the checksum is recalculated if the files has changed on disk, eg. the modified"
+                + "time stamp of the files has changed, and the setting VerifyAllData is set to 'SCHEDULER'.");
+        addStep("Set settings for VerifyAllData to SCHEDULER", "");
+        settings.getReferenceSettings().getPillarSettings().setVerifyAllData(VerifyAllData.SCHEDULAR_ONLY);
 
-        addStep("Call the getEntries method and return a checksum timestamp from the cache older than the archived file " +
-                "modification date.", "A call should be made to the recalculateChecksum for the concrete fileID.");
+        addStep("Call the getEntries method and return a checksum timestamp from the cache older than the archived "
+                + "file modification date.", 
+                "A call should be made to the recalculateChecksum for the concrete fileID.");
+        TestReferenceChecksumManager checksumManagerUnderTestManager = new TestReferenceChecksumManager(
+                archiveManager, cache, alarmDispatcher, settings);
+
+        addStep("Change the file", "Should be recalculated and thus have a newer timestamp");
+        String fileId = "testFile";
+        when(archiveManager.getAllFileIds(DEFAULT_COLlECTION_ID)).thenReturn(Arrays.asList(new String[] {fileId}));
+        when(cache.hasFile(fileId, DEFAULT_COLlECTION_ID)).thenReturn(true);
+        ExtractedChecksumResultSet expectedCsResults = new ExtractedChecksumResultSet();
+        ChecksumEntry cs = new ChecksumEntry(fileId, "aa", new Date(System.currentTimeMillis()-10));
+        expectedCsResults.insertChecksumEntry(cs);
+        when(cache.getEntries(null, null, null, DEFAULT_COLlECTION_ID)).thenReturn(expectedCsResults);
+        when(cache.getCalculationDate(fileId, DEFAULT_COLlECTION_ID)).thenReturn(new Date());
+        FileInfo fileInfoMock = mock(FileInfo.class);
+        when(fileInfoMock.getMdate()).thenReturn(new Date().getTime());
+        when(archiveManager.getFileInfo(fileId,DEFAULT_COLlECTION_ID)).thenReturn(fileInfoMock);
+        checksumManagerUnderTestManager.getEntries(
+                null, null, null, DEFAULT_COLlECTION_ID, defaultChecksumType);
+        assertFalse(checksumManagerUnderTestManager.recalculateCheckSumCalled);
+    }
+
+    @Test( groups = {"regressiontest"})
+    public void testChecksumRecalculationWithVerifyAllData() {
+        addDescription("Verifies that the checksum is recalculated if the files has changed on disk, eg. the modified"
+                + "time stamp of the files has changed, and the setting VerifyAllData is set to "
+                + "'MESSAGES_AND_SCHEDULER'.");
+        addStep("Set settings for VerifyAllData to MESSAGES_AND_SCHEDULER", "");
+        settings.getReferenceSettings().getPillarSettings().setVerifyAllData(VerifyAllData.MESSAGES_AND_SCHEDULER);
+
+        addStep("Call the getEntries method and return a checksum timestamp from the cache older than the archived "
+                + "file modification date.", 
+                "A call should be made to the recalculateChecksum for the concrete fileID.");
         TestReferenceChecksumManager checksumManagerUnderTestManager = new TestReferenceChecksumManager(
                 archiveManager, cache, alarmDispatcher, settings);
 

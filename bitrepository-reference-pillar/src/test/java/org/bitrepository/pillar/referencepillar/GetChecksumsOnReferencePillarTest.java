@@ -39,6 +39,7 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.messagefactories.GetChecksumsMessageFactory;
+import org.bitrepository.settings.referencesettings.VerifyAllData;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -223,9 +224,53 @@ public class GetChecksumsOnReferencePillarTest extends ReferencePillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void pillarGetChecksumsOfRemovedFile() throws Exception {
+    public void pillarGetChecksumsOfRemovedFileWithoutVerifyingData() throws Exception {
         addDescription("Tests how the reference pillar acts, when the file it is supposed to retrieve the checksum "
-                + "of is removed between two GetChecksum operations.");
+                + "of is removed between two GetChecksum operations, and the setting VerifyAllData is "
+                + "set to 'SCHEDULER'.");
+        addStep("Set settings for VerifyAllData to SCHEDULER", "");
+        settingsForCUT.getReferenceSettings().getPillarSettings().setVerifyAllData(VerifyAllData.SCHEDULAR_ONLY);
+        
+        addStep("Request the checksum all files", "Message is sent to the pillar.");
+        GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
+                csSpec, FileIDsUtils.getSpecificFileIDs(DEFAULT_FILE_ID), null);
+        messageBus.sendMessage(getChecksumsRequest);
+        
+        addStep("Retrieve the FinalResponse for the GetChecksums request", 
+                "Contains the checksum of the default file.");
+        GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 1);
+        
+        addStep("Remove the file from beneath the pillar", 
+                "The file is not longer in the archive, but still in the database.");
+        DefaultFileInfo dfi = (DefaultFileInfo) archives.getFileInfo(DEFAULT_FILE_ID, collectionID);
+        FileUtils.delete(dfi.getFile());
+        Assert.assertFalse(archives.hasFile(DEFAULT_FILE_ID, collectionID));
+        Assert.assertTrue(csCache.hasFile(DEFAULT_FILE_ID, collectionID));
+        
+        addStep("Request the checksum of the default file again", "Message is sent to the pillar.");
+        getChecksumsRequest = msgFactory.createGetChecksumsRequest(
+                csSpec, FileIDsUtils.getAllFileIDs(), null);
+        messageBus.sendMessage(getChecksumsRequest);
+        
+        addStep("Retrieve the FinalResponse for the GetChecksums request", 
+                "No checksums returned, the file has been removed from the cache, and an alarm was dispatched.");
+        finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 1);
+        Assert.assertTrue(csCache.hasFile(DEFAULT_FILE_ID, collectionID));
+    }
+
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void pillarGetChecksumsOfRemovedFileWithVerifyingData() throws Exception {
+        addDescription("Tests how the reference pillar acts, when the file it is supposed to retrieve the checksum "
+                + "of is removed between two GetChecksum operations, and the setting VerifyAllData is "
+                + "set to 'MESSAGES_AND_SCHEDULER'.");
+        addStep("Set settings for VerifyAllData to MESSAGES_AND_SCHEDULER", "");
+        settingsForCUT.getReferenceSettings().getPillarSettings().setVerifyAllData(
+                VerifyAllData.MESSAGES_AND_SCHEDULER);
+        
         addStep("Request the checksum all files", "Message is sent to the pillar.");
         GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
                 csSpec, FileIDsUtils.getSpecificFileIDs(DEFAULT_FILE_ID), null);
