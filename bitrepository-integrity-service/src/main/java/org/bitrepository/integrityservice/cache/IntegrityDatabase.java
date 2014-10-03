@@ -132,8 +132,13 @@ public class IntegrityDatabase implements IntegrityModel {
     }
     
     @Override
-    public IntegrityIssueIterator findMissingChecksums(String collectionId) {
-        return store.findMissingChecksums(collectionId);
+    public IntegrityIssueIterator findFilesWithMissingChecksum(String collectionId) {
+        return store.findFilesWithMissingChecksum(collectionId);
+    }
+    
+    @Override
+    public void setFilesWithUnknownChecksumToMissing(String collectionId) {
+        store.setFilesWithUnknownChecksumToMissing(collectionId);
     }
 
     @Override

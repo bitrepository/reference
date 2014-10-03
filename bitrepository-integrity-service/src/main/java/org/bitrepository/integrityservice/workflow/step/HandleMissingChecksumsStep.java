@@ -22,7 +22,6 @@
 package org.bitrepository.integrityservice.workflow.step;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.sql.SQLException;
 
 import org.bitrepository.integrityservice.cache.FileInfo;
@@ -63,7 +62,8 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
      */
     @Override
     public synchronized void performStep() throws Exception {
-        IntegrityIssueIterator missingChecksumsIterator = store.findMissingChecksums(reporter.getCollectionID());
+        store.setFilesWithUnknownChecksumToMissing(reporter.getCollectionID());
+        IntegrityIssueIterator missingChecksumsIterator = store.findFilesWithMissingChecksum(reporter.getCollectionID());
         String file;
         try {
             while((file = missingChecksumsIterator.getNextIntegrityIssue()) != null) {

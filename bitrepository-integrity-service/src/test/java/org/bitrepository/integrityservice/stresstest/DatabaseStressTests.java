@@ -133,7 +133,7 @@ public class DatabaseStressTests extends ExtendedTestCase {
         System.err.println("Time to find missing files: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
 
         startTime = System.currentTimeMillis();
-        cache.findMissingChecksums(settings.getRepositorySettings().getCollections().getCollection().get(0).getID());
+        cache.findFilesWithMissingChecksum(settings.getRepositorySettings().getCollections().getCollection().get(0).getID());
         System.err.println("Time to find missing checksums: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
     }
     

@@ -184,8 +184,13 @@ public class IntegrityCache implements IntegrityModel {
     }
 
     @Override
-    public IntegrityIssueIterator findMissingChecksums(String collectionId) {
-        return integrityModel.findMissingChecksums(collectionId);
+    public IntegrityIssueIterator findFilesWithMissingChecksum(String collectionId) {
+        return integrityModel.findFilesWithMissingChecksum(collectionId);
+    }
+    
+    @Override
+    public void setFilesWithUnknownChecksumToMissing(String collectionId) {
+        integrityModel.setFilesWithUnknownChecksumToMissing(collectionId);
     }
 
     @Override

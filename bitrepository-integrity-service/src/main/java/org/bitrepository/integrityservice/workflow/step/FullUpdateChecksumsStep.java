@@ -23,7 +23,6 @@ public class FullUpdateChecksumsStep extends UpdateChecksumsStep {
 
     // Set existing checksums to previously seen.
     protected void initialStepAction() {
-        //store.setChecksumTimestampsToEpocForCollection(collectionId);
         store.setExistingChecksumsToPreviouslySeen(collectionId);
     }
 

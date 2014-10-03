@@ -164,7 +164,13 @@ public interface IntegrityModel {
      * @param collectionId The collection in which to look for missing checksums
      * @return The IntegrityIssueIterator of file ids for the files which exists but are missing their checksum at any pillar.
      */
-    IntegrityIssueIterator findMissingChecksums(String collectionId);
+    IntegrityIssueIterator findFilesWithMissingChecksum(String collectionId);
+    
+    /**
+     * Moves all files with unknown checksum state to missing.
+     * @param collectionId The collection set unknown checksum to missing checksum.
+     */
+    void setFilesWithUnknownChecksumToMissing(String collectionId);
     
     /**
      * Locates the id of all the files which are older than a given date.
