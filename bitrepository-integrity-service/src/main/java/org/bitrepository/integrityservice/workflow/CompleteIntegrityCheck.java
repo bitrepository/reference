@@ -39,7 +39,7 @@ public class CompleteIntegrityCheck extends IntegrityCheckWorkflow {
      */
     public CompleteIntegrityCheck() {}
 
-  
+
     @Override
     public String getDescription() {
         return "Retrieves all fileIDs and checksums from all pillars and checks for all potential integrity " +
@@ -47,7 +47,7 @@ public class CompleteIntegrityCheck extends IntegrityCheckWorkflow {
                 //+ LINEFEED + getStepDescriptions()
                 ;
     }
-    
+
     @Override
     protected UpdateFileIDsStep getUpdateFileIDsStep() {
         return new FullUpdateFileIDsStep(context.getCollector(), context.getStore(),
@@ -55,10 +55,10 @@ public class CompleteIntegrityCheck extends IntegrityCheckWorkflow {
     }
 
 
-	@Override
-	protected UpdateChecksumsStep getUpdateChecksumsStep() {
-		return  new FullUpdateChecksumsStep(
+    @Override
+    protected UpdateChecksumsStep getUpdateChecksumsStep() {
+        return  new FullUpdateChecksumsStep(
                 context.getCollector(), context.getStore(), context.getAlerter(),
                 ChecksumUtils.getDefault(context.getSettings()), context.getSettings(), collectionID);
-	}
+    }
 }

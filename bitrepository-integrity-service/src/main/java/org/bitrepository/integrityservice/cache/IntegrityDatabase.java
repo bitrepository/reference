@@ -207,8 +207,23 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public void setPreviouslySeenToExisting(String collectionId, String pillarId) {
+    public void setPreviouslySeenFilesToExisting(String collectionId, String pillarId) {
         store.setPreviouslySeenFilesToExisting(collectionId, pillarId);
+    }
+
+    @Override
+    public void setExistingChecksumsToPreviouslySeen(String collectionId) {
+        store.setExistingChecksumsToPreviouslySeen(collectionId);
+    }
+
+    @Override
+    public void movePreviouslySeenChecksumsToMissing(String collectionId) {
+        store.movePreviouslySeenChecksumsToMissing(collectionId);
+    }
+
+    @Override
+    public void setPreviouslySeenChecksumsToUnknown(String collectionId, String pillarId) {
+        // TODO Auto-generated method stub
     }
 
     @Override

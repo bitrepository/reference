@@ -32,6 +32,10 @@ public enum ChecksumState {
     VALID,
     /** When the checksum of the given file is incorrect (e.g. lost the vote).*/
     ERROR,
+    /** Temporary state while retrieving checksums.*/
+    PREVIOUSLY_SEEN,
+    /** State when no checksum is found for the file.*/
+    MISSING,
     /** When no vote for the checksum has been performed.*/
     UNKNOWN;
     
@@ -44,6 +48,8 @@ public enum ChecksumState {
         switch (i) {
             case 0: return VALID;
             case 1: return ERROR;
+            case 2: return PREVIOUSLY_SEEN;
+            case 3: return MISSING;
             default: return UNKNOWN;
         }
     }

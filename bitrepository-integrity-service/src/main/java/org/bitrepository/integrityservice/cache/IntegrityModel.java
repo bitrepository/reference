@@ -211,10 +211,22 @@ public interface IntegrityModel {
     void setFilesWithConsistentChecksumToValid(String collectionId);
     
     /**
-     * Set the file state of all files to 'unknown'.
+     * Set the file state of all files in state 'Existing' to 'Previously_Seen'.
      * @param collectionId The ID of the collection to work on.
      */
     void setExistingFilesToPreviouslySeenFileState(String collectionId);
+
+    /**
+     * Set the checksum state of all files which are not missing their checksum to state 'Previously_Seen'.
+     * @param collectionId The ID of the collection to work on.
+     */
+    void setExistingChecksumsToPreviouslySeen(String collectionId);
+
+    /**
+     * Set all files with checksum state 'Previously_Seen' to state 'Missing'.
+     * @param collectionId The ID of the collection to work on.
+     */
+    void movePreviouslySeenChecksumsToMissing(String collectionId);
 
     /**
      * Set the file state of all unknown files to 'missing' if the file-date is newer than the grace period.
@@ -234,7 +246,15 @@ public interface IntegrityModel {
      * @param collectionId The id of the collection.
      * @param pillar The id of the pillar.
      */
-    void setPreviouslySeenToExisting(String collectionId, String pillarId);
+    void setPreviouslySeenFilesToExisting(String collectionId, String pillarId);
+    
+    /**
+     * Set the files with checksum state 'PreviouslySeen' to state 'Unknown'.
+     * This is to be used when a is not responding during a update of the checksums.
+     * @param collectionId The id of the collection.
+     * @param pillar The id of the pillar.
+     */
+    void setPreviouslySeenChecksumsToUnknown(String collectionId, String pillarId);
 
     /**
      * @param fileId The id of the file.

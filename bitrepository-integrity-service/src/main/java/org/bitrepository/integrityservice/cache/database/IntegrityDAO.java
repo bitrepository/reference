@@ -874,6 +874,67 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
     }
     
     /**
+     * Setting all checksum state to 'PREVIOUSLY_SEEN' for those entries, which are not in the 'MISSING' state.
+     * @param collectionId The id of the collection. 
+     */
+    public void setExistingChecksumsToPreviouslySeen(String collectionId) {
+        log.trace("Setting all checksum state to '" + ChecksumState.PREVIOUSLY_SEEN + "' for those entries, "
+                + "which are not in the '" + ChecksumState.MISSING + "' state.");
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_CHECKSUM_STATE + " = ?"
+                              + " WHERE " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " <> ?"
+                              + " AND " + FI_FILE_KEY + " IN (" 
+                                  + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                                  + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
+                                      + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                                  + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
+        
+        DatabaseUtils.executeStatement(dbConnector, updateSql, ChecksumState.PREVIOUSLY_SEEN.ordinal(), 
+                ChecksumState.MISSING.ordinal(), retrieveCollectionKey(collectionId));
+    }
+
+    /**
+     * Setting all checksum state to 'MISSING' for those entries which checksum state 'PREVIOUSLY_SEEN'.
+     * @param collectionId The id of the collection. 
+     */
+    public void movePreviouslySeenChecksumsToMissing(String collectionId) {
+        log.trace("Setting all checksum state to '" + ChecksumState.MISSING + "' for those entries which "
+                + "checksum state '" + ChecksumState.PREVIOUSLY_SEEN + "'.");
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_CHECKSUM_STATE + " = ?"
+                              + " WHERE " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ?"
+                              + " AND " + FI_FILE_KEY + " IN (" 
+                                  + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                                  + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
+                                      + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                                  + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
+        
+        DatabaseUtils.executeStatement(dbConnector, updateSql, ChecksumState.MISSING.ordinal(), 
+                ChecksumState.PREVIOUSLY_SEEN.ordinal(), retrieveCollectionKey(collectionId));
+    }
+
+    /**
+     * Setting all checksum state to 'UNKNOWN' for those entries which checksum state 'PREVIOUSLY_SEEN', 
+     * for a given pillar.
+     * @param collectionId The id of the collection, which the change applies.
+     * @param pillarId The id of the pillar, which  
+     */
+    public void setPreviouslySeenChecksumsToUnknown(String collectionId, String pillarId) {
+        log.trace("Setting all checksum state to '" + ChecksumState.UNKNOWN + "' for those entries which "
+                + "checksum state '" + ChecksumState.PREVIOUSLY_SEEN + "'.");
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_CHECKSUM_STATE + " = ?"
+                              + " WHERE " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ?"
+                              + " AND " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ? "
+                              + " AND " + FI_FILE_KEY + " IN (" 
+                                  + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                                  + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
+                                      + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                                  + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
+        
+        DatabaseUtils.executeStatement(dbConnector, updateSql, ChecksumState.UNKNOWN.ordinal(), 
+                ChecksumState.PREVIOUSLY_SEEN.ordinal(), retrievePillarKey(pillarId), 
+                retrieveCollectionKey(collectionId));
+    }
+    
+    /**
      * Method th acquire the sql for selecting files on a pillar in a collection
      * with a limited number of results.
      */
@@ -1188,7 +1249,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         java.util.Collections.reverse(res);
         return res;   
     }
-
+    
     /**
      * Method to acquire the backend specific SQL, for use in getLatestStatisticsKey method
      * @return The sql for getting the latest collection stats. 
