@@ -599,7 +599,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         for(FileInfo fi : cache.getFileInfosForFile(FILE_ID, TEST_COLLECTIONID)) {
             if(fi.getPillarId().equals(TEST_PILLAR_3)) {
                 Assert.assertEquals(fi.getFileState(), FileState.MISSING);
-                Assert.assertEquals(fi.getChecksumState(), ChecksumState.UNKNOWN);
+                Assert.assertEquals(fi.getChecksumState(), ChecksumState.MISSING);
             } else {
                 Assert.assertEquals(fi.getFileState(), FileState.EXISTING);
                 Assert.assertEquals(fi.getChecksumState(), ChecksumState.ERROR);

@@ -146,6 +146,7 @@ public class DerbyIntegrityDAO extends IntegrityDAO {
                 + " ON " + FILE_INFO_TABLE + "." + FILES_KEY + " = " + FILES_TABLE + "." + FILES_KEY
                 + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ?"
                 + " AND " + FI_FILE_STATE + " = ?"
+                + " AND " + FI_CHECKSUM_STATE + " <> ?"
                 + " AND " + FI_PILLAR_KEY + " = ("
                     + " SELECT " + PILLAR_KEY + " FROM " + PILLAR_TABLE 
                     + " WHERE " + PILLAR_ID + " = ? )"

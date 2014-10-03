@@ -672,7 +672,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         log.trace("Localizing the file ids where the checksums are not consistent.");
         String findUniqueSql = "SELECT " + FI_CHECKSUM + " , " + FI_FILE_KEY + " FROM " + FILE_INFO_TABLE
                 + " WHERE " + FI_FILE_STATE + " <> ?"
-                + " AND inner_fi." + FI_CHECKSUM_STATE + " <> ?"
+                + " AND " + FI_CHECKSUM_STATE + " <> ?"
                 + " AND " + FI_CHECKSUM + " IS NOT NULL"
                 + " GROUP BY " + FI_CHECKSUM + " , " + FI_FILE_KEY;
         String countSql = "SELECT " + FI_FILE_KEY + " , COUNT(*) AS num FROM ( " + findUniqueSql + " ) AS unique1 "
@@ -778,7 +778,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         Long collectionKey = retrieveCollectionKey(collectionId);
         String retrieveSql = getDateForNewestChecksumEntryForPillarSql();
         return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionKey, 
-                FileState.EXISTING.ordinal(), pillarId);
+                FileState.EXISTING.ordinal(), ChecksumState.MISSING.ordinal(), pillarId);
     }
     
     /**
