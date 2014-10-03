@@ -21,9 +21,6 @@
  */
 package org.bitrepository.integrityservice.stresstest;
 
-import org.testng.annotations.Test;
-import org.testng.AssertJUnit;
-
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILE_INFO_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_TABLE;
@@ -39,7 +36,6 @@ import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.cache.IntegrityDatabaseManager;
 import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO;
@@ -50,8 +46,10 @@ import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.jaccept.structure.ExtendedTestCase;
+import org.testng.AssertJUnit;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 public class DatabaseStressTests extends ExtendedTestCase {
     

@@ -770,6 +770,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
     /**
      * Retrieves the date for the latest checksum entry for a given pillar.
      * E.g. the date for the latest checksum which has been positively identified as valid on the given pillar.  
+     * Ignores entries with checksum state either MISSING or PREVIOUSLY_SEEN.
      * @param pillarId The pillar whose latest checksum entry is requested.
      * @param collectionId The ID of the collection to get the newest checksum from
      * @return The requested date.
@@ -778,7 +779,8 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         Long collectionKey = retrieveCollectionKey(collectionId);
         String retrieveSql = getDateForNewestChecksumEntryForPillarSql();
         return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionKey, 
-                FileState.EXISTING.ordinal(), ChecksumState.MISSING.ordinal(), pillarId);
+                FileState.EXISTING.ordinal(), ChecksumState.MISSING.ordinal(), ChecksumState.PREVIOUSLY_SEEN.ordinal(),
+                pillarId);
     }
     
     /**

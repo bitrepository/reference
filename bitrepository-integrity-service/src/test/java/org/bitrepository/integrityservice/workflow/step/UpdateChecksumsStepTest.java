@@ -96,6 +96,8 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         step.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(alerter).operationFailed(anyString(), eq(TEST_COLLECTION));
+        verify(model).setPreviouslySeenChecksumsToUnknown(eq(TEST_COLLECTION), anyString());
+        verify(model).setPreviouslySeenChecksumsToUnknown(eq(TEST_COLLECTION), anyString());
     }
     
     @Test(groups = {"regressiontest"})
@@ -119,6 +121,33 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         step.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
                 any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+        verify(model).addChecksums(resultingChecksums.getChecksumDataItems(), TEST_PILLAR_1, TEST_COLLECTION);
+        verifyNoMoreInteractions(alerter);
+    }
+
+    @Test(groups = {"regressiontest"})
+    public void testCallForChangingChecksumStates() {
+        addDescription("Test the step for updating the checksums delivers the results to the integrity model.");
+        final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
+        doAnswer(new Answer() {
+            public Void answer(InvocationOnMock invocation) {
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(TEST_PILLAR_1)));
+                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION,
+                        resultingChecksums, createChecksumSpecTYPE(), false));
+                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+                return null;
+            }
+        }).when(collector).getChecksums(
+                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
+                any(ContributorQuery[].class), any(EventHandler.class));
+
+        UpdateChecksumsStep step = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        step.performStep();
+        verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
+                any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+        verify(model).setExistingChecksumsToPreviouslySeen(TEST_COLLECTION);
+        verify(model).movePreviouslySeenChecksumsToMissing(TEST_COLLECTION);
         verify(model).addChecksums(resultingChecksums.getChecksumDataItems(), TEST_PILLAR_1, TEST_COLLECTION);
         verifyNoMoreInteractions(alerter);
     }
@@ -205,36 +234,6 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), 
         		anyString(), eq(expectedContributorQueries), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
-    }
-    
-    private class TestEventHandler implements Runnable {
-        final EventHandler eventHandler;
-        int partialsLeft;
-        TestEventHandler(EventHandler eventhandler, int numberOfPartialCompletes) {
-            this.eventHandler = eventhandler;
-            this.partialsLeft = numberOfPartialCompletes; 
-        }
-        @Override
-        public void run() {
-            synchronized(this) {
-                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(TEST_PILLAR_1)));
-                
-                ChecksumsCompletePillarEvent event;
-                if(partialsLeft > 0) {
-                    event = new ChecksumsCompletePillarEvent(
-                        TEST_PILLAR_1, TEST_COLLECTION, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
-                        createChecksumSpecTYPE(), true);
-                } else {
-                    event = new ChecksumsCompletePillarEvent(
-                            TEST_PILLAR_1, TEST_COLLECTION, createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1),
-                            createChecksumSpecTYPE(), false);                    
-                }
-                eventHandler.handleEvent(event);
-                
-                eventHandler.handleEvent(new ContributorEvent(TEST_PILLAR_1, TEST_COLLECTION));
-            }
-            eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
-        }
     }
     
     private ContributorQuery[] makeFullQueries(List<String> pillars, IntegrityModel store) {
