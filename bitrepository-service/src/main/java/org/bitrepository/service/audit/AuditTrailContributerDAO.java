@@ -180,7 +180,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     private AuditTrailDatabaseResults extractEvents(AuditTrailExtractor extractor, Long maxNumberOfResults) {
 
         final int sequencePosition = 1;
-        final int fileGuidPosition = 2;
+        final int filePosition = 2;
         final int actorPosition = 3;
         final int actionDatePosition = 4;
         final int operationPosition = 5;
@@ -189,11 +189,20 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         final int operationIDPosition = 8;
         final int fingerprintPosition = 9;
         
-        String sql = "SELECT " + AUDITTRAIL_SEQUENCE_NUMBER + ", " + AUDITTRAIL_FILE_GUID + " , "
-                + AUDITTRAIL_ACTOR_GUID + " , " + AUDITTRAIL_OPERATION_DATE + " , " + AUDITTRAIL_OPERATION + " , "
-                + AUDITTRAIL_AUDIT + " , " + AUDITTRAIL_INFORMATION + " , " + AUDITTRAIL_OPERATIONID + " , "
-                + AUDITTRAIL_FINGERPRINT + " FROM " + AUDITTRAIL_TABLE + " "
-                + extractor.createRestriction();
+        String sql = "SELECT "  + AUDITTRAIL_SEQUENCE_NUMBER + ", " 
+                                + FILE_FILEID + " , "
+                                + AUDITTRAIL_ACTOR_GUID + " , " 
+                                + AUDITTRAIL_OPERATION_DATE + " , " 
+                                + AUDITTRAIL_OPERATION + " , "
+                                + AUDITTRAIL_AUDIT + " , " 
+                                + AUDITTRAIL_INFORMATION + " , " 
+                                + AUDITTRAIL_OPERATIONID + " , "
+                                + AUDITTRAIL_FINGERPRINT 
+                                + " FROM " 
+                                + AUDITTRAIL_TABLE + " JOIN " + FILE_TABLE 
+                                + " ON " + AUDITTRAIL_TABLE + "." + AUDITTRAIL_FILE_GUID + " = " 
+                                + FILE_TABLE + "." + FILE_GUID
+                                + " " + extractor.createRestriction();
 
         AuditTrailDatabaseResults auditResults = new AuditTrailDatabaseResults();
         try {
@@ -211,7 +220,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                     AuditTrailEvent event = new AuditTrailEvent();
 
                     event.setSequenceNumber(BigInteger.valueOf(results.getLong(sequencePosition)));
-                    event.setFileID(retrieveFileId(results.getLong(fileGuidPosition)));
+                    event.setFileID(results.getString(filePosition));
                     event.setActorOnFile(retrieveActorName(results.getLong(actorPosition)));
                     event.setActionDateTime(CalendarUtils.getFromMillis(results.getTimestamp(actionDatePosition).getTime()));
                     event.setActionOnFile(FileAction.fromValue(results.getString(operationPosition)));
@@ -319,8 +328,10 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
      * Class for encapsulating the request for extracting
      */
     private class AuditTrailExtractor {
+        /** The collection id limitation for the request.*/
+        private String collectionId;
         /** The file id limitation for the request. */
-        private Long fileGuid;
+        private String fileId;
         /** The minimum sequence number limitation for the request.*/
         private Long minSeqNumber;
         /** The maximum sequence number limitation for the request.*/
@@ -340,11 +351,8 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
          */
         public AuditTrailExtractor(String collectionId, String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate,
                                    Date maxDate) {
-            if(fileId == null) {
-                this.fileGuid = null;
-            } else {
-                this.fileGuid = retrieveFileGuid(collectionId, fileId);
-            }
+            this.collectionId = collectionId;
+            this.fileId = fileId;
             this.minSeqNumber = minSeqNumber;
             this.maxSeqNumber = maxSeqNumber;
             this.minDate = minDate;
@@ -356,15 +364,21 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
          */
         public String createRestriction() {
             // Handle the case with no restrictions.
-            if(fileGuid == null && minSeqNumber == null && maxSeqNumber == null && minDate == null && maxDate == null) {
+            if(collectionId == null && fileId == null && minSeqNumber == null && maxSeqNumber == null 
+                    && minDate == null && maxDate == null) {
                 return "";
             }
 
             StringBuilder res = new StringBuilder();
 
-            if(fileGuid != null) {
+            if(collectionId != null) {
                 nextArgument(res);
-                res.append(AUDITTRAIL_FILE_GUID + " = ?");
+                res.append(FILE_COLLECTIONID + " = ?");
+            }
+
+            if(fileId != null) {
+                nextArgument(res);
+                res.append(FILE_FILEID + " = ?");
             }
 
             if(minSeqNumber != null) {
@@ -407,8 +421,11 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
          */
         public Object[] getArguments() {
             List<Object> res = new ArrayList<Object>();
-            if(fileGuid != null) {
-                res.add(fileGuid);
+            if(collectionId != null) {
+                res.add(collectionId);
+            }
+            if(fileId != null) {
+                res.add(fileId);
             }
             if(minSeqNumber != null) {
                 res.add(minSeqNumber);
