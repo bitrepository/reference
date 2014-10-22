@@ -24,10 +24,16 @@
  */
 package org.bitrepository.pillar.messagefactories;
 
+import java.math.BigInteger;
+import java.util.Date;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.CalendarUtils;
 
 public class GetFileIDsMessageFactory extends PillarTestMessageFactory {
     public GetFileIDsMessageFactory(
@@ -50,4 +56,19 @@ public class GetFileIDsMessageFactory extends PillarTestMessageFactory {
         res.setPillarID(pillarID);
         return res;
     }
+    
+    public GetFileIDsRequest createGetFileIDsRequest(FileIDs fileId, String url, Long maxResults, XMLGregorianCalendar maxDate, XMLGregorianCalendar minDate) {
+        GetFileIDsRequest res = createGetFileIDsRequest(fileId, url);
+        if(maxResults != null) { 
+            res.setMaxNumberOfResults(BigInteger.valueOf(maxResults));
+        }
+        if(maxDate != null) {
+            res.setMaxTimestamp(maxDate);
+        }
+        if(minDate != null) {
+            res.setMinTimestamp(minDate);
+        }
+        return res;
+    }
+
 }
