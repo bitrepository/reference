@@ -33,9 +33,11 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.pillar.cache.ChecksumEntry;
-import org.bitrepository.pillar.cache.ChecksumStore;
-import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
+import org.bitrepository.pillar.store.ChecksumStore;
+import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
+import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
+import org.bitrepository.pillar.store.filearchive.CollectionArchiveManager;
+import org.bitrepository.pillar.store.filearchive.ReferenceChecksumManager;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.settings.referencesettings.VerifyAllData;
 import org.jaccept.structure.ExtendedTestCase;
@@ -80,7 +82,7 @@ public class ReferenceChecksumManagerTest extends ExtendedTestCase {
         XMLGregorianCalendar maxTimeStamp = CalendarUtils.getXmlGregorianCalendar(new Date());
         long maxNumberOfResults = 10;
         ExtractedChecksumResultSet expectedCsResults = new ExtractedChecksumResultSet();
-        when(cache.getEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults, DEFAULT_COLlECTION_ID)).thenReturn(
+        when(cache.getChecksumResults(minTimeStamp, maxTimeStamp, maxNumberOfResults, DEFAULT_COLlECTION_ID)).thenReturn(
                 expectedCsResults);
 
         ExtractedChecksumResultSet receivedCsResults = checksumManagerUnderTestManager.getEntries(
@@ -108,7 +110,7 @@ public class ReferenceChecksumManagerTest extends ExtendedTestCase {
         ExtractedChecksumResultSet expectedCsResults = new ExtractedChecksumResultSet();
         ChecksumEntry cs = new ChecksumEntry(fileId, "aa", new Date(System.currentTimeMillis()-10));
         expectedCsResults.insertChecksumEntry(cs);
-        when(cache.getEntries(null, null, null, DEFAULT_COLlECTION_ID)).thenReturn(expectedCsResults);
+        when(cache.getChecksumResults(null, null, null, DEFAULT_COLlECTION_ID)).thenReturn(expectedCsResults);
         when(cache.getCalculationDate(fileId, DEFAULT_COLlECTION_ID)).thenReturn(new Date());
         FileInfo fileInfoMock = mock(FileInfo.class);
         when(fileInfoMock.getMdate()).thenReturn(new Date().getTime());
@@ -139,7 +141,7 @@ public class ReferenceChecksumManagerTest extends ExtendedTestCase {
         ExtractedChecksumResultSet expectedCsResults = new ExtractedChecksumResultSet();
         ChecksumEntry cs = new ChecksumEntry(fileId, "aa", new Date(System.currentTimeMillis()-10));
         expectedCsResults.insertChecksumEntry(cs);
-        when(cache.getEntries(null, null, null, DEFAULT_COLlECTION_ID)).thenReturn(expectedCsResults);
+        when(cache.getChecksumResults(null, null, null, DEFAULT_COLlECTION_ID)).thenReturn(expectedCsResults);
         when(cache.getCalculationDate(fileId, DEFAULT_COLlECTION_ID)).thenReturn(new Date());
         FileInfo fileInfoMock = mock(FileInfo.class);
         when(fileInfoMock.getMdate()).thenReturn(new Date().getTime());

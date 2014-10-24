@@ -32,7 +32,7 @@
  * The {@link org.bitrepository.pillar.PillarMessageListener} provides the basic interface for receiving the different
  * message handled by the reference pillar.
  * <p/>
- * The {@link org.bitrepository.pillar.referencepillar.archive.ReferenceArchive} handles the deposit of the files. 
+ * The {@link org.bitrepository.pillar.store.filearchive.ReferenceArchive} handles the deposit of the files. 
  * When retrieving a file, it is downloaded to the 'tmp' directory, and when the files is completed, then it is moved 
  * to the file directory.
  * If it at some later point is requested to be removed, then it is moved to an 'retain' directory.

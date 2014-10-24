@@ -26,7 +26,7 @@ import java.io.FileWriter;
 import java.util.Arrays;
 
 import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.pillar.referencepillar.archive.ArchiveDirectory;
+import org.bitrepository.pillar.store.filearchive.ArchiveDirectory;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;

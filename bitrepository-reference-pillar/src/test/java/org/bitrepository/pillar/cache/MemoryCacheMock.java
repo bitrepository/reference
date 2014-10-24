@@ -28,8 +28,10 @@ import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
-import org.bitrepository.pillar.cache.database.ExtractedFileIDsResultSet;
+import org.bitrepository.pillar.store.ChecksumStore;
+import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
+import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
+import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
 
 /**
  * Very simple memory based implementation of the ChecksumCache.
@@ -92,7 +94,7 @@ public class MemoryCacheMock implements ChecksumStore {
     }
 
     @Override
-    public ExtractedChecksumResultSet getEntries(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
+    public ExtractedChecksumResultSet getChecksumResults(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
             Long maxNumberOfResults, String collectionId) {
         ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
         for(ChecksumEntry cs : checksumMap.values()) {

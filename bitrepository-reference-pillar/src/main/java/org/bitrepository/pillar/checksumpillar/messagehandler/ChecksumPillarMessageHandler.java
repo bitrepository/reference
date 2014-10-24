@@ -29,9 +29,9 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.common.PillarMessageHandler;
+import org.bitrepository.pillar.messagehandler.PillarMessageHandler;
+import org.bitrepository.pillar.store.ChecksumStore;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload;
 

@@ -23,6 +23,7 @@ package org.bitrepository.pillar.cache;
 
 import java.util.Date;
 
+import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;

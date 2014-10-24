@@ -26,10 +26,10 @@ package org.bitrepository.pillar;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
-import org.bitrepository.pillar.cache.ChecksumDAO;
-import org.bitrepository.pillar.cache.ChecksumDatabaseManager;
 import org.bitrepository.pillar.checksumpillar.ChecksumPillar;
 import org.bitrepository.pillar.referencepillar.ReferencePillar;
+import org.bitrepository.pillar.store.ChecksumDAO;
+import org.bitrepository.pillar.store.checksumdatabase.ChecksumDatabaseManager;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;

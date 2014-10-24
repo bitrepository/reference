@@ -26,6 +26,7 @@ import java.util.Date;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.pillar.store.checksumdatabase.ChecksumDBMigrator;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
@@ -36,11 +37,11 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.bitrepository.pillar.cache.database.DatabaseConstants.CHECKSUM_TABLE;
-import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_CHECKSUM;
-import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_COLLECTION_ID;
-import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_DATE;
-import static org.bitrepository.pillar.cache.database.DatabaseConstants.CS_FILE_ID;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CHECKSUM_TABLE;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_CHECKSUM;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_COLLECTION_ID;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_DATE;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_FILE_ID;
 
 public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
     protected Settings settings;

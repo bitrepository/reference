@@ -28,9 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.common.PillarMediator;
+import org.bitrepository.pillar.messagehandler.PillarMediator;
+import org.bitrepository.pillar.store.ChecksumStore;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.contributor.handler.GetAuditTrailsRequestHandler;
 import org.bitrepository.service.contributor.handler.GetStatusRequestHandler;

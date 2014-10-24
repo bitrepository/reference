@@ -22,8 +22,8 @@
 package org.bitrepository.pillar.integration;
 
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.pillar.common.PillarAuditTrailDatabaseCreator;
 import org.bitrepository.pillar.common.ChecksumDatabaseCreator;
+import org.bitrepository.pillar.common.PillarAuditTrailDatabaseCreator;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 

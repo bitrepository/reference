@@ -25,6 +25,7 @@ import java.math.BigInteger;
 
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.protocol.ProtocolVersionLoader;
 import org.bitrepository.service.contributor.ContributorContext;
 
@@ -51,6 +52,7 @@ public abstract class AbstractRequestHandler<T> implements RequestHandler<T> {
      * @param context The context for this contributor.
      */
     protected AbstractRequestHandler(ContributorContext context) {
+        ArgumentValidator.checkNotNull(context, "ContributorContext context");
         this.context = context;
     }
 

@@ -49,10 +49,10 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.pillar.cache.ChecksumEntry;
-import org.bitrepository.pillar.cache.ChecksumStore;
-import org.bitrepository.pillar.cache.database.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.common.MessageHandlerContext;
+import org.bitrepository.pillar.store.ChecksumStore;
+import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
+import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -169,7 +169,7 @@ public class GetChecksumsRequestHandler extends ChecksumPillarMessageHandler<Get
             if(message.getMaxNumberOfResults() != null) {
                 maxResults = message.getMaxNumberOfResults().longValue();
             }
-            return getCache().getEntries(message.getMinTimestamp(), message.getMaxTimestamp(), maxResults, 
+            return getCache().getChecksumResults(message.getMinTimestamp(), message.getMaxTimestamp(), maxResults, 
                     message.getCollectionID());
         }
     }

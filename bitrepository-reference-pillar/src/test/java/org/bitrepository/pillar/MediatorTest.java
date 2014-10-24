@@ -32,8 +32,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusR
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
-import org.bitrepository.pillar.common.PillarMediator;
 import org.bitrepository.pillar.common.SettingsHelper;
+import org.bitrepository.pillar.messagehandler.PillarMediator;
 import org.bitrepository.protocol.*;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
