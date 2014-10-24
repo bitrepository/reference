@@ -1,5 +1,7 @@
 package org.bitrepository.pillar.store;
 
+import java.util.Date;
+
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
@@ -18,6 +20,9 @@ import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Common interface for both ChecksumPillar and full ReferencePillar. 
+ */
 public abstract class FileInfoStore {
 
     /** The log.*/
@@ -49,50 +54,64 @@ public abstract class FileInfoStore {
         this.defaultChecksumSpec = ChecksumUtils.getDefault(settings);
     }
 
+    /**
+     * Checks whether the pillar has an entry with the file-id for the given collection.
+     * It will potentially verify that the actual file is consistent with the data in the cache.
+     * @param fileID The id of the file.
+     * @param collectionID The id of the collection.
+     * @return Whether the pillar has an entry for the file.
+     */
     public boolean hasFileID(String fileID, String collectionID) {
-        verfiyFileToCacheConsistencyIfRequired(fileID, collectionID);
+        verifyFileToCacheConsistencyIfRequired(fileID, collectionID);
         return cache.hasFile(fileID, collectionID);
     }
 
     /**
-     * Retrieves the checksum for a given file with the given checksum specification.
-     * If it is the default checksum specification, then the cached checksum is returned (though it is recalculated 
-     * if it is too old).
-     * A different checksum specification will cause the default checksum to be recalculated for the file and updated 
-     * in the database, along with the calculation of the new checksum specification which will be returned. 
+     * Retrieves the checksum for a given file at the given collection with the given checksum specification.
+     * If it is the default checksum specification, then the cached checksum is returned (though it might verify the 
+     * consistency between the actual file and the cache before).
+     * If it otherwise requests a non-default checksum specification, then it will be handled differently for the 
+     * Full ReferencePillar and the ChecksumPillar.
+     * The Full ReferencePillar will recalculated the default checksum for the file and updated in the database, along 
+     * with calculating the new checksum specification for the file which will be returned.
      * 
-     * @param fileId The id of the file whose checksum is requested.
-     * @param collectionId The id of the collection of the file.
+     * @param fileID The id of the file whose checksum is requested.
+     * @param collectionID The id of the collection of the file.
      * @param csType The type of checksum.
      * @return The requested type of checksum for the given file.
+     * @throws RequestHandlerException If a non-default checksum is requested for a checksum-pillar.
      */
-    public String getChecksumForFile(String fileId, String collectionId, ChecksumSpecTYPE csType) {
-        verfiyFileToCacheConsistencyIfRequired(fileId, collectionId);
+    public String getChecksumForFile(String fileID, String collectionID, ChecksumSpecTYPE csType) 
+            throws RequestHandlerException {
         if(csType == defaultChecksumSpec) {
-            return cache.getChecksum(fileId, collectionId);            
+            verifyFileToCacheConsistencyIfRequired(fileID, collectionID);
+            return cache.getChecksum(fileID, collectionID);            
         } else {
-            return retrieveNonDefaultChecksum(fileId, collectionId, csType);
+            return getNonDefaultChecksum(fileID, collectionID, csType);
         }
     }
 
     /**
-     * Retrieves the entry for the checksum for a given file with the given checksum specification.
-     * If it is the default checksum specification, then the cached checksum is returned (though it is recalculated 
-     * if it is too old).
-     * A different checksum specification will cause the default checksum to be recalculated for the file and updated 
-     * in the database, along with the calculation of the new checksum specification which will be returned. 
+     * Retrieves the checksum entry for a given file at the given collection with the given checksum specification.
+     * If it is the default checksum specification, then the entry in the case is returned (though it might verify the 
+     * consistency between the actual file and the cache before).
+     * If it otherwise requests a non-default checksum specification, then it will be handled differently for the 
+     * Full ReferencePillar and the ChecksumPillar.
      * 
      * @param fileId The id of the file whose checksum is requested.
      * @param collectionId The id of the collection of the file.
      * @param csType The type of checksum.
      * @return The entry for the requested type of checksum for the given file.
+     * @return {@link RequestHandlerException} If a non-default checksum is requested from a ChecksumPillar.
      */
-    public ChecksumEntry getChecksumEntryForFile(String fileId, String collectionId, ChecksumSpecTYPE csType) {
-        verfiyFileToCacheConsistencyIfRequired(fileId, collectionId);
+    public ChecksumEntry getChecksumEntryForFile(String fileId, String collectionId, ChecksumSpecTYPE csType) 
+            throws RequestHandlerException {
         if(csType == defaultChecksumSpec) {
+            verifyFileToCacheConsistencyIfRequired(fileId, collectionId);
             return cache.getEntry(fileId, collectionId);            
         } else {
-            return retrieveNonDefaultChecksumEntry(fileId, collectionId, csType);
+            String checksum = getNonDefaultChecksum(fileId, collectionId, csType);
+            return new ChecksumEntry(fileId, checksum, new Date());
         }
     }
 
@@ -103,7 +122,8 @@ public abstract class FileInfoStore {
      * @param csType The type of checksum to calculate.
      * @return The entry encapsulated in the ChecksumDataForFileTYPE data format.
      */
-    public ChecksumDataForFileTYPE getChecksumDataForFile(String fileId, String collectionId, ChecksumSpecTYPE csType) {
+    public ChecksumDataForFileTYPE getChecksumDataForFile(String fileId, String collectionId, ChecksumSpecTYPE csType) 
+            throws RequestHandlerException {
         ChecksumEntry entry = getChecksumEntryForFile(fileId, collectionId, csType);
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
@@ -124,7 +144,7 @@ public abstract class FileInfoStore {
      */
     public ExtractedChecksumResultSet getChecksumResultSet(XMLGregorianCalendar minTimestamp, 
             XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID, ChecksumSpecTYPE csSpec) {
-        verfiyFileToCacheConsistencyOfAllDataIfRequired(collectionID);
+        verifyFileToCacheConsistencyOfAllDataIfRequired(collectionID);
         if(csSpec.equals(defaultChecksumSpec)) {
             return cache.getChecksumResults(minTimestamp, maxTimestamp, maxResults, collectionID);
         } else {
@@ -134,11 +154,31 @@ public abstract class FileInfoStore {
             return getNonDefaultChecksumResultSet(maxResults, collectionID, csSpec);
         }
     }
-
+    
+    /**
+     * Extracts the results set for a given checksum entry.
+     * If it has the file, but its calculation date is not within the timestamp restrictions, then an empty 
+     * resultset is returned.
+     * @param fileID The ID of the file.
+     * @param collectionID The id of the collection.
+     * @param minTimestamp Optional restrictions for the minimum timestamp for the checksum calculation date.
+     * @param maxTimestamp Optional restrictions for the maximum timestamp for the checksum calculation date.
+     * @param csSpec The checksum specification.
+     * @return The extracted checksum result set.
+     * @throws RequestHandlerException
+     */
     public ExtractedChecksumResultSet getSingleChecksumResultSet(String fileID, String collectionID, 
-            XMLGregorianCalendar minTimestamp, XMLGregorianCalendar maxTimestamp, ChecksumSpecTYPE csSpec) {
-        verfiyFileToCacheConsistencyIfRequired(fileID, collectionID);
-        return cache.getChecksumResult(minTimestamp, maxTimestamp, fileID, collectionID);
+            XMLGregorianCalendar minTimestamp, XMLGregorianCalendar maxTimestamp, ChecksumSpecTYPE csSpec) 
+                    throws RequestHandlerException {
+        ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
+        ChecksumEntry entry = getChecksumEntryForFile(fileID, collectionID, csSpec);
+        if((minTimestamp == null || CalendarUtils.convertFromXMLGregorianCalendar(minTimestamp).getTime() 
+                <= entry.getCalculationDate().getTime()) && (maxTimestamp == null || 
+                CalendarUtils.convertFromXMLGregorianCalendar(maxTimestamp).getTime() 
+                >= entry.getCalculationDate().getTime())) {
+            res.insertChecksumEntry(entry);
+        }
+        return res;
     }
     
     /**
@@ -153,14 +193,51 @@ public abstract class FileInfoStore {
         cache.deleteEntry(fileID, collectionID);
     }
 
-    public abstract void verfiyFileToCacheConsistencyOfAllDataIfRequired(String collectionID);
-    protected abstract void verfiyFileToCacheConsistencyIfRequired(String fileID, String collectionID);
-    protected abstract String retrieveNonDefaultChecksum(String fileId, String collectionID, ChecksumSpecTYPE csType);
+    public abstract void verifyFileToCacheConsistencyOfAllDataIfRequired(String collectionID);
+    protected abstract void verifyFileToCacheConsistencyIfRequired(String fileID, String collectionID);
+    protected abstract String getNonDefaultChecksum(String fileId, String collectionID, ChecksumSpecTYPE csType) 
+            throws RequestHandlerException;
     protected abstract ChecksumEntry retrieveNonDefaultChecksumEntry(String fileID, String collectionID, 
             ChecksumSpecTYPE csType);
     public abstract FileInfo getFileData(String fileID, String collectionID);
     public abstract ExtractedFileIDsResultSet getFileIDsResultSet(String fileID, XMLGregorianCalendar minTimestamp, 
             XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID);
+    public abstract void putFile(String collectionID, String fileID, String fileAddress, 
+            ChecksumDataForFileTYPE expectedChecksum);
+//    log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
+//    FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
+//
+//    try {
+//        getFileInfoStore().downloadFileForValidation(message.getFileID(), message.getCollectionID(),
+//                fe.downloadFromServer(new URL(message.getFileAddress())));
+//    } catch (IOException e) {
+//        String errMsg = "Could not retrieve the file from '" + message.getFileAddress() + "'";
+//        log.error(errMsg, e);
+//        ResponseInfo ri = new ResponseInfo();
+//        ri.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
+//        ri.setResponseText(errMsg);
+//        throw new InvalidMessageException(ri, message.getCollectionID());
+//    }
+//    
+//    if(message.getChecksumDataForNewFile() != null) {
+//        ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
+//        String calculatedChecksum = getFileInfoStore().getChecksumForTempFile(message.getFileID(), 
+//                message.getCollectionID(), csType.getChecksumSpec());
+//        String expectedChecksum = Base16Utils.decodeBase16(csType.getChecksumValue());
+//        if(!calculatedChecksum.equals(expectedChecksum)) {
+//            ResponseInfo responseInfo = new ResponseInfo();
+//            responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
+//            responseInfo.setResponseText("Wrong checksum! Expected: [" + expectedChecksum 
+//                    + "], but calculated: [" + calculatedChecksum + "]");
+//            throw new IllegalOperationException(responseInfo, message.getCollectionID());
+//        }
+//    } else {
+//        // TODO is such a checksum required?
+//        log.warn("No checksums for validating the retrieved file.");
+//    }
+//    getArchives().moveToArchive(message.getFileID(), message.getCollectionID());
+//    getCsManager().recalculateChecksum(message.getFileID(), message.getCollectionID());
+
 
     public abstract boolean verifyEnoughFreeSpaceLeftForFile(Long fileSize, String collectionID) throws RequestHandlerException;
     //    {
@@ -178,181 +255,10 @@ public abstract class FileInfoStore {
     //    }
     protected abstract ExtractedChecksumResultSet getNonDefaultChecksumResultSet(Long maxResults, String collectionID, 
             ChecksumSpecTYPE csSpec);
-//  ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
-//
-//  long i = 0;
-//  for(String fileId : cache.getAllFileIDs(collectionID)) {
-//      if(maxResults != null && i > maxResults) {
-//          break;
-//      }
-//      i++;
-//
-//      String checksum = getChecksumForFile(fileId, collectionID, csSpec);
-//      ChecksumEntry entry = new ChecksumEntry(fileId, checksum, new Date());
-//      res.insertChecksumEntry(entry);
-//  }
-//    return res
+
 
     
     public abstract void checkWhetherFileExists(String fileID, String collectionID) throws RequestHandlerException;
-//    {
-//        if(!hasFileID(message.getFileID(), message.getCollectionID())) {
-//            log.warn("The file '" + message.getFileID() + "' has been requested, but we do not have that file!");
-//            // Then tell the mediator, that we failed.
-//            ResponseInfo fri = new ResponseInfo();
-//            fri.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-//            fri.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
-//                    + "not have that file!");
-//            throw new InvalidMessageException(fri, message.getCollectionID());
-//        }
-//    }
-
-
-    //
-    //    
-    //    /**
-    //     * Recalculates the checksum of a given file based on the default checksum specification.
-    //     * @param fileId The id of the file to recalculate its default checksum for.
-    //     * @param collectionId The id of the collection of the file.
-    //     */
-    //    public void recalculateChecksum(String fileId, String collectionId) {
-    //        log.info("Recalculating the checksum of file '" + fileId + "'.");
-    //        FileInfo fi = fileArchive.getFileInfo(fileId, collectionId);
-    //        String checksum = ChecksumUtils.generateChecksum(fi, defaultChecksumSpec);
-    //        cache.insertChecksumCalculation(fileId, collectionId, checksum, new Date());
-    //    }
-    //    
-    //    /**
-    //     * Calculates the checksum of a file within the tmpDir.
-    //     * @param fileId The id of the file to calculate the checksum for.
-    //     * @param collectionId The id of the collection of the file.
-    //     * @param csType The specification for the type of checksum to calculate.
-    //     * @return The checksum of the given type for the file with the given id.
-    //     */
-    //    public String getChecksumForTempFile(String fileId, String collectionId, ChecksumSpecTYPE csType) {
-    //        FileInfo fi = fileArchive.getFileInTmpDir(fileId, collectionId);
-    //        return ChecksumUtils.generateChecksum(fi, csType);
-    //    }
-    //    
-    //    /**
-    //     * TODO this should be in the database instead.
-    //     * @param minTimeStamp The minimum date for the timestamp of the extracted file ids entries.
-    //     * @param maxTimeStamp The maximum date for the timestamp of the extracted file ids entries.
-    //     * @param maxNumberOfResults The maximum number of results.
-    //     * @param collectionId The id of the collection.
-    //     * @return The requested file ids.
-    //     */
-    //    public ExtractedFileIDsResultSet getFileIds(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-    //            Long maxNumberOfResults, String collectionId) {
-    //        ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
-    //    
-    //        Long minTime = 0L;
-    //        if(minTimeStamp != null) {
-    //            minTime = CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp).getTime();
-    //        }
-    //        Long maxTime = 0L;
-    //        if(maxTimeStamp != null) {
-    //            maxTime = CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp).getTime();
-    //        }
-    //    
-    //        // Map between lastModifiedDate and fileInfo.
-    //        ConcurrentSkipListMap<Long, FileInfo> sortedDateFileIDMap = new ConcurrentSkipListMap<Long, FileInfo>();
-    //        for(String fileId : fileArchive.getAllFileIds(collectionId)) {
-    //            FileInfo fi = fileArchive.getFileInfo(fileId, collectionId);
-    //            if((minTimeStamp == null || minTime <= fi.getMdate()) &&
-    //                    (maxTimeStamp == null || maxTime >= fi.getMdate())) {
-    //                sortedDateFileIDMap.put(fi.getMdate(), fi);
-    //            }
-    //        }
-    //    
-    //        int i = 0;
-    //        Map.Entry<Long, FileInfo> entry;
-    //        while((entry = sortedDateFileIDMap.pollFirstEntry()) != null && 
-    //                (maxNumberOfResults == null || i < maxNumberOfResults)) {
-    //            res.insertFileInfo(entry.getValue());
-    //            i++;
-    //        }
-    //    
-    //        if(maxNumberOfResults != null && i >= maxNumberOfResults) {
-    //            res.reportMoreEntriesFound();
-    //        }
-    //    
-    //        return res;
-    //    }
-    //    
-    //    /**
-    //     * Validates that all files in the cache is also in the archive, and that all files in the archive
-    //     * is also in the cache.
-    //     * @param collectionId The id of the collection where the data should be ensured.
-    //     */
-    //    public void ensureStateOfAllData(String collectionId) {
-    //        for(String fileId : cache.getAllFileIDs(collectionId)) {
-    //            ensureFileState(fileId, collectionId);
-    //        }
-    //    
-    //        for(String fileId : fileArchive.getAllFileIds(collectionId)) {
-    //            ensureChecksumState(fileId, collectionId);
-    //        }
-    //    }
-    //    
-    //    /**
-    //     * Checks the settings for whether to traverse and ensure all the data, when dealing with a message 
-    //     * (unlike the scheduler). Default is not to ensure all data (thus if the setting is null).
-    //     * @param collectionId The ID of the collection to ensure all data of - if the settings allows.
-    //     */
-    //    protected void checkWhetherToTraverseAllDataForMessage(String collectionId) {
-    //        if(settings.getReferenceSettings().getPillarSettings().getVerifyAllData() != null &&
-    //                settings.getReferenceSettings().getPillarSettings().getVerifyAllData() 
-    //                == VerifyAllData.MESSAGES_AND_SCHEDULER) {
-    //            ensureStateOfAllData(collectionId);
-    //        }
-    //    }
-    //    
-    //    /**
-    //     * Ensures that a file id in the cache is also in the archive.
-    //     * Will send an alarm, if the file is missing, then remove it from index.
-    //     * @param fileId The id of the file.
-    //     * @param collectionId The id of the collection of the file.
-    //     */
-    //    private void ensureFileState(String fileId, String collectionId) {
-    //        if(!fileArchive.hasFile(fileId, collectionId)) {
-    //            log.warn("The file '" + fileId + "' in the ChecksumCache is no longer in the archive. "
-    //                    + "Dispatching an alarm, and removing it from the cache.");
-    //            Alarm alarm = new Alarm();
-    //            alarm.setAlarmCode(AlarmCode.COMPONENT_FAILURE);
-    //            alarm.setAlarmText("The file '" + fileId + "' has been removed from the archive without it being removed "
-    //                    + "from index. Removing it from index.");
-    //            alarm.setFileID(fileId);
-    //            alarmDispatcher.error(alarm);
-    //    
-    //            cache.deleteEntry(fileId, collectionId);
-    //        }
-    //    }
-    //    
-    //    /**
-    //     * Ensures that the cache has an non-obsolete checksum for the given file.
-    //     * Also validates, that the checksum is up to date with the file.
-    //     * @param fileId The id of the file.
-    //     * @param collectionId The id of the collection of the file.
-    //     */
-    //    private void ensureChecksumState(String fileId, String collectionId) {
-    //        Long maxAgeForChecksums = settings.getReferenceSettings().getPillarSettings()
-    //                .getMaxAgeForChecksums().longValue();
-    //        if(!cache.hasFile(fileId, collectionId)) {
-    //            log.debug("No checksum cached for file '" + fileId + "'. Calculating the checksum.");
-    //            recalculateChecksum(fileId, collectionId);
-    //        } else {
-    //            long checksumDate = cache.getCalculationDate(fileId, collectionId).getTime();
-    //            long minDateForChecksum = System.currentTimeMillis() - maxAgeForChecksums;
-    //            if(checksumDate < minDateForChecksum) {
-    //                log.info("The checksum for the file '" + fileId + "' is too old. Recalculating.");                
-    //                recalculateChecksum(fileId, collectionId);
-    //            } else if(checksumDate < fileArchive.getFileInfo(fileId, collectionId).getMdate()) {
-    //                log.info("The last modified date for the file is newer than the latest checksum.");
-    //                recalculateChecksum(fileId, collectionId);
-    //            }
-    //        }
-    //    }
 
     /**
      * Ensuring that the file is not in tmpDir is only relevant, if the file-archives exists.

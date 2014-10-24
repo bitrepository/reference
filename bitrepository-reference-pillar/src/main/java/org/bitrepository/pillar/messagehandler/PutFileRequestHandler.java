@@ -24,7 +24,6 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -32,21 +31,14 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.common.filestore.FileStore;
-import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.FileInfoStore;
-import org.bitrepository.pillar.store.filearchive.ReferenceChecksumManager;
-import org.bitrepository.protocol.*;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.URL;
 
 /**
  * Class for performing the PutFile operation.
@@ -78,7 +70,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
             retrieveFile(message, messageContext);
             sendFinalResponse(message);
         } finally {
-            getArchives().ensureFileNotInTmpDir(message.getFileID(), message.getCollectionID());
+            getFileInfoStore().ensureFileNotInTmpDir(message.getFileID(), message.getCollectionID());
         }
     }
 
@@ -117,7 +109,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
      * @param message The request with the filename to validate.
      */
     private void checkThatTheFileDoesNotAlreadyExist(PutFileRequest message) throws RequestHandlerException {
-        if(getArchives().hasFileID(message.getFileID(), message.getCollectionID())) {
+        if(getFileInfoStore().hasFileID(message.getFileID(), message.getCollectionID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
             irInfo.setResponseText("The file '" + message.getFileID() 
@@ -139,18 +131,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
             return;
         }
         
-        BigInteger fileSize = message.getFileSize();
-        
-        long useableSizeLeft = getArchives().sizeLeftInArchive(message.getCollectionID()) 
-                - getSettings().getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
-        if(useableSizeLeft < fileSize.longValue()) {
-            ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.FAILURE);
-            irInfo.setResponseText("Not enough space left in this pillar. Requires '" 
-                    + fileSize.longValue() + "' but has only '" + useableSizeLeft + "'");
-            
-            throw new InvalidMessageException(irInfo, message.getCollectionID());
-        }
+        getFileInfoStore().verifyEnoughFreeSpaceLeftForFile(message.getFileSize().longValue(), message.getCollectionID());
     }
     
     /**
@@ -175,42 +156,12 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
      * @throws RequestHandlerException If the retrival of the file fails.
      */
     private void retrieveFile(PutFileRequest message, MessageContext messageContext) throws RequestHandlerException {
-        log.debug("Retrieving the data to be stored from URL: '" + message.getFileAddress() + "'");
-        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
-        
-        try {
-            getArchives().downloadFileForValidation(message.getFileID(), message.getCollectionID(),
-                    fe.downloadFromServer(new URL(message.getFileAddress())));
-        } catch (IOException e) {
-            String errMsg = "Could not retrieve the file from '" + message.getFileAddress() + "'";
-            log.error(errMsg, e);
-            ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
-            ri.setResponseText(errMsg);
-            throw new InvalidMessageException(ri, message.getCollectionID());
-        }
-        
-        if(message.getChecksumDataForNewFile() != null) {
-            ChecksumDataForFileTYPE csType = message.getChecksumDataForNewFile();
-            String calculatedChecksum = getCsManager().getChecksumForTempFile(message.getFileID(), 
-                    message.getCollectionID(), csType.getChecksumSpec());
-            String expectedChecksum = Base16Utils.decodeBase16(csType.getChecksumValue());
-            if(!calculatedChecksum.equals(expectedChecksum)) {
-                ResponseInfo responseInfo = new ResponseInfo();
-                responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
-                responseInfo.setResponseText("Wrong checksum! Expected: [" + expectedChecksum 
-                        + "], but calculated: [" + calculatedChecksum + "]");
-                throw new IllegalOperationException(responseInfo, message.getCollectionID());
-            }
-        } else {
-            // TODO is such a checksum required?
-            log.warn("No checksums for validating the retrieved file.");
-        }
+        getFileInfoStore().putFile(message.getCollectionID(), message.getFileID(), message.getFileAddress(), 
+                message.getChecksumDataForNewFile());
+
         getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
                 "Add file to archive.", message.getAuditTrailInformation(), FileAction.PUT_FILE,
                 message.getCorrelationID(), messageContext.getCertificateFingerprint());
-        getArchives().moveToArchive(message.getFileID(), message.getCollectionID());
-        getCsManager().recalculateChecksum(message.getFileID(), message.getCollectionID());
     }
     
     /**
@@ -226,11 +177,10 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         response.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
         
         if(message.getChecksumRequestForNewFile() != null) {
-            response.setChecksumDataForNewFile(getCsManager().getChecksumDataForFile(message.getFileID(),
+            response.setChecksumDataForNewFile(getFileInfoStore().getChecksumDataForFile(message.getFileID(),
                     message.getCollectionID(), message.getChecksumRequestForNewFile()));
         } else {
-            // TODO is such a request required?
-            log.info("No checksum validation requested.");
+            log.debug("No checksum validation requested.");
         }
 
         dispatchResponse(response, message);

@@ -37,7 +37,7 @@ public class RecalculateChecksumJob implements SchedulableJob {
     public void start() {
         log.info("Recalculating old checksums.");
         state = "Running";
-        manager.ensureStateOfAllData(collectionID);
+        manager.verifyFileToCacheConsistencyOfAllData(collectionID);
         state = null;
     }
 

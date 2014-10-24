@@ -33,8 +33,7 @@ import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.FileInfoStore;
-import org.bitrepository.pillar.store.filearchive.ReferenceChecksumManager;
-import org.bitrepository.protocol.*;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -130,7 +129,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         }
         
         // Validate, that we have the requested file.
-        if(!getArchives().hasFileID(message.getFileID(), message.getCollectionID())) {
+        if(!getFileInfoStore().hasFileID(message.getFileID(), message.getCollectionID())) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             responseInfo.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
@@ -139,24 +138,14 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         }
 
         // validate, that we have enough space for the new file.
-        long useableSizeLeft = getArchives().sizeLeftInArchive(message.getCollectionID())
-                - getSettings().getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
-        if(useableSizeLeft < message.getFileSize().longValue()) {
-            String errMsg = "Not enough space left on device. Requires '" + message.getFileSize().longValue()
-                    + "' bytes, but we only have '" + getArchives().sizeLeftInArchive(message.getCollectionID()) 
-                    + "' bytes left.";
-            log.warn(errMsg);
-            ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.FAILURE);
-            responseInfo.setResponseText(errMsg);
-            throw new InvalidMessageException(responseInfo, message.getCollectionID());
-        }
+        getFileInfoStore().verifyEnoughFreeSpaceLeftForFile(message.getFileSize().longValue(), 
+                message.getCollectionID());
 
         // calculate and validate the checksum of the file.
         ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
         if(checksumData != null) {
             ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
-            String calculatedChecksum = getCsManager().getChecksumForFile(message.getFileID(), 
+            String calculatedChecksum = getFileInfoStore().getChecksumForFile(message.getFileID(), 
                     message.getCollectionID(), checksumType);
             String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
             if(!calculatedChecksum.equals(requestedChecksum)) {
