@@ -286,7 +286,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
      */
     private GetFileIDsProgressResponse createProgressResponse(GetFileIDsRequest message) {
         GetFileIDsProgressResponse res = new GetFileIDsProgressResponse();
-        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarID(getPillarModel().getPillarID());
         res.setFileIDs(message.getFileIDs());
         res.setResultAddress(message.getResultAddress());
 
@@ -304,7 +304,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
      */
     private GetFileIDsFinalResponse createFinalResponse(GetFileIDsRequest message) {
         GetFileIDsFinalResponse res = new GetFileIDsFinalResponse();
-        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarID(getPillarModel().getPillarID());
         res.setFileIDs(message.getFileIDs());
 
         return res;

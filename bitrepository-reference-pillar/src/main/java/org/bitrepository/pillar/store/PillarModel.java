@@ -42,6 +42,8 @@ public abstract class PillarModel {
     protected final AlarmDispatcher alarmDispatcher;
     /** The settings.*/
     protected final Settings settings;
+    /** The id of the pillar.*/
+    protected final String pillarID;
 
     /**
      * @param archives The archive with the data.
@@ -56,6 +58,15 @@ public abstract class PillarModel {
         this.alarmDispatcher = alarmDispatcher;
         this.settings = settings;
         this.defaultChecksumSpec = ChecksumUtils.getDefault(settings);
+        this.pillarID = settings.getReferenceSettings().getPillarSettings().getPillarID();
+    }
+    
+    /**
+     * Retrieval of the pillar id.
+     * @return The id of the pillar.
+     */
+    public String getPillarID() {
+        return pillarID;
     }
 
     /**

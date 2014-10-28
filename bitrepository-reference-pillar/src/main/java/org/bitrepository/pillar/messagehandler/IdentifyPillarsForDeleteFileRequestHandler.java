@@ -115,7 +115,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
     private IdentifyPillarsForDeleteFileResponse createFinalResponse(IdentifyPillarsForDeleteFileRequest msg) {
         IdentifyPillarsForDeleteFileResponse res = new IdentifyPillarsForDeleteFileResponse();
         res.setFileID(msg.getFileID());
-        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarID(getPillarModel().getPillarID());
         res.setPillarChecksumSpec(getPillarModel().getChecksumPillarSpec());
 
         return res;

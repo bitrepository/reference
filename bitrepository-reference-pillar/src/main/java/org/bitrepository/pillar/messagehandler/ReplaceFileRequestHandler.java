@@ -269,7 +269,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         ReplaceFileProgressResponse res = new ReplaceFileProgressResponse();
         res.setFileAddress(request.getFileAddress());
         res.setFileID(request.getFileID());
-        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarID(getPillarModel().getPillarID());
         res.setPillarChecksumSpec(getPillarModel().getChecksumPillarSpec());
 
         return res;
@@ -288,7 +288,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         ReplaceFileFinalResponse res = new ReplaceFileFinalResponse();
         res.setFileAddress(request.getFileAddress());
         res.setFileID(request.getFileID());
-        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarID(getPillarModel().getPillarID());
         res.setPillarChecksumSpec(getPillarModel().getChecksumPillarSpec());
 
         return res;

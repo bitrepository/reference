@@ -203,7 +203,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
         res.setFilePart(msg.getFilePart());
-        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarID(getPillarModel().getPillarID());
 
         return res;
     }
@@ -222,7 +222,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
         res.setFileAddress(msg.getFileAddress());
         res.setFileID(msg.getFileID());
         res.setFilePart(msg.getFilePart());
-        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarID(getPillarModel().getPillarID());
 
         return res;
     }

@@ -139,7 +139,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
     private IdentifyPillarsForReplaceFileResponse createFinalResponse(IdentifyPillarsForReplaceFileRequest request) {
         IdentifyPillarsForReplaceFileResponse res = new IdentifyPillarsForReplaceFileResponse();
         res.setFileID(request.getFileID());
-        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarID(getPillarModel().getPillarID());
         res.setPillarChecksumSpec(getPillarModel().getChecksumPillarSpec());
         
         return res;

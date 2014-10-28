@@ -204,7 +204,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
     private DeleteFileProgressResponse createDeleteFileProgressResponse(DeleteFileRequest request) {
         DeleteFileProgressResponse res = new DeleteFileProgressResponse();
         res.setFileID(request.getFileID());
-        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarID(getPillarModel().getPillarID());
         
         return res;
     }
@@ -221,7 +221,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
     private DeleteFileFinalResponse createFinalResponse(DeleteFileRequest msg) {
         DeleteFileFinalResponse res = new DeleteFileFinalResponse();
         res.setFileID(msg.getFileID());
-        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarID(getPillarModel().getPillarID());
 
         return res;
     }

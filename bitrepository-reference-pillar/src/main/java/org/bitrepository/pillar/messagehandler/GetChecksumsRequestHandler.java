@@ -311,7 +311,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         res.setChecksumRequestForExistingFile(message.getChecksumRequestForExistingFile());
         res.setFileIDs(message.getFileIDs());
         res.setResultAddress(message.getResultAddress());
-        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarID(getPillarModel().getPillarID());
 
         return res;
     }
@@ -329,7 +329,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
     private GetChecksumsFinalResponse createFinalResponse(GetChecksumsRequest message) {
         GetChecksumsFinalResponse res = new GetChecksumsFinalResponse();
         res.setChecksumRequestForExistingFile(message.getChecksumRequestForExistingFile());
-        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarID(getPillarModel().getPillarID());
 
         return res;
     }

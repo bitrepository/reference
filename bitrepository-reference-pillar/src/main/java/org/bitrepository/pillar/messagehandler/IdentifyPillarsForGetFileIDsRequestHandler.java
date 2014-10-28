@@ -128,7 +128,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
     private IdentifyPillarsForGetFileIDsResponse createFinalResponse(IdentifyPillarsForGetFileIDsRequest msg) {
         IdentifyPillarsForGetFileIDsResponse res = new IdentifyPillarsForGetFileIDsResponse();
         res.setFileIDs(msg.getFileIDs());
-        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarID(getPillarModel().getPillarID());
         
         return res;
     }

@@ -199,7 +199,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         PutFileProgressResponse res = new PutFileProgressResponse();
         res.setFileAddress(request.getFileAddress());
         res.setFileID(request.getFileID());
-        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarID(getPillarModel().getPillarID());
         res.setPillarChecksumSpec(getPillarModel().getChecksumPillarSpec());
 
         return res;
@@ -220,7 +220,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         PutFileFinalResponse res = new PutFileFinalResponse();
         res.setFileAddress(request.getFileAddress());
         res.setFileID(request.getFileID());
-        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarID(getPillarModel().getPillarID());
         res.setPillarChecksumSpec(getPillarModel().getChecksumPillarSpec());
 
         return res;

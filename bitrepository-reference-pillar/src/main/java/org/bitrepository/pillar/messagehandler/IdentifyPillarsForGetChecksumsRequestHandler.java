@@ -132,7 +132,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         IdentifyPillarsForGetChecksumsResponse res = new IdentifyPillarsForGetChecksumsResponse();
         res.setFileIDs(msg.getFileIDs());
         res.setChecksumRequestForExistingFile(msg.getChecksumRequestForExistingFile());
-        res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarID(getPillarModel().getPillarID());
         res.setPillarChecksumSpec(getPillarModel().getChecksumPillarSpec());
         
         return res;
