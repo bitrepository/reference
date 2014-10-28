@@ -31,9 +31,10 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.FileInfoStore;
+import org.bitrepository.pillar.store.PillarModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.IdentifyContributorException;
+import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 
 /**
@@ -46,7 +47,7 @@ public class IdentifyPillarsForGetFileRequestHandler
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected IdentifyPillarsForGetFileRequestHandler(MessageHandlerContext context, FileInfoStore fileInfoStore) {
+    protected IdentifyPillarsForGetFileRequestHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
         super(context, fileInfoStore);
     }
     
@@ -56,8 +57,9 @@ public class IdentifyPillarsForGetFileRequestHandler
     }
 
     @Override
-    public void processRequest(IdentifyPillarsForGetFileRequest message, MessageContext messageContext) throws RequestHandlerException {
-        validateCollectionID(message);
+    public void processRequest(IdentifyPillarsForGetFileRequest message, MessageContext messageContext) 
+            throws RequestHandlerException {
+        validateMessage(message);
         checkThatFileIsAvailable(message);
         respondSuccesfullIdentification(message);
     }
@@ -68,6 +70,26 @@ public class IdentifyPillarsForGetFileRequestHandler
     }
     
     /**
+     * Method for validating the content of the message.
+     * @param message The message to validate.
+     * @throws RequestHandlerException If it tries to positively identify a ChecksumPillar for a GetFile operation.
+     */
+    public void validateMessage(IdentifyPillarsForGetFileRequest message) throws RequestHandlerException {
+        validateCollectionID(message);
+        validateFileID(message.getFileID());
+        
+        if(getPillarModel().getChecksumPillarSpec() != null) {
+            ResponseInfo ri = new ResponseInfo();
+            ri.setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);
+            ri.setResponseText("The ChecksumPillar '" 
+                    + getSettings().getReferenceSettings().getPillarSettings().getPillarID() + "' cannot handle a "
+                    + "request for the actual file, since it only contains the checksum of the file.");
+            
+            throw new InvalidMessageException(ri, message.getCollectionID());
+        }
+    }
+    
+    /**
      * Validates that the requested file is within the archive. 
      * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
      * @param message The request for the identification for the GetFileRequest operation.
@@ -75,7 +97,7 @@ public class IdentifyPillarsForGetFileRequestHandler
     private void checkThatFileIsAvailable(IdentifyPillarsForGetFileRequest message) 
             throws RequestHandlerException {
         validateFileID(message.getFileID());
-        if(!getFileInfoStore().hasFileID(message.getFileID(), message.getCollectionID())) {
+        if(!getPillarModel().hasFileID(message.getFileID(), message.getCollectionID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText("The file '" + message.getFileID() 

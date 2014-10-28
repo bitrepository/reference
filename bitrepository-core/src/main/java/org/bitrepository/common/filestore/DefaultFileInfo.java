@@ -52,7 +52,7 @@ public class DefaultFileInfo implements FileInfo {
     }
     
     @Override
-    public Long getMdate() {
+    public Long getLastModifiedDate() {
         return file.lastModified();
     }
     

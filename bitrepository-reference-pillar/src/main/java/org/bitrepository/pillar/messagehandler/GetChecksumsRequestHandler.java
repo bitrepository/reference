@@ -47,7 +47,7 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.FileInfoStore;
+import org.bitrepository.pillar.store.PillarModel;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.MessageContext;
@@ -71,7 +71,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected GetChecksumsRequestHandler(MessageHandlerContext context, FileInfoStore fileInfoStore) {
+    protected GetChecksumsRequestHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
         super(context, fileInfoStore);
     }
 
@@ -85,7 +85,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         validateMessage(message);
         sendInitialProgressMessage(message);
         ExtractedChecksumResultSet extractedChecksums = extractChecksumResults(message);
-        ResultingChecksums compiledResults = performPostProcessing(message, extractedChecksums);
+        ResultingChecksums compiledResults = createDeliveryFormatAndPossiblyUploadIfRequested(message, extractedChecksums);
         sendFinalResponse(message, compiledResults, extractedChecksums);
     }
 
@@ -103,7 +103,8 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
     private void validateMessage(GetChecksumsRequest message) throws RequestHandlerException {
         validateCollectionID(message);
         validatePillarId(message.getPillarID());
-        validateChecksumSpecification(message.getChecksumRequestForExistingFile(), message.getCollectionID());
+        getPillarModel().verifyChecksumAlgorithm(message.getChecksumRequestForExistingFile(), 
+                message.getCollectionID());
         validateFileIDs(message);
 
         log.debug(MessageUtils.createMessageIdentifier(message) + "' validated and accepted.");
@@ -128,7 +129,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         validateFileID(fileID);
 
         // if not missing, then all files have been found!
-        if(!getFileInfoStore().hasFileID(fileID, message.getCollectionID())) {
+        if(!getPillarModel().hasFileID(fileID, message.getCollectionID())) {
             // report on the missing files
             String errText = "The following file is missing: '" + fileID + "'";
             log.warn(errText);
@@ -159,12 +160,13 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * Method for calculating the checksum results requested.
      * @param message The message with the checksum request.
      * @return The extracted results for the requested checksum.
+     * @throws RequestHandlerException If the requested checksum specification is not supported.
      */
-    private ExtractedChecksumResultSet extractChecksumResults(GetChecksumsRequest message) {
+    private ExtractedChecksumResultSet extractChecksumResults(GetChecksumsRequest message) throws RequestHandlerException {
         log.debug("Starting to extracting the checksum of the requested files.");
 
         if(message.getFileIDs().isSetFileID()) {
-            return getFileInfoStore().getSingleChecksumResultSet(message.getFileIDs().getFileID(), 
+            return getPillarModel().getSingleChecksumResultSet(message.getFileIDs().getFileID(), 
                     message.getCollectionID(), message.getMinTimestamp(), message.getMaxTimestamp(), 
                     message.getChecksumRequestForExistingFile());
         } else {
@@ -172,21 +174,22 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
             if(message.getMaxNumberOfResults() != null) {
                 maxResults = message.getMaxNumberOfResults().longValue();
             }
-            return getFileInfoStore().getChecksumResultSet(message.getMinTimestamp(), message.getMaxTimestamp(), maxResults,
+            return getPillarModel().getChecksumResultSet(message.getMinTimestamp(), message.getMaxTimestamp(), maxResults,
                     message.getCollectionID(), message.getChecksumRequestForExistingFile());
         }
     }
 
     /**
-     * Performs the needed operations to complete the operation.
-     * If the results should be uploaded to a given URL, then the results are packed into a file and uploaded, 
-     * otherwise the results a put into the result structure.
+     * Creates the ResultingChecksums object for the final response message.
+     * If the results should be uploaded to a given URL, then the requested checksums are packed into a file, 
+     * uploaded, and the URL are put into the ResultingChecksums object. 
+     * Otherwise the requested checksums are put into the result structure.
      * 
      * @param message The message requesting the calculation of the checksums.
-     * @param checksumResultSet The list of requested checksums.
+     * @param checksumResultSet List containing the requested checksums.
      * @return The result structure.
      */
-    private ResultingChecksums performPostProcessing(GetChecksumsRequest message, 
+    private ResultingChecksums createDeliveryFormatAndPossiblyUploadIfRequested(GetChecksumsRequest message, 
             ExtractedChecksumResultSet checksumResultSet) throws RequestHandlerException {
         ResultingChecksums res = new ResultingChecksums();
 

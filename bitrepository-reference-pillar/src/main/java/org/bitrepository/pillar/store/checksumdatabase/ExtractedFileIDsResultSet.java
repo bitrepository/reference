@@ -56,7 +56,7 @@ public class ExtractedFileIDsResultSet {
      */
     public void insertFileInfo(FileInfo fileInfo) {
         insertFileID(fileInfo.getFileID(), BigInteger.valueOf(fileInfo.getSize()), 
-                CalendarUtils.getFromMillis(fileInfo.getMdate()));
+                CalendarUtils.getFromMillis(fileInfo.getLastModifiedDate()));
     }
     
     /**

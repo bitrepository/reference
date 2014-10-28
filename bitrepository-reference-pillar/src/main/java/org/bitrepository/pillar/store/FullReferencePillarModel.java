@@ -1,5 +1,7 @@
 package org.bitrepository.pillar.store;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -15,24 +17,29 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
+import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.service.AlarmDispatcher;
+import org.bitrepository.service.exception.IdentifyContributorException;
+import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.bitrepository.settings.referencesettings.VerifyAllData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FullReferencePillarFileInfoStore extends FileInfoStore {
+public class FullReferencePillarModel extends PillarModel {
 
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    public FullReferencePillarFileInfoStore(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher,
+    public FullReferencePillarModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher,
             Settings settings) {
         super(archives, cache, alarmDispatcher, settings);
     }
@@ -58,46 +65,57 @@ public class FullReferencePillarFileInfoStore extends FileInfoStore {
     }
 
     @Override
-    protected String getNonDefaultChecksum(String fileId,
+    protected String getNonDefaultChecksum(String fileID,
             String collectionID, ChecksumSpecTYPE csType) {
-        // TODO Auto-generated method stub
-        return null;
+        FileInfo fi = fileArchive.getFileInfo(fileID, collectionID);
+        return ChecksumUtils.generateChecksum(fi, csType);
     }
 
     @Override
-    protected ChecksumEntry retrieveNonDefaultChecksumEntry(String fileID,
-            String collectionID, ChecksumSpecTYPE csType) {
-        // TODO Auto-generated method stub
-        return null;
+    public FileInfo getFileInfoForActualFile(String fileID, String collectionID) {
+        return fileArchive.getFileInfo(fileID, collectionID);
     }
 
     @Override
-    public FileInfo getFileData(String fileID, String collectionID) {
-        // TODO Auto-generated method stub
-        return null;
+    public ExtractedFileIDsResultSet getFileIDsResultSet(String fileID, XMLGregorianCalendar minTimestamp,
+            XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID) {
+        Long minTime = null;
+        if(minTimestamp != null) {
+            minTime = CalendarUtils.convertFromXMLGregorianCalendar(minTimestamp).getTime();
+        }
+        Long maxTime = null;
+        if(maxTimestamp != null) {
+            maxTime = CalendarUtils.convertFromXMLGregorianCalendar(maxTimestamp).getTime();
+        }
+        
+        if(fileID == null) {
+            return getFileIds(minTime, maxTime, maxResults, collectionID);
+        }
+        
+        ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
+        FileInfo entry = fileArchive.getFileInfo(fileID, collectionID);
+        if((minTime == null || minTime <= entry.getLastModifiedDate()) &&
+                (maxTime == null || maxTime >= entry.getLastModifiedDate())) {
+            res.insertFileInfo(entry);
+        }
+        return res;
+
     }
 
     @Override
-    public ExtractedFileIDsResultSet getFileIDsResultSet(String fileID,
-            XMLGregorianCalendar minTimestamp,
-            XMLGregorianCalendar maxTimestamp, Long maxResults,
-            String collectionID) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void putFile(String collectionID, String fileID, String fileAddress,
-            ChecksumDataForFileTYPE expectedChecksum) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public boolean verifyEnoughFreeSpaceLeftForFile(Long fileSize,
+    public void verifyEnoughFreeSpaceLeftForFile(Long fileSize,
             String collectionID) throws RequestHandlerException {
-        // TODO Auto-generated method stub
-        return false;
+        long useableSizeLeft = fileArchive.sizeLeftInArchive(collectionID) 
+                - settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
+
+        if(useableSizeLeft < fileSize) {
+            ResponseInfo irInfo = new ResponseInfo();
+            irInfo.setResponseCode(ResponseCode.FAILURE);
+            irInfo.setResponseText("Not enough space left in this pillar. Requires '" 
+                    + fileSize + "' but has only '" + useableSizeLeft + "'");
+
+            throw new IdentifyContributorException(irInfo, collectionID);
+        }
     }
 
     @Override
@@ -120,7 +138,7 @@ public class FullReferencePillarFileInfoStore extends FileInfoStore {
     }
 
     @Override
-    public void checkWhetherFileExists(String fileID, String collectionID)
+    public void verifyFileExists(String fileID, String collectionID)
             throws RequestHandlerException {
         if(!hasFileID(fileID, collectionID)) {
             String errMsg = "The file '" + fileID + "' has been requested, but we do not have that file in collection '" 
@@ -132,6 +150,28 @@ public class FullReferencePillarFileInfoStore extends FileInfoStore {
             fri.setResponseText(errMsg);
             throw new InvalidMessageException(fri, collectionID);
         }
+    }
+
+    @Override
+    public ChecksumSpecTYPE getChecksumPillarSpec() {
+        // Is not a checksum-pillar, thus no required checksum spec.
+        return null;
+    }
+
+    @Override
+    public void putFile(String collectionID, String fileID, String fileAddress,
+            ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
+        downloadFileToTmpAndVerify(fileID, collectionID, fileAddress, expectedChecksum);
+        fileArchive.moveToArchive(fileID, collectionID);
+        verifyFileToCacheConsistency(fileID, collectionID);
+    }
+
+    @Override
+    public void replaceFile(String fileID, String collectionID, String fileAddress,
+            ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
+        downloadFileToTmpAndVerify(fileID, collectionID, fileAddress, expectedChecksum);
+        fileArchive.replaceFile(fileID, collectionID);
+        verifyFileToCacheConsistency(fileID, collectionID);
     }
 
     /**
@@ -153,7 +193,7 @@ public class FullReferencePillarFileInfoStore extends FileInfoStore {
      * @param csType The specification for the type of checksum to calculate.
      * @return The checksum of the given type for the file with the given id.
      */
-    public String getChecksumForTempFile(String fileId, String collectionId, ChecksumSpecTYPE csType) {
+    private String getChecksumForTempFile(String fileId, String collectionId, ChecksumSpecTYPE csType) {
         FileInfo fi = fileArchive.getFileInTmpDir(fileId, collectionId);
         return ChecksumUtils.generateChecksum(fi, csType);
     }
@@ -166,26 +206,16 @@ public class FullReferencePillarFileInfoStore extends FileInfoStore {
      * @param collectionId The id of the collection.
      * @return The requested file ids.
      */
-    public ExtractedFileIDsResultSet getFileIds(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            Long maxNumberOfResults, String collectionId) {
+    private ExtractedFileIDsResultSet getFileIds(Long minTime, Long maxTime, Long maxNumberOfResults, String collectionId) {
         ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
-
-        Long minTime = 0L;
-        if(minTimeStamp != null) {
-            minTime = CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp).getTime();
-        }
-        Long maxTime = 0L;
-        if(maxTimeStamp != null) {
-            maxTime = CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp).getTime();
-        }
 
         // Map between lastModifiedDate and fileInfo.
         ConcurrentSkipListMap<Long, FileInfo> sortedDateFileIDMap = new ConcurrentSkipListMap<Long, FileInfo>();
         for(String fileId : fileArchive.getAllFileIds(collectionId)) {
             FileInfo fi = fileArchive.getFileInfo(fileId, collectionId);
-            if((minTimeStamp == null || minTime <= fi.getMdate()) &&
-                    (maxTimeStamp == null || maxTime >= fi.getMdate())) {
-                sortedDateFileIDMap.put(fi.getMdate(), fi);
+            if((minTime == null || minTime <= fi.getLastModifiedDate()) &&
+                    (maxTime == null || maxTime >= fi.getLastModifiedDate())) {
+                sortedDateFileIDMap.put(fi.getLastModifiedDate(), fi);
             }
         }
 
@@ -258,10 +288,52 @@ public class FullReferencePillarFileInfoStore extends FileInfoStore {
             if(checksumDate < minDateForChecksum) {
                 log.info("The checksum for the file '" + fileId + "' is too old. Recalculating.");                
                 verifyFileToCacheConsistency(fileId, collectionId);
-            } else if(checksumDate < fileArchive.getFileInfo(fileId, collectionId).getMdate()) {
+            } else if(checksumDate < fileArchive.getFileInfo(fileId, collectionId).getLastModifiedDate()) {
                 log.info("The last modified date for the file is newer than the latest checksum.");
                 verifyFileToCacheConsistency(fileId, collectionId);
             }
+        }
+    }
+
+    /**
+     * Downloads the file to temporary area and verifies, that it has the expected checksum.
+     * 
+     * @param fileID The id of the file.
+     * @param collectionID The id of the collection.
+     * @param fileAddress The address to download the file from.
+     * @param expectedChecksum The expected checksum for the downloaded file.
+     * @throws RequestHandlerException If 
+     */
+    private void downloadFileToTmpAndVerify(String fileID, String collectionID, String fileAddress, 
+            ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
+        log.debug("Retrieving the data to be stored from URL: '" + fileAddress + "'");
+        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(settings);
+
+        try {
+            fileArchive.downloadFileForValidation(fileID, collectionID,
+                    fe.downloadFromServer(new URL(fileAddress)));
+        } catch (IOException e) {
+            String errMsg = "Could not retrieve the file from '" + fileAddress + "'";
+            ResponseInfo ri = new ResponseInfo();
+            ri.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
+            ri.setResponseText(errMsg);
+            log.error(errMsg, e);
+            throw new InvalidMessageException(ri, collectionID, e);
+        }
+
+        if(expectedChecksum != null) {
+            String calculatedChecksum = getChecksumForTempFile(fileID, collectionID, expectedChecksum.getChecksumSpec());
+            String expectedChecksumValue = Base16Utils.decodeBase16(expectedChecksum.getChecksumValue());
+            log.debug("Validating newly downloaded file, '" + fileID + "', against expected checksum '" + expectedChecksumValue + "'.");
+            if(!calculatedChecksum.equals(expectedChecksumValue)) {
+                ResponseInfo responseInfo = new ResponseInfo();
+                responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
+                responseInfo.setResponseText("Wrong checksum! Expected: [" + expectedChecksumValue 
+                        + "], but calculated: [" + calculatedChecksum + "]");
+                throw new IllegalOperationException(responseInfo, collectionID);
+            }
+        } else {
+            log.debug("No checksums for validating the newly downloaded file '" + fileID + "'.");
         }
     }
 }

@@ -113,7 +113,7 @@ public class ReferenceChecksumManagerTest extends ExtendedTestCase {
         when(cache.getChecksumResults(null, null, null, DEFAULT_COLlECTION_ID)).thenReturn(expectedCsResults);
         when(cache.getCalculationDate(fileId, DEFAULT_COLlECTION_ID)).thenReturn(new Date());
         FileInfo fileInfoMock = mock(FileInfo.class);
-        when(fileInfoMock.getMdate()).thenReturn(new Date().getTime());
+        when(fileInfoMock.getLastModifiedDate()).thenReturn(new Date().getTime());
         when(archiveManager.getFileInfo(fileId,DEFAULT_COLlECTION_ID)).thenReturn(fileInfoMock);
         checksumManagerUnderTestManager.getEntries(
                 null, null, null, DEFAULT_COLlECTION_ID, defaultChecksumType);
@@ -144,7 +144,7 @@ public class ReferenceChecksumManagerTest extends ExtendedTestCase {
         when(cache.getChecksumResults(null, null, null, DEFAULT_COLlECTION_ID)).thenReturn(expectedCsResults);
         when(cache.getCalculationDate(fileId, DEFAULT_COLlECTION_ID)).thenReturn(new Date());
         FileInfo fileInfoMock = mock(FileInfo.class);
-        when(fileInfoMock.getMdate()).thenReturn(new Date().getTime());
+        when(fileInfoMock.getLastModifiedDate()).thenReturn(new Date().getTime());
         when(archiveManager.getFileInfo(fileId,DEFAULT_COLlECTION_ID)).thenReturn(fileInfoMock);
         checksumManagerUnderTestManager.getEntries(
                 null, null, null, DEFAULT_COLlECTION_ID, defaultChecksumType);

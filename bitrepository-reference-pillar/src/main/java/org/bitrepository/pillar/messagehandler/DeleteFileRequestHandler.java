@@ -35,7 +35,7 @@ import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.FileInfoStore;
+import org.bitrepository.pillar.store.PillarModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
@@ -55,7 +55,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected DeleteFileRequestHandler(MessageHandlerContext context, FileInfoStore fileInfoStore) {
+    protected DeleteFileRequestHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
         super(context, fileInfoStore);
     }
 
@@ -86,9 +86,9 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
     protected void validateMessage(DeleteFileRequest message) throws RequestHandlerException {
         validateCollectionID(message);
         validatePillarId(message.getPillarID());
-        validateChecksumSpecification(message.getChecksumRequestForExistingFile(), message.getCollectionID());
+        getPillarModel().verifyChecksumAlgorithm(message.getChecksumRequestForExistingFile(), message.getCollectionID());
         if(message.getChecksumDataForExistingFile() != null) {
-            validateChecksumSpecification(message.getChecksumDataForExistingFile().getChecksumSpec(), 
+            getPillarModel().verifyChecksumAlgorithm(message.getChecksumDataForExistingFile().getChecksumSpec(), 
                     message.getCollectionID());
         } else if(getSettings().getRepositorySettings().getProtocolSettings()
                 .isRequireChecksumForDestructiveRequests()) {
@@ -102,7 +102,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         validateFileID(message.getFileID());
 
         // Validate, that we have the requested file.
-        if(!getFileInfoStore().hasFileID(message.getFileID(), message.getCollectionID())) {
+        if(!getPillarModel().hasFileID(message.getFileID(), message.getCollectionID())) {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             responseInfo.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
@@ -115,7 +115,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         if(checksumData != null) {
             ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
 
-            String calculatedChecksum = getFileInfoStore().getChecksumForFile(message.getFileID(), 
+            String calculatedChecksum = getPillarModel().getChecksumForFile(message.getFileID(), 
                     message.getCollectionID(), checksumType);
             String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
             if(!calculatedChecksum.equals(requestedChecksum)) {
@@ -156,14 +156,15 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
      * If no checksum is requested to be delivered back a warning is logged.
      * @param message The request for deleting the file. Contains the specs for calculating the checksum.
      * @return The requested checksum, or null if no such checksum is requested.
+     * @throws RequestHandlerException If the requested checksum specification is not supported.
      */
-    protected ChecksumDataForFileTYPE calculatedRequestedChecksum(DeleteFileRequest message) {
+    protected ChecksumDataForFileTYPE calculatedRequestedChecksum(DeleteFileRequest message) throws RequestHandlerException {
         ChecksumSpecTYPE checksumType = message.getChecksumRequestForExistingFile();
         if(checksumType == null) {
             return null;
         }
 
-        return getFileInfoStore().getChecksumDataForFile(message.getFileID(), message.getCollectionID(), checksumType);
+        return getPillarModel().getChecksumDataForFile(message.getFileID(), message.getCollectionID(), checksumType);
     }
     
     /**
@@ -174,7 +175,7 @@ public class DeleteFileRequestHandler extends PillarMessageHandler<DeleteFileReq
         getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
                 "Deleting the file.", message.getAuditTrailInformation(), FileAction.DELETE_FILE,
                 message.getCorrelationID(), messageContext.getCertificateFingerprint());
-        getFileInfoStore().deleteFile(message.getFileID(), message.getCollectionID());
+        getPillarModel().deleteFile(message.getFileID(), message.getCollectionID());
     }
 
     /**

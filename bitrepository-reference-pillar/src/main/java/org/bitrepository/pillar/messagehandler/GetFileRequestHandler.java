@@ -40,7 +40,7 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.FileInfoStore;
+import org.bitrepository.pillar.store.PillarModel;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -61,7 +61,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected GetFileRequestHandler(MessageHandlerContext context, FileInfoStore fileInfoStore) {
+    protected GetFileRequestHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
         super(context, fileInfoStore);
     }
 
@@ -87,30 +87,24 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
      * Method for validating the content of the message.
      * @param message The message requesting the operation, which should be validated.
      * @return Whether it was valid.
+     * @throws RequestHandlerException If the request is invalid, or if the file does not exist, e.g. if it is a 
+     * ChecksumPillar.
      */
     protected void validateMessage(GetFileRequest message) throws RequestHandlerException {
         validateCollectionID(message);
         validatePillarId(message.getPillarID());
         validateFileID(message.getFileID());
-
-        getFileInfoStore().checkWhetherFileExists(message.getFileID(), message.getCollectionID());
-//        if(!getFileInfoStore().hasFile(message.getFileID(), message.getCollectionID())) {
-//            log.warn("The file '" + message.getFileID() + "' has been requested, but we do not have that file!");
-//            // Then tell the mediator, that we failed.
-//            ResponseInfo fri = new ResponseInfo();
-//            fri.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-//            fri.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
-//                    + "not have that file!");
-//            throw new InvalidMessageException(fri, message.getCollectionID());
-//        }
+        
+        getPillarModel().verifyFileExists(message.getFileID(), message.getCollectionID());
     }
     
     /**
      * The method for sending a progress response telling, that the operation is about to be performed.
      * @param message The request for the GetFile operation.
      */
-    protected void sendProgressMessage(GetFileRequest message) throws InvalidMessageException {
-        FileInfo requestedFi = getFileInfoStore().getFileData(message.getFileID(), message.getCollectionID());
+    protected void sendProgressMessage(GetFileRequest message) throws RequestHandlerException {
+        FileInfo requestedFi = getPillarModel().getFileInfoForActualFile(message.getFileID(), 
+                message.getCollectionID());
         GetFileProgressResponse response = createGetFileProgressResponse(message);
 
         response.setFileSize(BigInteger.valueOf(requestedFi.getSize()));
@@ -126,8 +120,10 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
      * @param message The message requesting the GetFile operation.
      * @throws InvalidMessageException If the upload of the file fails.
      */
-    protected void uploadToClient(GetFileRequest message, MessageContext messageContext) throws InvalidMessageException {
-        FileInfo requestedFile = getFileInfoStore().getFileData(message.getFileID(), message.getCollectionID());
+    protected void uploadToClient(GetFileRequest message, MessageContext messageContext) 
+            throws RequestHandlerException {
+        FileInfo requestedFile = getPillarModel().getFileInfoForActualFile(message.getFileID(), 
+                message.getCollectionID());
 
         try {
             InputStream is;

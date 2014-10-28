@@ -47,7 +47,7 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.FileInfoStore;
+import org.bitrepository.pillar.store.PillarModel;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.MessageContext;
@@ -70,7 +70,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected GetFileIDsRequestHandler(MessageHandlerContext context, FileInfoStore fileInfoStore) {
+    protected GetFileIDsRequestHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
         super(context, fileInfoStore);
     }
     
@@ -84,7 +84,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         validateMessage(message);
         sendInitialProgressMessage(message);
         ExtractedFileIDsResultSet extractedFileIDs = retrieveFileIDsData(message);
-        ResultingFileIDs results = performGetFileIDsOperation(message, extractedFileIDs);
+        ResultingFileIDs results = createDeliveryFormatAndPossiblyUploadIfRequested(message, extractedFileIDs);
         sendFinalResponse(message, results, extractedFileIDs);
     }
 
@@ -120,7 +120,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
             return ;
         }
         
-        if(!getFileInfoStore().hasFileID(fileids.getFileID(), message.getCollectionID())) {
+        if(!getPillarModel().hasFileID(fileids.getFileID(), message.getCollectionID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText("Missing the file: '" + fileids.getFileID() + "'");
@@ -154,19 +154,22 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         if(message.getMaxNumberOfResults() != null) {
             maxResults = message.getMaxNumberOfResults().longValue();
         }
-        return getFileInfoStore().getFileIDsResultSet(message.getFileIDs().getFileID(), message.getMinTimestamp(), message.getMaxTimestamp(), maxResults,
+        return getPillarModel().getFileIDsResultSet(message.getFileIDs().getFileID(), message.getMinTimestamp(), message.getMaxTimestamp(), maxResults,
                 message.getCollectionID());
     }
     
     /**
-     * Finds the requested FileIDs and either uploads them or puts them into the final response depending on 
-     * the request. 
+     * Creates the ResultingFileIDs object for the final response message.
+     * If the results should be uploaded to a given URL, then the requested FileIDs are packed into a file, 
+     * uploaded, and the URL are put into the ResultingFileIDs object. 
+     * Otherwise the requested FileIDs are put into the result structure.
+     *  
      * @param message The message requesting which fileids to be found.
      * @param extractedFileIDs The extracted file ids.
      * @return The ResultingFileIDs with either the list of fileids or the final address for where the 
      * list of fileids is uploaded.
      */
-    private ResultingFileIDs performGetFileIDsOperation(GetFileIDsRequest message, 
+    private ResultingFileIDs createDeliveryFormatAndPossiblyUploadIfRequested(GetFileIDsRequest message, 
             ExtractedFileIDsResultSet extractedFileIDs) throws RequestHandlerException {
         ResultingFileIDs res = new ResultingFileIDs();
         

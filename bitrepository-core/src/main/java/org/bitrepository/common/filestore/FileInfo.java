@@ -42,7 +42,7 @@ public interface FileInfo {
     /**
      * @return The last modified timestamp.
      */
-    Long getMdate();
+    Long getLastModifiedDate();
     
     /**
      * @return The size of the file.

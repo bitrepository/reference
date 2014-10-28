@@ -34,7 +34,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.FileInfoStore;
+import org.bitrepository.pillar.store.PillarModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -54,7 +54,7 @@ public class IdentifyPillarsForPutFileRequestHandler
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected IdentifyPillarsForPutFileRequestHandler(MessageHandlerContext context, FileInfoStore fileInfoStore) {
+    protected IdentifyPillarsForPutFileRequestHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
         super(context, fileInfoStore);
     }
     
@@ -93,7 +93,7 @@ public class IdentifyPillarsForPutFileRequestHandler
             return false;
         }
         
-        return getFileInfoStore().hasFileID(message.getFileID(), message.getCollectionID());
+        return getPillarModel().hasFileID(message.getFileID(), message.getCollectionID());
     }
     
     /**
@@ -110,21 +110,21 @@ public class IdentifyPillarsForPutFileRequestHandler
             fileSize = BigInteger.ZERO;
         }
         
-        getFileInfoStore().verifyEnoughFreeSpaceLeftForFile(fileSize.longValue(), message.getCollectionID());
+        getPillarModel().verifyEnoughFreeSpaceLeftForFile(fileSize.longValue(), message.getCollectionID());
     }
     
     /**
      * Method for sending a response for 'DUPLICATE_FILE_FAILURE'.
      * @param message The request to base the response upon.
+     * @throws RequestHandlerException 
      */
-    protected void respondDuplicateFile(IdentifyPillarsForPutFileRequest message) {
+    protected void respondDuplicateFile(IdentifyPillarsForPutFileRequest message) throws RequestHandlerException {
         IdentifyPillarsForPutFileResponse response = createFinalResponse(message);
 
         response.setReplyTo(getSettings().getReceiverDestinationID());
         response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
             getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
-        response.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
-        response.setChecksumDataForExistingFile(getFileInfoStore().getChecksumDataForFile(message.getFileID(),
+        response.setChecksumDataForExistingFile(getPillarModel().getChecksumDataForFile(message.getFileID(),
                 message.getCollectionID(), ChecksumUtils.getDefault(getSettings())));
         
         ResponseInfo irInfo = new ResponseInfo();
@@ -145,7 +145,6 @@ public class IdentifyPillarsForPutFileRequestHandler
         response.setReplyTo(getSettings().getContributorDestinationID());
         response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
             getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
-        response.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
         
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
@@ -169,7 +168,8 @@ public class IdentifyPillarsForPutFileRequestHandler
     private IdentifyPillarsForPutFileResponse createFinalResponse(IdentifyPillarsForPutFileRequest msg) {
         IdentifyPillarsForPutFileResponse res = new IdentifyPillarsForPutFileResponse();
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        
+        res.setPillarChecksumSpec(getPillarModel().getChecksumPillarSpec());
+
         return res;
     }
 }

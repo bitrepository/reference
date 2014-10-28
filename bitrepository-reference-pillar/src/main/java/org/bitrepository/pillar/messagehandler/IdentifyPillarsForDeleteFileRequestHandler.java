@@ -31,7 +31,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRespo
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.FileInfoStore;
+import org.bitrepository.pillar.store.PillarModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -46,7 +46,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected IdentifyPillarsForDeleteFileRequestHandler(MessageHandlerContext context, FileInfoStore fileInfoStore) {
+    protected IdentifyPillarsForDeleteFileRequestHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
         super(context, fileInfoStore);
     }
 
@@ -76,7 +76,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
      */
     private void checkThatRequestedFileIsAvailable(IdentifyPillarsForDeleteFileRequest message) 
             throws RequestHandlerException {
-        if(!getFileInfoStore().hasFileID(message.getFileID(), message.getCollectionID())) {
+        if(!getPillarModel().hasFileID(message.getFileID(), message.getCollectionID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText("Could not find the requested file to delete.");
@@ -116,7 +116,8 @@ public class IdentifyPillarsForDeleteFileRequestHandler
         IdentifyPillarsForDeleteFileResponse res = new IdentifyPillarsForDeleteFileResponse();
         res.setFileID(msg.getFileID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        
+        res.setPillarChecksumSpec(getPillarModel().getChecksumPillarSpec());
+
         return res;
     }
 }

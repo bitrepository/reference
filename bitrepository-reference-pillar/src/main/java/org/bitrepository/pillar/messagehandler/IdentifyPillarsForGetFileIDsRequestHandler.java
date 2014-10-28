@@ -32,7 +32,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRespo
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.FileInfoStore;
+import org.bitrepository.pillar.store.PillarModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -52,7 +52,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected IdentifyPillarsForGetFileIDsRequestHandler(MessageHandlerContext context, FileInfoStore fileInfoStore) {
+    protected IdentifyPillarsForGetFileIDsRequestHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
         super(context, fileInfoStore);
     }
     
@@ -89,7 +89,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
         validateFileID(message.getFileIDs().getFileID());
         
         String fileID = fileids.getFileID();
-        if(fileID != null && !getFileInfoStore().hasFileID(fileID, message.getCollectionID())) {
+        if(fileID != null && !getPillarModel().hasFileID(fileID, message.getCollectionID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText("The following file is missing: '" + fileID + "'");

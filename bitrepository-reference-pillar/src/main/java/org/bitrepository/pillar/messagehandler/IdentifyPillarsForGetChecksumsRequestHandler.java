@@ -35,7 +35,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRes
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.FileInfoStore;
+import org.bitrepository.pillar.store.PillarModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -50,7 +50,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected IdentifyPillarsForGetChecksumsRequestHandler(MessageHandlerContext context, FileInfoStore fileInfoStore) {
+    protected IdentifyPillarsForGetChecksumsRequestHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
         super(context, fileInfoStore);
     }
     
@@ -62,7 +62,8 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
     @Override
     public void processRequest(IdentifyPillarsForGetChecksumsRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateCollectionID(message);
-        validateChecksumSpecification(message.getChecksumRequestForExistingFile(), message.getCollectionID());
+        getPillarModel().verifyChecksumAlgorithm(message.getChecksumRequestForExistingFile(), 
+                message.getCollectionID());
         checkThatAllRequestedFilesAreAvailable(message);
         respondSuccesfullIdentification(message);
     }
@@ -85,7 +86,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         
         List<String> missingFiles = new ArrayList<String>();
         String fileID = fileids.getFileID();
-        if(fileID != null && !getFileInfoStore().hasFileID(fileID, message.getCollectionID())) {
+        if(fileID != null && !getPillarModel().hasFileID(fileID, message.getCollectionID())) {
             missingFiles.add(fileID);
         }
         
@@ -132,6 +133,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         res.setFileIDs(msg.getFileIDs());
         res.setChecksumRequestForExistingFile(msg.getChecksumRequestForExistingFile());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarChecksumSpec(getPillarModel().getChecksumPillarSpec());
         
         return res;
     }

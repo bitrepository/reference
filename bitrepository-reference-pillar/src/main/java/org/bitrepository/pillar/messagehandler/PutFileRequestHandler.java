@@ -32,7 +32,7 @@ import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.FileInfoStore;
+import org.bitrepository.pillar.store.PillarModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Class for performing the PutFile operation.
- * TODO handle error scenarios.
  */
 public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> {
     /** The log.*/
@@ -53,7 +52,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected PutFileRequestHandler(MessageHandlerContext context, FileInfoStore fileInfoStore) {
+    protected PutFileRequestHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
         super(context, fileInfoStore);
     }
     
@@ -70,7 +69,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
             retrieveFile(message, messageContext);
             sendFinalResponse(message);
         } finally {
-            getFileInfoStore().ensureFileNotInTmpDir(message.getFileID(), message.getCollectionID());
+            getPillarModel().ensureFileNotInTmpDir(message.getFileID(), message.getCollectionID());
         }
     }
 
@@ -87,7 +86,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         validateCollectionID(message);
         validatePillarId(message.getPillarID());
         if(message.getChecksumDataForNewFile() != null) {
-            validateChecksumSpecification(message.getChecksumDataForNewFile().getChecksumSpec(), 
+            getPillarModel().verifyChecksumAlgorithm(message.getChecksumDataForNewFile().getChecksumSpec(), 
                     message.getCollectionID());
         } else if(getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
             ResponseInfo responseInfo = new ResponseInfo();
@@ -96,7 +95,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
             throw new IllegalOperationException(responseInfo, message.getCollectionID());
         }
         
-        validateChecksumSpecification(message.getChecksumRequestForNewFile(), message.getCollectionID());
+        getPillarModel().verifyChecksumAlgorithm(message.getChecksumRequestForNewFile(), message.getCollectionID());
         validateFileID(message.getFileID());
         
         checkThatTheFileDoesNotAlreadyExist(message);
@@ -109,7 +108,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
      * @param message The request with the filename to validate.
      */
     private void checkThatTheFileDoesNotAlreadyExist(PutFileRequest message) throws RequestHandlerException {
-        if(getFileInfoStore().hasFileID(message.getFileID(), message.getCollectionID())) {
+        if(getPillarModel().hasFileID(message.getFileID(), message.getCollectionID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
             irInfo.setResponseText("The file '" + message.getFileID() 
@@ -131,7 +130,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
             return;
         }
         
-        getFileInfoStore().verifyEnoughFreeSpaceLeftForFile(message.getFileSize().longValue(), message.getCollectionID());
+        getPillarModel().verifyEnoughFreeSpaceLeftForFile(message.getFileSize().longValue(), message.getCollectionID());
     }
     
     /**
@@ -141,7 +140,6 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
     private void dispatchInitialProgressResponse(PutFileRequest request) {
         PutFileProgressResponse response = createPutFileProgressResponse(request);
 
-        response.setPillarChecksumSpec(null);
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Started to receive data.");  
@@ -156,7 +154,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
      * @throws RequestHandlerException If the retrival of the file fails.
      */
     private void retrieveFile(PutFileRequest message, MessageContext messageContext) throws RequestHandlerException {
-        getFileInfoStore().putFile(message.getCollectionID(), message.getFileID(), message.getFileAddress(), 
+        getPillarModel().putFile(message.getCollectionID(), message.getFileID(), message.getFileAddress(), 
                 message.getChecksumDataForNewFile());
 
         getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
@@ -167,17 +165,17 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
     /**
      * Method for sending the final response for the requested put operation.
      * @param message The request requesting the put operation.
+     * @throws RequestHandlerException If the requested checksum specification is not supported.
      */
-    private void sendFinalResponse(PutFileRequest message) {
+    private void sendFinalResponse(PutFileRequest message) throws RequestHandlerException {
         PutFileFinalResponse response = createFinalResponse(message);
 
         ResponseInfo frInfo = new ResponseInfo();
         frInfo.setResponseCode(ResponseCode.OPERATION_COMPLETED);
         response.setResponseInfo(frInfo);
-        response.setPillarChecksumSpec(null); // NOT A CHECKSUM PILLAR
         
         if(message.getChecksumRequestForNewFile() != null) {
-            response.setChecksumDataForNewFile(getFileInfoStore().getChecksumDataForFile(message.getFileID(),
+            response.setChecksumDataForNewFile(getPillarModel().getChecksumDataForFile(message.getFileID(),
                     message.getCollectionID(), message.getChecksumRequestForNewFile()));
         } else {
             log.debug("No checksum validation requested.");
@@ -202,7 +200,8 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         res.setFileAddress(request.getFileAddress());
         res.setFileID(request.getFileID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        
+        res.setPillarChecksumSpec(getPillarModel().getChecksumPillarSpec());
+
         return res;
     }
     
@@ -222,7 +221,8 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
         res.setFileAddress(request.getFileAddress());
         res.setFileID(request.getFileID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
-        
+        res.setPillarChecksumSpec(getPillarModel().getChecksumPillarSpec());
+
         return res;
     }
 }

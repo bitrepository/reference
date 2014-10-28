@@ -24,19 +24,12 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import java.security.NoSuchAlgorithmException;
-
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.FileInfoStore;
+import org.bitrepository.pillar.store.PillarModel;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.handler.AbstractRequestHandler;
-import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 
 /**
@@ -51,12 +44,12 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
     /** The file id validator for validating the file id.*/
     private final FileIDValidator fileIdValidator;
     /** The interface to data storage.*/
-    private final FileInfoStore fileInfoStore;
+    private final PillarModel fileInfoStore;
     
     /**
      * @param context The context to use for message handling.
      */
-    protected PillarMessageHandler(MessageHandlerContext context, FileInfoStore fileInfoStore) {
+    protected PillarMessageHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
         super(context);
         this.context = context;
         this.fileIdValidator = new FileIDValidator(context.getSettings());
@@ -66,7 +59,7 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
     /**
      * @return The cache for this message handler.
      */
-    protected FileInfoStore getFileInfoStore() {
+    protected PillarModel getPillarModel() {
         return fileInfoStore;
     }
     
@@ -95,29 +88,6 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
                     + "' but was '" + pillarId + "'.");
         }
     }
-
-    /**
-     * Validates a given checksum calculation.
-     * Ignores if the checksum type is null.
-     * @param checksumSpec The checksum specification to validate.
-     * @param collectionId The id of the collection which this is relevant for.
-     */
-    protected void validateChecksumSpecification(ChecksumSpecTYPE checksumSpec, String collectionId) 
-            throws RequestHandlerException {
-        if(checksumSpec == null) {
-            return;
-        }
-        
-        try {
-            ChecksumUtils.verifyAlgorithm(checksumSpec);
-        } catch (NoSuchAlgorithmException e) {
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
-            fri.setResponseText(e.toString());
-            throw new InvalidMessageException(fri, collectionId, e);
-        }
-    }
-
     
     /**
      * Uses the FileIDValidator to validate a given file id.

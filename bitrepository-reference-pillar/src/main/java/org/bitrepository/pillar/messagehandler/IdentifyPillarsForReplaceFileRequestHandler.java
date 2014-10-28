@@ -33,7 +33,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResp
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.FileInfoStore;
+import org.bitrepository.pillar.store.PillarModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -53,7 +53,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected IdentifyPillarsForReplaceFileRequestHandler(MessageHandlerContext context, FileInfoStore fileInfoStore) {
+    protected IdentifyPillarsForReplaceFileRequestHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
         super(context, fileInfoStore);
     }
 
@@ -83,7 +83,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
      */
     public void checkThatRequestedFileIsAvailable(IdentifyPillarsForReplaceFileRequest message) 
             throws RequestHandlerException {
-        if(!getFileInfoStore().hasFileID(message.getFileID(), message.getCollectionID())) {
+        if(!getPillarModel().hasFileID(message.getFileID(), message.getCollectionID())) {
             ResponseInfo irInfo = new ResponseInfo();
             irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
             irInfo.setResponseText("Could not find the requested file to delete.");
@@ -105,7 +105,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
             fileSize = BigInteger.ZERO;
         }
         
-        getFileInfoStore().verifyEnoughFreeSpaceLeftForFile(fileSize.longValue(), message.getCollectionID());
+        getPillarModel().verifyEnoughFreeSpaceLeftForFile(fileSize.longValue(), message.getCollectionID());
     }
 
     /**
@@ -140,6 +140,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
         IdentifyPillarsForReplaceFileResponse res = new IdentifyPillarsForReplaceFileResponse();
         res.setFileID(request.getFileID());
         res.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
+        res.setPillarChecksumSpec(getPillarModel().getChecksumPillarSpec());
         
         return res;
     }
