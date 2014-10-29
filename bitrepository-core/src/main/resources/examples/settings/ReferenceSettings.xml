@@ -64,6 +64,11 @@
       ID of the pillar 
     -->
     <PillarID>test-pillar</PillarID>
+    
+    <!--
+      The type of pillar. Must be either 'FULLREFERENCEPILLAR' or 'CHECKSUMPILLAR'. 
+     -->
+    <PillarType>FULLREFERENCEPILLAR</PillarType>
 
     <!--
       The directories for the collections for this pillar. 

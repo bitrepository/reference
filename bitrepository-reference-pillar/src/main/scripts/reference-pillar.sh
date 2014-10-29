@@ -26,10 +26,10 @@ LOGBACK="-Dlogback.configurationFile=conf/logback.xml" #configuration directory
 CONFDIR="conf"
 KEYFILE="conf/client-01.pem" #key file
 JAVA="/usr/bin/java"
-JAVA_OPTS="-classpath conf:lib/* org.bitrepository.pillar.referencepillar.ReferencePillarLauncher"
-PIDFILE="referencepillar.pid"
-SCRIPTNAME="referencepillar"
-NAME="reference-pillar"
+JAVA_OPTS="-classpath conf:lib/* org.bitrepository.pillar.PillarLauncher"
+PIDFILE="pillar.pid"
+SCRIPTNAME="pillar"
+NAME="pillar"
 
 cd $(dirname $(perl -e "use Cwd 'abs_path';print abs_path('$0');"))/..
 #Check availability of crucial system components

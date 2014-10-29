@@ -34,9 +34,9 @@ export CATALINA_PID="${quickstartdir}/tomcat/pid.tomcat"
 #
 do_start() {
     export CATALINA_OPTS="-Xms256m -Xmx1028m -XX:PermSize=256m -XX:MaxPermSize=256m"
-    ${quickstartdir}/reference1pillar/bin/reference-pillar.sh start
-    ${quickstartdir}/reference2pillar/bin/reference-pillar.sh start
-    ${quickstartdir}/checksumpillar/bin/checksum-pillar.sh start
+    ${quickstartdir}/reference1pillar/bin/pillar.sh start
+    ${quickstartdir}/reference2pillar/bin/pillar.sh start
+    ${quickstartdir}/checksumpillar/bin/pillar.sh start
     ${quickstartdir}/tomcat/bin/catalina.sh start
 }
 
@@ -45,18 +45,18 @@ do_start() {
 #
 do_stop() {
     ${quickstartdir}/tomcat/bin/catalina.sh stop -force
-    ${quickstartdir}/reference1pillar/bin/reference-pillar.sh stop
-    ${quickstartdir}/reference2pillar/bin/reference-pillar.sh stop
-    ${quickstartdir}/checksumpillar/bin/checksum-pillar.sh stop
+    ${quickstartdir}/reference1pillar/bin/pillar.sh stop
+    ${quickstartdir}/reference2pillar/bin/pillar.sh stop
+    ${quickstartdir}/checksumpillar/bin/pillar.sh stop
 }
 
 #
 # Function that lists the status of the quickstart components
 #
 do_status() {
-    ${quickstartdir}/reference1pillar/bin/reference-pillar.sh status
-    ${quickstartdir}/reference2pillar/bin/reference-pillar.sh status
-    ${quickstartdir}/checksumpillar/bin/checksum-pillar.sh status
+    ${quickstartdir}/reference1pillar/bin/pillar.sh status
+    ${quickstartdir}/reference2pillar/bin/pillar.sh status
+    ${quickstartdir}/checksumpillar/bin/pillar.sh status
     ${quickstartdir}/tomcat/bin/catalina.sh status
 }
 

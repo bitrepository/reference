@@ -33,6 +33,7 @@
 
   <PillarSettings> 
     <PillarID>reference1-pillar</PillarID>
+    <PillarType>FULLREFERENCEPILLAR</PillarType>
     <CollectionDirs>
       <CollectionID>books</CollectionID>
       <FileDirs><!--foobarpattern-->var/reference1pillar</FileDirs>
