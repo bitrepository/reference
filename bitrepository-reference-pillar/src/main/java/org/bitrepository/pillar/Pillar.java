@@ -21,9 +21,97 @@
  */
 package org.bitrepository.pillar;
 
-public interface Pillar {
+import java.util.Arrays;
+
+import javax.jms.JMSException;
+
+import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.pillar.common.MessageHandlerContext;
+import org.bitrepository.pillar.messagehandler.PillarMediator;
+import org.bitrepository.pillar.schedulablejobs.RecalculateChecksumJob;
+import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.service.scheduler.JobScheduler;
+import org.bitrepository.service.scheduler.TimerbasedScheduler;
+import org.bitrepository.service.workflow.SchedulableJob;
+import org.bitrepository.settings.referencesettings.PillarType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class Pillar {
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
+    /** The messagebus for the pillar.*/
+    private final MessageBus messageBus;
+    /** The settings.*/
+    private final Settings settings;
+    /** The manager of the checksums with regard to the archive.*/
+    private final PillarModel pillarModel;
+    
+    /** The type of pillar.*/
+    private final PillarType pillarType;
+    private final PillarMediator mediator;
+    
+    /** The scheduler for the recalculation workflows.*/
+    private final JobScheduler scheduler;
+    /** The default time for running the recalculation workflow, when the settings is not set.
+     * The default is every hour. */
+    private static final Long DEFAULT_RECALCULATION_WORKFLOW_TIME = 3600000L;
+
     /**
-     * Shutdown the Pillar.
+     * Constructor.
+     * @param messageBus The messagebus for the communication.
+     * @param settings The settings for the pillar.
      */
-    public void close();
+    public Pillar(MessageBus messageBus, Settings settings, PillarModel pillarModel, MessageHandlerContext context) {
+        ArgumentValidator.checkNotNull(messageBus, "messageBus");
+        ArgumentValidator.checkNotNull(settings, "settings");
+        this.messageBus = messageBus;
+        SettingsUtils.initialize(settings);
+        this.settings = settings;
+        this.pillarModel = pillarModel;
+        this.pillarType = settings.getReferenceSettings().getPillarSettings().getPillarType(); 
+
+        log.info("Starting the ReferencePillar of type '" + pillarType + "'.");
+        messageBus.setCollectionFilter(Arrays.asList(context.getPillarCollections()));
+        mediator = new PillarMediator(messageBus, context, pillarModel);
+        mediator.start();
+        
+        this.scheduler = new TimerbasedScheduler();
+        if(pillarType == PillarType.FULLREFERENCEPILLAR) {
+            initializeWorkflows();
+        }
+    }
+    
+    /**
+     * Initializes one RecalculateChecksums workflow for each collection.
+     */
+    private void initializeWorkflows() {
+        Long interval = DEFAULT_RECALCULATION_WORKFLOW_TIME;
+        if(settings.getReferenceSettings().getPillarSettings().getRecalculateOldChecksumsInterval() != null) {
+            interval = settings.getReferenceSettings().getPillarSettings()
+                    .getRecalculateOldChecksumsInterval().longValue();
+        }
+        for(String collectionId : SettingsUtils.getCollectionIDsForPillar(
+                settings.getReferenceSettings().getPillarSettings().getPillarID())) {
+            SchedulableJob workflow = new RecalculateChecksumJob(collectionId, pillarModel);
+            scheduler.schedule(workflow, interval);
+        }
+    }
+    
+    /**
+     * Closes the ReferencePillar.
+     */
+    public void close() {
+        try {
+            mediator.close();
+            messageBus.close();
+            pillarModel.close();
+            log.info("ReferencePillar stopped!");
+        } catch (JMSException e) {
+            log.warn("Could not close the messagebus.", e);
+        }
+    }
 }

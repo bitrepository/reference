@@ -329,7 +329,14 @@ public abstract class PillarModel {
      * @param collectionID The id of the collection to verify the consistency for.
      */
     protected abstract void verifyFileToCacheConsistencyIfRequired(String fileID, String collectionID);
-    
+
+    /**
+     * Validates that all files in the cache is also in the archive, and that all files in the archive
+     * is also in the cache.
+     * @param collectionId The id of the collection where the data should be ensured.
+     */
+    public abstract void verifyFileToCacheConsistencyOfAllData(String collectionID);
+
     /**
      * Retrieves the non-default checksum for a file, thus calculating the checksum of the file with the new 
      * checksum specification.
@@ -388,4 +395,13 @@ public abstract class PillarModel {
      */
     public abstract void verifyFileExists(String fileID, String collectionID) throws RequestHandlerException;
 
+    /**
+     * Closes the pillar model.
+     */
+    public void close() {
+        cache.close();
+        if(fileArchive != null) {
+            fileArchive.close();
+        }
+    }
 }

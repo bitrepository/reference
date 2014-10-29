@@ -42,6 +42,7 @@ public class FullReferencePillarModel extends PillarModel {
     public FullReferencePillarModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher,
             Settings settings) {
         super(archives, cache, alarmDispatcher, settings);
+        log.info("Instantiating the FullReferencePillar: " + getPillarID());
     }
 
     @Override
@@ -234,11 +235,7 @@ public class FullReferencePillarModel extends PillarModel {
         return res;
     }
 
-    /**
-     * Validates that all files in the cache is also in the archive, and that all files in the archive
-     * is also in the cache.
-     * @param collectionId The id of the collection where the data should be ensured.
-     */
+    @Override
     public void verifyFileToCacheConsistencyOfAllData(String collectionId) {
         for(String fileId : cache.getAllFileIDs(collectionId)) {
             ensureFileState(fileId, collectionId);

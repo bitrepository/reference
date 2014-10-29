@@ -213,6 +213,13 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element ref="PillarType">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The type pillar. Can be either FullReferencePillar or ChecksumPillar.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
         <xs:element ref="CollectionDirs" minOccurs="1" maxOccurs="unbounded">
           <xs:annotation>
             <xs:documentation xml:lang="en">
@@ -380,6 +387,34 @@
             <xs:documentation xml:lang="en">
               All files are ensured either whenever the schedular runs, or when receiving a message
               for all checksums. 
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  
+  <xs:element name="PillarType">
+    <xs:simpleType>
+      <xs:annotation>
+        <xs:documentation xml:lang="en">
+          Decides which type of pillar it is. 
+        </xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="CHECKSUMPILLAR">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              It is thus a ChecksumPillar, which does not have any actual files beneath it.
+              All archive directories defined will be ignored.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="FULLREFERENCEPILLAR">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              It is a Full ReferencePillar, which will have archives containing the actual files.
+              The directories defined in settings will automatically be instantiated (if possible). 
             </xs:documentation>
           </xs:annotation>
         </xs:enumeration>

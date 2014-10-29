@@ -10,6 +10,9 @@
     <jaxb:bindings node="//xs:element[@name='ChecksumPillarFileDownload']/xs:simpleType" >
       <jaxb:typesafeEnumClass name="ChecksumPillarFileDownload"/>
     </jaxb:bindings>
+    <jaxb:bindings node="//xs:element[@name='PillarType']/xs:simpleType" >
+      <jaxb:typesafeEnumClass name="PillarType"/>
+    </jaxb:bindings>
     <jaxb:bindings node="//xs:element[@name='VerifyAllData']/xs:simpleType" >
       <jaxb:typesafeEnumClass name="VerifyAllData"/>
     </jaxb:bindings>

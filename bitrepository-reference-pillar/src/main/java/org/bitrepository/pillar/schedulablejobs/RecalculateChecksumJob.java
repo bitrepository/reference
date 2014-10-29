@@ -1,6 +1,6 @@
 package org.bitrepository.pillar.schedulablejobs;
 
-import org.bitrepository.pillar.store.filearchive.ReferenceChecksumManager;
+import org.bitrepository.pillar.store.PillarModel;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.SchedulableJob;
 import org.bitrepository.service.workflow.WorkflowContext;
@@ -16,7 +16,7 @@ public class RecalculateChecksumJob implements SchedulableJob {
     /** The id of the collection to recalculate the checksum for.*/
     private final String collectionID;
     /** The manager of the checksum and reference archive.*/
-    private final ReferenceChecksumManager manager;
+    private final PillarModel model;
     
     /** The state of this workflow. */
     private String state;
@@ -27,9 +27,9 @@ public class RecalculateChecksumJob implements SchedulableJob {
      * @param collectionID The id of the collection to recalculate checksum for.
      * @param manager The manager of the checksums and reference archive.
      */
-    public RecalculateChecksumJob(String collectionID, ReferenceChecksumManager manager) {
+    public RecalculateChecksumJob(String collectionID, PillarModel model) {
         this.collectionID = collectionID;
-        this.manager = manager;
+        this.model = model;
         id = new JobID(getClass().getSimpleName(), collectionID);
     }
     
@@ -37,7 +37,7 @@ public class RecalculateChecksumJob implements SchedulableJob {
     public void start() {
         log.info("Recalculating old checksums.");
         state = "Running";
-        manager.verifyFileToCacheConsistencyOfAllData(collectionID);
+        model.verifyFileToCacheConsistencyOfAllData(collectionID);
         state = null;
     }
 

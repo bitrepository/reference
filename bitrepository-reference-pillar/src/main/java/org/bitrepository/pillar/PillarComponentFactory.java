@@ -24,12 +24,22 @@
  */
 package org.bitrepository.pillar;
 
+import java.lang.reflect.Constructor;
+
+import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
-import org.bitrepository.pillar.checksumpillar.ChecksumPillar;
-import org.bitrepository.pillar.referencepillar.ReferencePillar;
+import org.bitrepository.pillar.common.MessageHandlerContext;
+import org.bitrepository.pillar.common.PillarAlarmDispatcher;
+import org.bitrepository.pillar.common.SettingsHelper;
 import org.bitrepository.pillar.store.ChecksumDAO;
+import org.bitrepository.pillar.store.ChecksumPillarModel;
+import org.bitrepository.pillar.store.ChecksumStore;
+import org.bitrepository.pillar.store.FullReferencePillarModel;
+import org.bitrepository.pillar.store.PillarModel;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumDatabaseManager;
+import org.bitrepository.pillar.store.filearchive.CollectionArchiveManager;
+import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
@@ -41,7 +51,13 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.service.AlarmDispatcher;
+import org.bitrepository.service.audit.AuditDatabaseManager;
+import org.bitrepository.service.audit.AuditTrailContributerDAO;
+import org.bitrepository.service.audit.AuditTrailManager;
+import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.database.DatabaseManager;
+import org.bitrepository.settings.referencesettings.PillarType;
 
 /**
  * Component factory for this module.
@@ -69,42 +85,95 @@ public final class PillarComponentFactory {
     private PillarComponentFactory() {
     }
 
-    /**
-     * Method for retrieving a reference pillar.
-     * @param pathToSettings The path to the directory containing the settings. See {@link XMLFileSettingsLoader} for details.
-     * @param pathToKeyFile The path to the private key file with the certificates for communication.
-     * @param pillarID The pillars componentID.
-     * @return The reference requested pillar.
-     */
-    public ReferencePillar createReferencePillar(String pathToSettings, String pathToKeyFile, String pillarID) {
+    public Pillar createPillar(String pathToSettings, String pathToKeyFile, String pillarID) {
         Settings settings = loadSettings(pillarID, pathToSettings);
+
         SecurityManager securityManager = loadSecurityManager(pathToKeyFile, settings);
-
         MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
+        
+        ChecksumStore cache = getChecksumStore(settings);
+        AuditTrailManager audits = getAuditTrailManager(settings);        
+        PillarAlarmDispatcher alarmDispatcher = new PillarAlarmDispatcher(settings, messageBus);
+        ResponseDispatcher responseDispatcher = new ResponseDispatcher(settings, messageBus);
 
-        return new ReferencePillar(messageBus, settings);
+        PillarModel pillarModel = getPillarModel(settings, cache, alarmDispatcher);
+
+        MessageHandlerContext context = new MessageHandlerContext(
+                settings,
+                SettingsHelper.getPillarCollections(settings.getComponentID(), settings.getCollections()),
+                responseDispatcher,
+                alarmDispatcher,
+                audits);
+        
+        return new Pillar(messageBus, settings, pillarModel, context);
     }
     
     /**
-     * Method for retrieving a checksum pillar.
-     * @param pathToSettings The path to the directory containing the settings. See {@link XMLFileSettingsLoader} for details.</li>
-     * @param pathToKeyFile The path to the private key file with the certificates for communication.</li>
-     * @param pillarID The pillars componentID.</li>
-     * @return The reference requested checksum pillar.
+     * Instantiates the ChecksumStore.
+     * @param settings The settings.
+     * @return The ChecksumStore.
      */
-    public ChecksumPillar createChecksumPillar(
-            String pathToSettings, String pathToKeyFile, String pillarID) {
-        Settings settings = loadSettings(pillarID, pathToSettings);
-        SecurityManager securityManager = loadSecurityManager(pathToKeyFile, settings);
-
-        MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
+    private ChecksumStore getChecksumStore(Settings settings) {
         DatabaseManager checksumDatabaseManager = new ChecksumDatabaseManager(settings);
-        return new ChecksumPillar(messageBus, settings, new ChecksumDAO(checksumDatabaseManager));
+        return new ChecksumDAO(checksumDatabaseManager);
+    }
+    
+    /**
+     * Instantiates the AuditTrailManager.
+     * @param settings The settings.
+     * @return The AuditTrailManager.
+     */
+    private AuditTrailManager getAuditTrailManager(Settings settings) {
+        DatabaseManager auditDatabaseManager = new AuditDatabaseManager(
+                settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase());
+        return new AuditTrailContributerDAO(settings, auditDatabaseManager);        
+    }
+
+    
+    /**
+     * Retrieves the FileStore defined in the settings.
+     * @param settings The settings.
+     * @return The filestore from settings, or the CollectionArchiveManager, if the setting is missing.
+     */
+    @SuppressWarnings("unchecked")
+    private FileStore getFileStore(Settings settings) {
+        if(settings.getReferenceSettings().getPillarSettings().getFileStoreClass() == null) {
+            return new CollectionArchiveManager(settings);
+        }
+        
+        try {
+            Class<FileStore> fsClass = (Class<FileStore>) Class.forName(
+                    settings.getReferenceSettings().getPillarSettings().getFileStoreClass());
+            Constructor<FileStore> fsConstructor = fsClass.getConstructor(Settings.class);
+            return fsConstructor.newInstance(settings);
+        } catch (Exception e) {
+            throw new CoordinationLayerException("Could not instantiate the FileStore", e);
+        }
+    }
+    
+    /**
+     * Instantiates the PillarModel.
+     * @param settings The settings.
+     * @param cache The ChecksumCache.
+     * @param alarmDispatcher The alarm dispatcher.
+     * @return The PillarModel, either for FullReferencePillar or ChecksumPillar.
+     */
+    private PillarModel getPillarModel(Settings settings, ChecksumStore cache, AlarmDispatcher alarmDispatcher) {
+        PillarType pillarType = settings.getReferenceSettings().getPillarSettings().getPillarType();
+        if(pillarType == PillarType.CHECKSUMPILLAR) {
+            return new ChecksumPillarModel(cache, alarmDispatcher, settings);
+        } else if(pillarType == PillarType.FULLREFERENCEPILLAR) {
+            FileStore archive = getFileStore(settings);
+            return new FullReferencePillarModel(archive, cache, alarmDispatcher, settings);
+        } else {
+            throw new IllegalStateException("Cannot instantiate a pillar of type '" + pillarType + "'.");
+        }
     }
 
     /** The default path for the settings in the development.*/
     private static final String DEFAULT_PATH_TO_SETTINGS = "conf";
     /** The default path for the settings in the development.*/
+    // TODO fix this? It seems too odd to have 'putClient.pem' as default key-file name for the pillar.
     private static final String DEFAULT_PATH_TO_KEY_FILE = "conf/putClient.pem";
 
     /**

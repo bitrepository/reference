@@ -30,12 +30,12 @@ import org.bitrepository.common.settings.XMLFileSettingsLoader;
  * Method for launching the ReferencePillar. 
  * It just loads the configurations and uses them to create the PillarSettings needed for starting the ReferencePillar.
  */
-public final class ReferencePillarLauncher {
+public final class PillarLauncher {
 
     /**
      * Private constructor. To prevent instantiation of this utility class.
      */
-    private ReferencePillarLauncher() { }
+    private PillarLauncher() { }
     
     /**
      * @param args <ol>
@@ -48,8 +48,9 @@ public final class ReferencePillarLauncher {
         String pathToSettings = args[0];
         String pathToKeyFile = args.length >=2 ? args[1] : null;
         String pillarID =  args.length == 3 ? pillarID = args[2]: null;
+        
         Pillar fullPillar =
-                PillarComponentFactory.getInstance().createReferencePillar(pathToSettings, pathToKeyFile, pillarID);
+                PillarComponentFactory.getInstance().createPillar(pathToSettings, pathToKeyFile, pillarID);
         PillarRunner.launchPillar(fullPillar);
     }
 }

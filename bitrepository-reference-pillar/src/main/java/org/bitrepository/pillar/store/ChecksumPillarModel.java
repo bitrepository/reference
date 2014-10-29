@@ -33,9 +33,10 @@ public class ChecksumPillarModel extends PillarModel {
     /** The checksum specification for this checksum pillar.*/
     protected final ChecksumSpecTYPE pillarSpecificChecksumType;
     
-    protected ChecksumPillarModel(ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings) {
+    public ChecksumPillarModel(ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings) {
         super(null, cache, alarmDispatcher, settings);
         this.pillarSpecificChecksumType = ChecksumUtils.getDefault(settings);
+        log.info("Instantiating the ChecksumPillar: " + getPillarID());
     }
     
     @Override
@@ -217,5 +218,10 @@ public class ChecksumPillarModel extends PillarModel {
         }
         
         return calculatedChecksum;
+    }
+
+    @Override
+    public void verifyFileToCacheConsistencyOfAllData(String collectionID) {
+        log.warn("Should not make a call to verify all data on a ChecksumPillar.");
     }
 }
