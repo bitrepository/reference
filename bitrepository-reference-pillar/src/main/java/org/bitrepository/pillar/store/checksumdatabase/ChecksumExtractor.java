@@ -41,11 +41,16 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Extracts data from the checksum database.
  */
 public class ChecksumExtractor {
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
+
     /** The connector for the database.*/
     private final DBConnector connector;
     
@@ -122,6 +127,66 @@ public class ChecksumExtractor {
                 res = ps.executeQuery();
                 if(!res.next()) {
                     throw new IllegalStateException("No entry for the file '" + fileId + "'.");
+                }
+                return extractChecksumEntry(res);
+            } finally {
+                if(res != null) {
+                    res.close();
+                }
+                if(ps != null) {
+                    ps.close();
+                }
+                if(conn != null) {
+                    conn.close();
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot extract the ChecksumEntry for '" + fileId + "'", e);
+        }
+    }
+
+    /**
+     * Extracts the checksum entry for a single file, with restrictions on time interval.
+     * @param minTimeStamp The minimum timestamp for the checksum calculation date.
+     * @param maxTimeStamp The maximum timestamp for the checksum calculation date.
+     * @param fileId The id of the file.
+     * @param collectionId The id of the collection.
+     * @return The entry for the file, or null if it is not within the restrictions.
+     */
+    public ChecksumEntry extractSingleEntryWithRestrictions(XMLGregorianCalendar minTimeStamp, 
+            XMLGregorianCalendar maxTimeStamp, String fileId, String collectionId) {
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+
+        List<Object> args = new ArrayList<Object>();
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE 
+                + " WHERE " + CS_FILE_ID + " = ? AND " + CS_COLLECTION_ID + " = ?");
+
+        args.add(fileId);
+        args.add(collectionId);
+        
+        if(minTimeStamp != null) {
+            sql.append(" AND " + CS_DATE + " > ? ");
+            args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp));
+        }
+        if(maxTimeStamp != null) {
+            sql.append(" AND " + CS_DATE + " <= ? ");
+            args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp));
+        }
+        sql.append(" ORDER BY " + CS_DATE + " ASC ");
+
+        try {
+            PreparedStatement ps = null;
+            ResultSet res = null;
+            Connection conn = null;
+            try {
+                conn = connector.getConnection();
+                ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray());
+                res = ps.executeQuery();
+                if(!res.next()) {
+                    log.debug("No checksum entry found for file '" + fileId + "' at collection '" + collectionId 
+                            + "', with calculation date interval: [" + minTimeStamp + " , " + maxTimeStamp + "]");
+                    return null;
                 }
                 return extractChecksumEntry(res);
             } finally {

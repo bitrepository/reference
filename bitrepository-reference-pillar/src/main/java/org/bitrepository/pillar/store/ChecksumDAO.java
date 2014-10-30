@@ -26,7 +26,6 @@ import java.util.Date;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumExtractor;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumIngestor;
@@ -146,5 +145,17 @@ public class ChecksumDAO implements ChecksumStore {
     @Override
     public void close() {
         connector.destroy();
+    }
+
+    @Override
+    public ExtractedChecksumResultSet getChecksumResult(XMLGregorianCalendar minTimeStamp, 
+            XMLGregorianCalendar maxTimeStamp, String fileID, String collectionID) {
+        ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();        
+        ChecksumEntry entry = extractor.extractSingleEntryWithRestrictions(minTimeStamp, maxTimeStamp, fileID, 
+                collectionID);
+        if(entry != null) {
+            res.insertChecksumEntry(entry);
+        }
+        return res;
     }
 }
