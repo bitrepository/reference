@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.checksumpillar;
+package org.bitrepository.pillar.store.checksumpillarmodel;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;

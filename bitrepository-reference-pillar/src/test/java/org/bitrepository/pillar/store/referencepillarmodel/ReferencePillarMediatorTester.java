@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.referencepillar;
+package org.bitrepository.pillar.store.referencepillarmodel;
 
 import java.io.File;
 
@@ -27,7 +27,7 @@ import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.SettingsHelper;
-import org.bitrepository.pillar.messagehandler.ReferencePillarMediator;
+import org.bitrepository.pillar.messagehandler.PillarMediator;
 import org.bitrepository.pillar.store.filearchive.CollectionArchiveManager;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
@@ -37,7 +37,7 @@ import org.testng.annotations.AfterMethod;
 public class ReferencePillarMediatorTester extends ReferencePillarTest {
     
     CollectionArchiveManager archives;
-    ReferencePillarMediator mediator;
+    PillarMediator mediator;
     MockAuditManager audits;
 
     @Override
@@ -58,7 +58,7 @@ public class ReferencePillarMediatorTester extends ReferencePillarTest {
             new ResponseDispatcher(settingsForCUT, messageBus),
             new PillarAlarmDispatcher(settingsForCUT, messageBus),
             audits);
-        mediator = new ReferencePillarMediator(messageBus, context, archives, csManager);
+        mediator = new PillarMediator(messageBus, context, model);
         mediator.start();
     }
     

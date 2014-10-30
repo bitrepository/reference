@@ -25,7 +25,6 @@
 package org.bitrepository.pillar.messagefactories;
 
 import java.math.BigInteger;
-import java.util.Date;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -33,11 +32,10 @@ import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.CalendarUtils;
 
 public class GetFileIDsMessageFactory extends PillarTestMessageFactory {
-    public GetFileIDsMessageFactory(
-            String collectionID, Settings clientSettings, String pillarID, String pillarDestination) {
+    public GetFileIDsMessageFactory(String collectionID, Settings clientSettings, String pillarID, 
+            String pillarDestination) {
         super(collectionID, clientSettings, pillarID, pillarDestination);
     }
     

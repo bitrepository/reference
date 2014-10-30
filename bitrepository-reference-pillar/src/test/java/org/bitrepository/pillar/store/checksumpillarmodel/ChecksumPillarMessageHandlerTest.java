@@ -19,13 +19,14 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.checksumpillar;
+package org.bitrepository.pillar.store.checksumpillarmodel;
 
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMessageHandler;
 import org.bitrepository.pillar.common.MessageHandlerContext;
+import org.bitrepository.pillar.messagehandler.PillarMessageHandler;
 import org.bitrepository.pillar.store.ChecksumStore;
-import org.bitrepository.protocol.*;
+import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -38,7 +39,7 @@ public class ChecksumPillarMessageHandlerTest extends ChecksumPillarTest {
         settingsForCUT.getRepositorySettings().getProtocolSettings().setDefaultChecksumType("OTHER");
 
         try {
-            new MockChecksumMessageHandler(context, cache);
+            new MockChecksumMessageHandler(context, model);
             Assert.fail("Should throw an IllegalArgumentException here.");
         } catch (IllegalArgumentException e) {
             // expected
@@ -48,7 +49,7 @@ public class ChecksumPillarMessageHandlerTest extends ChecksumPillarTest {
         settingsForCUT.getRepositorySettings().getProtocolSettings().setDefaultChecksumType("ERROR");
 
         try {
-            new MockChecksumMessageHandler(context, cache);
+            new MockChecksumMessageHandler(context, model);
             Assert.fail("Should throw an IllegalArgumentException here.");
         } catch (IllegalArgumentException e) {
             // expected
@@ -57,14 +58,14 @@ public class ChecksumPillarMessageHandlerTest extends ChecksumPillarTest {
         addStep("Check with valid checksum type (MD5)", "Should create message handler.");
         settingsForCUT.getRepositorySettings().getProtocolSettings().setDefaultChecksumType("MD5");
 
-        ChecksumPillarMessageHandler<MessageResponse> handler = new MockChecksumMessageHandler(context, cache);
+        PillarMessageHandler<MessageResponse> handler = new MockChecksumMessageHandler(context, model);
         Assert.assertNotNull(handler);
     }
 
-    private class MockChecksumMessageHandler extends ChecksumPillarMessageHandler<MessageResponse> {
+    private class MockChecksumMessageHandler extends PillarMessageHandler<MessageResponse> {
 
-        protected MockChecksumMessageHandler(MessageHandlerContext context, ChecksumStore refCache) {
-            super(context, refCache);
+        protected MockChecksumMessageHandler(MessageHandlerContext context, PillarModel model) {
+            super(context, model);
         }
 
         @Override

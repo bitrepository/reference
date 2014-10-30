@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.cache;
+package org.bitrepository.pillar.store.checksumcache;
 
 import java.io.File;
 import java.util.Date;

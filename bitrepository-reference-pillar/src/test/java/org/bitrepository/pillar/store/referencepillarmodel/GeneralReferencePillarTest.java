@@ -22,18 +22,17 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.referencepillar;
+package org.bitrepository.pillar.store.referencepillarmodel;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.messagehandler.ReferencePillarMessageHandler;
-import org.bitrepository.pillar.store.filearchive.ReferenceChecksumManager;
-import org.bitrepository.protocol.*;
+import org.bitrepository.pillar.messagehandler.PillarMessageHandler;
+import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -43,7 +42,7 @@ public class GeneralReferencePillarTest extends ReferencePillarTest {
     public void testReferencePillarMessageHandler() throws Exception {
         addDescription("Test the handling of the ReferencePillarMessageHandler super-class.");
         addStep("Setup", "Should be OK.");
-        MockRequestHandler mockRequestHandler = new MockRequestHandler(context, archives, csManager);
+        MockRequestHandler mockRequestHandler = new MockRequestHandler(context, model);
         
         addStep("Test the MD5 checksum type without any salt.", "Should be valid.");
         ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
@@ -73,11 +72,10 @@ public class GeneralReferencePillarTest extends ReferencePillarTest {
         }
     }
     
-    private class MockRequestHandler extends ReferencePillarMessageHandler<MessageRequest> {
+    private class MockRequestHandler extends PillarMessageHandler<MessageRequest> {
 
-        protected MockRequestHandler(MessageHandlerContext context, FileStore archives,
-                ReferenceChecksumManager manager) {
-            super(context, archives, manager);
+        protected MockRequestHandler(MessageHandlerContext context, PillarModel model) {
+            super(context, model);
         }
 
         @Override
@@ -93,10 +91,10 @@ public class GeneralReferencePillarTest extends ReferencePillarTest {
             return null;
         }
         
-        public void validateChecksum(ChecksumSpecTYPE csType) throws RequestHandlerException {
-            validateChecksumSpecification(csType, null);
+        public void validateChecksum(ChecksumSpecTYPE csType) throws RequestHandlerException{
+            getPillarModel().verifyChecksumAlgorithm(csType, collectionID);
         }
-        
+         
         public void validatePillarID(String pillarId) throws RequestHandlerException {
             super.validatePillarId(pillarId);
         }

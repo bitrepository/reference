@@ -37,7 +37,7 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
-        msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient);
+        msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
     }
 
     @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST})
@@ -45,8 +45,7 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
         addDescription("Tests the general IdentifyPillarsForGetFile functionality of the pillar for the successful scenario.");
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
-                "", DEFAULT_FILE_ID, getPillarID(), settingsForTestClient.getReceiverDestinationID());
+        IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(DEFAULT_FILE_ID);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
@@ -77,8 +76,7 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(
-                "", NON_DEFAULT_FILE_ID, getPillarID(), settingsForTestClient.getReceiverDestinationID());
+        IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(NON_DEFAULT_FILE_ID);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",

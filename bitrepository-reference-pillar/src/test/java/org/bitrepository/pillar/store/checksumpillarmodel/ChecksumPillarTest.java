@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.checksumpillar;
+package org.bitrepository.pillar.store.checksumpillarmodel;
 
 import static org.mockito.Mockito.mock;
 
@@ -31,18 +31,21 @@ import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.cache.MemoryCacheMock;
-import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.SettingsHelper;
+import org.bitrepository.pillar.messagehandler.PillarMediator;
+import org.bitrepository.pillar.store.ChecksumPillarModel;
 import org.bitrepository.pillar.store.ChecksumStore;
+import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.checksumcache.MemoryCacheMock;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 
 public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
     protected ChecksumStore cache;
-    protected ChecksumPillarMediator mediator;
+    protected PillarMediator mediator;
+    protected PillarModel model;
     protected MockAuditManager audits;
     protected MessageHandlerContext context;
     protected ChecksumSpecTYPE csSpec;
@@ -78,12 +81,14 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
     protected void createChecksumPillar() {
         shutdownMediator();
         addFixture("Initialize a new checksumPillar.");
+        PillarAlarmDispatcher alarmDispatcher = new PillarAlarmDispatcher(settingsForCUT, messageBus);
         context = new MessageHandlerContext(settingsForCUT,
                 SettingsHelper.getPillarCollections(settingsForCUT.getComponentID(), settingsForCUT.getCollections()),
-                new ResponseDispatcher(settingsForCUT, messageBus),
-            new PillarAlarmDispatcher(settingsForCUT, messageBus),
-            audits);
-        mediator = new ChecksumPillarMediator(messageBus, context, cache);
+                new ResponseDispatcher(settingsForCUT, messageBus), 
+                alarmDispatcher,
+                audits);
+        model = new ChecksumPillarModel(cache, alarmDispatcher, settingsForCUT);
+        mediator = new PillarMediator(messageBus, context, model);
         mediator.start();
 
         csSpec = new ChecksumSpecTYPE();

@@ -21,6 +21,8 @@
  */
 package org.bitrepository.pillar.messagefactories;
 
+import java.util.UUID;
+
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.message.ComponentTestMessageFactory;
@@ -45,5 +47,13 @@ public abstract class PillarTestMessageFactory {
         componentTestMessageFactory.initializeMessageToComponentUnderTest(request);
         request.setDestination(pillarDestinationID);
         request.setTo(pillarID);
+    }
+
+    /**
+     * Method for generating new correlation IDs.
+     * @return A unique correlation id.
+     */
+    public String getNewCorrelationID() {
+        return UUID.randomUUID().toString();
     }
 }

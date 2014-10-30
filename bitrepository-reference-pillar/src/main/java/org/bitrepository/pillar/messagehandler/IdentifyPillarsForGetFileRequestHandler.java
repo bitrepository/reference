@@ -97,14 +97,7 @@ public class IdentifyPillarsForGetFileRequestHandler
     private void checkThatFileIsAvailable(IdentifyPillarsForGetFileRequest message) 
             throws RequestHandlerException {
         validateFileID(message.getFileID());
-        if(!getPillarModel().hasFileID(message.getFileID(), message.getCollectionID())) {
-            ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            irInfo.setResponseText("The file '" + message.getFileID() 
-                    + "' does not exist within the archive.");
-            
-            throw new IdentifyContributorException(irInfo, message.getCollectionID());
-        }
+        getPillarModel().verifyFileExists(message.getFileID(), message.getCollectionID());
     }
     
     /**

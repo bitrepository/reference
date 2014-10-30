@@ -1,4 +1,4 @@
-package org.bitrepository.pillar.referencepillar.scheduler;
+package org.bitrepository.pillar.schedulablejobs;
 /*
  * #%L
  * Bitrepository Reference Pillar
@@ -21,8 +21,8 @@ package org.bitrepository.pillar.referencepillar.scheduler;
  * #L%
  */
 
-import org.bitrepository.pillar.referencepillar.ReferencePillarTest;
 import org.bitrepository.pillar.schedulablejobs.RecalculateChecksumJob;
+import org.bitrepository.pillar.store.referencepillarmodel.ReferencePillarTest;
 import org.bitrepository.service.workflow.SchedulableJob;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -44,7 +44,7 @@ public class RecalculateChecksumWorkflowTest extends ReferencePillarTest {
         }
         
         addStep("Create and run workflow", "The checksum");
-        SchedulableJob workflow = new RecalculateChecksumJob(collectionID, csManager);
+        SchedulableJob workflow = new RecalculateChecksumJob(collectionID, model);
         workflow.start();
         Date afterWorkflowDate = csCache.getCalculationDate(DEFAULT_FILE_ID, collectionID);
         
@@ -66,7 +66,7 @@ public class RecalculateChecksumWorkflowTest extends ReferencePillarTest {
         }
         
         addStep("Create and run workflow", "The checksum");
-        SchedulableJob workflow = new RecalculateChecksumJob(collectionID, csManager);
+        SchedulableJob workflow = new RecalculateChecksumJob(collectionID, model);
         workflow.start();
         Date afterWorkflowDate = csCache.getCalculationDate(DEFAULT_FILE_ID, collectionID);
         

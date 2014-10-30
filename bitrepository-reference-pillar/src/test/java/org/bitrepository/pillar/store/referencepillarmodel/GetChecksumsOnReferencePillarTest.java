@@ -22,9 +22,8 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.checksumpillar;
+package org.bitrepository.pillar.store.referencepillarmodel;
 
-import java.util.Date;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDs;
@@ -35,16 +34,19 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
+import org.bitrepository.common.filestore.DefaultFileInfo;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.FileIDsUtils;
+import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.messagefactories.GetChecksumsMessageFactory;
+import org.bitrepository.settings.referencesettings.VerifyAllData;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
  * Tests the PutFile functionality on the ReferencePillar.
  */
-public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
+public class GetChecksumsOnReferencePillarTest extends ReferencePillarTest {
     private GetChecksumsMessageFactory msgFactory;
     private ChecksumSpecTYPE csSpec;
 
@@ -60,13 +62,13 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void goodCase() throws Exception {
+    public void pillarGetChecksumsTestSuccessCase() throws Exception {
         addDescription("Tests the GetChecksums functionality of the reference pillar for the successful scenario.");
-        initializeCacheWithMD5ChecksummedFile();
 
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID;
-        FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
+        FileIDs fileids = new FileIDs();
+        fileids.setFileID(FILE_ID);
 
         addStep("Create and send the identify request message.", 
         "Should be received and handled by the pillar.");
@@ -108,18 +110,18 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
         Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 1);
         Assert.assertEquals(Base16Utils.decodeBase16(
                 finalResponse.getResultingChecksums().getChecksumDataItems().get(0).getChecksumValue()), 
-                DEFAULT_MD5_CHECKSUM);
+                EMPTY_FILE_CHECKSUM);
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        Assert.assertEquals(audits.getCallsForAuditEvent(), 0, "Should not deliver audits");
+        Assert.assertEquals(audits.getCallsForAuditEvent(), 0, "Should not deliver any audit for calculating the checksum");
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void allFilesInIdentification() throws Exception {
+    public void pillarGetChecksumsTestWithAllFilesInIdentification() throws Exception {
         addDescription("Tests the GetChecksums functionality of the reference pillar for the successful scenario, "
                 + "when calculating all files.");
-        initializeCacheWithMD5ChecksummedFile();
-        FileIDs fileids = FileIDsUtils.getAllFileIDs();
+        FileIDs fileids = new FileIDs();
+        fileids.setAllFileIDs("true");
 
         IdentifyPillarsForGetChecksumsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetChecksumsRequest(csSpec, fileids);
         messageBus.sendMessage(identifyRequest);
@@ -130,11 +132,11 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void allFilesInOperation() throws Exception {
+    public void pillarGetChecksumsTestWithAllFilesInOperation() throws Exception {
         addDescription("Tests the GetChecksums functionality of the reference pillar for the successful scenario, "
                 + "when calculating all files.");
-        initializeCacheWithMD5ChecksummedFile();
-        FileIDs fileids = FileIDsUtils.getAllFileIDs();
+        FileIDs fileids = new FileIDs();
+        fileids.setAllFileIDs("true");
 
         GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
                 csSpec, fileids, null);
@@ -146,15 +148,15 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
         GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 
-                1);
+                archives.getAllFileIds(collectionID).size());
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void deliveryAtURL() throws Exception {
+    public void pillarGetChecksumsTestWithDeliveryAtURL() throws Exception {
         addDescription("Tests the GetChecksums functionality of the reference pillar when delivery at an URL.");
-        String DELIVERY_ADDRESS = "http://sandkasse-01.kb.dk/dav/CS_TEST_" + new Date().getTime() + getPillarID();
-        initializeCacheWithMD5ChecksummedFile();
-        FileIDs fileids = FileIDsUtils.getAllFileIDs();
+        String DELIVERY_ADDRESS =  httpServer.getURL("CS_TEST").toExternalForm();
+        FileIDs fileids = new FileIDs();
+        fileids.setAllFileIDs(DEFAULT_FILE_ID);
 
         GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
                 csSpec, fileids, DELIVERY_ADDRESS);
@@ -170,29 +172,28 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void badDeliviryURL() throws Exception {
+    public void pillarGetChecksumsTestWithDeliveryAtBadURL() throws Exception {
         addDescription("Tests the reference pillar handling of a bad URL in the GetChecksumRequest.");
         String DELIVERY_ADDRESS = "https:localhost:1/?";
-        initializeCacheWithMD5ChecksummedFile();
-        FileIDs fileids = FileIDsUtils.getAllFileIDs();
 
         GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
-                csSpec, fileids, DELIVERY_ADDRESS);
+                csSpec, FileIDsUtils.getAllFileIDs(), DELIVERY_ADDRESS);
         messageBus.sendMessage(getChecksumsRequest);
 
-        GetChecksumsProgressResponse progressResponse = clientReceiver.waitForMessage(GetChecksumsProgressResponse.class);
-        Assert.assertTrue(progressResponse.getFileIDs().isSetAllFileIDs());
+        clientReceiver.waitForMessage(GetChecksumsProgressResponse.class);
 
         GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_TRANSFER_FAILURE);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void noSuchFileInIdentification() throws Exception {
+    public void pillarGetChecksumsTestFailedNoSuchFile() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetChecksums requests for a file, which it does not have.");
-        FileIDs fileids = FileIDsUtils.getSpecificFileIDs("A-NON-EXISTING-FILE");
+        FileIDs fileids = new FileIDs();
+        fileids.setFileID("A-NON-EXISTING-FILE");
 
-        IdentifyPillarsForGetChecksumsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetChecksumsRequest(csSpec, fileids);
+        IdentifyPillarsForGetChecksumsRequest identifyRequest =
+                msgFactory.createIdentifyPillarsForGetChecksumsRequest(csSpec, FileIDsUtils.getSpecificFileIDs(NON_DEFAULT_FILE_ID));
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.", 
@@ -204,10 +205,11 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     }
 
     @Test( groups = {"regressiontest", "pillartest"})
-    public void noSuchFileInOperation() throws Exception {
+    public void pillarGetChecksumsTestFailedNoSuchFileInOperation() throws Exception {
         addDescription("Tests that the ReferencePillar is able to reject a GetChecksums requests for a file, " +
         "which it does not have. But this time at the GetChecksums message.");
-        FileIDs fileids = FileIDsUtils.getSpecificFileIDs("A-NON-EXISTING-FILE");
+        FileIDs fileids = new FileIDs();
+        fileids.setFileID("A-NON-EXISTING-FILE");
 
         addStep("Create and send the actual GetChecksums message to the pillar.", 
         "Should be received and handled by the pillar.");
@@ -222,36 +224,83 @@ public class GetChecksumsOnChecksumPillarTest extends ChecksumPillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void identifyWithNoChecksumSpec() throws Exception {
-        addDescription("Tests that the ReferencePillar is accepts a GetChecksums requests when there is no checksum "
-                +"type specified.");
-        FileIDs fileids = FileIDsUtils.getAllFileIDs();
-
-        addStep("Create and send the identify message", "Should be received and handled by the pillar.");
-        messageBus.sendMessage(msgFactory.createIdentifyPillarsForGetChecksumsRequest(null, fileids));
-
-        addStep("Retrieve the IdentifyResponse for the GetChecksums request and validate it.",
-                "The pillar is positively identified.");
-        IdentifyPillarsForGetChecksumsResponse response = clientReceiver.waitForMessage(IdentifyPillarsForGetChecksumsResponse.class);
-        Assert.assertEquals(response.getResponseInfo().getResponseCode(), ResponseCode.IDENTIFICATION_POSITIVE);
-    }
-    
-    @Test( groups = {"regressiontest", "pillartest"})
-    public void identifyWithBadChecksumSpec() throws Exception {
-        addDescription("Tests that the ReferencePillar is rejects a GetChecksums requests when a bad checksum "
-                +"type specified. But it should just be returned as a negative identification, not a 'REQUEST_NOT_UNDERSTOOD_FAILURE'.");
-        FileIDs fileids = FileIDsUtils.getAllFileIDs();
-        ChecksumSpecTYPE badCsType = new ChecksumSpecTYPE();
-        badCsType.setChecksumSalt(new byte[]{1,0,1,0});
-        badCsType.setChecksumType(ChecksumType.OTHER);
-        badCsType.setOtherChecksumType("AlgorithmDoesNotExist");
+    public void pillarGetChecksumsOfRemovedFileWithoutVerifyingData() throws Exception {
+        addDescription("Tests how the reference pillar acts, when the file it is supposed to retrieve the checksum "
+                + "of is removed between two GetChecksum operations, and the setting VerifyAllData is "
+                + "set to 'SCHEDULER'.");
+        addStep("Set settings for VerifyAllData to SCHEDULER", "");
+        settingsForCUT.getReferenceSettings().getPillarSettings().setVerifyAllData(VerifyAllData.SCHEDULAR_ONLY);
         
-        addStep("Create and send the identify message", "Should be received and handled by the pillar.");
-        messageBus.sendMessage(msgFactory.createIdentifyPillarsForGetChecksumsRequest(badCsType, fileids));
+        addStep("Request the checksum all files", "Message is sent to the pillar.");
+        GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
+                csSpec, FileIDsUtils.getSpecificFileIDs(DEFAULT_FILE_ID), null);
+        messageBus.sendMessage(getChecksumsRequest);
+        
+        addStep("Retrieve the FinalResponse for the GetChecksums request", 
+                "Contains the checksum of the default file.");
+        GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 1);
+        
+        addStep("Remove the file from beneath the pillar", 
+                "The file is not longer in the archive, but still in the database.");
+        DefaultFileInfo dfi = (DefaultFileInfo) archives.getFileInfo(DEFAULT_FILE_ID, collectionID);
+        FileUtils.delete(dfi.getFile());
+        Assert.assertFalse(archives.hasFile(DEFAULT_FILE_ID, collectionID));
+        Assert.assertTrue(csCache.hasFile(DEFAULT_FILE_ID, collectionID));
+        
+        addStep("Request the checksum of the default file again", "Message is sent to the pillar.");
+        getChecksumsRequest = msgFactory.createGetChecksumsRequest(
+                csSpec, FileIDsUtils.getAllFileIDs(), null);
+        messageBus.sendMessage(getChecksumsRequest);
+        
+        addStep("Retrieve the FinalResponse for the GetChecksums request", 
+                "No checksums returned, the file has been removed from the cache, and an alarm was dispatched.");
+        finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 1);
+        Assert.assertTrue(csCache.hasFile(DEFAULT_FILE_ID, collectionID));
+    }
 
-        addStep("Retrieve the IdentifyResponse for the GetChecksums request and validate it.",
-                "The pillar gives a negative identification.");
-        IdentifyPillarsForGetChecksumsResponse response = clientReceiver.waitForMessage(IdentifyPillarsForGetChecksumsResponse.class);
-        Assert.assertEquals(response.getResponseInfo().getResponseCode(), ResponseCode.REQUEST_NOT_SUPPORTED);
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void pillarGetChecksumsOfRemovedFileWithVerifyingData() throws Exception {
+        addDescription("Tests how the reference pillar acts, when the file it is supposed to retrieve the checksum "
+                + "of is removed between two GetChecksum operations, and the setting VerifyAllData is "
+                + "set to 'MESSAGES_AND_SCHEDULER'.");
+        addStep("Set settings for VerifyAllData to MESSAGES_AND_SCHEDULER", "");
+        settingsForCUT.getReferenceSettings().getPillarSettings().setVerifyAllData(
+                VerifyAllData.MESSAGES_AND_SCHEDULER);
+        
+        addStep("Request the checksum all files", "Message is sent to the pillar.");
+        GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(
+                csSpec, FileIDsUtils.getSpecificFileIDs(DEFAULT_FILE_ID), null);
+        messageBus.sendMessage(getChecksumsRequest);
+        
+        addStep("Retrieve the FinalResponse for the GetChecksums request", 
+                "Contains the checksum of the default file.");
+        GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 1);
+        
+        addStep("Remove the file from beneath the pillar", 
+                "The file is not longer in the archive, but still in the database.");
+        DefaultFileInfo dfi = (DefaultFileInfo) archives.getFileInfo(DEFAULT_FILE_ID, collectionID);
+        FileUtils.delete(dfi.getFile());
+        Assert.assertFalse(archives.hasFile(DEFAULT_FILE_ID, collectionID));
+        Assert.assertTrue(csCache.hasFile(DEFAULT_FILE_ID, collectionID));
+        
+        addStep("Request the checksum of the default file again", "Message is sent to the pillar.");
+        getChecksumsRequest = msgFactory.createGetChecksumsRequest(
+                csSpec, FileIDsUtils.getAllFileIDs(), null);
+        messageBus.sendMessage(getChecksumsRequest);
+        
+        addStep("Retrieve the FinalResponse for the GetChecksums request", 
+                "No checksums returned, the file has been removed from the cache, and an alarm was dispatched.");
+        finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
+        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        Assert.assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 0);
+        Assert.assertFalse(csCache.hasFile(DEFAULT_FILE_ID, collectionID));
+        AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
+        Assert.assertNotNull(alarm);
     }
 }

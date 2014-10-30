@@ -211,7 +211,7 @@ public class ChecksumPillarModel extends PillarModel {
                 ri.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
                 ri.setResponseText("Expected checksums '" + givenChecksum + "' but the checksum was '" 
                         + calculatedChecksum + "'.");
-                throw new IllegalOperationException(ri, collectionID);
+                throw new IllegalOperationException(ri, collectionID, fileID);
             }
         } else {
             log.debug("No checksums for validating the retrieved file.");

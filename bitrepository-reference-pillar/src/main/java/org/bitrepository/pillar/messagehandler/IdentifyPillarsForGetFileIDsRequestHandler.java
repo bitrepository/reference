@@ -103,8 +103,8 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
      * @param request The request to respond to.
      */
     private void respondSuccesfullIdentification(IdentifyPillarsForGetFileIDsRequest request) {
-        IdentifyPillarsForGetFileIDsResponse response = createFinalResponse(request);
         
+        IdentifyPillarsForGetFileIDsResponse response = createFinalResponse(request);
         response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
             getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         

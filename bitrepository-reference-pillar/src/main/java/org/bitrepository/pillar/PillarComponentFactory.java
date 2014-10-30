@@ -91,6 +91,10 @@ public final class PillarComponentFactory {
         SecurityManager securityManager = loadSecurityManager(pathToKeyFile, settings);
         MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
         
+        return createPillar(settings, messageBus);
+    }
+    
+    public Pillar createPillar(Settings settings, MessageBus messageBus) {
         ChecksumStore cache = getChecksumStore(settings);
         AuditTrailManager audits = getAuditTrailManager(settings);        
         PillarAlarmDispatcher alarmDispatcher = new PillarAlarmDispatcher(settings, messageBus);
@@ -105,7 +109,7 @@ public final class PillarComponentFactory {
                 alarmDispatcher,
                 audits);
         
-        return new Pillar(messageBus, settings, pillarModel, context);
+        return new Pillar(messageBus, settings, pillarModel, context);        
     }
     
     /**

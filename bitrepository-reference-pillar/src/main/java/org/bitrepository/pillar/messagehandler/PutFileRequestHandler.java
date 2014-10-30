@@ -92,7 +92,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
             responseInfo.setResponseText("According to the contract a checksum for creating a new file is required.");
-            throw new IllegalOperationException(responseInfo, message.getCollectionID());
+            throw new IllegalOperationException(responseInfo, message.getCollectionID(), message.getFileID());
         }
         
         getPillarModel().verifyChecksumAlgorithm(message.getChecksumRequestForNewFile(), message.getCollectionID());

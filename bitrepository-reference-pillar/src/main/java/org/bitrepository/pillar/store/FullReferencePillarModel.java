@@ -327,7 +327,7 @@ public class FullReferencePillarModel extends PillarModel {
                 responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
                 responseInfo.setResponseText("Wrong checksum! Expected: [" + expectedChecksumValue 
                         + "], but calculated: [" + calculatedChecksum + "]");
-                throw new IllegalOperationException(responseInfo, collectionID);
+                throw new IllegalOperationException(responseInfo, collectionID, fileID);
             }
         } else {
             log.debug("No checksums for validating the newly downloaded file '" + fileID + "'.");

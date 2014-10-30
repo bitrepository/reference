@@ -35,6 +35,7 @@ public class IllegalOperationExceptionTest extends ExtendedTestCase {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");
         String errMsg = "TEST-ERROR";
+        String FileID = "FILE-ID";
         ResponseCode errCode = ResponseCode.FAILURE;
         ResponseInfo ri = new ResponseInfo();
         ri.setResponseText(errMsg);
@@ -43,7 +44,7 @@ public class IllegalOperationExceptionTest extends ExtendedTestCase {
         
         addStep("Try to throw such an exception", "Should be able to be caught and validated");
         try {
-            throw new IllegalOperationException(ri, TEST_COLLECTION_ID);
+            throw new IllegalOperationException(ri, TEST_COLLECTION_ID, FileID);
         } catch(Exception e) {
             Assert.assertTrue(e instanceof IllegalOperationException);
             Assert.assertEquals(e.getMessage(), errMsg);
@@ -51,11 +52,12 @@ public class IllegalOperationExceptionTest extends ExtendedTestCase {
             Assert.assertEquals(((IllegalOperationException) e).getResponseInfo().getResponseText(), errMsg);
             Assert.assertEquals(((IllegalOperationException) e).getCollectionId(), TEST_COLLECTION_ID);
             Assert.assertNull(e.getCause());
+            Assert.assertEquals(((IllegalOperationException) e).getFileId(), FileID);
         }
         
         addStep("Throw the exception with an embedded exception", "The embedded exception should be the same.");
         try {
-            throw new IllegalOperationException(ri, TEST_COLLECTION_ID, new IllegalArgumentException(causeMsg));
+            throw new IllegalOperationException(ri, TEST_COLLECTION_ID, FileID, new IllegalArgumentException(causeMsg));
         } catch(Exception e) {
             Assert.assertTrue(e instanceof IllegalOperationException);
             Assert.assertTrue(e instanceof RequestHandlerException);
@@ -67,6 +69,7 @@ public class IllegalOperationExceptionTest extends ExtendedTestCase {
             Assert.assertTrue(e.getCause() instanceof IllegalArgumentException);
             Assert.assertEquals(e.getCause().getMessage(), causeMsg);
             Assert.assertNotNull(((RequestHandlerException) e).toString());
+            Assert.assertEquals(((IllegalOperationException) e).getFileId(), FileID);
         }
     }
 }

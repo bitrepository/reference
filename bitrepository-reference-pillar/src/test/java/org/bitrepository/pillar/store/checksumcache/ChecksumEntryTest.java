@@ -1,4 +1,4 @@
-package org.bitrepository.pillar.cache;
+package org.bitrepository.pillar.store.checksumcache;
 /*
  * #%L
  * Bitrepository Reference Pillar

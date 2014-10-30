@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.cache;
+package org.bitrepository.pillar.store.checksumcache;
 
 import java.util.Collection;
 import java.util.Date;
@@ -117,5 +117,14 @@ public class MemoryCacheMock implements ChecksumStore {
     @Override
     public Collection<String> getAllFileIDs(String collectionId) {
         return checksumMap.keySet();
+    }
+
+    @Override
+    public ExtractedChecksumResultSet getChecksumResult(XMLGregorianCalendar minTimeStamp,
+            XMLGregorianCalendar maxTimeStamp, String fileID, String collectionID) {
+        ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
+        res.insertChecksumEntry(checksumMap.get(fileID));
+
+        return res;
     }
 }

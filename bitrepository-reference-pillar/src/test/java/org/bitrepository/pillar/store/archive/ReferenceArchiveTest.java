@@ -22,23 +22,24 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.referencepillar.archive;
+package org.bitrepository.pillar.store.archive;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Arrays;
+
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.messagehandler.ReferencePillarMediator;
-import org.bitrepository.pillar.referencepillar.ReferencePillarTest;
+import org.bitrepository.pillar.messagehandler.PillarMediator;
 import org.bitrepository.pillar.store.filearchive.ReferenceArchive;
+import org.bitrepository.pillar.store.referencepillarmodel.ReferencePillarTest;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class ReferenceArchiveTest extends ReferencePillarTest {
     protected ReferenceArchive archive;
-    protected ReferencePillarMediator mediator;
+    protected PillarMediator mediator;
     protected MockAuditManager audits;
     protected MessageHandlerContext context;
     

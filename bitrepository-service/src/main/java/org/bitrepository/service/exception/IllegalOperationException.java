@@ -29,22 +29,35 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
  */
 @SuppressWarnings("serial")
 public class IllegalOperationException extends RequestHandlerException {
+    private String fileId;
+    
     /**
      * Constructor.
      * @param rInfo The ResponseInfo for this class to wrap.
      * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
+     * @param fileId The id of the file regarding the illegal operation. Use null, if no file.
      */
-    public IllegalOperationException(ResponseInfo rInfo, String collectionId) {
+    public IllegalOperationException(ResponseInfo rInfo, String collectionId, String fileId) {
         super(rInfo, collectionId);
+        this.fileId = fileId;
     }
     
     /**
      * Constructor.
      * @param rInfo The ResponseInfo for this class to wrap.
      * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
+     * @param fileId The id of the file regarding the illegal operation. Use null, if no file.
      * @param e The exception to wrap into the StackTrace.
      */
-    public IllegalOperationException(ResponseInfo rInfo, String collectionId, Exception e) {
+    public IllegalOperationException(ResponseInfo rInfo, String collectionId, String fileId, Exception e) {
         super(rInfo, collectionId, e);
+        this.fileId = fileId;
+    }
+    
+    /**
+     * @return The fileId
+     */
+    public String getFileId() {
+        return fileId;
     }
 }

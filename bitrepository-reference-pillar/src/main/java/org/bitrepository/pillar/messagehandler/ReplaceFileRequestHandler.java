@@ -113,7 +113,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
             responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
             responseInfo.setResponseText("According to the contract a checksum for file to be deleted during the "
                     + "replacing operation is required.");
-            throw new IllegalOperationException(responseInfo, message.getCollectionID());
+            throw new IllegalOperationException(responseInfo, message.getCollectionID(), message.getFileID());
         }
         if(message.getChecksumDataForNewFile() != null) {
             getPillarModel().verifyChecksumAlgorithm(message.getChecksumDataForNewFile().getChecksumSpec(), 
@@ -124,7 +124,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
             responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
             responseInfo.setResponseText("According to the contract a checksum for new file in the "
                     + "replacing operation is required.");
-            throw new IllegalOperationException(responseInfo, message.getCollectionID());
+            throw new IllegalOperationException(responseInfo, message.getCollectionID(), message.getFileID());
         }
         
         // Validate, that we have the requested file.
@@ -158,7 +158,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
                 ResponseInfo responseInfo = new ResponseInfo();
                 responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
                 responseInfo.setResponseText(errMsg);
-                throw new IllegalOperationException(responseInfo, message.getCollectionID());
+                throw new IllegalOperationException(responseInfo, message.getCollectionID(), message.getFileID());
             }
         } else {
             log.debug("No checksum for validation of the existing file before replace.");

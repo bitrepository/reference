@@ -35,15 +35,22 @@ public class SettingsHelperTest {
     @Test( groups = {"regressiontest"})
     public void getPillarCollectionsTest() {
         String myPillarID = "myPillarID";
+        String otherPillarID = "OtherPillar";
         List<Collection> collection = new ArrayList<Collection>();
 
         collection.add(createCollection("myFirstCollection", new String[] {myPillarID}));
-        collection.add(createCollection("mySecondCollection", new String[] {myPillarID, "OtherPillar"}));
-        collection.add(createCollection("otherCollection", new String[] {"OtherPillar"}));
+        collection.add(createCollection("mySecondCollection", new String[] {myPillarID, otherPillarID}));
+        collection.add(createCollection("otherCollection", new String[] {otherPillarID}));
 
         String[] myCollections = SettingsHelper.getPillarCollections(myPillarID, collection);
+        Assert.assertEquals(myCollections.length, 2);
         Assert.assertEquals("myFirstCollection", myCollections[0]);
         Assert.assertEquals("mySecondCollection", myCollections[1]);
+
+        String[] otherCollections = SettingsHelper.getPillarCollections(otherPillarID, collection);
+        Assert.assertEquals(otherCollections.length, 2);
+        Assert.assertEquals("mySecondCollection", otherCollections[0]);
+        Assert.assertEquals("otherCollection", otherCollections[1]);
     }
 
     private Collection createCollection(String collectionID, String[] pillarIDs) {

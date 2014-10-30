@@ -34,6 +34,7 @@ import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.SettingsHelper;
 import org.bitrepository.pillar.messagehandler.PillarMediator;
+import org.bitrepository.pillar.store.PillarModel;
 import org.bitrepository.protocol.*;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
@@ -46,6 +47,7 @@ import org.testng.annotations.Test;
 public class MediatorTest extends DefaultFixturePillarTest {
     MockAuditManager audits;
     MessageHandlerContext context;
+    PillarModel model = null;
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseTest() throws Exception {
@@ -63,7 +65,7 @@ public class MediatorTest extends DefaultFixturePillarTest {
         addDescription("Tests the handling of a runtime exception");
         addStep("Setup create and start the mediator.", "");
         
-        TestMediator mediator = new TestMediator(context);
+        TestMediator mediator = new TestMediator(context, model);
         try {
             mediator.start();
             
@@ -96,8 +98,8 @@ public class MediatorTest extends DefaultFixturePillarTest {
 
     private class TestMediator extends PillarMediator {
 
-        public TestMediator(MessageHandlerContext context) {
-            super(messageBus, context);
+        public TestMediator(MessageHandlerContext context, PillarModel model) {
+            super(messageBus, context, model);
         }
         @SuppressWarnings("rawtypes")
         @Override

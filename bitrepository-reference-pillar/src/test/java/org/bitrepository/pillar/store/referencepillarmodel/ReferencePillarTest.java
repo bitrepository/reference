@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.referencepillar;
+package org.bitrepository.pillar.store.referencepillarmodel;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -34,22 +34,23 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.cache.MemoryCacheMock;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.SettingsHelper;
-import org.bitrepository.pillar.messagehandler.ReferencePillarMediator;
+import org.bitrepository.pillar.messagehandler.PillarMediator;
 import org.bitrepository.pillar.store.ChecksumStore;
+import org.bitrepository.pillar.store.FullReferencePillarModel;
+import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.checksumcache.MemoryCacheMock;
 import org.bitrepository.pillar.store.filearchive.CollectionArchiveManager;
-import org.bitrepository.pillar.store.filearchive.ReferenceChecksumManager;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 
 public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
     protected FileStore archives;
-    protected ReferenceChecksumManager csManager;
-    protected ReferencePillarMediator mediator;
+    protected PillarModel model;
+    protected PillarMediator mediator;
     protected MockAuditManager audits;
     protected ChecksumStore csCache;
     protected MessageHandlerContext context;
@@ -95,8 +96,8 @@ public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
                 new ResponseDispatcher(settingsForCUT, messageBus),
                 new PillarAlarmDispatcher(settingsForCUT, messageBus),
                 audits);
-        csManager = new ReferenceChecksumManager(archives, csCache, alarmDispatcher, settingsForCUT);
-        mediator = new ReferencePillarMediator(messageBus, context, archives, csManager);
+        model = new FullReferencePillarModel(archives, csCache, alarmDispatcher, settingsForCUT); 
+        mediator = new PillarMediator(messageBus, context, model);
         mediator.start();
         
         try {

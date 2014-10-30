@@ -28,16 +28,14 @@ import java.util.Arrays;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.Pillar;
-import org.bitrepository.pillar.checksumpillar.ChecksumPillar;
-import org.bitrepository.pillar.referencepillar.ReferencePillar;
-import org.bitrepository.pillar.store.ChecksumDAO;
-import org.bitrepository.pillar.store.checksumdatabase.ChecksumDatabaseManager;
+import org.bitrepository.pillar.PillarComponentFactory;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.settings.referencesettings.CollectionDirs;
+import org.bitrepository.settings.referencesettings.PillarType;
 
 public class EmbeddedPillar implements LifeCycledService {
     private final Pillar pillar;
@@ -56,13 +54,14 @@ public class EmbeddedPillar implements LifeCycledService {
 
     public static EmbeddedPillar createReferencePillar(Settings pillarSettings) {
         MessageBus messageBus = initialize(pillarSettings);
-        return new EmbeddedPillar(new ReferencePillar(messageBus, pillarSettings));
+        pillarSettings.getReferenceSettings().getPillarSettings().setPillarType(PillarType.FULLREFERENCEPILLAR);
+        return new EmbeddedPillar(PillarComponentFactory.getInstance().createPillar(pillarSettings, messageBus));
     }
 
     public static EmbeddedPillar createChecksumPillar(Settings pillarSettings) {
         MessageBus messageBus = initialize(pillarSettings);
-        return new EmbeddedPillar(new ChecksumPillar(messageBus, pillarSettings,
-                new ChecksumDAO(new ChecksumDatabaseManager(pillarSettings))));
+        pillarSettings.getReferenceSettings().getPillarSettings().setPillarType(PillarType.CHECKSUMPILLAR);
+        return new EmbeddedPillar(PillarComponentFactory.getInstance().createPillar(pillarSettings, messageBus));
     }
 
     private static MessageBus initialize(Settings pillarSettings) {

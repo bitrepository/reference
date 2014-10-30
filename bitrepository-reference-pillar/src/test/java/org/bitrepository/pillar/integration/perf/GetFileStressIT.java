@@ -104,7 +104,7 @@ public class GetFileStressIT extends PillarPerformanceTest {
         addStep("Getting " + numberOfFiles + " files", "Not errors should occur");
         ParallelOperationLimiter getLimiter = new ParallelOperationLimiter(numberOfParallelGets);
         messageBus.addListener(settingsForTestClient.getReceiverDestinationID(), new MessageHandlerForMetrics(metrics, getLimiter));
-        GetFileMessageFactory msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient);
+        GetFileMessageFactory msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
         for (int i = 1; i <= numberOfFiles; i++) {
             String correlationID = msgFactory.getNewCorrelationID();
             getLimiter.addJob(correlationID);
@@ -122,10 +122,9 @@ public class GetFileStressIT extends PillarPerformanceTest {
         MessageReceiver clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID(), testEventManager);
         messageBus.addListener(clientReceiver.getDestination(), clientReceiver.getMessageListener());;
         GetFileMessageFactory pillarLookupmMsgFactory =
-                new GetFileMessageFactory(collectionID, settingsForTestClient);
+                new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
         IdentifyPillarsForGetFileRequest identifyRequest =
-                pillarLookupmMsgFactory.createIdentifyPillarsForGetFileRequest("",
-                        DEFAULT_FILE_ID, getPillarID(), settingsForTestClient.getReceiverDestinationID());
+                pillarLookupmMsgFactory.createIdentifyPillarsForGetFileRequest(DEFAULT_FILE_ID);
         messageBus.sendMessage(identifyRequest);
         String pillarDestination = clientReceiver.waitForMessage(IdentifyPillarsForGetFileResponse.class).getReplyTo();
         messageBus.removeListener(clientReceiver.getDestination(), clientReceiver.getMessageListener());
