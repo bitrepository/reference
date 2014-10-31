@@ -95,7 +95,7 @@ public abstract class PillarModel {
      */
     public String getChecksumForFile(String fileID, String collectionID, ChecksumSpecTYPE csType) 
             throws RequestHandlerException {
-        if(csType == defaultChecksumSpec) {
+        if(csType.equals(defaultChecksumSpec)) {
             verifyFileToCacheConsistencyIfRequired(fileID, collectionID);
             return cache.getChecksum(fileID, collectionID);            
         } else {
@@ -118,7 +118,7 @@ public abstract class PillarModel {
      */
     public ChecksumEntry getChecksumEntryForFile(String fileId, String collectionId, ChecksumSpecTYPE csType) 
             throws RequestHandlerException {
-        if(csType == defaultChecksumSpec) {
+        if(csType.equals(defaultChecksumSpec)) {
             verifyFileToCacheConsistencyIfRequired(fileId, collectionId);
             return cache.getEntry(fileId, collectionId);            
         } else {

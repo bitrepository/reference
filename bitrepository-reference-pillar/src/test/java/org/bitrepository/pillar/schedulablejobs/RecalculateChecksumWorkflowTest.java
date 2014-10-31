@@ -21,7 +21,7 @@ package org.bitrepository.pillar.schedulablejobs;
  * #L%
  */
 
-import org.bitrepository.pillar.ReferencePillarTest;
+import org.bitrepository.pillar.DefaultPillarTest;
 import org.bitrepository.pillar.schedulablejobs.RecalculateChecksumJob;
 import org.bitrepository.service.workflow.SchedulableJob;
 import org.testng.Assert;
@@ -30,7 +30,7 @@ import org.testng.annotations.Test;
 import java.math.BigInteger;
 import java.util.Date;
 
-public class RecalculateChecksumWorkflowTest extends ReferencePillarTest {
+public class RecalculateChecksumWorkflowTest extends DefaultPillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void testWorkflowRecalculatesChecksum() throws Exception {
         addDescription("Test that the workflow recalculates the workflows, when the maximum age has been met.");

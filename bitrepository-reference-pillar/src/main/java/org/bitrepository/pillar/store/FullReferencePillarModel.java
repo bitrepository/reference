@@ -180,7 +180,7 @@ public class FullReferencePillarModel extends PillarModel {
      * @param fileId The id of the file to recalculate its default checksum for.
      * @param collectionId The id of the collection of the file.
      */
-    private void verifyFileToCacheConsistency(String fileId, String collectionId) {
+    public void verifyFileToCacheConsistency(String fileId, String collectionId) {
         log.info("Recalculating the checksum of file '" + fileId + "'.");
         FileInfo fi = fileArchive.getFileInfo(fileId, collectionId);
         String checksum = ChecksumUtils.generateChecksum(fi, defaultChecksumSpec);

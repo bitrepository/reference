@@ -73,7 +73,7 @@ public class GetChecksumsTest extends MockedPillarTest {
     public void goodCaseIdentification() throws Exception {
         addDescription("Tests the identification for a GetChecksums operation on the pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ID = DEFAULT_FILE_ID;
+        final String FILE_ID = DEFAULT_FILE_ID + testMethodName;
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
         
         addStep("Setup for having the file and delivering pillar id", 
@@ -112,7 +112,7 @@ public class GetChecksumsTest extends MockedPillarTest {
     public void badCaseIdentification() throws Exception {
         addDescription("Tests the identification for a GetChecksums operation on the pillar for the failure scenario, when the file is missing.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ID = DEFAULT_FILE_ID;
+        final String FILE_ID = DEFAULT_FILE_ID + testMethodName;
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
         
         addStep("Setup for delivering pillar id and not having the file ", 
@@ -151,7 +151,7 @@ public class GetChecksumsTest extends MockedPillarTest {
     public void goodCaseOperationSingleFile() throws Exception {
         addDescription("Tests the GetChecksums operation on the pillar for the successful scenario when requesting one specific file.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ID = DEFAULT_FILE_ID;
+        final String FILE_ID = DEFAULT_FILE_ID + testMethodName;
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
         addStep("Setup for having the file and delivering result-set", "No failure here");
         doAnswer(new Answer() {
@@ -167,11 +167,11 @@ public class GetChecksumsTest extends MockedPillarTest {
         doAnswer(new Answer() {
             public ExtractedChecksumResultSet answer(InvocationOnMock invocation) {
                 ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
-                res.insertChecksumEntry(new ChecksumEntry(DEFAULT_FILE_ID, DEFAULT_MD5_CHECKSUM, new Date()));
+                res.insertChecksumEntry(new ChecksumEntry(FILE_ID, DEFAULT_MD5_CHECKSUM, new Date()));
                 return res;
                 
             }
-        }).when(model).getSingleChecksumResultSet(anyString(), anyString(), any(XMLGregorianCalendar.class), any(XMLGregorianCalendar.class), any(ChecksumSpecTYPE.class));
+        }).when(model).getSingleChecksumResultSet(eq(FILE_ID), anyString(), any(XMLGregorianCalendar.class), any(XMLGregorianCalendar.class), any(ChecksumSpecTYPE.class));
         
         addStep("Create and send the actual GetChecksums message to the pillar.",
                 "Should be received and handled by the pillar.");
@@ -191,7 +191,7 @@ public class GetChecksumsTest extends MockedPillarTest {
         assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         assertEquals(finalResponse.getPillarID(), getPillarID());
         assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 1);
-        assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().get(0).getFileID(), DEFAULT_FILE_ID);
+        assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().get(0).getFileID(), FILE_ID);
     }
     
     @SuppressWarnings("rawtypes")
@@ -199,15 +199,9 @@ public class GetChecksumsTest extends MockedPillarTest {
     public void goodCaseOperationAllFiles() throws Exception {
         addDescription("Tests the GetChecksums operation on the pillar for the successful scenario, when requesting all files.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ID = DEFAULT_FILE_ID;
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
         
         addStep("Setup for having the file and delivering result-set", "No failure here");
-        doAnswer(new Answer() {
-            public Boolean answer(InvocationOnMock invocation) {
-                return true;
-            }
-        }).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();
@@ -247,7 +241,7 @@ public class GetChecksumsTest extends MockedPillarTest {
     public void badCaseOperationNoFile() throws Exception {
         addDescription("Tests the GetChecksums functionality of the pillar for the failure scenario, where it does not have the file.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ID = DEFAULT_FILE_ID;
+        final String FILE_ID = DEFAULT_FILE_ID + testMethodName;
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
         
         addStep("Setup for not having the file", "Should cause the FILE_NOT_FOUND_FAILURE later.");
@@ -285,18 +279,12 @@ public class GetChecksumsTest extends MockedPillarTest {
         addDescription("Tests that the restrictions are correctly passed on to the cache.");
 
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ID = DEFAULT_FILE_ID;
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
 
         final XMLGregorianCalendar MIN_DATE = CalendarUtils.getXmlGregorianCalendar(new Date(12345));
         final XMLGregorianCalendar MAX_DATE = CalendarUtils.getXmlGregorianCalendar(new Date());
         final Long MAX_RESULTS = 12345L;
 
-        doAnswer(new Answer() {
-            public Boolean answer(InvocationOnMock invocation) {
-                return true;
-            }
-        }).when(model).hasFileID(eq(FILE_ID), eq(collectionID));
         doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();

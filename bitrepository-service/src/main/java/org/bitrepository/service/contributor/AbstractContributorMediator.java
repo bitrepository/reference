@@ -67,7 +67,6 @@ public abstract class AbstractContributorMediator implements ContributorMediator
             handlerMap.put(handler.getRequestClass().getSimpleName(), handler);
         }
         messageBus.addListener(getContext().getSettings().getContributorDestinationID(), messageHandler);
-        System.out.println("Referencepillar: adding lister to pillar topic: " + getContext().getSettings().getContributorDestinationID());
         messageBus.addListener(getContext().getSettings().getCollectionDestination(), messageHandler);
     }
 

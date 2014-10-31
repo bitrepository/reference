@@ -68,7 +68,7 @@ public abstract class MockedPillarTest extends DefaultFixturePillarTest {
      */
     protected void createPillar() {
         shutdownMediator();
-        addFixture("Initialize a new checksumPillar.");
+        addFixture("Initialize a new Pillar.");
         PillarAlarmDispatcher alarmDispatcher = new PillarAlarmDispatcher(settingsForCUT, messageBus);
         context = new MessageHandlerContext(settingsForCUT,
                 SettingsHelper.getPillarCollections(settingsForCUT.getComponentID(), settingsForCUT.getCollections()),
@@ -106,6 +106,6 @@ public abstract class MockedPillarTest extends DefaultFixturePillarTest {
 
     @Override
     protected String getComponentID() {
-        return "ChecksumPillar-" + testMethodName;
+        return "Pillar-" + testMethodName;
     }
 }

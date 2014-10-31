@@ -55,6 +55,7 @@ public class ReplaceFileTest extends MockedPillarTest {
     ReplaceFileMessageFactory msgFactory;
     Long FILE_SIZE = 1L;
 
+    @Override
     public void initializeCUT() {
         super.initializeCUT();
         msgFactory = new ReplaceFileMessageFactory(collectionID, settingsForTestClient, getPillarID(),

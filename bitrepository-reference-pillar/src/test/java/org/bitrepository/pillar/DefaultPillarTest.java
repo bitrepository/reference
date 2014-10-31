@@ -44,7 +44,7 @@ import org.bitrepository.pillar.store.filearchive.CollectionArchiveManager;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
-public abstract class ReferencePillarTest extends DefaultFixturePillarTest {
+public abstract class DefaultPillarTest extends DefaultFixturePillarTest {
     protected FileStore archives;
     protected PillarModel model;
     protected PillarMediator mediator;
