@@ -169,6 +169,7 @@ public class IdentifyPillarsForPutFileRequestHandler
         IdentifyPillarsForPutFileResponse res = new IdentifyPillarsForPutFileResponse();
         res.setPillarID(getPillarModel().getPillarID());
         res.setPillarChecksumSpec(getPillarModel().getChecksumPillarSpec());
+        res.setFileID(msg.getFileID());
 
         return res;
     }

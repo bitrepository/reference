@@ -30,8 +30,6 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.testng.Assert.assertEquals;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -206,7 +204,6 @@ public class DeleteFileTest extends MockedPillarTest {
 
         addStep("Pillar should have sent an alarm", "Alarm contains information about the missing verification checksum");
         AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
-        System.out.println(alarm);
         assertEquals(alarm.getAlarm().getFileID(), FILE_ID);
         assertEquals(alarm.getAlarm().getAlarmRaiser(), getPillarID());
         assertEquals(alarm.getAlarm().getAlarmCode(), AlarmCode.CHECKSUM_ALARM);
