@@ -29,10 +29,10 @@ import java.io.FileWriter;
 import java.util.Arrays;
 
 import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.pillar.ReferencePillarTest;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.messagehandler.PillarMediator;
 import org.bitrepository.pillar.store.filearchive.ReferenceArchive;
-import org.bitrepository.pillar.store.referencepillarmodel.ReferencePillarTest;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.testng.Assert;
 import org.testng.annotations.Test;

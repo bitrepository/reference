@@ -42,6 +42,7 @@ import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -180,8 +181,8 @@ public class PutFileTest extends MockedPillarTest {
         String FILE_ID = DEFAULT_FILE_ID;
         settingsForCUT.getRepositorySettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
 
-        addStep("Setup for already having the file and delivering pillar id", 
-                "Should return true, when requesting file-id existence.");
+        addStep("Setup for not already having the file and delivering pillar id", 
+                "Should return false, when requesting file-id existence.");
         doAnswer(new Answer() {
             public Boolean answer(InvocationOnMock invocation) {
                 return false;
@@ -219,8 +220,8 @@ public class PutFileTest extends MockedPillarTest {
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID;
 
-        addStep("Setup for already having the file and delivering pillar id", 
-                "Should return true, when requesting file-id existence.");
+        addStep("Setup for not already having the file and delivering pillar id", 
+                "Should return false, when requesting file-id existence.");
         doAnswer(new Answer() {
             public Boolean answer(InvocationOnMock invocation) {
                 return false;
@@ -264,8 +265,8 @@ public class PutFileTest extends MockedPillarTest {
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID;
 
-        addStep("Setup for already having the file and delivering pillar id", 
-                "Should return true, when requesting file-id existence.");
+        addStep("Setup for not already having the file and delivering pillar id, and delivering an answer for the checksum request", 
+                "Should return false, when requesting file-id existence.");
         doAnswer(new Answer() {
             public Boolean answer(InvocationOnMock invocation) {
                 return false;

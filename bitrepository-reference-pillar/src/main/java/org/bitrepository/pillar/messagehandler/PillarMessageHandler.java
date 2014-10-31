@@ -43,8 +43,8 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
     protected final MessageHandlerContext context;
     /** The file id validator for validating the file id.*/
     private final FileIDValidator fileIdValidator;
-    /** The interface to data storage.*/
-    private final PillarModel fileInfoStore;
+    /** The model for the pillar.*/
+    private final PillarModel pillarModel;
     
     /**
      * @param context The context to use for message handling.
@@ -53,14 +53,14 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
         super(context);
         this.context = context;
         this.fileIdValidator = new FileIDValidator(context.getSettings());
-        this.fileInfoStore = fileInfoStore;
+        this.pillarModel = fileInfoStore;
     }
 
     /**
      * @return The cache for this message handler.
      */
     protected PillarModel getPillarModel() {
-        return fileInfoStore;
+        return pillarModel;
     }
     
     /**

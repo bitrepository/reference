@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.messagehandling;
+package org.bitrepository.pillar;
 
 import static org.mockito.Mockito.mock;
 
@@ -28,7 +28,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.SettingsHelper;
@@ -43,6 +42,7 @@ public abstract class MockedPillarTest extends DefaultFixturePillarTest {
     protected MockAuditManager audits;
     protected MessageHandlerContext context;
     protected ChecksumSpecTYPE csSpec;
+    protected ChecksumSpecTYPE otherCsSpec;
     protected ChecksumDataForFileTYPE csData;
     protected ChecksumDataForFileTYPE NON_DEFAULT_CS;
     protected static String DEFAULT_MD5_CHECKSUM = "1234cccccccc4321";
@@ -81,6 +81,10 @@ public abstract class MockedPillarTest extends DefaultFixturePillarTest {
         csSpec = new ChecksumSpecTYPE();
         csSpec.setChecksumSalt(null);
         csSpec.setChecksumType(ChecksumType.MD5);
+        
+        otherCsSpec = new ChecksumSpecTYPE();
+        otherCsSpec.setChecksumSalt(new byte[]{'a', 'b'});
+        otherCsSpec.setChecksumType(ChecksumType.HMAC_SHA512);
 
         csData = new ChecksumDataForFileTYPE();
         csData.setCalculationTimestamp(CalendarUtils.getEpoch());

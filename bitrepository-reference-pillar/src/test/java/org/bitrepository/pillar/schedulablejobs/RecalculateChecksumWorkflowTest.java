@@ -21,8 +21,8 @@ package org.bitrepository.pillar.schedulablejobs;
  * #L%
  */
 
+import org.bitrepository.pillar.ReferencePillarTest;
 import org.bitrepository.pillar.schedulablejobs.RecalculateChecksumJob;
-import org.bitrepository.pillar.store.referencepillarmodel.ReferencePillarTest;
 import org.bitrepository.service.workflow.SchedulableJob;
 import org.testng.Assert;
 import org.testng.annotations.Test;

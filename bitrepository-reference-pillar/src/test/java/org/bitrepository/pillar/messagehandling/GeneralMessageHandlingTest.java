@@ -24,44 +24,23 @@
  */
 package org.bitrepository.pillar.messagehandling;
 
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.common.utils.Base16Utils;
+import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.messagehandler.PillarMessageHandler;
 import org.bitrepository.pillar.store.PillarModel;
-import org.bitrepository.pillar.store.referencepillarmodel.ReferencePillarTest;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class GeneralMessageHandlingTest extends ReferencePillarTest {
+public class GeneralMessageHandlingTest extends MockedPillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
     public void testPillarMessageHandler() throws Exception {
-        addDescription("Test the handling of the ReferencePillarMessageHandler super-class.");
+        addDescription("Test the handling of the PillarMessageHandler super-class.");
         addStep("Setup", "Should be OK.");
         MockRequestHandler mockRequestHandler = new MockRequestHandler(context, model);
-        
-        addStep("Test the MD5 checksum type without any salt.", "Should be valid.");
-        ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
-        csType.setChecksumSalt(null);
-        csType.setChecksumType(ChecksumType.MD5);
-        mockRequestHandler.validateChecksum(csType);
-        
-        addStep("Test another csType with salt.", "Should be valid.");
-        csType = new ChecksumSpecTYPE();
-        csType.setChecksumSalt(Base16Utils.encodeBase16("checksum"));
-        csType.setChecksumType(ChecksumType.OTHER);
-        
-        try {
-            mockRequestHandler.validateChecksum(csType);
-            Assert.fail("Should throw an RequestHandlerException here!");
-        } catch (RequestHandlerException e) {
-            // expected.
-        }
         
         addStep("Test the pillar ID", "Should be Ok, with the id from settings, but not with another pillar id");
         mockRequestHandler.validatePillarID(getPillarID());
@@ -92,10 +71,6 @@ public class GeneralMessageHandlingTest extends ReferencePillarTest {
             return null;
         }
         
-        public void validateChecksum(ChecksumSpecTYPE csType) throws RequestHandlerException{
-            getPillarModel().verifyChecksumAlgorithm(csType, collectionID);
-        }
-         
         public void validatePillarID(String pillarId) throws RequestHandlerException {
             super.validatePillarId(pillarId);
         }

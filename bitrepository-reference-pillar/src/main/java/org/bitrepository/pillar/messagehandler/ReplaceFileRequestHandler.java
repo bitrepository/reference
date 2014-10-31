@@ -149,7 +149,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
             String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
             if(!calculatedChecksum.equals(requestedChecksum)) {
                 // Log the different checksums, but do not send the right checksum back!
-                log.info("Failed to handle replace operation on file '" + message.getFileID() + "' since the request had "
+                log.warn("Failed to handle replace operation on file '" + message.getFileID() + "' since the request had "
                         + "the checksum '" + requestedChecksum + "' where our local file has the value '" 
                         + calculatedChecksum + "'. Sending alarm and respond failure.");
                 String errMsg = "Requested to replace the file '" + message.getFileID() + "' with checksum '"

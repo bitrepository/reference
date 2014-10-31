@@ -40,6 +40,7 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.filestore.FileInfo;
+import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.common.MockFileInfo;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.service.exception.InvalidMessageException;
