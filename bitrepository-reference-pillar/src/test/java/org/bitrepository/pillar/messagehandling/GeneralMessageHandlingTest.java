@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.store.referencepillarmodel;
+package org.bitrepository.pillar.messagehandling;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -32,14 +32,15 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.messagehandler.PillarMessageHandler;
 import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.referencepillarmodel.ReferencePillarTest;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class GeneralReferencePillarTest extends ReferencePillarTest {
+public class GeneralMessageHandlingTest extends ReferencePillarTest {
     @Test( groups = {"regressiontest", "pillartest"})
-    public void testReferencePillarMessageHandler() throws Exception {
+    public void testPillarMessageHandler() throws Exception {
         addDescription("Test the handling of the ReferencePillarMessageHandler super-class.");
         addStep("Setup", "Should be OK.");
         MockRequestHandler mockRequestHandler = new MockRequestHandler(context, model);

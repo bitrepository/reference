@@ -24,6 +24,10 @@
  */
 package org.bitrepository.pillar.messagefactories;
 
+import java.math.BigInteger;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
@@ -53,6 +57,18 @@ public class GetChecksumsMessageFactory extends PillarTestMessageFactory {
         res.setFileIDs(fileId);
         res.setPillarID(pillarID);
         res.setResultAddress(url);
+
+        return res;
+    }
+
+    public GetChecksumsRequest createGetChecksumsRequest(ChecksumSpecTYPE csSpec, FileIDs fileId, String url, 
+            XMLGregorianCalendar minDate, XMLGregorianCalendar maxDate, Long maxResults) {
+        GetChecksumsRequest res = createGetChecksumsRequest(csSpec, fileId, url);
+        res.setMinTimestamp(minDate);
+        res.setMaxTimestamp(maxDate);
+        if(maxResults != null) {
+            res.setMaxNumberOfResults(BigInteger.valueOf(maxResults));
+        }
 
         return res;
     }
