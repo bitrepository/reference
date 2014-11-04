@@ -266,6 +266,9 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
 
     private ChecksumDAO getCacheWithData() {
         ChecksumDAO res = new ChecksumDAO(new ChecksumDatabaseManager(settings));
+        for(String fileID : res.getAllFileIDs(collectionID)) {
+            res.deleteEntry(fileID, collectionID);
+        }
         res.insertChecksumCalculation(DEFAULT_FILE_ID, collectionID, DEFAULT_CHECKSUM, DEFAULT_DATE);
         return res;
     }

@@ -40,7 +40,10 @@ public class ArchiveDirectoryTest extends ExtendedTestCase {
     
     @AfterMethod (alwaysRun=true)
     public void shutdownTests() throws Exception {
-        FileUtils.delete(new File(DIR_NAME));
+        File dir = new File(DIR_NAME);
+        if(dir.exists()) {
+            FileUtils.delete(new File(DIR_NAME));
+        }
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

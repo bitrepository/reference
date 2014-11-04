@@ -29,6 +29,7 @@ import org.bitrepository.common.exceptions.OperationFailedException;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarSettingsProvider;
 import org.bitrepository.pillar.PillarTestGroups;
@@ -117,6 +118,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
      */
     protected void startEmbeddedPillar(ITestContext testContext) {
         if (testConfiguration.useEmbeddedPillar()) {
+            SettingsUtils.initialize(settingsForCUT);
             if (Arrays.asList(testContext.getIncludedGroups()).contains(PillarTestGroups.CHECKSUM_PILLAR_TEST)) {
                 embeddedPillar = EmbeddedPillar.createChecksumPillar(settingsForCUT);
             } else {
@@ -210,7 +212,6 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
         /** The <code>TestEventManager</code> used to manage the event for the associated test. */
         private final TestEventManager testEventManager;
-
 
         /** The constructor.
          *
