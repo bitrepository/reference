@@ -281,17 +281,6 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     }
 
     /**
-     * Retrieves a id of an file based on the guid.
-     * @param fileGuid The guid for the file table entry.
-     * @return The id of the file corresponding to the guid.
-     */
-    private String retrieveFileId(long fileGuid) {
-        String sqlRetrieve = "SELECT " + FILE_FILEID + " FROM " + FILE_TABLE + " WHERE " + FILE_GUID + " = ?";
-
-        return DatabaseUtils.selectStringValue(dbConnector, sqlRetrieve, fileGuid);
-    }
-
-    /**
      * Retrieve the guid for a given actor. If the actor does not exist within the actor, then it is created.
      *
      * @param actorName The name of the actor.

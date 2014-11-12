@@ -1,22 +1,20 @@
 package org.bitrepository.pillar.store;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Date;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.common.filestore.FileInfo;
-import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.store.checksumcache.MemoryCacheMock;
-import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
-import org.bitrepository.pillar.store.filearchive.CollectionArchiveManager;
 import org.bitrepository.service.AlarmDispatcher;
-import org.bitrepository.service.exception.RequestHandlerException;
 import org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload;
 import org.testng.annotations.Test;
 

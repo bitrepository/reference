@@ -26,7 +26,7 @@ import java.util.List;
 
 public class Assert extends org.testng.Assert {
 
-    public static void assertEmpty(List list2Test, String message) {
+    public static void assertEmpty(List<?> list2Test, String message) {
         if (!list2Test.isEmpty()) {
             fail(message + ": Expected empty list but was " + list2Test);
         }

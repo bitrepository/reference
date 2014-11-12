@@ -140,7 +140,7 @@ public abstract class WorkflowManager {
         }
     }
 
-    private Class lookupClass(String settingsDefinedClass) throws ClassNotFoundException {
+    private Class<?> lookupClass(String settingsDefinedClass) throws ClassNotFoundException {
         String fullClassName;
         if (settingsDefinedClass.indexOf('.') == -1) {
             fullClassName = getDefaultWorkflowPackage() + "." + settingsDefinedClass;
