@@ -33,7 +33,7 @@
 
   <PillarSettings> 
     <PillarID>checksum-pillar</PillarID>
-    <PillarType>CHECKSUMPILLAR</PillarType>
+    <PillarType>CHECKSUM</PillarType>
     <CollectionDirs>
       <CollectionID>not-used</CollectionID>
       <FileDirs><!--foobarpattern-->var/checksumpillar</FileDirs>

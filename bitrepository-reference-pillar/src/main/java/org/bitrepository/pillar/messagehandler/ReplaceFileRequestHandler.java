@@ -109,31 +109,24 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
                     message.getCollectionID());
         } else if(getSettings().getRepositorySettings().getProtocolSettings()
                 .isRequireChecksumForDestructiveRequests()) {
-            ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-            responseInfo.setResponseText("According to the contract a checksum for file to be deleted during the "
-                    + "replacing operation is required.");
-            throw new IllegalOperationException(responseInfo, message.getCollectionID(), message.getFileID());
+            throw new IllegalOperationException(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, "According to the "
+                    + "contract a checksum for file to be deleted during the replacing operation is required.", 
+                    message.getCollectionID(), message.getFileID());
         }
         if(message.getChecksumDataForNewFile() != null) {
             getPillarModel().verifyChecksumAlgorithm(message.getChecksumDataForNewFile().getChecksumSpec(), 
                     message.getCollectionID());
         } else if(getSettings().getRepositorySettings().getProtocolSettings()
                 .isRequireChecksumForNewFileRequests()) {
-            ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
-            responseInfo.setResponseText("According to the contract a checksum for new file in the "
-                    + "replacing operation is required.");
-            throw new IllegalOperationException(responseInfo, message.getCollectionID(), message.getFileID());
+            throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, "According to the contract a "
+                    + "checksum for new file in the replacing operation is required.",
+                    message.getCollectionID(), message.getFileID());
         }
         
         // Validate, that we have the requested file.
         if(!getPillarModel().hasFileID(message.getFileID(), message.getCollectionID())) {
-            ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            responseInfo.setResponseText("The file '" + message.getFileID() + "' has been requested, but we do "
-                    + "not have that file!");
-            throw new InvalidMessageException(responseInfo, message.getCollectionID());
+            throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "The file '" + message.getFileID() 
+                    + "' has been requested, but we do not have that file!", message.getCollectionID());
         }
 
         // validate, that we have enough space for the new file.
@@ -155,10 +148,8 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
                 String errMsg = "Requested to replace the file '" + message.getFileID() + "' with checksum '"
                         + requestedChecksum + "', but our file had a different checksum.";
                 
-                ResponseInfo responseInfo = new ResponseInfo();
-                responseInfo.setResponseCode(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-                responseInfo.setResponseText(errMsg);
-                throw new IllegalOperationException(responseInfo, message.getCollectionID(), message.getFileID());
+                throw new IllegalOperationException(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, errMsg, 
+                        message.getCollectionID(), message.getFileID());
             }
         } else {
             log.debug("No checksum for validation of the existing file before replace.");

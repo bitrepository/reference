@@ -164,9 +164,9 @@ public final class PillarComponentFactory {
      */
     private PillarModel getPillarModel(Settings settings, ChecksumStore cache, AlarmDispatcher alarmDispatcher) {
         PillarType pillarType = settings.getReferenceSettings().getPillarSettings().getPillarType();
-        if(pillarType == PillarType.CHECKSUMPILLAR) {
+        if(pillarType == PillarType.CHECKSUM) {
             return new ChecksumPillarModel(cache, alarmDispatcher, settings);
-        } else if(pillarType == PillarType.FULLREFERENCEPILLAR) {
+        } else if(pillarType == PillarType.FILE) {
             FileStore archive = getFileStore(settings);
             return new FullReferencePillarModel(archive, cache, alarmDispatcher, settings);
         } else {

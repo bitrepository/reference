@@ -101,7 +101,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
     private void validateMessage(GetFileIDsRequest message) throws RequestHandlerException {
         validateCollectionID(message);
         validatePillarId(message.getPillarID());
-        validateFileID(message.getFileIDs().getFileID());
+        validateFileIDFormat(message.getFileIDs().getFileID());
         checkThatAllRequestedFilesAreAvailable(message);
 
         log.debug("Message '" + message.getCorrelationID() + "' validated and accepted.");
@@ -121,10 +121,8 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
         }
         
         if(!getPillarModel().hasFileID(fileids.getFileID(), message.getCollectionID())) {
-            ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            irInfo.setResponseText("Missing the file: '" + fileids.getFileID() + "'");
-            throw new InvalidMessageException(irInfo, message.getCollectionID());
+            throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
+                    message.getCollectionID());
         }
     }
     
@@ -182,10 +180,8 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
                 uploadFile(outputFile, resultingAddress);
                 res.setResultAddress(resultingAddress);
             } catch (Exception e) {
-                ResponseInfo ir = new ResponseInfo();
-                ir.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
-                ir.setResponseText(e.getMessage());
-                throw new InvalidMessageException(ir, message.getCollectionID(), e);
+                throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, "Could not deliver results.", 
+                        message.getCollectionID(), e);
             }
         }
         

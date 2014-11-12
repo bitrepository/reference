@@ -236,20 +236,16 @@ public abstract class PillarModel {
         
         // Validate against ChecksumPillar specific algorithm (if is a ChecksumPillar).
         if(getChecksumPillarSpec() != null && !(getChecksumPillarSpec().equals(checksumSpec))) {
-            ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);
-            ri.setResponseText("Cannot handle the checksum specification '" + checksumSpec + "'."
-                    + "This checksum pillar can only handle '" + getChecksumPillarSpec() + "'");
-            throw new InvalidMessageException(ri, collectionID);
+            throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "Cannot handle the checksum "
+                    + "specification '" + checksumSpec + "'.This checksum pillar can only handle '" 
+                    + getChecksumPillarSpec() + "'", collectionID);
         }
 
         try {
             ChecksumUtils.verifyAlgorithm(checksumSpec);
         } catch (NoSuchAlgorithmException e) {
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
-            fri.setResponseText(e.toString());
-            throw new InvalidMessageException(fri, collectionID, e);
+            throw new InvalidMessageException(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE, e.getMessage(), 
+                    collectionID, e);
         }
     }
 

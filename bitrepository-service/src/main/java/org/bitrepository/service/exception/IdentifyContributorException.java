@@ -24,7 +24,7 @@
  */
 package org.bitrepository.service.exception;
 
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 
 /**
  * Exception which wraps bad response information for the identifications. 
@@ -33,20 +33,22 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 public class IdentifyContributorException extends RequestHandlerException {
     /**
      * Constructor.
-     * @param irInfo The IdentifyResponseInfo for this class to wrap.
+     * @param rCode The response code.
+     * @param rText The text for the response info.
      * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
      */
-    public IdentifyContributorException(ResponseInfo irInfo, String collectionId) {
-        super(irInfo, collectionId);
+    public IdentifyContributorException(ResponseCode rCode, String rText, String collectionId) {
+        super(rCode, rText, collectionId);
     }
     
     /**
      * Constructor.
-     * @param irInfo The IdentifyResponseInfo for this class to wrap.
+     * @param rCode The response code.
+     * @param rText The text for the response info.
      * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
      * @param e The exception to wrap into the StackTrace.
      */
-    public IdentifyContributorException(ResponseInfo irInfo, String collectionId, Exception e) {
-        super(irInfo, collectionId, e);
+    public IdentifyContributorException(ResponseCode rCode, String rText, String collectionId, Exception e) {
+        super(rCode, rText, collectionId, e);
     }
 }

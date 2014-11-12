@@ -13,7 +13,6 @@ import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.settings.Settings;
@@ -110,12 +109,8 @@ public class FullReferencePillarModel extends PillarModel {
                 - settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
 
         if(useableSizeLeft < fileSize) {
-            ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.FAILURE);
-            irInfo.setResponseText("Not enough space left in this pillar. Requires '" 
-                    + fileSize + "' but has only '" + useableSizeLeft + "'");
-
-            throw new IdentifyContributorException(irInfo, collectionID);
+            throw new IdentifyContributorException(ResponseCode.FAILURE, "Not enough space left in this pillar. "
+                    + "Requires '" + fileSize + "' but has only '" + useableSizeLeft + "'", collectionID);
         }
     }
 
@@ -142,14 +137,9 @@ public class FullReferencePillarModel extends PillarModel {
     public void verifyFileExists(String fileID, String collectionID)
             throws RequestHandlerException {
         if(!hasFileID(fileID, collectionID)) {
-            String errMsg = "The file '" + fileID + "' has been requested, but we do not have that file in collection '" 
-                    + collectionID + "'!";
-            log.warn(errMsg);
-            // Then tell the mediator, that we failed.
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            fri.setResponseText(errMsg);
-            throw new InvalidMessageException(fri, collectionID);
+            log.warn("The file '" + fileID + "' has been requested, but we do not have that file in collection '" 
+                    + collectionID + "'!");
+            throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", collectionID);
         }
     }
 
@@ -311,11 +301,8 @@ public class FullReferencePillarModel extends PillarModel {
                     fe.downloadFromServer(new URL(fileAddress)));
         } catch (IOException e) {
             String errMsg = "Could not retrieve the file from '" + fileAddress + "'";
-            ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
-            ri.setResponseText(errMsg);
             log.error(errMsg, e);
-            throw new InvalidMessageException(ri, collectionID, e);
+            throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, errMsg, collectionID, e);
         }
 
         if(expectedChecksum != null) {
@@ -323,11 +310,10 @@ public class FullReferencePillarModel extends PillarModel {
             String expectedChecksumValue = Base16Utils.decodeBase16(expectedChecksum.getChecksumValue());
             log.debug("Validating newly downloaded file, '" + fileID + "', against expected checksum '" + expectedChecksumValue + "'.");
             if(!calculatedChecksum.equals(expectedChecksumValue)) {
-                ResponseInfo responseInfo = new ResponseInfo();
-                responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
-                responseInfo.setResponseText("Wrong checksum! Expected: [" + expectedChecksumValue 
+                log.warn("Wrong checksum! Expected: [" + expectedChecksumValue 
                         + "], but calculated: [" + calculatedChecksum + "]");
-                throw new IllegalOperationException(responseInfo, collectionID, fileID);
+                throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, "The downloaded file does "
+                        + "not have the expected checksum", collectionID, fileID);
             }
         } else {
             log.debug("No checksums for validating the newly downloaded file '" + fileID + "'.");

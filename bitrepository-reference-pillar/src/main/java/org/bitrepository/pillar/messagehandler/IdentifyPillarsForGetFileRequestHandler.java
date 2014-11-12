@@ -76,16 +76,11 @@ public class IdentifyPillarsForGetFileRequestHandler
      */
     public void validateMessage(IdentifyPillarsForGetFileRequest message) throws RequestHandlerException {
         validateCollectionID(message);
-        validateFileID(message.getFileID());
+        validateFileIDFormat(message.getFileID());
         
         if(getPillarModel().getChecksumPillarSpec() != null) {
-            ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);
-            ri.setResponseText("The ChecksumPillar '" 
-                    + getSettings().getReferenceSettings().getPillarSettings().getPillarID() + "' cannot handle a "
-                    + "request for the actual file, since it only contains the checksum of the file.");
-            
-            throw new InvalidMessageException(ri, message.getCollectionID());
+            throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "A ChecksumPillar cannot deliver "
+                    + "actual files.", message.getCollectionID());
         }
     }
     
@@ -96,7 +91,7 @@ public class IdentifyPillarsForGetFileRequestHandler
      */
     private void checkThatFileIsAvailable(IdentifyPillarsForGetFileRequest message) 
             throws RequestHandlerException {
-        validateFileID(message.getFileID());
+        validateFileIDFormat(message.getFileID());
         getPillarModel().verifyFileExists(message.getFileID(), message.getCollectionID());
     }
     

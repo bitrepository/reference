@@ -34,7 +34,7 @@
   </ClientSettings>
   <PillarSettings>
     <PillarID>Pillar1</PillarID>
-    <PillarType>FULLREFERENCEPILLAR</PillarType>
+    <PillarType>FILE</PillarType>
     <CollectionDirs>
       <FileDirs>target/test/referencepillar/file-archive</FileDirs>
     </CollectionDirs>

@@ -97,10 +97,10 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
      */
     protected void validateMessage(GetAuditTrailsRequest message) throws RequestHandlerException {
         if(!message.getContributor().equals(getContext().getSettings().getComponentID())) {
-            ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
-            ri.setResponseText("Invalid contributor id.");
-            throw new InvalidMessageException(ri, message.getCollectionID());
+            throw new InvalidMessageException(
+                    ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE, 
+                    "Invalid contributor id.", 
+                    message.getCollectionID());
         }
     }
     
@@ -178,10 +178,10 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
             FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getContext().getSettings());
             fe.uploadToServer(new FileInputStream(fileToUpload), uploadUrl);
         } catch (Exception e) {
-            ResponseInfo ir = new ResponseInfo();
-            ir.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
-            ir.setResponseText("Could not handle the creation and upload of the results due to: " + e.getMessage());
-            throw new InvalidMessageException(ir, message.getCollectionID(), e);
+            throw new InvalidMessageException(
+                    ResponseCode.FILE_TRANSFER_FAILURE, 
+                    "Could not handle the creation and upload of the results due to: " + e.getMessage(), 
+                    message.getCollectionID(), e);
         }
     }
     

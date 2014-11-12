@@ -24,9 +24,6 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -82,21 +79,11 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
     public void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetChecksumsRequest message) 
             throws RequestHandlerException {
         FileIDs fileids = message.getFileIDs();
-        validateFileID(fileids.getFileID());
+        validateFileIDFormat(fileids.getFileID());
         
-        List<String> missingFiles = new ArrayList<String>();
-        String fileID = fileids.getFileID();
-        if(fileID != null && !getPillarModel().hasFileID(fileID, message.getCollectionID())) {
-            missingFiles.add(fileID);
-        }
-        
-        // Throw exception if any files are missing.
-        if(!missingFiles.isEmpty()) {
-            ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            irInfo.setResponseText(missingFiles.size() + " missing files: '" + missingFiles + "'");
-            
-            throw new IdentifyContributorException(irInfo, message.getCollectionID());
+        if(fileids.getFileID() != null && !getPillarModel().hasFileID(fileids.getFileID(), message.getCollectionID())) {
+            throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
+                    message.getCollectionID());
         }
     }
     

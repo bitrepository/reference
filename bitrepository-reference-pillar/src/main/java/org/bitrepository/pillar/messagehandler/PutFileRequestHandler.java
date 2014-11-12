@@ -89,14 +89,12 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
             getPillarModel().verifyChecksumAlgorithm(message.getChecksumDataForNewFile().getChecksumSpec(), 
                     message.getCollectionID());
         } else if(getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
-            ResponseInfo responseInfo = new ResponseInfo();
-            responseInfo.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
-            responseInfo.setResponseText("According to the contract a checksum for creating a new file is required.");
-            throw new IllegalOperationException(responseInfo, message.getCollectionID(), message.getFileID());
+            throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, "A checksum is required for "
+                    + "the PutFile operation to be performed.", message.getCollectionID(), message.getFileID());
         }
         
         getPillarModel().verifyChecksumAlgorithm(message.getChecksumRequestForNewFile(), message.getCollectionID());
-        validateFileID(message.getFileID());
+        validateFileIDFormat(message.getFileID());
         
         checkThatTheFileDoesNotAlreadyExist(message);
         checkSpaceForStoringNewFile(message);
@@ -104,33 +102,32 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
     
     /**
      * Validates that the file is not already within the archive. 
-     * Otherwise an {@link InvalidMessageException} with the appropriate errorcode is thrown.
+     * Otherwise an {@link InvalidMessageException} with the appropriate error code is thrown.
      * @param message The request with the filename to validate.
      */
     private void checkThatTheFileDoesNotAlreadyExist(PutFileRequest message) throws RequestHandlerException {
         if(getPillarModel().hasFileID(message.getFileID(), message.getCollectionID())) {
-            ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
-            irInfo.setResponseText("The file '" + message.getFileID() 
-                    + "' already exists within the archive.");
-            
-            throw new InvalidMessageException(irInfo, message.getCollectionID());
+            throw new InvalidMessageException(ResponseCode.DUPLICATE_FILE_FAILURE, "We already have the file", 
+                    message.getCollectionID());
         }
     }
     
     /**
      * Validates that enough space exists is left in the archive.
-     * Otherwise an {@link InvalidMessageException} with the appropriate errorcode is thrown.
+     * Otherwise an {@link InvalidMessageException} with the appropriate error code is thrown.
      * If the no size is defined in the message, then it is not checked.
      * @param message The request with the size of the file.
      */
     private void checkSpaceForStoringNewFile(PutFileRequest message) throws RequestHandlerException {
+        long fileSize;
         if(message.getFileSize() == null) {
             log.debug("No size for the file to be put.");
-            return;
+            fileSize = 0L;
+        } else {
+            fileSize = message.getFileSize().longValue();
         }
         
-        getPillarModel().verifyEnoughFreeSpaceLeftForFile(message.getFileSize().longValue(), message.getCollectionID());
+        getPillarModel().verifyEnoughFreeSpaceLeftForFile(fileSize, message.getCollectionID());
     }
     
     /**

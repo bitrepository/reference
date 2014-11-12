@@ -32,8 +32,8 @@
   </ClientSettings>
 
   <PillarSettings> 
-    <PillarID>reference2-pillar</PillarID>
-     <PillarType>FULLREFERENCEPILLAR</PillarType>
+    <PillarID>file2-pillar</PillarID>
+    <PillarType>FILE</PillarType>
     <CollectionDirs>
       <CollectionID>books</CollectionID>
       <FileDirs><!--foobarpattern-->var/reference2pillar</FileDirs>

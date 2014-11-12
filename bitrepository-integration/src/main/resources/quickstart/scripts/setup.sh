@@ -46,11 +46,11 @@ cd var
 if [ ! -d "checksumpillar" ]; then
 	mkdir checksumpillar
 fi
-if [ ! -d "reference1pillar" ]; then
-	mkdir reference1pillar
+if [ ! -d "file1pillar" ]; then
+	mkdir file1pillar
 fi
-if [ ! -d "reference2pillar" ]; then
-	mkdir reference2pillar
+if [ ! -d "file2pillar" ]; then
+	mkdir file2pillar
 fi
 cd $quickstartdir
 
@@ -93,20 +93,20 @@ if [ ! -d "checksumpillar" ]; then
 	ln -s ../conf/checksumpillar checksumpillar/conf
 fi
 
-echo "Installing reference1pillar"
-if [ ! -d "reference1pillar" ]; then
-	mkdir "reference1pillar" 
-	cp -r $refpillardistdir/lib reference1pillar/.
-	cp -r $refpillardistdir/bin reference1pillar/.
-	ln -s ../conf/reference1pillar reference1pillar/conf
+echo "Installing file1pillar"
+if [ ! -d "file1pillar" ]; then
+	mkdir "file1pillar" 
+	cp -r $refpillardistdir/lib file1pillar/.
+	cp -r $refpillardistdir/bin file1pillar/.
+	ln -s ../conf/file1pillar file1pillar/conf
 fi
 
-echo "Installing reference2pillar"
-if [ ! -d "reference2pillar" ]; then
-        mkdir "reference2pillar"
-        cp -r $refpillardistdir/lib reference2pillar/.
-        cp -r $refpillardistdir/bin reference2pillar/.
-        ln -s ../conf/reference2pillar reference2pillar/conf
+echo "Installing file2pillar"
+if [ ! -d "file2pillar" ]; then
+        mkdir "file2pillar"
+        cp -r $refpillardistdir/lib file2pillar/.
+        cp -r $refpillardistdir/bin file2pillar/.
+        ln -s ../conf/file2pillar file2pillar/conf
 fi
 
 rm -r $refpillardistdir

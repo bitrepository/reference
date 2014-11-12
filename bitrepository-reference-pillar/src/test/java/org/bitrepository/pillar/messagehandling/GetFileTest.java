@@ -32,7 +32,6 @@ import static org.testng.Assert.assertEquals;
 import java.io.ByteArrayInputStream;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
@@ -43,7 +42,9 @@ import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.common.MockFileInfo;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
+import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.InvalidMessageException;
+import org.bitrepository.service.exception.RequestHandlerException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.annotations.Test;
@@ -103,11 +104,9 @@ public class GetFileTest extends MockedPillarTest {
         addStep("Setup for throwing an exception when asked to verify file existence", 
                 "Should cause the FILE_NOT_FOUND_FAILURE later.");
         doAnswer(new Answer() {
-            public Void answer(InvocationOnMock invocation) throws InvalidMessageException {
-                ResponseInfo ri = new ResponseInfo();
-                ri.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-                ri.setResponseText("Cannot find the file.");
-                throw new InvalidMessageException(ri, collectionID);
+            public Void answer(InvocationOnMock invocation) throws RequestHandlerException {
+                throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
+                        collectionID);
             }
         }).when(model).verifyFileExists(eq(FILE_ID), anyString());
         doAnswer(new Answer() {
@@ -145,11 +144,9 @@ public class GetFileTest extends MockedPillarTest {
         addStep("Setup for throwing an exception when asked to verify file existence", 
                 "Should cause the FILE_NOT_FOUND_FAILURE later.");
         doAnswer(new Answer() {
-            public Void answer(InvocationOnMock invocation) throws InvalidMessageException {
-                ResponseInfo ri = new ResponseInfo();
-                ri.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-                ri.setResponseText("Cannot find the file.");
-                throw new InvalidMessageException(ri, collectionID);
+            public Void answer(InvocationOnMock invocation) throws RequestHandlerException {
+                throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
+                        collectionID);
             }
         }).when(model).verifyFileExists(eq(FILE_ID), anyString());
         doAnswer(new Answer() {

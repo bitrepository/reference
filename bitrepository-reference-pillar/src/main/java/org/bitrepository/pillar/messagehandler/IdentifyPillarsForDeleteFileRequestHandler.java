@@ -58,7 +58,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
     @Override
     public void processRequest(IdentifyPillarsForDeleteFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateCollectionID(message);
-        validateFileID(message.getFileID());
+        validateFileIDFormat(message.getFileID());
         checkThatRequestedFileIsAvailable(message);
         respondSuccessfulIdentification(message);
     }
@@ -77,10 +77,8 @@ public class IdentifyPillarsForDeleteFileRequestHandler
     private void checkThatRequestedFileIsAvailable(IdentifyPillarsForDeleteFileRequest message) 
             throws RequestHandlerException {
         if(!getPillarModel().hasFileID(message.getFileID(), message.getCollectionID())) {
-            ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            irInfo.setResponseText("Could not find the requested file to delete.");
-            throw new IdentifyContributorException(irInfo, message.getCollectionID());
+            throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
+                    message.getCollectionID());
         }
     }
 

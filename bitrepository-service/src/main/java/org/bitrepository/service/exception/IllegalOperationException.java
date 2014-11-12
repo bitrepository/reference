@@ -21,7 +21,7 @@
  */
 package org.bitrepository.service.exception;
 
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 
 /**
  * Exception for telling, that a given operation is illegal.
@@ -33,24 +33,26 @@ public class IllegalOperationException extends RequestHandlerException {
     
     /**
      * Constructor.
-     * @param rInfo The ResponseInfo for this class to wrap.
+     * @param rCode The response code.
+     * @param rText The text for the response info.
      * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
      * @param fileId The id of the file regarding the illegal operation. Use null, if no file.
      */
-    public IllegalOperationException(ResponseInfo rInfo, String collectionId, String fileId) {
-        super(rInfo, collectionId);
+    public IllegalOperationException(ResponseCode rCode, String rText, String collectionId, String fileId) {
+        super(rCode, rText, collectionId);
         this.fileId = fileId;
     }
     
     /**
      * Constructor.
-     * @param rInfo The ResponseInfo for this class to wrap.
+     * @param rCode The response code.
+     * @param rText The text for the response info.
      * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
      * @param fileId The id of the file regarding the illegal operation. Use null, if no file.
      * @param e The exception to wrap into the StackTrace.
      */
-    public IllegalOperationException(ResponseInfo rInfo, String collectionId, String fileId, Exception e) {
-        super(rInfo, collectionId, e);
+    public IllegalOperationException(ResponseCode rCode, String rText, String collectionId, String fileId, Exception e) {
+        super(rCode, rText, collectionId, e);
         this.fileId = fileId;
     }
     

@@ -54,13 +54,13 @@ public class EmbeddedPillar implements LifeCycledService {
 
     public static EmbeddedPillar createReferencePillar(Settings pillarSettings) {
         MessageBus messageBus = initialize(pillarSettings);
-        pillarSettings.getReferenceSettings().getPillarSettings().setPillarType(PillarType.FULLREFERENCEPILLAR);
+        pillarSettings.getReferenceSettings().getPillarSettings().setPillarType(PillarType.FILE);
         return new EmbeddedPillar(PillarComponentFactory.getInstance().createPillar(pillarSettings, messageBus));
     }
 
     public static EmbeddedPillar createChecksumPillar(Settings pillarSettings) {
         MessageBus messageBus = initialize(pillarSettings);
-        pillarSettings.getReferenceSettings().getPillarSettings().setPillarType(PillarType.CHECKSUMPILLAR);
+        pillarSettings.getReferenceSettings().getPillarSettings().setPillarType(PillarType.CHECKSUM);
         return new EmbeddedPillar(PillarComponentFactory.getInstance().createPillar(pillarSettings, messageBus));
     }
 

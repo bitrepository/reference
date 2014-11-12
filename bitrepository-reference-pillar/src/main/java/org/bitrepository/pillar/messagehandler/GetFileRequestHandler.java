@@ -93,7 +93,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
     protected void validateMessage(GetFileRequest message) throws RequestHandlerException {
         validateCollectionID(message);
         validatePillarId(message.getPillarID());
-        validateFileID(message.getFileID());
+        validateFileIDFormat(message.getFileID());
         
         getPillarModel().verifyFileExists(message.getFileID(), message.getCollectionID());
     }
@@ -140,11 +140,10 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
             FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
             fe.uploadToServer(is, new URL(message.getFileAddress()));
         } catch (IOException e) {
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
-            fri.setResponseText("The file '" + message.getFileID() + "' could not be uploaded at '" 
-                    + message.getFileAddress() + "'");
-            throw new InvalidMessageException(fri, message.getCollectionID(), e);
+            log.warn("The file '" + message.getFileID() + "' from collection '" + message.getCollectionID() 
+                    + "' could not be uploaded at '" + message.getFileAddress() + "'");
+            throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, "Could not deliver file to address '" 
+                    + message.getFileAddress() + "'", message.getCollectionID(), e);
         }
     }
     

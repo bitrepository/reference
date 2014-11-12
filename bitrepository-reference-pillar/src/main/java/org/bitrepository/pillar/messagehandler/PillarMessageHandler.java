@@ -90,11 +90,11 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
     }
     
     /**
-     * Uses the FileIDValidator to validate a given file id.
+     * Uses the FileIDValidator to validate the format of a given file id.
      * @param fileId The id to validate.
      * @throws RequestHandlerException If the id of the file was invalid.
      */
-    protected void validateFileID(String fileId) throws RequestHandlerException {
+    protected void validateFileIDFormat(String fileId) throws RequestHandlerException {
         fileIdValidator.validateFileID(fileId);
     }
 }

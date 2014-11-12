@@ -65,7 +65,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
     @Override
     public void processRequest(IdentifyPillarsForReplaceFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateCollectionID(message);
-        validateFileID(message.getFileID());
+        validateFileIDFormat(message.getFileID());
         checkThatRequestedFileIsAvailable(message);
         checkSpaceForStoringNewFile(message);
         respondSuccessfulIdentification(message);
@@ -78,22 +78,20 @@ public class IdentifyPillarsForReplaceFileRequestHandler
     
     /**
      * Validates that the requested files are present in the archive. 
-     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
+     * Otherwise an {@link IdentifyContributorException} with the appropriate error code is thrown.
      * @param message The message containing the id of the file. 
      */
     public void checkThatRequestedFileIsAvailable(IdentifyPillarsForReplaceFileRequest message) 
             throws RequestHandlerException {
         if(!getPillarModel().hasFileID(message.getFileID(), message.getCollectionID())) {
-            ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            irInfo.setResponseText("Could not find the requested file to delete.");
-            throw new IdentifyContributorException(irInfo, message.getCollectionID());
+            throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "Could not find the "
+                    + "requested file to delete.", message.getCollectionID());
         }
     }
     
     /**
      * Validates that enough space exists is left in the archive.
-     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
+     * Otherwise an {@link IdentifyContributorException} with the appropriate error code is thrown.
      * @param message The request with the size of the file.
      */
     private void checkSpaceForStoringNewFile(IdentifyPillarsForReplaceFileRequest message) 

@@ -66,9 +66,12 @@
     <PillarID>test-pillar</PillarID>
     
     <!--
-      The type of pillar. Must be either 'FULLREFERENCEPILLAR' or 'CHECKSUMPILLAR'. 
+      The type of pillar. Must be either 'FILE' or 'CHECKSUM' for a FilePillar or ChecksumPillar respectively.
+      The ChecksumPillar does not have any actual files, it only contains the checksum database, where the checksums
+      of the files are stored.
+      The FilePillar contains both the checksum database and archives for storing the actual files. 
      -->
-    <PillarType>FULLREFERENCEPILLAR</PillarType>
+    <PillarType>FILE</PillarType>
 
     <!--
       The directories for the collections for this pillar. 

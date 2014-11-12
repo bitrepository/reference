@@ -66,7 +66,7 @@ public class IdentifyPillarsForPutFileRequestHandler
     @Override
     public void processRequest(IdentifyPillarsForPutFileRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateCollectionID(message);
-        validateFileID(message.getFileID());
+        validateFileIDFormat(message.getFileID());
         if(checkThatTheFileDoesNotAlreadyExist(message)) {
             respondDuplicateFile(message);
         } else {

@@ -216,7 +216,7 @@
         <xs:element ref="PillarType">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The type pillar. Can be either FullReferencePillar or ChecksumPillar.
+              The type pillar. Can be either FilePillar or ChecksumPillar.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
@@ -402,7 +402,7 @@
         </xs:documentation>
       </xs:annotation>
       <xs:restriction base="xs:string">
-        <xs:enumeration value="CHECKSUMPILLAR">
+        <xs:enumeration value="CHECKSUM">
           <xs:annotation>
             <xs:documentation xml:lang="en">
               It is thus a ChecksumPillar, which does not have any actual files beneath it.
@@ -410,10 +410,11 @@
             </xs:documentation>
           </xs:annotation>
         </xs:enumeration>
-        <xs:enumeration value="FULLREFERENCEPILLAR">
+        <xs:enumeration value="FILE">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              It is a Full ReferencePillar, which will have archives containing the actual files.
+              The FilePillar is a full ReferencePillar, both containing the checksum database and archives with 
+              the actual files.
               The directories defined in settings will automatically be instantiated (if possible). 
             </xs:documentation>
           </xs:annotation>

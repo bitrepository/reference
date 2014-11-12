@@ -9,7 +9,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.Base16Utils;
@@ -78,20 +77,16 @@ public class ChecksumPillarModel extends PillarModel {
     @Override
     protected String getNonDefaultChecksum(String fileId, String collectionID, ChecksumSpecTYPE csType) 
             throws RequestHandlerException {
-        ResponseInfo ri = new ResponseInfo();
-        ri.setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);
-        ri.setResponseText("Cannot handle the checksum specification '" + csType + "'."
-                + "This is a checksum pillar, which only can handle '" + pillarSpecificChecksumType + "'");
-        throw new InvalidMessageException(ri, collectionID);
+        throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "Cannot handle the checksum "
+                + "specification '" + csType + "'. This is a checksum pillar, which only can handle '" 
+                + pillarSpecificChecksumType + "'", collectionID);
     }
 
     @Override
     public FileInfo getFileInfoForActualFile(String fileID, String collectionID)
             throws RequestHandlerException {
-        ResponseInfo ri = new ResponseInfo();
-        ri.setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);
-        ri.setResponseText("This is a checksum pillar and it does not have the actual file. Only it's checksum.");
-        throw new InvalidMessageException(ri, collectionID);
+        throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "This is a checksum pillar and it does "
+                + "not have the actual file. Only it's checksum.", collectionID);
     }
 
     @Override
@@ -103,16 +98,14 @@ public class ChecksumPillarModel extends PillarModel {
     @Override
     protected ExtractedChecksumResultSet getNonDefaultChecksumResultSet(Long maxResults, String collectionID, 
             ChecksumSpecTYPE csSpec) throws RequestHandlerException {
-        ResponseInfo ri = new ResponseInfo();
-        ri.setResponseCode(ResponseCode.REQUEST_NOT_SUPPORTED);
-        ri.setResponseText("This is a checksum pillar and it does not have the actual file. Only it's checksum.");
-        throw new InvalidMessageException(ri, collectionID);
+        throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "This is a checksum pillar and it does "
+                + "not have the actual file. Only it's checksum.", collectionID);
     }
 
     @Override
     public void verifyFileExists(String fileID, String collectionID) throws RequestHandlerException {
-        // Fail similarly to retrieving the file info for a file.
-        getFileInfoForActualFile(fileID, collectionID);
+        throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "This is a checksum pillar and it does "
+                + "not have the actual file. Only it's checksum.", collectionID);
     }
     
     /**
@@ -171,10 +164,8 @@ public class ChecksumPillarModel extends PillarModel {
         if(checksumData != null) {
             return Base16Utils.decodeBase16(checksumData.getChecksumValue());
         } else {
-            ResponseInfo fi = new ResponseInfo();
-            fi.setResponseText("The checksum should have been provided with the message");
-            fi.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
-            throw new InvalidMessageException(fi, collectionID);
+            throw new InvalidMessageException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, "The checksum should have been "
+                    + "provided with the message", collectionID);
         }
     }
 
@@ -196,22 +187,16 @@ public class ChecksumPillarModel extends PillarModel {
         } catch (IOException e) {
             String errMsg = "Could not retrieve the file from '" + fileAddress + "'";
             log.error(errMsg, e);
-            ResponseInfo ri = new ResponseInfo();
-            ri.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
-            ri.setResponseText(errMsg);
-            throw new InvalidMessageException(ri, collectionID);
+            throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, errMsg, collectionID);
         }
         
         if(expectedChecksum != null) {
             String givenChecksum = Base16Utils.decodeBase16(expectedChecksum.getChecksumValue());
             if(!calculatedChecksum.equals(givenChecksum)) {
-                log.error("Wrong checksum! Expected: [" + givenChecksum 
-                        + "], but calculated: [" + calculatedChecksum + "]");
-                ResponseInfo ri = new ResponseInfo();
-                ri.setResponseCode(ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
-                ri.setResponseText("Expected checksums '" + givenChecksum + "' but the checksum was '" 
-                        + calculatedChecksum + "'.");
-                throw new IllegalOperationException(ri, collectionID, fileID);
+                log.error("Wrong checksum for file '" + fileID + "' at '" + collectionID + "'! Expected: [" 
+                        + givenChecksum + "], but calculated: [" + calculatedChecksum + "]");
+                throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, "Expected checksums '" 
+                        + givenChecksum + "' but the checksum was '" + calculatedChecksum + "'.", collectionID, fileID);
             }
         } else {
             log.debug("No checksums for validating the retrieved file.");

@@ -86,15 +86,12 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
             log.debug("No fileids are defined in the identification request ('" + message.getCorrelationID() + "').");
             return;
         }
-        validateFileID(message.getFileIDs().getFileID());
+        validateFileIDFormat(message.getFileIDs().getFileID());
         
         String fileID = fileids.getFileID();
         if(fileID != null && !getPillarModel().hasFileID(fileID, message.getCollectionID())) {
-            ResponseInfo irInfo = new ResponseInfo();
-            irInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            irInfo.setResponseText("The following file is missing: '" + fileID + "'");
-            
-            throw new IdentifyContributorException(irInfo, message.getCollectionID());
+            throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
+                    message.getCollectionID());
         }
     }
     

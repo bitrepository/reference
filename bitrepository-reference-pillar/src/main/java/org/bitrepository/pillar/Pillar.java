@@ -80,7 +80,7 @@ public class Pillar {
         mediator.start();
         
         this.scheduler = new TimerbasedScheduler();
-        if(pillarType == PillarType.FULLREFERENCEPILLAR) {
+        if(pillarType == PillarType.FILE) {
             initializeWorkflows();
         }
     }

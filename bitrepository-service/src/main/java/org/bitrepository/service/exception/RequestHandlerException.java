@@ -21,6 +21,7 @@
  */
 package org.bitrepository.service.exception;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 
 /**
@@ -35,24 +36,30 @@ public abstract class RequestHandlerException extends Exception {
     
     /**
      * Constructor.
-     * @param rInfo The ResponseInfo for this class to wrap.
-     * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
+     * @param rCode The response code.
+     * @param rText The text for the response info.
+     * @param collectionId The id of the collection.
      */
-    public RequestHandlerException(ResponseInfo rInfo, String collectionId) {
-        super(rInfo.getResponseText());
-        this.responseInfo = rInfo;
+    public RequestHandlerException(ResponseCode rCode, String rText, String collectionId) {
+        super(rText);
+        this.responseInfo = new ResponseInfo();
+        this.responseInfo.setResponseCode(rCode);
+        this.responseInfo.setResponseText(rText);
         this.collectionId = collectionId;
     }
     
     /**
      * Constructor.
-     * @param rInfo The ResponseInfo for this class to wrap.
-     * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
+     * @param rCode The response code.
+     * @param rText The text for the response info.
+     * @param collectionId The id of the collection.
      * @param e The exception to wrap into the StackTrace.
      */
-    public RequestHandlerException(ResponseInfo rInfo, String collectionId, Exception e) {
-        super(rInfo.getResponseText(), e);
-        this.responseInfo = rInfo;
+    public RequestHandlerException(ResponseCode rCode, String rText, String collectionId, Exception e) {
+        super(rText, e);
+        this.responseInfo = new ResponseInfo();
+        this.responseInfo.setResponseCode(rCode);
+        this.responseInfo.setResponseText(rText);
         this.collectionId = collectionId;
     }
     

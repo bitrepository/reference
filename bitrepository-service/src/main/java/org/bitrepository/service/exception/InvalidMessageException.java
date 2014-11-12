@@ -24,7 +24,7 @@
  */
 package org.bitrepository.service.exception;
 
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 
 /**
  * Exception which wraps bad response information for the validation of the operation requests. 
@@ -33,20 +33,22 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 public class InvalidMessageException extends RequestHandlerException {
     /**
      * Constructor.
-     * @param rInfo The ResponseInfo for this class to wrap.
-     * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
+     * @param rCode The response code.
+     * @param rText The text for the response info.
+     * @param collectionId The id of the collection.
      */
-    public InvalidMessageException(ResponseInfo rInfo, String collectionId) {
-        super(rInfo, collectionId);
+    public InvalidMessageException(ResponseCode rCode, String rText, String collectionId) {
+        super(rCode, rText, collectionId);
     }
     
     /**
      * Constructor.
-     * @param rInfo The ResponseInfo for this class to wrap.
-     * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
+     * @param rCode The response code.
+     * @param rText The text for the response info.
+     * @param collectionId The id of the collection.
      * @param e The exception to wrap into the StackTrace.
      */
-    public InvalidMessageException(ResponseInfo rInfo, String collectionId, Exception e) {
-        super(rInfo, collectionId, e);
+    public InvalidMessageException(ResponseCode rCode, String rText, String collectionId, Exception e) {
+        super(rCode, rText, collectionId, e);
     }
 }

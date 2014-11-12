@@ -118,26 +118,18 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * @param message The message to validate the FileIDs of.
      */
     private void validateFileIDs(GetChecksumsRequest message) throws RequestHandlerException {
-        // Validate the requested files
         FileIDs fileids = message.getFileIDs();
 
-        // go through all the files and find any missing
         String fileID = fileids.getFileID();
         if(fileID == null) {
             return;
         }
-        validateFileID(fileID);
+        validateFileIDFormat(fileID);
 
-        // if not missing, then all files have been found!
         if(!getPillarModel().hasFileID(fileID, message.getCollectionID())) {
-            // report on the missing files
-            String errText = "The following file is missing: '" + fileID + "'";
-            log.warn(errText);
-            // Then tell the mediator, that we failed.
-            ResponseInfo fri = new ResponseInfo();
-            fri.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
-            fri.setResponseText(errText);
-            throw new InvalidMessageException(fri, message.getCollectionID());
+            log.warn("The following file is missing: '" + fileID + "'");
+            throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
+                    message.getCollectionID());
         }
     }
 
@@ -199,10 +191,8 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
                 File fileToUpload = makeTemporaryChecksumFile(message, checksumResultSet);
                 uploadFile(fileToUpload, url);
             } catch (Exception e) {
-                ResponseInfo ir = new ResponseInfo();
-                ir.setResponseCode(ResponseCode.FILE_TRANSFER_FAILURE);
-                ir.setResponseText("Could not handle the creation and upload of the results due to: " + e.getMessage());
-                throw new InvalidMessageException(ir, message.getCollectionID(), e);
+                throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, "Could not handle the creation "
+                        + "and upload of the results due to: " + e.getMessage(), message.getCollectionID(), e);
             }
 
             res.setResultAddress(url);
