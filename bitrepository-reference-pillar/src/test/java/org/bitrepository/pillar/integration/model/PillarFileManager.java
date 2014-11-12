@@ -45,17 +45,18 @@ public class PillarFileManager {
     private final String pillarID;
     private final Settings mySettings;
     private final ClientProvider clientProvider;
+    @SuppressWarnings("unused")
     private final TestEventManager testEventManager;
     private final HttpServerConnector httpServer;
     private int knownNumberOfFilesOnPillar = -1;
 
     public PillarFileManager(
-        String collectionID,
-        String pillarID,
-        Settings mySettings,
-        ClientProvider clientProvider,
-        TestEventManager testEventManager,
-        HttpServerConnector httpServer) {
+            String collectionID,
+            String pillarID,
+            Settings mySettings,
+            ClientProvider clientProvider,
+            TestEventManager testEventManager,
+            HttpServerConnector httpServer) {
         this.collectionID = collectionID;
         this.pillarID = pillarID;
         this.mySettings = mySettings;

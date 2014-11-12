@@ -36,7 +36,6 @@ import org.testng.annotations.Test;
 
 public class IdentifyPillarsForReplaceFileIT extends DefaultPillarIdentificationTest {
     protected ReplaceFileMessageFactory msgFactory;
-    private String testSpecificFileID;
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {

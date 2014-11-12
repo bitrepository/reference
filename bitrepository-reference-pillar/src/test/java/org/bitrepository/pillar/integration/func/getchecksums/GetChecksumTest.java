@@ -21,6 +21,9 @@
  */
 package org.bitrepository.pillar.integration.func.getchecksums;
 
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertNotNull;
+
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
@@ -32,8 +35,6 @@ import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertTrue;
 
 public class GetChecksumTest extends PillarFunctionTest {
 
@@ -71,7 +72,7 @@ public class GetChecksumTest extends PillarFunctionTest {
         checksumSpec.setChecksumType(ChecksumType.SHA1);
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
                 checksumSpec, null, DEFAULT_FILE_ID);
-        //assertEquals(checksums.get(0), );
+        assertNotNull(checksums.get(0));
     }
 
     @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST} )
@@ -86,6 +87,7 @@ public class GetChecksumTest extends PillarFunctionTest {
         checksumSpec.setChecksumSalt(Base16Utils.encodeBase16("abab"));
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
                 checksumSpec, null, DEFAULT_FILE_ID);
+        assertNotNull(checksums.get(0));
     }
     
     @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST} )
@@ -100,6 +102,6 @@ public class GetChecksumTest extends PillarFunctionTest {
         checksumSpec.setChecksumSalt(Base16Utils.encodeBase16("abab"));
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
                 checksumSpec, null, DEFAULT_FILE_ID);
-    }
-    
+        assertNotNull(checksums.get(0));
+    }    
 }

@@ -26,6 +26,7 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 
 public class LastEventMemory implements EventHandler {
+    @SuppressWarnings("unused")
     private OperationEvent lastEvent;
 
     @Override
