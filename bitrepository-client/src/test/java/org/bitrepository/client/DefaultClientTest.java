@@ -212,7 +212,7 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         messageBus.sendMessage(identifyResponse2);
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
-        MessageRequest request1 = waitForRequest(pillar1Receiver);
+        waitForRequest(pillar1Receiver);
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
 
         addStep("Wait for 5 seconds", "An FAILED event should be received");
@@ -258,7 +258,7 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         assertEquals(event4.getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
         assertEquals(event4.getCollectionID(), collectionID);
         
-        MessageRequest request1 = waitForRequest(pillar1Receiver);
+        waitForRequest(pillar1Receiver);
         
         OperationEvent event5 = testEventHandler.waitForEvent();
         assertEquals(event5.getEventType(), OperationEventType.REQUEST_SENT);

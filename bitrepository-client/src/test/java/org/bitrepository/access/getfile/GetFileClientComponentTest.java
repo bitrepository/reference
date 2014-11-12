@@ -356,9 +356,6 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = null;
         receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
-        IdentifyPillarsForGetFileRequest expectedMessage =
-                messageFactory.createIdentifyPillarsForGetFileRequest(receivedIdentifyRequestMessage,
-                        settingsForCUT.getCollectionDestination(), settingsForTestClient.getComponentID());
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("The pillar sends a response to the identify message.",

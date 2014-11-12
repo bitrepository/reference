@@ -64,7 +64,6 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
 
         MockAuditStore store = new MockAuditStore();
         MockAuditClient client = new MockAuditClient();
-        MockAuditPreserver preserver = new MockAuditPreserver();
         ContributorMediator mediator = new MockContributorMediator();
         AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
         

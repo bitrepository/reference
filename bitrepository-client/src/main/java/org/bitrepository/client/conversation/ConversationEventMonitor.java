@@ -339,7 +339,7 @@ public class ConversationEventMonitor {
     /**
      * Custom logger for prefixing the log entries with the conversation ID.
      */
-    private class ConversationLogger {
+    protected class ConversationLogger {
 
         /** Delegates to the normal logger debug */
         public void debug(String info) {

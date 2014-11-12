@@ -144,7 +144,7 @@ public class MessageReceiver {
      */
     public <T> void checkNoMessagesRemain() {
         StringBuilder outstandingMessages = new StringBuilder();
-        for (BlockingQueue messageQueue:messageModel.getMessageQueues()) {
+        for (BlockingQueue<?> messageQueue:messageModel.getMessageQueues()) {
             if (!messageQueue.isEmpty()) {
                 while (!messageQueue.isEmpty()) {
                     outstandingMessages.append("\n" + messageQueue.poll());
@@ -162,7 +162,7 @@ public class MessageReceiver {
      * Clears the message in the queue.
      */
     public <T> void clearMessages() {
-        for (BlockingQueue messageQueue:messageModel.getMessageQueues()) {
+        for (BlockingQueue<?> messageQueue:messageModel.getMessageQueues()) {
             if (!messageQueue.isEmpty()) {
                 messageQueue.clear();
             }

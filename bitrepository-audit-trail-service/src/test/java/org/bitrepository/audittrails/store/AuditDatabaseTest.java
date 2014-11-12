@@ -329,7 +329,6 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         DatabaseManager dm = new AuditTrailDatabaseManager(
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
         AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
-        AuditTrailReadDAO readDao = new AuditTrailReadDAO(dm);
         
         addStep("Build test data", "No failure");
         AuditTrailEvents events = new AuditTrailEvents();

@@ -212,8 +212,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         deleteClient.deleteFile(collectionID, DEFAULT_FILE_ID, PILLAR1_ID, checksumData, checksumRequest,
                 testEventHandler, null);
 
-        IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage =
-                collectionReceiver.waitForMessage(IdentifyPillarsForDeleteFileRequest.class);
+        collectionReceiver.waitForMessage(IdentifyPillarsForDeleteFileRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Do not respond. Just await the timeout.",
@@ -256,12 +255,11 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Make response for the pillar.", "The client receive the response, identify the pillar and send the request.");
 
-        DeleteFileRequest receivedDeleteFileRequest = null;
         IdentifyPillarsForDeleteFileResponse identifyResponse
                 = messageFactory.createIdentifyPillarsForDeleteFileResponse(receivedIdentifyRequestMessage,
                 PILLAR1_ID, pillar1DestinationId, DEFAULT_FILE_ID);
         messageBus.sendMessage(identifyResponse);
-        receivedDeleteFileRequest = pillar1Receiver.waitForMessage(DeleteFileRequest.class);
+        pillar1Receiver.waitForMessage(DeleteFileRequest.class);
 
         addStep("Validate the steps of the DeleteClient by going through the events.", "Should be 'PillarIdentified', "
                 + "'PillarSelected' and 'RequestSent'");

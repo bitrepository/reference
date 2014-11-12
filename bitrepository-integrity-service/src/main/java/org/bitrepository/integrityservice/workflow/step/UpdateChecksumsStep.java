@@ -59,7 +59,6 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
     private final Integer maxNumberOfResultsPerConversation;
     /** The collectionID */
     protected final String collectionId;
-    private final Settings settings;
     
     /** The default value for the maximum number of results for each conversation. Is case the setting is missing.*/
     public static final Integer DEFAULT_MAX_RESULTS = 10000;
@@ -77,7 +76,6 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
         this.store = store;
         this.checksumType = checksumType;
         this.alerter = alerter;
-        this.settings = settings;
         this.collectionId = collectionId;
         this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
                 + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();

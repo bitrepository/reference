@@ -27,8 +27,6 @@ package org.bitrepository.client.conversation;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.MessageContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Abstract super class for conversations.
@@ -37,7 +35,6 @@ import org.slf4j.LoggerFactory;
  * receiving specific messages.
  */
 public class StateBasedConversation implements Conversation {
-    private Logger log = LoggerFactory.getLogger(getClass());
     private long startTime;
     private ConversationContext context;
 

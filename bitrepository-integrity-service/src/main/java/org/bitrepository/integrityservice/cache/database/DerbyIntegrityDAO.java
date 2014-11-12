@@ -25,11 +25,7 @@ import static org.bitrepository.integrityservice.cache.database.DatabaseConstant
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TABLE;
 import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TIME;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-
 import org.bitrepository.service.database.DatabaseManager;
-import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.settings.repositorysettings.Collections;
 
 /**

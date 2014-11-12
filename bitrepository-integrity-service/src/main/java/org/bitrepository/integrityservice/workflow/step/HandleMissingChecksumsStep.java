@@ -22,7 +22,6 @@
 package org.bitrepository.integrityservice.workflow.step;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.sql.SQLException;
 
 import org.bitrepository.integrityservice.cache.FileInfo;

@@ -24,7 +24,6 @@
  */
 package org.bitrepository.protocol;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.Iterator;
 

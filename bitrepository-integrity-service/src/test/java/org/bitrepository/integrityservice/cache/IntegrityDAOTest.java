@@ -43,7 +43,6 @@ import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
-import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;

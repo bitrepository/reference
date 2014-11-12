@@ -33,12 +33,8 @@ import static org.mockito.Mockito.*;
 public class IntegrityCacheTest extends ExtendedTestCase {
     private IntegrityModel mockedDB;
     private static final String PILLAR1 = "pillar1";
-    private static final String PILLAR2 = "pillar2";
     private static final String COLLECTION1 = "collection1";
 
-    private static final String DUMMY_FILE_ID = "";
-    private static final String DUMMY_COLLECTION_ID = "";
-    
     @BeforeMethod(alwaysRun = true)
     public void setup() throws Exception {
         mockedDB = mock(IntegrityModel.class);

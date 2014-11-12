@@ -52,16 +52,12 @@ import org.bitrepository.protocol.message.ClientTestMessageFactory;
  * Messages creation factory for the DeleteFile tests.
  */
 public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
-    /** The collection id for the factory.*/
-    private final String collectionId;
-    
     /**
      * Constructor.
      * @param bitrepositoryCollectionId The id for the collection, where the factory belong.
      */
     public TestDeleteFileMessageFactory(String bitrepositoryCollectionId) {
         super(bitrepositoryCollectionId);
-        this.collectionId = bitrepositoryCollectionId;
     }
 
     /**

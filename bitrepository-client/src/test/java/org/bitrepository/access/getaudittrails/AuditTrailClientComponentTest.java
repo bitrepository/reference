@@ -205,8 +205,6 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.REQUEST_SENT);
         GetAuditTrailsRequest requestPillar1 = pillar1Receiver.waitForMessage(GetAuditTrailsRequest.class);
-        GetAuditTrailsRequest request = testMessageFactory.createGetAuditTrailsRequest(
-                identifyRequest, PILLAR1_ID, pillar1DestinationId);
         Assert.assertEquals(requestPillar1.getMaxNumberOfResults().intValue(), 10000);
         Assert.assertEquals(requestPillar1.getMinSequenceNumber().intValue(), 1);
         Assert.assertEquals(requestPillar1.getMaxSequenceNumber().intValue(), 3);

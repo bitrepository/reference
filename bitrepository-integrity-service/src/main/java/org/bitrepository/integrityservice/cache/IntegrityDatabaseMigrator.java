@@ -40,8 +40,6 @@ public class IntegrityDatabaseMigrator extends DatabaseMigrator {
     /** The log.*/
     private static Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
     
-    /** The name of the update script for version 1 to 2.*/
-    private static final String UPDATE_SCRIPT_VERSION_1_TO_2 = "sql/derby/integrityDB1to2migration.sql";
     /** The name of the update script for version 2 to 3.*/
     private static final String UPDATE_SCRIPT_VERSION_2_TO_3 = "sql/derby/integrityDB2to3migration.sql";
     /** The name of the update script for version 3 to 4.*/

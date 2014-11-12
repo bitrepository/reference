@@ -44,8 +44,6 @@ public class AuditPreservationEventHandler implements EventHandler {
     private final Map<String, Long> seqNumbers;
     /** The store for the audit trails. Where the new preservation sequence numbers should be inserted.*/
     private final AuditTrailStore store;
-    /** Whether the store has been updated with the values.*/
-    private boolean updated;
     /** The collection which preservation sequence number needs to be updated. */
     private final String collectionID;
     

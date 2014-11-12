@@ -47,14 +47,10 @@ import org.bitrepository.common.utils.TimeUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Path("/AlarmService")
 public class RestAlarmService {
-    private Logger log = LoggerFactory.getLogger(getClass());
-
-	private AlarmService alarmService;
+    private AlarmService alarmService;
     
     public RestAlarmService() {
         alarmService = AlarmServiceFactory.getAlarmService();

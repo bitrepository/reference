@@ -169,8 +169,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                 checksumRequest,
                 address, 10, DEFAULT_NEW_CHECKSUM_DATA, checksumRequest, testEventHandler, null);
 
-        IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
-                IdentifyPillarsForReplaceFileRequest.class);
+        collectionReceiver.waitForMessage(IdentifyPillarsForReplaceFileRequest.class);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Do not respond. Just await the timeout.",

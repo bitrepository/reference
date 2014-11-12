@@ -50,7 +50,7 @@ public abstract class GeneralConversationState implements ConversationState {
     /** The scheduler used for timeout checks. */
     private static final ScheduledExecutorService timer = Executors.newScheduledThreadPool(1,
             new DefaultThreadFactory("ConversationState-Timeout-", Thread.NORM_PRIORITY));
-    private ScheduledFuture scheduledTimeout;
+    private ScheduledFuture<?> scheduledTimeout;
     /** For response bookkeeping */
     private final ContributorResponseStatus responseStatus;
 

@@ -34,15 +34,11 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implements the generic functionality for a reference client
  */
 public class AbstractClient implements BitrepositoryClient {
-    /** The log for this class. */
-    private final Logger log = LoggerFactory.getLogger(getClass());
     /** The settings for this instance.*/
     protected final Settings settings;
     /** The messagebus for communication.*/

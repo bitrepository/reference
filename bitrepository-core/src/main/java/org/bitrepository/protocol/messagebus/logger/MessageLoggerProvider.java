@@ -26,10 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.OperationType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Defines how messages received or sent are logged. Meant to be used in the shared message bus
@@ -39,7 +38,6 @@ import org.slf4j.LoggerFactory;
  * addMessageLogger method with a specific logger class for the operation.
  */
 public class MessageLoggerProvider implements MessageLogger {
-    private final Logger log = LoggerFactory.getLogger(getClass());
     private final static MessageLoggerProvider instance = new MessageLoggerProvider();
 
     private final Map<String, MessageLogger> messageToLoggerMap = new HashMap<String, MessageLogger>();

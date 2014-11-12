@@ -24,7 +24,6 @@
  */
 package org.bitrepository.protocol.message;
 
-import java.io.File;
 import java.io.InputStream;
 
 import org.apache.activemq.util.ByteArrayInputStream;

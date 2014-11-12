@@ -34,15 +34,15 @@ import com.sun.jersey.api.json.JSONJAXBContext;
 public class AlarmContextResolver implements ContextResolver<JAXBContext> {
 
     private JAXBContext context;
-    private Class[] types = {Alarm.class};
+    private Class<?>[] types = {Alarm.class};
     
     public AlarmContextResolver() throws Exception {
          this.context = new JSONJAXBContext(JSONConfiguration.mapped().arrays("Alarm").build(), types);
     }
     
     @Override
-    public JAXBContext getContext(Class objectType) {
-        for(Class type : types) {
+    public JAXBContext getContext(Class<?> objectType) {
+        for(Class<?> type : types) {
             if(type == objectType) {
                 return context;
             }

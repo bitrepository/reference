@@ -21,6 +21,14 @@
  */
 package org.bitrepository.audittrails.preserver;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
 import java.io.FileInputStream;
 import java.math.BigInteger;
 import java.net.URL;
@@ -29,7 +37,6 @@ import java.sql.Date;
 import org.bitrepository.audittrails.store.AuditEventIterator;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
-import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -48,10 +55,6 @@ import org.mockito.stubbing.Answer;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
 
 public class LocalAuditPreservationTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
@@ -78,6 +81,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
 
     //@Test(groups = {"failed"})
     // Fragile test, fails occasionally.
+    @SuppressWarnings("rawtypes")
     public void auditPreservationSchedulingTest() throws Exception {
         addDescription("Tests the scheduling of the audit trail preservation.");
         addStep("Setup variables and settings for the test", "");
@@ -136,6 +140,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
     }
 
     @Test(groups = {"regressiontest"})
+    @SuppressWarnings("rawtypes")
     public void auditPreservationIngestTest() throws Exception {
         addDescription("Tests the ingest of the audit trail preservation.");
         addStep("Setup variables and settings for the test", "");
@@ -188,20 +193,6 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         verifyNoMoreInteractions(fileExchange);
     }
     
-    private AuditTrailEvents createEvents() {
-        AuditTrailEvents res = new AuditTrailEvents();
-        
-        AuditTrailEvent e1 = new AuditTrailEvent();
-        e1.setActionDateTime(CalendarUtils.getNow());
-        e1.setActionOnFile(FileAction.FAILURE);
-        e1.setActorOnFile(ACTOR);
-        e1.setSequenceNumber(BigInteger.ONE);
-        e1.setReportingComponent(PILLARID);
-        
-        res.getAuditTrailEvent().add(e1);
-        return res;
-    }
-
     private class MockPutClient implements PutFileClient {
         private int callsToPutFile = 0;
         @Override

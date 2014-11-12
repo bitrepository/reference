@@ -222,7 +222,7 @@ public class PermissionStore {
             this.permissions = new HashSet<Operation>();
             this.certificate = certificate;
             this.permissions.addAll(allowedOperations);
-            this.fingerprint = DigestUtils.shaHex(certificate.getEncoded());
+            this.fingerprint = DigestUtils.sha1Hex(certificate.getEncoded());
         }
 
         /**

@@ -56,7 +56,6 @@ public class IdentifyPillarsForReplaceFile extends IdentifyingState {
     @Override
     protected void handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
         //ToDo implement idempotent behaviour, BITMAG-659.
-        IdentifyPillarsForReplaceFileResponse response = (IdentifyPillarsForReplaceFileResponse) msg;
         getContext().getMonitor().contributorFailed(
                 msg.getResponseInfo().getResponseText(), msg.getFrom(), msg.getResponseInfo().getResponseCode());
         throw new UnableToFinishException("Can not continue with replace operation, as " + msg.getFrom() +

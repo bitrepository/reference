@@ -74,6 +74,11 @@ public abstract class ConversationMediatorTest {
         public void startConversation() {
             hasStarted = true;
         }
+        
+        @Override
+        public String getConversationID() {
+            return null;
+        }
 
         @Override
         public void endConversation() {}
