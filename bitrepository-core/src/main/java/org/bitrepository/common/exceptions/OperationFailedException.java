@@ -27,6 +27,7 @@ package org.bitrepository.common.exceptions;
 /**
  * Indicates that a operation finished with errors.
  */
+@SuppressWarnings("serial")
 public class OperationFailedException extends Exception {
 
     public OperationFailedException(String message, Throwable cause) {
