@@ -40,7 +40,7 @@ import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -61,7 +61,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected GetFileRequestHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
+    protected GetFileRequestHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
         super(context, fileInfoStore);
     }
 

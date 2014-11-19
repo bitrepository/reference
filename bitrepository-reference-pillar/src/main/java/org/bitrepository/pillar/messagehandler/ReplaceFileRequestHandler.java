@@ -35,7 +35,7 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
@@ -65,7 +65,7 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected ReplaceFileRequestHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
+    protected ReplaceFileRequestHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
         super(context, fileInfoStore);
     }
 

@@ -30,7 +30,7 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.common.ChecksumDatabaseCreator;
-import org.bitrepository.pillar.store.ChecksumDAO;
+import org.bitrepository.pillar.store.checksumdatabase.ChecksumDAO;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumDatabaseManager;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;

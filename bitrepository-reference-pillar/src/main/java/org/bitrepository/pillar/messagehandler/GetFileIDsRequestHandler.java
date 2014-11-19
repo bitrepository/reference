@@ -47,7 +47,7 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.MessageContext;
@@ -70,7 +70,7 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected GetFileIDsRequestHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
+    protected GetFileIDsRequestHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
         super(context, fileInfoStore);
     }
     

@@ -36,17 +36,17 @@ import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.SettingsHelper;
 import org.bitrepository.pillar.messagehandler.PillarMediator;
-import org.bitrepository.pillar.store.ChecksumStore;
-import org.bitrepository.pillar.store.FullReferencePillarModel;
-import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.FileStorageModel;
+import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.pillar.store.checksumcache.MemoryCacheMock;
+import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.filearchive.CollectionArchiveManager;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 public abstract class DefaultPillarTest extends DefaultFixturePillarTest {
     protected FileStore archives;
-    protected PillarModel model;
+    protected StorageModel model;
     protected PillarMediator mediator;
     protected MockAuditManager audits;
     protected ChecksumStore csCache;
@@ -88,7 +88,7 @@ public abstract class DefaultPillarTest extends DefaultFixturePillarTest {
                 new ResponseDispatcher(settingsForCUT, messageBus),
                 new PillarAlarmDispatcher(settingsForCUT, messageBus),
                 audits);
-        model = new FullReferencePillarModel(archives, csCache, alarmDispatcher, settingsForCUT);
+        model = new FileStorageModel(archives, csCache, alarmDispatcher, settingsForCUT);
         mediator = new PillarMediator(messageBus, context, model);
         mediator.start();
         try {

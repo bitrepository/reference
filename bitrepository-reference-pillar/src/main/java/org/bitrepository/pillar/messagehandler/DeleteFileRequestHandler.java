@@ -35,7 +35,7 @@ import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
@@ -52,10 +52,9 @@ public class DeleteFileRequestHandler extends PerformRequestHandler<DeleteFileRe
     
     /**
      * @param context The context for the pillar.
-     * @param archivesManager The manager of the archives.
-     * @param csManager The checksum manager for the pillar.
+     * @param fileInfoStore
      */
-    protected DeleteFileRequestHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
+    protected DeleteFileRequestHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
         super(context, fileInfoStore);
     }
 

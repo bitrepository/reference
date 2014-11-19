@@ -32,12 +32,12 @@ import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.SettingsHelper;
-import org.bitrepository.pillar.store.ChecksumDAO;
-import org.bitrepository.pillar.store.ChecksumPillarModel;
-import org.bitrepository.pillar.store.ChecksumStore;
-import org.bitrepository.pillar.store.FullReferencePillarModel;
-import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.ChecksumStorageModel;
+import org.bitrepository.pillar.store.FileStorageModel;
+import org.bitrepository.pillar.store.StorageModel;
+import org.bitrepository.pillar.store.checksumdatabase.ChecksumDAO;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumDatabaseManager;
+import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.filearchive.CollectionArchiveManager;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -100,7 +100,7 @@ public final class PillarComponentFactory {
         PillarAlarmDispatcher alarmDispatcher = new PillarAlarmDispatcher(settings, messageBus);
         ResponseDispatcher responseDispatcher = new ResponseDispatcher(settings, messageBus);
 
-        PillarModel pillarModel = getPillarModel(settings, cache, alarmDispatcher);
+        StorageModel pillarModel = getPillarModel(settings, cache, alarmDispatcher);
 
         MessageHandlerContext context = new MessageHandlerContext(
                 settings,
@@ -162,13 +162,13 @@ public final class PillarComponentFactory {
      * @param alarmDispatcher The alarm dispatcher.
      * @return The PillarModel, either for FullReferencePillar or ChecksumPillar.
      */
-    private PillarModel getPillarModel(Settings settings, ChecksumStore cache, AlarmDispatcher alarmDispatcher) {
+    private StorageModel getPillarModel(Settings settings, ChecksumStore cache, AlarmDispatcher alarmDispatcher) {
         PillarType pillarType = settings.getReferenceSettings().getPillarSettings().getPillarType();
         if(pillarType == PillarType.CHECKSUM) {
-            return new ChecksumPillarModel(cache, alarmDispatcher, settings);
+            return new ChecksumStorageModel(cache, alarmDispatcher, settings);
         } else if(pillarType == PillarType.FILE) {
             FileStore archive = getFileStore(settings);
-            return new FullReferencePillarModel(archive, cache, alarmDispatcher, settings);
+            return new FileStorageModel(archive, cache, alarmDispatcher, settings);
         } else {
             throw new IllegalStateException("Cannot instantiate a pillar of type '" + pillarType + "'.");
         }

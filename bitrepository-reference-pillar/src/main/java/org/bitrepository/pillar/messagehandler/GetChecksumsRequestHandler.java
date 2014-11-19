@@ -47,7 +47,7 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.MessageContext;
@@ -71,7 +71,7 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected GetChecksumsRequestHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
+    protected GetChecksumsRequestHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
         super(context, fileInfoStore);
     }
 

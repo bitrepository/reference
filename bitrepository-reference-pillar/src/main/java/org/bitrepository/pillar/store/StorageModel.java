@@ -1,3 +1,27 @@
+/*
+ * #%L
+ * Bitmagasin
+ * 
+ * $Id$
+ * $HeadURL$
+ * %%
+ * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.pillar.store;
 
 import java.security.NoSuchAlgorithmException;
@@ -15,6 +39,7 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
+import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
 import org.bitrepository.service.AlarmDispatcher;
@@ -24,16 +49,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Common interface for both ChecksumPillar and full ReferencePillar. 
+ * Storage model for the file data.
+ * Involves having the checksums in a checksum store (database), 
+ * and potentially having the actual files in a file store (file system).
+ * Handles all requests or operations regarding files.
  */
-public abstract class PillarModel {
+public abstract class StorageModel {
 
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /** The storage of checksums.*/
     protected final ChecksumStore cache;
-    /** The file archives for the different collections.*/
+    /** The file archives for the different collections. Can be null, if the pillar has no actual files 
+     * (e.g. ChecksumPillar). */
     protected FileStore fileArchive;
     /** The default checksum specification.*/
     protected final ChecksumSpecTYPE defaultChecksumSpec;
@@ -48,7 +77,7 @@ public abstract class PillarModel {
      * @param alarmDispatcher The alarm dispatcher.
      * @param settings The configuration to use.
      */
-    protected PillarModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, 
+    protected StorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, 
             Settings settings) {
         this.cache = cache;
         this.fileArchive = archives;

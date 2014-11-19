@@ -28,8 +28,8 @@ import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.bitrepository.pillar.store.ChecksumStore;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
+import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
 

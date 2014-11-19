@@ -32,7 +32,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRespo
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -52,7 +52,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
      * @param archivesManager The manager of the archives.
      * @param csManager The checksum manager for the pillar.
      */
-    protected IdentifyPillarsForGetFileIDsRequestHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
+    protected IdentifyPillarsForGetFileIDsRequestHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
         super(context, fileInfoStore);
     }
     

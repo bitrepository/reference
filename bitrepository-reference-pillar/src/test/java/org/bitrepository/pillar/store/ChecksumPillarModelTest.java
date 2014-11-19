@@ -14,12 +14,13 @@ import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.store.checksumcache.MemoryCacheMock;
+import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload;
 import org.testng.annotations.Test;
 
 public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
-    ChecksumPillarModel pillarModel;
+    ChecksumStorageModel pillarModel;
     ChecksumStore cache;
     protected AlarmDispatcher alarmDispatcher;
     ChecksumSpecTYPE defaultCsType;
@@ -31,7 +32,7 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
     protected void initializeCUT() {
         cache = new MemoryCacheMock();
         alarmDispatcher = new AlarmDispatcher(settingsForCUT, messageBus);
-        pillarModel = new ChecksumPillarModel(cache, alarmDispatcher, settingsForCUT);
+        pillarModel = new ChecksumStorageModel(cache, alarmDispatcher, settingsForCUT);
         
         defaultCsType = ChecksumUtils.getDefault(settingsForCUT);
         

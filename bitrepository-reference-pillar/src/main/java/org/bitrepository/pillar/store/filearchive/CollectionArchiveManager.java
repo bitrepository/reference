@@ -38,7 +38,7 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.settings.referencesettings.CollectionDirs;
 
 /**
- * 
+ * The CollectionArchiveManager manages the archives of the different collections for the Pillar.
  */
 public class CollectionArchiveManager implements FileStore {
     /** The mapping between the collections and their archives.*/

@@ -1,7 +1,7 @@
 package org.bitrepository.pillar.messagehandler;
 
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.RequestHandlerException;
 
@@ -15,7 +15,7 @@ public abstract class PerformRequestHandler<MessageRequest> extends PillarMessag
      * @param context The context for the message handling.
      * @param model The model for the pillar.
      */
-    protected PerformRequestHandler(MessageHandlerContext context, PillarModel model) {
+    protected PerformRequestHandler(MessageHandlerContext context, StorageModel model) {
         super(context, model);
     }
 

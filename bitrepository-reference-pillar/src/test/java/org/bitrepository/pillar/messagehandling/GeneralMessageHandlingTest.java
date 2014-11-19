@@ -29,7 +29,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.messagehandler.PillarMessageHandler;
-import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.testng.Assert;
@@ -54,7 +54,7 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
     
     private class MockRequestHandler extends PillarMessageHandler<MessageRequest> {
 
-        protected MockRequestHandler(MessageHandlerContext context, PillarModel model) {
+        protected MockRequestHandler(MessageHandlerContext context, StorageModel model) {
             super(context, model);
         }
 

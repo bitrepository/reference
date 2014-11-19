@@ -50,7 +50,7 @@ public class ReferenceArchive {
     private final List<ArchiveDirectory> directories = new ArrayList<ArchiveDirectory>();
     
     /** 
-     * Constructor. Initialises the file directory. 
+     * Constructor. Initializes the file directory. 
      * 
      * @param dirPaths The list of paths to the archival base directories.
      */

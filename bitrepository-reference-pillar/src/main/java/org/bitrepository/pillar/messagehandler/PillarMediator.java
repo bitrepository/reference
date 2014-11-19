@@ -33,7 +33,7 @@ import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
-import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.contributor.AbstractContributorMediator;
@@ -57,13 +57,13 @@ public class PillarMediator extends AbstractContributorMediator {
     private Logger log = LoggerFactory.getLogger(getClass());
     protected final MessageHandlerContext context;
 
-    protected final PillarModel pillarModel;
+    protected final StorageModel pillarModel;
     
     /**
      * Constructor.
      * Sets the parameters of this mediator, and adds itself as a listener to the destinations.
      */
-    public PillarMediator(MessageBus messageBus, MessageHandlerContext context, PillarModel pillarModel) {
+    public PillarMediator(MessageBus messageBus, MessageHandlerContext context, StorageModel pillarModel) {
         super(messageBus);
         this.context = context;
         this.pillarModel = pillarModel;

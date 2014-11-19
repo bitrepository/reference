@@ -19,18 +19,13 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.store;
+package org.bitrepository.pillar.store.checksumdatabase;
 
 import java.util.Date;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
-import org.bitrepository.pillar.store.checksumdatabase.ChecksumExtractor;
-import org.bitrepository.pillar.store.checksumdatabase.ChecksumIngestor;
-import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
-import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
 

@@ -34,7 +34,7 @@ import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.SettingsHelper;
 import org.bitrepository.pillar.messagehandler.PillarMediator;
-import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.*;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
@@ -47,7 +47,7 @@ import org.testng.annotations.Test;
 public class MediatorTest extends DefaultFixturePillarTest {
     MockAuditManager audits;
     MessageHandlerContext context;
-    PillarModel model = null;
+    StorageModel model = null;
     
     @BeforeMethod (alwaysRun=true)
     public void initialiseTest() throws Exception {
@@ -98,7 +98,7 @@ public class MediatorTest extends DefaultFixturePillarTest {
 
     private class TestMediator extends PillarMediator {
 
-        public TestMediator(MessageHandlerContext context, PillarModel model) {
+        public TestMediator(MessageHandlerContext context, StorageModel model) {
             super(messageBus, context, model);
         }
         @SuppressWarnings("rawtypes")

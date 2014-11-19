@@ -32,13 +32,13 @@ import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.SettingsHelper;
 import org.bitrepository.pillar.messagehandler.PillarMediator;
-import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 
 public abstract class MockedPillarTest extends DefaultFixturePillarTest {
     protected PillarMediator mediator;
-    protected PillarModel model;
+    protected StorageModel model;
     protected MockAuditManager audits;
     protected MessageHandlerContext context;
     protected ChecksumSpecTYPE csSpec;
@@ -52,7 +52,7 @@ public abstract class MockedPillarTest extends DefaultFixturePillarTest {
     protected void initializeCUT() {
         super.initializeCUT();
         audits = new MockAuditManager();
-        model = mock(PillarModel.class);
+        model = mock(StorageModel.class);
 
         createPillar();
     }

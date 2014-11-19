@@ -1,3 +1,27 @@
+/*
+ * #%L
+ * Bitmagasin 
+ * 
+ * $Id$
+ * $HeadURL$
+ * %%
+ * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.bitrepository.pillar.store;
 
 import java.io.IOException;
@@ -20,6 +44,7 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
+import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
 import org.bitrepository.protocol.FileExchange;
@@ -33,12 +58,21 @@ import org.bitrepository.settings.referencesettings.VerifyAllData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FullReferencePillarModel extends PillarModel {
+/**
+ * The storage model for a pillar with a file store, where it can store its actual files.
+ */
+public class FileStorageModel extends StorageModel {
 
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    public FullReferencePillarModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher,
+    /**
+     * @param archives The file archives.
+     * @param cache The checksum store.
+     * @param alarmDispatcher The alarm dispatcher.
+     * @param settings The settings.
+     */
+    public FileStorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher,
             Settings settings) {
         super(archives, cache, alarmDispatcher, settings);
         log.info("Instantiating the FullReferencePillar: " + getPillarID());
@@ -152,7 +186,8 @@ public class FullReferencePillarModel extends PillarModel {
     @Override
     public void putFile(String collectionID, String fileID, String fileAddress,
             ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
-        downloadFileToTmpAndVerify(fileID, collectionID, fileAddress, expectedChecksum);
+        downloadFileToTmp(fileID, collectionID, fileAddress);
+        verifyFileInTmp(fileID, collectionID, expectedChecksum);
         fileArchive.moveToArchive(fileID, collectionID);
         verifyFileToCacheConsistency(fileID, collectionID);
     }
@@ -160,7 +195,8 @@ public class FullReferencePillarModel extends PillarModel {
     @Override
     public void replaceFile(String fileID, String collectionID, String fileAddress,
             ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
-        downloadFileToTmpAndVerify(fileID, collectionID, fileAddress, expectedChecksum);
+        downloadFileToTmp(fileID, collectionID, fileAddress);
+        verifyFileInTmp(fileID, collectionID, expectedChecksum);
         fileArchive.replaceFile(fileID, collectionID);
         verifyFileToCacheConsistency(fileID, collectionID);
     }
@@ -228,11 +264,11 @@ public class FullReferencePillarModel extends PillarModel {
     @Override
     public void verifyFileToCacheConsistencyOfAllData(String collectionId) {
         for(String fileId : cache.getAllFileIDs(collectionId)) {
-            ensureFileState(fileId, collectionId);
+            verifyCacheToArchiveConsistencyForFile(fileId, collectionId);
         }
 
         for(String fileId : fileArchive.getAllFileIds(collectionId)) {
-            ensureChecksumState(fileId, collectionId);
+            verifyArchiveToCacheConsistencyForFile(fileId, collectionId);
         }
     }
 
@@ -242,7 +278,7 @@ public class FullReferencePillarModel extends PillarModel {
      * @param fileId The id of the file.
      * @param collectionId The id of the collection of the file.
      */
-    private void ensureFileState(String fileId, String collectionId) {
+    private void verifyCacheToArchiveConsistencyForFile(String fileId, String collectionId) {
         if(!fileArchive.hasFile(fileId, collectionId)) {
             log.warn("The file '" + fileId + "' in the ChecksumCache is no longer in the archive. "
                     + "Dispatching an alarm, and removing it from the cache.");
@@ -263,7 +299,7 @@ public class FullReferencePillarModel extends PillarModel {
      * @param fileId The id of the file.
      * @param collectionId The id of the collection of the file.
      */
-    private void ensureChecksumState(String fileId, String collectionId) {
+    private void verifyArchiveToCacheConsistencyForFile(String fileId, String collectionId) {
         Long maxAgeForChecksums = settings.getReferenceSettings().getPillarSettings()
                 .getMaxAgeForChecksums().longValue();
         if(!cache.hasFile(fileId, collectionId)) {
@@ -283,16 +319,14 @@ public class FullReferencePillarModel extends PillarModel {
     }
 
     /**
-     * Downloads the file to temporary area and verifies, that it has the expected checksum.
+     * Downloads the file to temporary area.
      * 
      * @param fileID The id of the file.
      * @param collectionID The id of the collection.
      * @param fileAddress The address to download the file from.
-     * @param expectedChecksum The expected checksum for the downloaded file.
-     * @throws RequestHandlerException If 
+     * @throws RequestHandlerException If the download fails.
      */
-    private void downloadFileToTmpAndVerify(String fileID, String collectionID, String fileAddress, 
-            ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
+    private void downloadFileToTmp(String fileID, String collectionID, String fileAddress) throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + fileAddress + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(settings);
 
@@ -303,8 +337,19 @@ public class FullReferencePillarModel extends PillarModel {
             String errMsg = "Could not retrieve the file from '" + fileAddress + "'";
             log.error(errMsg, e);
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, errMsg, collectionID, e);
-        }
-
+        }        
+    }
+    
+    /**
+     * Verifies that a file in temporary area has the expected checksum.
+     * 
+     * @param fileID The id of the file.
+     * @param collectionID The id of the collection.
+     * @param expectedChecksum The expected checksum for the downloaded file.
+     * @throws RequestHandlerException If it does not have the expected checksum. 
+     */
+    private void verifyFileInTmp(String fileID, String collectionID, ChecksumDataForFileTYPE expectedChecksum) 
+            throws RequestHandlerException {
         if(expectedChecksum != null) {
             String calculatedChecksum = getChecksumForTempFile(fileID, collectionID, expectedChecksum.getChecksumSpec());
             String expectedChecksumValue = Base16Utils.decodeBase16(expectedChecksum.getChecksumValue());
@@ -317,6 +362,6 @@ public class FullReferencePillarModel extends PillarModel {
             }
         } else {
             log.debug("No checksums for validating the newly downloaded file '" + fileID + "'.");
-        }
+        }        
     }
 }

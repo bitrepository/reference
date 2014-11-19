@@ -31,7 +31,7 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.messagehandler.PillarMediator;
 import org.bitrepository.pillar.schedulablejobs.RecalculateChecksumJob;
-import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.scheduler.JobScheduler;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
@@ -48,7 +48,7 @@ public class Pillar {
     /** The settings.*/
     private final Settings settings;
     /** The manager of the checksums with regard to the archive.*/
-    private final PillarModel pillarModel;
+    private final StorageModel pillarModel;
     
     /** The type of pillar.*/
     private final PillarType pillarType;
@@ -65,7 +65,7 @@ public class Pillar {
      * @param messageBus The messagebus for the communication.
      * @param settings The settings for the pillar.
      */
-    public Pillar(MessageBus messageBus, Settings settings, PillarModel pillarModel, MessageHandlerContext context) {
+    public Pillar(MessageBus messageBus, Settings settings, StorageModel pillarModel, MessageHandlerContext context) {
         ArgumentValidator.checkNotNull(messageBus, "messageBus");
         ArgumentValidator.checkNotNull(settings, "settings");
         this.messageBus = messageBus;

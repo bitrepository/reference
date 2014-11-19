@@ -27,7 +27,7 @@ package org.bitrepository.pillar.messagehandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.store.PillarModel;
+import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.handler.AbstractRequestHandler;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -44,12 +44,12 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
     /** The file id validator for validating the file id.*/
     private final FileIDValidator fileIdValidator;
     /** The model for the pillar.*/
-    private final PillarModel pillarModel;
+    private final StorageModel pillarModel;
     
     /**
      * @param context The context to use for message handling.
      */
-    protected PillarMessageHandler(MessageHandlerContext context, PillarModel fileInfoStore) {
+    protected PillarMessageHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
         super(context);
         this.context = context;
         this.fileIdValidator = new FileIDValidator(context.getSettings());
@@ -59,7 +59,7 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
     /**
      * @return The cache for this message handler.
      */
-    protected PillarModel getPillarModel() {
+    protected StorageModel getPillarModel() {
         return pillarModel;
     }
     
