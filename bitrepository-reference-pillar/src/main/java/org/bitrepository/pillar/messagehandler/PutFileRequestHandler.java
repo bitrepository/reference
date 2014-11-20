@@ -43,17 +43,16 @@ import org.slf4j.LoggerFactory;
 /**
  * Class for performing the PutFile operation.
  */
-public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> {
+public class PutFileRequestHandler extends PerformRequestHandler<PutFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
     /**
-     * @param context The context for the pillar.
-     * @param archivesManager The manager of the archives.
-     * @param csManager The checksum manager for the pillar.
+     * @param context The context for the message handling.
+     * @param model The storage model for the pillar.
      */
-    protected PutFileRequestHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
-        super(context, fileInfoStore);
+    protected PutFileRequestHandler(MessageHandlerContext context, StorageModel model) {
+        super(context, model);
     }
     
     @Override
@@ -62,42 +61,55 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
     }
 
     @Override
-    public void processRequest(PutFileRequest message, MessageContext messageContext) throws RequestHandlerException {
-        validateMessage(message);
-        try {
-            dispatchInitialProgressResponse(message);
-            retrieveFile(message, messageContext);
-            sendFinalResponse(message);
-        } finally {
-            getPillarModel().ensureFileNotInTmpDir(message.getFileID(), message.getCollectionID());
-        }
-    }
-
-    @Override
     public MessageResponse generateFailedResponse(PutFileRequest message) {
         return createFinalResponse(message);
     }
     
-    /**
-     * Validates the message.
-     * @param message The message to validate.
-     */
-    private void validateMessage(PutFileRequest message) throws RequestHandlerException {
-        validateCollectionID(message);
-        validatePillarId(message.getPillarID());
-        if(message.getChecksumDataForNewFile() != null) {
-            getPillarModel().verifyChecksumAlgorithm(message.getChecksumDataForNewFile().getChecksumSpec(), 
-                    message.getCollectionID());
+    @Override
+    protected void validateRequest(PutFileRequest request, MessageContext requestContext) 
+            throws RequestHandlerException {
+        validateCollectionID(request);
+        validatePillarId(request.getPillarID());
+        if(request.getChecksumDataForNewFile() != null) {
+            getPillarModel().verifyChecksumAlgorithm(request.getChecksumDataForNewFile().getChecksumSpec(), 
+                    request.getCollectionID());
         } else if(getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
             throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, "A checksum is required for "
-                    + "the PutFile operation to be performed.", message.getCollectionID(), message.getFileID());
+                    + "the PutFile operation to be performed.", request.getCollectionID(), request.getFileID());
         }
         
-        getPillarModel().verifyChecksumAlgorithm(message.getChecksumRequestForNewFile(), message.getCollectionID());
-        validateFileIDFormat(message.getFileID());
+        getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForNewFile(), request.getCollectionID());
+        validateFileIDFormat(request.getFileID());
         
-        checkThatTheFileDoesNotAlreadyExist(message);
-        checkSpaceForStoringNewFile(message);
+        checkThatTheFileDoesNotAlreadyExist(request);
+        checkSpaceForStoringNewFile(request);
+    }
+
+    @Override
+    protected void sendProgressResponse(PutFileRequest request, MessageContext requestContext) 
+            throws RequestHandlerException {
+        PutFileProgressResponse response = createPutFileProgressResponse(request);
+
+        ResponseInfo prInfo = new ResponseInfo();
+        prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
+        prInfo.setResponseText("Started to receive data.");  
+        response.setResponseInfo(prInfo);
+
+        dispatchResponse(response, request);
+    }
+
+    @Override
+    protected void performOperation(PutFileRequest request, MessageContext requestContext) 
+            throws RequestHandlerException {
+        try {
+            retrieveFile(request);
+            getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(), 
+                    "Add file to archive.", request.getAuditTrailInformation(), FileAction.PUT_FILE,
+                    request.getCorrelationID(), requestContext.getCertificateFingerprint());
+            sendFinalResponse(request);
+        } finally {
+            getPillarModel().ensureFileNotInTmpDir(request.getFileID(), request.getCollectionID());
+        }
     }
     
     /**
@@ -131,32 +143,13 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
     }
     
     /**
-     * Method for sending a progress response.
-     * @param request The request to base the response upon.
-     */
-    private void dispatchInitialProgressResponse(PutFileRequest request) {
-        PutFileProgressResponse response = createPutFileProgressResponse(request);
-
-        ResponseInfo prInfo = new ResponseInfo();
-        prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
-        prInfo.setResponseText("Started to receive data.");  
-        response.setResponseInfo(prInfo);
-
-        dispatchResponse(response, request);
-    }
-    
-    /**
      * Retrieves the actual data, validates it and stores it.
      * @param message The request to for the file to put.
      * @throws RequestHandlerException If the retrival of the file fails.
      */
-    private void retrieveFile(PutFileRequest message, MessageContext messageContext) throws RequestHandlerException {
+    private void retrieveFile(PutFileRequest message) throws RequestHandlerException {
         getPillarModel().putFile(message.getCollectionID(), message.getFileID(), message.getFileAddress(), 
                 message.getChecksumDataForNewFile());
-
-        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                "Add file to archive.", message.getAuditTrailInformation(), FileAction.PUT_FILE,
-                message.getCorrelationID(), messageContext.getCertificateFingerprint());
     }
     
     /**
@@ -183,12 +176,7 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
     
     
     /**
-     * Creates a PutFileProgressResponse based on a PutFileRequest. Missing the 
-     * following fields:
-     * <br/> - AuditTrailInformation
-     * <br/> - PillarChecksumSpec
-     * <br/> - ProgressResponseInfo
-     * 
+     * Creates a PutFileProgressResponse based on a PutFileRequest. 
      * @param request The PutFileRequest to base the progress response on.
      * @return The PutFileProgressResponse based on the request.
      */
@@ -203,13 +191,8 @@ public class PutFileRequestHandler extends PillarMessageHandler<PutFileRequest> 
     }
     
     /**
-     * Creates a PutFileFinalResponse based on a PutFileRequest. Missing the
-     * following fields:
-     * <br/> - AuditTrailInformation
-     * <br/> - ChecksumsDataForNewFile
-     * <br/> - FinalResponseInfo
-     * <br/> - PillarChecksumSpec
-     * 
+     * Creates a PutFileFinalResponse based on a PutFileRequest. 
+     *  
      * @param request The PutFileRequest to base the final response message on.
      * @return The PutFileFinalResponse message based on the request.
      */

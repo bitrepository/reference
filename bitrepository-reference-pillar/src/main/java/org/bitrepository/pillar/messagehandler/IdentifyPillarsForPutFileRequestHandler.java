@@ -45,17 +45,16 @@ import org.slf4j.LoggerFactory;
  * Class for handling the identification of this pillar for the purpose of performing the PutFile operation.
  */
 public class IdentifyPillarsForPutFileRequestHandler 
-        extends PillarMessageHandler<IdentifyPillarsForPutFileRequest> {
+        extends IdentifyRequestHandler<IdentifyPillarsForPutFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
     /**
-     * @param context The context for the pillar.
-     * @param archivesManager The manager of the archives.
-     * @param csManager The checksum manager for the pillar.
+     * @param context The context for the message handling.
+     * @param model The storage model for the pillar.
      */
-    protected IdentifyPillarsForPutFileRequestHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
-        super(context, fileInfoStore);
+    protected IdentifyPillarsForPutFileRequestHandler(MessageHandlerContext context, StorageModel model) {
+        super(context, model);
     }
     
     @Override
@@ -64,20 +63,26 @@ public class IdentifyPillarsForPutFileRequestHandler
     }
     
     @Override
-    public void processRequest(IdentifyPillarsForPutFileRequest message, MessageContext messageContext) throws RequestHandlerException {
-        validateCollectionID(message);
-        validateFileIDFormat(message.getFileID());
-        if(checkThatTheFileDoesNotAlreadyExist(message)) {
-            respondDuplicateFile(message);
-        } else {
-            checkSpaceForStoringNewFile(message);
-            respondSuccesfullIdentification(message);
-        }
+    public MessageResponse generateFailedResponse(IdentifyPillarsForPutFileRequest message) {
+        return createFinalResponse(message);
     }
     
     @Override
-    public MessageResponse generateFailedResponse(IdentifyPillarsForPutFileRequest message) {
-        return createFinalResponse(message);
+    public void validateRequest(IdentifyPillarsForPutFileRequest request, MessageContext messageContext) 
+            throws RequestHandlerException {
+        validateCollectionID(request);
+        validateFileIDFormat(request.getFileID());
+    }
+    
+    @Override
+    protected void sendResponse(IdentifyPillarsForPutFileRequest request, MessageContext requestContext)  
+                    throws RequestHandlerException {
+        if(checkThatTheFileDoesNotAlreadyExist(request)) {
+            respondDuplicateFile(request);
+        } else {
+            checkSpaceForStoringNewFile(request);
+            respondSuccesfullIdentification(request);
+        }
     }
     
     /**
@@ -86,8 +91,7 @@ public class IdentifyPillarsForPutFileRequestHandler
      * @param message The request with the filename to validate.
      * @return Whether the file already exists.
      */
-    private boolean checkThatTheFileDoesNotAlreadyExist(IdentifyPillarsForPutFileRequest message) 
-            throws RequestHandlerException {
+    private boolean checkThatTheFileDoesNotAlreadyExist(IdentifyPillarsForPutFileRequest message) {
         if(message.getFileID() == null) {
             log.debug("No fileid given in the identification request.");
             return false;
@@ -118,7 +122,7 @@ public class IdentifyPillarsForPutFileRequestHandler
      * @param message The request to base the response upon.
      * @throws RequestHandlerException 
      */
-    protected void respondDuplicateFile(IdentifyPillarsForPutFileRequest message) throws RequestHandlerException {
+    private void respondDuplicateFile(IdentifyPillarsForPutFileRequest message) throws RequestHandlerException {
         IdentifyPillarsForPutFileResponse response = createFinalResponse(message);
 
         response.setReplyTo(getSettings().getReceiverDestinationID());
@@ -138,7 +142,7 @@ public class IdentifyPillarsForPutFileRequestHandler
      * Method for sending a positive response for putting this file.
      * @param request The request to respond to.
      */
-    protected void respondSuccesfullIdentification(IdentifyPillarsForPutFileRequest request)  {
+    private void respondSuccesfullIdentification(IdentifyPillarsForPutFileRequest request)  {
         IdentifyPillarsForPutFileResponse response = createFinalResponse(request);
 
         // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver

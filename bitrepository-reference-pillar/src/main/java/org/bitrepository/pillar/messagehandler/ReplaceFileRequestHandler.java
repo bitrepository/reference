@@ -56,17 +56,16 @@ import org.slf4j.LoggerFactory;
  * </ul>
  * If anything goes wrong a FinalResponse is send telling about the failure.
  */
-public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileRequest> {
+public class ReplaceFileRequestHandler extends PerformRequestHandler<ReplaceFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
     /**
-     * @param context The context for the pillar.
-     * @param archivesManager The manager of the archives.
-     * @param csManager The checksum manager for the pillar.
+     * @param context The context for the message handling.
+     * @param model The storage model for the pillar.
      */
-    protected ReplaceFileRequestHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
-        super(context, fileInfoStore);
+    protected ReplaceFileRequestHandler(MessageHandlerContext context, StorageModel model) {
+        super(context, model);
     }
 
     @Override
@@ -75,92 +74,31 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
     }
 
     @Override
-    public void processRequest(ReplaceFileRequest message, MessageContext messageContext) throws RequestHandlerException {
-        validateMessage(message);
-        try {
-            sendProgressMessage(message);
-            ChecksumDataForFileTYPE requestedOldChecksum = calculateChecksumOnOldFile(message);
-            replaceFile(message, messageContext);
-            ChecksumDataForFileTYPE requestedNewChecksum = calculateChecksumOnNewFile(message);
-            sendFinalResponse(message, requestedOldChecksum, requestedNewChecksum);
-        } finally {
-            getPillarModel().ensureFileNotInTmpDir(message.getFileID(), message.getCollectionID());
-        }
-    }
-
-    @Override
     public MessageResponse generateFailedResponse(ReplaceFileRequest message) {
         return createFinalResponse(message);
     }
     
-    /**
-     * Method for validating the content of the message.
-     * @param message The message requesting the operation, which should be validated.
-     * @return Whether it was valid.
-     */
-    protected void validateMessage(ReplaceFileRequest message) throws RequestHandlerException {
-        validateCollectionID(message);
-        validatePillarId(message.getPillarID());
-        getPillarModel().verifyChecksumAlgorithm(message.getChecksumRequestForExistingFile(), 
-                message.getCollectionID());
-        getPillarModel().verifyChecksumAlgorithm(message.getChecksumRequestForNewFile(), message.getCollectionID());
-        if(message.getChecksumDataForExistingFile() != null) {
-            getPillarModel().verifyChecksumAlgorithm(message.getChecksumDataForExistingFile().getChecksumSpec(), 
-                    message.getCollectionID());
-        } else if(getSettings().getRepositorySettings().getProtocolSettings()
-                .isRequireChecksumForDestructiveRequests()) {
-            throw new IllegalOperationException(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, "According to the "
-                    + "contract a checksum for file to be deleted during the replacing operation is required.", 
-                    message.getCollectionID(), message.getFileID());
-        }
-        if(message.getChecksumDataForNewFile() != null) {
-            getPillarModel().verifyChecksumAlgorithm(message.getChecksumDataForNewFile().getChecksumSpec(), 
-                    message.getCollectionID());
-        } else if(getSettings().getRepositorySettings().getProtocolSettings()
-                .isRequireChecksumForNewFileRequests()) {
-            throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, "According to the contract a "
-                    + "checksum for new file in the replacing operation is required.",
-                    message.getCollectionID(), message.getFileID());
-        }
+    @Override
+    protected void validateRequest(ReplaceFileRequest request, MessageContext requestContext) 
+            throws RequestHandlerException {
+        validateCollectionID(request);
+        validatePillarId(request.getPillarID());
         
-        // Validate, that we have the requested file.
-        if(!getPillarModel().hasFileID(message.getFileID(), message.getCollectionID())) {
-            throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "The file '" + message.getFileID() 
-                    + "' has been requested, but we do not have that file!", message.getCollectionID());
+        if(!getPillarModel().hasFileID(request.getFileID(), request.getCollectionID())) {
+            throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "The file '" + request.getFileID() 
+                    + "' has been requested, but we do not have that file!", request.getCollectionID());
         }
 
-        // validate, that we have enough space for the new file.
-        getPillarModel().verifyEnoughFreeSpaceLeftForFile(message.getFileSize().longValue(), 
-                message.getCollectionID());
+        getPillarModel().verifyEnoughFreeSpaceLeftForFile(request.getFileSize().longValue(), 
+                request.getCollectionID());
 
-        // Validate the checksum of the existing file.
-        ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
-        if(checksumData != null) {
-            ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
-            String calculatedChecksum = getPillarModel().getChecksumForFile(message.getFileID(), 
-                    message.getCollectionID(), checksumType);
-            String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
-            if(!calculatedChecksum.equals(requestedChecksum)) {
-                // Log the different checksums, but do not send the right checksum back!
-                log.warn("Failed to handle replace operation on file '" + message.getFileID() + "' since the request had "
-                        + "the checksum '" + requestedChecksum + "' where our local file has the value '" 
-                        + calculatedChecksum + "'. Sending alarm and respond failure.");
-                String errMsg = "Requested to replace the file '" + message.getFileID() + "' with checksum '"
-                        + requestedChecksum + "', but our file had a different checksum.";
-                
-                throw new IllegalOperationException(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, errMsg, 
-                        message.getCollectionID(), message.getFileID());
-            }
-        } else {
-            log.debug("No checksum for validation of the existing file before replace.");
-        }
+        validateChecksumAlgorithms(request);
+        validateExistingChecksum(request);
     }
-    
-    /**
-     * Sends a progress response to tell that the replacement is happening.
-     * @param request The request to base the progress response upon.
-     */
-    private void sendProgressMessage(ReplaceFileRequest request) {
+
+    @Override
+    protected void sendProgressResponse(ReplaceFileRequest request, MessageContext requestContext) 
+            throws RequestHandlerException {
         ReplaceFileProgressResponse response = createProgressResponse(request);
         String responseText = "Performing the ReplaceFileRequest for file '" + request.getFileID() + "' at '"
                 + request.getCollectionID() + "'.";
@@ -172,6 +110,82 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
         response.setResponseInfo(responseInfo);
 
         dispatchResponse(response, request);
+    }
+
+    @Override
+    protected void performOperation(ReplaceFileRequest request, MessageContext requestContext) 
+            throws RequestHandlerException {
+        try {
+            ChecksumDataForFileTYPE requestedOldChecksum = calculateChecksumOnOldFile(request);
+            replaceFile(request);
+            getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(), 
+                    "Replacing the file.", request.getAuditTrailInformation(), FileAction.REPLACE_FILE,
+                    request.getCorrelationID(), requestContext.getCertificateFingerprint());
+
+            ChecksumDataForFileTYPE requestedNewChecksum = calculateChecksumOnNewFile(request);
+            sendFinalResponse(request, requestedOldChecksum, requestedNewChecksum);
+        } finally {
+            getPillarModel().ensureFileNotInTmpDir(request.getFileID(), request.getCollectionID());
+        }
+    }
+    
+    /**
+     * Validates that the checksum algorithms in the request are supported, and that the request contains the required
+     * checksums for destructive and new file requests.
+     * @param request The request.
+     * @throws RequestHandlerException If one (or more) of the algorithms are not supported, or if the required 
+     * checksums are not given. 
+     */
+    private void validateChecksumAlgorithms(ReplaceFileRequest request) throws RequestHandlerException {
+        getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile(), 
+                request.getCollectionID());
+        getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForNewFile(), request.getCollectionID());
+        if(request.getChecksumDataForExistingFile() != null) {
+            getPillarModel().verifyChecksumAlgorithm(request.getChecksumDataForExistingFile().getChecksumSpec(), 
+                    request.getCollectionID());
+        } else if(getSettings().getRepositorySettings().getProtocolSettings()
+                .isRequireChecksumForDestructiveRequests()) {
+            throw new IllegalOperationException(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, "According to the "
+                    + "contract a checksum for file to be deleted during the replacing operation is required.", 
+                    request.getCollectionID(), request.getFileID());
+        }
+        if(request.getChecksumDataForNewFile() != null) {
+            getPillarModel().verifyChecksumAlgorithm(request.getChecksumDataForNewFile().getChecksumSpec(), 
+                    request.getCollectionID());
+        } else if(getSettings().getRepositorySettings().getProtocolSettings()
+                .isRequireChecksumForNewFileRequests()) {
+            throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, "According to the contract a "
+                    + "checksum for new file in the replacing operation is required.",
+                    request.getCollectionID(), request.getFileID());
+        }
+    }
+    
+    /**
+     * Validates the the existing file has the expected checksum.
+     * @param request The request containing info about which file and which checksum is expected.
+     * @throws RequestHandlerException If the file does not have the expected checksum.
+     */
+    private void validateExistingChecksum(ReplaceFileRequest request) throws RequestHandlerException {
+        ChecksumDataForFileTYPE checksumData = request.getChecksumDataForExistingFile();
+        if(checksumData != null) {
+            ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
+            String calculatedChecksum = getPillarModel().getChecksumForFile(request.getFileID(), 
+                    request.getCollectionID(), checksumType);
+            String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
+            if(!calculatedChecksum.equals(requestedChecksum)) {
+                // Log the different checksums, but do not send the right checksum back!
+                log.warn("Failed to handle replace operation on file '" + request.getFileID() + "' since the request had "
+                        + "the checksum '" + requestedChecksum + "' where our local file has the value '" 
+                        + calculatedChecksum + "'. Sending alarm and respond failure.");
+                String errMsg = "Requested to replace the file '" + request.getFileID() + "' with checksum '"
+                        + requestedChecksum + "', but our file had a different checksum.";
+                
+                throw new IllegalOperationException(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, errMsg, 
+                        request.getCollectionID(), request.getFileID());
+            }
+        } else {
+            log.debug("No checksum for validation of the existing file before replace.");
+        }
     }
     
     /**
@@ -199,14 +213,11 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
      * Also validates against the given checksum. Will log a warning, if no checksum for validation is in the request.
      * @param message The request containing the location of the file and the checksum of it.
      */
-    private void replaceFile(ReplaceFileRequest message, MessageContext messageContext) throws RequestHandlerException {
+    private void replaceFile(ReplaceFileRequest message) throws RequestHandlerException {
         log.info("Replacing the file '" + message.getFileID() + "' in the archive with the one in the "
                 + "temporary area.");
         getPillarModel().replaceFile(message.getFileID(), message.getCollectionID(), 
                 message.getFileAddress(), message.getChecksumDataForNewFile());
-        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                "Replacing the file.", message.getAuditTrailInformation(), FileAction.REPLACE_FILE,
-                message.getCorrelationID(), messageContext.getCertificateFingerprint());
     }
 
     /**
@@ -231,8 +242,8 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
     /**
      * Sends the final response for a successful finish of the operation.
      * @param request The request to base the response upon.
-     * @param requestedOldChecksum [OPTIONAL] The requested checksum for the old file.
-     * @param requestedNewChecksum [OPTIONAL] The requested checksum for the new file.
+     * @param requestedOldChecksum The requested checksum for the old file, or null if no checksum for the old file.
+     * @param requestedNewChecksum The requested checksum for the new file, or null if no checksum for the new file.
      */
     private void sendFinalResponse(ReplaceFileRequest request, ChecksumDataForFileTYPE requestedOldChecksum,
             ChecksumDataForFileTYPE requestedNewChecksum) {
@@ -250,9 +261,6 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
     
     /**
      * Creates the generic ReplaceFileFinalResponse based on the request.
-     * Missing fields:
-     * <br/> ResponseInfo
-     * <br/> PillarChecksumSpec
      * @param request The ReplaceFileRequest to base the response upon.
      * @return The ReplaceFileFinalResponse based on the request.
      */
@@ -268,10 +276,6 @@ public class ReplaceFileRequestHandler extends PillarMessageHandler<ReplaceFileR
     
     /**
      * Creates the generic ReplaceFileFinalResponse based on the request.
-     * Missing fields:
-     * <br/> ResponseInfo
-     * <br/> ChecksumDataForFile
-     * <br/> PillarChecksumSpec
      * @param request The ReplaceFileRequest to base the response upon.
      * @return The ReplaceFileFinalResponse based on the request.
      */

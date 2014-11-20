@@ -52,17 +52,16 @@ import org.slf4j.LoggerFactory;
 /**
  * Class for performing the GetFile operation.
  */
-public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> {
+public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
     /**
-     * @param context The context for the pillar.
-     * @param archivesManager The manager of the archives.
-     * @param csManager The checksum manager for the pillar.
+     * @param context The context for the message handling.
+     * @param model The storage model for the pillar.
      */
-    protected GetFileRequestHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
-        super(context, fileInfoStore);
+    protected GetFileRequestHandler(MessageHandlerContext context, StorageModel model) {
+        super(context, model);
     }
 
     @Override
@@ -71,56 +70,52 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
     }
 
     @Override
-    public void processRequest(GetFileRequest message, MessageContext messageContext) throws RequestHandlerException {
-        validateMessage(message);
-        sendProgressMessage(message);
-        uploadToClient(message, messageContext);
-        sendFinalResponse(message);
-    }
-
-    @Override
     public MessageResponse generateFailedResponse(GetFileRequest message) {
         return createFinalResponse(message);
     }
-    
-    /**
-     * Method for validating the content of the message.
-     * @param message The message requesting the operation, which should be validated.
-     * @return Whether it was valid.
-     * @throws RequestHandlerException If the request is invalid, or if the file does not exist, e.g. if it is a 
-     * ChecksumPillar.
-     */
-    protected void validateMessage(GetFileRequest message) throws RequestHandlerException {
-        validateCollectionID(message);
-        validatePillarId(message.getPillarID());
-        validateFileIDFormat(message.getFileID());
-        
-        getPillarModel().verifyFileExists(message.getFileID(), message.getCollectionID());
+
+    @Override
+    protected void validateRequest(GetFileRequest request, MessageContext requestContext) 
+            throws RequestHandlerException {
+        validateCollectionID(request);
+        validatePillarId(request.getPillarID());
+        validateFileIDFormat(request.getFileID());
+
+        getPillarModel().verifyFileExists(request.getFileID(), request.getCollectionID());
+
     }
-    
-    /**
-     * The method for sending a progress response telling, that the operation is about to be performed.
-     * @param message The request for the GetFile operation.
-     */
-    protected void sendProgressMessage(GetFileRequest message) throws RequestHandlerException {
-        FileInfo requestedFi = getPillarModel().getFileInfoForActualFile(message.getFileID(), 
-                message.getCollectionID());
-        GetFileProgressResponse response = createGetFileProgressResponse(message);
+
+    @Override
+    protected void sendProgressResponse(GetFileRequest request, MessageContext requestContext) 
+            throws RequestHandlerException {
+        FileInfo requestedFi = getPillarModel().getFileInfoForActualFile(request.getFileID(), 
+                request.getCollectionID());
+        GetFileProgressResponse response = createGetFileProgressResponse(request);
 
         response.setFileSize(BigInteger.valueOf(requestedFi.getSize()));
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Started to retrieve data.");
         response.setResponseInfo(prInfo);
-        getContext().getResponseDispatcher().dispatchResponse(response, message);
-    } 
+        getContext().getResponseDispatcher().dispatchResponse(response, request);
+    }
+
+    @Override
+    protected void performOperation(GetFileRequest request, MessageContext requestContext) 
+            throws RequestHandlerException {
+        uploadToClient(request);
+        getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(), 
+                "Failed identifying pillar.", request.getAuditTrailInformation(), FileAction.GET_FILE,
+                request.getCorrelationID(), requestContext.getCertificateFingerprint());
+        sendFinalResponse(request);
+    }
 
     /**
      * Method for uploading the file to the requested location.
      * @param message The message requesting the GetFile operation.
      * @throws InvalidMessageException If the upload of the file fails.
      */
-    protected void uploadToClient(GetFileRequest message, MessageContext messageContext) 
+    protected void uploadToClient(GetFileRequest message) 
             throws RequestHandlerException {
         FileInfo requestedFile = getPillarModel().getFileInfoForActualFile(message.getFileID(), 
                 message.getCollectionID());
@@ -134,9 +129,6 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
             }
 
             log.info("Uploading file: " + requestedFile.getFileID() + " to " + message.getFileAddress());
-            getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                    "Failed identifying pillar.", message.getAuditTrailInformation(), FileAction.GET_FILE,
-                    message.getCorrelationID(), messageContext.getCertificateFingerprint());
             FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
             fe.uploadToServer(is, new URL(message.getFileAddress()));
         } catch (IOException e) {
@@ -187,13 +179,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
     }
     
     /**
-     * Creates a GetFileResponse based on a GetFileRequest. Missing the 
-     * following fields:
-     * <br/> - AuditTrailInformation
-     * <br/> - ChecksumsDataForBitRepositoryFile
-     * <br/> - FileSize
-     * <br/> - ProgressResponseInfo
-     * 
+     * Creates a GetFileProgressResponse based on a GetFileRequest. 
      * @param msg The GetFileRequest to base the progress response on.
      * @return The GetFileProgressResponse based on the request.
      */
@@ -208,11 +194,7 @@ public class GetFileRequestHandler extends PillarMessageHandler<GetFileRequest> 
     }
     
     /**
-     * Creates a GetFileFinalResponse based on a GetFileRequest. Missing the 
-     * following fields:
-     * <br/> - AuditTrailInformation
-     * <br/> - FinalResponseInfo
-     * 
+     * Creates a GetFileFinalResponse based on a GetFileRequest. 
      * @param msg The GetFileRequest to base the final response on.
      * @return The GetFileFinalResponse based on the request.
      */

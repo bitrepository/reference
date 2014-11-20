@@ -52,6 +52,7 @@ import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
@@ -61,17 +62,16 @@ import org.xml.sax.SAXException;
 /**
  * Class for handling requests for the GetFileIDs operation.
  */
-public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsRequest> {
+public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /**
-     * @param context The context for the pillar.
-     * @param archivesManager The manager of the archives.
-     * @param csManager The checksum manager for the pillar.
+     * @param context The context for the message handling.
+     * @param model The storage model for the pillar.
      */
-    protected GetFileIDsRequestHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
-        super(context, fileInfoStore);
+    protected GetFileIDsRequestHandler(MessageHandlerContext context, StorageModel model) {
+        super(context, model);
     }
     
     @Override
@@ -80,31 +80,45 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
     }
 
     @Override
-    public void processRequest(GetFileIDsRequest message, MessageContext messageContext) throws RequestHandlerException {
-        validateMessage(message);
-        sendInitialProgressMessage(message);
-        ExtractedFileIDsResultSet extractedFileIDs = retrieveFileIDsData(message);
-        ResultingFileIDs results = createDeliveryFormatAndPossiblyUploadIfRequested(message, extractedFileIDs);
-        sendFinalResponse(message, results, extractedFileIDs);
+    public MessageResponse generateFailedResponse(GetFileIDsRequest request) {
+        return createFinalResponse(request);
     }
 
     @Override
-    public MessageResponse generateFailedResponse(GetFileIDsRequest message) {
-        return createFinalResponse(message);
-    }
-    
-    /**
-     * Method for validating the content of the GetFileIDsRequest message. 
-     * @param message The message to validate.
-     * @throws RequestHandlerException If the requested operation is not possible to perform.
-     */
-    private void validateMessage(GetFileIDsRequest message) throws RequestHandlerException {
-        validateCollectionID(message);
-        validatePillarId(message.getPillarID());
-        validateFileIDFormat(message.getFileIDs().getFileID());
-        checkThatAllRequestedFilesAreAvailable(message);
+    protected void validateRequest(GetFileIDsRequest request, MessageContext requestContext) 
+            throws RequestHandlerException {
+        validateCollectionID(request);
+        validatePillarId(request.getPillarID());
+        validateFileIDFormat(request.getFileIDs().getFileID());
+        checkThatAllRequestedFilesAreAvailable(request);
 
-        log.debug("Message '" + message.getCorrelationID() + "' validated and accepted.");
+        log.debug(MessageUtils.createMessageIdentifier(request) + "' validated and accepted.");
+    }
+
+    @Override
+    protected void sendProgressResponse(GetFileIDsRequest request, MessageContext requestContext) {
+        GetFileIDsProgressResponse response = createProgressResponse(request);
+        
+        ResponseInfo prInfo = new ResponseInfo();
+        prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
+        prInfo.setResponseText("Starting to locate files.");
+        response.setResponseInfo(prInfo);
+
+        dispatchResponse(response, request);
+    }
+
+    @Override
+    protected void performOperation(GetFileIDsRequest request, MessageContext requestContext) 
+            throws RequestHandlerException {
+        ExtractedFileIDsResultSet extractedFileIDs = retrieveFileIDsData(request);
+        ResultingFileIDs results = new ResultingFileIDs();
+        if(request.getResultAddress() == null) {
+            results.setFileIDsData(extractedFileIDs.getEntries());
+        } else {
+            uploadResults(request, extractedFileIDs);
+            results.setResultAddress(request.getResultAddress());
+        }
+        sendFinalResponse(request, results, extractedFileIDs);
     }
     
     /**
@@ -127,21 +141,6 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
     }
     
     /**
-     * Method for creating and sending the initial progress response for accepting the operation.
-     * @param request The request to base the response upon.
-     */
-    private void sendInitialProgressMessage(GetFileIDsRequest request) {
-        GetFileIDsProgressResponse response = createProgressResponse(request);
-        
-        ResponseInfo prInfo = new ResponseInfo();
-        prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
-        prInfo.setResponseText("Starting to locate files.");
-        response.setResponseInfo(prInfo);
-
-        dispatchResponse(response, request);
-    }
-    
-    /**
      * Retrieves the requested FileIDs. Depending on which operation is requested, it will call the appropriate method.
      * 
      * @param message The requested for extracting the file ids.
@@ -157,35 +156,22 @@ public class GetFileIDsRequestHandler extends PillarMessageHandler<GetFileIDsReq
     }
     
     /**
-     * Creates the ResultingFileIDs object for the final response message.
-     * If the results should be uploaded to a given URL, then the requested FileIDs are packed into a file, 
-     * uploaded, and the URL are put into the ResultingFileIDs object. 
-     * Otherwise the requested FileIDs are put into the result structure.
+     * Uploads the results to the URL in the request.
      *  
-     * @param message The message requesting which fileids to be found.
+     * @param request The request.
      * @param extractedFileIDs The extracted file ids.
-     * @return The ResultingFileIDs with either the list of fileids or the final address for where the 
-     * list of fileids is uploaded.
+     * @throws RequestHandlerException If the file with the resutls could not be created, or could not be uploaded.
      */
-    private ResultingFileIDs createDeliveryFormatAndPossiblyUploadIfRequested(GetFileIDsRequest message, 
-            ExtractedFileIDsResultSet extractedFileIDs) throws RequestHandlerException {
-        ResultingFileIDs res = new ResultingFileIDs();
-        
-        String resultingAddress = message.getResultAddress();
-        if(resultingAddress == null) {
-            res.setFileIDsData(extractedFileIDs.getEntries());
-        } else {
-            try {
-                File outputFile = makeTemporaryResultFile(message, extractedFileIDs.getEntries());
-                uploadFile(outputFile, resultingAddress);
-                res.setResultAddress(resultingAddress);
-            } catch (Exception e) {
-                throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, "Could not deliver results.", 
-                        message.getCollectionID(), e);
-            }
+    private void uploadResults(GetFileIDsRequest request,  ExtractedFileIDsResultSet extractedFileIDs) 
+            throws RequestHandlerException {
+        String resultingAddress = request.getResultAddress();
+        try {
+            File outputFile = makeTemporaryResultFile(request, extractedFileIDs.getEntries());
+            uploadFile(outputFile, resultingAddress);
+        } catch (Exception e) {
+            throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, "Could not deliver results.", 
+                    request.getCollectionID(), e);
         }
-        
-        return res;
     }
     
     /**

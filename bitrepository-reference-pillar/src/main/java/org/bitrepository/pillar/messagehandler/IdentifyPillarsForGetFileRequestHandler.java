@@ -41,14 +41,13 @@ import org.bitrepository.service.exception.RequestHandlerException;
  * Class for handling the identification of this pillar for the purpose of performing the GetFile operation.
  */
 public class IdentifyPillarsForGetFileRequestHandler 
-        extends PillarMessageHandler<IdentifyPillarsForGetFileRequest> {
+        extends IdentifyRequestHandler<IdentifyPillarsForGetFileRequest> {
     /**
-     * @param context The context for the pillar.
-     * @param archivesManager The manager of the archives.
-     * @param csManager The checksum manager for the pillar.
+     * @param context The context for the message handling.
+     * @param model The storage model for the pillar.
      */
-    protected IdentifyPillarsForGetFileRequestHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
-        super(context, fileInfoStore);
+    protected IdentifyPillarsForGetFileRequestHandler(MessageHandlerContext context, StorageModel model) {
+        super(context, model);
     }
     
     @Override
@@ -57,49 +56,26 @@ public class IdentifyPillarsForGetFileRequestHandler
     }
 
     @Override
-    public void processRequest(IdentifyPillarsForGetFileRequest message, MessageContext messageContext) 
-            throws RequestHandlerException {
-        validateMessage(message);
-        checkThatFileIsAvailable(message);
-        respondSuccesfullIdentification(message);
-    }
-
-    @Override
     public MessageResponse generateFailedResponse(IdentifyPillarsForGetFileRequest message) {
         return createFinalResponse(message);
     }
     
-    /**
-     * Method for validating the content of the message.
-     * @param message The message to validate.
-     * @throws RequestHandlerException If it tries to positively identify a ChecksumPillar for a GetFile operation.
-     */
-    public void validateMessage(IdentifyPillarsForGetFileRequest message) throws RequestHandlerException {
-        validateCollectionID(message);
-        validateFileIDFormat(message.getFileID());
-        
+    @Override
+    protected void validateRequest(IdentifyPillarsForGetFileRequest request, MessageContext requestContext) 
+            throws RequestHandlerException {
         if(getPillarModel().getChecksumPillarSpec() != null) {
             throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "A ChecksumPillar cannot deliver "
-                    + "actual files.", message.getCollectionID());
+                    + "actual files.", request.getCollectionID());
         }
+
+        validateCollectionID(request);
+        validateFileIDFormat(request.getFileID());
+        
+        checkThatFileIsAvailable(request);
     }
-    
-    /**
-     * Validates that the requested file is within the archive. 
-     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
-     * @param message The request for the identification for the GetFileRequest operation.
-     */
-    private void checkThatFileIsAvailable(IdentifyPillarsForGetFileRequest message) 
-            throws RequestHandlerException {
-        validateFileIDFormat(message.getFileID());
-        getPillarModel().verifyFileExists(message.getFileID(), message.getCollectionID());
-    }
-    
-    /**
-     * Method for making a successful response to the identification.
-     * @param request The request to respond to.
-     */
-    private void respondSuccesfullIdentification(IdentifyPillarsForGetFileRequest request) {
+
+    @Override
+    protected void sendResponse(IdentifyPillarsForGetFileRequest request, MessageContext requestContext) {
         IdentifyPillarsForGetFileResponse response = createFinalResponse(request);
 
         response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
@@ -111,6 +87,17 @@ public class IdentifyPillarsForGetFileRequestHandler
         response.setResponseInfo(irInfo);
 
         dispatchResponse(response, request);
+    }
+    
+    /**
+     * Validates that the requested file is within the archive. 
+     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
+     * @param message The request for the identification for the GetFileRequest operation.
+     */
+    private void checkThatFileIsAvailable(IdentifyPillarsForGetFileRequest message) 
+            throws RequestHandlerException {
+        validateFileIDFormat(message.getFileID());
+        getPillarModel().verifyFileExists(message.getFileID(), message.getCollectionID());
     }
     
     /**

@@ -37,8 +37,10 @@ public abstract class PerformRequestHandler<MessageRequest> extends PillarMessag
      * Sends a progress response.
      * @param request The request to respond to.
      * @param requestContext The context for the request.
+     * @throws RequestHandlerException If something data necessary for the progress response could not be extracted. 
      */
-    protected abstract void sendProgressResponse(MessageRequest request, MessageContext requestContext);
+    protected abstract void sendProgressResponse(MessageRequest request, MessageContext requestContext)
+            throws RequestHandlerException ;
     
     /**
      * Perform the operation behind the request.

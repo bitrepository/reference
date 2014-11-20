@@ -40,14 +40,13 @@ import org.bitrepository.service.exception.RequestHandlerException;
  * Class for handling the identification of this pillar for the purpose of performing the DeleteFile operation.
  */
 public class IdentifyPillarsForDeleteFileRequestHandler 
-        extends PillarMessageHandler<IdentifyPillarsForDeleteFileRequest> {
+        extends IdentifyRequestHandler<IdentifyPillarsForDeleteFileRequest> {
     /**
-     * @param context The context for the pillar.
-     * @param archivesManager The manager of the archives.
-     * @param csManager The checksum manager for the pillar.
+     * @param context The context for the message handling.
+     * @param model The storage model for the pillar.
      */
-    protected IdentifyPillarsForDeleteFileRequestHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
-        super(context, fileInfoStore);
+    protected IdentifyPillarsForDeleteFileRequestHandler(MessageHandlerContext context, StorageModel model) {
+        super(context, model);
     }
 
     @Override
@@ -56,18 +55,33 @@ public class IdentifyPillarsForDeleteFileRequestHandler
     }
 
     @Override
-    public void processRequest(IdentifyPillarsForDeleteFileRequest message, MessageContext messageContext) throws RequestHandlerException {
-        validateCollectionID(message);
-        validateFileIDFormat(message.getFileID());
-        checkThatRequestedFileIsAvailable(message);
-        respondSuccessfulIdentification(message);
-    }
-
-    @Override
     public MessageResponse generateFailedResponse(IdentifyPillarsForDeleteFileRequest message) {
         return createFinalResponse(message);
     }
         
+
+    @Override
+    protected void validateRequest(IdentifyPillarsForDeleteFileRequest message, MessageContext messageContext) throws RequestHandlerException {
+        validateCollectionID(message);
+        validateFileIDFormat(message.getFileID());
+        checkThatRequestedFileIsAvailable(message);
+    }
+
+    @Override
+    protected void sendResponse(IdentifyPillarsForDeleteFileRequest request, MessageContext messageContext) {
+        IdentifyPillarsForDeleteFileResponse response = createFinalResponse(request);
+
+        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+            getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+        
+        ResponseInfo irInfo = new ResponseInfo();
+        irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
+        irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
+        response.setResponseInfo(irInfo);
+
+        dispatchResponse(response, request);
+    }
+    
     /**
      * Validates that the requested files are present in the archive. 
      * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
@@ -82,24 +96,6 @@ public class IdentifyPillarsForDeleteFileRequestHandler
         }
     }
 
-    /**
-     * Method for making a successful response to the identification.
-     * @param request The request to respond to.
-     */
-    private void respondSuccessfulIdentification(IdentifyPillarsForDeleteFileRequest request) {
-        IdentifyPillarsForDeleteFileResponse response = createFinalResponse(request);
-
-        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
-            getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
-        
-        ResponseInfo irInfo = new ResponseInfo();
-        irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
-        irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
-        response.setResponseInfo(irInfo);
-
-        dispatchResponse(response, request);
-    }
-    
     /**
      * Creates a IdentifyPillarsForDeleteFileResponse based on a 
      * IdentifyPillarsForDeleteFileRequest. The following fields are not inserted:

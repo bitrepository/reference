@@ -62,17 +62,16 @@ import org.xml.sax.SAXException;
 /**
  * Class for performing the GetChecksums operation for this pillar.
  */
-public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksumsRequest> {
+public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksumsRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /**
-     * @param context The context for the pillar.
-     * @param archivesManager The manager of the archives.
-     * @param csManager The checksum manager for the pillar.
+     * @param context The context for the message handling.
+     * @param model The storage model for the pillar.
      */
-    protected GetChecksumsRequestHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
-        super(context, fileInfoStore);
+    protected GetChecksumsRequestHandler(MessageHandlerContext context, StorageModel model) {
+        super(context, model);
     }
 
     @Override
@@ -81,63 +80,24 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
     }
 
     @Override
-    public void processRequest(GetChecksumsRequest message, MessageContext messageContext) throws RequestHandlerException {
-        validateMessage(message);
-        sendInitialProgressMessage(message);
-        ExtractedChecksumResultSet extractedChecksums = extractChecksumResults(message);
-        ResultingChecksums compiledResults = createDeliveryFormatAndPossiblyUploadIfRequested(message, extractedChecksums);
-        sendFinalResponse(message, compiledResults, extractedChecksums);
+    public MessageResponse generateFailedResponse(GetChecksumsRequest request) {
+        return createFinalResponse(request);
     }
 
     @Override
-    public MessageResponse generateFailedResponse(GetChecksumsRequest message) {
-        return createFinalResponse(message);
+    protected void validateRequest(GetChecksumsRequest request, MessageContext requestContext) 
+            throws RequestHandlerException {
+        validateCollectionID(request);
+        validatePillarId(request.getPillarID());
+        getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile(), 
+                request.getCollectionID());
+        validateFileIDs(request);
+
+        log.debug(MessageUtils.createMessageIdentifier(request) + "' validated and accepted.");
     }
 
-    /**
-     * Method for validating the content of the GetChecksumsRequest message. 
-     * Is it possible to perform the operation?
-     * 
-     * @param message The message to validate.
-     */
-    private void validateMessage(GetChecksumsRequest message) throws RequestHandlerException {
-        validateCollectionID(message);
-        validatePillarId(message.getPillarID());
-        getPillarModel().verifyChecksumAlgorithm(message.getChecksumRequestForExistingFile(), 
-                message.getCollectionID());
-        validateFileIDs(message);
-
-        log.debug(MessageUtils.createMessageIdentifier(message) + "' validated and accepted.");
-    }
-
-    /**
-     * Method for validating the FileIDs in the GetChecksumsRequest message.
-     * Do we have the requested files?
-     * This does only concern the specified files. Not 'AllFiles' or the parameter stuff.
-     *  
-     * @param message The message to validate the FileIDs of.
-     */
-    private void validateFileIDs(GetChecksumsRequest message) throws RequestHandlerException {
-        FileIDs fileids = message.getFileIDs();
-
-        String fileID = fileids.getFileID();
-        if(fileID == null) {
-            return;
-        }
-        validateFileIDFormat(fileID);
-
-        if(!getPillarModel().hasFileID(fileID, message.getCollectionID())) {
-            log.warn("The following file is missing: '" + fileID + "'");
-            throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
-                    message.getCollectionID());
-        }
-    }
-
-    /**
-     * Method for creating and sending the initial progress response for accepting the operation.
-     * @param request The request to base the response upon.
-     */
-    private void sendInitialProgressMessage(GetChecksumsRequest request) {
+    @Override
+    protected void sendProgressResponse(GetChecksumsRequest request, MessageContext requestContext) {
         GetChecksumsProgressResponse response = createProgressResponse(request);
 
         ResponseInfo prInfo = new ResponseInfo();
@@ -148,59 +108,102 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
         dispatchResponse(response, request);
     }
 
-    /**
-     * Method for calculating the checksum results requested.
-     * @param message The message with the checksum request.
-     * @return The extracted results for the requested checksum.
-     * @throws RequestHandlerException If the requested checksum specification is not supported.
-     */
-    private ExtractedChecksumResultSet extractChecksumResults(GetChecksumsRequest message) throws RequestHandlerException {
-        log.debug("Starting to extracting the checksum of the requested files.");
-
-        if(message.getFileIDs().isSetFileID()) {
-            return getPillarModel().getSingleChecksumResultSet(message.getFileIDs().getFileID(), 
-                    message.getCollectionID(), message.getMinTimestamp(), message.getMaxTimestamp(), 
-                    message.getChecksumRequestForExistingFile());
+    @Override
+    protected void performOperation(GetChecksumsRequest request, MessageContext requestContext) 
+            throws RequestHandlerException {
+        ExtractedChecksumResultSet extractedChecksums = extractChecksumResults(request);
+        ResultingChecksums checksumResults;
+        if(request.getResultAddress() == null) {
+            checksumResults = compileResultsForMessage(request, extractedChecksums);
         } else {
-            Long maxResults = null;
-            if(message.getMaxNumberOfResults() != null) {
-                maxResults = message.getMaxNumberOfResults().longValue();
-            }
-            return getPillarModel().getChecksumResultSet(message.getMinTimestamp(), message.getMaxTimestamp(), maxResults,
-                    message.getCollectionID(), message.getChecksumRequestForExistingFile());
+            checksumResults = createAndUploadResults(request, extractedChecksums);
+        }
+        sendFinalResponse(request, checksumResults, extractedChecksums.hasMoreEntries());
+    }
+
+    /**
+     * Method for validating the FileIDs in the GetChecksumsRequest message.
+     * Do we have the requested files?
+     * This does only concern the specified files. Not 'AllFiles' or the parameter stuff.
+     *  
+     * @param request The message to validate the FileIDs of.
+     */
+    private void validateFileIDs(GetChecksumsRequest request) throws RequestHandlerException {
+        FileIDs fileids = request.getFileIDs();
+
+        String fileID = fileids.getFileID();
+        if(fileID == null) {
+            return;
+        }
+        validateFileIDFormat(fileID);
+
+        if(!getPillarModel().hasFileID(fileID, request.getCollectionID())) {
+            log.warn("The following file is missing: '" + fileID + "'");
+            throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
+                    request.getCollectionID());
         }
     }
 
     /**
-     * Creates the ResultingChecksums object for the final response message.
-     * If the results should be uploaded to a given URL, then the requested checksums are packed into a file, 
-     * uploaded, and the URL are put into the ResultingChecksums object. 
-     * Otherwise the requested checksums are put into the result structure.
-     * 
-     * @param message The message requesting the calculation of the checksums.
-     * @param checksumResultSet List containing the requested checksums.
-     * @return The result structure.
+     * Method for calculating the checksum results requested.
+     * @param request The message with the checksum request.
+     * @return The extracted results for the requested checksum.
+     * @throws RequestHandlerException If the requested checksum specification is not supported.
      */
-    private ResultingChecksums createDeliveryFormatAndPossiblyUploadIfRequested(GetChecksumsRequest message, 
+    private ExtractedChecksumResultSet extractChecksumResults(GetChecksumsRequest request) throws RequestHandlerException {
+        log.debug("Starting to extracting the checksum of the requested files.");
+
+        if(request.getFileIDs().isSetFileID()) {
+            return getPillarModel().getSingleChecksumResultSet(request.getFileIDs().getFileID(), 
+                    request.getCollectionID(), request.getMinTimestamp(), request.getMaxTimestamp(), 
+                    request.getChecksumRequestForExistingFile());
+        } else {
+            Long maxResults = null;
+            if(request.getMaxNumberOfResults() != null) {
+                maxResults = request.getMaxNumberOfResults().longValue();
+            }
+            return getPillarModel().getChecksumResultSet(request.getMinTimestamp(), request.getMaxTimestamp(), maxResults,
+                    request.getCollectionID(), request.getChecksumRequestForExistingFile());
+        }
+    }
+
+    /**
+     * Uploads the extracted checksum results to the given URL, and creates the ResultingChecksums object for 
+     * the final response message.
+     * 
+     * @param request The message requesting the calculation of the checksums.
+     * @param checksumResultSet List containing the requested checksums.
+     * @return The ResultingChecksums containing the URL.
+     */
+    private ResultingChecksums createAndUploadResults(GetChecksumsRequest request, 
             ExtractedChecksumResultSet checksumResultSet) throws RequestHandlerException {
         ResultingChecksums res = new ResultingChecksums();
 
-        String url = message.getResultAddress();
-        if(url != null) {
-            try {
-                File fileToUpload = makeTemporaryChecksumFile(message, checksumResultSet);
-                uploadFile(fileToUpload, url);
-            } catch (Exception e) {
-                throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, "Could not handle the creation "
-                        + "and upload of the results due to: " + e.getMessage(), message.getCollectionID(), e);
-            }
+        String url = request.getResultAddress();
+        try {
+            File fileToUpload = makeTemporaryChecksumFile(request, checksumResultSet);
+            uploadFile(fileToUpload, url);
+        } catch (Exception e) {
+            throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, "Could not handle the creation "
+                    + "and upload of the results due to: " + e.getMessage(), request.getCollectionID(), e);
+        }
 
-            res.setResultAddress(url);
-        } else {
-            // Put the checksums into the result structure.
-            for(ChecksumDataForChecksumSpecTYPE cs : checksumResultSet.getEntries()) {
-                res.getChecksumDataItems().add(cs);
-            }
+        res.setResultAddress(url);
+        return res;
+    }
+    
+    /**
+     * Compiles the extracted checksum results into the message format.
+     * @param request The GetChecksumsRequest.
+     * @param checksumResultSet The checksum results extracted from the database.
+     * @return The extracted results in the ResultingChecksums format.
+     */
+    private ResultingChecksums compileResultsForMessage(GetChecksumsRequest request, 
+            ExtractedChecksumResultSet checksumResultSet) {
+        ResultingChecksums res = new ResultingChecksums();
+        
+        for(ChecksumDataForChecksumSpecTYPE cs : checksumResultSet.getEntries()) {
+            res.getChecksumDataItems().add(cs);
         }
 
         return res;
@@ -270,20 +273,17 @@ public class GetChecksumsRequestHandler extends PillarMessageHandler<GetChecksum
      * Method for sending a final response reporting the success.
      * @param request The GetChecksumRequest to base the response upon.
      * @param results The results of the checksum calculations.
-     * @param extractedChecksums The extracted checksum entries. Contains whether more results can be found.
+     * @param hasMoreEntries Whether more results can be found.
      */
     private void sendFinalResponse(GetChecksumsRequest request, ResultingChecksums results, 
-            ExtractedChecksumResultSet extractedChecksums) {
+            boolean hasMoreEntries) {
         GetChecksumsFinalResponse response = createFinalResponse(request);
-
-        if(extractedChecksums.hasMoreEntries()) {
-            response.setPartialResult(true);
-        }
 
         ResponseInfo fri = new ResponseInfo();
         fri.setResponseCode(ResponseCode.OPERATION_COMPLETED);
         response.setResponseInfo(fri);
         response.setResultingChecksums(results);
+        response.setPartialResult(hasMoreEntries);
 
         dispatchResponse(response, request);
     }

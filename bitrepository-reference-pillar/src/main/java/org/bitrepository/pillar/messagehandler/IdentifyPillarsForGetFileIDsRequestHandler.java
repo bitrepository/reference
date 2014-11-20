@@ -43,17 +43,16 @@ import org.slf4j.LoggerFactory;
  * Class for handling the identification of this pillar for the purpose of performing the GetFileIDs operation.
  */
 public class IdentifyPillarsForGetFileIDsRequestHandler 
-        extends PillarMessageHandler<IdentifyPillarsForGetFileIDsRequest> {
+        extends IdentifyRequestHandler<IdentifyPillarsForGetFileIDsRequest> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
     /**
-     * @param context The context for the pillar.
-     * @param archivesManager The manager of the archives.
-     * @param csManager The checksum manager for the pillar.
+     * @param context The context for the message handling.
+     * @param model The storage model for the pillar.
      */
-    protected IdentifyPillarsForGetFileIDsRequestHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
-        super(context, fileInfoStore);
+    protected IdentifyPillarsForGetFileIDsRequestHandler(MessageHandlerContext context, StorageModel model) {
+        super(context, model);
     }
     
     @Override
@@ -62,15 +61,28 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
     }
 
     @Override
-    public void processRequest(IdentifyPillarsForGetFileIDsRequest message, MessageContext messageContext) throws RequestHandlerException {
-        validateCollectionID(message);
-        checkThatAllRequestedFilesAreAvailable(message);
-        respondSuccesfullIdentification(message);
-    }
-
-    @Override
     public MessageResponse generateFailedResponse(IdentifyPillarsForGetFileIDsRequest message) {
         return createFinalResponse(message);
+    }
+    
+    @Override
+    protected void validateRequest(IdentifyPillarsForGetFileIDsRequest message, MessageContext messageContext) throws RequestHandlerException {
+        validateCollectionID(message);
+        checkThatAllRequestedFilesAreAvailable(message);
+    }
+    
+    @Override
+    protected void sendResponse(IdentifyPillarsForGetFileIDsRequest request, MessageContext requestContext) {
+        IdentifyPillarsForGetFileIDsResponse response = createFinalResponse(request);
+        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+            getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+        
+        ResponseInfo irInfo = new ResponseInfo();
+        irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
+        irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
+        response.setResponseInfo(irInfo);
+
+        dispatchResponse(response, request);
     }
     
     /**
@@ -79,7 +91,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
      * @param message The message containing the list files. An empty filelist is expected 
      * when "AllFiles" or the parameter option is used.
      */
-    public void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetFileIDsRequest message) 
+    private void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetFileIDsRequest message) 
             throws RequestHandlerException {
         FileIDs fileids = message.getFileIDs();
         if(fileids == null) {
@@ -93,24 +105,6 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
             throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
                     message.getCollectionID());
         }
-    }
-    
-    /**
-     * Makes a response to the successful identification.
-     * @param request The request to respond to.
-     */
-    private void respondSuccesfullIdentification(IdentifyPillarsForGetFileIDsRequest request) {
-        
-        IdentifyPillarsForGetFileIDsResponse response = createFinalResponse(request);
-        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
-            getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
-        
-        ResponseInfo irInfo = new ResponseInfo();
-        irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
-        irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
-        response.setResponseInfo(irInfo);
-
-        dispatchResponse(response, request);
     }
     
     /**

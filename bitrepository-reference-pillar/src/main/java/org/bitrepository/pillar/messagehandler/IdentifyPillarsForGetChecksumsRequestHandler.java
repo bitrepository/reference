@@ -41,14 +41,13 @@ import org.bitrepository.service.exception.RequestHandlerException;
  * Class for handling the identification of this pillar for the purpose of performing the GetChecksums operation.
  */
 public class IdentifyPillarsForGetChecksumsRequestHandler 
-        extends PillarMessageHandler<IdentifyPillarsForGetChecksumsRequest> {
+        extends IdentifyRequestHandler<IdentifyPillarsForGetChecksumsRequest> {
     /**
-     * @param context The context for the pillar.
-     * @param archivesManager The manager of the archives.
-     * @param csManager The checksum manager for the pillar.
+     * @param context The context for the message handling.
+     * @param model The storage model for the pillar.
      */
-    protected IdentifyPillarsForGetChecksumsRequestHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
-        super(context, fileInfoStore);
+    protected IdentifyPillarsForGetChecksumsRequestHandler(MessageHandlerContext context, StorageModel model) {
+        super(context, model);
     }
     
     @Override
@@ -57,41 +56,21 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
     }
 
     @Override
-    public void processRequest(IdentifyPillarsForGetChecksumsRequest message, MessageContext messageContext) throws RequestHandlerException {
-        validateCollectionID(message);
-        getPillarModel().verifyChecksumAlgorithm(message.getChecksumRequestForExistingFile(), 
-                message.getCollectionID());
-        checkThatAllRequestedFilesAreAvailable(message);
-        respondSuccesfullIdentification(message);
-    }
-
-    @Override
     public MessageResponse generateFailedResponse(IdentifyPillarsForGetChecksumsRequest message) {
         return createFinalResponse(message);
     }
     
-    /**
-     * Validates that all the requested files in the filelist are present. 
-     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
-     * @param message The message containing the list files. An empty filelist is expected 
-     * when "AllFiles" or the parameter option is used.
-     */
-    public void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetChecksumsRequest message) 
+    @Override
+    protected void validateRequest(IdentifyPillarsForGetChecksumsRequest message, MessageContext messageContext) 
             throws RequestHandlerException {
-        FileIDs fileids = message.getFileIDs();
-        validateFileIDFormat(fileids.getFileID());
-        
-        if(fileids.getFileID() != null && !getPillarModel().hasFileID(fileids.getFileID(), message.getCollectionID())) {
-            throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
-                    message.getCollectionID());
-        }
+        validateCollectionID(message);
+        getPillarModel().verifyChecksumAlgorithm(message.getChecksumRequestForExistingFile(), 
+                message.getCollectionID());
+        checkThatAllRequestedFilesAreAvailable(message);
     }
-    
-    /**
-     * Method for making a successful response to the identification.
-     * @param request The request to respond to.
-     */
-    private void respondSuccesfullIdentification(IdentifyPillarsForGetChecksumsRequest request) {
+
+    @Override
+    protected void sendResponse(IdentifyPillarsForGetChecksumsRequest request, MessageContext requestContext) {
         IdentifyPillarsForGetChecksumsResponse response = createFinalResponse(request);
 
         response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
@@ -103,6 +82,23 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         response.setResponseInfo(irInfo);
         
         getContext().getResponseDispatcher().dispatchResponse(response, request);
+    }
+
+    /**
+     * Validates that all the requested files in the filelist are present. 
+     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
+     * @param message The message containing the list files. An empty filelist is expected 
+     * when "AllFiles" or the parameter option is used.
+     */
+    private void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetChecksumsRequest message) 
+            throws RequestHandlerException {
+        FileIDs fileids = message.getFileIDs();
+        validateFileIDFormat(fileids.getFileID());
+        
+        if(fileids.getFileID() != null && !getPillarModel().hasFileID(fileids.getFileID(), message.getCollectionID())) {
+            throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
+                    message.getCollectionID());
+        }
     }
     
     /**

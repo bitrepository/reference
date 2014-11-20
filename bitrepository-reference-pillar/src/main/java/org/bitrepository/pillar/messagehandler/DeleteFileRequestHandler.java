@@ -37,6 +37,7 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
+import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -64,54 +65,56 @@ public class DeleteFileRequestHandler extends PerformRequestHandler<DeleteFileRe
     }
 
     @Override
-    public MessageResponse generateFailedResponse(DeleteFileRequest message) {
-        return createFinalResponse(message);
+    public MessageResponse generateFailedResponse(DeleteFileRequest request) {
+        return createFinalResponse(request);
     }
     
     @Override
-    protected void validateRequest(DeleteFileRequest message, MessageContext messageContext) 
+    protected void validateRequest(DeleteFileRequest request, MessageContext messageContext) 
             throws RequestHandlerException {
-        validateCollectionID(message);
-        validatePillarId(message.getPillarID());
-        getPillarModel().verifyChecksumAlgorithm(message.getChecksumRequestForExistingFile(), message.getCollectionID());
-        if(message.getChecksumDataForExistingFile() != null) {
-            getPillarModel().verifyChecksumAlgorithm(message.getChecksumDataForExistingFile().getChecksumSpec(), 
-                    message.getCollectionID());
+        validateCollectionID(request);
+        validatePillarId(request.getPillarID());
+        getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile(), request.getCollectionID());
+        if(request.getChecksumDataForExistingFile() != null) {
+            getPillarModel().verifyChecksumAlgorithm(request.getChecksumDataForExistingFile().getChecksumSpec(), 
+                    request.getCollectionID());
         } else if(getSettings().getRepositorySettings().getProtocolSettings()
                 .isRequireChecksumForDestructiveRequests()) {
             throw new IllegalOperationException(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, "No mandatory checksum "
-                    + "for destructive operation was supplied.", message.getCollectionID(), message.getFileID());
+                    + "for destructive operation was supplied.", request.getCollectionID(), request.getFileID());
         }
         
-        validateFileIDFormat(message.getFileID());
+        validateFileIDFormat(request.getFileID());
 
         // Validate, that we have the requested file.
-        if(!getPillarModel().hasFileID(message.getFileID(), message.getCollectionID())) {
+        if(!getPillarModel().hasFileID(request.getFileID(), request.getCollectionID())) {
             throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
-                    message.getCollectionID());
+                    request.getCollectionID());
         }
         
         // calculate and validate the checksum of the file.
-        ChecksumDataForFileTYPE checksumData = message.getChecksumDataForExistingFile();
+        ChecksumDataForFileTYPE checksumData = request.getChecksumDataForExistingFile();
         if(checksumData != null) {
             ChecksumSpecTYPE checksumType = checksumData.getChecksumSpec();
 
-            String calculatedChecksum = getPillarModel().getChecksumForFile(message.getFileID(), 
-                    message.getCollectionID(), checksumType);
+            String calculatedChecksum = getPillarModel().getChecksumForFile(request.getFileID(), 
+                    request.getCollectionID(), checksumType);
             String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
             if(!calculatedChecksum.equals(requestedChecksum)) {
                 // Log the different checksums, but do not send the right checksum back!
-                log.warn("Failed to handle delete operation on file '" + message.getFileID() + "' since the request "
+                log.warn("Failed to handle delete operation on file '" + request.getFileID() + "' since the request "
                         + "had the checksum '" + requestedChecksum + "' where our local file has the value '" 
                         + calculatedChecksum + "'. Sending alarm and respond failure.");
 
                 throw new IllegalOperationException(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, "Cannot delete file "
-                        + "due to inconsistency between checksums.", message.getCollectionID(), message.getFileID());
+                        + "due to inconsistency between checksums.", request.getCollectionID(), request.getFileID());
             }
         } else {
-            log.debug("No checksum for validation of the existing file before delete the file '" + message.getFileID() 
+            log.debug("No checksum for validation of the existing file before delete the file '" + request.getFileID() 
                     + "'");
         }
+        
+        log.debug(MessageUtils.createMessageIdentifier(request) + "' validated and accepted.");
     }
 
     /**
@@ -133,7 +136,10 @@ public class DeleteFileRequestHandler extends PerformRequestHandler<DeleteFileRe
     protected void performOperation(DeleteFileRequest request, MessageContext requestContext) 
             throws RequestHandlerException {
         ChecksumDataForFileTYPE resultingChecksum = calculatedRequestedChecksum(request);
-        deleteTheFile(request, requestContext);
+        deleteTheFile(request);
+        getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(), 
+                "Deleting the file.", request.getAuditTrailInformation(), FileAction.DELETE_FILE,
+                request.getCorrelationID(), requestContext.getCertificateFingerprint());
         sendFinalResponse(request, resultingChecksum);
     }
 
@@ -157,10 +163,8 @@ public class DeleteFileRequestHandler extends PerformRequestHandler<DeleteFileRe
      * Performs the operation of deleting the file from the archive.
      * @param message The message requesting the file to be deleted.
      */
-    private void deleteTheFile(DeleteFileRequest message, MessageContext messageContext) throws RequestHandlerException {
-        getAuditManager().addAuditEvent(message.getCollectionID(), message.getFileID(), message.getFrom(), 
-                "Deleting the file.", message.getAuditTrailInformation(), FileAction.DELETE_FILE,
-                message.getCorrelationID(), messageContext.getCertificateFingerprint());
+    private void deleteTheFile(DeleteFileRequest message) 
+            throws RequestHandlerException {
         getPillarModel().deleteFile(message.getFileID(), message.getCollectionID());
     }
 

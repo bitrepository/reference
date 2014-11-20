@@ -20,7 +20,7 @@ public abstract class IdentifyRequestHandler<MessageRequest> extends PillarMessa
     public void processRequest(MessageRequest request, MessageContext requestContext)
             throws RequestHandlerException {
         validateRequest(request, requestContext);
-        sendPositiveResponse(request, requestContext);
+        sendResponse(request, requestContext);
     }
 
     /**
@@ -33,9 +33,11 @@ public abstract class IdentifyRequestHandler<MessageRequest> extends PillarMessa
             throws RequestHandlerException ;
     
     /**
-     * Sends a progress response.
+     * Sends a identification response.
      * @param request The request to respond to.
      * @param requestContext The context for the request.
+     * @throws RequestHandlerException If the response could not be created.
      */
-    protected abstract void sendPositiveResponse(MessageRequest request, MessageContext requestContext);
+    protected abstract void sendResponse(MessageRequest request, MessageContext requestContext)
+            throws RequestHandlerException;
 }
