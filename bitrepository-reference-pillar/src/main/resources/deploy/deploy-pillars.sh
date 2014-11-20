@@ -87,8 +87,8 @@ update_pillars() {
   fi
   if [ -e "${DEPLOY_SCRIPTS}/fetchconf.sh" ] ; then
     echo "Updating master conf"
-    ${DEPLOY_SCRIPTS}/fetchconf.sh ${STANDARD_CONFIG_DIR}/conf
-    ${DEPLOY_SCRIPTS}/gitutils.sh commit_all ${STANDARD_CONFIG_DIR} "Fetched new conf files"
+    #${DEPLOY_SCRIPTS}/fetchconf.sh ${STANDARD_CONFIG_DIR}/conf
+    #${DEPLOY_SCRIPTS}/gitutils.sh commit_all ${STANDARD_CONFIG_DIR} "Fetched new conf files"
   fi
   for i in ${PILLAR_DIR}/*
    do
