@@ -84,8 +84,8 @@ public class CollectionArchiveManager implements FileStore {
     /**
      * Initiates the archives for a set of collection ids and their respective directory paths.
      * Only creates archives for the collection, if it does not already has one.
-     * @param collectionIds
-     * @param fileDirs
+     * @param collectionIds The ids of the collections.
+     * @param fileDirs The paths to the directories.
      */
     private void initiateArchive(Collection<String> collectionIds, Collection<String> fileDirs) {
         for(String colId : collectionIds) {

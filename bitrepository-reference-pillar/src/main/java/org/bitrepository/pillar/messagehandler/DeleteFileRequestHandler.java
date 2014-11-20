@@ -51,11 +51,11 @@ public class DeleteFileRequestHandler extends PerformRequestHandler<DeleteFileRe
     private Logger log = LoggerFactory.getLogger(getClass());
     
     /**
-     * @param context The context for the pillar.
-     * @param fileInfoStore
+     * @param context The context for the message handling.
+     * @param model The storage model for the pillar.
      */
-    protected DeleteFileRequestHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
-        super(context, fileInfoStore);
+    protected DeleteFileRequestHandler(MessageHandlerContext context, StorageModel model) {
+        super(context, model);
     }
 
     @Override

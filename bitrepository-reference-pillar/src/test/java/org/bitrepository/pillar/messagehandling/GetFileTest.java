@@ -40,7 +40,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.pillar.MockedPillarTest;
-import org.bitrepository.pillar.common.MockFileInfo;
+import org.bitrepository.pillar.common.FileInfoStub;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.InvalidMessageException;
@@ -184,7 +184,7 @@ public class GetFileTest extends MockedPillarTest {
                 "Should make it possible to perform the whole operation without any exceptions.");
         doAnswer(new Answer() {
             public FileInfo answer(InvocationOnMock invocation) throws InvalidMessageException {
-                FileInfo res = new MockFileInfo(FILE_ID, 0L, 0L, new ByteArrayInputStream(new byte[0]));
+                FileInfo res = new FileInfoStub(FILE_ID, 0L, 0L, new ByteArrayInputStream(new byte[0]));
                 return res;
             }
         }).when(model).getFileInfoForActualFile(eq(FILE_ID), anyString());

@@ -47,7 +47,7 @@ public class Pillar {
     private final MessageBus messageBus;
     /** The settings.*/
     private final Settings settings;
-    /** The manager of the checksums with regard to the archive.*/
+    /** The storage model for all the file data.*/
     private final StorageModel pillarModel;
     
     /** The type of pillar.*/

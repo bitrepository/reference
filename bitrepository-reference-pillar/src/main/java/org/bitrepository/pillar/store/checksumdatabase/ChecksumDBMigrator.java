@@ -48,9 +48,8 @@ public class ChecksumDBMigrator extends DatabaseMigrator {
     
     
     /**
-     * Constructor.
-     * @param connector
-     * @param settings
+     * @param connector The connection to the database.
+     * @param settings The settings.
      */
     public ChecksumDBMigrator(DBConnector connector, Settings settings) {
         super(connector);

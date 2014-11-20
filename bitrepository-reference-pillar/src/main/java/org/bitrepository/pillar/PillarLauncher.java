@@ -49,8 +49,7 @@ public final class PillarLauncher {
         String pathToKeyFile = args.length >=2 ? args[1] : null;
         String pillarID =  args.length == 3 ? pillarID = args[2]: null;
         
-        Pillar fullPillar =
-                PillarComponentFactory.getInstance().createPillar(pathToSettings, pathToKeyFile, pillarID);
-        PillarRunner.launchPillar(fullPillar);
+        Pillar pillar = PillarComponentFactory.getInstance().createPillar(pathToSettings, pathToKeyFile, pillarID);
+        PillarRunner.launchPillar(pillar);
     }
 }

@@ -50,22 +50,25 @@ import org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The storage model for a pillar without a file store.
+ */
 public class ChecksumStorageModel extends StorageModel {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    /** The checksum specification for this checksum pillar.*/
-    protected final ChecksumSpecTYPE pillarSpecificChecksumType;
-    
+    /**
+     * @param cache The storage for the checksums.
+     * @param alarmDispatcher The alarm dispatcher.
+     * @param settings The configuration to use.
+     */
     public ChecksumStorageModel(ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings) {
         super(null, cache, alarmDispatcher, settings);
-        this.pillarSpecificChecksumType = ChecksumUtils.getDefault(settings);
-        log.info("Instantiating the ChecksumPillar: " + getPillarID());
     }
     
     @Override
     public ChecksumSpecTYPE getChecksumPillarSpec() {
-        return pillarSpecificChecksumType;
+        return defaultChecksumSpec;
     }
 
     @Override
@@ -102,9 +105,8 @@ public class ChecksumStorageModel extends StorageModel {
     @Override
     protected String getNonDefaultChecksum(String fileId, String collectionID, ChecksumSpecTYPE csType) 
             throws RequestHandlerException {
-        throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "Cannot handle the checksum "
-                + "specification '" + csType + "'. This is a checksum pillar, which only can handle '" 
-                + pillarSpecificChecksumType + "'", collectionID);
+        throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "The ChecksumPillar cannot handle a "
+                + "non-default checksum specification '" + csType + "'.'", collectionID);
     }
 
     @Override
@@ -151,14 +153,14 @@ public class ChecksumStorageModel extends StorageModel {
             String fileAddress, ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
         switch(getChecksumPillarFileDownload()) {
         case ALWAYS_DOWNLOAD:
-            return downloadeFileAndCalculateChecksum(fileID, collectionID, fileAddress, expectedChecksum);
+            return downloadFileAndCalculateChecksum(fileID, collectionID, fileAddress, expectedChecksum);
         case NEVER_DOWNLOAD:
             return extractChecksum(expectedChecksum, collectionID);
         default:
             if(expectedChecksum != null) {
                 return extractChecksum(expectedChecksum, collectionID);
             } else {
-                return downloadeFileAndCalculateChecksum(fileID, collectionID, fileAddress, expectedChecksum);
+                return downloadFileAndCalculateChecksum(fileID, collectionID, fileAddress, expectedChecksum);
             }
         }
     }
@@ -200,34 +202,54 @@ public class ChecksumStorageModel extends StorageModel {
      * @return The checksum of the retrieved file.
      * @throws RequestHandlerException If the operation fails.
      */
-    private String downloadeFileAndCalculateChecksum(String fileID, String collectionID, String fileAddress, 
+    private String downloadFileAndCalculateChecksum(String fileID, String collectionID, String fileAddress, 
             ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
-        log.debug("Retrieving the data to be stored from URL: '" + fileAddress + "'");
+        String calculatedChecksum = calculateChecksumForFileAtURL(fileAddress);
+        if(!validChecksum(calculatedChecksum, expectedChecksum)) {
+            String givenChecksum = Base16Utils.decodeBase16(expectedChecksum.getChecksumValue());
+            log.error("Wrong checksum for file '" + fileID + "' at '" + collectionID + "'! Expected: [" 
+                    + givenChecksum + "], but calculated: [" + calculatedChecksum + "]");
+            throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, "Expected checksums '" 
+                    + givenChecksum + "' but the checksum was '" + calculatedChecksum + "'.", collectionID, fileID);
+        }
+
+        return calculatedChecksum;
+    }
+    
+    /**
+     * Calculates the checksum for a file at a given URL.
+     * @param fileAddress The URL for the file.
+     * @return The checksum for the file.
+     * @throws RequestHandlerException If data for the file could not be retrieved.
+     */
+    private String calculateChecksumForFileAtURL(String fileAddress) throws RequestHandlerException {
+        log.debug("Retrieving the data from URL: '" + fileAddress + "'");
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(settings);
 
-        String calculatedChecksum = null;
         try {
-            calculatedChecksum = ChecksumUtils.generateChecksum(fe.downloadFromServer(new URL(fileAddress)),
-                    pillarSpecificChecksumType);
+            return ChecksumUtils.generateChecksum(fe.downloadFromServer(new URL(fileAddress)),
+                    defaultChecksumSpec);
         } catch (IOException e) {
             String errMsg = "Could not retrieve the file from '" + fileAddress + "'";
             log.error(errMsg, e);
-            throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, errMsg, collectionID);
+            throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, errMsg, null);
         }
-        
+    }
+    
+    /**
+     * Checks whether a calculated checksum is identical to a given checksum.
+     * @param calculatedChecksum The calculated checksum.
+     * @param expectedChecksum The expected checksum, may be null (will give a 'true' answer).
+     * @return Whether the calculated checksum is the same as the expected one (or true, if nothing is expected).
+     */
+    private boolean validChecksum(String calculatedChecksum, ChecksumDataForFileTYPE expectedChecksum) {
         if(expectedChecksum != null) {
             String givenChecksum = Base16Utils.decodeBase16(expectedChecksum.getChecksumValue());
             if(!calculatedChecksum.equals(givenChecksum)) {
-                log.error("Wrong checksum for file '" + fileID + "' at '" + collectionID + "'! Expected: [" 
-                        + givenChecksum + "], but calculated: [" + calculatedChecksum + "]");
-                throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, "Expected checksums '" 
-                        + givenChecksum + "' but the checksum was '" + calculatedChecksum + "'.", collectionID, fileID);
+                return false;
             }
-        } else {
-            log.debug("No checksums for validating the retrieved file.");
-        }
-        
-        return calculatedChecksum;
+        }        
+        return true;
     }
 
     @Override

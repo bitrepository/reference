@@ -277,6 +277,6 @@ public class ReferenceArchive {
      * Closes the reference archive.
      */
     public void close() {
-        // TODO close stuff.
+        directories.clear();
     }
 }

@@ -85,6 +85,13 @@ public final class PillarComponentFactory {
     private PillarComponentFactory() {
     }
 
+    /**
+     * Creates the pillar from on settings, key-file and pillar-ID.
+     * @param pathToSettings The path to the settings file.
+     * @param pathToKeyFile The path to the key file (can be empty).
+     * @param pillarID The id of the pillar (if null, the pillar-id in settings are used).
+     * @return The pillar.
+     */
     public Pillar createPillar(String pathToSettings, String pathToKeyFile, String pillarID) {
         Settings settings = loadSettings(pillarID, pathToSettings);
 
@@ -94,6 +101,12 @@ public final class PillarComponentFactory {
         return createPillar(settings, messageBus);
     }
     
+    /**
+     * Creates a pillar from settings and message-bus.
+     * @param settings The instantiated settings.
+     * @param messageBus The messagebus.
+     * @return The pillar.
+     */
     public Pillar createPillar(Settings settings, MessageBus messageBus) {
         ChecksumStore cache = getChecksumStore(settings);
         AuditTrailManager audits = getAuditTrailManager(settings);        
@@ -177,8 +190,7 @@ public final class PillarComponentFactory {
     /** The default path for the settings in the development.*/
     private static final String DEFAULT_PATH_TO_SETTINGS = "conf";
     /** The default path for the settings in the development.*/
-    // TODO fix this? It seems too odd to have 'putClient.pem' as default key-file name for the pillar.
-    private static final String DEFAULT_PATH_TO_KEY_FILE = "conf/putClient.pem";
+    private static final String DEFAULT_PATH_TO_KEY_FILE = "conf/pillar.pem";
 
     /**
      * Method for retrieving the settings for the launcher.

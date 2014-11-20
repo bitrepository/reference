@@ -31,7 +31,7 @@ import org.bitrepository.service.database.DatabaseManager;
 
 /**
  * The checksum store backed by a database.
- * This contains one ingestor and one extractor for each collec
+ * Mediates the operations of the database to either the extractor or the ingestor.
  */
 public class ChecksumDAO implements ChecksumStore {
     /** The ingestors for the database.*/

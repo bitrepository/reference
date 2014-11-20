@@ -5,14 +5,14 @@ import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.RequestHandlerException;
 
-public abstract class PerformRequestHandler<MessageRequest> extends PillarMessageHandler<MessageRequest> {
+public abstract class IdentifyRequestHandler<MessageRequest> extends PillarMessageHandler<MessageRequest> {
 
     /**
      * Constructor.
      * @param context The context for the message handling.
      * @param model The storage model for the pillar.
      */
-    protected PerformRequestHandler(MessageHandlerContext context, StorageModel model) {
+    protected IdentifyRequestHandler(MessageHandlerContext context, StorageModel model) {
         super(context, model);
     }
 
@@ -20,8 +20,7 @@ public abstract class PerformRequestHandler<MessageRequest> extends PillarMessag
     public void processRequest(MessageRequest request, MessageContext requestContext)
             throws RequestHandlerException {
         validateRequest(request, requestContext);
-        sendProgressResponse(request, requestContext);
-        performOperation(request, requestContext);
+        sendPositiveResponse(request, requestContext);
     }
 
     /**
@@ -38,14 +37,5 @@ public abstract class PerformRequestHandler<MessageRequest> extends PillarMessag
      * @param request The request to respond to.
      * @param requestContext The context for the request.
      */
-    protected abstract void sendProgressResponse(MessageRequest request, MessageContext requestContext);
-    
-    /**
-     * Perform the operation behind the request.
-     * @param request The request to perform.
-     * @param requestContext The context for the request.
-     * @throws RequestHandlerException If the request is unable to be performed.
-     */
-    protected abstract void performOperation(MessageRequest request, MessageContext requestContext)
-            throws RequestHandlerException ;
+    protected abstract void sendPositiveResponse(MessageRequest request, MessageContext requestContext);
 }

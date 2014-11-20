@@ -6,14 +6,14 @@ import java.io.InputStream;
 import org.bitrepository.common.filestore.FileInfo;
 
 
-public class MockFileInfo implements FileInfo {
+public class FileInfoStub implements FileInfo {
 
     String fileID;
     Long lastModifiedDate;
     Long size;
     InputStream is;
     
-    public MockFileInfo(String fileID, Long lastModifiedDate, Long size, InputStream is) {
+    public FileInfoStub(String fileID, Long lastModifiedDate, Long size, InputStream is) {
         this.fileID = fileID;
         this.lastModifiedDate = lastModifiedDate;
         this.size = size; 
