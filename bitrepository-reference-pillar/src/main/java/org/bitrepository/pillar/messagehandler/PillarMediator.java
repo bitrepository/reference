@@ -79,11 +79,11 @@ public class PillarMediator extends AbstractContributorMediator {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
             responseInfo.setResponseText(e.getMessage());
-            log.trace("Stack trace for illegal argument", e);
+            log.info("Stack trace for illegal argument", e);
             dispatchNegativeResponse(request, handler, responseInfo);
         } catch (RequestHandlerException e) {
             dispatchNegativeResponse(request, handler, e.getResponseInfo());
-            log.trace("Stack trace for request handler exception.", e);
+            log.debug("Stack trace for request handler exception.", e);
             getAlarmDispatcher().handleRequestException(e);
         } catch (RuntimeException e) {
             log.warn("Unexpected exception caught.", e);

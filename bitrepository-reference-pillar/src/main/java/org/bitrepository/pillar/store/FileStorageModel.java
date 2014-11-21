@@ -54,7 +54,6 @@ import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
-import org.bitrepository.settings.referencesettings.VerifyAllData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,26 +80,22 @@ public class FileStorageModel extends StorageModel {
     @Override
     public void verifyFileToCacheConsistencyOfAllDataIfRequired(
             String collectionID) {
-        if(settings.getReferenceSettings().getPillarSettings().getVerifyAllData() != null &&
-                settings.getReferenceSettings().getPillarSettings().getVerifyAllData() 
-                == VerifyAllData.MESSAGES_AND_SCHEDULER) {
+        Boolean verify = settings.getReferenceSettings().getPillarSettings().isVerifyDataConsistencyOnMessage();
+        if(verify != null && verify) {
             verifyFileToCacheConsistencyOfAllData(collectionID);
         }
     }
 
     @Override
-    protected void verifyFileToCacheConsistencyIfRequired(String fileID,
-            String collectionID) {
-        if(settings.getReferenceSettings().getPillarSettings().getVerifyAllData() != null &&
-                settings.getReferenceSettings().getPillarSettings().getVerifyAllData() 
-                == VerifyAllData.MESSAGES_AND_SCHEDULER) {
+    protected void verifyFileToCacheConsistencyIfRequired(String fileID, String collectionID) {
+        Boolean verify = settings.getReferenceSettings().getPillarSettings().isVerifyDataConsistencyOnMessage();
+        if(verify != null && verify) {
             verifyFileToCacheConsistency(fileID, collectionID);
         }
     }
 
     @Override
-    protected String getNonDefaultChecksum(String fileID,
-            String collectionID, ChecksumSpecTYPE csType) {
+    protected String getNonDefaultChecksum(String fileID, String collectionID, ChecksumSpecTYPE csType) {
         FileInfo fi = fileArchive.getFileInfo(fileID, collectionID);
         return ChecksumUtils.generateChecksum(fi, csType);
     }

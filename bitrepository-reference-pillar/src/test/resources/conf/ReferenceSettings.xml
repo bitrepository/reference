@@ -52,6 +52,7 @@
       <DatabaseURL>jdbc:derby:target/reference1pillar/checksumdb</DatabaseURL>
     </ChecksumDatabase>
     <AlarmLevel>ERROR</AlarmLevel>
+    <VerifyDataConsistencyOnMessage>true</VerifyDataConsistencyOnMessage>
   </PillarSettings>
   <FileExchangeSettings>
     <ProtocolType>HTTP</ProtocolType>

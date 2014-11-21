@@ -102,8 +102,11 @@ public abstract class StorageModel {
      * @return Whether the pillar has an entry for the file.
      */
     public boolean hasFileID(String fileID, String collectionID) {
-        verifyFileToCacheConsistencyIfRequired(fileID, collectionID);
-        return cache.hasFile(fileID, collectionID);
+        if(cache.hasFile(fileID, collectionID)) {
+            verifyFileToCacheConsistencyIfRequired(fileID, collectionID);
+            return true;
+        } 
+        return false;
     }
 
     /**

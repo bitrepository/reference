@@ -296,7 +296,17 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element ref="VerifyAllData" minOccurs="0">
+        <xs:element name="VerifyDataConsistencyOnMessage" type="xs:boolean" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>
+              Whether or not verify the consistency between files and the data in the checksum database, when handling 
+              messages for operations involving the given files.
+              The consistency is already being checked by the scheduled job, so it setting is only for further 
+              verifying the consistency when handling messages.
+              Default value is false. 
+              This setting is only releavent for the FilePillar (since ChecksumPillars do not have the actual files).
+            </xs:documentation>
+          </xs:annotation>
         </xs:element>
       </xs:sequence>
     </xs:complexType>
@@ -365,35 +375,6 @@
     </xs:simpleType>
   </xs:element>
 
-  <xs:element name="VerifyAllData">
-    <xs:simpleType>
-      <xs:annotation>
-        <xs:documentation xml:lang="en">
-          Decision for when the ReferencePillar should verify and ensure that all the files on the
-          backend matches the data in the database. 
-        </xs:documentation>
-      </xs:annotation>
-      <xs:restriction base="xs:string">
-        <xs:enumeration value="SCHEDULAR_ONLY">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              All files are only ensured, whenever the schedular runs.
-              This is default.
-            </xs:documentation>
-          </xs:annotation>
-        </xs:enumeration>
-        <xs:enumeration value="MESSAGES_AND_SCHEDULER">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              All files are ensured either whenever the schedular runs, or when receiving a message
-              for all checksums. 
-            </xs:documentation>
-          </xs:annotation>
-        </xs:enumeration>
-      </xs:restriction>
-    </xs:simpleType>
-  </xs:element>
-  
   <xs:element name="PillarType">
     <xs:simpleType>
       <xs:annotation>
