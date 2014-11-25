@@ -54,6 +54,13 @@
      -->
     <OperationRetryCount>2</OperationRetryCount>
     
+    <!--
+      The factory class for generating the ID of the commandline client.      
+      Currently the following classes are available:
+      org.bitrepository.client.componentid.DefaultCommandlineComponentID (the default)
+      org.bitrepository.client.componentid.UniqueCommandlineComponentID
+     -->
+    <ComponentIDFactoryClass>org.bitrepository.client.componentid.DefaultCommandlineComponentID</ComponentIDFactoryClass>
   </ClientSettings>
 
   <!-- 
