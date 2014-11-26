@@ -81,7 +81,6 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
         irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
         response.setResponseInfo(irInfo);
 
-        log.warn("Positive response: " + response);
         dispatchResponse(response, request);
     }
     
