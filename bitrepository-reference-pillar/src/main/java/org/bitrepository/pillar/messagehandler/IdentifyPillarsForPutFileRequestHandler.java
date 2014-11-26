@@ -75,7 +75,7 @@ public class IdentifyPillarsForPutFileRequestHandler
     }
     
     @Override
-    protected void sendResponse(IdentifyPillarsForPutFileRequest request, MessageContext requestContext)  
+    protected void sendPositiveResponse(IdentifyPillarsForPutFileRequest request, MessageContext requestContext)  
                     throws RequestHandlerException {
         if(checkThatTheFileDoesNotAlreadyExist(request)) {
             respondDuplicateFile(request);

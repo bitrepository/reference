@@ -76,7 +76,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
     }
     
     @Override
-    protected void sendResponse(IdentifyPillarsForReplaceFileRequest request,
+    protected void sendPositiveResponse(IdentifyPillarsForReplaceFileRequest request,
             MessageContext requestContext) throws RequestHandlerException {
         IdentifyPillarsForReplaceFileResponse response = createFinalResponse(request);
 

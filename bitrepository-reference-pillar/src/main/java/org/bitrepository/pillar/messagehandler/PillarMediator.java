@@ -75,15 +75,15 @@ public class PillarMediator extends AbstractContributorMediator {
         try {
             handler.processRequest(request, messageContext);
         } catch (IllegalArgumentException e) {
-            getAlarmDispatcher().handleIllegalArgumentException(e);
+            log.debug("Stack trace for illegal argument", e);
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
             responseInfo.setResponseText(e.getMessage());
-            log.info("Stack trace for illegal argument", e);
             dispatchNegativeResponse(request, handler, responseInfo);
+            getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RequestHandlerException e) {
-            dispatchNegativeResponse(request, handler, e.getResponseInfo());
             log.debug("Stack trace for request handler exception.", e);
+            dispatchNegativeResponse(request, handler, e.getResponseInfo());
             getAlarmDispatcher().handleRequestException(e);
         } catch (RuntimeException e) {
             log.warn("Unexpected exception caught.", e);
@@ -91,9 +91,7 @@ public class PillarMediator extends AbstractContributorMediator {
             responseInfo.setResponseCode(ResponseCode.FAILURE);
             responseInfo.setResponseText(e.toString());
             
-            MessageResponse response = handler.generateFailedResponse(request);
-            response.setResponseInfo(responseInfo);
-            context.getResponseDispatcher().dispatchResponse(response, request);
+            dispatchNegativeResponse(request, handler, responseInfo);
             getAlarmDispatcher().handleRuntimeExceptions(e);
         }
     }
@@ -136,7 +134,7 @@ public class PillarMediator extends AbstractContributorMediator {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void dispatchNegativeResponse(MessageRequest request, RequestHandler handler, ResponseInfo info) {
-        log.warn("Cannot perform operation. Sending failed response. Cause: " + info.getResponseText());
+        log.info("Cannot perform operation. Sending failed response. Cause: " + info.getResponseText());
         MessageResponse response = handler.generateFailedResponse(request);
         response.setResponseInfo(info);
         context.getResponseDispatcher().dispatchResponse(response, request);

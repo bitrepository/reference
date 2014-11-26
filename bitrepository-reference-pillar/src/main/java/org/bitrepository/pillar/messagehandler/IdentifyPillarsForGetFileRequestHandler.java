@@ -75,7 +75,7 @@ public class IdentifyPillarsForGetFileRequestHandler
     }
 
     @Override
-    protected void sendResponse(IdentifyPillarsForGetFileRequest request, MessageContext requestContext) {
+    protected void sendPositiveResponse(IdentifyPillarsForGetFileRequest request, MessageContext requestContext) {
         IdentifyPillarsForGetFileResponse response = createFinalResponse(request);
 
         response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(

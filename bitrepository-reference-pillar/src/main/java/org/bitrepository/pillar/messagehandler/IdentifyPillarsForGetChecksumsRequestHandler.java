@@ -70,7 +70,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
     }
 
     @Override
-    protected void sendResponse(IdentifyPillarsForGetChecksumsRequest request, MessageContext requestContext) {
+    protected void sendPositiveResponse(IdentifyPillarsForGetChecksumsRequest request, MessageContext requestContext) {
         IdentifyPillarsForGetChecksumsResponse response = createFinalResponse(request);
 
         response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(

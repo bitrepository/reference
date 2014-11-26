@@ -24,7 +24,6 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -72,7 +71,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
     }
     
     @Override
-    protected void sendResponse(IdentifyPillarsForGetFileIDsRequest request, MessageContext requestContext) {
+    protected void sendPositiveResponse(IdentifyPillarsForGetFileIDsRequest request, MessageContext requestContext) {
         IdentifyPillarsForGetFileIDsResponse response = createFinalResponse(request);
         response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
             getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
@@ -82,6 +81,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
         irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
         response.setResponseInfo(irInfo);
 
+        log.warn("Positive response: " + response);
         dispatchResponse(response, request);
     }
     
@@ -93,15 +93,14 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
      */
     private void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetFileIDsRequest message) 
             throws RequestHandlerException {
-        FileIDs fileids = message.getFileIDs();
-        if(fileids == null) {
+        if(message.getFileIDs() == null || message.getFileIDs().getFileID() == null) {
             log.debug("No fileids are defined in the identification request ('" + message.getCorrelationID() + "').");
             return;
         }
-        validateFileIDFormat(message.getFileIDs().getFileID());
+        String fileID = message.getFileIDs().getFileID();
+        validateFileIDFormat(fileID);
         
-        String fileID = fileids.getFileID();
-        if(fileID != null && !getPillarModel().hasFileID(fileID, message.getCollectionID())) {
+        if(!getPillarModel().hasFileID(fileID, message.getCollectionID())) {
             throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
                     message.getCollectionID());
         }

@@ -86,7 +86,7 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
         addDescription("Tests that the pillar is able to reject a GetFileIDs requests for a file, which it " +
                        "does not have during the identification phase.");
         addStep("Setup for test", "2 files on the pillar");
-        pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
+        //pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
         FileIDs fileids = FileIDsUtils.createFileIDs(NON_DEFAULT_FILE_ID);
 
@@ -100,6 +100,7 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileIDsResponse.class);
+        assertNotNull(receivedIdentifyResponse.getFileIDs().getFileID());
         assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.FILE_NOT_FOUND_FAILURE,
                 "Received unexpected 'ResponseCode' in response.");

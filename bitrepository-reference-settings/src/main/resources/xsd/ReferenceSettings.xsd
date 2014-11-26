@@ -866,10 +866,12 @@
           </xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="MaxChecksumAge" type="xs:positiveInteger">
+      <xs:element name="MaxChecksumAge" type="xs:nonNegativeInteger">
         <xs:annotation>
           <xs:documentation xml:lang="en">
             The max checksum age for the pillar.
+            If set to 0, then the pillar is ignored for obsolete checksums check, e.g. for ChecksumPillars 
+            who cannot recalculate the checksum.
           </xs:documentation>
         </xs:annotation>
       </xs:element>
