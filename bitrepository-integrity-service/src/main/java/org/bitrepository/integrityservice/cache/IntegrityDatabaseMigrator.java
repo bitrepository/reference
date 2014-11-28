@@ -70,8 +70,7 @@ public class IntegrityDatabaseMigrator extends DatabaseMigrator {
         
         if(versions.get(DATABASE_VERSION_ENTRY) < 2) {
             throw new IllegalStateException("The integrityDB is of version 1, migration is not supported. "
-                    + "Create a new database, or handle migration by hand (see inspiration at '" 
-                    + UPDATE_SCRIPT_VERSION_1_TO_2 + ")");
+                    + "Create a new database, or handle migration by hand.");
         }
         if(versions.get(DATABASE_VERSION_ENTRY) < 3) {
             log.warn("Migrating integrityDB from version 2 to 3.");
