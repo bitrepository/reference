@@ -181,7 +181,7 @@ public class FileUpdater {
             fileInfoPS.setString(1, item.getFileID());
             fileInfoPS.setLong(2, collectionKey);
             fileInfoPS.setString(3, pillar);
-            fileInfoPS.setInt(4, ChecksumState.UNKNOWN.ordinal());
+            fileInfoPS.setInt(4, ChecksumState.MISSING.ordinal());
             fileInfoPS.setTimestamp(5, new Timestamp(epoch.getTime()));
             fileInfoPS.setInt(6, FileState.UNKNOWN.ordinal());
             fileInfoPS.setTimestamp(7, new Timestamp(epoch.getTime()));
@@ -243,5 +243,4 @@ public class FileUpdater {
             conn.close();
         }
     }
-    
 }

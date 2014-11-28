@@ -96,7 +96,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         Assert.assertEquals(oldChecksums.size(), 0);
         
         addStep("Test the 'findMissingChecksums'", "Should deliver an empty collection");
-        Collection<String> missingChecksums = getIssuesFromIterator(model.findMissingChecksums(TEST_COLLECTIONID));
+        Collection<String> missingChecksums = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTIONID));
         Assert.assertNotNull(missingChecksums);
         Assert.assertEquals(missingChecksums.size(), 0);
         

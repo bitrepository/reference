@@ -81,7 +81,7 @@ public class IntegrityCache implements IntegrityModel {
     public Collection<String> getAllFileIDs(String collectionId) {
         return integrityModel.getAllFileIDs(collectionId);
     }
-    
+
     @Override
     public long getNumberOfFilesInCollection(String collectionId) {
         Long numberOfFilesInCollection = (Long) collectionTotalFilesCache.get(collectionId);
@@ -106,7 +106,7 @@ public class IntegrityCache implements IntegrityModel {
     public IntegrityIssueIterator getFilesOnPillar(String pillarId, long firstIndex, long maxResults, String collectionId) {
         return integrityModel.getFilesOnPillar(pillarId, firstIndex, maxResults, collectionId);
     }
-    
+
     @Override
     public Long getCollectionFileSize(String collectionId) {
         Long collectionSizeVal = (Long) collectionSizeCache.get(collectionId); 
@@ -116,7 +116,7 @@ public class IntegrityCache implements IntegrityModel {
         }
         return collectionSizeVal;
     }
-    
+
     @Override
     public Long getPillarDataSize(String pillarID) {
         return integrityModel.getPillarDataSize(pillarID);
@@ -131,7 +131,7 @@ public class IntegrityCache implements IntegrityModel {
         }
         return numberOfMissingFiles.longValue();
     }
-    
+
     @Override
     public IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarId, long firstIndex, 
             long maxResults, String collectionId) {
@@ -184,8 +184,13 @@ public class IntegrityCache implements IntegrityModel {
     }
 
     @Override
-    public IntegrityIssueIterator findMissingChecksums(String collectionId) {
-        return integrityModel.findMissingChecksums(collectionId);
+    public IntegrityIssueIterator findFilesWithMissingChecksum(String collectionId) {
+        return integrityModel.findFilesWithMissingChecksum(collectionId);
+    }
+    
+    @Override
+    public void setFilesWithUnknownChecksumToMissing(String collectionId) {
+        integrityModel.setFilesWithUnknownChecksumToMissing(collectionId);
     }
 
     @Override
@@ -251,7 +256,7 @@ public class IntegrityCache implements IntegrityModel {
         }
         return latestDate;
     }
-    
+
     @Override
     public Date getDateForNewestFileEntryForPillar(String pillarId, String collectionId) {
         return integrityModel.getDateForNewestFileEntryForPillar(pillarId, collectionId);
@@ -261,21 +266,21 @@ public class IntegrityCache implements IntegrityModel {
     public Date getDateForNewestChecksumEntryForPillar(String pillarId, String collectionId) {
         return integrityModel.getDateForNewestChecksumEntryForPillar(pillarId, collectionId);
     }
-    
+
     @Override
     public List<CollectionStat> getLatestCollectionStat(String collectionID, int count) {
         return integrityModel.getLatestCollectionStat(collectionID, count);
     }
-    
+
     @Override 
     public List<PillarStat> getLatestPillarStats(String collectionID) {
         return integrityModel.getLatestPillarStats(collectionID);
     }
-    
+
     @Override
     public void makeStatisticsForCollection(String collectionID) {
         integrityModel.makeStatisticsForCollection(collectionID);
-        
+
     }
 
     @Override
@@ -309,8 +314,8 @@ public class IntegrityCache implements IntegrityModel {
     }
 
     @Override
-    public void setPreviouslySeenToExisting(String collectionId, String pillarId) {
-        integrityModel.setPreviouslySeenToExisting(collectionId, pillarId);
+    public void setPreviouslySeenFilesToExisting(String collectionId, String pillarId) {
+        integrityModel.setPreviouslySeenFilesToExisting(collectionId, pillarId);
     }
 
     @Override
@@ -323,9 +328,24 @@ public class IntegrityCache implements IntegrityModel {
         return integrityModel.findOrphanFiles(collectionID);
     }
 
-	@Override
-	public void setChecksumTimestampsToEpocForCollection(String collectionID) {
-		integrityModel.setChecksumTimestampsToEpocForCollection(collectionID);
-		
-	}
+    @Override
+    public void setChecksumTimestampsToEpocForCollection(String collectionID) {
+        integrityModel.setChecksumTimestampsToEpocForCollection(collectionID);
+    }
+
+    @Override
+    public void setExistingChecksumsToPreviouslySeen(String collectionId) {
+        integrityModel.setExistingChecksumsToPreviouslySeen(collectionId);
+    }
+
+    @Override
+    public void setPreviouslySeenChecksumsToMissing(String collectionId) {
+        integrityModel.setPreviouslySeenChecksumsToMissing(collectionId);
+    }
+
+    @Override
+    public void setPreviouslySeenChecksumsToUnknown(String collectionId,
+            String pillarId) {
+        integrityModel.setPreviouslySeenChecksumsToUnknown(collectionId, pillarId);
+    }
 }

@@ -243,7 +243,8 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         
         Long collectionKey = retrieveCollectionKey(collectionId);
-        log.trace("Updating the checksum data '" + data + "' for pillar '" + pillarId + "' in collection " + collectionId + "'");
+        log.trace("Updating the checksum data '" + data + "' for pillar '" + pillarId 
+                + "' in collection " + collectionId + "'");
         updateFileInfoWithChecksum(data, pillarId, collectionKey);
     }
     
@@ -357,7 +358,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                     + " JOIN " + FILES_TABLE
                     + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY
                     + " WHERE " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ?"
-                    + " AND " + FILES_TABLE + "." +COLLECTION_KEY + " = ?";
+                    + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ?";
         return DatabaseUtils.selectLongValue(dbConnector, sql, ChecksumState.ERROR.ordinal(), collectionKey);
     }
     
@@ -524,7 +525,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
      * Finds the id of the files which at any pillar exists but is missing its checksum state.
      * @param collectionId The ID of the collection to find missing checksums in
      */
-    public IntegrityIssueIterator findMissingChecksums(String collectionId) {
+    public IntegrityIssueIterator findFilesWithMissingChecksum(String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         log.trace("Locating files which are missing the checksum at any pillar.");
         Long collectionKey = retrieveCollectionKey(collectionId);
@@ -535,11 +536,31 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 + " AND " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?" 
                 + " AND " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ?";
         return makeIntegrityIssueIterator(requestSql, collectionKey, 
-                FileState.EXISTING.ordinal(), ChecksumState.UNKNOWN.ordinal());
+                FileState.EXISTING.ordinal(), ChecksumState.MISSING.ordinal());
+    }
+    
+    /** 
+     * Changes the state of files with checksum state Unknown to checksum state Missing.
+     * @param collectionId The id of the collection.
+     */
+    public void setFilesWithUnknownChecksumToMissing(String collectionId) {
+        log.trace("Setting all checksum state to '" + ChecksumState.MISSING + "' for those entries, "
+                + "which are in the '" + ChecksumState.UNKNOWN + "' state.");
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_CHECKSUM_STATE + " = ?"
+                              + " WHERE " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ?"
+                              + " AND " + FI_FILE_KEY + " IN (" 
+                                  + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                                  + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
+                                      + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                                  + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
+      
+        DatabaseUtils.executeStatement(dbConnector, updateSql, ChecksumState.MISSING.ordinal(), 
+                ChecksumState.UNKNOWN.ordinal(), retrieveCollectionKey(collectionId));
     }
 
     /**
      * Finds the id of the files which have a checksum older than a given date.
+     * Ignores files, which have either file-state or checksum-state set to missing. 
      * @param date The date for the checksum to be older than.
      * @param pillarID The ID of the pillar to find obsolete checksum for.
      * @param collectionId The ID of the collection to find files with obsolete checksums in
@@ -558,9 +579,10 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 + " WHERE " + FILES_TABLE + "." + COLLECTION_KEY + " = ? "
                 + " AND " + FILE_INFO_TABLE + "." + FI_LAST_CHECKSUM_UPDATE + " < ?" 
                 + " AND " + FILE_INFO_TABLE + "." + FI_FILE_STATE + " = ?"
+                + " AND " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " <> ?"
                 + " AND " + FI_PILLAR_KEY + " = ?";
         return makeIntegrityIssueIterator(requestSql, collectionKey, date, 
-                FileState.EXISTING.ordinal(), pillarKey);
+                FileState.EXISTING.ordinal(), ChecksumState.MISSING.ordinal(), pillarKey);
     }
     
     /**
@@ -607,7 +629,6 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         return makeIntegrityIssueIterator(requestSql, collectionKey, FileState.MISSING.ordinal());
     }
     
-    
     /**
      * Finds the ids of the pillars where the given file is missing.
      * @param fileId The id of the file which is missing.
@@ -636,7 +657,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
      * Extracting the file ids for the files with inconsistent checksums. Thus finding the files with checksum errors.
      * It is done in the following way:
      * 1. Find all the unique combinations of checksums and file keys in the FileInfo table. 
-     *   Though not for the files which are reported as missing or the checksum is null.
+     *   Though not for the files which are reported as missing or the checksum is missing or null.
      * 2. Count the number of occurrences for each file key (thus counting the amount of checksums for each file).
      * 3. Eliminate the file keys which only had one count (thus removing the file keys with consistent checksum).
      * 4. Select the respective file ids for the remaining file keys.
@@ -651,6 +672,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         log.trace("Localizing the file ids where the checksums are not consistent.");
         String findUniqueSql = "SELECT " + FI_CHECKSUM + " , " + FI_FILE_KEY + " FROM " + FILE_INFO_TABLE
                 + " WHERE " + FI_FILE_STATE + " <> ?"
+                + " AND " + FI_CHECKSUM_STATE + " <> ?"
                 + " AND " + FI_CHECKSUM + " IS NOT NULL"
                 + " GROUP BY " + FI_CHECKSUM + " , " + FI_FILE_KEY;
         String countSql = "SELECT " + FI_FILE_KEY + " , COUNT(*) AS num FROM ( " + findUniqueSql + " ) AS unique1 "
@@ -660,14 +682,15 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 + " JOIN ( " + eliminateSql + " ) AS eliminate1"
                 + " ON " + FILES_TABLE + "." + FILES_KEY + " = eliminate1." + FI_FILE_KEY 
                 + " WHERE " + COLLECTION_KEY + " = ? ";
-        return makeIntegrityIssueIterator(selectSql, FileState.MISSING.ordinal(), collectionKey);
+        return makeIntegrityIssueIterator(selectSql, FileState.MISSING.ordinal(), ChecksumState.MISSING.ordinal(),
+                collectionKey);
     }
     
     /**
      * Updating all the entries for the files with consistent checksums to set their checksum state to valid.
      * It is done in the following way:
      * 1. Find all the unique combinations of checksums and file keys in the FileInfo table. 
-     *    Though not for the files which are reported as missing, or if the checksum is null.
+     *    Though not for the files which are reported as missing, if the checksum is reported missing or null.
      * 2. Count the number of occurrences for each file key (thus counting the amount of different checksums for 
      *    each file).
      * 3. Eliminate the files with a consistent checksum (select only those with the count of unique checksums of 1)
@@ -685,6 +708,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 + " AND EXISTS ("
                     + " SELECT 1 FROM " + FILE_INFO_TABLE + " AS inner_fi"
                     + " WHERE " + "inner_fi." + FI_FILE_STATE + " <> ?"
+                    + " AND inner_fi." + FI_CHECKSUM_STATE + " <> ?"
                     + " AND inner_fi." + FI_CHECKSUM + " IS NOT NULL"
                     + " AND inner_fi." + FI_FILE_KEY + " = " + FILE_INFO_TABLE + "." + FI_FILE_KEY 
                     + " GROUP BY inner_fi." + FI_FILE_KEY 
@@ -694,7 +718,8 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                     + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " + FILE_INFO_TABLE + "." + FILES_KEY 
                     + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
         DatabaseUtils.executeStatement(dbConnector, updateSql, ChecksumState.VALID.ordinal(), 
-                ChecksumState.VALID.ordinal(), FileState.MISSING.ordinal(), collectionKey);
+                ChecksumState.VALID.ordinal(), FileState.MISSING.ordinal(), ChecksumState.MISSING.ordinal(),
+                collectionKey);
         log.debug("Marked consistent files in " + (System.currentTimeMillis() - startTime) + "ms");
     }
 
@@ -745,6 +770,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
     /**
      * Retrieves the date for the latest checksum entry for a given pillar.
      * E.g. the date for the latest checksum which has been positively identified as valid on the given pillar.  
+     * Ignores entries with checksum state either MISSING or PREVIOUSLY_SEEN.
      * @param pillarId The pillar whose latest checksum entry is requested.
      * @param collectionId The ID of the collection to get the newest checksum from
      * @return The requested date.
@@ -753,7 +779,8 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         Long collectionKey = retrieveCollectionKey(collectionId);
         String retrieveSql = getDateForNewestChecksumEntryForPillarSql();
         return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionKey, 
-                FileState.EXISTING.ordinal(), pillarId);
+                FileState.EXISTING.ordinal(), ChecksumState.MISSING.ordinal(), ChecksumState.PREVIOUSLY_SEEN.ordinal(),
+                pillarId);
     }
     
     /**
@@ -871,6 +898,67 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         
         DatabaseUtils.executeStatement(dbConnector, updateSql, FileState.EXISTING.ordinal(), 
                 FileState.PREVIOUSLY_SEEN.ordinal(), retrievePillarKey(pillarId), collectionKey);
+    }
+    
+    /**
+     * Setting all checksum state to 'PREVIOUSLY_SEEN' for those entries, which are not in the 'MISSING' state.
+     * @param collectionId The id of the collection. 
+     */
+    public void setExistingChecksumsToPreviouslySeen(String collectionId) {
+        log.trace("Setting all checksum state to '" + ChecksumState.PREVIOUSLY_SEEN + "' for those entries, "
+                + "which are not in the '" + ChecksumState.MISSING + "' state.");
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_CHECKSUM_STATE + " = ?"
+                              + " WHERE " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " <> ?"
+                              + " AND " + FI_FILE_KEY + " IN (" 
+                                  + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                                  + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
+                                      + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                                  + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
+        
+        DatabaseUtils.executeStatement(dbConnector, updateSql, ChecksumState.PREVIOUSLY_SEEN.ordinal(), 
+                ChecksumState.MISSING.ordinal(), retrieveCollectionKey(collectionId));
+    }
+
+    /**
+     * Setting all checksum state to 'MISSING' for those entries which checksum state 'PREVIOUSLY_SEEN'.
+     * @param collectionId The id of the collection. 
+     */
+    public void setPreviouslySeenChecksumsToMissing(String collectionId) {
+        log.trace("Setting all checksum state to '" + ChecksumState.MISSING + "' for those entries which "
+                + "checksum state '" + ChecksumState.PREVIOUSLY_SEEN + "'.");
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_CHECKSUM_STATE + " = ?"
+                              + " WHERE " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ?"
+                              + " AND " + FI_FILE_KEY + " IN (" 
+                                  + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                                  + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
+                                      + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                                  + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
+        
+        DatabaseUtils.executeStatement(dbConnector, updateSql, ChecksumState.MISSING.ordinal(), 
+                ChecksumState.PREVIOUSLY_SEEN.ordinal(), retrieveCollectionKey(collectionId));
+    }
+
+    /**
+     * Setting all checksum state to 'UNKNOWN' for those entries which checksum state 'PREVIOUSLY_SEEN', 
+     * for a given pillar.
+     * @param collectionId The id of the collection, which the change applies.
+     * @param pillarId The id of the pillar, which  
+     */
+    public void setPreviouslySeenChecksumsToUnknown(String collectionId, String pillarId) {
+        log.trace("Setting all checksum state to '" + ChecksumState.UNKNOWN + "' for those entries which "
+                + "checksum state '" + ChecksumState.PREVIOUSLY_SEEN + "'.");
+        String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_CHECKSUM_STATE + " = ?"
+                              + " WHERE " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ?"
+                              + " AND " + FILE_INFO_TABLE + "." + FI_PILLAR_KEY + " = ? "
+                              + " AND " + FI_FILE_KEY + " IN (" 
+                                  + " SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
+                                  + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
+                                      + FILE_INFO_TABLE + "." + FI_FILE_KEY 
+                                  + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
+        
+        DatabaseUtils.executeStatement(dbConnector, updateSql, ChecksumState.UNKNOWN.ordinal(), 
+                ChecksumState.PREVIOUSLY_SEEN.ordinal(), retrievePillarKey(pillarId), 
+                retrieveCollectionKey(collectionId));
     }
     
     /**
@@ -1188,7 +1276,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         java.util.Collections.reverse(res);
         return res;   
     }
-
+    
     /**
      * Method to acquire the backend specific SQL, for use in getLatestStatisticsKey method
      * @return The sql for getting the latest collection stats. 
@@ -1311,7 +1399,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 updateChecksumPS = conn.prepareStatement(updateChecksumSql);
                 
                 for(ChecksumDataForChecksumSpecTYPE csData : data) {
-                    updateFileStatePS.setInt(1, FileState.UNKNOWN.ordinal());
+                    updateFileStatePS.setInt(1, ChecksumState.UNKNOWN.ordinal());
                     updateFileStatePS.setInt(2, FileState.EXISTING.ordinal());
                     updateFileStatePS.setString(3, csData.getFileID());
                     updateFileStatePS.setLong(4, collectionKey);

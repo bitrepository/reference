@@ -132,8 +132,13 @@ public class IntegrityDatabase implements IntegrityModel {
     }
     
     @Override
-    public IntegrityIssueIterator findMissingChecksums(String collectionId) {
-        return store.findMissingChecksums(collectionId);
+    public IntegrityIssueIterator findFilesWithMissingChecksum(String collectionId) {
+        return store.findFilesWithMissingChecksum(collectionId);
+    }
+    
+    @Override
+    public void setFilesWithUnknownChecksumToMissing(String collectionId) {
+        store.setFilesWithUnknownChecksumToMissing(collectionId);
     }
 
     @Override
@@ -207,8 +212,23 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public void setPreviouslySeenToExisting(String collectionId, String pillarId) {
+    public void setPreviouslySeenFilesToExisting(String collectionId, String pillarId) {
         store.setPreviouslySeenFilesToExisting(collectionId, pillarId);
+    }
+
+    @Override
+    public void setExistingChecksumsToPreviouslySeen(String collectionId) {
+        store.setExistingChecksumsToPreviouslySeen(collectionId);
+    }
+
+    @Override
+    public void setPreviouslySeenChecksumsToMissing(String collectionId) {
+        store.setPreviouslySeenChecksumsToMissing(collectionId);
+    }
+
+    @Override
+    public void setPreviouslySeenChecksumsToUnknown(String collectionId, String pillarId) {
+        store.setPreviouslySeenChecksumsToUnknown(collectionId, pillarId);
     }
 
     @Override

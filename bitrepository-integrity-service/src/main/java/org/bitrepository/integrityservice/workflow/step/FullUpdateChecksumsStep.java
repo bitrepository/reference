@@ -20,16 +20,24 @@ public class FullUpdateChecksumsStep extends UpdateChecksumsStep {
     public String getName() {
         return "Collect all checksums from pillars";
     }
-    
+
+    // Set existing checksums to previously seen.
+    @Override
     protected void initialStepAction() {
-    	store.setChecksumTimestampsToEpocForCollection(collectionId);
+        store.setExistingChecksumsToPreviouslySeen(collectionId);
     }
-    
+
+    // Set previously seen checksums to missing.
+    @Override
+    protected void finalStepAction() {
+        store.setPreviouslySeenChecksumsToMissing(collectionId);
+    }
+
     /**
      * @return Description of this step.
      */
     public static String getDescription() {
         return "Contacts all pillars to retrieve the list of checksums for the pillar";
     }
-    
+
 }

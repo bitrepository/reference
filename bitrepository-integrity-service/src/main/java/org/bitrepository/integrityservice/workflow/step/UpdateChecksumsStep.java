@@ -93,9 +93,16 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
      */
     protected void initialStepAction() {}
     
+    /**
+     * Method to implement late/post-perform actions.
+     */
+    protected void finalStepAction() {}
+    
     @Override
     public synchronized void performStep() {
         try {
+            initialStepAction();
+
             List<String> pillarsToCollectFrom = new ArrayList<String>(
                     SettingsUtils.getPillarIDsForCollection(collectionId));
             log.debug("Collecting checksums from '" + pillarsToCollectFrom + "' for collection '" 
@@ -110,6 +117,8 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
                 log.debug("Collecting of checksums ids had the final event: " + event);
                 pillarsToCollectFrom = new ArrayList<String>(eventHandler.getPillarsWithPartialResult());
             }
+            
+            finalStepAction();
         } catch (InterruptedException e) {
             log.warn("Interrupted while collecting checksums.", e);
         }
