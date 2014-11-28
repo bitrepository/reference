@@ -222,13 +222,13 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public void movePreviouslySeenChecksumsToMissing(String collectionId) {
-        store.movePreviouslySeenChecksumsToMissing(collectionId);
+    public void setPreviouslySeenChecksumsToMissing(String collectionId) {
+        store.setPreviouslySeenChecksumsToMissing(collectionId);
     }
 
     @Override
     public void setPreviouslySeenChecksumsToUnknown(String collectionId, String pillarId) {
-        // TODO Auto-generated method stub
+        store.setPreviouslySeenChecksumsToUnknown(collectionId, pillarId);
     }
 
     @Override

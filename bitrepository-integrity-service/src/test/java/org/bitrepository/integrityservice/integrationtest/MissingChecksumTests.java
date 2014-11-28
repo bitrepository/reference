@@ -28,6 +28,9 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -72,10 +75,10 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+@SuppressWarnings("rawtypes")
 public class MissingChecksumTests extends ExtendedTestCase {
     
     private static final String PILLAR_1 = "pillar1";
@@ -129,29 +132,29 @@ public class MissingChecksumTests extends ExtendedTestCase {
         addStep("Ingest files to both pillars.", "Should give a epoc, as latest checksum entry.");
         populateDatabase(model, TEST_FILE_1);
         
-        Assert.assertEquals(model.getDateForNewestChecksumEntryForPillar(PILLAR_1, TEST_COLLECTION), epoc);
-        Assert.assertEquals(model.getDateForNewestChecksumEntryForPillar(PILLAR_2, TEST_COLLECTION), epoc);
+        assertEquals(model.getDateForNewestChecksumEntryForPillar(PILLAR_1, TEST_COLLECTION), epoc);
+        assertEquals(model.getDateForNewestChecksumEntryForPillar(PILLAR_2, TEST_COLLECTION), epoc);
         
         addStep("Add checksums for one pillar", 
                 "Should give 'now' as latest time for that pillar (the other should be unaffected).");
         List<ChecksumDataForChecksumSpecTYPE> checksumData = createChecksumData(DEFAULT_CHECKSUM, TEST_FILE_1);
         model.addChecksums(checksumData, PILLAR_1, TEST_COLLECTION);
         
-        Assert.assertTrue(model.getDateForNewestChecksumEntryForPillar(PILLAR_1, TEST_COLLECTION).getTime() >= now.getTime());
-        Assert.assertEquals(model.getDateForNewestChecksumEntryForPillar(PILLAR_2, TEST_COLLECTION), epoc);
+        assertTrue(model.getDateForNewestChecksumEntryForPillar(PILLAR_1, TEST_COLLECTION).getTime() >= now.getTime());
+        assertEquals(model.getDateForNewestChecksumEntryForPillar(PILLAR_2, TEST_COLLECTION), epoc);
         
         addStep("Set checksum state to PREVIOUSLY_SEEN", "Should give null");
         model.setExistingChecksumsToPreviouslySeen(TEST_COLLECTION);
-        Assert.assertNull(model.getDateForNewestChecksumEntryForPillar(PILLAR_1, TEST_COLLECTION));
+        assertNull(model.getDateForNewestChecksumEntryForPillar(PILLAR_1, TEST_COLLECTION));
 
         addStep("Set checksum state to MISSING", "Should give null");
-        model.movePreviouslySeenChecksumsToMissing(TEST_COLLECTION);
-        Assert.assertNull(model.getDateForNewestChecksumEntryForPillar(PILLAR_1, TEST_COLLECTION));
+        model.setPreviouslySeenChecksumsToMissing(TEST_COLLECTION);
+        assertNull(model.getDateForNewestChecksumEntryForPillar(PILLAR_1, TEST_COLLECTION));
         
         addStep("Ingest another file - not checksum", 
                 "Should give epoc (default checksum date for the new file) - missing checksum should be ignored.");
         populateDatabase(model, TEST_FILE_2);
-        Assert.assertEquals(model.getDateForNewestChecksumEntryForPillar(PILLAR_1, TEST_COLLECTION), epoc);
+        assertEquals(model.getDateForNewestChecksumEntryForPillar(PILLAR_1, TEST_COLLECTION), epoc);
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
@@ -164,7 +167,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
         addStep("Check whether checksum state before running missing checksum step.", 
                 "Should be set to unknown at all pillars.");
         for(FileInfo fi : model.getFileInfos(TEST_FILE_1, TEST_COLLECTION)) {
-            Assert.assertEquals(fi.getChecksumState().name(), ChecksumState.UNKNOWN.name());                
+            assertEquals(fi.getChecksumState().name(), ChecksumState.UNKNOWN.name());                
         }
 
         addStep("Run missing checksum step.", "The file should be marked as missing at all pillars.");
@@ -177,7 +180,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
         HandleMissingChecksumsStep missingChecksumStep = new HandleMissingChecksumsStep(model, reporter); 
         missingChecksumStep.performStep();
         for(FileInfo fi : model.getFileInfos(TEST_FILE_1, TEST_COLLECTION)) {
-            Assert.assertEquals(fi.getChecksumState().name(), ChecksumState.MISSING.name());                
+            assertEquals(fi.getChecksumState().name(), ChecksumState.MISSING.name());                
         }
     }
 
@@ -209,17 +212,17 @@ public class MissingChecksumTests extends ExtendedTestCase {
         verifyNoMoreInteractions(alerter);
         
         addStep("Check whether checksum is missing", "Should be missing at pillar two only.");
-        Assert.assertEquals(model.getNumberOfFiles(PILLAR_1, TEST_COLLECTION), 1);
-        Assert.assertEquals(model.getNumberOfFiles(PILLAR_2, TEST_COLLECTION), 1);
+        assertEquals(model.getNumberOfFiles(PILLAR_1, TEST_COLLECTION), 1);
+        assertEquals(model.getNumberOfFiles(PILLAR_2, TEST_COLLECTION), 1);
         List<String> missingChecksums = getIssuesFromIterator(
                 model.findFilesWithMissingChecksum(TEST_COLLECTION));
-        Assert.assertEquals(missingChecksums.size(), 1);
+        assertEquals(missingChecksums.size(), 1);
         
         for(FileInfo fi : model.getFileInfos(TEST_FILE_1, TEST_COLLECTION)) {
             if(fi.getPillarId().equals(PILLAR_1)) {
-                Assert.assertEquals(fi.getChecksumState().name(), ChecksumState.UNKNOWN.name());
+                assertEquals(fi.getChecksumState().name(), ChecksumState.UNKNOWN.name());
             } else {
-                Assert.assertEquals(fi.getChecksumState().name(), ChecksumState.MISSING.name());                
+                assertEquals(fi.getChecksumState().name(), ChecksumState.MISSING.name());                
             }
         }
     }
@@ -255,11 +258,11 @@ public class MissingChecksumTests extends ExtendedTestCase {
         verifyNoMoreInteractions(alerter);
         
         addStep("Check whether checksum is missing", "Should be missing at pillar two only.");
-        Assert.assertEquals(model.getNumberOfFiles(PILLAR_1, TEST_COLLECTION), 1);
-        Assert.assertEquals(model.getNumberOfFiles(PILLAR_2, TEST_COLLECTION), 1);
+        assertEquals(model.getNumberOfFiles(PILLAR_1, TEST_COLLECTION), 1);
+        assertEquals(model.getNumberOfFiles(PILLAR_2, TEST_COLLECTION), 1);
         List<String> missingChecksums = getIssuesFromIterator(
                 model.findFilesWithMissingChecksum(TEST_COLLECTION));
-        Assert.assertEquals(missingChecksums.size(), 0);
+        assertEquals(missingChecksums.size(), 0);
 
         addStep("Add checksum results for only the second pillar.", "");
         doAnswer(new Answer() {
@@ -280,16 +283,16 @@ public class MissingChecksumTests extends ExtendedTestCase {
         verifyNoMoreInteractions(alerter);
         
         addStep("Check whether checksum is missing", "Should be missing at pillar one, and state Unknown at pillar two.");
-        Assert.assertEquals(model.getNumberOfFiles(PILLAR_1, TEST_COLLECTION), 1);
-        Assert.assertEquals(model.getNumberOfFiles(PILLAR_2, TEST_COLLECTION), 1);
+        assertEquals(model.getNumberOfFiles(PILLAR_1, TEST_COLLECTION), 1);
+        assertEquals(model.getNumberOfFiles(PILLAR_2, TEST_COLLECTION), 1);
         missingChecksums = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTION));
-        Assert.assertEquals(missingChecksums.size(), 1);
+        assertEquals(missingChecksums.size(), 1);
         
         for(FileInfo fi : model.getFileInfos(TEST_FILE_1, TEST_COLLECTION)) {
             if(fi.getPillarId().equals(PILLAR_2)) {
-                Assert.assertEquals(fi.getChecksumState().name(), ChecksumState.UNKNOWN.name());
+                assertEquals(fi.getChecksumState().name(), ChecksumState.UNKNOWN.name());
             } else {
-                Assert.assertEquals(fi.getChecksumState().name(), ChecksumState.MISSING.name());                
+                assertEquals(fi.getChecksumState().name(), ChecksumState.MISSING.name());                
             }
         }
     }

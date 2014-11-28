@@ -339,8 +339,8 @@ public class IntegrityCache implements IntegrityModel {
     }
 
     @Override
-    public void movePreviouslySeenChecksumsToMissing(String collectionId) {
-        integrityModel.movePreviouslySeenChecksumsToMissing(collectionId);
+    public void setPreviouslySeenChecksumsToMissing(String collectionId) {
+        integrityModel.setPreviouslySeenChecksumsToMissing(collectionId);
     }
 
     @Override

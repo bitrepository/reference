@@ -22,12 +22,15 @@ public class FullUpdateChecksumsStep extends UpdateChecksumsStep {
     }
 
     // Set existing checksums to previously seen.
+    @Override
     protected void initialStepAction() {
         store.setExistingChecksumsToPreviouslySeen(collectionId);
     }
 
+    // Set previously seen checksums to missing.
+    @Override
     protected void finalStepAction() {
-        store.movePreviouslySeenChecksumsToMissing(collectionId);
+        store.setPreviouslySeenChecksumsToMissing(collectionId);
     }
 
     /**

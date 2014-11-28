@@ -232,7 +232,7 @@ public interface IntegrityModel {
      * Set all files with checksum state 'Previously_Seen' to state 'Missing'.
      * @param collectionId The ID of the collection to work on.
      */
-    void movePreviouslySeenChecksumsToMissing(String collectionId);
+    void setPreviouslySeenChecksumsToMissing(String collectionId);
 
     /**
      * Set the file state of all unknown files to 'missing' if the file-date is newer than the grace period.

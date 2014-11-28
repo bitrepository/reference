@@ -358,7 +358,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                     + " JOIN " + FILES_TABLE
                     + " ON " + FILE_INFO_TABLE + "." + FI_FILE_KEY + " = " + FILES_TABLE + "." + FILES_KEY
                     + " WHERE " + FILE_INFO_TABLE + "." + FI_CHECKSUM_STATE + " = ?"
-                    + " AND " + FILES_TABLE + "." +COLLECTION_KEY + " = ?";
+                    + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ?";
         return DatabaseUtils.selectLongValue(dbConnector, sql, ChecksumState.ERROR.ordinal(), collectionKey);
     }
     
@@ -553,7 +553,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                                   + " WHERE " + FILES_TABLE + "." + FILES_KEY + " = " 
                                       + FILE_INFO_TABLE + "." + FI_FILE_KEY 
                                   + " AND " + FILES_TABLE + "." + COLLECTION_KEY + " = ? )";
-        
+      
         DatabaseUtils.executeStatement(dbConnector, updateSql, ChecksumState.MISSING.ordinal(), 
                 ChecksumState.UNKNOWN.ordinal(), retrieveCollectionKey(collectionId));
     }
@@ -923,7 +923,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
      * Setting all checksum state to 'MISSING' for those entries which checksum state 'PREVIOUSLY_SEEN'.
      * @param collectionId The id of the collection. 
      */
-    public void movePreviouslySeenChecksumsToMissing(String collectionId) {
+    public void setPreviouslySeenChecksumsToMissing(String collectionId) {
         log.trace("Setting all checksum state to '" + ChecksumState.MISSING + "' for those entries which "
                 + "checksum state '" + ChecksumState.PREVIOUSLY_SEEN + "'.");
         String updateSql = "UPDATE " + FILE_INFO_TABLE + " SET " + FI_CHECKSUM_STATE + " = ?"

@@ -43,6 +43,7 @@ import java.util.Collection;
 
 import static org.mockito.Mockito.*;
 
+@SuppressWarnings("rawtypes")
 public class UpdateFileIDsStepTest extends WorkflowstepTest {
     public static final String TEST_PILLAR_1 = "test-pillar-1";
     public static final String TEST_FILE_1 = "test-file-1";

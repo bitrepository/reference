@@ -25,10 +25,10 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +43,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.client.eventhandler.CompleteEvent;
-import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
@@ -55,6 +54,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.annotations.Test;
 
+@SuppressWarnings("rawtypes")
 public class UpdateChecksumsStepTest extends WorkflowstepTest {
     public static final String TEST_PILLAR_1 = "test-pillar-1";
     public static final String TEST_FILE_1 = "test-file-1";
@@ -147,7 +147,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
                 any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(model).setExistingChecksumsToPreviouslySeen(TEST_COLLECTION);
-        verify(model).movePreviouslySeenChecksumsToMissing(TEST_COLLECTION);
+        verify(model).setPreviouslySeenChecksumsToMissing(TEST_COLLECTION);
         verify(model).addChecksums(resultingChecksums.getChecksumDataItems(), TEST_PILLAR_1, TEST_COLLECTION);
         verifyNoMoreInteractions(alerter);
     }
