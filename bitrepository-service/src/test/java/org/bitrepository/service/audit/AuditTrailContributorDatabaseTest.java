@@ -108,6 +108,11 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         events = daba.getAudits(firstCollectionID, null, null, null, null, null, 1000L);
         Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().size(), 5);
         
+        addStep("Test extracting from another collection", "Should not extract anything.");
+        String secondCollectionID = settings.getCollections().get(1).getID();
+        events = daba.getAudits(secondCollectionID, null, null, null, null, null, 1000L);
+        Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().size(), 0);
+        
         dm.getConnector().destroy();
     }
     

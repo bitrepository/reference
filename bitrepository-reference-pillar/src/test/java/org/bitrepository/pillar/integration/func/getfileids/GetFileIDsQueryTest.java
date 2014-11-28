@@ -78,8 +78,7 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
                 "The returned file id wasn't equal to the oldest file id");
     }
 
-    @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST} )
-    //ChecksumPillarTest Fails for the current checksum pillar, see BITMAG-856.
+    @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
     public void minTimeStampTest() {
         addDescription("Test the pillar support for only retrieving file ids newer that a given time. " +
                 "Note that this test assumes there is at least 2 file ids with different timestamps.");

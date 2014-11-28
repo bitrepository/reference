@@ -21,13 +21,17 @@
  */
 package org.bitrepository.pillar.checksumpillar;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.Date;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
+import org.bitrepository.pillar.cache.ChecksumStore;
 import org.bitrepository.pillar.cache.MemoryCacheMock;
 import org.bitrepository.pillar.checksumpillar.messagehandler.ChecksumPillarMediator;
 import org.bitrepository.pillar.common.MessageHandlerContext;
@@ -37,7 +41,7 @@ import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 
 public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
-    protected MemoryCacheMock cache;
+    protected ChecksumStore cache;
     protected ChecksumPillarMediator mediator;
     protected MockAuditManager audits;
     protected MessageHandlerContext context;
@@ -51,6 +55,13 @@ public abstract class ChecksumPillarTest extends DefaultFixturePillarTest {
     protected void initializeCUT() {
         super.initializeCUT();
         cache = new MemoryCacheMock();
+        audits = new MockAuditManager();
+        createChecksumPillar();
+    }
+    
+    protected void initializeCUTwithMockCache() {
+        super.initializeCUT();
+        cache = mock(ChecksumStore.class);
         audits = new MockAuditManager();
         createChecksumPillar();
     }
