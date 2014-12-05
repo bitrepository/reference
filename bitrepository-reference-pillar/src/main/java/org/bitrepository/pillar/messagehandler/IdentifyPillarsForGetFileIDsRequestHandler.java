@@ -67,6 +67,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
     @Override
     protected void validateRequest(IdentifyPillarsForGetFileIDsRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateCollectionID(message);
+        validateFileIDFormat(message.getFileIDs().getFileID());
         checkThatAllRequestedFilesAreAvailable(message);
     }
     
@@ -97,7 +98,6 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
             return;
         }
         String fileID = message.getFileIDs().getFileID();
-        validateFileIDFormat(fileID);
         
         if(!getPillarModel().hasFileID(fileID, message.getCollectionID())) {
             throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 

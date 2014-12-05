@@ -66,6 +66,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         validateCollectionID(message);
         getPillarModel().verifyChecksumAlgorithm(message.getChecksumRequestForExistingFile(), 
                 message.getCollectionID());
+        validateFileIDFormat(message.getFileIDs().getFileID());
         checkThatAllRequestedFilesAreAvailable(message);
     }
 
@@ -93,7 +94,6 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
     private void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetChecksumsRequest message) 
             throws RequestHandlerException {
         FileIDs fileids = message.getFileIDs();
-        validateFileIDFormat(fileids.getFileID());
         
         if(fileids.getFileID() != null && !getPillarModel().hasFileID(fileids.getFileID(), message.getCollectionID())) {
             throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 

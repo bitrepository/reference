@@ -37,7 +37,6 @@ import javax.xml.bind.JAXBException;
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetChecksumsResults;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
@@ -91,7 +90,8 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
         validatePillarId(request.getPillarID());
         getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile(), 
                 request.getCollectionID());
-        validateFileIDs(request);
+        validateFileIDFormat(request.getFileIDs().getFileID());
+        validateFileExistence(request);
 
         log.debug(MessageUtils.createMessageIdentifier(request) + "' validated and accepted.");
     }
@@ -130,17 +130,13 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
      *  
      * @param request The message to validate the FileIDs of.
      */
-    private void validateFileIDs(GetChecksumsRequest request) throws RequestHandlerException {
-        FileIDs fileids = request.getFileIDs();
-
-        String fileID = fileids.getFileID();
-        if(fileID == null) {
+    private void validateFileExistence(GetChecksumsRequest request) throws RequestHandlerException {
+        if(request.getFileIDs().getFileID() == null) {
             return;
         }
-        validateFileIDFormat(fileID);
 
-        if(!getPillarModel().hasFileID(fileID, request.getCollectionID())) {
-            log.warn("The following file is missing: '" + fileID + "'");
+        if(!getPillarModel().hasFileID(request.getFileIDs().getFileID(), request.getCollectionID())) {
+            log.warn("The following file is missing: '" + request.getFileIDs().getFileID() + "'");
             throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
                     request.getCollectionID());
         }
