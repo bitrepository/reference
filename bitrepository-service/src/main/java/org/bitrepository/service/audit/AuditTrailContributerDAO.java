@@ -87,7 +87,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                               FileAction operation, String operationID, String fingerprint) {
         ArgumentValidator.checkNotNull(collectionId, "String collectionId");
         ArgumentValidator.checkNotNull(operation, "FileAction operation");
-        log.trace("Inserting an audit event for file '" + fileId + "', from actor '" + actor
+        log.debug("Inserting an audit event for file '" + fileId + "', from actor '" + actor
                 + "' performing operation '" + operation + "', with the audit trail information '" + auditTrail + "'");
 
         long fileGuid;

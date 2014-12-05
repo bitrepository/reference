@@ -135,6 +135,8 @@ public class DeleteFileRequestHandler extends PerformRequestHandler<DeleteFileRe
     @Override
     protected void performOperation(DeleteFileRequest request, MessageContext requestContext) 
             throws RequestHandlerException {
+        log.info(MessageUtils.createMessageIdentifier(request) + " Deleting file " + request.getFileID() 
+                + " on collection " + request.getCollectionID());
         ChecksumDataForFileTYPE resultingChecksum = calculatedRequestedChecksum(request);
         deleteTheFile(request);
         getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(), 

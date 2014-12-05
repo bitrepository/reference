@@ -110,6 +110,8 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
     @Override
     protected void performOperation(GetFileIDsRequest request, MessageContext requestContext) 
             throws RequestHandlerException {
+        log.debug(MessageUtils.createMessageIdentifier(request) + " Performing GetFileIDs for file(s) " 
+                + request.getFileIDs() + " on collection " + request.getCollectionID());
         ExtractedFileIDsResultSet extractedFileIDs = retrieveFileIDsData(request);
         ResultingFileIDs results = new ResultingFileIDs();
         if(request.getResultAddress() == null) {

@@ -44,6 +44,7 @@ import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
@@ -103,6 +104,8 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
     @Override
     protected void performOperation(GetFileRequest request, MessageContext requestContext) 
             throws RequestHandlerException {
+        log.info(MessageUtils.createMessageIdentifier(request) + " Performing GetFile for file " 
+                + request.getFileID() + " on collection " + request.getCollectionID());
         uploadToClient(request);
         getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(), 
                 "Failed identifying pillar.", request.getAuditTrailInformation(), FileAction.GET_FILE,

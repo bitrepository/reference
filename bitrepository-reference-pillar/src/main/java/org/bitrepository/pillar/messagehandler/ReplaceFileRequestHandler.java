@@ -37,6 +37,7 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
+import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -115,6 +116,8 @@ public class ReplaceFileRequestHandler extends PerformRequestHandler<ReplaceFile
     @Override
     protected void performOperation(ReplaceFileRequest request, MessageContext requestContext) 
             throws RequestHandlerException {
+        log.info(MessageUtils.createMessageIdentifier(request) + " Performing ReplaceFile for file " 
+                + request.getFileID() + " on collection " + request.getCollectionID());
         try {
             ChecksumDataForFileTYPE requestedOldChecksum = calculateChecksumOnOldFile(request);
             replaceFile(request);

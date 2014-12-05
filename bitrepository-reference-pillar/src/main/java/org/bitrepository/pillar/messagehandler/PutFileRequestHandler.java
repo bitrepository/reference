@@ -34,6 +34,7 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
+import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -101,6 +102,8 @@ public class PutFileRequestHandler extends PerformRequestHandler<PutFileRequest>
     @Override
     protected void performOperation(PutFileRequest request, MessageContext requestContext) 
             throws RequestHandlerException {
+        log.info(MessageUtils.createMessageIdentifier(request) + " Performing PutFile for file " 
+                + request.getFileID() + " on collection " + request.getCollectionID());
         try {
             retrieveFile(request);
             getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(), 

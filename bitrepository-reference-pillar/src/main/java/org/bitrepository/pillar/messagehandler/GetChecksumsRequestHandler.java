@@ -111,6 +111,8 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
     @Override
     protected void performOperation(GetChecksumsRequest request, MessageContext requestContext) 
             throws RequestHandlerException {
+        log.debug(MessageUtils.createMessageIdentifier(request) + " Performing GetChecksums for file(s) " 
+                + request.getFileIDs() + " on collection " + request.getCollectionID());
         ExtractedChecksumResultSet extractedChecksums = extractChecksumResults(request);
         ResultingChecksums checksumResults;
         if(request.getResultAddress() == null) {
