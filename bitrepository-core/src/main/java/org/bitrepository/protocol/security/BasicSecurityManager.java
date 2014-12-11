@@ -266,7 +266,7 @@ public class BasicSecurityManager implements SecurityManager {
         PrivateKey privKey = null;
         X509Certificate privCert = null;
         if(!(new File(privateKeyFile)).isFile()) {
-            log.info("Key file with private key and certificate does not exist!");
+            log.info("Key file '" + privateKeyFile + "' with private key and certificate does not exist!");
             return;
         }
         BufferedReader bufferedReader = new BufferedReader(new FileReader(privateKeyFile));
