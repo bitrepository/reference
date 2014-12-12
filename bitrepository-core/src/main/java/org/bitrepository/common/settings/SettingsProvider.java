@@ -24,6 +24,7 @@
  */
 package org.bitrepository.common.settings;
 
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.protocol.messagebus.destination.DestinationHelper;
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
 import org.bitrepository.settings.repositorysettings.RepositorySettings;
@@ -60,6 +61,7 @@ public class SettingsProvider {
     public synchronized Settings getSettings() {
         if(settings == null) {
             reloadSettings();
+            SettingsUtils.initialize(settings);
         }
         return settings;
     }
