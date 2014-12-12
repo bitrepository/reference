@@ -37,6 +37,9 @@ public abstract class Workflow implements SchedulableJob {
 
     /** The current step running.*/
     private WorkflowStep currentStep = null;
+    /** The current state of the workflow. */
+    private WorkflowState currentState = WorkflowState.NOT_RUNNING;
+    /** Statistics for the workflow.*/
     private WorkflowStatistic statistics;
 
     @Override
@@ -50,6 +53,7 @@ public abstract class Workflow implements SchedulableJob {
      * @param step The step to start.
      */
     protected void performStep(WorkflowStep step) {
+        this.currentState = WorkflowState.RUNNING;
         this.currentStep = step;
         log.info("Starting step: '" + step.getName() + "'");
         try {
@@ -69,14 +73,25 @@ public abstract class Workflow implements SchedulableJob {
      */
     protected void finish() {
         statistics.finish();
+        this.currentState = WorkflowState.NOT_RUNNING;
         this.currentStep = null;
         log.info(statistics.getFullStatistics());
     }
     
     @Override
-    public String currentState() {
+    public WorkflowState currentState() {
+        return currentState;
+    }
+
+    @Override
+    public void setCurrentState(WorkflowState newState) {
+        this.currentState = newState;
+    }
+
+    @Override
+    public String getHumanReadableState() {
         if(currentStep == null) {
-            return NOT_RUNNING;
+            return currentState.name();
         } else {
             return currentStep.getName();
         }
