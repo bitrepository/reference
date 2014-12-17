@@ -181,6 +181,36 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
             Assert.assertTrue(fi.getChecksumState() == ChecksumState.ERROR);
         }
     }
+    
+    @Test(groups = {"regressiontest", "integritytest"})
+    public void testChecksumMajority() throws Exception {
+        addDescription("Test the checksum integrity validator when two pillars have one checksum and the last pillar "
+                + "has another checksum.");
+        IntegrityModel cache = getIntegrityModel();
+        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
+        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter);
+        
+        addStep("Add data to the cache", "");
+        List<ChecksumDataForChecksumSpecTYPE> csData1 = createChecksumData("1234cccc4321", FILE_1);
+        insertChecksumDataForModel(cache, csData1, TEST_PILLAR_1, TEST_COLLECTION);
+        List<ChecksumDataForChecksumSpecTYPE> csData2 = createChecksumData("1234cccc4321", FILE_1);
+        insertChecksumDataForModel(cache, csData2, TEST_PILLAR_2, TEST_COLLECTION);
+        List<ChecksumDataForChecksumSpecTYPE> csData3 = createChecksumData("1c2c3c44c3c2c1", FILE_1);
+        insertChecksumDataForModel(cache, csData3, TEST_PILLAR_3, TEST_COLLECTION);
+        
+        addStep("Perform the step", "");
+        step.performStep();
+
+        addStep("Validate the file ids", "Should only have integrity issues on pillar 3.");
+        Assert.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
+        for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
+            if(fi.getPillarId().equals(TEST_PILLAR_3)) {
+                Assert.assertTrue(fi.getChecksumState() == ChecksumState.ERROR, fi.toString());
+            } else {
+                Assert.assertTrue(fi.getChecksumState() == ChecksumState.VALID, fi.toString());                
+            }
+        }
+    }
 
     @Test(groups = {"regressiontest", "integritytest"})
     public void testUpdatingFileIDsForValidChecksum() throws Exception {

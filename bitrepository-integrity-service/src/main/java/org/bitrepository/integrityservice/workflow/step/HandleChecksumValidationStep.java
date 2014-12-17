@@ -137,13 +137,14 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
      * @param infos The list of FileInfos for the file.
      * @param pillarID The id of the pillar, which are not agreeing with the other pillars.
      */
-    private void setChecksumInconsistencyOnlyOnSpecificPillar(String fileID, Collection<FileInfo> infos, String pillarID) {
+    private void setChecksumInconsistencyOnlyOnSpecificPillar(String fileID, Collection<FileInfo> infos, 
+            String pillarID) {
         try {
             reporter.reportChecksumIssue(fileID, pillarID);
             List<String> pillarsWithoutChecksumIssue = getPillarsFileExisting(infos);
             pillarsWithoutChecksumIssue.remove(pillarID);
-            store.setChecksumAgreement(fileID, pillarsWithoutChecksumIssue, reporter.getCollectionID());
             store.setChecksumError(fileID, getPillarsFileExisting(infos), reporter.getCollectionID());
+            store.setChecksumAgreement(fileID, pillarsWithoutChecksumIssue, reporter.getCollectionID());
         } catch (IOException e) {
             log.error("Failed to report file: " + fileID + " as having a checksum issue", e);
         }
