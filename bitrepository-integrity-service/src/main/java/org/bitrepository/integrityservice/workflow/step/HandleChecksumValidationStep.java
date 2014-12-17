@@ -75,25 +75,17 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
         IntegrityIssueIterator inconsistentFilesIterator 
             = store.getFilesWithInconsistentChecksums(reporter.getCollectionID());
         List<String> collectionPillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
-        String file;
+        String fileID;
         try {
-            while((file = inconsistentFilesIterator.getNextIntegrityIssue()) != null) {
-                Collection<FileInfo> infos = store.getFileInfos(file, reporter.getCollectionID());
+            while((fileID = inconsistentFilesIterator.getNextIntegrityIssue()) != null) {
+                Collection<FileInfo> infos = store.getFileInfos(fileID, reporter.getCollectionID());
                 Set<String> checksums = getUniqueChecksums(infos);
                 if(checksums.size() > 1) {
-                    createAuditForInconsistentChecksum(infos, file);
-                    for(FileInfo info : infos) {
-                        try {
-                            reporter.reportChecksumIssue(file, info.getPillarId());
-                        } catch (IOException e) {
-                            log.error("Failed to report file: " + file + " as having a checksum issue", e);
-                        }
-                    }
-                    store.setChecksumError(file, getPillarsFileExisting(infos), reporter.getCollectionID());
+                    setChecksumInconsistency(infos, fileID);
                 } else {
                     log.error("File with inconsistent checksums from SQL have apparently not inconsistency according to "
                             + "Java! This is a scenario, which must never occur!!!");
-                    store.setChecksumAgreement(file, collectionPillars, reporter.getCollectionID());
+                    store.setChecksumAgreement(fileID, collectionPillars, reporter.getCollectionID());
                 }
             }
         } finally {
@@ -101,7 +93,62 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
         }
         store.setFilesWithConsistentChecksumToValid(reporter.getCollectionID());
     }
+
+    /**
+     * Locates the source of the checksum inconsistency.
+     * If only a single pillar is inconsistent with the majority, then it alone will be set to checksum error for the 
+     * file.
+     * Otherwise all the pillars will be set to checksum error for the file.
+     * @param infos The FileInfos
+     * @param fileID The id of the file.
+     */
+    private void setChecksumInconsistency(Collection<FileInfo> infos, String fileID) {
+        Map<String, List<String>> checksumMap = getChecksumMapping(infos);
+        String pillarID = findSingleInconsistentPillar(checksumMap);
+
+        createAuditForInconsistentChecksum(pillarID, fileID);
+        
+        if(pillarID == null) {
+            setChecksumInconsistencyOnAllPillars(fileID, infos);
+        } else {
+            setChecksumInconsistencyOnlyOnSpecificPillar(fileID, infos, pillarID);
+        }
+    }
+
+    /**
+     * Sets checksum inconsistency for a given file on all pillars.
+     * @param fileID The id of the file.
+     * @param infos The list of FileInfos for the file.
+     */
+    private void setChecksumInconsistencyOnAllPillars(String fileID, Collection<FileInfo> infos) {
+        try {
+            for(FileInfo info : infos) {
+                reporter.reportChecksumIssue(fileID, info.getPillarId());
+            }
+            store.setChecksumError(fileID, getPillarsFileExisting(infos), reporter.getCollectionID());
+        } catch (IOException e) {
+            log.error("Failed to report file: " + fileID + " as having a checksum issue", e);
+        }
+    }
     
+    /**
+     * Sets the checksum inconsistency on a specific pillar, and sets all the other pillars to checksum agreement.
+     * @param fileID The id of the file.
+     * @param infos The list of FileInfos for the file.
+     * @param pillarID The id of the pillar, which are not agreeing with the other pillars.
+     */
+    private void setChecksumInconsistencyOnlyOnSpecificPillar(String fileID, Collection<FileInfo> infos, String pillarID) {
+        try {
+            reporter.reportChecksumIssue(fileID, pillarID);
+            List<String> pillarsWithoutChecksumIssue = getPillarsFileExisting(infos);
+            pillarsWithoutChecksumIssue.remove(pillarID);
+            store.setChecksumAgreement(fileID, pillarsWithoutChecksumIssue, reporter.getCollectionID());
+            store.setChecksumError(fileID, getPillarsFileExisting(infos), reporter.getCollectionID());
+        } catch (IOException e) {
+            log.error("Failed to report file: " + fileID + " as having a checksum issue", e);
+        }
+    }
+
     /**
      * Retrieves the unique checksums for the files, which exists.
      * Ignores files with another filestate than 'EXISTING'.
@@ -110,16 +157,16 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
      */
     private Set<String> getUniqueChecksums(Collection<FileInfo> infos) {
         Set<String> checksums = new HashSet<String>();
-        
+
         for(FileInfo info : infos) {
             if((info.getChecksum() != null) && (info.getFileState() == FileState.EXISTING)) {
                 checksums.add(info.getChecksum());
             }
         }
-        
+
         return checksums;
     }
-    
+
     /**
      * Extract the pillars where the file has state 'EXISTING'.
      * @param infos The FileInfo with information about the file at the different pillars. 
@@ -141,13 +188,12 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
      * Creates a audit-trail for inconsistency between checksums.
      * If only one pillar is alone with a checksum compared to all the others, then it is pointed out at the possible 
      * cause.
-     * @param infos The information about the file at all the pillars.
+     * @param pillarId The id of the pillar, which is inconsistent with the other pillars. Or null, if no single pillar
+     * is causing the inconsistency.
      * @param fileId The id of the file.
      */
-    private void createAuditForInconsistentChecksum(Collection<FileInfo> infos, String fileId) {
+    private void createAuditForInconsistentChecksum(String pillarId, String fileId) {
         String auditText;
-        Map<String, List<String>> checksumMap = getChecksumMapping(infos);
-        String pillarId = findSingleInconsistentPillar(checksumMap);
         
         if(pillarId != null) {
             auditText = "Checksum inconsistency for the file '" + fileId + "' at collection '" 
