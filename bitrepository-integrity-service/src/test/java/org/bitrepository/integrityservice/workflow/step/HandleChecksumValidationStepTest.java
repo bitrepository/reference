@@ -198,7 +198,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         List<ChecksumDataForChecksumSpecTYPE> csData3 = createChecksumData("1c2c3c44c3c2c1", FILE_1);
         insertChecksumDataForModel(cache, csData3, TEST_PILLAR_3, TEST_COLLECTION);
         
-        addStep("Perform the step", "");
+        addStep("Perform the checksum validation step", "");
         step.performStep();
 
         addStep("Validate the file ids", "Should only have integrity issues on pillar 3.");

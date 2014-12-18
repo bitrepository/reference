@@ -25,13 +25,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.FileState;
@@ -74,19 +71,10 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
     public synchronized void performStep() throws Exception {
         IntegrityIssueIterator inconsistentFilesIterator 
             = store.getFilesWithInconsistentChecksums(reporter.getCollectionID());
-        List<String> collectionPillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
         String fileID;
         try {
             while((fileID = inconsistentFilesIterator.getNextIntegrityIssue()) != null) {
-                Collection<FileInfo> infos = store.getFileInfos(fileID, reporter.getCollectionID());
-                Set<String> checksums = getUniqueChecksums(infos);
-                if(checksums.size() > 1) {
-                    setChecksumInconsistency(infos, fileID);
-                } else {
-                    log.error("File with inconsistent checksums from SQL have apparently not inconsistency according to "
-                            + "Java! This is a scenario, which must never occur!!!");
-                    store.setChecksumAgreement(fileID, collectionPillars, reporter.getCollectionID());
-                }
+                handleChecksumInconsistency(store.getFileInfos(fileID, reporter.getCollectionID()), fileID);
             }
         } finally {
             inconsistentFilesIterator.close();
@@ -102,7 +90,7 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
      * @param infos The FileInfos
      * @param fileID The id of the file.
      */
-    private void setChecksumInconsistency(Collection<FileInfo> infos, String fileID) {
+    private void handleChecksumInconsistency(Collection<FileInfo> infos, String fileID) {
         Map<String, List<String>> checksumMap = getChecksumMapping(infos);
         String pillarID = findSingleInconsistentPillar(checksumMap);
 
@@ -148,24 +136,6 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
         } catch (IOException e) {
             log.error("Failed to report file: " + fileID + " as having a checksum issue", e);
         }
-    }
-
-    /**
-     * Retrieves the unique checksums for the files, which exists.
-     * Ignores files with another filestate than 'EXISTING'.
-     * @param infos The FileInfo with information about the file at the different pillars. 
-     * @return The set of unique checksums.
-     */
-    private Set<String> getUniqueChecksums(Collection<FileInfo> infos) {
-        Set<String> checksums = new HashSet<String>();
-
-        for(FileInfo info : infos) {
-            if((info.getChecksum() != null) && (info.getFileState() == FileState.EXISTING)) {
-                checksums.add(info.getChecksum());
-            }
-        }
-
-        return checksums;
     }
 
     /**
