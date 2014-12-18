@@ -34,14 +34,20 @@ import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
+import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for handling the identification of this pillar for the purpose of performing the GetChecksums operation.
  */
 public class IdentifyPillarsForGetChecksumsRequestHandler 
         extends IdentifyRequestHandler<IdentifyPillarsForGetChecksumsRequest> {
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
+
     /**
      * @param context The context for the message handling.
      * @param model The storage model for the pillar.
@@ -82,7 +88,9 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
         response.setResponseInfo(irInfo);
         
-        getContext().getResponseDispatcher().dispatchResponse(response, request);
+        dispatchResponse(response, request);
+        log.debug(MessageUtils.createMessageIdentifier(request) 
+                + " Identified for performing a GetChecksums operation.");
     }
 
     /**

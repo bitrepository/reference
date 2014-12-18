@@ -91,7 +91,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
         getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile(), 
                 request.getCollectionID());
         validateFileIDFormat(request.getFileIDs().getFileID());
-        validateFileExistence(request);
+        verifyFileIDExistence(request.getFileIDs(), request.getCollectionID());
 
         log.debug(MessageUtils.createMessageIdentifier(request) + "' validated and accepted.");
     }
@@ -121,25 +121,6 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
             checksumResults = createAndUploadResults(request, extractedChecksums);
         }
         sendFinalResponse(request, checksumResults, extractedChecksums.hasMoreEntries());
-    }
-
-    /**
-     * Method for validating the FileIDs in the GetChecksumsRequest message.
-     * Do we have the requested files?
-     * This does only concern the specified files. Not 'AllFiles' or the parameter stuff.
-     *  
-     * @param request The message to validate the FileIDs of.
-     */
-    private void validateFileExistence(GetChecksumsRequest request) throws RequestHandlerException {
-        if(request.getFileIDs().getFileID() == null) {
-            return;
-        }
-
-        if(!getPillarModel().hasFileID(request.getFileIDs().getFileID(), request.getCollectionID())) {
-            log.warn("The following file is missing: '" + request.getFileIDs().getFileID() + "'");
-            throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
-                    request.getCollectionID());
-        }
     }
 
     /**

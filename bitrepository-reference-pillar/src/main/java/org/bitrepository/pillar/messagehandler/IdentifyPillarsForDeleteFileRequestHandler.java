@@ -33,14 +33,20 @@ import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
+import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for handling the identification of this pillar for the purpose of performing the DeleteFile operation.
  */
 public class IdentifyPillarsForDeleteFileRequestHandler 
         extends IdentifyRequestHandler<IdentifyPillarsForDeleteFileRequest> {
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
+
     /**
      * @param context The context for the message handling.
      * @param model The storage model for the pillar.
@@ -80,6 +86,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
         response.setResponseInfo(irInfo);
 
         dispatchResponse(response, request);
+        log.debug(MessageUtils.createMessageIdentifier(request) + " Identified for performing a DeleteFile operation.");
     }
     
     /**

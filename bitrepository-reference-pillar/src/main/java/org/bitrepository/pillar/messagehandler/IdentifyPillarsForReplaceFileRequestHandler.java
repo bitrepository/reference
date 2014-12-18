@@ -35,6 +35,7 @@ import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
+import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
@@ -89,6 +90,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
         response.setResponseInfo(irInfo);
 
         dispatchResponse(response, request);
+        log.debug(MessageUtils.createMessageIdentifier(request) + " Identified for performing a ReplaceFile operation.");
     }
 
     /**

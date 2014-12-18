@@ -36,7 +36,6 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetFileIDsResults;
-import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -90,7 +89,7 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
         validateCollectionID(request);
         validatePillarId(request.getPillarID());
         validateFileIDFormat(request.getFileIDs().getFileID());
-        checkThatAllRequestedFilesAreAvailable(request);
+        verifyFileIDExistence(request.getFileIDs(), request.getCollectionID());
 
         log.debug(MessageUtils.createMessageIdentifier(request) + "' validated and accepted.");
     }
@@ -121,25 +120,6 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
             results.setResultAddress(request.getResultAddress());
         }
         sendFinalResponse(request, results, extractedFileIDs);
-    }
-    
-    /**
-     * Validates that all the requested files in the filelist are present. 
-     * Otherwise an {@link InvalidMessageException} with the appropriate errorcode is thrown.
-     * @param message The message containing the list files. An empty filelist is expected 
-     * when "AllFiles" or the parameter option is used.
-     * @throws InvalidMessageException If the requested file does not exist.
-     */
-    private void checkThatAllRequestedFilesAreAvailable(GetFileIDsRequest message) throws InvalidMessageException {
-        FileIDs fileids = message.getFileIDs();
-        if(fileids.isSetAllFileIDs()) {
-            return ;
-        }
-        
-        if(!getPillarModel().hasFileID(fileids.getFileID(), message.getCollectionID())) {
-            throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
-                    message.getCollectionID());
-        }
     }
     
     /**

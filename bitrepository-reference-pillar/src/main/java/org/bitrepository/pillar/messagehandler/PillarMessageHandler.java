@@ -24,18 +24,25 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
+import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.handler.AbstractRequestHandler;
+import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract level for message handling for both types of pillar.
  */
 public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> {
+    /** The log.*/
+    private Logger log = LoggerFactory.getLogger(getClass());
     /** The response value for a positive identification.*/
     protected static final String RESPONSE_FOR_POSITIVE_IDENTIFICATION = "Operation acknowledged and accepted.";
     
@@ -86,6 +93,26 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
             throw new IllegalArgumentException("The message had a wrong PillarId: "
                     + "Expected '" + getSettings().getComponentID()
                     + "' but was '" + pillarId + "'.");
+        }
+    }
+    
+    /**
+     * Verifies that we have a given fileID on a given collection, otherwise throws an exception. 
+     * If no specific FileID is given (the AllFileIDs), then it is ignored.
+     * @param fileIDs The FileIDs containing the fileID which we should have.  
+     * @param collectionID The collection which should contain the requested file.
+     * @throws RequestHandlerException If a specific file is given, but we do not have it.
+     */
+    protected void verifyFileIDExistence(FileIDs fileIDs, String collectionID) throws RequestHandlerException {
+        if(fileIDs.getFileID() == null) {
+            return;
+        }
+
+        if(!getPillarModel().hasFileID(fileIDs.getFileID(), collectionID)) {
+            log.warn("The following file is missing '" + fileIDs.getFileID() + "' at collection '" + collectionID 
+                    + "'.");
+            throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
+                    collectionID);
         }
     }
     

@@ -33,7 +33,7 @@ import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
-import org.bitrepository.service.exception.IdentifyContributorException;
+import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +68,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
     protected void validateRequest(IdentifyPillarsForGetFileIDsRequest message, MessageContext messageContext) throws RequestHandlerException {
         validateCollectionID(message);
         validateFileIDFormat(message.getFileIDs().getFileID());
-        checkThatAllRequestedFilesAreAvailable(message);
+        verifyFileIDExistence(message.getFileIDs(), message.getCollectionID());
     }
     
     @Override
@@ -83,26 +83,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
         response.setResponseInfo(irInfo);
 
         dispatchResponse(response, request);
-    }
-    
-    /**
-     * Validates that all the requested files in the filelist are present. 
-     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
-     * @param message The message containing the list files. An empty filelist is expected 
-     * when "AllFiles" or the parameter option is used.
-     */
-    private void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetFileIDsRequest message) 
-            throws RequestHandlerException {
-        if(message.getFileIDs() == null || message.getFileIDs().getFileID() == null) {
-            log.debug("No fileids are defined in the identification request ('" + message.getCorrelationID() + "').");
-            return;
-        }
-        String fileID = message.getFileIDs().getFileID();
-        
-        if(!getPillarModel().hasFileID(fileID, message.getCollectionID())) {
-            throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
-                    message.getCollectionID());
-        }
+        log.debug(MessageUtils.createMessageIdentifier(request) + " Identified for performing a GetFileIDs operation.");
     }
     
     /**
