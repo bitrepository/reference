@@ -30,19 +30,26 @@ package org.bitrepository.service.workflow;
  * A SchedulableJob performs a given task for the respective service. 
  */
 public interface SchedulableJob {
-    /** The default state when the workflow is not running.*/
-    String NOT_RUNNING = "The job is currently not running.";
-
     /**
      * Start the SchedulableJob.
      */
     void start();
     
     /**
+     * @return The current state of the SchedulableJob.
+     */
+    WorkflowState currentState();
+    
+    /**
+     * @param newState The new state for the workflow.
+     */
+    void setCurrentState(WorkflowState newState);
+    
+    /**
      * @return A human readable text telling the current state of the SchedulableJob.
      */
-    String currentState();
-
+    String getHumanReadableState();
+    
     /**
      * @return Provides a human readable description of the SchedulableJob.
      */

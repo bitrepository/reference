@@ -5,7 +5,7 @@ set JAVA=c:\Program Files (x86)\Java\jre7\bin\java.exe
 set BASEDIR=%0%
 for %%x in (%BASEDIR%) DO set BASEDIR=%%~dpx..
 set CONFDIR=%BASEDIR%\conf
-set KEYFILE=%CONFDIR%\mycert-key.pem
+set KEYFILE=%CONFDIR%\client-certificate.pem
 set JAVA_OPTS=-classpath  "%BASEDIR%\lib\*"
 set JAVA_OPTS=%JAVA_OPTS% "-Dlogback.configurationFile=%CONFDIR%\logback.xml"
 set JAVA_OPTS=%JAVA_OPTS% "-DBASEDIR=%BASEDIR%"

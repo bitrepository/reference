@@ -36,6 +36,7 @@ import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.JobTimerTask;
 import org.bitrepository.service.workflow.SchedulableJob;
+import org.bitrepository.service.workflow.WorkflowState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,8 +68,9 @@ public class TimerbasedScheduler implements JobScheduler {
 
     @Override
     public void schedule(SchedulableJob workflow, Long interval) {
-        log.info("Scheduling job : " + workflow.getJobID() + " to run every " + TimeUtils.millisecondsToHuman(interval));
-
+        log.info("Scheduling job : " + workflow.getJobID() + " to run every " 
+                + TimeUtils.millisecondsToHuman(interval));
+        
         JobTimerTask task = new JobTimerTask(interval, workflow, Collections.unmodifiableList(jobListeners));
         timer.scheduleAtFixedRate(task, NO_DELAY, SCHEDULE_INTERVAL);
         intervalTasks.put(workflow.getJobID(), task);
@@ -76,6 +78,11 @@ public class TimerbasedScheduler implements JobScheduler {
 
     @Override
     public String startJob(SchedulableJob job) {
+        if(job.currentState() != WorkflowState.NOT_RUNNING) {
+            log.info("Cannot schedule job,'" + job.getJobID() + "', which is in state '" 
+                    + job.currentState() + "'");
+            return "Already running";
+        }
         long timeBetweenRuns = -1;
         JobTimerTask oldTask = cancelJob(job.getJobID());
         if (oldTask != null) {

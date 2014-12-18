@@ -3,7 +3,7 @@ BASEDIR=$(perl -e "use Cwd 'abs_path';print abs_path('$0');")
 BASEDIR=$(dirname "$BASEDIR")
 BASEDIR=$(dirname "$BASEDIR") 
 CONFDIR="$BASEDIR/conf"
-KEYFILE="$CONFDIR/mycert-key.pem"
+KEYFILE="$CONFDIR/client-certificate.pem"
 
 JAVA=${JAVA:-java}
 

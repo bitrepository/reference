@@ -80,8 +80,9 @@ public class JobTimerTask extends TimerTask {
      */
     public String runJob() {
         try {
-            if (job.currentState().equals(SchedulableJob.NOT_RUNNING)) {
+            if (job.currentState().equals(WorkflowState.NOT_RUNNING)) {
                 log.info("Starting job: " + job.getJobID());
+                job.setCurrentState(WorkflowState.WAITING);
                 job.start();
                 if (interval > 0) {
                     nextRun = new Date(System.currentTimeMillis() + interval);

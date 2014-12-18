@@ -180,7 +180,7 @@ public class PutFileTest extends MockedPillarTest {
     
     @SuppressWarnings("rawtypes")
     @Test( groups = {"regressiontest", "pillartest"})
-    public void badCaseOperationNoValidationChecksum() throws Exception {
+    public void badCasePutOperationNoValidationChecksum() throws Exception {
         addDescription("Tests the PutFile operation on the pillar for the failure scenario, when no validation checksum is given but required.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID + testMethodName;

@@ -25,6 +25,7 @@ import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.SchedulableJob;
 import org.bitrepository.service.workflow.WorkflowContext;
+import org.bitrepository.service.workflow.WorkflowState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +41,7 @@ public class RecalculateChecksumJob implements SchedulableJob {
     private final StorageModel model;
     
     /** The state of this workflow. */
-    private String state;
+    private WorkflowState state = WorkflowState.NOT_RUNNING;
     private final JobID id;
     
     /**
@@ -57,18 +58,14 @@ public class RecalculateChecksumJob implements SchedulableJob {
     @Override
     public void start() {
         log.info("Recalculating old checksums.");
-        state = "Running";
+        state = WorkflowState.RUNNING;
         model.verifyFileToCacheConsistencyOfAllData(collectionID);
-        state = null;
+        state = WorkflowState.NOT_RUNNING;
     }
 
     @Override
-    public String currentState() {
-        if(state == null) {
-            return NOT_RUNNING;
-        } else {
-            return state;
-        }
+    public WorkflowState currentState() {
+        return state;
     }
 
     @Override
@@ -84,5 +81,15 @@ public class RecalculateChecksumJob implements SchedulableJob {
     @Override
     public void initialise(WorkflowContext context, String collectionID) {
         //Not used as reference pillar workflows are defined compile time.
+    }
+
+    @Override
+    public void setCurrentState(WorkflowState newState) {
+        this.state = newState;
+    }
+
+    @Override
+    public String getHumanReadableState() {
+       return state.name();
     }
 }
