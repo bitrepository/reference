@@ -88,10 +88,10 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
             throws RequestHandlerException {
         validateCollectionID(request);
         validatePillarId(request.getPillarID());
-        if (request.getFileIDs() != null) {
+        if (request.getFileIDs() != null && request.getFileIDs().getFileID() != null) {
             validateFileIDFormat(request.getFileIDs().getFileID());
+            verifyFileIDExistence(request.getFileIDs(), request.getCollectionID());
         }
-        verifyFileIDExistence(request.getFileIDs(), request.getCollectionID());
 
         log.debug(MessageUtils.createMessageIdentifier(request) + "' validated and accepted.");
     }

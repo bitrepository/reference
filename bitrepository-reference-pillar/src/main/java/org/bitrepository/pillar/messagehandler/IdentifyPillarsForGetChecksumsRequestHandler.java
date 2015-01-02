@@ -72,10 +72,10 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         validateCollectionID(request);
         getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile(),
                 request.getCollectionID());
-        if (request.getFileIDs() != null) {
+        if (request.getFileIDs() != null && request.getFileIDs().getFileID() != null) {
             validateFileIDFormat(request.getFileIDs().getFileID());
+            checkThatAllRequestedFilesAreAvailable(request);
         }
-        checkThatAllRequestedFilesAreAvailable(request);
     }
 
     @Override
