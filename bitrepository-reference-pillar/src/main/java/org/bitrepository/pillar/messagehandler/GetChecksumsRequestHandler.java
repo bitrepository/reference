@@ -90,7 +90,9 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
         validatePillarId(request.getPillarID());
         getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile(), 
                 request.getCollectionID());
-        validateFileIDFormat(request.getFileIDs().getFileID());
+        if (request.getFileIDs() != null) {
+            validateFileIDFormat(request.getFileIDs().getFileID());
+        }
         verifyFileIDExistence(request.getFileIDs(), request.getCollectionID());
 
         log.debug(MessageUtils.createMessageIdentifier(request) + "' validated and accepted.");

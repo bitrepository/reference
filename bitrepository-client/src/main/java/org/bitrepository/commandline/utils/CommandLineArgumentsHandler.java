@@ -142,7 +142,6 @@ public class CommandLineArgumentsHandler {
     /**
      * Method for retrieving the settings for the launcher.
      * This will be based on the argument for the path to the settings.
-     * @param componentId The id of the component.
      * @return The settings.
      */
     public Settings loadSettings() {
