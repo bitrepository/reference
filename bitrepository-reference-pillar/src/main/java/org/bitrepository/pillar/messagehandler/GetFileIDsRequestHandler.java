@@ -135,8 +135,8 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
         if(message.getMaxNumberOfResults() != null) {
             maxResults = message.getMaxNumberOfResults().longValue();
         }
-        return getPillarModel().getFileIDsResultSet(message.getFileIDs().getFileID(), message.getMinTimestamp(), message.getMaxTimestamp(), maxResults,
-                message.getCollectionID());
+        return getPillarModel().getFileIDsResultSet(message.getFileIDs().getFileID(), message.getMinTimestamp(), 
+                message.getMaxTimestamp(), maxResults, message.getCollectionID());
     }
     
     /**

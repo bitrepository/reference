@@ -103,7 +103,8 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
         ContributorQuery query = new ContributorQuery(getPillarID(),
                 oldestTimestamp.toGregorianCalendar().getTime(), null, null);
         List<FileIDsDataItem> limitedFileIDsList = pillarFileManager.getFileIDs(query);
-        assertEquals(limitedFileIDsList, originalFileIDsList, "Different list return when setting old minTimestamp");
+        assertEquals(limitedFileIDsList, originalFileIDsList, "Different list return when setting old minTimestamp: " 
+                + limitedFileIDsList + " != " + originalFileIDsList);
 
         addStep("Request file ids with MinTimeStamp set to the timestamp of the newest file id",
                 "Only file id with the timestamp equal to MinTimeStamp are returned.");
