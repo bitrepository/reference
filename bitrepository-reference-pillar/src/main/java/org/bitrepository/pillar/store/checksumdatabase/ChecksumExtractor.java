@@ -223,7 +223,7 @@ public class ChecksumExtractor {
         args.add(collectionId);
         
         if(minTimeStamp != null) {
-            sql.append(" AND " + CS_DATE + " > ? ");
+            sql.append(" AND " + CS_DATE + " >= ? ");
             args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp));
         }
         if(maxTimeStamp != null) {

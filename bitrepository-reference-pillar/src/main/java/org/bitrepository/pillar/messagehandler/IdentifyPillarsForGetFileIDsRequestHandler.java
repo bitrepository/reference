@@ -65,7 +65,8 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
     }
     
     @Override
-    protected void validateRequest(IdentifyPillarsForGetFileIDsRequest request, MessageContext messageContext) throws RequestHandlerException {
+    protected void validateRequest(IdentifyPillarsForGetFileIDsRequest request, MessageContext messageContext) 
+            throws RequestHandlerException {
         validateCollectionID(request);
         if (request.getFileIDs() != null && request.getFileIDs().getFileID() != null) {
             validateFileIDFormat(request.getFileIDs().getFileID());
