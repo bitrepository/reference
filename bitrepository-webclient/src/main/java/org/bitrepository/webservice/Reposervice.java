@@ -22,6 +22,7 @@
 package org.bitrepository.webservice;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bitrepository.BasicClient;
 import org.bitrepository.BasicClientFactory;
@@ -56,13 +57,8 @@ public class Reposervice {
     @GET
     @Path("/getCollectionIDs")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getCollectionIDs() {
-        JSONArray array = new JSONArray();
-        for(String collectionID : client.getCollectionIDs()) {
-            array.put(collectionID);
-        }
-        
-        return array.toString();
+    public List<String> getCollectionIDs() {
+        return client.getCollectionIDs();
     }
     
     @GET
@@ -75,17 +71,8 @@ public class Reposervice {
     @GET
     @Path("/getCollections")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getCollections() throws JSONException {
-        JSONArray array = new JSONArray();
-        JSONObject obj;
-        for(String collectionID : client.getCollectionIDs()) {
-            obj = new JSONObject();
-            obj.put("collectionID", collectionID);
-            obj.put("collectionName", SettingsUtils.getCollectionName(collectionID));
-            array.put((JSONObject) obj);
-        }
-        
-        return array.toString();
+    public List<WebCollection> getCollections() {
+        return client.getCollectionIDs().stream().map(c -> new WebCollection(c, SettingsUtils.getCollectionName(c))).collect(Collectors.toList());
     }
     
     @GET
