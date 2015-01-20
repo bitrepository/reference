@@ -23,28 +23,29 @@ package org.bitrepository.alarm.alarmservice;
 
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-import javax.xml.bind.JAXBContext;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.glassfish.jersey.moxy.json.MoxyJsonConfig;
 
-import com.sun.jersey.api.json.JSONConfiguration;
-import com.sun.jersey.api.json.JSONJAXBContext;
 
 @Provider
-public class AlarmContextResolver implements ContextResolver<JAXBContext> {
+public class AlarmContextResolver implements ContextResolver<MoxyJsonConfig> {
 
-    private JAXBContext context;
+    private final MoxyJsonConfig config;
     private Class<?>[] types = {Alarm.class};
     
     public AlarmContextResolver() throws Exception {
-         this.context = new JSONJAXBContext(JSONConfiguration.mapped().arrays("Alarm").build(), types);
+        this.config = new MoxyJsonConfig();
+        config.property(JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
+        config.property(JAXBContextProperties.JSON_INCLUDE_ROOT, true);        
     }
     
     @Override
-    public JAXBContext getContext(Class<?> objectType) {
+    public MoxyJsonConfig getContext(Class<?> objectType) {
         for(Class<?> type : types) {
             if(type == objectType) {
-                return context;
+                return config;
             }
         }
         
