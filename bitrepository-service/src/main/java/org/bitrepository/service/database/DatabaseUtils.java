@@ -66,14 +66,9 @@ public class DatabaseUtils {
         ArgumentValidator.checkNotNullOrEmpty(query, "String query");
         ArgumentValidator.checkNotNull(args, "Object... args");
         
-        PreparedStatement ps = null; 
-        ResultSet res = null;
-        Connection conn = null;
-        try {
-            try {
-                conn = dbConnector.getConnection();
-                ps = createPreparedStatement(conn, query, args);
-                res = ps.executeQuery();
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement ps = createPreparedStatement(conn, query, args)) {
+            try (ResultSet res = ps.executeQuery()) {
                 if (!res.next()) {
                     throw new IllegalStateException("No results from " + ps);
                 }
@@ -85,19 +80,9 @@ public class DatabaseUtils {
                     throw new IllegalStateException("Too many results from " + ps);
                 }
                 return resultInt;
-            } finally {
-                if(res != null) {
-                    res.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
             }
         } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, conn, query, args);
+            throw failedExecutionOfStatement(e, query, args);
         }
     }
     
@@ -115,14 +100,9 @@ public class DatabaseUtils {
         ArgumentValidator.checkNotNullOrEmpty(query, "String query");
         ArgumentValidator.checkNotNull(args, "Object... args");
         
-        PreparedStatement ps = null; 
-        ResultSet res = null;
-        Connection conn = null;
-        try {
-            try {
-                conn = dbConnector.getConnection();
-                ps = createPreparedStatement(conn, query, args);
-                res = ps.executeQuery();
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement ps = createPreparedStatement(conn, query, args)) {
+            try (ResultSet res = ps.executeQuery()) {
                 if (!res.next()) {
                     log.trace("Got an empty result set for statement '" + query + "' with arguments '"
                             + Arrays.asList(args) + "' on database '" + conn + "'. Returning a null.");
@@ -136,19 +116,9 @@ public class DatabaseUtils {
                     throw new IllegalStateException("Too many results from " + ps);
                 }
                 return resultLong;
-            } finally {
-                if(res != null) {
-                    res.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
-            }
+            } 
         } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, conn, query, args);
+            throw failedExecutionOfStatement(e, query, args);
         }
     }
     
@@ -167,14 +137,9 @@ public class DatabaseUtils {
         ArgumentValidator.checkNotNullOrEmpty(query, "String query");
         ArgumentValidator.checkNotNull(args, "Object... args");
         
-        PreparedStatement ps = null; 
-        ResultSet res = null;
-        Connection conn = null;
-        try {
-            try {
-                conn = dbConnector.getConnection();
-                ps = createPreparedStatement(conn, query, args);
-                res = ps.executeQuery();
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement ps = createPreparedStatement(conn, query, args)) {
+            try (ResultSet res = ps.executeQuery()) {
                 if (!res.next()) {
                     log.trace("Got an empty result set for statement '" + query + "' with arguments '"
                             + Arrays.asList(args) + "' on database '" + conn + "'. Returning a null.");
@@ -185,19 +150,9 @@ public class DatabaseUtils {
                     resultLong = null;
                 }
                 return resultLong;
-            } finally {
-                if(res != null) {
-                    res.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
             }
         } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, conn, query, args);
+            throw failedExecutionOfStatement(e, query, args);
         }
     }
     
@@ -215,33 +170,17 @@ public class DatabaseUtils {
         ArgumentValidator.checkNotNullOrEmpty(query, "String query");
         ArgumentValidator.checkNotNull(args, "Object... args");
         
-        PreparedStatement ps = null; 
-        ResultSet res = null;
-        Connection conn = null;
-        try {
+        try (Connection conn = dbConnector.getConnection();
+            PreparedStatement ps = createPreparedStatement(conn, query, args)) {
             List<Long> list = new ArrayList<Long>();
-            try {
-                conn = dbConnector.getConnection();
-                ps = createPreparedStatement(conn, query, args);
-                res = ps.executeQuery();
-                
+            try (ResultSet res = ps.executeQuery()) {
                 while(res.next()) {
                     list.add(res.getLong(1));
                 }
                 return list;
-            } finally {
-                if(res != null) {
-                    res.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
             }
         } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, conn, query, args);
+            throw failedExecutionOfStatement(e, query, args);
         }
     }
 
@@ -285,15 +224,9 @@ public class DatabaseUtils {
         ArgumentValidator.checkNotNullOrEmpty(query, "String query");
         ArgumentValidator.checkNotNull(args, "Object... args");
         
-        PreparedStatement ps = null; 
-        ResultSet res = null;
-        Connection conn = null;
-        try {
-            try {
-                conn = dbConnector.getConnection();
-                ps = createPreparedStatement(conn, query, args);
-                
-                res = ps.executeQuery();
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement ps = createPreparedStatement(conn, query, args)) {
+            try (ResultSet res = ps.executeQuery()) {
                 if (!res.next()) {
                     log.trace("Got an empty result set for statement '" + query + "' on database '"
                             + conn + "'. Returning a null.");
@@ -307,19 +240,9 @@ public class DatabaseUtils {
                     throw new IllegalStateException("Too many results from " + ps);
                 }
                 return resultDate;
-            } finally {
-                if(res != null) {
-                    res.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
             }
         } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, conn, query, args);
+            throw failedExecutionOfStatement(e, query, args);
         }
     }
     
@@ -337,34 +260,17 @@ public class DatabaseUtils {
         ArgumentValidator.checkNotNullOrEmpty(query, "String query");
         ArgumentValidator.checkNotNull(args, "Object... args");
 
-        PreparedStatement ps = null; 
-        ResultSet res = null;
-        Connection conn = null;
-        try {
-            try {
-                conn = dbConnector.getConnection();
-                ps = createPreparedStatement(conn, query, args);
-                res = ps.executeQuery();
-                
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement ps = createPreparedStatement(conn, query, args)) {
+            try (ResultSet res = ps.executeQuery()) {
                 if(!res.next()) {
                     log.trace("No string was found for the query '" + query + "'. A null has been returned.");
                     return null;
                 }
-                
                 return res.getString(1);
-            } finally {
-                if(res != null) {
-                    res.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
             }
         } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, conn, query, args);
+            throw failedExecutionOfStatement(e, query, args);
         }
     }
     
@@ -382,33 +288,17 @@ public class DatabaseUtils {
         ArgumentValidator.checkNotNullOrEmpty(query, "String query");
         ArgumentValidator.checkNotNull(args, "Object... args");
 
-        PreparedStatement ps = null; 
-        ResultSet res = null;
-        Connection conn = null;
-        try {
-            try {
-                conn = dbConnector.getConnection();
-                ps = createPreparedStatement(conn, query, args);
-                res = ps.executeQuery();
-                
-                List<String> list = new ArrayList<String>();
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement ps = createPreparedStatement(conn, query, args)) {
+            try (ResultSet res = ps.executeQuery()) {
+                 List<String> list = new ArrayList<String>();
                 while(res.next()) {
                     list.add(res.getString(1));
                 }
                 return list;
-            } finally {
-                if(res != null) {
-                    res.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
             }
         } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, conn, query, args);
+            throw failedExecutionOfStatement(e, query, args);
         }
     }
 
@@ -425,28 +315,11 @@ public class DatabaseUtils {
         ArgumentValidator.checkNotNullOrEmpty(query, "String query");
         ArgumentValidator.checkNotNull(args, "Object... args");
         
-        PreparedStatement ps = null; 
-        ResultSet res = null;
-        Connection conn = null;
-        try {
-            try {
-                conn = dbConnector.getConnection();
-                ps = createPreparedStatement(conn, query, args);
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement ps = createPreparedStatement(conn, query, args)) {
                 ps.executeUpdate();
-                
-            } finally {
-                if(res != null) {
-                    res.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
-            }
-        } catch (SQLException e) {
-            throw failedExecutionOfStatement(e, conn, query, args);
+            } catch (SQLException e) {
+            throw failedExecutionOfStatement(e, query, args);
         }
     }
     
@@ -496,15 +369,13 @@ public class DatabaseUtils {
      * Method for throwing an exception for a failure for executing a statement.
      * 
      * @param e The exception for the execution to fail.
-     * @param dbConnection The connection to the database, where the failure occurred.
      * @param query The SQL query for the statement, which caused the failure.
      * @param args The arguments for the statement, which caused the failure.
      * @throws IllegalStateException Always, since it is intended for this method to report the failure.
      */
-    private static IllegalStateException failedExecutionOfStatement(Throwable e, Connection dbConnection, 
-            String query, Object... args) {
+    private static IllegalStateException failedExecutionOfStatement(Throwable e, String query, Object... args) {
         return new IllegalStateException("Could not execute the query '" + query + "' with the arguments '" 
-                + Arrays.asList(args) + "' on database '" + dbConnection + "'", e);
+                + Arrays.asList(args) + "'", e);
     }
     
     /**
