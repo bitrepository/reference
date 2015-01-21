@@ -29,9 +29,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -222,11 +223,25 @@ public class RestIntegrityService {
     @Path("/getWorkflowList/")
     @Produces(MediaType.APPLICATION_JSON)
     public List<String> getWorkflowList(@QueryParam("collectionID") String collectionID) {
-        List<String> workflowIDs = new LinkedList<String>();
+        List<String> workflowIDs = new ArrayList<String>();
         for(JobID workflowID : workflowManager.getWorkflows(collectionID)) {
             workflowIDs.add(workflowID.getWorkflowName());
         }
         return workflowIDs;
+    }
+    
+    @GET
+    @Path("/getWorkflowList2")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<String> getWorkflows2() {
+        return Arrays.asList("foo", "bar", "baz");
+    }
+    
+    @GET
+    @Path("/getWorkflowList3")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<String> getWorkflows3(@QueryParam("collectionID") String collectionID) {
+        return Arrays.asList(collectionID, collectionID, collectionID);
     }
     
     /**

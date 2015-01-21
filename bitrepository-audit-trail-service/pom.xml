@@ -34,15 +34,9 @@
     </dependency>
     <dependency>
         <groupId>org.glassfish.jersey.media</groupId>
-        <artifactId>jersey-media-moxy</artifactId>
-        <version>2.15</version>
-    </dependency>
-    <dependency>
-        <groupId>org.glassfish.jersey.media</groupId>
         <artifactId>jersey-media-json-jackson</artifactId>
         <version>2.15</version>
     </dependency>
-
     <dependency>
         <groupId>javax.ws.rs</groupId>
         <artifactId>javax.ws.rs-api</artifactId>
