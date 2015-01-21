@@ -106,7 +106,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         
         // Indirectly extracts contributor and collection keys, and joins with the file table where the query can be
         // limited by collection
-        String sql = "SELECT " + AUDITTRAIL_SEQUENCE_NUMBER + " FROM " + AUDITTRAIL_TABLE 
+        String sql = "SELECT MAX(" + AUDITTRAIL_SEQUENCE_NUMBER + ") FROM " + AUDITTRAIL_TABLE 
                 + " JOIN " + FILE_TABLE 
                 + " ON " + AUDITTRAIL_TABLE + "." + AUDITTRAIL_FILE_KEY + " = " + FILE_TABLE + "." + FILE_KEY
                 + " WHERE "  + AUDITTRAIL_TABLE + "." + AUDITTRAIL_CONTRIBUTOR_KEY + " = ("
@@ -114,8 +114,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
                     + " WHERE " + CONTRIBUTOR_ID + " = ? )"
                 + " AND " + FILE_TABLE + "." + FILE_COLLECTION_KEY + " = (" 
                     + " SELECT " + COLLECTION_KEY + " FROM " + COLLECTION_TABLE 
-                    + " WHERE " + COLLECTION_ID + " = ? )"
-                + " ORDER BY " + AUDITTRAIL_TABLE + "." + AUDITTRAIL_SEQUENCE_NUMBER + " DESC";
+                    + " WHERE " + COLLECTION_ID + " = ? )";
         
         Long seq = DatabaseUtils.selectFirstLongValue(dbConnector, sql, contributorId, collectionId);
         if(seq != null) {
