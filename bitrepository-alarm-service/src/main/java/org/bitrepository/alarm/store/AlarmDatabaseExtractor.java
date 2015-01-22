@@ -92,33 +92,17 @@ public class AlarmDatabaseExtractor {
     public List<Alarm> extractAlarms() {
         String sql = createSelectString() + " FROM " + ALARM_TABLE + createRestriction() + createOrder();
         
-        try {
-            Connection conn = null;
-            PreparedStatement ps = null;
-            ResultSet result = null;
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql, extractArgumentsFromModel())) {
             List<Alarm> res = new ArrayList<Alarm>();
-            try {
-                conn = dbConnector.getConnection();
+            try (ResultSet result = ps.executeQuery()) {
                 log.debug("Extracting sql '" + sql + "' with arguments '" + Arrays.asList(extractArgumentsFromModel()));
-                ps = DatabaseUtils.createPreparedStatement(conn, sql, extractArgumentsFromModel());
-                result = ps.executeQuery();
-                
                 int i = 0;
                 while(result.next() && i < model.getMaxCount()) {
                     res.add(extractAlarm(result));
                     i++;
                 }
-            } finally {
-                if(result != null) {
-                    result.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
-            }
+            } 
             log.debug("Extracted the alarms: {}", res);
             
             return res;
