@@ -117,28 +117,13 @@ public class ChecksumExtractor {
 
         String sql = "SELECT " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE 
                 + " WHERE " + CS_FILE_ID + " = ? AND " + CS_COLLECTION_ID + " = ?";
-        try {
-            PreparedStatement ps = null;
-            ResultSet res = null;
-            Connection conn = null;
-            try {
-                conn = connector.getConnection();
-                ps = DatabaseUtils.createPreparedStatement(conn, sql, fileId, collectionId);
-                res = ps.executeQuery();
+        try (Connection conn = connector.getConnection();
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql, fileId, collectionId)) {
+            try (ResultSet res = ps.executeQuery()) {
                 if(!res.next()) {
                     throw new IllegalStateException("No entry for the file '" + fileId + "'.");
                 }
                 return extractChecksumEntry(res);
-            } finally {
-                if(res != null) {
-                    res.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
             }
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot extract the ChecksumEntry for '" + fileId + "'", e);
@@ -175,31 +160,16 @@ public class ChecksumExtractor {
         }
         sql.append(" ORDER BY " + CS_DATE + " ASC ");
 
-        try {
-            PreparedStatement ps = null;
-            ResultSet res = null;
-            Connection conn = null;
-            try {
-                conn = connector.getConnection();
-                ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray());
-                res = ps.executeQuery();
+        try (Connection conn = connector.getConnection();
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())) {
+            try (ResultSet res = ps.executeQuery()) {
                 if(!res.next()) {
                     log.debug("No checksum entry found for file '" + fileId + "' at collection '" + collectionId 
                             + "', with calculation date interval: [" + minTimeStamp + " , " + maxTimeStamp + "]");
                     return null;
                 }
                 return extractChecksumEntry(res);
-            } finally {
-                if(res != null) {
-                    res.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
-            }
+            } 
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot extract the ChecksumEntry for '" + fileId + "'", e);
         }
@@ -233,17 +203,11 @@ public class ChecksumExtractor {
         sql.append(" ORDER BY " + CS_DATE + " ASC ");
         
         ExtractedFileIDsResultSet results = new ExtractedFileIDsResultSet();
-        try {
-            PreparedStatement ps = null;
-            ResultSet res = null;
-            Connection conn = null;
-            try {
-                conn = connector.getConnection();
-                ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray());
-                conn.setAutoCommit(false);
-                ps.setFetchSize(100);
-                res = ps.executeQuery();
-                
+        try (Connection conn = connector.getConnection();
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())){
+            conn.setAutoCommit(false);
+            ps.setFetchSize(100);
+            try (ResultSet res = ps.executeQuery()){
                 int i = 0;
                 while(res.next() && (maxNumberOfResults == null || i < maxNumberOfResults)) {
                     results.insertFileID(res.getString(1), res.getTimestamp(2));
@@ -254,12 +218,6 @@ public class ChecksumExtractor {
                     results.reportMoreEntriesFound();
                 }
             } finally {
-                if(res != null) {
-                    res.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
                 if(conn != null) {
                     conn.setAutoCommit(true);
                     conn.close();
@@ -312,17 +270,11 @@ public class ChecksumExtractor {
         sql.append(" ORDER BY " + CS_DATE + " ASC ");
         
         ExtractedChecksumResultSet results = new ExtractedChecksumResultSet();
-        try {
-            PreparedStatement ps = null;
-            ResultSet res = null;
-            Connection conn = null;
-            try {
-                conn = connector.getConnection();
-                ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray());
-                conn.setAutoCommit(false);
-                ps.setFetchSize(100);
-                res = ps.executeQuery();
-                
+        try (Connection conn = connector.getConnection();
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())){
+            conn.setAutoCommit(false);
+            ps.setFetchSize(100);
+            try (ResultSet res = ps.executeQuery()) {
                 int i = 0;
                 while(res.next() && (maxNumberOfResults == null || i < maxNumberOfResults)) {
                     results.insertChecksumEntry(extractChecksumEntry(res));
@@ -333,12 +285,6 @@ public class ChecksumExtractor {
                     results.reportMoreEntriesFound();
                 }
             } finally {
-                if(res != null) {
-                    res.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
                 if(conn != null) {
                     conn.setAutoCommit(true);
                     conn.close();
