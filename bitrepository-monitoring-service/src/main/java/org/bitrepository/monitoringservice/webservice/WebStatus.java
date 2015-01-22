@@ -1,11 +1,13 @@
 package org.bitrepository.monitoringservice.webservice;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.monitoringservice.status.ComponentStatus;
 
+@XmlRootElement
 public class WebStatus {
 
     private String componentID;

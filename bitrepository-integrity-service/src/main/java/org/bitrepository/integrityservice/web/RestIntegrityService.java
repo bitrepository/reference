@@ -230,20 +230,6 @@ public class RestIntegrityService {
         return workflowIDs;
     }
     
-    @GET
-    @Path("/getWorkflowList2")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getWorkflows2() {
-        return Arrays.asList("foo", "bar", "baz");
-    }
-    
-    @GET
-    @Path("/getWorkflowList3")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getWorkflows3(@QueryParam("collectionID") String collectionID) {
-        return Arrays.asList(collectionID, collectionID, collectionID);
-    }
-    
     /**
      * Get the latest integrity report, or an error message telling no such report found.  
      */
