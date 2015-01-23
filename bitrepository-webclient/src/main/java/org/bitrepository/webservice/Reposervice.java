@@ -21,18 +21,20 @@
  */
 package org.bitrepository.webservice;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.bitrepository.BasicClient;
 import org.bitrepository.BasicClientFactory;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.ProtocolSettings;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -85,43 +87,48 @@ public class Reposervice {
     @GET
     @Path("/getConfigurationOverview")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getConfigurationOverview() throws JSONException {
-        JSONObject config = new JSONObject();
-        config.put("repositoryName", SettingsUtils.getRepositoryName());
-        config.put("collections", makeCollectionsArray());
-        config.put("protocolSettings", makeProtocolSettingsObj());
-        return config.toString();
+    public String getConfigurationOverview() throws IOException {
+        StringWriter writer = new StringWriter();
+        JsonFactory jf = new JsonFactory();
+        JsonGenerator jg = jf.createGenerator(writer);
+        jg.writeStartObject();
+        jg.writeObjectField("repositoryName", SettingsUtils.getRepositoryName());
+        writeCollectionsArray(jg);
+        writeProtocolSettingsObj(jg);
+        jg.writeEndObject();
+        jg.flush();
+        writer.flush();
+        return writer.toString();
     }
     
-    private JSONObject makeProtocolSettingsObj() throws JSONException {
-        JSONObject obj = new JSONObject();
-        ProtocolSettings protocolSettings = client.getSettings().getRepositorySettings().getProtocolSettings();
-        obj.put("Allowed fileID pattern", protocolSettings.getAllowedFileIDPattern());
-        obj.put("Default checksum type", protocolSettings.getDefaultChecksumType());
-        obj.put("Require message authentication", protocolSettings.isRequireMessageAuthentication());
-        obj.put("Require operation authorization", protocolSettings.isRequireOperationAuthorization());
-        obj.put("Require checksum for destructive reqests", protocolSettings.isRequireChecksumForDestructiveRequests());
-        obj.put("Require checksum for new file", protocolSettings.isRequireChecksumForNewFileRequests());
-        return obj; 
-    }
-
-    private JSONArray makeCollectionsArray() throws JSONException {
-        JSONArray array = new JSONArray();
-        Settings settings = client.getSettings();
-        List<Collection> collections = settings.getRepositorySettings().getCollections().getCollection();
+    private void writeCollectionsArray(JsonGenerator jg) throws JsonGenerationException, IOException {
+        List<Collection> collections = client.getSettings().getRepositorySettings().getCollections().getCollection();
+        jg.writeArrayFieldStart("collections");
         for(Collection c : collections) {
-            JSONObject obj = new JSONObject();
-            obj.put("collectionID", c.getID());
-            obj.put("collectionName", SettingsUtils.getCollectionName(c.getID()));
-            JSONArray pillarArray = new JSONArray();
+            jg.writeStartObject();
+            jg.writeObjectField("collectionID", c.getID());
+            jg.writeObjectField("collectionName", SettingsUtils.getCollectionName(c.getID()));
+            jg.writeArrayFieldStart("pillars");
             List<String> pillars = c.getPillarIDs().getPillarID();
             for(String p : pillars) {
-                pillarArray.put(p);
+                jg.writeString(p);
             }
-            obj.put("pillars", pillarArray);
-            array.put(obj);
+            jg.writeEndArray();
+            jg.writeEndObject();
         }
-        return array;
+        jg.writeEndArray();
+    } 
+    
+    private void writeProtocolSettingsObj(JsonGenerator jg) throws JsonGenerationException, IOException {
+        ProtocolSettings protocolSettings = client.getSettings().getRepositorySettings().getProtocolSettings();
+        jg.writeObjectFieldStart("protocolSettings");
+        jg.writeObjectField("Allowed fileID pattern", protocolSettings.getAllowedFileIDPattern());
+        jg.writeObjectField("Default checksum type", protocolSettings.getDefaultChecksumType());
+        jg.writeObjectField("Require message authentication", protocolSettings.isRequireMessageAuthentication());
+        jg.writeObjectField("Require operation authorization", protocolSettings.isRequireOperationAuthorization());
+        jg.writeObjectField("Require checksum for destructive reqests", protocolSettings.isRequireChecksumForDestructiveRequests());
+        jg.writeObjectField("Require checksum for new file", protocolSettings.isRequireChecksumForNewFileRequests());
+        jg.writeEndObject();
     }
     
     /**
