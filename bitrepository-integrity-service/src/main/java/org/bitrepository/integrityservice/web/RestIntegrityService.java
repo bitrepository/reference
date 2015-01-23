@@ -29,8 +29,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -62,11 +62,13 @@ import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowManager;
 import org.bitrepository.service.workflow.WorkflowStatistic;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Path("/IntegrityService")
 public class RestIntegrityService {
@@ -171,12 +173,16 @@ public class RestIntegrityService {
 
     /**
      * Get the listing of integrity status as a JSON array
+     * @throws IOException 
+     * @throws JsonGenerationException 
      */
     @GET
     @Path("/getIntegrityStatus/")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getIntegrityStatus(@QueryParam("collectionID") String collectionID) {
-        JSONArray array = new JSONArray();
+    public String getIntegrityStatus(@QueryParam("collectionID") String collectionID) throws JsonGenerationException, IOException {
+        StringWriter writer = new StringWriter();
+        JsonFactory jf = new JsonFactory();
+        JsonGenerator jg = jf.createGenerator(writer);
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         Map<String, PillarStat> stats = new HashMap<String, PillarStat>();
         for(PillarStat stat : model.getLatestPillarStats(collectionID)) {
@@ -191,25 +197,36 @@ public class RestIntegrityService {
                 stats.put(pillar, emptyStat);
             }
         }
+        jg.writeStartArray();
         for(PillarStat stat : stats.values()) {
-             array.put(makeIntegrityStatusObj(stat));
+            writeIntegrityStatusObject(stat, jg);
         }
-        return array.toString();
+        jg.writeEndArray();
+        jg.flush();
+        writer.flush();
+        return writer.toString();
     }
 
     /***
      * Get the current workflows setup as a JSON array 
+     * @throws IOException 
      */
     @GET
     @Path("/getWorkflowSetup/")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getWorkflowSetup(@QueryParam("collectionID") String collectionID) {
+    public String getWorkflowSetup(@QueryParam("collectionID") String collectionID) throws IOException {
         try {
-            JSONArray array = new JSONArray();
+            StringWriter writer = new StringWriter();
+            JsonFactory jf = new JsonFactory();
+            JsonGenerator jg = jf.createGenerator(writer);
+            jg.writeStartArray();
             for(JobID workflowID : workflowManager.getWorkflows(collectionID)) {
-                array.put(makeWorkflowSetupObj(workflowID));
+                writeWorflowSetupObject(workflowID, jg);
             }
-            return array.toString();
+            jg.writeEndArray();
+            jg.flush();
+            writer.flush();
+            return writer.toString();
         } catch (RuntimeException e) {
             log.error("Failed to getWorkflowSetup ", e);
             throw e;
@@ -299,12 +316,15 @@ public class RestIntegrityService {
 
     /**
      * Start a named workflow.  
+     * @throws IOException 
      */
     @GET
     @Path("/getCollectionInformation/")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getCollectionInformation(@QueryParam("collectionID") String collectionID) {
-        JSONObject obj = new JSONObject();
+    public String getCollectionInformation(@QueryParam("collectionID") String collectionID) throws IOException {
+        StringWriter writer = new StringWriter();
+        JsonFactory jf = new JsonFactory();
+        JsonGenerator jg = jf.createGenerator(writer);
         List<CollectionStat> stats = model.getLatestCollectionStat(collectionID, 1);
         Date lastIngest = model.getDateForNewestFileEntryForCollection(collectionID);
         String lastIngestStr = lastIngest == null ? "No files ingested yet" : TimeUtils.shortDate(lastIngest);
@@ -318,56 +338,49 @@ public class RestIntegrityService {
             collectionSize = stat.getDataSize();
             numberOfFiles = stat.getFileCount();
         }
-        try {
-            obj.put("lastIngest", lastIngestStr);
-            obj.put("collectionSize", FileSizeUtils.toHumanShortDecimal(collectionSize));
-            obj.put("numberOfFiles", numberOfFiles);
-        } catch (JSONException e) {
-            obj = (JSONObject) JSONObject.NULL;
-        }
-        return obj.toString();
+        jg.writeStartObject();
+        jg.writeObjectField("lastIngest", lastIngestStr);
+        jg.writeObjectField("collectionSize", FileSizeUtils.toHumanShortDecimal(collectionSize));
+        jg.writeObjectField("numberOfFiles", numberOfFiles);
+        jg.writeEndObject();
+        jg.flush();
+        writer.flush();
+        return writer.toString();
     }
     
-    private JSONObject makeIntegrityStatusObj(PillarStat stat) {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("pillarID", stat.getPillarID());
-            obj.put("totalFileCount", stat.getFileCount());
-            obj.put("missingFilesCount", stat.getMissingFiles());
-            obj.put("checksumErrorCount", stat.getChecksumErrors());
-            return obj;
-        } catch (JSONException e) {
-            return (JSONObject) JSONObject.NULL;
-        }
+    
+    private void writeIntegrityStatusObject(PillarStat stat, JsonGenerator jg) throws JsonProcessingException, IOException {
+        jg.writeStartObject();
+        jg.writeObjectField("pillarID", stat.getPillarID());
+        jg.writeObjectField("totalFileCount", stat.getFileCount());
+        jg.writeObjectField("missingFilesCount", stat.getMissingFiles());
+        jg.writeObjectField("checksumErrorCount", stat.getChecksumErrors());
+        jg.writeEndObject();
     }
 
-    private JSONObject makeWorkflowSetupObj(JobID workflowID) {
-        JSONObject obj = new JSONObject();
+    private void writeWorflowSetupObject(JobID workflowID, JsonGenerator jg) throws JsonProcessingException, IOException {
         Workflow workflow = workflowManager.getWorkflow(workflowID);
         WorkflowStatistic lastRunStatistic = workflowManager.getLastCompleteStatistics(workflowID);
-        try {
-            obj.put("workflowID", workflowID.getWorkflowName());
-            obj.put("workflowDescription", workflow.getDescription());
-            obj.put("nextRun", TimeUtils.shortDate(workflowManager.getNextScheduledRun(workflowID)));
-            if (lastRunStatistic == null) {
-                obj.put("lastRun", "Workflow hasn't finished a run yet");
-                obj.put("lastRunDetails", "Workflow hasn't finished a run yet");
-            } else {
-                obj.put("lastRun", TimeUtils.shortDate(lastRunStatistic.getFinish()));
-                obj.put("lastRunDetails", lastRunStatistic.getFullStatistics());
-            }
-            long runInterval = workflowManager.getRunInterval(workflowID);
-            String intervalString;
-            if (runInterval == -1 ) {
-                intervalString = "Never";
-            }  else {
-                intervalString = TimeUtils.millisecondsToHuman(runInterval);
-            }
-            obj.put("executionInterval", intervalString);
-            obj.put("currentState", workflowManager.getCurrentStatistics(workflowID).getPartStatistics());
-            return obj;
-        } catch (JSONException e) {
-            return (JSONObject) JSONObject.NULL;
+        jg.writeStartObject();
+        jg.writeObjectField("workflowID", workflowID.getWorkflowName());
+        jg.writeObjectField("workflowDescription", workflow.getDescription());
+        jg.writeObjectField("nextRun", TimeUtils.shortDate(workflowManager.getNextScheduledRun(workflowID)));
+        if (lastRunStatistic == null) {
+            jg.writeObjectField("lastRun", "Workflow hasn't finished a run yet");
+            jg.writeObjectField("lastRunDetails", "Workflow hasn't finished a run yet");
+        } else {
+            jg.writeObjectField("lastRun", TimeUtils.shortDate(lastRunStatistic.getFinish()));
+            jg.writeObjectField("lastRunDetails", lastRunStatistic.getFullStatistics());
         }
+        long runInterval = workflowManager.getRunInterval(workflowID);
+        String intervalString;
+        if (runInterval == -1 ) {
+            intervalString = "Never";
+        }  else {
+            intervalString = TimeUtils.millisecondsToHuman(runInterval);
+        }
+        jg.writeObjectField("executionInterval", intervalString);
+        jg.writeObjectField("currentState", workflowManager.getCurrentStatistics(workflowID).getPartStatistics());
+        jg.writeEndObject();        
     }
 }

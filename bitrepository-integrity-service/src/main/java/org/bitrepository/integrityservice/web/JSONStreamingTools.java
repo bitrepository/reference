@@ -10,16 +10,15 @@ import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+
 /**
  * Class to handle streaming of different kinds of JSON data 
  */
 public class JSONStreamingTools {
     private final static Logger log = LoggerFactory.getLogger(JSONStreamingTools.class);
-    private final static String JSON_LIST_START = "[";
-    private final static String JSON_LIST_END = "]";
-    private final static String JSON_LIST_SEPERATOR = ",";
-    private final static String JSON_DELIMITER = "\"";
-    
     
     /**
      * Helper method to stream integrity issues as JSON for webservices.
@@ -29,19 +28,17 @@ public class JSONStreamingTools {
         final IntegrityIssueIterator it = iterator;
         return new StreamingOutput() {
             public void write(OutputStream output) throws IOException, WebApplicationException {
+                JsonFactory jf = new JsonFactory();
+                JsonGenerator jg = jf.createGenerator(output, JsonEncoding.UTF8);
                 try {
-                    boolean firstIssueWritten = false;
+                    jg.writeStartArray();
                     String issue;
-                    output.write(JSON_LIST_START.getBytes());
                     while((issue = it.getNextIntegrityIssue()) != null) {
-                        if(firstIssueWritten) {
-                            output.write(JSON_LIST_SEPERATOR.getBytes());
-                        }
-                        String issueStr = JSON_DELIMITER + issue + JSON_DELIMITER;
-                        output.write(issueStr.getBytes());
-                        firstIssueWritten = true;
+                        jg.writeString(issue);
                     }
-                    output.write(JSON_LIST_END.getBytes());
+                    jg.writeEndArray();
+                    jg.flush();
+                    jg.close();
                 } catch (Exception e) {
                     throw new WebApplicationException(e);
                 } finally {
