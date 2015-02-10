@@ -25,7 +25,7 @@
 LOGBACK="-Dlogback.configurationFile=conf/logback.xml" #configuration directory
 CONFDIR="conf"
 KEYFILE="conf/client-01.pem" #key file
-JAVA="/usr/bin/java"
+JAVA="$JAVA_HOME/bin/java"
 JAVA_OPTS="-classpath conf:lib/* org.bitrepository.pillar.PillarLauncher"
 PIDFILE="pillar.pid"
 SCRIPTNAME="pillar"

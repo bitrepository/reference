@@ -1,6 +1,6 @@
 @ECHO OFF
 
-set JAVA=c:\Program Files (x86)\Java\jre7\bin\java.exe
+set JAVA=c:\Program Files (x86)\Java\jre8\bin\java.exe
 
 set BASEDIR=%0%
 for %%x in (%BASEDIR%) DO set BASEDIR=%%~dpx..
