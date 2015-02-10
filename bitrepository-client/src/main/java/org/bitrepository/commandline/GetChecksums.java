@@ -86,11 +86,7 @@ public class GetChecksums extends CommandLineClient {
     @Override
     protected void validateArguments() {
         super.validateArguments();
-        
-        if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG) 
-                && !cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
-            throw new IllegalArgumentException("A salted checksum cannot be requested without providing the salt.");
-        }
+      	validateRequestChecksumSpec();
     }
     
     /**

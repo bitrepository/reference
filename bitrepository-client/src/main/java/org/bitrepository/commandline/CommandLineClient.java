@@ -181,6 +181,25 @@ public abstract class CommandLineClient {
             }
         }
     }
+    
+    /**
+     * Validates the 
+     */
+    protected void validateRequestChecksumSpec() {
+    	if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
+    		try {
+    			ChecksumType algorithm = ChecksumType.valueOf(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG));
+                if (ChecksumUtils.requiresSalt(algorithm) && !cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
+                	throw new IllegalArgumentException("A salted checksum cannot be requested without providing the salt.");
+                }
+                if (!ChecksumUtils.requiresSalt(algorithm) && cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
+                	throw new IllegalArgumentException("The given checksum algorithm does not require a salt.");
+                }
+            } catch (NoSuchAlgorithmException e) {
+            	throw new IllegalArgumentException("Invalid arguments for the requested checksum.", e);
+            }
+    	}
+    }
 
     /**
      * @return The file ids to request. If a specific file has been given as argument, then it will be returned,

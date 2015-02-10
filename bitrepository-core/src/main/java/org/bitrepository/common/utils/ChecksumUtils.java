@@ -217,7 +217,6 @@ public final class ChecksumUtils {
     }
     
     /**
-     * Returns whether a given checksum calculation algorithm exists.
      * This validates both whether the ChecksumType is implemented and whether the salt is put the correct place. 
      * 
      * @param checksumSpec The specification for the checksum calculation to validate.
@@ -226,27 +225,41 @@ public final class ChecksumUtils {
     public static void verifyAlgorithm(ChecksumSpecTYPE checksumSpec) throws NoSuchAlgorithmException {
         ChecksumType algorithm = checksumSpec.getChecksumType();
         
+        if(requiresSalt(algorithm)) {
+            if(checksumSpec.getChecksumSalt() != null && checksumSpec.getChecksumSalt().length > 0) {
+                throw new NoSuchAlgorithmException("Cannot perform a message-digest checksum calculation with salt "
+                        + "as requested: " + checksumSpec);
+            }
+        } else {
+            if(checksumSpec.getChecksumSalt() == null) {
+                throw new NoSuchAlgorithmException("Cannot perform a HMAC checksum calculation without salt as "
+                        + "requested: " + checksumSpec);
+            }
+        }
+    }
+    
+    /**
+     * Returns whether the given checksum algorithm requires a salt.
+     * @param algorithm The algorithm to validate.
+     * @return Whether it requires a salt.
+     * @throws NoSuchAlgorithmException If the algorithm is not supported.
+     */
+    public static boolean requiresSalt(ChecksumType algorithm) throws NoSuchAlgorithmException {
         if((algorithm == ChecksumType.MD5) 
                 || (algorithm == ChecksumType.SHA1)
                 || (algorithm == ChecksumType.SHA256)
                 || (algorithm == ChecksumType.SHA384)
                 || (algorithm == ChecksumType.SHA512)) {
-            if(checksumSpec.getChecksumSalt() != null && checksumSpec.getChecksumSalt().length > 0) {
-                throw new NoSuchAlgorithmException("Cannot perform a message-digest checksum calculation with salt "
-                        + "as requested: " + checksumSpec);
-            }
+        	return true;
         } else if((algorithm == ChecksumType.HMAC_MD5) 
                 || (algorithm == ChecksumType.HMAC_SHA1)
                 || (algorithm == ChecksumType.HMAC_SHA256)
                 || (algorithm == ChecksumType.HMAC_SHA384)
                 || (algorithm == ChecksumType.HMAC_SHA512)) {
-            if(checksumSpec.getChecksumSalt() == null) {
-                throw new NoSuchAlgorithmException("Cannot perform a HMAC checksum calculation without salt as "
-                        + "requested: " + checksumSpec);
-            }
+        	return false;
         } else {
-            throw new NoSuchAlgorithmException("The checksum specification '" + checksumSpec + "' is not supported.");
-        }
+            throw new NoSuchAlgorithmException("The checksum algorithm '" + algorithm + "' is not supported.");
+        }    	
     }
     
     /**
