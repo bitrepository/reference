@@ -141,28 +141,13 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         String sql = "SELECT " + AUDITTRAIL_SEQUENCE_NUMBER + " FROM " + AUDITTRAIL_TABLE + " ORDER BY "
                 + AUDITTRAIL_SEQUENCE_NUMBER + " DESC";
 
-        try {
-            PreparedStatement ps = null;
-            ResultSet res = null;
-            Connection conn = null;
-            try {
-                conn = getConnection();
-                ps = DatabaseUtils.createPreparedStatement(conn, sql, new Object[0]);
-                res = ps.executeQuery();
+        try (Connection conn = getConnection();
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql, new Object[0])) {
+            try (ResultSet res = ps.executeQuery()) {
                 if(!res.next()) {
                     return 0L;
                 }
                 return res.getLong(1);
-            } finally {
-                if(res != null) {
-                    res.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
             }
         } catch (Exception e) {
             throw new IllegalStateException("Could not use SQL query '" + sql
@@ -205,15 +190,9 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                                 + " " + extractor.createRestriction();
 
         AuditTrailDatabaseResults auditResults = new AuditTrailDatabaseResults();
-        try {
-            PreparedStatement ps = null;
-            ResultSet results = null;
-            Connection conn = null;
-            try {
-                conn = getConnection();
-                ps = DatabaseUtils.createPreparedStatement(conn, sql, extractor.getArguments());
-                results = ps.executeQuery();
-                
+        try (Connection conn = getConnection();
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql, extractor.getArguments())) {
+            try (ResultSet results = ps.executeQuery()) {     
                 int count = 0;
                 while(results.next() && (maxNumberOfResults == null || count < maxNumberOfResults)) {
                     count++;
@@ -236,17 +215,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                     log.debug("More than the maximum {} results found.", maxNumberOfResults);
                     auditResults.reportMoreResultsFound();
                 }
-            } finally {
-                if(results != null) {
-                    results.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
-            }
+            } 
         } catch (Exception e) {
             throw new IllegalStateException("Could not extract the audit trails events.", e);
         }

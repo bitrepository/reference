@@ -70,27 +70,11 @@ public abstract class DatabaseMigrator extends DatabaseMaintainer {
         int tablenameColoumn = 1;
         int versionColoumn = 2;
         
-        try {
-            PreparedStatement ps = null;
-            ResultSet res = null;
-            Connection conn = null;
-            try {
-                conn = connector.getConnection();
-                ps = DatabaseUtils.createPreparedStatement(conn, sql, new Object[0]);
-                res = ps.executeQuery();
-                
+        try (Connection conn = connector.getConnection();
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql, new Object[0])) {
+            try (ResultSet res = ps.executeQuery()){
                 while (res.next()) {
                     resultMap.put(res.getString(tablenameColoumn), res.getInt(versionColoumn));
-                }
-            } finally {
-                if(res != null) {
-                    res.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
                 }
             }
         } catch (SQLException e) {

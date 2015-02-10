@@ -21,20 +21,17 @@
  */
 package org.bitrepository.monitoringservice.webservice;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.monitoringservice.MonitoringService;
 import org.bitrepository.monitoringservice.MonitoringServiceFactory;
 import org.bitrepository.monitoringservice.status.ComponentStatus;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 @Path("/MonitoringService")
 public class RestMonitoringService {
@@ -48,55 +45,26 @@ public class RestMonitoringService {
     @GET
     @Path("/getMonitoringConfiguration/")
     @Produces("application/json")
-    public String getMonitoringServiceConfiguration() {
-        JSONArray array = new JSONArray();
+    public List<WebConfOption> getMonitoringServiceConfiguration() {
+        List<WebConfOption> options = new ArrayList<>();
         
-        array.put(makeConfigurationEntry("Check interval", TimeUtils.millisecondsToHuman(service.getCollectionInterval())));
-        array.put(makeConfigurationEntry("Max retries", Long.toString(service.getMaxRetries())));
+        options.add(new WebConfOption("Check interval", TimeUtils.millisecondsToHuman(service.getCollectionInterval())));
+        options.add(new WebConfOption("Max retries", Long.toString(service.getMaxRetries())));
         
-        return array.toString();
+        return options;
     }
     
     @GET
     @Path("/getComponentStatus/")
     @Produces("application/json")
-    public String getComponentStatus() {
+    public List<WebStatus> getComponentStatus() {
         Map<String, ComponentStatus> statusMap = service.getStatus();
-        JSONArray array = new JSONArray();
+        List<WebStatus> statuses = new ArrayList<>();
         
         for(String component : statusMap.keySet()) {
-            array.put(makeJSONStatusObject(component, statusMap.get(component)));
+            statuses.add(new WebStatus(component, statusMap.get(component)));
         }
-        return array.toString();
+        return statuses;
     }
     
-    private JSONObject makeJSONStatusObject(String componentID, ComponentStatus status) {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("componentID", componentID);
-            obj.put("status", status.getStatus());
-            obj.put("info", status.getInfo());
-            XMLGregorianCalendar cal = status.getLastReply();
-            if(cal != null) {
-                obj.put("timeStamp", TimeUtils.shortDate(cal));
-            } else {
-                obj.put("timeStamp", "N/A");    
-            }
-            
-            return obj;
-        } catch (JSONException e) {
-            return (JSONObject) JSONObject.NULL;
-        }
-    }
-    
-    private JSONObject makeConfigurationEntry(String option, String value) {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("confOption", option);            
-            obj.put("confValue", value);
-            return obj;
-        } catch (JSONException e) {
-            return (JSONObject) JSONObject.NULL;
-        }
-    }
 }
