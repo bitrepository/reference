@@ -250,13 +250,13 @@ public final class ChecksumUtils {
                 || (algorithm == ChecksumType.SHA256)
                 || (algorithm == ChecksumType.SHA384)
                 || (algorithm == ChecksumType.SHA512)) {
-        	return true;
+        	return false;
         } else if((algorithm == ChecksumType.HMAC_MD5) 
                 || (algorithm == ChecksumType.HMAC_SHA1)
                 || (algorithm == ChecksumType.HMAC_SHA256)
                 || (algorithm == ChecksumType.HMAC_SHA384)
                 || (algorithm == ChecksumType.HMAC_SHA512)) {
-        	return false;
+        	return true;
         } else {
             throw new NoSuchAlgorithmException("The checksum algorithm '" + algorithm + "' is not supported.");
         }    	
