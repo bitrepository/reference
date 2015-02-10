@@ -390,7 +390,7 @@
     </profiles>
 
     <properties>
-        <message.xml.version>27</message.xml.version>
+        <message.xml.version>28-SNAPSHOT</message.xml.version>
         <repository.settings.version>11</repository.settings.version>
         <activemq.version>5.9.0</activemq.version>
         <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
