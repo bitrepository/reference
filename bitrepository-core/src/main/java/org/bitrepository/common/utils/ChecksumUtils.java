@@ -226,14 +226,14 @@ public final class ChecksumUtils {
         ChecksumType algorithm = checksumSpec.getChecksumType();
         
         if(requiresSalt(algorithm)) {
-            if(checksumSpec.getChecksumSalt() != null && checksumSpec.getChecksumSalt().length > 0) {
-                throw new NoSuchAlgorithmException("Cannot perform a message-digest checksum calculation with salt "
-                        + "as requested: " + checksumSpec);
-            }
-        } else {
             if(checksumSpec.getChecksumSalt() == null) {
                 throw new NoSuchAlgorithmException("Cannot perform a HMAC checksum calculation without salt as "
                         + "requested: " + checksumSpec);
+            }
+        } else {
+            if(checksumSpec.getChecksumSalt() != null && checksumSpec.getChecksumSalt().length > 0) {
+                throw new NoSuchAlgorithmException("Cannot perform a message-digest checksum calculation with salt "
+                        + "as requested: " + checksumSpec);
             }
         }
     }
