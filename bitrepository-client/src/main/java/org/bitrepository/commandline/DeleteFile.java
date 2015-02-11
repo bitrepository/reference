@@ -42,14 +42,13 @@ public class DeleteFile extends CommandLineClient {
      * @param args The arguments for performing the DeleteFile operation.
      */
     public static void main(String[] args) {
-        DeleteFile client = new DeleteFile(args);
-        client.runCommand();
+    	runClient(DeleteFile.class, args);
     }
 
     /**
      * @param args The command line arguments for defining the operation.
      */
-    private DeleteFile(String ... args) {
+    protected DeleteFile(String ... args) {
         super(args);
         client = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, securityManager,
                 getComponentID());

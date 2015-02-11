@@ -45,8 +45,7 @@ public class PutFile extends CommandLineClient {
      * @param args The arguments for performing the PutFile operation.
      */
     public static void main(String[] args) {
-        PutFile client = new PutFile(args);
-        client.runCommand();
+    	runClient(PutFile.class, args);
     }
 
     /**
@@ -60,7 +59,7 @@ public class PutFile extends CommandLineClient {
      * C = The checksum of the file.
      * 
      */
-    private PutFile(String ... args) {
+    protected PutFile(String ... args) {
         super(args);
         client = ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager, getComponentID());
     }

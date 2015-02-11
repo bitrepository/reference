@@ -45,14 +45,13 @@ public class ReplaceFile extends CommandLineClient {
      * @param args The arguments for performing the ReplaceFile operation.
      */
     public static void main(String[] args) {
-        ReplaceFile client = new ReplaceFile(args);
-        client.runCommand();
+    	runClient(ReplaceFile.class, args);
     }
 
     /**
      * @param args The command line arguments for defining the operation.
      */
-    private ReplaceFile(String ... args) {
+    protected ReplaceFile(String ... args) {
         super(args);
         client = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings, securityManager,
                 getComponentID());
