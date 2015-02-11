@@ -49,7 +49,15 @@ public class GetFile extends CommandLineClient {
      * @param args The arguments for performing the GetFile operation.
      */
     public static void main(String[] args) {
-    	runClient(GetFile.class, args);
+    	try {
+    		GetFile client = new GetFile(args);
+    		client.runCommand();
+    	} catch (IllegalArgumentException iae) {
+            System.exit(Constants.EXIT_ARGUMENT_FAILURE);
+    	} catch (Exception e) {
+            e.printStackTrace();
+            System.exit(Constants.EXIT_OPERATION_FAILURE);
+    	}
     }
 
     /**

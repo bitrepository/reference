@@ -45,7 +45,15 @@ public class ReplaceFile extends CommandLineClient {
      * @param args The arguments for performing the ReplaceFile operation.
      */
     public static void main(String[] args) {
-    	runClient(ReplaceFile.class, args);
+    	try {
+    		ReplaceFile client = new ReplaceFile(args);
+    		client.runCommand();
+    	} catch (IllegalArgumentException iae) {
+            System.exit(Constants.EXIT_ARGUMENT_FAILURE);
+    	} catch (Exception e) {
+            e.printStackTrace();
+            System.exit(Constants.EXIT_OPERATION_FAILURE);
+    	}
     }
 
     /**

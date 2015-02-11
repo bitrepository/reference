@@ -23,7 +23,6 @@
 package org.bitrepository.commandline;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
@@ -58,18 +57,6 @@ import org.bitrepository.protocol.security.SecurityManager;
 public abstract class CommandLineClient {
     private final String componentID;
     
-    protected static void runClient(Class<? extends CommandLineClient> clientClass, String[] args) {
-    	try {
-    		CommandLineClient client = ((Constructor<CommandLineClient>) clientClass.getConstructors()[0]).newInstance(args);
-    		client.runCommand();
-    	} catch (IllegalArgumentException iae) {
-            System.exit(Constants.EXIT_ARGUMENT_FAILURE);
-    	} catch (Exception e) {
-            e.printStackTrace();
-            System.exit(Constants.EXIT_OPERATION_FAILURE);
-    	}
-
-    }
     /**
      * Runs a specific command-line-client operation. 
      * Handles also the closing of connections and deals with exceptions.
