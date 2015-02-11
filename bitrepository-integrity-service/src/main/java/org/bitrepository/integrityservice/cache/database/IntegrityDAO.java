@@ -281,15 +281,9 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 + " FROM " + FILE_INFO_TABLE 
                 + " WHERE " + FI_FILE_KEY + " = ?";
         
-        try {
-            ResultSet dbResult = null;
-            PreparedStatement ps = null;
-            Connection conn = null;
-            try {
-                conn = dbConnector.getConnection();
-                ps = DatabaseUtils.createPreparedStatement(conn, sql, fileKey);
-                dbResult = ps.executeQuery();
-                
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql, fileKey)) {
+            try (ResultSet dbResult = ps.executeQuery()) {
                 while(dbResult.next()) {
                     Date lastFileCheck = dbResult.getTimestamp(indexLastFileCheck);
                     String checksum = dbResult.getString(indexChecksum);
@@ -306,17 +300,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                             fileState, checksumState);
                     res.add(f);
                 }
-            } finally {
-                if(dbResult != null) {
-                    dbResult.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
-            }
+            } 
         } catch (SQLException e) {
             throw new IllegalStateException("Could not retrieve the FileInfo for '" + fileId + "' with the SQL '"
                     + sql + "'.", e);
@@ -1171,15 +1155,9 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 + " ON  p." + PS_STAT_KEY + " = s." + STATS_KEY
                 + " WHERE s." + STATS_KEY + " = ?";
         
-        try {
-            ResultSet dbResult = null;
-            PreparedStatement ps = null;
-            Connection conn = null;
-            try {
-                conn = dbConnector.getConnection();
-                ps = DatabaseUtils.createPreparedStatement(conn, sql, statsKey);
-                dbResult = ps.executeQuery();
-                
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql, statsKey)) {
+            try (ResultSet dbResult = ps.executeQuery()) {
                 while(dbResult.next()) {
                     Long pillarKey = dbResult.getLong(indexPillarKey);
                     Long fileCount = dbResult.getLong(indexFileCount);
@@ -1194,17 +1172,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                             checksumErrors, statsTime, updateTime);
                     res.add(p);
                 }
-            } finally {
-                if(dbResult != null) {
-                    dbResult.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
-            }
+            } 
         } catch (SQLException e) {
             throw new IllegalStateException("Could not retrieve the latest PillarStat's for '" + collectionID + "' " +
             		"with the SQL '" + sql + "'.", e);
@@ -1237,15 +1205,9 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         
         String sql = getLatestCollectionStatsSQL();
 
-        try {
-            ResultSet dbResult = null;
-            PreparedStatement ps = null;
-            Connection conn = null;
-            try {
-                conn = dbConnector.getConnection();
-                ps = DatabaseUtils.createPreparedStatement(conn, sql, collectionKey, count);
-                dbResult = ps.executeQuery();
-                
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql, collectionKey, count)) {
+            try (ResultSet dbResult = ps.executeQuery()) {
                 while(dbResult.next()) {
                     Long fileCount = dbResult.getLong(indexFileCount);
                     Long dataSize = dbResult.getLong(indexDataSize);
@@ -1257,17 +1219,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                             statsTime, updateTime);
                     res.add(stat);
                 }
-            } finally {
-                if(dbResult != null) {
-                    dbResult.close();
-                }
-                if(ps != null) {
-                    ps.close();
-                }
-                if(conn != null) {
-                    conn.close();
-                }
-            }
+            } 
         } catch (SQLException e) {
             throw new IllegalStateException("Could not retrieve the latest PillarStat's for '" + collectionID + "' " +
                     "with the SQL '" + sql + "' with arguments '"
@@ -1387,17 +1339,11 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                     + " WHERE " + PILLAR_ID + " = ?)"
                 + " AND " + FI_LAST_CHECKSUM_UPDATE + " < ?";
         
-        try {
-            Connection conn = null;
-            PreparedStatement updateFileStatePS = null;
-            PreparedStatement updateChecksumPS = null;
-        
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement updateFileStatePS = conn.prepareStatement(updateFileStateSql);
+             PreparedStatement updateChecksumPS = conn.prepareStatement(updateChecksumSql)) {
             try {
-                conn = dbConnector.getConnection();
                 conn.setAutoCommit(false);
-                updateFileStatePS = conn.prepareStatement(updateFileStateSql);
-                updateChecksumPS = conn.prepareStatement(updateChecksumSql);
-                
                 for(ChecksumDataForChecksumSpecTYPE csData : data) {
                     updateFileStatePS.setInt(1, ChecksumState.UNKNOWN.ordinal());
                     updateFileStatePS.setInt(2, FileState.EXISTING.ordinal());
@@ -1420,12 +1366,6 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                 updateChecksumPS.executeBatch();
                 conn.commit();
             } finally {
-                if(updateFileStatePS != null) {
-                    updateFileStatePS.close();
-                }
-                if(updateChecksumPS != null) {
-                    updateChecksumPS.close();
-                }
                 if(conn != null) {
                     conn.setAutoCommit(true);
                     conn.close();

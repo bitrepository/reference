@@ -49,10 +49,13 @@ import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.TimeUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 @Path("/AuditTrailService")
 
@@ -60,9 +63,6 @@ public class RestAuditTrailService {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     private AuditTrailService service;
-    private final static String JSON_LIST_START = "[";
-    private final static String JSON_LIST_END = "]";
-    private final static String JSON_LIST_SEPERATOR = ",";
     
     public RestAuditTrailService() {
         service = AuditTrailServiceFactory.getAuditTrailService();	
@@ -93,19 +93,21 @@ public class RestAuditTrailService {
         if(it != null) {     
             return new StreamingOutput() {
                 public void write(OutputStream output) throws IOException, WebApplicationException {
+                    JsonFactory jf = new JsonFactory();
+                    JsonGenerator jg = jf.createGenerator(output, JsonEncoding.UTF8);
                     try {
                         AuditTrailEvent event;
+                        jg.writeStartArray();
                         int numAudits = 0;
-                        output.write(JSON_LIST_START.getBytes());
                         while((event = it.getNextAuditTrailEvent()) != null && numAudits < maxAudits) {
-                            if(numAudits >= 1) {
-                                output.write(JSON_LIST_SEPERATOR.getBytes());
-                            }
-                            output.write(makeJSONEntry(event).toString().getBytes());
+                            writeAuditResult(event, jg);
                             numAudits++;
                         }
-                        output.write(JSON_LIST_END.getBytes());
+                        jg.writeEndArray();
+                        jg.flush();
+                        jg.close();
                     } catch (Exception e) {
+                        log.error("Caught exception trying to stream audittrails", e);
                         throw new WebApplicationException(e);
                     } finally {
                         try {
@@ -142,25 +144,23 @@ public class RestAuditTrailService {
         return service.getCollectorInfos();
     }
     
-    private JSONObject makeJSONEntry(AuditTrailEvent event) {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("fileID", event.getFileID());
-            obj.put("reportingComponent", event.getReportingComponent());
-            obj.put("actor", contentOrEmptyString(event.getActorOnFile()));
-            obj.put("action", event.getActionOnFile());
-            obj.put("timeStamp", TimeUtils.shortDate(
-                    CalendarUtils.convertFromXMLGregorianCalendar(event.getActionDateTime())));
-            obj.put("info", contentOrEmptyString(event.getInfo()));
-            obj.put("auditTrailInfo", contentOrEmptyString(event.getAuditTrailInformation()));
-            obj.put("fingerprint", contentOrEmptyString(event.getCertificateID()));
-            obj.put("operationID", contentOrEmptyString(event.getOperationID()));
-            return obj;
-        } catch (JSONException e) {
-            return (JSONObject) JSONObject.NULL;
-        }
+    private void writeAuditResult(AuditTrailEvent event, JsonGenerator jg) throws JsonGenerationException, IOException {
+        jg.writeStartObject();
+        jg.writeObjectField("fileID", event.getFileID());
+        jg.writeObjectField("reportingComponent", event.getReportingComponent());
+        jg.writeObjectField("actor", contentOrEmptyString(event.getActorOnFile()));
+        jg.writeObjectField("action", event.getActionOnFile().toString());
+        jg.writeObjectField("timeStamp", TimeUtils.shortDate(
+                CalendarUtils.convertFromXMLGregorianCalendar(event.getActionDateTime())));
+        jg.writeObjectField("info", contentOrEmptyString(event.getInfo()));
+        jg.writeObjectField("auditTrailInfo", contentOrEmptyString(event.getAuditTrailInformation()));
+        jg.writeObjectField("fingerprint", contentOrEmptyString(event.getCertificateID()));
+        jg.writeObjectField("operationID", contentOrEmptyString(event.getOperationID()));
+        jg.writeEndObject();
+        jg.flush();
+        
     }
-    
+
     private FileAction filterAction(String action) {
         if(action.equals("ALL")) {
             return null;

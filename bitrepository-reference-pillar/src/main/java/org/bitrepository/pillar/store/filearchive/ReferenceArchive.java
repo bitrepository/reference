@@ -133,19 +133,14 @@ public class ReferenceArchive {
             log.debug("Downloading the file '" + fileID + "' for validation.");
             
             // Save InputStream to the file.
-            BufferedOutputStream bufferedOutputstream = null;
-            try {
-                bufferedOutputstream = new BufferedOutputStream(new FileOutputStream(downloadedFile));
+            try (BufferedOutputStream bufferedOutputstream 
+                    = new BufferedOutputStream(new FileOutputStream(downloadedFile))){
                 byte[] buffer = new byte[MAX_BUFFER_SIZE];
                 int bytesRead = 0;
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
                     bufferedOutputstream.write(buffer, 0, bytesRead);
                 }
-            } finally {
-                if(bufferedOutputstream != null) {
-                    bufferedOutputstream.close();
-                }
-            }
+            } 
         }
         return downloadedFile;
     }

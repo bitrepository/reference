@@ -29,6 +29,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -42,11 +43,6 @@ import org.bitrepository.alarm.AlarmService;
 import org.bitrepository.alarm.AlarmServiceFactory;
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
-import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.TimeUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 @Path("/AlarmService")
 public class RestAlarmService {
@@ -86,7 +82,7 @@ public class RestAlarmService {
     @Path("/queryAlarms/")
     @Consumes("application/x-www-form-urlencoded")
     @Produces("application/json")
-    public String queryAlarms(
+    public List<WebAlarm> queryAlarms(
             @FormParam("fromDate") String fromDate,
             @FormParam("toDate") String toDate,
             @FormParam("fileID") String fileID,
@@ -95,19 +91,13 @@ public class RestAlarmService {
             @FormParam("collectionID") String collectionID,
             @DefaultValue("10") @FormParam("maxAlarms") Integer maxAlarms,
             @DefaultValue("true") @FormParam ("oldestAlarmFirst") boolean oldestAlarmFirst) {
-        JSONArray array = new JSONArray();
         Date from = makeDateObject(fromDate);
         Date to = makeDateObject(toDate);
         
         Collection<Alarm> alarms = alarmService.extractAlarms(contentOrNull(reportingComponent), makeAlarmCode(alarmCode), 
                 from, to, contentOrNull(fileID), makeCollectionID(collectionID), maxAlarms, oldestAlarmFirst);
         
-        if(alarms != null) {
-            for(Alarm alarm : alarms) {
-                array.put(makeJSONEntry(alarm));
-            }
-        }    
-        return array.toString();
+        return alarms.stream().map(a -> new WebAlarm(a)).collect(Collectors.toList());
     }
     
     @POST
@@ -163,19 +153,4 @@ public class RestAlarmService {
             return input.trim();
         }
     }
-    
-    private JSONObject makeJSONEntry(Alarm alarm) {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("OrigDateTime", TimeUtils.shortDate(
-                    CalendarUtils.convertFromXMLGregorianCalendar(alarm.getOrigDateTime())));
-            obj.put("AlarmRaiser", alarm.getAlarmRaiser());
-            obj.put("AlarmCode", alarm.getAlarmCode());
-            obj.put("AlarmText", alarm.getAlarmText());
-            obj.put("CollectionID", alarm.getCollectionID() == null ? "" : alarm.getCollectionID());
-            return obj;
-        } catch (JSONException e) {
-            return (JSONObject) JSONObject.NULL;
-        }
-    } 
 }

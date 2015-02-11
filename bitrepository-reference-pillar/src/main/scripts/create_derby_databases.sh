@@ -24,7 +24,7 @@
 
 CONFDIR="conf"
 LOGBACK="-Dlogback.configurationFile=$CONFDIR/logback.xml" #configuration directory
-JAVA="/usr/bin/java"
+JAVA="$JAVA_HOME/bin/java"
 CLASSPATH="-classpath ./:lib/*"
 CHECKSUM_DB_SCRIPT="sql/derby/checksumDBCreation.sql";
 AUDIT_CONTRIBUTOR_DB_SCRIPT="sql/derby/auditContributorDBCreation.sql";
