@@ -3,7 +3,7 @@
   function dataSizeGraph(collections, colorMapper, fileSizeUtils, dataUrl, graphTypeSelector, graphPlaceholder) {
  
     var collectionIDs = new Object();
-    var colerMap = colorMapper;
+    var colorMap = colorMapper;
     var sizeUtils = fileSizeUtils;
     var graphType = graphTypeSelector;
     var placeholder = graphPlaceholder;
@@ -13,23 +13,23 @@
     var mySelf = this;
     var msPerDay = 86400 * 1000;
 
-    for(i=0; i<collections.length; i++) {
+    for(var i=0; i<collections.length; i++) {
       collectionIDs[collections[i].collectionID] = {state : "active" };
     }
 
     this.enableCollection = function(collectionID) {
       collectionIDs[collectionID].state = "active";
       this.renderGraph();
-    }
+    };
 
     this.disableCollection = function(collectionID) {
       collectionIDs[collectionID].state = "disabled";
       this.renderGraph();
-    }
+    };
 
     this.graphTypeChanged = function() {
       this.renderGraph();
-    }
+    };
 
     function showTooltip(x, y, contents) {
         $('<div id="tooltip">' + contents + '</div>').css({
@@ -100,19 +100,22 @@
     this.renderGraph = function() {
       var dataObj = new Array();
       var dMax = 0;
-      var dataField;
-      var dMaxField;
-      if($(graphType).val() == "growth") {
+      var dataField = "data";
+      var dMaxField = "dataMax";
+      if($(graphType).val() == "data") {
         dataField = "data";
         dMaxField = "dataMax";
-      } else if($(graphType).val() == "delta") {
+      } else if($(graphType).val() == "datadelta") {
         dataField = "deltaData";
         dMaxField = "deltaMax";       
       } else if($(graphType).val() == "filecount") {
         dataField = "fileCount";
         dMaxField = "fileCountMax";       
+      } else if($(graphType).val() == "filedelta") {
+        dataField = "deltaCount";
+        dMaxField = "deltaCountMax";       
       }
-
+      
       for(i in collectionIDs) {
         var collectionID = i;
         if(collectionIDs[i].state == "active" && graphDataPool[collectionID] != null) {
@@ -136,17 +139,19 @@
             dataArray = scaleAndCopyData(graphDataPool[collectionID][dataField], scale);          
           }
 
-          var collectionObj = {data: dataArray, color: colorMapper.getCollectionColor(collectionID)};
+          var collectionObj = {data: dataArray, color: colorMap.getCollectionColor(collectionID)};
           dataObj.push(collectionObj);
         }
       }
 
-      if($(graphType).val() == "growth") {
+      if($(graphType).val() == "data") {
         yAxisText = unitSuffix;
-      } else if($(graphType).val() == "delta") {
+      } else if($(graphType).val() == "datadelta") {
         yAxisText = unitSuffix + " per day";
       } else if($(graphType).val() == "filecount") {
         yAxisText = "Number of files";
+      } else if($(graphType).val() == "filedelta") {
+        yAxisText = "Files per day";
       }
 
       var options = {
@@ -166,12 +171,11 @@
       var plot = $.plot(placeholder, dataObj, options);
       useRange(placeholder, plot, dataObj, options);
       handleHover(placeholder, plot, dataObj, options);
-
-    }
+    };
 
     this.getGraphData = function() {
       return graphDataPool;
-    }
+    };
 
     function updateCollectionData(collection) {
       var c = collection;
@@ -181,7 +185,9 @@
           var dMax = 0;
           var deltaDataMax = 0;
           var fileCountData = new Array();
+          var deltaCountData = new Array();
           var fileCountDataMax = 0;
+          var fileCountDeltaMax = 0;
           // Get the timezone offset in milliseconds
           var timeOffset = moment().tz("Europe/Copenhagen")._offset * 1000 * 60;
           for(i=0; i<data.length; i++) {
@@ -190,29 +196,38 @@
               dMax = data[i].dataSize;
             }
             collectionData.push(a);
+            
+            var fc = new Array(data[i].dateMillis - timeOffset, data[i].fileCount);
+            if(data[i].fileCount > fileCountDataMax) {
+              fileCountDataMax = data[i].fileCount;
+            }
+            fileCountData.push(fc);
 
+            //Build delta data
             if(i == 0) {
               deltaCollectionData.push([data[i].dateMillis - timeOffset, 0]);
+              deltaCountData.push([data[i].dateMillis - timeOffset, 0]);
             } else {
               var deltaBytes = data[i].dataSize - data[i-1].dataSize;
+              var deltaCount = data[i].fileCount - data[i-1].fileCount;
               var deltaMs = data[i].dateMillis - data[i-1].dateMillis;
               var growthPerDay = (msPerDay * deltaBytes) / deltaMs;
               if(growthPerDay > deltaDataMax) {
                 deltaDataMax = growthPerDay;
               }
               deltaCollectionData.push([data[i].dateMillis - timeOffset, growthPerDay]);
+              var fileGrowthPerDay = (msPerDay * deltaCount) / deltaMs;
+              if(fileGrowthPerDay > fileCountDeltaMax) {
+              	fileCountDeltaMax = fileGrowthPerDay;
+              }
+              deltaCountData.push([data[i].dateMillis - timeOffset, fileGrowthPerDay]);
             }
- 
-            var fc = new Array(data[i].dateMillis - timeOffset, data[i].fileCount);
-            if(data[i].fileCount > fileCountDataMax) {
-              fileCountDataMax = data[i].fileCount;
-            }
-            fileCountData.push(fc);
           }
           graphDataPool[c] = {data: collectionData, dataMax: dMax, 
                               deltaData: deltaCollectionData, deltaMax: deltaDataMax,
-                              fileCount: fileCountData, fileCountMax: fileCountDataMax};
-        }).done(function() {mySelf.renderGraph()});
+                              fileCount: fileCountData, fileCountMax: fileCountDataMax,
+                              deltaCount: deltaCountData, deltaCountMax: fileCountDeltaMax};
+        }).done(function() {mySelf.renderGraph();});
     }
 
     this.updateData = function() {
@@ -220,11 +235,11 @@
       for(i in keys) {
         updateCollectionData(keys[i]);
       }
-    }
+    };
 
     this.getCollectionIDs = function() {
       return Object.keys(collectionIDs);
-    } 
+    }; 
   }
 
 
