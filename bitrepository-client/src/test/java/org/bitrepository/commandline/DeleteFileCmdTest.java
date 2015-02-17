@@ -21,8 +21,6 @@
  */
 package org.bitrepository.commandline;
 
-import static org.testng.Assert.fail;
-
 import java.util.Date;
 
 import org.bitrepository.client.DefaultFixtureClientTest;
@@ -35,155 +33,133 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
     private static final String DEFAULT_CHECKSUM = "0123456789";
 
     private String DEFAULT_COLLECTION_ID;
-    
+
     @BeforeMethod(alwaysRun = true)
     public void setupClient() throws Exception {
-    	DEFAULT_COLLECTION_ID = settingsForTestClient.getCollections().get(0).getID();
-    }
-    
-    @Test(groups = { "regressiontest" })
-    public void successScenarioTest() throws Exception {
-    	addDescription("Tests the scenario, where the arguments are OK.");
-    	String[] args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-p" + PILLAR1_ID,
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-c" + DEFAULT_COLLECTION_ID, 
-    			"-i" + DEFAULT_FILE_ID};
-    	new DeleteFile(args);
+        DEFAULT_COLLECTION_ID = settingsForTestClient.getCollections().get(0).getID();
     }
 
     @Test(groups = { "regressiontest" })
-    public void missingCollectionScenarioTest() throws Exception {
-    	addDescription("Tests the scenario, where the collection arguments is missing.");
-    	String[] args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-p" + PILLAR1_ID,
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-i" + DEFAULT_FILE_ID};
-    	try {
-    		new DeleteFile(args);
-            fail("Should fail.");
-    	} catch (IllegalArgumentException e) {
-    		// expected.
-    	}
+    public void defaultSuccessScenarioTest() throws Exception {
+        addDescription("Tests simplest arguments for running the CmdLineClient");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-p" + PILLAR1_ID,
+                "-C" + DEFAULT_CHECKSUM,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-i" + DEFAULT_FILE_ID};
+        new DeleteFileCmd(args);
+    }
+
+    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    public void missingCollectionArgumentTest() throws Exception {
+        addDescription("Tests the scenario, where the collection arguments is missing.");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-p" + PILLAR1_ID,
+                "-C" + DEFAULT_CHECKSUM,
+                "-i" + DEFAULT_FILE_ID};
+        new DeleteFileCmd(args);
+    }
+
+    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    public void missingPillarArgumentTest() throws Exception {
+        addDescription("Tests the different scenarios, with the pillar argument.");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-C" + DEFAULT_CHECKSUM,
+                "-c" + DEFAULT_COLLECTION_ID,
+                "-i" + DEFAULT_FILE_ID};
+        new DeleteFileCmd(args);
+    }
+
+    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    public void unknownPillarArgumentTest() throws Exception {
+        addStep("Testing against a non-existing pillar id", "Should fail");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-C" + DEFAULT_CHECKSUM,
+                "-c" + DEFAULT_COLLECTION_ID,
+                "-p" + "Random" + (new Date()).getTime() + "pillar",
+                "-i" + DEFAULT_FILE_ID};
+        new DeleteFileCmd(args);
+    }
+
+    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    public void missingFileIDArgumentTest() throws Exception {
+        addDescription("Tests the scenario, where no arguments for file id argument is given.");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-p" + PILLAR1_ID,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-C" + DEFAULT_CHECKSUM};
+        new DeleteFileCmd(args);
+    }
+
+    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    public void badChecksumAlgorithmArgumentTest() throws Exception {
+        addDescription("Test failure giving non-existing checksum algorithm as argument.");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-p" + PILLAR1_ID,
+                "-C" + DEFAULT_CHECKSUM,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-i" + DEFAULT_FILE_ID,
+                "-R" + "NonExistingChecksumType"};
+        new DeleteFileCmd(args);
     }
 
     @Test(groups = { "regressiontest" })
-    public void pillarScenarioTest() throws Exception {
-    	addDescription("Tests the different scenarios, with the pillar argument.");
-    	addStep("Missing argument for pillar id", "Should fail");
-    	String[] args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-c" + DEFAULT_COLLECTION_ID,
-    			"-i" + DEFAULT_FILE_ID};
-    	try {
-    		new DeleteFile(args);
-            fail("Should fail.");
-    	} catch (IllegalArgumentException e) {
-    		// expected.
-    	}
-    	
-    	addStep("Testing against a non-existing pillar id", "Should fail");
-    	args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-c" + DEFAULT_COLLECTION_ID,
-    			"-p" + "Random" + (new Date()).getTime() + "pillar",
-    			"-i" + DEFAULT_FILE_ID};
-    	try {
-    		new DeleteFile(args);
-            fail("Should fail.");
-    	} catch (IllegalArgumentException e) {
-    		// expected.
-    	}
+    public void checksumArgumentNonSaltAlgorithmWitoutSaltTest() throws Exception {
+        addDescription("Test MD5 checksum without salt -> no failure");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-p" + PILLAR1_ID,
+                "-C" + DEFAULT_CHECKSUM,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-i" + DEFAULT_FILE_ID,
+                "-R" + "MD5"};
+        new DeleteFileCmd(args);
     }
-    
-    @Test(groups = { "regressiontest" })
-    public void missingFileScenarioTest() throws Exception {
-    	addDescription("Tests the scenario, where no arguments for file or url is given.");
-    	String[] args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-p" + PILLAR1_ID,
-    			"-c" + DEFAULT_COLLECTION_ID, 
-    			"-C" + DEFAULT_CHECKSUM};
-    	try {
-    		new DeleteFile(args);
-            fail("Should fail.");
-    	} catch (IllegalArgumentException e) {
-    		// expected.
-    	}
+
+    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    public void checksumArgumentNonSaltAlgorithmWithSaltTest() throws Exception {
+        addDescription("Test SHA1 checksum with salt -> failure");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-p" + PILLAR1_ID,
+                "-C" + DEFAULT_CHECKSUM,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-i" + DEFAULT_FILE_ID,
+                "-R" + "SHA1",
+                "-S" + "SALT"};
+        new DeleteFileCmd(args);
     }
 
     @Test(groups = { "regressiontest" })
-    public void checksumSpecArgumentTest() throws Exception {
-    	addDescription("Tests the different checksum scenarios.");
-    	addStep("Test non existing checksum algorithm", "Should fail");
-    	String[] args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-p" + PILLAR1_ID,
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-c" + DEFAULT_COLLECTION_ID, 
-    			"-i" + DEFAULT_FILE_ID,
-    			"-R" + "NonExistingChecksumType"};
-    	try {
-    		new DeleteFile(args);
-            fail("Should fail.");
-    	} catch (IllegalArgumentException e) {
-    		// expected.
-    	}
-    	
-    	addStep("Test MD5 checksum without salt", "Should not fail");
-    	args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-p" + PILLAR1_ID,
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-c" + DEFAULT_COLLECTION_ID, 
-    			"-i" + DEFAULT_FILE_ID,
-    			"-R" + "MD5"};
-		new DeleteFile(args);
+    public void checksumArgumentSaltAlgorithmWithSaltTest() throws Exception {
+        addDescription("Test HMAC_SHA256 checksum with salt -> No failure");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-p" + PILLAR1_ID,
+                "-C" + DEFAULT_CHECKSUM,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-i" + DEFAULT_FILE_ID,
+                "-R" + "HMAC_SHA256",
+                "-S" + "SALT"};
+        new DeleteFileCmd(args);
+    }
 
-    	addStep("Test SHA1 checksum with salt", "Should fail");
-    	args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-p" + PILLAR1_ID,
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-c" + DEFAULT_COLLECTION_ID, 
-    			"-i" + DEFAULT_FILE_ID,
-    			"-R" + "SHA1",
-    			"-S" + "SALT"};
-    	try {
-    		new DeleteFile(args);
-            fail("Should fail.");
-    	} catch (IllegalArgumentException e) {
-    		// expected.
-    	}
-    	
-    	addStep("Test HMAC_SHA256 checksum with salt", "Should not fail");
-    	args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-p" + PILLAR1_ID,
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-c" + DEFAULT_COLLECTION_ID, 
-    			"-i" + DEFAULT_FILE_ID,
-    			"-R" + "HMAC_SHA256",
-    			"-S" + "SALT"};
-    	new DeleteFile(args);
-
-    	addStep("Test HMAC_SHA512 checksum without a salt", "Should fail");
-    	args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-p" + PILLAR1_ID,
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-c" + DEFAULT_COLLECTION_ID, 
-    			"-i" + DEFAULT_FILE_ID,
-    			"-R" + "HMAC_SHA512"};
-    	try {
-    		new DeleteFile(args);
-            fail("Should fail.");
-    	} catch (IllegalArgumentException e) {
-    		// expected.
-    	}
+    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    public void checksumArgumentSaltAlgorithmWithoutSaltTest() throws Exception {
+        addDescription("Test HMAC_SHA512 checksum without a salt -> Failure");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-p" + PILLAR1_ID,
+                "-C" + DEFAULT_CHECKSUM,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-i" + DEFAULT_FILE_ID,
+                "-R" + "HMAC_SHA512"};
+        new DeleteFileCmd(args);
     }
 }

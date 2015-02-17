@@ -21,8 +21,6 @@
  */
 package org.bitrepository.commandline;
 
-import static org.testng.Assert.fail;
-
 import java.util.Date;
 
 import org.bitrepository.client.DefaultFixtureClientTest;
@@ -35,153 +33,189 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
     private static final String DEFAULT_CHECKSUM = "0123456789";
 
     private String DEFAULT_COLLECTION_ID;
-    
+
     @BeforeMethod(alwaysRun = true)
     public void setupClient() throws Exception {
-    	DEFAULT_COLLECTION_ID = settingsForTestClient.getCollections().get(0).getID();
-    }
-    
-    @Test(groups = { "regressiontest" })
-    public void successScenarioTest() throws Exception {
-    	addDescription("Tests the scenario, where the arguments are OK.");
-    	String[] args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-c" + DEFAULT_COLLECTION_ID, 
-    			"-i" + DEFAULT_FILE_ID};
-    	new PutFile(args);
+        DEFAULT_COLLECTION_ID = settingsForTestClient.getCollections().get(0).getID();
     }
 
     @Test(groups = { "regressiontest" })
-    public void missingCollectionScenarioTest() throws Exception {
-    	addDescription("Tests the scenario, where the collection arguments is missing.");
-    	String[] args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-i" + DEFAULT_FILE_ID};
-    	try {
-    		new PutFile(args);
-            fail("Should fail.");
-    	} catch (IllegalArgumentException e) {
-    		// expected.
-    	}
+    public void defaultSuccessScenarioTest() throws Exception {
+        addDescription("Tests simplest arguments for running the CmdLineClient");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-c" + DEFAULT_COLLECTION_ID,
+                "-f" + DEFAULT_FILE_ID};
+        new PutFileCmd(args);
     }
 
     @Test(groups = { "regressiontest" })
-    public void pillarScenarioTest() throws Exception {
-    	addDescription("Tests the different scenarios, with the pillar argument.");
-    	addStep("Testing against the first pillar id", "Should not fail");
-    	String[] args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-c" + DEFAULT_COLLECTION_ID,
-    			"-p" + PILLAR1_ID,
-    			"-i" + DEFAULT_FILE_ID};
-		new PutFile(args);
-    	
-    	addStep("Testing against a non-existing pillar id", "Should fail");
-    	args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-c" + DEFAULT_COLLECTION_ID,
-    			"-p" + "Random" + (new Date()).getTime() + "pillar",
-    			"-i" + DEFAULT_FILE_ID};
-    	try {
-    		new PutFile(args);
-            fail("Should fail.");
-    	} catch (IllegalArgumentException e) {
-    		// expected.
-    	}
+    public void urlSuccessScenarioTest() throws Exception {
+        addDescription("Tests arguments for putting a file on a given URL");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
+                "-C" + DEFAULT_CHECKSUM,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-i" + DEFAULT_FILE_ID};
+        new PutFileCmd(args);
     }
-    
-    @Test(groups = { "regressiontest" })
-    public void missingFileScenarioTest() throws Exception {
-    	addDescription("Tests the scenario, where no arguments for file or url is given.");
-    	String[] args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-c" + DEFAULT_COLLECTION_ID, 
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-i" + DEFAULT_FILE_ID};
-    	try {
-    		new PutFile(args);
-            fail("Should fail.");
-    	} catch (IllegalArgumentException e) {
-    		// expected.
-    	}
+
+    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    public void missingCollectionArgumentTest() throws Exception {
+        addDescription("Tests the scenario, where the collection arguments is missing.");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
+                "-C" + DEFAULT_CHECKSUM,
+                "-i" + DEFAULT_FILE_ID};
+        new PutFileCmd(args);
     }
 
     @Test(groups = { "regressiontest" })
-    public void checksumSpecArgumentTest() throws Exception {
-    	addDescription("Tests the different checksum scenarios.");
-    	addStep("Test non existing checksum algorithm", "Should fail");
-    	String[] args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-c" + DEFAULT_COLLECTION_ID, 
-    			"-i" + DEFAULT_FILE_ID,
-    			"-R" + "NonExistingChecksumType"};
-    	try {
-    		new PutFile(args);
-            fail("Should fail.");
-    	} catch (IllegalArgumentException e) {
-    		// expected.
-    	}
-    	
-    	addStep("Test MD5 checksum without salt", "Should not fail");
-    	args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-c" + DEFAULT_COLLECTION_ID, 
-    			"-i" + DEFAULT_FILE_ID,
-    			"-R" + "MD5"};
-		new PutFile(args);
+    public void specificPillarArgumentTest() throws Exception {
+        addDescription("Test argument for a specific pillar");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
+                "-C" + DEFAULT_CHECKSUM,
+                "-c" + DEFAULT_COLLECTION_ID,
+                "-p" + PILLAR1_ID,
+                "-i" + DEFAULT_FILE_ID};
+        new PutFileCmd(args);
+    }
 
-    	addStep("Test SHA1 checksum with salt", "Should fail");
-    	args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-c" + DEFAULT_COLLECTION_ID, 
-    			"-i" + DEFAULT_FILE_ID,
-    			"-R" + "SHA1",
-    			"-S" + "SALT"};
-    	try {
-    		new PutFile(args);
-            fail("Should fail.");
-    	} catch (IllegalArgumentException e) {
-    		// expected.
-    	}
-    	
-    	addStep("Test HMAC_SHA256 checksum with salt", "Should not fail");
-    	args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-c" + DEFAULT_COLLECTION_ID, 
-    			"-i" + DEFAULT_FILE_ID,
-    			"-R" + "HMAC_SHA256",
-    			"-S" + "SALT"};
-    	new PutFile(args);
+    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    public void unknownPillarArgumentTest() throws Exception {
+        addDescription("Testing against a non-existing pillar id -> Should fail");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
+                "-C" + DEFAULT_CHECKSUM,
+                "-c" + DEFAULT_COLLECTION_ID,
+                "-p" + "Random" + (new Date()).getTime() + "pillar",
+                "-i" + DEFAULT_FILE_ID};
+        new PutFileCmd(args);
+    }
 
-    	addStep("Test HMAC_SHA512 checksum with salt", "Should fail");
-    	args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
-    			"-C" + DEFAULT_CHECKSUM,
-    			"-c" + DEFAULT_COLLECTION_ID, 
-    			"-i" + DEFAULT_FILE_ID,
-    			"-R" + "HMAC_SHA512"};
-    	try {
-    		new PutFile(args);
-            fail("Should fail.");
-    	} catch (IllegalArgumentException e) {
-    		// expected.
-    	}
+    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    public void missingFileOrURLArgumentTest() throws Exception {
+        addDescription("Tests the scenario, where no arguments for file or url is given.");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-C" + DEFAULT_CHECKSUM,
+                "-i" + DEFAULT_FILE_ID};
+        new PutFileCmd(args);
+    }
+
+    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    public void missingChecksumWhenURLArgumentTest() throws Exception {
+        addDescription("Tests the scenario, where no checksum argument is given, but a URL is given.");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS,
+                "-i" + DEFAULT_FILE_ID};
+        new PutFileCmd(args);
+    }
+
+    @Test(groups = { "regressiontest" })
+    public void missingChecksumWhenFileArgumentTest() throws Exception {
+        addDescription("Tests the scenario, where no checksum argument is given, but a file is given.");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-f" + DEFAULT_FILE_ID,
+                "-i" + DEFAULT_FILE_ID};
+        new PutFileCmd(args);
+    }
+
+    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    public void missingFileIDWhenURLArgumentTest() throws Exception {
+        addDescription("Tests the scenario, where no checksum argument is given, but a URL is given.");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-C" + DEFAULT_CHECKSUM,
+                "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS};
+        new PutFileCmd(args);
+    }
+
+    @Test(groups = { "regressiontest" })
+    public void missingFileIDWhenFileArgumentTest() throws Exception {
+        addDescription("Tests the scenario, where no checksum argument is given, but a URL is given.");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-C" + DEFAULT_CHECKSUM,
+                "-f" + DEFAULT_FILE_ID};
+        new PutFileCmd(args);
+    }
+
+    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    public void badChecksumAlgorithmArgumentTest() throws Exception {
+        addDescription("Test failure giving non-existing checksum algorithm as argument.");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
+                "-C" + DEFAULT_CHECKSUM,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-i" + DEFAULT_FILE_ID,
+                "-R" + "NonExistingChecksumType"};
+        new PutFileCmd(args);
+    }
+
+    @Test(groups = { "regressiontest" })
+    public void checksumArgumentNonSaltAlgorithmWitoutSaltTest() throws Exception {
+        addDescription("Test MD5 checksum without salt -> no failure");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
+                "-C" + DEFAULT_CHECKSUM,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-i" + DEFAULT_FILE_ID,
+                "-R" + "MD5"};
+        new PutFileCmd(args);
+    }
+
+    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    public void checksumArgumentNonSaltAlgorithmWithSaltTest() throws Exception {
+        addDescription("Test SHA1 checksum with salt -> failure");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
+                "-C" + DEFAULT_CHECKSUM,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-i" + DEFAULT_FILE_ID,
+                "-R" + "SHA1",
+                "-S" + "SALT"};
+        new PutFileCmd(args);
+    }
+
+    @Test(groups = { "regressiontest" })
+    public void checksumArgumentSaltAlgorithmWithSaltTest() throws Exception {
+        addDescription("Test HMAC_SHA256 checksum with salt -> No failure");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
+                "-C" + DEFAULT_CHECKSUM,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-i" + DEFAULT_FILE_ID,
+                "-R" + "HMAC_SHA256",
+                "-S" + "SALT"};
+        new PutFileCmd(args);
+    }
+
+    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    public void checksumArgumentSaltAlgorithmWithoutSaltTest() throws Exception {
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
+                "-C" + DEFAULT_CHECKSUM,
+                "-c" + DEFAULT_COLLECTION_ID, 
+                "-i" + DEFAULT_FILE_ID,
+                "-R" + "HMAC_SHA512"};
+        new PutFileCmd(args);
     }
 }

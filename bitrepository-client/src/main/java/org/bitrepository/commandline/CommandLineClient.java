@@ -56,19 +56,24 @@ import org.bitrepository.protocol.security.SecurityManager;
  */
 public abstract class CommandLineClient {
     private final String componentID;
-    
+
     /**
      * Runs a specific command-line-client operation. 
      * Handles also the closing of connections and deals with exceptions.
      */
     public void runCommand() throws Exception {
-    	try {
-    		performOperation();
-    	} finally {
-    		shutdown();
-    	}
+        try {
+            try {
+                performOperation();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(Constants.EXIT_OPERATION_FAILURE);
+            }
+        } finally {
+            shutdown();
+        }
     }
-    
+
     /** For handling the output.*/
     protected final OutputHandler output = new DefaultOutputHandler(getClass());
 
@@ -110,7 +115,7 @@ public abstract class CommandLineClient {
 
         output.startupInfo("Creating client.");
     }
-    
+
     /**
      * Method for performing the operation of the specific commandline client.
      */
@@ -177,35 +182,35 @@ public abstract class CommandLineClient {
             }
         }
     }
-    
+
     /**
      * Validates the requested checksum specification.
      */
     protected void validateRequestChecksumSpec() {
-    	if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
-    		try {
-    			ChecksumType algorithm = ChecksumType.valueOf(
-    					cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG));
+        if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
+            try {
+                ChecksumType algorithm = ChecksumType.valueOf(
+                        cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG));
                 if (ChecksumUtils.requiresSalt(algorithm) 
-                		&& !cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
-                	throw new IllegalArgumentException("A salted checksum cannot be requested without providing the "
-                			+ "salt. Needs parameter: '" + Constants.REQUEST_CHECKSUM_SALT_ARG + "'");
+                        && !cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
+                    throw new IllegalArgumentException("A salted checksum cannot be requested without providing the "
+                            + "salt. Needs parameter: '" + Constants.REQUEST_CHECKSUM_SALT_ARG + "'");
                 }
                 if (!ChecksumUtils.requiresSalt(algorithm) 
-                		&& cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
-                	throw new IllegalArgumentException("The given checksum algorithm cannot handle a salt. "
-                			+ "Change algorithm for parameter '" + Constants.REQUEST_CHECKSUM_TYPE_ARG + "', or "
-                			+ "remove the salt parameter '" + Constants.REQUEST_CHECKSUM_SALT_ARG + "'.");
+                        && cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
+                    throw new IllegalArgumentException("The given checksum algorithm cannot handle a salt. "
+                            + "Change algorithm for parameter '" + Constants.REQUEST_CHECKSUM_TYPE_ARG + "', or "
+                            + "remove the salt parameter '" + Constants.REQUEST_CHECKSUM_SALT_ARG + "'.");
                 }
             } catch (NoSuchAlgorithmException e) {
-            	throw new IllegalArgumentException("Invalid arguments for the requested checksum.", e);
+                throw new IllegalArgumentException("Invalid arguments for the requested checksum.", e);
             }
-    	}
-    	if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG) 
-    			&& !cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
-        	throw new IllegalArgumentException("Cannot have a salt without a checksum algorithm. Needs argument '" 
-        			+ Constants.REQUEST_CHECKSUM_TYPE_ARG + "'");
-    	}
+        }
+        if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG) 
+                && !cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
+            throw new IllegalArgumentException("Cannot have a salt without a checksum algorithm. Needs argument '" 
+                    + Constants.REQUEST_CHECKSUM_TYPE_ARG + "'");
+        }
     }
 
     /**
@@ -247,7 +252,7 @@ public abstract class CommandLineClient {
         return settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
                 + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
     }
-    
+
     /**
      * @return The requested checksum spec, or the default checksum from settings if the arguments does not exist.
      */
@@ -258,7 +263,7 @@ public abstract class CommandLineClient {
 
         return getRequestChecksumSpec();
     }
-    
+
     /**
      * @return The requested checksum spec, or null.
      */
@@ -269,7 +274,7 @@ public abstract class CommandLineClient {
 
         return getRequestChecksumSpec();
     }
-    
+
     /**
      * Create the ChecksumSpecTYPE based on the cmd-line arguments.
      * Do not use directly. Use either 'getRequestChecksumSpecOrNull' or 'getRequestChecksumSpecOrDefault' to handle
@@ -294,7 +299,7 @@ public abstract class CommandLineClient {
 
         return res;
     }
-    
+
     /**
      * Finds the file from the arguments.
      * @return The requested file, or null if no file argument was given.
@@ -330,7 +335,7 @@ public abstract class CommandLineClient {
 
         return res;
     }
-    
+
     /**
      * Removes the file at the webserver after the operation has finished..
      * @param url The URL where the file should be removed from.
@@ -344,7 +349,7 @@ public abstract class CommandLineClient {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Retrieves the URL for the PutFile operation.
      * Either uploads the actual file to a webserver, or takes the URL argument.
@@ -365,7 +370,7 @@ public abstract class CommandLineClient {
             }
         }
     }
-    
+
     /**
      * @return The size of the actual file, or 0 if no file argument is given.
      */

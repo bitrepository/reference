@@ -21,8 +21,6 @@
  */
 package org.bitrepository.commandline;
 
-import static org.testng.Assert.fail;
-
 import java.util.Date;
 
 import org.bitrepository.client.DefaultFixtureClientTest;
@@ -34,68 +32,60 @@ public class GetFileIDsCmdTest extends DefaultFixtureClientTest {
     private static final String KEY_FILE = "KeyFile";
 
     private String DEFAULT_COLLECTION_ID;
-    
+
     @BeforeMethod(alwaysRun = true)
     public void setupClient() throws Exception {
-    	DEFAULT_COLLECTION_ID = settingsForTestClient.getCollections().get(0).getID();
-    }
-    
-    @Test(groups = { "regressiontest" })
-    public void successScenarioTest() throws Exception {
-    	addDescription("Tests the scenario, where the arguments are OK.");
-    	String[] args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-c" + DEFAULT_COLLECTION_ID, 
-    			"-i" + DEFAULT_FILE_ID};
-    	new GetFileIDs(args);
+        DEFAULT_COLLECTION_ID = settingsForTestClient.getCollections().get(0).getID();
     }
 
     @Test(groups = { "regressiontest" })
-    public void missingCollectionScenarioTest() throws Exception {
-    	addDescription("Tests the scenario, where the collection arguments is missing.");
-    	String[] args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-i" + DEFAULT_FILE_ID};
-    	try {
-    		new GetFileIDs(args);
-            fail("Should fail.");
-    	} catch (IllegalArgumentException e) {
-    		// expected.
-    	}
+    public void defaultSuccessScenarioTest() throws Exception {
+        addDescription("Tests simplest arguments for running the CmdLineClient");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-c" + DEFAULT_COLLECTION_ID};
+        new GetFileIDsCmd(args);
+    }
+
+
+    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    public void missingCollectionArgumentTest() throws Exception {
+        addDescription("Tests the scenario, where the collection arguments is missing.");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-i" + DEFAULT_FILE_ID};
+        new GetFileIDsCmd(args);
     }
 
     @Test(groups = { "regressiontest" })
-    public void pillarScenarioTest() throws Exception {
-    	addDescription("Tests the different scenarios, with the pillar argument.");
-    	addStep("Testing against the first pillar id", "Should not fail");
-    	String[] args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-c" + DEFAULT_COLLECTION_ID,
-    			"-p" + PILLAR1_ID,
-    			"-i" + DEFAULT_FILE_ID};
-		new GetFileIDs(args);
-    	
-    	addStep("Testing against a non-existing pillar id", "Should fail");
-    	args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-c" + DEFAULT_COLLECTION_ID,
-    			"-p" + "Random" + (new Date()).getTime() + "pillar",
-    			"-i" + DEFAULT_FILE_ID};
-    	try {
-    		new GetFileIDs(args);
-            fail("Should fail.");
-    	} catch (IllegalArgumentException e) {
-    		// expected.
-    	}
+    public void specificPillarArgumentTest() throws Exception {
+        addDescription("Test argument for a specific pillar");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-c" + DEFAULT_COLLECTION_ID,
+                "-p" + PILLAR1_ID,
+                "-i" + DEFAULT_FILE_ID};
+        new GetFileIDsCmd(args);
     }
-    
+
+    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    public void unknownPillarArgumentTest() throws Exception {
+        addDescription("Testing against a non-existing pillar id -> Should fail");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-c" + DEFAULT_COLLECTION_ID,
+                "-p" + "Random" + (new Date()).getTime() + "pillar",
+                "-i" + DEFAULT_FILE_ID};
+        new GetFileIDsCmd(args);
+    }
+
     @Test(groups = { "regressiontest" })
-    public void missingFileScenarioTest() throws Exception {
-    	addDescription("Tests the scenario, where no arguments for file id is given.");
-    	addStep("Test missing FileId argument", "Should not fail (no file id => all file ids)");
-    	String[] args = new String[]{"-s" + SETTINGS_DIR, 
-    			"-k" + KEY_FILE,
-    			"-c" + DEFAULT_COLLECTION_ID};
-    	new GetFileIDs(args);
+    public void fileArgumentTest() throws Exception {
+        addDescription("Tests the argument for a specific file.");
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
+                "-k" + KEY_FILE,
+                "-c" + DEFAULT_COLLECTION_ID,
+                "-i" + DEFAULT_FILE_ID};
+        new GetFileIDsCmd(args);
     }
 }

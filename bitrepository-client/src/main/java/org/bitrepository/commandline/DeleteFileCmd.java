@@ -34,7 +34,7 @@ import org.bitrepository.modify.deletefile.DeleteFileClient;
 /**
  * Deleting a file from the collection.
  */
-public class DeleteFile extends CommandLineClient {
+public class DeleteFileCmd extends CommandLineClient {
     /** The client for performing the DeleteFile operation.*/
     private final DeleteFileClient client;
 
@@ -42,21 +42,21 @@ public class DeleteFile extends CommandLineClient {
      * @param args The arguments for performing the DeleteFile operation.
      */
     public static void main(String[] args) {
-    	try {
-    		DeleteFile client = new DeleteFile(args);
-    		client.runCommand();
-    	} catch (IllegalArgumentException iae) {
+        try {
+            DeleteFileCmd client = new DeleteFileCmd(args);
+            client.runCommand();
+        } catch (IllegalArgumentException iae) {
             System.exit(Constants.EXIT_ARGUMENT_FAILURE);
-    	} catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(Constants.EXIT_OPERATION_FAILURE);
-    	}
+        }
     }
 
     /**
      * @param args The command line arguments for defining the operation.
      */
-    protected DeleteFile(String ... args) {
+    protected DeleteFileCmd(String ... args) {
         super(args);
         client = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, securityManager,
                 getComponentID());
@@ -129,7 +129,7 @@ public class DeleteFile extends CommandLineClient {
         output.debug("Initiating the DeleteFile conversation.");
         CompleteEventAwaiter eventHandler = new DeleteFileEventHandler(settings, output);
         String pillarId = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
-        
+
         if (requestChecksum != null) {
             output.resultHeader("PillarId \t Checksum");
         }

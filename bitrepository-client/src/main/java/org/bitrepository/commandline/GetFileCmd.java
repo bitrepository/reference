@@ -39,7 +39,7 @@ import java.net.URL;
 /**
  * Perform the GetFile operation.
  */
-public class GetFile extends CommandLineClient {
+public class GetFileCmd extends CommandLineClient {
     /** The client for performing the GetFile operation.*/
     private final GetFileClient client;
     /** The URL for where the file from the GetFile*/
@@ -49,21 +49,21 @@ public class GetFile extends CommandLineClient {
      * @param args The arguments for performing the GetFile operation.
      */
     public static void main(String[] args) {
-    	try {
-    		GetFile client = new GetFile(args);
-    		client.runCommand();
-    	} catch (IllegalArgumentException iae) {
+        try {
+            GetFileCmd client = new GetFileCmd(args);
+            client.runCommand();
+        } catch (IllegalArgumentException iae) {
             System.exit(Constants.EXIT_ARGUMENT_FAILURE);
-    	} catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(Constants.EXIT_OPERATION_FAILURE);
-    	}
+        }
     }
 
     /**
      * @param args The command line arguments for defining the operation.
      */
-    protected GetFile(String ... args) {
+    protected GetFileCmd(String ... args) {
         super(args);
         client = AccessComponentFactory.getInstance().createGetFileClient(settings, securityManager,
                 getComponentID());

@@ -37,7 +37,7 @@ import org.bitrepository.modify.replacefile.ReplaceFileClient;
  * Replace a file from the collection.
  * 
  */
-public class ReplaceFile extends CommandLineClient {
+public class ReplaceFileCmd extends CommandLineClient {
     /** The client for performing the ReplaceFile operation.*/
     private final ReplaceFileClient client;
 
@@ -45,21 +45,21 @@ public class ReplaceFile extends CommandLineClient {
      * @param args The arguments for performing the ReplaceFile operation.
      */
     public static void main(String[] args) {
-    	try {
-    		ReplaceFile client = new ReplaceFile(args);
-    		client.runCommand();
-    	} catch (IllegalArgumentException iae) {
+        try {
+            ReplaceFileCmd client = new ReplaceFileCmd(args);
+            client.runCommand();
+        } catch (IllegalArgumentException iae) {
             System.exit(Constants.EXIT_ARGUMENT_FAILURE);
-    	} catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(Constants.EXIT_OPERATION_FAILURE);
-    	}
+        }
     }
 
     /**
      * @param args The command line arguments for defining the operation.
      */
-    protected ReplaceFile(String ... args) {
+    protected ReplaceFileCmd(String ... args) {
         super(args);
         client = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings, securityManager,
                 getComponentID());
@@ -99,7 +99,7 @@ public class ReplaceFile extends CommandLineClient {
                 "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
         checksumSaltOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
-        
+
         Option deleteOption = new Option(Constants.DELETE_FILE_ARG, Constants.NO_ARGUMENT, 
                 "If this argument is present, then the file will be removed from the server, "
                         + "when the operation is complete.");
@@ -128,7 +128,7 @@ public class ReplaceFile extends CommandLineClient {
             throw new IllegalArgumentException("Checksum argument (-C) are mandatory for Replace and replace "
                     + "operations as defined in RepositorySettings.");
         }
-        
+
         if(cmdHandler.hasOption(Constants.FILE_ARG) && cmdHandler.hasOption(Constants.URL_ARG)) {
             throw new IllegalArgumentException("Cannot take both a file (-f) and an URL (-u) as argument.");
         }
@@ -143,7 +143,7 @@ public class ReplaceFile extends CommandLineClient {
             throw new IllegalArgumentException("The URL argument requires also the argument for the ID of the "
                     + "file (-i).");
         }
-        
+
         validateRequestChecksumSpec();
     }
 
@@ -176,17 +176,17 @@ public class ReplaceFile extends CommandLineClient {
         output.debug("Initiating the ReplaceFile conversation.");
         CompleteEventAwaiter eventHandler = new ReplaceFileEventHandler(settings, output);
         String pillarId = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
-        
+
         if (requestChecksum != null) {
             output.resultHeader("PillarId results");
         }
-        
+
         client.replaceFile(getCollectionID(), fileId, pillarId, replaceValidationChecksum, 
                 requestChecksum, url, getSizeOfFileOrZero(), newValidationChecksum, 
                 requestChecksum, eventHandler, null);
 
         OperationEvent finalEvent = eventHandler.getFinish(); 
-        
+
         if(cmdHandler.hasOption(Constants.DELETE_FILE_ARG)) {
             deleteFileAfterwards(url);
         }
@@ -194,7 +194,7 @@ public class ReplaceFile extends CommandLineClient {
         return finalEvent;
     }
 
-    
+
     /**
      * Retrieves the Checksum for the pillars to validate, either taken from the actual file, 
      * or from the checksum argument.
