@@ -22,6 +22,15 @@
 
 package org.bitrepository.commandline;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.jms.JMSException;
+
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
@@ -42,35 +51,22 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
 
-import javax.jms.JMSException;
-
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Defines the common functionality for command-line-clients.
  */
 public abstract class CommandLineClient {
     private final String componentID;
+    
     /**
      * Runs a specific command-line-client operation. 
      * Handles also the closing of connections and deals with exceptions.
      */
-    public void runCommand() {
-        try {
-            try {
-                performOperation();
-            } finally {
-                shutdown();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(Constants.EXIT_OPERATION_FAILURE);
-        }
+    public void runCommand() throws Exception {
+    	try {
+    		performOperation();
+    	} finally {
+    		shutdown();
+    	}
     }
     
     /** For handling the output.*/
@@ -95,7 +91,7 @@ public abstract class CommandLineClient {
         } catch (ParseException pe) {
             output.error(cmdHandler.listArguments() +
                     "Missing argument: " + pe.getMessage());
-            System.exit(Constants.EXIT_ARGUMENT_FAILURE);
+            throw new IllegalArgumentException("Missing arguments", pe);
         }
         if(cmdHandler.hasOption(Constants.VERBOSITY_ARG)) {
             output.setVerbosity(true);
@@ -109,7 +105,7 @@ public abstract class CommandLineClient {
             validateArguments();
         } catch (IllegalArgumentException iae) {
             output.error("Invalid argument: " + iae.getMessage());
-            System.exit(Constants.EXIT_ARGUMENT_FAILURE);
+            throw iae;
         }
 
         output.startupInfo("Creating client.");
@@ -183,21 +179,32 @@ public abstract class CommandLineClient {
     }
     
     /**
-     * Validates the 
+     * Validates the requested checksum specification.
      */
     protected void validateRequestChecksumSpec() {
     	if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
     		try {
-    			ChecksumType algorithm = ChecksumType.valueOf(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG));
-                if (ChecksumUtils.requiresSalt(algorithm) && !cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
-                	throw new IllegalArgumentException("A salted checksum cannot be requested without providing the salt.");
+    			ChecksumType algorithm = ChecksumType.valueOf(
+    					cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG));
+                if (ChecksumUtils.requiresSalt(algorithm) 
+                		&& !cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
+                	throw new IllegalArgumentException("A salted checksum cannot be requested without providing the "
+                			+ "salt. Needs parameter: '" + Constants.REQUEST_CHECKSUM_SALT_ARG + "'");
                 }
-                if (!ChecksumUtils.requiresSalt(algorithm) && cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
-                	throw new IllegalArgumentException("The given checksum algorithm does not require a salt.");
+                if (!ChecksumUtils.requiresSalt(algorithm) 
+                		&& cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
+                	throw new IllegalArgumentException("The given checksum algorithm cannot handle a salt. "
+                			+ "Change algorithm for parameter '" + Constants.REQUEST_CHECKSUM_TYPE_ARG + "', or "
+                			+ "remove the salt parameter '" + Constants.REQUEST_CHECKSUM_SALT_ARG + "'.");
                 }
             } catch (NoSuchAlgorithmException e) {
             	throw new IllegalArgumentException("Invalid arguments for the requested checksum.", e);
             }
+    	}
+    	if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG) 
+    			&& !cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
+        	throw new IllegalArgumentException("Cannot have a salt without a checksum algorithm. Needs argument '" 
+        			+ Constants.REQUEST_CHECKSUM_TYPE_ARG + "'");
     	}
     }
 

@@ -188,7 +188,14 @@ public class ChecksumUtilsTest extends ExtendedTestCase {
 
         try {
             ChecksumUtils.verifyAlgorithm(csType);
-            Assert.fail("The 'OTHER' algorithms should be invalid without the salt: '" + csType);
+            Assert.fail("The 'OTHER' algorithms should be invalid no matter the salt: '" + csType);
+        } catch (NoSuchAlgorithmException e) {
+            // expected
+        }
+        
+        try {
+        	ChecksumUtils.requiresSalt(algorithm);
+            Assert.fail("The 'OTHER' algorithms should be invalid no matter the salt: '" + csType);
         } catch (NoSuchAlgorithmException e) {
             // expected
         }
@@ -223,6 +230,8 @@ public class ChecksumUtilsTest extends ExtendedTestCase {
             // expected
         }
 
+        Assert.assertTrue(ChecksumUtils.requiresSalt(hmacType), "HMAC algorithms must require salt.");
+        
         csType.setChecksumSalt(new byte[]{0});
         ChecksumUtils.verifyAlgorithm(csType);   
 
@@ -237,7 +246,9 @@ public class ChecksumUtilsTest extends ExtendedTestCase {
         csType.setChecksumType(algorithmType);
         
         ChecksumUtils.verifyAlgorithm(csType);   
-        
+
+        Assert.assertFalse(ChecksumUtils.requiresSalt(algorithmType), "Non-HMAC algorithms must not require salt.");
+
         csType.setChecksumSalt(new byte[0]);
         ChecksumUtils.verifyAlgorithm(csType);
         

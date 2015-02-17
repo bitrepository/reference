@@ -38,14 +38,21 @@ public class GetFileIDs extends CommandLineClient {
      * @param args The arguments for performing the GetFileIDs operation.
      */
     public static void main(String[] args) {
-        GetFileIDs client = new GetFileIDs(args);
-        client.runCommand();
+    	try {
+    		GetFileIDs client = new GetFileIDs(args);
+    		client.runCommand();
+    	} catch (IllegalArgumentException iae) {
+            System.exit(Constants.EXIT_ARGUMENT_FAILURE);
+    	} catch (Exception e) {
+            e.printStackTrace();
+            System.exit(Constants.EXIT_OPERATION_FAILURE);
+    	}
     }
 
     /**
      * @param args The command line arguments for defining the operation.
      */
-    private GetFileIDs(String ... args) {
+    protected GetFileIDs(String ... args) {
         super(args);
         output.debug("Instantiation GetFileIDClient.");
         GetFileIDsClient client = AccessComponentFactory.getInstance().createGetFileIDsClient(settings, 

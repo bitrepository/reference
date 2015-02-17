@@ -41,14 +41,21 @@ public class GetChecksums extends CommandLineClient {
      * @param args The arguments for performing the GetChecksums operation.
      */
     public static void main(String[] args) {
-        GetChecksums client = new GetChecksums(args);
-        client.runCommand();
+    	try {
+    		GetChecksums client = new GetChecksums(args);
+    		client.runCommand();
+    	} catch (IllegalArgumentException iae) {
+            System.exit(Constants.EXIT_ARGUMENT_FAILURE);
+    	} catch (Exception e) {
+            e.printStackTrace();
+            System.exit(Constants.EXIT_OPERATION_FAILURE);
+    	}
     }
 
     /**
      * @param args The command line arguments for defining the operation.
      */
-    private GetChecksums(String ... args) {
+    protected GetChecksums(String ... args) {
         super(args);
         GetChecksumsClient client = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, 
                 securityManager, getComponentID());

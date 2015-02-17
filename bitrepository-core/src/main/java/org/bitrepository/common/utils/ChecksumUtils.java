@@ -118,35 +118,28 @@ public final class ChecksumUtils {
      * @return The HMAC calculated checksum in hexadecimal.
      */
     public static String generateChecksum(InputStream content, ChecksumSpecTYPE csSpec) {
-        
         byte[] digest = null;
         ChecksumType algorithm = csSpec.getChecksumType();
         
-        if((algorithm == ChecksumType.MD5) 
-                || (algorithm == ChecksumType.SHA1)
-                || (algorithm == ChecksumType.SHA256)
-                || (algorithm == ChecksumType.SHA384)
-                || (algorithm == ChecksumType.SHA512)) {
-            if(csSpec.getChecksumSalt() != null && csSpec.getChecksumSalt().length > 0) {
-                throw new IllegalArgumentException("Cannot perform a message-digest checksum calculation with salt "
-                        + "as requested:" + csSpec);
-            }
-            digest = calculateChecksumWithMessageDigest(content, algorithm);
-        } else if((algorithm == ChecksumType.HMAC_MD5) 
-                || (algorithm == ChecksumType.HMAC_SHA1)
-                || (algorithm == ChecksumType.HMAC_SHA256)
-                || (algorithm == ChecksumType.HMAC_SHA384)
-                || (algorithm == ChecksumType.HMAC_SHA512)) {
-            if(csSpec.getChecksumSalt() == null || csSpec.getChecksumSalt().length == 0) {
-                throw new IllegalArgumentException("Cannot perform a HMAC checksum calculation without salt as requested:" 
-                        + csSpec);
-            }
-            digest = calculateChecksumWithHMAC(content, algorithm, csSpec.getChecksumSalt());
-        } else {
-            throw new IllegalStateException("The checksum algorithm '" + csSpec.getChecksumType().name() 
-                    + "' is not supported.");
+        try {
+        	if(requiresSalt(algorithm)) {
+        		if(csSpec.getChecksumSalt() == null || csSpec.getChecksumSalt().length == 0) {
+        			throw new IllegalArgumentException("Cannot perform a HMAC checksum calculation without salt as requested:" 
+        					+ csSpec);
+        		}
+        		digest = calculateChecksumWithHMAC(content, algorithm, csSpec.getChecksumSalt());
+        	} else {
+        		if(csSpec.getChecksumSalt() != null && csSpec.getChecksumSalt().length > 0) {
+        			throw new IllegalArgumentException("Cannot perform a message-digest checksum calculation with salt "
+        					+ "as requested:" + csSpec);
+        		}
+        		digest = calculateChecksumWithMessageDigest(content, algorithm);
+        	}
+        } catch (NoSuchAlgorithmException e) {
+        	throw new IllegalStateException("The checksum algorithm '" + csSpec.getChecksumType().name() 
+        			+ "' is not supported.");        	
         }
-        
+
         return Base16Utils.decodeBase16(digest);
     }
     
