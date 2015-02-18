@@ -29,8 +29,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.client.conversation.Conversation;
+import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.MessageContext;
@@ -179,7 +181,8 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         
         @Override
         public void run() {
-            OperationFailedEvent failedEvent = new OperationFailedEvent(null, message, null);
+            OperationFailedEvent failedEvent = new OperationFailedEvent(null, message, 
+                    Collections.<ContributorEvent>emptyList());
             failedEvent.setConversationID(conversation.getConversationID());
             conversation.failConversation(failedEvent);
         }
