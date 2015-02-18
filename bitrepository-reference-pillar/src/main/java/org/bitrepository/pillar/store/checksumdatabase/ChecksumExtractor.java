@@ -204,7 +204,7 @@ public class ChecksumExtractor {
         
         ExtractedFileIDsResultSet results = new ExtractedFileIDsResultSet();
         try (Connection conn = connector.getConnection();
-             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())){
+            PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())){
             conn.setAutoCommit(false);
             ps.setFetchSize(100);
             try (ResultSet res = ps.executeQuery()){
@@ -297,6 +297,26 @@ public class ChecksumExtractor {
         }
         
         return results;
+    }
+    
+    /**
+     * Extracts the file ids data for a given file-id within the given optional limitations.
+     * 
+     * @param minTimeStamp The minimum date for the timestamp of the extracted file ids.
+     * @param maxTimeStamp The maximum date for the timestamp of the extracted file ids.
+     * @param fileID The id of the file.
+     * @param collectionId The collection id for the extraction.
+     * @return The file ids data for the given file-id.
+     */
+    public ExtractedFileIDsResultSet extractSingleFileID(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
+            String fileID, String collectionId) {
+        ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
+        ChecksumEntry ce = extractSingleEntryWithRestrictions(minTimeStamp, maxTimeStamp, fileID, collectionId);
+        if(ce != null) {
+            res.insertFileID(ce.getFileId(), ce.getCalculationDate());
+        }
+        
+        return res;
     }
     
     /**

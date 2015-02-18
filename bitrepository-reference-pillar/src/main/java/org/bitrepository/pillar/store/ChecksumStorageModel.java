@@ -119,7 +119,7 @@ public class ChecksumStorageModel extends StorageModel {
     @Override
     public ExtractedFileIDsResultSet getFileIDsResultSet(String fileID, XMLGregorianCalendar minTimestamp, 
             XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID) {
-        return cache.getFileIDs(minTimestamp, maxTimestamp, maxResults, collectionID);
+        return cache.getFileIDs(minTimestamp, maxTimestamp, maxResults, fileID, collectionID);
     }
 
     @Override

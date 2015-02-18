@@ -101,7 +101,7 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
 
         addStep("Check whether the default entry exists.", "It does!");
         Assert.assertTrue(cache.hasFile(DEFAULT_FILE_ID, collectionID));
-        ExtractedFileIDsResultSet res = cache.getFileIDs(null, null, null, collectionID);
+        ExtractedFileIDsResultSet res = cache.getFileIDs(null, null, null, null, collectionID);
         Assert.assertEquals(res.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 1);
         Assert.assertEquals(res.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID(),
                 DEFAULT_FILE_ID);
@@ -109,7 +109,7 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         addStep("Remove the default entry", "Should no longer exist");
         cache.deleteEntry(DEFAULT_FILE_ID, collectionID);
         Assert.assertFalse(cache.hasFile(DEFAULT_FILE_ID, collectionID));
-        res = cache.getFileIDs(null, null, null, collectionID);
+        res = cache.getFileIDs(null, null, null, null, collectionID);
         Assert.assertEquals(res.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 0);
     }
 
@@ -228,38 +228,49 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         cache.insertChecksumCalculation(FILE_ID_2, collectionID, DEFAULT_CHECKSUM, FILE_2_DATE);
         
         addStep("Test with no time restrictions and 10000 max_results", "Delivers both files.");
-        ExtractedFileIDsResultSet efirs = cache.getFileIDs(null, null, 100000L, collectionID);
+        ExtractedFileIDsResultSet efirs = cache.getFileIDs(null, null, 100000L, null, collectionID);
         Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 2);
         
         addStep("Test with minimum-date earlier than first file", "Delivers both files.");
-        efirs = cache.getFileIDs(CalendarUtils.getFromMillis(0), null, 100000L, collectionID);
+        efirs = cache.getFileIDs(CalendarUtils.getFromMillis(0), null, 100000L, null, collectionID);
         Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 2);
 
         addStep("Test with maximum-date earlier than first file", "Delivers no files.");
-        efirs = cache.getFileIDs(null, CalendarUtils.getFromMillis(0), 100000L, collectionID);
+        efirs = cache.getFileIDs(null, CalendarUtils.getFromMillis(0), 100000L, null, collectionID);
         Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 0);
 
         addStep("Test with minimum-date set to later than second file.", "Delivers no files.");
-        efirs = cache.getFileIDs(CalendarUtils.getXmlGregorianCalendar(new Date()), null, 100000L, collectionID);
+        efirs = cache.getFileIDs(CalendarUtils.getXmlGregorianCalendar(new Date()), null, 100000L, null, collectionID);
         Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 0);
 
         addStep("Test with maximum-date set to later than second file.", "Delivers both files.");
-        efirs = cache.getFileIDs(null, CalendarUtils.getXmlGregorianCalendar(new Date()), 100000L, collectionID);
+        efirs = cache.getFileIDs(null, CalendarUtils.getXmlGregorianCalendar(new Date()), 100000L, null, collectionID);
         Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 2);
 
         addStep("Test with minimum-date set to middle date.", "Delivers second file.");
-        efirs = cache.getFileIDs(CalendarUtils.getXmlGregorianCalendar(MIDDLE_DATE), null, 100000L, collectionID);
+        efirs = cache.getFileIDs(CalendarUtils.getXmlGregorianCalendar(MIDDLE_DATE), null, 100000L, null, collectionID);
         Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 1);
         Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID(), FILE_ID_2);
         
         addStep("Test with maximum-date set to middle date.", "Delivers first file.");
-        efirs = cache.getFileIDs(null, CalendarUtils.getXmlGregorianCalendar(MIDDLE_DATE), 100000L, collectionID);
+        efirs = cache.getFileIDs(null, CalendarUtils.getXmlGregorianCalendar(MIDDLE_DATE), 100000L, null, collectionID);
         Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 1);
         Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID(), FILE_ID_1);
 
         addStep("Test with both minimum-date and maximum-date set to middle date.", "Delivers no files.");
-        efirs = cache.getFileIDs(CalendarUtils.getXmlGregorianCalendar(MIDDLE_DATE), CalendarUtils.getXmlGregorianCalendar(MIDDLE_DATE), 100000L, collectionID);
+        efirs = cache.getFileIDs(CalendarUtils.getXmlGregorianCalendar(MIDDLE_DATE), CalendarUtils.getXmlGregorianCalendar(MIDDLE_DATE), 100000L, null, collectionID);
         Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 0);
+        
+        addStep("Test the first file-id, with no other restrictions", "Only delivers the requested file-id");
+        efirs = cache.getFileIDs(null, null, 100000L, FILE_ID_1, collectionID);
+        Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 1);
+        Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID(), FILE_ID_1);
+        
+        addStep("Test the second file-id, with no other restrictions", "Only delivers the requested file-id");
+        efirs = cache.getFileIDs(null, null, 100000L, FILE_ID_2, collectionID);
+        Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 1);
+        Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID(), FILE_ID_2);
+        
         
     }
 

@@ -57,7 +57,7 @@ public class MemoryCacheMock implements ChecksumStore {
     
     @Override
     public ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            Long maxNumberOfResults, String collectionId) {
+            Long maxNumberOfResults, String fileID, String collectionId) {
         ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
         for(String s : checksumMap.keySet()) {
             res.insertFileID(s, new Date(0));
