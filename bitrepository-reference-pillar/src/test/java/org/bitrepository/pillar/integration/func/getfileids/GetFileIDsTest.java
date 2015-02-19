@@ -117,30 +117,12 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(fileids, null);
         messageBus.sendMessage(getFileIDsRequest);
         
-        addStep("Retrieve the ProgressResponse for the GetFileIDs request",
-                "A GetFileIDs progress response should be sent to the client with correct attributes.");
-        GetFileIDsProgressResponse progressResponse = clientReceiver.waitForMessage(GetFileIDsProgressResponse.class);
-        assertNotNull(progressResponse);
-        assertEquals(progressResponse.getCorrelationID(), getFileIDsRequest.getCorrelationID());
-        assertEquals(progressResponse.getFileIDs(), getFileIDsRequest.getFileIDs());
-        assertEquals(progressResponse.getFrom(), getPillarID());
-        assertEquals(progressResponse.getPillarID(), getPillarID());
-        assertEquals(progressResponse.getReplyTo(), pillarDestination);
-        assertEquals(progressResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.OPERATION_ACCEPTED_PROGRESS);
-
         addStep("Retrieve the FinalResponse for the GetFileIDs request.",
                 "A OPERATION_COMPLETE final response only containing the requested file-id.");
         GetFileIDsFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileIDsFinalResponse.class);
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-        assertEquals(finalResponse.getCorrelationID(), getFileIDsRequest.getCorrelationID());
-        assertEquals(finalResponse.getFileIDs(), fileids);
-        assertEquals(finalResponse.getFrom(), getPillarID());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getReplyTo(), pillarDestination);
-        assertNull(finalResponse.getResultingFileIDs().getResultAddress());
         assertEquals(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size(), 1);
         assertEquals(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID(), DEFAULT_FILE_ID);
+        assertFalse(finalResponse.isSetPartialResult() && finalResponse.isPartialResult());
     }
     
     @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})

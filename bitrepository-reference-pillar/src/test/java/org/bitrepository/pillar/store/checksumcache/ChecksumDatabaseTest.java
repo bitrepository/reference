@@ -271,7 +271,9 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 1);
         Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID(), FILE_ID_2);
         
-        
+        addStep("Test the date for the first file-id, while requesting the second file-id", "Should not deliver anything");
+        efirs = cache.getFileIDs(CalendarUtils.getFromMillis(0), CalendarUtils.getXmlGregorianCalendar(MIDDLE_DATE), 100000L, FILE_ID_2, collectionID);
+        Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 0);
     }
 
 

@@ -106,13 +106,9 @@ public class ChecksumDAO implements ChecksumStore {
     
     @Override
     public ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            Long maxNumberOfResults, String fileID, String collectionId) {
+            Long maxNumberOfResults, String fileId, String collectionId) {
         ArgumentValidator.checkNotNull(collectionId, "String collectionId");
-        if(fileID == null || fileID.isEmpty()) {
-            return extractor.getFileIDs(minTimeStamp, maxTimeStamp, maxNumberOfResults, collectionId);
-        }
-        
-        return extractor.extractSingleFileID(minTimeStamp, maxTimeStamp, fileID, collectionId);
+        return extractor.getFileIDs(minTimeStamp, maxTimeStamp, maxNumberOfResults, fileId, collectionId);
     }
 
     @Override

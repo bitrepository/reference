@@ -116,11 +116,11 @@ public class FileStorageModel extends StorageModel {
         if(maxTimestamp != null) {
             maxTime = CalendarUtils.convertFromXMLGregorianCalendar(maxTimestamp).getTime();
         }
-        
+
         if(fileID == null) {
             return getFileIds(minTime, maxTime, maxResults, collectionID);
         }
-        
+
         ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
         FileInfo entry = fileArchive.getFileInfo(fileID, collectionID);
         if((minTime == null || minTime <= entry.getLastModifiedDate()) &&
@@ -334,7 +334,7 @@ public class FileStorageModel extends StorageModel {
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, errMsg, collectionID, e);
         }        
     }
-    
+
     /**
      * Verifies that a file in temporary area has the expected checksum.
      * 

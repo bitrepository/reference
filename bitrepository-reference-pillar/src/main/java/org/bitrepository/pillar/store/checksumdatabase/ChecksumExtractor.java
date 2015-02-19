@@ -185,7 +185,7 @@ public class ChecksumExtractor {
      * @return The requested collection of file ids.
      */
     public ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            Long maxNumberOfResults, String collectionId) {
+            Long maxNumberOfResults, String fileId, String collectionId) {
         List<Object> args = new ArrayList<Object>(); 
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT " + CS_FILE_ID + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE + " WHERE " + CS_COLLECTION_ID
@@ -199,6 +199,10 @@ public class ChecksumExtractor {
         if(maxTimeStamp != null) {
             sql.append(" AND " + CS_DATE + " <= ? ");
             args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp));
+        }
+        if(fileId != null) {
+            sql.append(" AND " + CS_FILE_ID + " = ? ");
+            args.add(fileId);
         }
         sql.append(" ORDER BY " + CS_DATE + " ASC ");
         
@@ -297,26 +301,6 @@ public class ChecksumExtractor {
         }
         
         return results;
-    }
-    
-    /**
-     * Extracts the file ids data for a given file-id within the given optional limitations.
-     * 
-     * @param minTimeStamp The minimum date for the timestamp of the extracted file ids.
-     * @param maxTimeStamp The maximum date for the timestamp of the extracted file ids.
-     * @param fileID The id of the file.
-     * @param collectionId The collection id for the extraction.
-     * @return The file ids data for the given file-id.
-     */
-    public ExtractedFileIDsResultSet extractSingleFileID(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            String fileID, String collectionId) {
-        ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
-        ChecksumEntry ce = extractSingleEntryWithRestrictions(minTimeStamp, maxTimeStamp, fileID, collectionId);
-        if(ce != null) {
-            res.insertFileID(ce.getFileId(), ce.getCalculationDate());
-        }
-        
-        return res;
     }
     
     /**
