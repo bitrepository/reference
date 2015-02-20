@@ -88,7 +88,8 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         assertEquals(finalResponse.getPillarID(), getPillarID());
         assertEquals(finalResponse.getReplyTo(), pillarDestination);
         assertNull(finalResponse.getResultingFileIDs().getResultAddress());
-        assertEquals(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size(), 2);
+        assertTrue(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size() >= 2, 
+                "Should be at least 2 files, but found: " + finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
     }
 
     @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
