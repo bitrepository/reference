@@ -21,8 +21,6 @@
  */
 package org.bitrepository.common.utils;
 
-import sun.nio.ch.DevPollSelectorProvider;
-
 /**
  * Util class for handling formatting of datasizes. 
  */
