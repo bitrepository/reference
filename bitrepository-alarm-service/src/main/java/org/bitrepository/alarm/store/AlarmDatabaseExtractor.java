@@ -101,6 +101,7 @@ public class AlarmDatabaseExtractor {
                 conn = dbConnector.getConnection();
                 log.debug("Extracting sql '" + sql + "' with arguments '" + Arrays.asList(extractArgumentsFromModel()));
                 ps = DatabaseUtils.createPreparedStatement(conn, sql, extractArgumentsFromModel());
+                ps.setFetchSize(100);
                 result = ps.executeQuery();
                 
                 int i = 0;
