@@ -37,6 +37,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.integration.ClientProvider;
+import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
 import org.bitrepository.protocol.fileexchange.HttpServerConnector;
 import org.jaccept.TestEventManager;
 
@@ -47,7 +48,7 @@ public class PillarFileManager {
     private final ClientProvider clientProvider;
     @SuppressWarnings("unused")
     private final TestEventManager testEventManager;
-    private final HttpServerConnector httpServer;
+    private final HttpServerConfiguration httpServerConfiguration;
     private int knownNumberOfFilesOnPillar = -1;
 
     public PillarFileManager(
@@ -56,12 +57,12 @@ public class PillarFileManager {
             Settings mySettings,
             ClientProvider clientProvider,
             TestEventManager testEventManager,
-            HttpServerConnector httpServer) {
+            HttpServerConfiguration httpServerConfiguration) {
         this.collectionID = collectionID;
         this.pillarID = pillarID;
         this.mySettings = mySettings;
         this.clientProvider = clientProvider;
-        this.httpServer = httpServer;
+        this.httpServerConfiguration = httpServerConfiguration;
         this.testEventManager = testEventManager;
     }
 
@@ -107,7 +108,7 @@ public class PillarFileManager {
         for (String newFileID:newFileIDs) {
             try {
                 // ToDo: This would be more precise if the client allowed put to a single pillar.
-                clientProvider.getPutClient().putFile(collectionID, httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID),
+                clientProvider.getPutClient().putFile(collectionID, httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID),
                         newFileID, 10L,
                     TestFileHelper.getDefaultFileChecksum(), null, null, null);
             } catch (Exception e) {

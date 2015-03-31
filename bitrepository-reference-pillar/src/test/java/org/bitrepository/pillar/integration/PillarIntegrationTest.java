@@ -65,7 +65,6 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected static PillarIntegrationTestConfiguration testConfiguration;
     private EmbeddedPillar embeddedPillar;
 
-    protected CollectionTestHelper collectionHelper;
     protected PillarFileManager pillarFileManager;
     protected static ClientProvider clientProvider;
 
@@ -79,7 +78,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         reloadMessageBus();
         clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
         pillarFileManager = new PillarFileManager(collectionID,
-            getPillarID(), settingsForTestClient, clientProvider, testEventManager, httpServer);
+            getPillarID(), settingsForTestClient, clientProvider, testEventManager, httpServerConfiguration);
         clientEventHandler = new ClientEventLogger(testEventManager);
     }
 
@@ -89,8 +88,8 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         testConfiguration =
                 new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
         super.initializeSuite(testContext);
-        startEmbeddedPillar(testContext);
         MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
+        startEmbeddedPillar(testContext);
         reloadMessageBus();
         clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
         nonDefaultCollectionId = settingsForTestClient.getCollections().get(1).getID();

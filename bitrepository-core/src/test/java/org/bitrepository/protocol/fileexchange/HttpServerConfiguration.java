@@ -26,6 +26,9 @@ package org.bitrepository.protocol.fileexchange;
 
 import org.bitrepository.settings.referencesettings.FileExchangeSettings;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 /**
  * Configuration for {@link HttpServerConnector} objects. Pretty obsoleted as it only delegates to the
  * Reference settings Fileexchange configuration.
@@ -55,5 +58,22 @@ public class HttpServerConfiguration {
     /** The path to the location we are going to connect to as in the format ${URL}:${PORT}/${PATH} */
     public String getHttpServerPath() {
         return fileExchangeSettings.getPath();
+    }
+
+    /**
+     * Calculates the url for the giving file based on the http configuration.
+     * @param filename
+     */
+    public URL getURL(String filename) throws MalformedURLException {
+        if (getHttpServerName() == null) {
+            return new URL(
+                    getProtocol(),
+                    getHttpServerPath() + "/" + filename);
+        }
+        return new URL(
+                getProtocol(),
+                getHttpServerName(),
+                getPortNumber(),
+                getHttpServerPath() + "/" + filename);
     }
 }

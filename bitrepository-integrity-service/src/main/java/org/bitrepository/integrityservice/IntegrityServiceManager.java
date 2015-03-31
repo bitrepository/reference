@@ -128,7 +128,7 @@ public final class IntegrityServiceManager {
         workFlowManager = new IntegrityWorkflowManager(
                 new IntegrityWorkflowContext(settings, collector, model, alarmDispatcher, auditManager),
                 new TimerbasedScheduler());
-        contributor = new SimpleContributorMediator(messageBus, settings, auditManager);
+        contributor = new SimpleContributorMediator(messageBus, settings, auditManager, null);
         contributor.start();
     }
 

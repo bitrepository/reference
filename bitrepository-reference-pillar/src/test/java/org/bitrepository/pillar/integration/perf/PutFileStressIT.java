@@ -55,7 +55,7 @@ public class PutFileStressIT extends PillarPerformanceTest {
         metrics.start();
         addStep("Add " + NUMBER_OF_FILES + " files", "Not errors should occur");
         for (String fileID:fileIDs) {
-            blockingPutFileClient.putFile(collectionID, httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID), fileID, 10L,
+            blockingPutFileClient.putFile(collectionID, httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID), fileID, 10L,
                     TestFileHelper.getDefaultFileChecksum(), null, null, "singleTreadedPut stress test file");
             metrics.mark(fileID);
         }
@@ -80,16 +80,13 @@ public class PutFileStressIT extends PillarPerformanceTest {
         EventHandler eventHandler = new PutEventHandlerForMetrics(metrics, putLimiter);
         for (String fileID:fileIDs) {
             putLimiter.addJob(fileID);
-            putClient.putFile(collectionID, httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID), fileID, 10L,
+            putClient.putFile(collectionID, httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID), fileID, 10L,
                     TestFileHelper.getDefaultFileChecksum(), null, eventHandler, "parallelPut stress test file");
         }
 
         awaitAsynchronousCompletion(metrics, numberOfFiles);
 
         addStep("Check that the files are now present on the pillar(s)", "No missing files should be found.");
-
-        //ToDo Actually assert that the files are present.
-
         existingFiles = fileIDs;
     }
 

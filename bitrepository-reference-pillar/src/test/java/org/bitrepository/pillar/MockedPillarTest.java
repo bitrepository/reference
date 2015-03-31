@@ -33,13 +33,16 @@ import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.SettingsHelper;
 import org.bitrepository.pillar.messagehandler.PillarMediator;
 import org.bitrepository.pillar.store.StorageModel;
+import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
+import org.mockito.Mock;
 
 public abstract class MockedPillarTest extends DefaultFixturePillarTest {
     protected PillarMediator mediator;
     protected StorageModel model;
     protected MockAuditManager audits;
+    protected FileExchange fileExchangeMock;
     protected MessageHandlerContext context;
     protected ChecksumSpecTYPE csSpec;
     protected ChecksumSpecTYPE otherCsSpec;
@@ -53,6 +56,7 @@ public abstract class MockedPillarTest extends DefaultFixturePillarTest {
         super.initializeCUT();
         audits = new MockAuditManager();
         model = mock(StorageModel.class);
+        fileExchangeMock = mock(FileExchange.class);
 
         createPillar();
     }
@@ -74,7 +78,7 @@ public abstract class MockedPillarTest extends DefaultFixturePillarTest {
                 SettingsHelper.getPillarCollections(settingsForCUT.getComponentID(), settingsForCUT.getCollections()),
                 new ResponseDispatcher(settingsForCUT, messageBus), 
                 alarmDispatcher,
-                audits);
+                audits, fileExchangeMock);
         mediator = new PillarMediator(messageBus, context, model);
         mediator.start();
 

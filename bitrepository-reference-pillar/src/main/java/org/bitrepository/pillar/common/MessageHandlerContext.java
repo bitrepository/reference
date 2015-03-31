@@ -23,6 +23,7 @@ package org.bitrepository.pillar.common;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorContext;
 import org.bitrepository.service.contributor.ResponseDispatcher;
@@ -41,8 +42,9 @@ public class MessageHandlerContext extends ContributorContext {
                                  String[] pillarCollections,
                                  ResponseDispatcher responseDispatcher,
                                  PillarAlarmDispatcher alarmDispatcher,
-                                 AuditTrailManager auditTrailManager) {
-        super(responseDispatcher, alarmDispatcher, settings);
+                                 AuditTrailManager auditTrailManager,
+                                 FileExchange fileExchange) {
+        super(responseDispatcher, alarmDispatcher, settings, fileExchange);
         ArgumentValidator.checkNotNull(auditTrailManager, "AuditTrailManager");
         this.auditTrailManager = auditTrailManager;
         this.pillarCollections = pillarCollections;
@@ -58,4 +60,5 @@ public class MessageHandlerContext extends ContributorContext {
     public String[] getPillarCollections() {
         return pillarCollections;
     }
+
 }

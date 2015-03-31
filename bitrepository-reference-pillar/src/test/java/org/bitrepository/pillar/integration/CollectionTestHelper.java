@@ -29,6 +29,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
+import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
 import org.bitrepository.protocol.fileexchange.HttpServerConnector;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
@@ -36,7 +37,7 @@ import org.bitrepository.protocol.security.SecurityManager;
 @SuppressWarnings("unused")
 public class CollectionTestHelper {
     private final Settings settings;
-    private final HttpServerConnector httpServer;
+    private final HttpServerConfiguration httpServerConfiguration;
     private final SecurityManager securityManager;
 
     private final GetFileIDsClient getFileIDsClient;
@@ -45,10 +46,10 @@ public class CollectionTestHelper {
 
     public CollectionTestHelper(
             Settings settings,
-            HttpServerConnector httpServer) {
+            HttpServerConfiguration httpServerConfiguration) {
         this.settings = settings;
         this.securityManager = new DummySecurityManager();
-        this.httpServer = httpServer;
+        this.httpServerConfiguration = httpServerConfiguration;
 
         putClient = ModifyComponentFactory.getInstance().retrievePutClient(
                 settings, new DummySecurityManager(), settings.getComponentID()

@@ -50,11 +50,8 @@ import java.util.List;
  * GetAuditTrails identification and operation. 
  */
 public class SimpleContributorMediator extends AbstractContributorMediator {
-    /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    /** The context for this simple contributor mediator.*/
     private final ContributorContext context;
-    /** The audit trail manager. */
     private AuditTrailManager auditManager;
     
     /**
@@ -63,12 +60,13 @@ public class SimpleContributorMediator extends AbstractContributorMediator {
      * @param settings the settings for the mediator.
      * @param auditManager [OPTIONAL] The manager of audit trails. Only if the contributor has audit trails.
      */
-    public SimpleContributorMediator(MessageBus messageBus, Settings settings, AuditTrailManager auditManager) {
+    public SimpleContributorMediator(
+            MessageBus messageBus, Settings settings, AuditTrailManager auditManager, FileExchange fileExchange) {
         super(messageBus);
         context = new ContributorContext(
             new ResponseDispatcher(settings, messageBus),
             new AlarmDispatcher(settings, messageBus),
-            settings);
+            settings, fileExchange);
         this.auditManager = auditManager;
     }
 

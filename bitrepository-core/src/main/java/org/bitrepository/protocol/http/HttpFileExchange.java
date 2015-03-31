@@ -57,7 +57,6 @@ import org.slf4j.LoggerFactory;
  * Simple interface for data transfer between an application and a HTTP server.
  */
 public class HttpFileExchange implements FileExchange {
-    /** The log. */
     private final Logger log = LoggerFactory.getLogger(getClass());
     
     /** The lower boundary for the error codes of the HTTP codes.*/

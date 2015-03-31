@@ -32,6 +32,7 @@ import org.bitrepository.pillar.PillarComponentFactory;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
+import org.bitrepository.protocol.messagebus.SimpleMessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.settings.referencesettings.CollectionDirs;
@@ -72,9 +73,10 @@ public class EmbeddedPillar implements LifeCycledService {
                 FileUtils.deleteDirIfExists(new File(dir));
             }
         }
-        ActiveMQMessageBus messageBus = new ActiveMQMessageBus(pillarSettings, new DummySecurityManager());
-        messageBus.setComponentFilter(Arrays.asList(new String[]{pillarSettings.getComponentID()}));
-        MessageBusManager.injectCustomMessageBus(pillarSettings.getComponentID(), messageBus);
-        return messageBus;
+//        ActiveMQMessageBus messageBus = new ActiveMQMessageBus(pillarSettings, new DummySecurityManager());
+//        messageBus.setComponentFilter(Arrays.asList(new String[]{pillarSettings.getComponentID()}));
+//        MessageBusManager.injectCustomMessageBus(pillarSettings.getComponentID(), messageBus);
+//        return messageBus;
+        return MessageBusManager.getMessageBus();
     }
 }

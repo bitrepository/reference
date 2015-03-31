@@ -29,6 +29,7 @@ import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 
 /**
  * Contains the generic parts for tests integrating to the message bus. 
@@ -50,6 +51,7 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
 
     @Override
     protected void initializeCUT() {
+        MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
         renewConversationMediator();
     }
     @Override

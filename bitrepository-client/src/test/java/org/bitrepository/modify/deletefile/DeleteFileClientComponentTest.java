@@ -225,12 +225,12 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     @Test(groups={"regressiontest"})
     public void deleteClientOperationTimeout() throws Exception {
         addDescription("Tests the handling of a failed operation for the DeleteClient");
-        addStep("Initialise the number of pillars and the DeleteClient. Sets the operation timeout to 1 sec.",
+        addStep("Initialise the number of pillars and the DeleteClient. Sets the operation timeout to 100 ms.",
                 "Should be OK.");
 
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
-        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(1000L));
+        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(100L));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         DeleteFileClient deleteClient = createDeleteFileClient();
 

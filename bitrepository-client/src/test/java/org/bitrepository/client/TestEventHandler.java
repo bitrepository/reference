@@ -32,6 +32,8 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.jaccept.TestEventManager;
 import org.testng.Assert;
 
+import static org.testng.Assert.assertNull;
+
 /** Used to listen for operation event and store them for later retrieval by a test. */
 public class TestEventHandler implements EventHandler {
 
@@ -41,7 +43,7 @@ public class TestEventHandler implements EventHandler {
     private final BlockingQueue<OperationEvent> eventQueue = new LinkedBlockingQueue<OperationEvent>();
 
     /** The default time to wait for events */
-    private static final long DEFAULT_WAIT_SECONDS = 10;  
+    private static final long DEFAULT_WAIT_SECONDS = 3;
 
     /** The constructor.
      * 
@@ -75,6 +77,6 @@ public class TestEventHandler implements EventHandler {
     }
 
     public void verifyNoEventsAreReceived() throws InterruptedException {
-        Assert.assertNull(waitForEvent(1,TimeUnit.SECONDS));
+        assertNull(waitForEvent(1, TimeUnit.SECONDS));
     }
 }

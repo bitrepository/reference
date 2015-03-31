@@ -216,8 +216,7 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
         URL uploadUrl = new URL(url);
 
         log.debug("Uploading file: " + fileToUpload.getName() + " to " + url);
-        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
-        fe.uploadToServer(new FileInputStream(fileToUpload), uploadUrl);
+        context.getFileExchange().uploadToServer(new FileInputStream(fileToUpload), uploadUrl);
     }
     
     /**

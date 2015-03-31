@@ -42,6 +42,7 @@ import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
+import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -70,19 +71,22 @@ public abstract class StorageModel {
     protected final AlarmDispatcher alarmDispatcher;
     /** The settings.*/
     protected final Settings settings;
+    protected final FileExchange fileExchange;
 
     /**
      * @param archives The archive with the data.
      * @param cache The storage for the checksums.
      * @param alarmDispatcher The alarm dispatcher.
      * @param settings The configuration to use.
+     * @param fileExchange
      */
-    protected StorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, 
-            Settings settings) {
+    protected StorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher,
+                           Settings settings, FileExchange fileExchange) {
         this.cache = cache;
         this.fileArchive = archives;
         this.alarmDispatcher = alarmDispatcher;
         this.settings = settings;
+        this.fileExchange = fileExchange;
         this.defaultChecksumSpec = ChecksumUtils.getDefault(settings);
     }
     
@@ -331,7 +335,7 @@ public abstract class StorageModel {
      * @param fileID The id of the file.
      * @param collectionID The id of the collection.
      * @param fileAddress The address to retrieve the file from.
-     * @param validationChecksum The expected checksum for the file (validate when it has been downloaded).
+     * @param expectedChecksum The expected checksum for the file (validate when it has been downloaded).
      * @throws RequestHandlerException If something goes wrong, e.g. the downloaded file does not have the expected
      * checksum.
      */
