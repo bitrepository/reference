@@ -68,6 +68,8 @@ public class HttpServerConfiguration {
         if (getHttpServerName() == null) {
             return new URL(
                     getProtocol(),
+                    null,
+                    0,
                     getHttpServerPath() + "/" + filename);
         }
         return new URL(

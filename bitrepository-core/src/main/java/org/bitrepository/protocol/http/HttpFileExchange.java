@@ -73,29 +73,17 @@ public class HttpFileExchange implements FileExchange {
     }
     
     @Override
-    public void uploadToServer(InputStream in, URL url) throws IOException {
+    public void putFile(InputStream in, URL url) throws IOException {
         performUpload(in, url);
     }
     
     @Override
-    public InputStream downloadFromServer(URL url) throws IOException {
+    public InputStream getFile(URL url) throws IOException {
         return retrieveStream(url);
     }
-    
+
     @Override
-    public URL uploadToServer(InputStream in, String filename)
-            throws IOException {
-        if(in == null || filename == null || filename.isEmpty()) {
-            throw new IllegalArgumentException("InputStream in: " + in 
-                    + ", String filename: " + filename);
-        }
-        URL url = getURL(filename);
-        performUpload(in, url);
-        return url;
-    }
-    
-    @Override
-    public URL uploadToServer(File dataFile) {
+    public URL putFile(File dataFile) {
         if(dataFile == null) {
             throw new IllegalArgumentException("The datafile may not be null.");
         }
@@ -125,13 +113,13 @@ public class HttpFileExchange implements FileExchange {
     }
     
     @Override
-    public void downloadFromServer(OutputStream out, URL url)
+    public void getFile(OutputStream out, URL url)
             throws IOException {
         performDownload(out, url);
     }
     
     @Override
-    public void downloadFromServer(File outputFile, String fileAddress) {
+    public void getFile(File outputFile, String fileAddress) {
         try {
             // retrieve the url and the outputstream for the file.
             URL url = new URL(fileAddress);
@@ -257,7 +245,7 @@ public class HttpFileExchange implements FileExchange {
     }
 
     @Override
-    public void deleteFromServer(URL url) throws IOException, URISyntaxException {
+    public void deleteFile(URL url) throws IOException, URISyntaxException {
         HttpClient httpClient = null;
         try {
             httpClient = getHttpClient();

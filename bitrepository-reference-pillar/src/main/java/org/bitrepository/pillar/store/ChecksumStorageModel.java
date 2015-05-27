@@ -41,7 +41,6 @@ import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
 import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
@@ -226,7 +225,7 @@ public class ChecksumStorageModel extends StorageModel {
         log.debug("Retrieving the data from URL: '" + fileAddress + "'");
 
         try {
-            return ChecksumUtils.generateChecksum(fileExchange.downloadFromServer(new URL(fileAddress)),
+            return ChecksumUtils.generateChecksum(fileExchange.getFile(new URL(fileAddress)),
                     defaultChecksumSpec);
         } catch (IOException e) {
             String errMsg = "Could not retrieve the file from '" + fileAddress + "'";

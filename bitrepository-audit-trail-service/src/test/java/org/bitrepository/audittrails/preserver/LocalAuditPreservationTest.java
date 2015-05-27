@@ -22,14 +22,10 @@
 package org.bitrepository.audittrails.preserver;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.*;
+import static org.testng.Assert.*;
 import static org.testng.Assert.assertEquals;
 
 import java.io.FileInputStream;
@@ -53,7 +49,6 @@ import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.jaccept.structure.ExtendedTestCase;
-import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.Assert;
@@ -83,7 +78,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
     }
 
 
-    //@Test(groups = {"failed"})
+    @Test(enabled = false)
     // Fragile test, fails occasionally.
     @SuppressWarnings("rawtypes")
     public void auditPreservationSchedulingTest() throws Exception {
@@ -174,7 +169,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
                 anyString(), anyString(), anyString(), any(Long.class), any(Long.class), anyString(),
                 any(FileAction.class), any(Date.class), any(Date.class), anyString(), anyString());
         
-        doAnswer(invocation -> testUploadUrl).when(fileExchange).uploadToServer(any(FileInputStream.class), anyString());
+        when(fileExchange.getURL(anyString())).thenReturn(testUploadUrl);
                 
         preserver.preserveRepositoryAuditTrails();
         // getPreservationSequenceNumber should be called twice, first to 'initialize' auditpacker, and second to
@@ -183,10 +178,9 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         verify(store).getAuditTrailsByIterator(null, collectionId, PILLARID, 0L,
                 null, null, null, null, null, null, null);
 
-        Assert.assertEquals(client.getCallsToPutFile(), 1);
+        assertEquals(client.getCallsToPutFile(), 1);
 
-        verify(fileExchange).uploadToServer(any(FileInputStream.class), anyString());
-        verifyNoMoreInteractions(fileExchange);
+        verify(fileExchange).putFile(any(FileInputStream.class), any(URL.class));
     }
     
     private class MockPutClient implements PutFileClient {

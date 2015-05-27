@@ -24,80 +24,43 @@ package org.bitrepository.protocol.http;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.ChecksumUtils;
+import org.bitrepository.settings.referencesettings.ProtocolType;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static org.testng.Assert.*;
+
 public class HttpFileExchangeTest extends ExtendedTestCase {
-    
-    @Test(groups = { "infrastructure" })
-    public void uploadTest() throws Exception {
-        addDescription("Test uploading a file.");
-
-        HttpFileExchange hfe = new HttpFileExchange(TestSettingsProvider.reloadSettings("uploadTest"));
-        File f = new File("src/test/resources/test-files/default-test-file.txt");
-        URL url = hfe.uploadToServer(f);
-        
-        Assert.assertNotNull(url, "URL url");
-    }
-    
-    @Test(groups = { "infrastructure" })
-    public void deleteFromServerTest() throws Exception {
-        addDescription("Test deleting a file from the server.");
-
-        addStep("Upload a file to the server.", "");
-        Settings settings = TestSettingsProvider.reloadSettings("deleteFromServerTest");
-        HttpFileExchange hfe = new HttpFileExchange(settings);
-        File f = new File("src/test/resources/test-files/default-test-file.txt");
-        URL url = hfe.uploadToServer(f);
-        
-        Assert.assertNotNull(url, "URL url");
-        String origChecksum = ChecksumUtils.generateChecksum(f, ChecksumUtils.getDefault(settings));
-        
-        addStep("Download and verify the file.", "Should have same lenght and checksum");
-        File tmpFile = new File("test-file-" + System.currentTimeMillis() + ".txt");
-        Assert.assertTrue(tmpFile.createNewFile());
-        tmpFile.deleteOnExit();
-        hfe.downloadFromServer(new FileOutputStream(tmpFile), url);
-        
-        Assert.assertEquals(f.length(), tmpFile.length());
-        String newChecksum = ChecksumUtils.generateChecksum(tmpFile, ChecksumUtils.getDefault(settings));
-        Assert.assertEquals(origChecksum, newChecksum);
-        
-        addStep("Delete file from server.", "Should give error if trying to download.");
-        hfe.deleteFromServer(url);
-        try {
-            hfe.downloadFromServer(System.out, url);
-            Assert.fail("Should fail, since the file at the URL should have been deleted.");
-        } catch (IOException e) {
-            // expected
-        }
-    }
-    
     @Test(groups = { "regressiontest" })
     public void checkUrlEncodingOfFilenamesTest() throws MalformedURLException {
-        addDescription("Tests that the remote filename is url-encoded to ensure that filetransfers does not fail on that account");
+        addDescription("Tests that the filename is url-encoded correctly for a configured webdav server");
         Settings mySettings = TestSettingsProvider.reloadSettings("uploadTest");
+        mySettings.getReferenceSettings().getFileExchangeSettings().setProtocolType(ProtocolType.HTTP);
+        mySettings.getReferenceSettings().getFileExchangeSettings().setServerName("http:testserver.org");
+        mySettings.getReferenceSettings().getFileExchangeSettings().setPort(BigInteger.valueOf(8000));
+        mySettings.getReferenceSettings().getFileExchangeSettings().setPath("dav");
         HttpFileExchange fe = new HttpFileExchange(mySettings);
         String serverPathPrefix = mySettings.getReferenceSettings().getFileExchangeSettings().getPath() + "/";
         
-        addStep("Check plain filename (a filename that does not see any changes due to urlencoding", "The filename should be unmodified");
+        addStep("Check plain filename (a filename that does not see any changes due to urlencoding", "The filename " +
+                "should be unmodified");
         String plainFilename = "testfile";
         URL plainFilenameUrl = fe.getURL(plainFilename);
         
-        Assert.assertEquals(plainFilenameUrl.getFile(), serverPathPrefix + plainFilename);
+        assertEquals(plainFilenameUrl.getFile(), serverPathPrefix + plainFilename);
         
         addStep("Check that + is encoded as expected", "Filenames with a + is correctly encoded");
         String plusFilename = "test+file";
         URL plusFilenameUrl = fe.getURL(plusFilename);
         String expectedEncodedPlusFilename = "test%2Bfile";
-        Assert.assertEquals(plusFilenameUrl.getFile(), serverPathPrefix + expectedEncodedPlusFilename);
-        
+        assertEquals(plusFilenameUrl.getFile(), serverPathPrefix + expectedEncodedPlusFilename);
     }
 }

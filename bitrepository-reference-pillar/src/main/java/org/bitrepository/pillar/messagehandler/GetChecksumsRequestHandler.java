@@ -48,9 +48,7 @@ import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
-import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.MessageContext;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -246,7 +244,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
 
         // Upload the file.
         log.debug("Uploading file: " + fileToUpload.getName() + " to " + url);
-        context.getFileExchange().uploadToServer(new FileInputStream(fileToUpload), uploadUrl);
+        context.getFileExchange().putFile(new FileInputStream(fileToUpload), uploadUrl);
     }
 
     /**

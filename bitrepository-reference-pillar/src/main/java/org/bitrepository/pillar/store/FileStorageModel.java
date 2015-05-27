@@ -48,7 +48,6 @@ import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
 import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.IllegalOperationException;
@@ -324,7 +323,7 @@ public class FileStorageModel extends StorageModel {
 
         try {
             fileArchive.downloadFileForValidation(fileID, collectionID,
-                    fileExchange.downloadFromServer(new URL(fileAddress)));
+                    fileExchange.getFile(new URL(fileAddress)));
         } catch (IOException e) {
             String errMsg = "Could not retrieve the file from '" + fileAddress + "'";
             log.error(errMsg, e);

@@ -9,7 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-public class LocalFileExchange implements FileExchange{
+public class LocalFileExchange implements FileExchange {
     private final File storageDir;
 
     public LocalFileExchange(String storageDir) {
@@ -17,33 +17,28 @@ public class LocalFileExchange implements FileExchange{
     }
 
     @Override
-    public void uploadToServer(InputStream in, URL url) throws IOException {
+    public void putFile(InputStream in, URL url) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public InputStream downloadFromServer(URL url) throws IOException {
+    public InputStream getFile(URL url) throws IOException {
         File file = new File(storageDir, url.getFile());
         return new FileInputStream(file);
     }
 
     @Override
-    public URL uploadToServer(InputStream in, String filename) throws IOException {
+    public URL putFile(File dataFile) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public URL uploadToServer(File dataFile) {
+    public void getFile(OutputStream out, URL url) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void downloadFromServer(OutputStream out, URL url) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void downloadFromServer(File outputFile, String fileAddress) {
+    public void getFile(File outputFile, String fileAddress) {
         throw new UnsupportedOperationException();
     }
 
@@ -53,7 +48,7 @@ public class LocalFileExchange implements FileExchange{
     }
 
     @Override
-    public void deleteFromServer(URL url) throws IOException, URISyntaxException {
+    public void deleteFile(URL url) throws IOException, URISyntaxException {
         throw new UnsupportedOperationException();
     }
 }
