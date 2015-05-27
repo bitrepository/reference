@@ -89,11 +89,12 @@ public interface ChecksumStore {
      * @param minTimeStamp The minimum date for the timestamp of the extracted file ids.
      * @param maxTimeStamp The maximum date for the timestamp of the extracted file ids.
      * @param maxNumberOfResults The maximum number of results.
+     * @param fileID The id of the file. If null or empty string, then all files.
      * @param collectionId The id of the collection for the file.
      * @return The file ids in the store within the restrictions.
      */
     ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            Long maxNumberOfResults, String collectionId);
+            Long maxNumberOfResults, String fileID, String collectionId);
     
     /**
      * Retrieval of all the file ids in the store.

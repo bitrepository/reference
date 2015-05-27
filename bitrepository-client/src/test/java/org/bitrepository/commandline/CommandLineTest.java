@@ -32,29 +32,29 @@ public class CommandLineTest extends ExtendedTestCase {
     private static final String SETTINGS_DIR = "SettingsDir";
     private static final String KEY_FILE = "KeyFile";
     private static final String DUMMY_DATA = "DummyData";
-    
+
     @Test(groups = { "regressiontest" })
     public void argumentsTester() throws Exception {
         addDescription("Test the handling of arguments by the CommandLineArgumentHandler.");
         CommandLineArgumentsHandler clah = new CommandLineArgumentsHandler();
-        
+
         addStep("Validate arguments without any options.", "Ok, when no arguments, but fails when arguments given.");
         clah.parseArguments(new String[0]);
-        
+
         try {
             clah.parseArguments("-Xunknown...");
             fail("Should fail.");
         } catch (Exception e) {
             // expected.
         }
-        
+
         addStep("Validate the default options", "Ok, when both given. Fails if either is missing");
         clah = new CommandLineArgumentsHandler();
         clah.createDefaultOptions();
         clah.parseArguments("-s" + SETTINGS_DIR, "-k" + KEY_FILE);
         assertEquals(clah.getOptionValue("s"), SETTINGS_DIR);
         assertEquals(clah.getOptionValue("k"), KEY_FILE);
-        
+
         clah = new CommandLineArgumentsHandler();
         clah.createDefaultOptions();
         try {
@@ -64,7 +64,7 @@ public class CommandLineTest extends ExtendedTestCase {
             // expected
         }
     }
-    
+
     @Test(groups = { "regressiontest" })
     public void newArgumentTester() throws Exception {
         addDescription("Test the handling of a new argument.");
@@ -72,13 +72,13 @@ public class CommandLineTest extends ExtendedTestCase {
         String argName = "X";
         Option newOption = new Option(argName, true, "Test argument.");
         clah.addOption(newOption);
-        
+
         addStep("Test the option", "Works");
         clah.parseArguments("-" + argName + DUMMY_DATA);
-        
+
         assertTrue(clah.hasOption(argName));
         assertEquals(clah.getOptionValue(argName), DUMMY_DATA);
-        
+
         assertNotNull(clah.listArguments());
     }
 }

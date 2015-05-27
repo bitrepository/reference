@@ -30,7 +30,7 @@ import org.bitrepository.commandline.outputformatter.GetFileIDsOutputFormatter;
 /**
  * Perform the GetFileIDs operation.
  */
-public class GetFileIDs extends CommandLineClient {
+public class GetFileIDsCmd extends CommandLineClient {
     /** The client for performing the actual operation.*/
     private final PagingGetFileIDsClient pagingClient;
 
@@ -38,21 +38,21 @@ public class GetFileIDs extends CommandLineClient {
      * @param args The arguments for performing the GetFileIDs operation.
      */
     public static void main(String[] args) {
-    	try {
-    		GetFileIDs client = new GetFileIDs(args);
-    		client.runCommand();
-    	} catch (IllegalArgumentException iae) {
+        try {
+            GetFileIDsCmd client = new GetFileIDsCmd(args);
+            client.runCommand();
+        } catch (IllegalArgumentException iae) {
             System.exit(Constants.EXIT_ARGUMENT_FAILURE);
-    	} catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(Constants.EXIT_OPERATION_FAILURE);
-    	}
+        }
     }
 
     /**
      * @param args The command line arguments for defining the operation.
      */
-    protected GetFileIDs(String ... args) {
+    protected GetFileIDsCmd(String ... args) {
         super(args);
         output.debug("Instantiation GetFileIDClient.");
         GetFileIDsClient client = AccessComponentFactory.getInstance().createGetFileIDsClient(settings, 

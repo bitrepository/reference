@@ -33,7 +33,7 @@ import org.bitrepository.commandline.outputformatter.GetChecksumsOutputFormatter
 /**
  * Perform the GetChecksums operation.
  */
-public class GetChecksums extends CommandLineClient {
+public class GetChecksumsCmd extends CommandLineClient {
     /** The client for performing the GetChecksums operation.*/
     private final PagingGetChecksumsClient pagingClient;
 
@@ -41,21 +41,21 @@ public class GetChecksums extends CommandLineClient {
      * @param args The arguments for performing the GetChecksums operation.
      */
     public static void main(String[] args) {
-    	try {
-    		GetChecksums client = new GetChecksums(args);
-    		client.runCommand();
-    	} catch (IllegalArgumentException iae) {
+        try {
+            GetChecksumsCmd client = new GetChecksumsCmd(args);
+            client.runCommand();
+        } catch (IllegalArgumentException iae) {
             System.exit(Constants.EXIT_ARGUMENT_FAILURE);
-    	} catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(Constants.EXIT_OPERATION_FAILURE);
-    	}
+        }
     }
 
     /**
      * @param args The command line arguments for defining the operation.
      */
-    protected GetChecksums(String ... args) {
+    protected GetChecksumsCmd(String ... args) {
         super(args);
         GetChecksumsClient client = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, 
                 securityManager, getComponentID());
@@ -93,9 +93,9 @@ public class GetChecksums extends CommandLineClient {
     @Override
     protected void validateArguments() {
         super.validateArguments();
-      	validateRequestChecksumSpec();
+        validateRequestChecksumSpec();
     }
-    
+
     /**
      * Perform the GetChecksums operation.
      */
@@ -111,7 +111,7 @@ public class GetChecksums extends CommandLineClient {
             System.exit(Constants.EXIT_OPERATION_FAILURE);
         }
     }
-    
+
     /**
      * Retrieves the given output formatter depending on whether or not it requests a given file or all files.
      * @return The output formatter.
@@ -123,5 +123,5 @@ public class GetChecksums extends CommandLineClient {
             return new GetChecksumsInfoFormatter(output);
         }
     }
-    
+
 }

@@ -36,7 +36,7 @@ import org.bitrepository.modify.putfile.PutFileClient;
 /**
  * Putting a file to the collection.
  */
-public class PutFile extends CommandLineClient {
+public class PutFileCmd extends CommandLineClient {
 
     /** The client for performing the PutFile operation.*/
     private final PutFileClient client;
@@ -45,15 +45,15 @@ public class PutFile extends CommandLineClient {
      * @param args The arguments for performing the PutFile operation.
      */
     public static void main(String[] args) {
-    	try {
-    		PutFile client = new PutFile(args);
-    		client.runCommand();
-    	} catch (IllegalArgumentException iae) {
+        try {
+            PutFileCmd client = new PutFileCmd(args);
+            client.runCommand();
+        } catch (IllegalArgumentException iae) {
             System.exit(Constants.EXIT_ARGUMENT_FAILURE);
-    	} catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(Constants.EXIT_OPERATION_FAILURE);
-    	}
+        }
     }
 
     /**
@@ -67,7 +67,7 @@ public class PutFile extends CommandLineClient {
      * C = The checksum of the file.
      * 
      */
-    protected PutFile(String ... args) {
+    protected PutFileCmd(String ... args) {
         super(args);
         client = ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager, getComponentID());
     }
@@ -100,7 +100,7 @@ public class PutFile extends CommandLineClient {
                 "The path to the file, which is wanted to be put. Is required, unless a URL is given.");
         fileOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(fileOption);
-        
+
         Option urlOption = new Option(Constants.URL_ARG, Constants.HAS_ARGUMENT, 
                 "The URL for the file to be put. Is required, unless the actual file is given.");
         urlOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
@@ -126,7 +126,7 @@ public class PutFile extends CommandLineClient {
         deleteOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(deleteOption);
     }
-    
+
     /**
      * Run the default validation, and validates that only file or URL is given.
      * Also, if it is an URL is given, then it must also be given the checksum and the file id.
@@ -134,7 +134,7 @@ public class PutFile extends CommandLineClient {
     @Override
     protected void validateArguments() {
         super.validateArguments();
-        
+
         if(cmdHandler.hasOption(Constants.FILE_ARG) && cmdHandler.hasOption(Constants.URL_ARG)) {
             throw new IllegalArgumentException("Cannot take both a file (-f) and an URL (-u) as argument.");
         }
@@ -148,7 +148,7 @@ public class PutFile extends CommandLineClient {
             throw new IllegalArgumentException("The URL argument requires also the argument for the ID of the "
                     + "file (-i).");
         }
-        
+
         validateRequestChecksumSpec();
     }
 
@@ -166,12 +166,12 @@ public class PutFile extends CommandLineClient {
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpecOrNull();
 
         boolean printChecksums = cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG);
-        
+
         CompleteEventAwaiter eventHandler = new PutFileEventHandler(settings, output, printChecksums);
         client.putFile(getCollectionID(), url, fileId, getSizeOfFileOrZero(), validationChecksum, requestChecksum, eventHandler, null);
 
         OperationEvent finalEvent = eventHandler.getFinish(); 
-        
+
         if(cmdHandler.hasOption(Constants.DELETE_FILE_ARG)) {
             deleteFileAfterwards(url);
         }
@@ -179,7 +179,7 @@ public class PutFile extends CommandLineClient {
         return finalEvent;
     }
 
-    
+
     /**
      * Retrieves the Checksum for the pillars to validate, either taken from the actual file, 
      * or from the checksum argument.

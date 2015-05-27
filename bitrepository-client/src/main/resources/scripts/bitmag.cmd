@@ -11,12 +11,12 @@ set JAVA_OPTS=%JAVA_OPTS% "-Dlogback.configurationFile=%CONFDIR%\logback.xml"
 set JAVA_OPTS=%JAVA_OPTS% "-DBASEDIR=%BASEDIR%"
 
 set CMD=help
-if /I x%1%==xdelete        set CMD=DeleteFile
-if /I x%1%==xget-checksums set CMD=GetChecksums
-if /I x%1%==xget-file      set CMD=GetFile
-if /I x%1%==xget-file-ids  set CMD=GetFileIDs
-if /I x%1%==xput-file      set CMD=PutFile -d
-if /I x%1%==xreplace-file  set CMD=ReplaceFile
+if /I x%1%==xdelete        set CMD=DeleteFileCmd
+if /I x%1%==xget-checksums set CMD=GetChecksumsCmd
+if /I x%1%==xget-file      set CMD=GetFileCmd
+if /I x%1%==xget-file-ids  set CMD=GetFileIDsCmd
+if /I x%1%==xput-file      set CMD=PutFileCmd -d
+if /I x%1%==xreplace-file  set CMD=ReplaceFileCmd
 
 if not "%CMD%"=="help" goto run
 echo. usage: %0% CMD PARAMS

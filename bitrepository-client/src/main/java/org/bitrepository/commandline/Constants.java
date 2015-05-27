@@ -29,7 +29,7 @@ public class Constants {
      * Private constructor to prevent instantiation.
      */
     private Constants() {}
-    
+
     /** If an argument is required.*/
     public static final Boolean ARGUMENT_IS_REQUIRED = true;
     /** If an argument is not required.*/
@@ -40,14 +40,14 @@ public class Constants {
     public static final Boolean NO_ARGUMENT = false;
     /** For not allowing undefined arguments when parsing of arguments.*/
     public static final Boolean NOT_ALLOWING_UNDEFINED_ARGUMENTS = false;
-    
+
     /** The path to the settings.*/ 
     public static final String SETTINGS_ARG = "s";
     /** The path to the private key.*/
     public static final String PRIVATE_KEY_ARG = "k";
     /** */
     public static final String VERBOSITY_ARG = "v";
-    
+
     /** The collectionID argument */
     public static final String COLLECTION_ID_ARG = "c";
     /** The file argument.*/
@@ -68,13 +68,13 @@ public class Constants {
     public static final String DELETE_FILE_ARG = "d";
     /** The argument for the URL of a file.*/
     public static final String URL_ARG = "u";
-    
+
     /** The argument for the location of the results.*/
     public static final String LOCATION = "l";
-    
-    
+
+
     public static final int EXIT_SUCCESS = 0;
     public static final int EXIT_ARGUMENT_FAILURE = 1;
     public static final int EXIT_OPERATION_FAILURE = -1;
-    
+
 }

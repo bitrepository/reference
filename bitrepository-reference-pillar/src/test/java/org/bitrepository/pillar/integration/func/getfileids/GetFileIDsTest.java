@@ -88,6 +88,8 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         assertEquals(finalResponse.getPillarID(), getPillarID());
         assertEquals(finalResponse.getReplyTo(), pillarDestination);
         assertNull(finalResponse.getResultingFileIDs().getResultAddress());
+        assertTrue(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size() >= 2, 
+                "Should be at least 2 files, but found: " + finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
     }
 
     @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
@@ -104,6 +106,26 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
     }
 
+    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    public void pillarGetFileIDsSpecificFileIDRequest() throws Exception {
+        addDescription("Tests that the pillar is able to handle requests for a non-existing file correctly during " +
+                       "the operation phase.");
+        FileIDs fileids = FileIDsUtils.createFileIDs(DEFAULT_FILE_ID);
+
+        addStep("Create and send a GetFileIDsRequest to the pillar.",
+                "A GetFileIDsProgressResponse should be sent to the client with correct attributes follow by " +
+                "a GetFileIDsFinalResponse.");
+        GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(fileids, null);
+        messageBus.sendMessage(getFileIDsRequest);
+        
+        addStep("Retrieve the FinalResponse for the GetFileIDs request.",
+                "A OPERATION_COMPLETE final response only containing the requested file-id.");
+        GetFileIDsFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileIDsFinalResponse.class);
+        assertEquals(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size(), 1);
+        assertEquals(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID(), DEFAULT_FILE_ID);
+        assertFalse(finalResponse.isSetPartialResult() && finalResponse.isPartialResult());
+    }
+    
     @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void pillarGetFileIDsTestBadDeliveryURL() throws Exception {
         addDescription("Test the case when the delivery URL is unaccessible.");

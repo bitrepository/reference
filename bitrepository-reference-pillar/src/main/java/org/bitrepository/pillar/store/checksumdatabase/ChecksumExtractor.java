@@ -185,7 +185,7 @@ public class ChecksumExtractor {
      * @return The requested collection of file ids.
      */
     public ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            Long maxNumberOfResults, String collectionId) {
+            Long maxNumberOfResults, String fileId, String collectionId) {
         List<Object> args = new ArrayList<Object>(); 
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT " + CS_FILE_ID + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE + " WHERE " + CS_COLLECTION_ID
@@ -200,11 +200,15 @@ public class ChecksumExtractor {
             sql.append(" AND " + CS_DATE + " <= ? ");
             args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp));
         }
+        if(fileId != null) {
+            sql.append(" AND " + CS_FILE_ID + " = ? ");
+            args.add(fileId);
+        }
         sql.append(" ORDER BY " + CS_DATE + " ASC ");
         
         ExtractedFileIDsResultSet results = new ExtractedFileIDsResultSet();
         try (Connection conn = connector.getConnection();
-             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())){
+            PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())){
             conn.setAutoCommit(false);
             ps.setFetchSize(100);
             try (ResultSet res = ps.executeQuery()){
