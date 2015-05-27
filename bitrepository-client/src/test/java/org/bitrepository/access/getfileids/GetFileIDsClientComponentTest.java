@@ -97,7 +97,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
 
         GetFileIDsClient getFileIDsClient = createGetFileIDsClient();
-        URL deliveryUrl = httpServer.getURL(deliveryFilename);
+        URL deliveryUrl = httpServerConfiguration.getURL(deliveryFilename);
 
         addStep("Request the delivery of the file ids of a file from the pillar(s). A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");
@@ -254,7 +254,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
 
         GetFileIDsClient client = createGetFileIDsClient();
-        URL deliveryUrl = httpServer.getURL(deliveryFilename);
+        URL deliveryUrl = httpServerConfiguration.getURL(deliveryFilename);
 
         addStep("Request the delivery of the file id of a file from the pillar(s). A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileIDsRequest will be sent to the pillar(s).");

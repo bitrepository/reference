@@ -978,14 +978,14 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="ServerName" type="xs:string">
+        <xs:element name="ServerName" type="xs:string" minOccurs="0">
           <xs:annotation>
             <xs:documentation>
               The name for the server to exchange the file through.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="Port" type="xs:positiveInteger">
+        <xs:element name="Port" type="xs:positiveInteger"  minOccurs="0">
           <xs:annotation>
             <xs:documentation>
               The port used by the protocol.
@@ -1022,6 +1022,13 @@
           <xs:annotation>
             <xs:documentation xml:lang="en">
               The secure HTTPS protocol.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="FILE">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The file protocol.
             </xs:documentation>
           </xs:annotation>
         </xs:enumeration>

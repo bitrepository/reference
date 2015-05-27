@@ -110,7 +110,7 @@ public class AlarmServiceFactory {
                 
                 MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, 
                         securityManager);
-                ContributorMediator contributorMediator = new SimpleContributorMediator(messageBus, settings, null);
+                ContributorMediator contributorMediator = new SimpleContributorMediator(messageBus, settings, null, null);
                 
                 DatabaseManager alarmDatabaseManager = new AlarmDatabaseManager(
                         settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());

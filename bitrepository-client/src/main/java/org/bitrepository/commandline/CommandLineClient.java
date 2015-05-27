@@ -343,7 +343,7 @@ public abstract class CommandLineClient {
     protected void deleteFileAfterwards(URL url) {
         try {
             FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
-            fileexchange.deleteFromServer(url);
+            fileexchange.deleteFile(url);
         } catch (Exception e) {
             System.err.println("Issue regarding removing file from server: " + e.getMessage());
             e.printStackTrace();
@@ -360,7 +360,7 @@ public abstract class CommandLineClient {
         if(cmdHandler.hasOption(Constants.FILE_ARG)) {
             File f = findTheFile();
             FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
-            return fileexchange.uploadToServer(f);
+            return fileexchange.putFile(f);
         } else {
             try {
                 return new URL(cmdHandler.getOptionValue(Constants.URL_ARG));

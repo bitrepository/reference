@@ -58,7 +58,7 @@ public class GetFileStressIT extends PillarPerformanceTest {
         addStep("Getting " + NUMBER_OF_FILES + " files", "Not errors should occur");
         for (String fileID:fileIDs) {
             blockingGetFileClient.getFileFromSpecificPillar(
-                    collectionID, DEFAULT_FILE_ID, null, httpServer.getURL(NON_DEFAULT_FILE_ID), getPillarID(), null,
+                    collectionID, DEFAULT_FILE_ID, null, httpServerConfiguration.getURL(NON_DEFAULT_FILE_ID), getPillarID(), null,
                     "performing singleGetFilePerformanceTest");
             metrics.mark(fileID);
         }
@@ -81,7 +81,7 @@ public class GetFileStressIT extends PillarPerformanceTest {
         for (int i = 1; i <= numberOfFiles; i++) {
             getLimiter.addJob(DEFAULT_FILE_ID);
             getFileClient.getFileFromSpecificPillar(
-                    collectionID, DEFAULT_FILE_ID, null, httpServer.getURL(NON_DEFAULT_FILE_ID + "-" + i), getPillarID(),
+                    collectionID, DEFAULT_FILE_ID, null, httpServerConfiguration.getURL(NON_DEFAULT_FILE_ID + "-" + i), getPillarID(),
                     eventHandler,
                     " performing parallelGetFilePerformance");
         }
@@ -110,7 +110,7 @@ public class GetFileStressIT extends PillarPerformanceTest {
             getLimiter.addJob(correlationID);
             GetFileRequest getRequest =
                     msgFactory.createGetFileRequest("noIdentfyGetFilePerformanceTest", correlationID,
-                            httpServer.getURL(NON_DEFAULT_FILE_ID + "-" + i).toExternalForm(), DEFAULT_FILE_ID, null,
+                            httpServerConfiguration.getURL(NON_DEFAULT_FILE_ID + "-" + i).toExternalForm(), DEFAULT_FILE_ID, null,
                             getPillarID(), getPillarID(), settingsForTestClient.getReceiverDestinationID(),  pillarDestination);
             messageBus.sendMessage(getRequest);
         }

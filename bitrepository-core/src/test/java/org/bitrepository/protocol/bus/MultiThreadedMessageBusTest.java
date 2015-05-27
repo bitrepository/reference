@@ -31,6 +31,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.MessageContext;
+import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.testng.Assert;
@@ -49,6 +50,17 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
     private final static String FINISH = "FINISH";
     private BlockingQueue<String> finishQueue = new LinkedBlockingQueue<String>(1);
     MultiMessageListener listener;
+
+    @Override
+    protected void setupMessageBus() {
+        if (useEmbeddedMessageBus() && broker == null) {
+            broker = new LocalActiveMQBroker(settingsForTestClient.getMessageBusConfiguration());
+            broker.start();
+        }
+        messageBus = new MessageBusWrapper(ProtocolComponentFactory.getInstance().getMessageBus(
+                settingsForTestClient, securityManager), testEventManager);
+
+    }
     
     @Test(groups = { "regressiontest" })
     public final void manyTheadsBeforeFinish() throws Exception {

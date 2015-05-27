@@ -57,7 +57,7 @@ public class MediatorTest extends DefaultFixturePillarTest {
                 SettingsHelper.getPillarCollections(settingsForCUT.getComponentID(), settingsForCUT.getCollections()),
             new ResponseDispatcher(settingsForCUT, messageBus),
             new PillarAlarmDispatcher(settingsForCUT, messageBus),
-            audits);
+            audits, null);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

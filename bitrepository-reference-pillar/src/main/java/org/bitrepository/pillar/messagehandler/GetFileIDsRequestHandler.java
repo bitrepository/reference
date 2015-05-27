@@ -48,9 +48,7 @@ import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
-import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.MessageContext;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -216,8 +214,7 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
         URL uploadUrl = new URL(url);
 
         log.debug("Uploading file: " + fileToUpload.getName() + " to " + url);
-        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
-        fe.uploadToServer(new FileInputStream(fileToUpload), uploadUrl);
+        context.getFileExchange().putFile(new FileInputStream(fileToUpload), uploadUrl);
     }
     
     /**

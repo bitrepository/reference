@@ -37,13 +37,12 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.protocol.bus.LocalActiveMQBroker;
-import org.bitrepository.protocol.bus.MessageBusWrapper;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
-import org.bitrepository.protocol.fileexchange.HttpServerConnector;
 import org.bitrepository.protocol.http.EmbeddedHttpServer;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
+import org.bitrepository.protocol.messagebus.SimpleMessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
@@ -64,7 +63,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected static TestEventManager testEventManager = TestEventManager.getInstance();
     public static LocalActiveMQBroker broker;
     public static EmbeddedHttpServer server;
-    public static HttpServerConnector httpServer;
     public static HttpServerConfiguration httpServerConfiguration;
     public static MessageBus messageBus;
 
@@ -95,14 +93,15 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         settingsForTestClient = loadSettings("TestSuiteInitialiser");
         makeUserSpecificSettings(settingsForCUT);
         makeUserSpecificSettings(settingsForTestClient);
+        httpServerConfiguration = new HttpServerConfiguration(
+                settingsForTestClient.getReferenceSettings().getFileExchangeSettings());
         collectionID = settingsForTestClient.getCollections().get(0).getID();
 
         securityManager = createSecurityManager();
         setupMessageBus();
-        setupHttpServer();
         DEFAULT_FILE_ID = "DefaultFile";
         try {
-            DEFAULT_FILE_URL = httpServer.getURL(TestFileHelper.DEFAULT_FILE_ID);
+            DEFAULT_FILE_URL = httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID);
             DEFAULT_DOWNLOAD_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm();
             DEFAULT_UPLOAD_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm() + "-" + DEFAULT_FILE_ID;
         } catch (MalformedURLException e) {
@@ -228,13 +227,13 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * Hooks up the message bus.
      */
     protected void setupMessageBus() {
-        if (useEmbeddedMessageBus() && broker == null) {
-            broker = new LocalActiveMQBroker(settingsForTestClient.getMessageBusConfiguration());
-            broker.start();
-        }
+//        if (useEmbeddedMessageBus() && broker == null) {
+//            broker = new LocalActiveMQBroker(settingsForTestClient.getMessageBusConfiguration());
+//            broker.start();
+//        }
 
-        messageBus = new MessageBusWrapper(
-                ProtocolComponentFactory.getInstance().getMessageBus(settingsForTestClient, securityManager), testEventManager);
+        messageBus = new SimpleMessageBus();
+                //new MessageBusWrapper(ProtocolComponentFactory.getInstance().getMessageBus(settingsForTestClient, securityManager), testEventManager);
     }
 
     /**
@@ -257,21 +256,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
                 // No reason to pollute the test output with this
             }
         }
-    }
-
-    /**
-     * Initialises the connection to the file exchange server. Also starts an embedded http server 
-     * if this is going to be used, eg. if useEmbeddedHttpServer is true.
-     */
-    protected void setupHttpServer() {
-        httpServerConfiguration =
-                new HttpServerConfiguration(settingsForTestClient.getReferenceSettings().getFileExchangeSettings());
-        if (useEmbeddedHttpServer() && server == null) { // Note that the embedded server isn't fully functional yet
-            server = new EmbeddedHttpServer();
-            server.start();
-        }
-        httpServer = new HttpServerConnector(httpServerConfiguration, testEventManager);
-        httpServer.clearFiles();
     }
 
     /**

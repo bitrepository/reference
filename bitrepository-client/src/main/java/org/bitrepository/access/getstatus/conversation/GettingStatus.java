@@ -51,11 +51,10 @@ public class GettingStatus extends PerformingOperationState {
 
     @Override
     protected void sendRequest() {
-        GetStatusRequest request = new GetStatusRequest();
-        initializeMessage(request);
-
         context.getMonitor().requestSent("Sending GetStatusRequest", activeContributors.keySet().toString());
         for(String ID : activeContributors.keySet()) {
+            GetStatusRequest request = new GetStatusRequest();
+            initializeMessage(request);
             request.setContributor(ID);
             request.setDestination(activeContributors.get(ID));
             context.getMessageSender().sendMessage(request);

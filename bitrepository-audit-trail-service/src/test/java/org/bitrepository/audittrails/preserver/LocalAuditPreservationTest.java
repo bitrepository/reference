@@ -23,11 +23,10 @@ package org.bitrepository.audittrails.preserver;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
 
 import java.io.FileInputStream;
 import java.math.BigInteger;
@@ -79,7 +78,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
     }
 
 
-    //@Test(groups = {"failed"})
+    @Test(enabled = false)
     // Fragile test, fails occasionally.
     @SuppressWarnings("rawtypes")
     public void auditPreservationSchedulingTest() throws Exception {
@@ -136,7 +135,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         //Assert.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().size());
         
         //Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 2);
-        Assert.assertEquals(client.getCallsToPutFile(), 1);
+        assertEquals(client.getCallsToPutFile(), 1);
     }
 
     @Test(groups = {"regressiontest"})
@@ -145,7 +144,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         addDescription("Tests the ingest of the audit trail preservation.");
         addStep("Setup variables and settings for the test", "");
         MockPutClient client = new MockPutClient();
-        
+
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLARID);
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
@@ -166,31 +165,22 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         addStep("Call the preservation of audit trails now.", 
                 "Should make calls to the store, upload the file and call the client");
 
-        doAnswer(new Answer() {
-            public AuditEventIterator answer(InvocationOnMock invocation) {
-                return iterator;
-            }
-        }).when(store).getAuditTrailsByIterator(anyString(), anyString(), anyString(), any(Long.class), 
-                any(Long.class), anyString(), any(FileAction.class), any(Date.class), any(Date.class), 
-                anyString(), anyString());
+        doAnswer(invocation -> iterator).when(store).getAuditTrailsByIterator(
+                anyString(), anyString(), anyString(), any(Long.class), any(Long.class), anyString(),
+                any(FileAction.class), any(Date.class), any(Date.class), anyString(), anyString());
         
-        doAnswer(new Answer() {
-            public URL answer(InvocationOnMock invocation) {
-                return testUploadUrl;
-            }
-        }).when(fileExchange).uploadToServer(any(FileInputStream.class), anyString());
+        when(fileExchange.getURL(anyString())).thenReturn(testUploadUrl);
                 
         preserver.preserveRepositoryAuditTrails();
-        // getPreservationSequenceNumber should be called twice, first to 'initialize' auditpacker, and second to 
+        // getPreservationSequenceNumber should be called twice, first to 'initialize' auditpacker, and second to
         // run the preserver/packer...
         verify(store, times(2)).getPreservationSequenceNumber(PILLARID, collectionId);
-        verify(store).getAuditTrailsByIterator(null, collectionId, PILLARID, 0L, 
+        verify(store).getAuditTrailsByIterator(null, collectionId, PILLARID, 0L,
                 null, null, null, null, null, null, null);
-        
-        Assert.assertEquals(client.getCallsToPutFile(), 1);
 
-        verify(fileExchange).uploadToServer(any(FileInputStream.class), anyString());
-        verifyNoMoreInteractions(fileExchange);
+        assertEquals(client.getCallsToPutFile(), 1);
+
+        verify(fileExchange).putFile(any(FileInputStream.class), any(URL.class));
     }
     
     private class MockPutClient implements PutFileClient {
@@ -200,11 +190,11 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
                 ChecksumDataForFileTYPE checksumForValidationAtPillar, ChecksumSpecTYPE checksumRequestsForValidation,
                 final EventHandler eventHandler, String auditTrailInformation) {
             callsToPutFile++;
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    eventHandler.handleEvent(new CompleteEvent(null, null));
-                }
+            new Thread(() -> {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {}
+                eventHandler.handleEvent(new CompleteEvent(null, null));
             }).start();
         }
         public int getCallsToPutFile() {
