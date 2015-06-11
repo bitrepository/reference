@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.workflow;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.bitrepository.integrityservice.IntegrityServiceManager;
 import org.bitrepository.integrityservice.reports.BasicIntegrityReporter;
@@ -74,7 +75,9 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
     
     @Override
     public void start() {
-
+        
+        Date workflowStart = new Date();
+        
         if (context == null) {
             throw new IllegalStateException("The workflow can not be started before the initialise method has been " +
                     "called.");
@@ -90,7 +93,7 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             UpdateChecksumsStep updateChecksumStep = getUpdateChecksumsStep();
             performStep(updateChecksumStep);
 
-            HandleDeletedFilesStep handleDeletedFilesStep = new HandleDeletedFilesStep(context.getStore(), reporter);
+            HandleDeletedFilesStep handleDeletedFilesStep = new HandleDeletedFilesStep(context.getStore(), reporter, workflowStart);
             performStep(handleDeletedFilesStep);
             
             HandleMissingFilesStep handleMissingFilesStep = new HandleMissingFilesStep(context.getStore(),reporter);

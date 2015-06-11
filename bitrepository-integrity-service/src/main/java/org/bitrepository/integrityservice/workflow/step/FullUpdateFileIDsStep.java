@@ -19,6 +19,7 @@ public class FullUpdateFileIDsStep extends UpdateFileIDsStep {
     
     @Override
     protected void initialStepAction() {
+        //store.resetFileCollectionProgress(collectionId);
         store.setExistingFilesToPreviouslySeenFileState(collectionId);
     }
 

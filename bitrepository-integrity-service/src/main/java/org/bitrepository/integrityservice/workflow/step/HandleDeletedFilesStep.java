@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.workflow.step;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
@@ -41,10 +42,13 @@ public class HandleDeletedFilesStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
     /** The report model to populate */
     private final IntegrityReporter reporter;
+    /** */
+    private final Date workflowStart;
     
-    public HandleDeletedFilesStep(IntegrityModel store, IntegrityReporter reporter) {
+    public HandleDeletedFilesStep(IntegrityModel store, IntegrityReporter reporter, Date workflowStart) {
         this.store = store;
         this.reporter = reporter;
+        this.workflowStart = workflowStart;
     }
     
     @Override

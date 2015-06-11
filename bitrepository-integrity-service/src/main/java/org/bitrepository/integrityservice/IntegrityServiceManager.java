@@ -32,6 +32,7 @@ import org.bitrepository.integrityservice.alerter.IntegrityAlarmDispatcher;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityCache;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
+import org.bitrepository.integrityservice.cache.IntegrityDatabase2;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.DelegatingIntegrityInformationCollector;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
@@ -117,7 +118,8 @@ public final class IntegrityServiceManager {
         auditManager = new AuditTrailContributerDAO(settings, auditDatabaseManager);
 
         alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus, AlarmLevel.ERROR);
-        model = new IntegrityCache(new IntegrityDatabase(settings));
+        model = new IntegrityDatabase2(settings);
+        //model = new IntegrityCache(new IntegrityDatabase(settings));
 
         collector = new DelegatingIntegrityInformationCollector(
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager,
