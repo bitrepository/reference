@@ -73,10 +73,6 @@ public class EmbeddedPillar implements LifeCycledService {
                 FileUtils.deleteDirIfExists(new File(dir));
             }
         }
-//        ActiveMQMessageBus messageBus = new ActiveMQMessageBus(pillarSettings, new DummySecurityManager());
-//        messageBus.setComponentFilter(Arrays.asList(new String[]{pillarSettings.getComponentID()}));
-//        MessageBusManager.injectCustomMessageBus(pillarSettings.getComponentID(), messageBus);
-//        return messageBus;
         return MessageBusManager.getMessageBus();
     }
 }

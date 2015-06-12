@@ -74,8 +74,18 @@ public class PutFileTest extends MockedPillarTest {
 
         addStep("Setup for not already having the file and delivering pillar id", 
                 "Should return false, when requesting file-id existence.");
-        doAnswer(invocation -> false).when(model).hasFileID(eq(FILE_ID), anyString());
-        doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return false;
+            }
+        }).when(model).hasFileID(eq(FILE_ID), anyString());
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return settingsForCUT.getComponentID();
+            }
+        }).when(model).getPillarID();
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
@@ -295,7 +305,7 @@ public class PutFileTest extends MockedPillarTest {
         assertEquals(finalResponse.getFileID(), FILE_ID);
         assertNotNull(finalResponse.getChecksumDataForNewFile());
         assertEquals(finalResponse.getChecksumDataForNewFile().getChecksumSpec(), csSpec);
-        
+
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(audits.getCallsForAuditEvent(), 1, "Should make 1 put-file audit trail");
     }

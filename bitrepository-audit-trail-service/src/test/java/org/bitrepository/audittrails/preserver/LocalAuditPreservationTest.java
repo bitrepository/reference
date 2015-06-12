@@ -165,9 +165,13 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         addStep("Call the preservation of audit trails now.", 
                 "Should make calls to the store, upload the file and call the client");
 
-        doAnswer(invocation -> iterator).when(store).getAuditTrailsByIterator(
-                anyString(), anyString(), anyString(), any(Long.class), any(Long.class), anyString(),
-                any(FileAction.class), any(Date.class), any(Date.class), anyString(), anyString());
+        doAnswer(new Answer() {
+            public AuditEventIterator answer(InvocationOnMock invocation) {
+                return iterator;
+            }
+        }).when(store).getAuditTrailsByIterator(anyString(), anyString(), anyString(), any(Long.class),
+                any(Long.class), anyString(), any(FileAction.class), any(Date.class), any(Date.class),
+                anyString(), anyString());
         
         when(fileExchange.getURL(anyString())).thenReturn(testUploadUrl);
                 
@@ -190,11 +194,15 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
                 ChecksumDataForFileTYPE checksumForValidationAtPillar, ChecksumSpecTYPE checksumRequestsForValidation,
                 final EventHandler eventHandler, String auditTrailInformation) {
             callsToPutFile++;
-            new Thread(() -> {
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {}
-                eventHandler.handleEvent(new CompleteEvent(null, null));
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                    }
+                    eventHandler.handleEvent(new CompleteEvent(null, null));
+                }
             }).start();
         }
         public int getCallsToPutFile() {

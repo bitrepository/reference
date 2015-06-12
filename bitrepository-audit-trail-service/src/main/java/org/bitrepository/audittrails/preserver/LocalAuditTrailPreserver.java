@@ -187,7 +187,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
      */
     private URL uploadFile(File file) throws IOException {
         URL uploadedFileURL = exchange.getURL(file.getName());
-        exchange.putFile(new FileInputStream(file), exchange.getURL(file.getName()));
+        exchange.putFile(new FileInputStream(file), uploadedFileURL);
         return uploadedFileURL;
     }
     

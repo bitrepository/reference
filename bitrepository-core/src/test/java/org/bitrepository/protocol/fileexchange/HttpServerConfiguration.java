@@ -66,16 +66,8 @@ public class HttpServerConfiguration {
      */
     public URL getURL(String filename) throws MalformedURLException {
         if (getHttpServerName() == null) {
-            return new URL(
-                    getProtocol(),
-                    null,
-                    0,
-                    getHttpServerPath() + "/" + filename);
+            return new URL(getProtocol(), null, 0, getHttpServerPath() + "/" + filename);
         }
-        return new URL(
-                getProtocol(),
-                getHttpServerName(),
-                getPortNumber(),
-                getHttpServerPath() + "/" + filename);
+        return new URL(getProtocol(), getHttpServerName(), getPortNumber(), getHttpServerPath() + "/" + filename);
     }
 }
