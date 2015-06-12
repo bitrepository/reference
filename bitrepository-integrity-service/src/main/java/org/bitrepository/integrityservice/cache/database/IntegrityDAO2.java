@@ -142,8 +142,8 @@ public class IntegrityDAO2 {
     }
     
     public IntegrityIssueIterator getFilesWithMissingChecksums(String collectionId, String pillarId) {
-        ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
+        ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         
         String retrieveSql = "SELECT fileID from fileinfo"
                 + " WHERE collectionID = ?"
@@ -153,7 +153,58 @@ public class IntegrityDAO2 {
         return makeIntegrityIssueIterator(retrieveSql, collectionId, pillarId);
     }
     
+    public IntegrityIssueIterator getOrphanFilesOnPillar(String collectionId, String pillarId, Date cutoffDate) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
+        ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
+        ArgumentValidator.checkNotNull(cutoffDate, "Date cutoffDate");
+        
+        String findOrphansSql = "SELECT fileID from fileinfo"
+                + " WHERE collectionID = ?"
+                + " AND pillarID = ?"
+                + " AND last_seen_getfileids < ?"
+                + " AND last_seen_getchecksums < ?";
+        
+        return makeIntegrityIssueIterator(findOrphansSql, collectionId, pillarId, cutoffDate, cutoffDate);
+    }
     
+    public void removeFile(String collectionId, String pillarId, String fileId) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
+        ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+
+        String removeSql = "DELETE FROM fileinfo"
+                + " WHERE collectionId = ?"
+                + " AND pillarId = ?"
+                + " AND fileId = ?";
+        
+        DatabaseUtils.executeStatement(dbConnector, removeSql, collectionId, pillarId, fileId);
+    }
+    
+    public IntegrityIssueIterator findMissingFilesAtPillar(String collectionId, String pillarId) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
+        ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
+        
+        String findMissingFilesSql = "SELECT DISTINCT(fileID) FROM fileinfo"
+                + " WHERE collectionID = ?"
+                + " EXCEPT SELECT fileID FROM fileinfo"
+                    + " WHERE collectionID = ?"
+                    + " AND pillarID = ?";
+        
+        return makeIntegrityIssueIterator(findMissingFilesSql, collectionId, collectionId, pillarId);
+    }
+    
+    public IntegrityIssueIterator findFilesWithChecksumInconsistincies(String collectionId) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
+                
+        String findInconsistentChecksumsSql = "SELECT fileID FROM ("
+                + " SELECT fileID, count(distinct(checksum)) as checksums FROM fileinfo"
+                + " WHERE collectionID = ?"
+                + " GROUP BY fileID) as subselect"
+                //+ " GROUP BY fileID, collectionID) as subselect"
+                + " WHERE checksums > 1";
+        
+        return makeIntegrityIssueIterator(findInconsistentChecksumsSql, collectionId);
+    }
     
     private IntegrityIssueIterator makeIntegrityIssueIterator(String query, Object... args) {
         PreparedStatement ps = null;
