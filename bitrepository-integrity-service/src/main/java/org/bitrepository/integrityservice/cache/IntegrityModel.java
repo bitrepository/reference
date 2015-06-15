@@ -68,6 +68,18 @@ public interface IntegrityModel {
     Collection<String> getAllFileIDs(String collectionId);
     
     /**
+     * Reset the status of fileID collection
+     * @param collectionId The collection to reset the fileID collection status of
+     */
+    void resetFileCollectionProgress(String collectionId);
+    
+    /**
+     * Reset the status of the checksum collection
+     * @param collectionId The collection to reset the checksum collection status of
+     */
+    void resetChecksumCollectionProgress(String collectionId);
+    
+    /**
      * Retrieves the number of files in a collection
      * @param collectionId The ID of the collection
      * @return The number of files in the collection
@@ -160,11 +172,27 @@ public interface IntegrityModel {
     void deleteFileIdEntry(String fileId, String collectionId);
     
     /**
+     * Removes the record of the given fileId for the given pillar
+     * @param collectionId The id of the collection the file belongs to.
+     * @param pillarId The id of the pillar that the record is about
+     * @param fileId The id of the file to be removed from cache.
+     */
+    void deleteFileIdEntry(String collectionId, String pillarId, String fileId);
+    
+    /**
      * Locates the files which exists but are missing their checksum at any pillar.
      * @param collectionId The collection in which to look for missing checksums
      * @return The IntegrityIssueIterator of file ids for the files which exists but are missing their checksum at any pillar.
      */
     IntegrityIssueIterator findFilesWithMissingChecksum(String collectionId);
+
+    /**
+     * Locates the files which exists but are missing their checksum on a given pillar.
+     * @param collectionId The collection in which to look for missing checksums
+     * @param pillarId The pillar on which to look for missing checksums
+     * @return The IntegrityIssueIterator of file ids for the files which exists but are missing their checksum at any pillar.
+     */
+    IntegrityIssueIterator findFilesWithMissingChecksum(String collectionId, String pillarId);
     
     /**
      * Moves all files with unknown checksum state to missing.
@@ -194,6 +222,15 @@ public interface IntegrityModel {
      * @return The list of orphan files   
      */
     IntegrityIssueIterator findOrphanFiles(String collectionID);
+    
+    /**
+     * Finds orphan files on a pillar in a given collection, i.e. files that no longer exists on the pillar
+     * @param collectionId, The ID of the collection in which to find orphan files.
+     * @param pillarId The ID of the pillar on which to look for orphan files.
+     * @param cutoffDate The date after which the file need to have been updated to not be considered orphan
+     * @return The list of orphan files   
+     */
+    IntegrityIssueIterator findOrphanFiles(String collectionID, String pillarId, Date cutoffDate);
     
     /**
      * Checks whether a given file is missing and returns the list of pillars, where it is missing.

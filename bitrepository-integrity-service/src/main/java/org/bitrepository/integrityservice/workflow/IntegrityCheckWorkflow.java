@@ -69,6 +69,8 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
     
     protected abstract UpdateChecksumsStep getUpdateChecksumsStep();
     
+    protected abstract boolean cleanDeletedFiles();
+    
     public IntegrityReporter getLatestIntegrityReport() {
         return latestReport;
     }
@@ -93,8 +95,11 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             UpdateChecksumsStep updateChecksumStep = getUpdateChecksumsStep();
             performStep(updateChecksumStep);
 
-            HandleDeletedFilesStep handleDeletedFilesStep = new HandleDeletedFilesStep(context.getStore(), reporter, workflowStart);
-            performStep(handleDeletedFilesStep);
+            if(cleanDeletedFiles()) {
+                HandleDeletedFilesStep handleDeletedFilesStep 
+                    = new HandleDeletedFilesStep(context.getStore(), reporter, workflowStart);
+                performStep(handleDeletedFilesStep);
+            }
             
             HandleMissingFilesStep handleMissingFilesStep = new HandleMissingFilesStep(context.getStore(),reporter);
             performStep(handleMissingFilesStep);

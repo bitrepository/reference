@@ -32,6 +32,7 @@ public class IntegrityReportWriter {
     private final IntegrityReportPartWriter checksumIssuesWriter;
     private final IntegrityReportPartWriter missingChecksumsWriter;
     private final IntegrityReportPartWriter obsoleteChecksumsWriter;
+    private final IntegrityReportPartWriter deletedFilesWriter2;
     
     private BufferedWriter deletedFilesWriter;
     private BufferedWriter reportFileWriter;
@@ -43,6 +44,7 @@ public class IntegrityReportWriter {
         checksumIssuesWriter = new IntegrityReportPartWriter(CHECKSUM_ISSUE, reportDir);
         missingChecksumsWriter = new IntegrityReportPartWriter(MISSING_CHECKSUM, reportDir);
         obsoleteChecksumsWriter = new IntegrityReportPartWriter(OBSOLETE_CHECKSUM, reportDir);
+        deletedFilesWriter2 = new IntegrityReportPartWriter(DELETED_FILE, reportDir);
     }
     
     /**
@@ -64,6 +66,10 @@ public class IntegrityReportWriter {
             deletedFilesWriter = new BufferedWriter(new FileWriter(deletedFilesFile, true));
         }
         ReportWriterUtils.addLine(deletedFilesWriter, fileID);
+    }
+    
+    public void writeDeletedFile(String pillarID, String fileID) throws IOException {
+        deletedFilesWriter2.writeIssue(pillarID, fileID);
     }
     
     /**
@@ -118,13 +124,14 @@ public class IntegrityReportWriter {
         reportFileWriter.append(reportHeader);
         reportFileWriter.newLine();
         
-        writeSectionHeader(reportFileWriter, "Deleted files");
+        /*writeSectionHeader(reportFileWriter, "Deleted files");
         if(deletedFilesWriter != null) {
             writeSectionPart(reportFileWriter, new File(reportDir, DELETED_FILE));
         } else {
             writeNoIssueHeader(reportFileWriter, "No deleted files detected");
-        }
-        
+        }*/
+        writeReportSection(reportFileWriter, deletedFilesWriter2.getSectionFiles(), "Deleted files",
+                "No deleted files detected");        
         writeReportSection(reportFileWriter, missingFilesWriter.getSectionFiles(), "Missing files", 
                 "No missing files detected");
         writeReportSection(reportFileWriter, checksumIssuesWriter.getSectionFiles(), "Checksum issues", 

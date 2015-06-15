@@ -23,7 +23,9 @@ package org.bitrepository.integrityservice.workflow.step;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.ChecksumState;
@@ -62,23 +64,24 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
      */
     @Override
     public synchronized void performStep() throws Exception {
-        store.setFilesWithUnknownChecksumToMissing(reporter.getCollectionID());
-        IntegrityIssueIterator missingChecksumsIterator = store.findFilesWithMissingChecksum(reporter.getCollectionID());
-        String file;
-        try {
-            while((file = missingChecksumsIterator.getNextIntegrityIssue()) != null) {
-                for(FileInfo info : store.getFileInfos(file, reporter.getCollectionID())) {
-                    if(info.getFileState() == FileState.EXISTING && info.getChecksumState() == ChecksumState.UNKNOWN) {
-                        try {
-                            reporter.reportMissingChecksum(file, info.getPillarId());
-                        } catch (IOException e) {
-                            log.error("Failed to report file: " + file + " as having a missing checksum", e);
-                        }
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
+
+        for(String pillar : pillars) {
+            IntegrityIssueIterator missingChecksumsIterator 
+                = store.findFilesWithMissingChecksum(reporter.getCollectionID(), pillar);
+            
+            String missingFile;
+            try {
+                while((missingFile = missingChecksumsIterator.getNextIntegrityIssue()) != null) {
+                    try {
+                        reporter.reportMissingChecksum(missingFile, pillar);
+                    } catch (IOException e) {
+                        log.error("Failed to report file: " + missingFile + " as having a missing checksum", e);
                     }
                 }
+            } finally {
+                    missingChecksumsIterator.close();
             }
-        } finally {
-                missingChecksumsIterator.close();
         }
     }
 

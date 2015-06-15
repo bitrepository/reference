@@ -140,6 +140,13 @@ public class BasicIntegrityReporter implements IntegrityReporter {
         deletedFilesCount++;
         writer.writeDeletedFile(fileID);
     }
+    
+    @Override
+    public void reportDeletedFile(String pillarID, String fileID) throws IOException {
+        deletedFilesCount++;
+        writer.writeDeletedFile(pillarID, fileID);
+        
+    }
 
     @Override
     public void reportMissingFile(String fileID, String pillarID) throws IOException {
@@ -180,4 +187,5 @@ public class BasicIntegrityReporter implements IntegrityReporter {
         }
         writer.writeObsoleteChecksum(pillarID, fileID);
     }
+
 }

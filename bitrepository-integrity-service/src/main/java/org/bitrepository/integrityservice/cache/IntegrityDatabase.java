@@ -288,4 +288,37 @@ public class IntegrityDatabase implements IntegrityModel {
     public IntegrityIssueIterator findOrphanFiles(String collectionID) {
         return store.findOrphanFiles(collectionID);
     }
+
+    @Override
+    public void resetFileCollectionProgress(String collectionId) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void resetChecksumCollectionProgress(String collectionId) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void deleteFileIdEntry(String collectionId, String pillarId,
+            String fileId) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public IntegrityIssueIterator findFilesWithMissingChecksum(
+            String collectionId, String pillarId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IntegrityIssueIterator findOrphanFiles(String collectionID,
+            String pillarId, Date cutoffDate) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

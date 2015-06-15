@@ -36,8 +36,17 @@ public class IntegrityDatabase2 implements IntegrityModel {
 
     @Override
     public Collection<FileInfo> getFileInfos(String fileId, String collectionId) {
-        // TODO Auto-generated method stub
-        return null;
+        return store.getFileInfosForFile(fileId, collectionId);
+    }
+    
+    @Override
+    public void resetFileCollectionProgress(String collectionId) {
+        store.resetChecksumCollectionProgress(collectionId);
+    }
+    
+    @Override
+    public void resetChecksumCollectionProgress(String collectionId) {
+        store.resetChecksumCollectionProgress(collectionId);
     }
 
     @Override
@@ -74,8 +83,7 @@ public class IntegrityDatabase2 implements IntegrityModel {
     @Override
     public IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarId, long firstIndex, 
             long maxResults, String collectionId) {
-        // TODO Auto-generated method stub
-        return null;
+        return store.findMissingFilesAtPillar(collectionId, pillarId, firstIndex, maxResults);
     }
 
     @Override
@@ -114,11 +122,21 @@ public class IntegrityDatabase2 implements IntegrityModel {
         // TODO Auto-generated method stub
 
     }
+    
+    @Override
+    public void deleteFileIdEntry(String collectionId, String pillarId, String fileId) {
+        store.removeFile(collectionId, pillarId, fileId);
+    }
 
     @Override
     public IntegrityIssueIterator findFilesWithMissingChecksum(String collectionId) {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    @Override
+    public IntegrityIssueIterator findFilesWithMissingChecksum(String collectionId, String pillarId) {
+        return store.getFilesWithMissingChecksums(collectionId, pillarId);
     }
 
     @Override
@@ -129,8 +147,7 @@ public class IntegrityDatabase2 implements IntegrityModel {
 
     @Override
     public IntegrityIssueIterator findChecksumsOlderThan(Date date, String pillarID, String collectionId) {
-        // TODO Auto-generated method stub
-        return null;
+        return store.getFilesWithOutdatedChecksums(collectionId, pillarID, date);
     }
 
     @Override
@@ -144,6 +161,11 @@ public class IntegrityDatabase2 implements IntegrityModel {
         // TODO Auto-generated method stub
         return null;
     }
+    
+    @Override
+    public IntegrityIssueIterator findOrphanFiles(String collectionId, String pillarId, Date cutoffDate) {
+        return store.getOrphanFilesOnPillar(collectionId, pillarId, cutoffDate);
+    }
 
     @Override
     public List<String> getPillarsMissingFile(String fileId, String collectionId) {
@@ -152,10 +174,8 @@ public class IntegrityDatabase2 implements IntegrityModel {
     }
 
     @Override
-    public IntegrityIssueIterator getFilesWithInconsistentChecksums(
-            String collectionId) {
-        // TODO Auto-generated method stub
-        return null;
+    public IntegrityIssueIterator getFilesWithInconsistentChecksums(String collectionId) {
+        return store.findFilesWithChecksumInconsistincies(collectionId);
     }
 
     @Override

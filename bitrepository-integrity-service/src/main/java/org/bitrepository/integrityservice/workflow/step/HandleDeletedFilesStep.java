@@ -23,7 +23,9 @@ package org.bitrepository.integrityservice.workflow.step;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
@@ -61,19 +63,23 @@ public class HandleDeletedFilesStep extends AbstractWorkFlowStep {
      */
     @Override
     public synchronized void performStep() throws Exception {
-        IntegrityIssueIterator deletedFilesIterator = store.findOrphanFiles(reporter.getCollectionID());
-        String deletedFile;
-        try {
-            while((deletedFile = deletedFilesIterator.getNextIntegrityIssue()) != null) {
-                store.deleteFileIdEntry(deletedFile, reporter.getCollectionID());
-                try {
-                    reporter.reportDeletedFile(deletedFile);
-                } catch (IOException e) {
-                    log.error("Failed to report file: " + deletedFile + " as deleted", e);
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
+        for(String pillar : pillars) {
+            IntegrityIssueIterator deletedFilesIterator = store.findOrphanFiles(reporter.getCollectionID(), 
+                    pillar, workflowStart);
+            String deletedFile;
+            try {
+                while((deletedFile = deletedFilesIterator.getNextIntegrityIssue()) != null) {
+                    store.deleteFileIdEntry(reporter.getCollectionID(), pillar, deletedFile);
+                    try {
+                        reporter.reportDeletedFile(pillar, deletedFile);
+                    } catch (IOException e) {
+                        log.error("Failed to report file: " + deletedFile + " as deleted", e);
+                    }
                 }
-            }
-        } finally {
-            deletedFilesIterator.close();
+            } finally {
+                deletedFilesIterator.close();
+            }    
         }
     }
 

@@ -2,6 +2,9 @@ package org.bitrepository.integrityservice.cache.database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -10,7 +13,9 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
@@ -180,17 +185,29 @@ public class IntegrityDAO2 {
         DatabaseUtils.executeStatement(dbConnector, removeSql, collectionId, pillarId, fileId);
     }
     
-    public IntegrityIssueIterator findMissingFilesAtPillar(String collectionId, String pillarId) {
+    public IntegrityIssueIterator findMissingFilesAtPillar(String collectionId, String pillarId, 
+            Long firstIndex, Long maxResults) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
+        
+        long first;
+        if(firstIndex == null) {
+            first = 0;
+        } else {
+            first = firstIndex;
+        }
         
         String findMissingFilesSql = "SELECT DISTINCT(fileID) FROM fileinfo"
                 + " WHERE collectionID = ?"
                 + " EXCEPT SELECT fileID FROM fileinfo"
                     + " WHERE collectionID = ?"
-                    + " AND pillarID = ?";
+                    + " AND pillarID = ?"
+                + " ORDER BY fileid"
+                + " OFFSET ?"
+                + " LIMIT ?";
         
-        return makeIntegrityIssueIterator(findMissingFilesSql, collectionId, collectionId, pillarId);
+        return makeIntegrityIssueIterator(findMissingFilesSql, collectionId, collectionId, pillarId,
+                first, maxResults);
     }
     
     public IntegrityIssueIterator findFilesWithChecksumInconsistincies(String collectionId) {
@@ -204,6 +221,38 @@ public class IntegrityDAO2 {
                 + " WHERE checksums > 1";
         
         return makeIntegrityIssueIterator(findInconsistentChecksumsSql, collectionId);
+    }
+    
+    public List<FileInfo> getFileInfosForFile(String fileId, String collectionId) {
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+        ArgumentValidator.checkNotNullOrEmpty(fileId, "String collectionId");
+        
+        List<FileInfo> res = new ArrayList<FileInfo>();
+        String getFileInfoSql = "SELECT pillarID, filesize, checksum, file_timestamp, checksum_timestamp FROM fileinfo"
+                + " WHERE collectionID = ?"
+                + " AND fileID = ?";
+        
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, getFileInfoSql, collectionId, fileId)) {
+            try (ResultSet dbResult = ps.executeQuery()) {
+                while(dbResult.next()) {
+                    Date lastFileCheck = dbResult.getTimestamp("file_timestamp");
+                    String checksum = dbResult.getString("checksum");
+                    Date lastChecksumCheck = dbResult.getTimestamp("checksum_timestamp");
+                    Long fileSize = dbResult.getLong("fileSize");
+                    String pillarId = dbResult.getString("pillarID");
+                    
+                    FileInfo f = new FileInfo(fileId, CalendarUtils.getXmlGregorianCalendar(lastFileCheck), checksum, 
+                            fileSize, CalendarUtils.getXmlGregorianCalendar(lastChecksumCheck), pillarId,
+                            null, null);
+                    res.add(f);
+                }
+            } 
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not retrieve the FileInfo for '" + fileId + "' with the SQL '"
+                    + getFileInfoSql + "'.", e);
+        }
+        return res;
     }
     
     private IntegrityIssueIterator makeIntegrityIssueIterator(String query, Object... args) {

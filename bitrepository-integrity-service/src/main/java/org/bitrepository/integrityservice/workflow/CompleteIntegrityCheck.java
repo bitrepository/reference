@@ -61,4 +61,10 @@ public class CompleteIntegrityCheck extends IntegrityCheckWorkflow {
                 context.getCollector(), context.getStore(), context.getAlerter(),
                 ChecksumUtils.getDefault(context.getSettings()), context.getSettings(), collectionID);
     }
+
+
+    @Override
+    protected boolean cleanDeletedFiles() {
+        return true;
+    }
 }
