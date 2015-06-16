@@ -82,7 +82,7 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.FileInfo;
-import org.bitrepository.integrityservice.cache.PillarStat;
+import org.bitrepository.integrityservice.cache.PillarCollectionStat;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.settings.repositorysettings.Collections;
@@ -1131,7 +1131,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
      * @param collectionID The ID of the collection 
      * @return List<PillarStat> The list of PillarStat's for the collection
      */
-    public List<PillarStat> getLatestPillarStats(String collectionID) {
+    public List<PillarCollectionStat> getLatestPillarStats(String collectionID) {
         final int indexPillarKey = 1;
         final int indexFileCount = 2;
         final int indexDataSize = 3;
@@ -1143,9 +1143,9 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
         Long statsKey = getLatestStatisticsKey(collectionID);
         if(statsKey == null) {
             log.debug("Trying to retrieve pillar stats but none exists for collectionID: '" + collectionID + "'.");
-            return new ArrayList<PillarStat>();
+            return new ArrayList<PillarCollectionStat>();
         }
-        List<PillarStat> res = new ArrayList<PillarStat>();
+        List<PillarCollectionStat> res = new ArrayList<PillarCollectionStat>();
         
         String sql = "SELECT p." + PS_PILLAR_KEY + ", p." + PS_FILE_COUNT +  ", p." + PS_FILE_SIZE 
                     +  ", p." + PS_MISSING_FILES_COUNT + ", p." + PS_CHECKSUM_ERRORS + ", s." + STATS_TIME
@@ -1168,7 +1168,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                     Date updateTime = dbResult.getTimestamp(indexUpdateTime);
                     String pillarID = retrievePillarIDFromKey(pillarKey);
                     
-                    PillarStat p = new PillarStat(pillarID, collectionID, fileCount, dataSize, missingFiles, 
+                    PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID, fileCount, dataSize, missingFiles, 
                             checksumErrors, statsTime, updateTime);
                     res.add(p);
                 }

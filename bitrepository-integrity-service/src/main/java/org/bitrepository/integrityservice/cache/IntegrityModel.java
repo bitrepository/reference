@@ -31,6 +31,7 @@ import java.util.List;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
+import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 
 /**
  * Store of cached integrity information.
@@ -347,6 +348,13 @@ public interface IntegrityModel {
     Long getCollectionFileSize(String collectionId);
     
     /**
+     * Retrieves the accumulated size of the files in the given collection
+     * @param collectionId The ID of the collection
+     * @return The accumulated size of the files in the collection.
+     */
+    Long getCollectionFileSizeAtPillar(String collectionId, String pillarId);
+    
+    /**
      * Retrieves the accumulated data size of the files on a given pillar
      * @param pillarID The ID of the pillar
      * @return The accumulated data size for the pillar
@@ -363,9 +371,9 @@ public interface IntegrityModel {
     /**
      * Retrieves the lastest statistics for the set of pillars in the given collection
      * @param collectionID The ID of the collection
-     * @return {@link PillarStat} The latest pillar statistics for the pillars in the collection 
+     * @return {@link PillarCollectionStat} The latest pillar statistics for the pillars in the collection 
      */
-    List<PillarStat> getLatestPillarStats(String collectionID);
+    List<PillarCollectionStat> getLatestPillarStats(String collectionID);
     
     /**
      * Method to create a new set of statistics entries for a given collection
@@ -377,4 +385,10 @@ public interface IntegrityModel {
      * Shutdown the model. This will typically consist of closing DB connections.
      */
     void close();
+
+    /**
+     * Create the statistics entries in the database based on the information from the StatisticsCollector
+     * @param statisticsCollector the collection with information needed to create the statistics entries. 
+     */
+    void createStatistics(String collectionId,  StatisticsCollector statisticsCollector);
 }

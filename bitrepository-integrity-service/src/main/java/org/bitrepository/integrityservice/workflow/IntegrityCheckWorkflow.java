@@ -27,6 +27,7 @@ import java.util.Date;
 import org.bitrepository.integrityservice.IntegrityServiceManager;
 import org.bitrepository.integrityservice.reports.BasicIntegrityReporter;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
+import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.bitrepository.integrityservice.workflow.step.CreateStatisticsEntryStep;
 import org.bitrepository.integrityservice.workflow.step.HandleChecksumValidationStep;
 import org.bitrepository.integrityservice.workflow.step.HandleDeletedFilesStep;
@@ -89,6 +90,8 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
         
         super.start();
         try {
+            StatisticsCollector statisticsCollector = new StatisticsCollector(context.getSettings(), collectionID);
+            
             UpdateFileIDsStep updateFileIDsStep = getUpdateFileIDsStep();
             performStep(updateFileIDsStep);
             
@@ -101,23 +104,26 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
                 performStep(handleDeletedFilesStep);
             }
             
-            HandleMissingFilesStep handleMissingFilesStep = new HandleMissingFilesStep(context.getStore(),reporter);
+            HandleMissingFilesStep handleMissingFilesStep = new HandleMissingFilesStep(context.getStore(), reporter,
+                    statisticsCollector);
             performStep(handleMissingFilesStep);
             
             HandleChecksumValidationStep handleChecksumValidationStep 
-                    = new HandleChecksumValidationStep(context.getStore(), context.getAuditManager(), reporter);
+                    = new HandleChecksumValidationStep(context.getStore(), context.getAuditManager(), reporter, 
+                            statisticsCollector);
             performStep(handleChecksumValidationStep);
             
             HandleMissingChecksumsStep handleMissingChecksumsStep 
-                    = new HandleMissingChecksumsStep(context.getStore(), reporter);
+                    = new HandleMissingChecksumsStep(context.getStore(), reporter, statisticsCollector);
             performStep(handleMissingChecksumsStep);
             
             HandleObsoleteChecksumsStep handleObsoleteChecksumsStep 
-                    = new HandleObsoleteChecksumsStep(context.getSettings(), context.getStore(), reporter);
+                    = new HandleObsoleteChecksumsStep(context.getSettings(), context.getStore(), reporter, 
+                            statisticsCollector);
             performStep(handleObsoleteChecksumsStep);
             
             CreateStatisticsEntryStep createStatistics = new CreateStatisticsEntryStep(
-                    context.getStore(), collectionID);
+                    context.getStore(), collectionID, statisticsCollector);
             performStep(createStatistics);
 
             if(reporter.hasIntegrityIssues()) {

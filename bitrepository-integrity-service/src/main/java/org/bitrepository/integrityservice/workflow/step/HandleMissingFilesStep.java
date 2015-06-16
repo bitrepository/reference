@@ -28,6 +28,7 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
+import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,10 +44,13 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
     /** The report model to populate */
     private final IntegrityReporter reporter;
+    private final StatisticsCollector sc;
     
-    public HandleMissingFilesStep(IntegrityModel store, IntegrityReporter reporter) {
+    public HandleMissingFilesStep(IntegrityModel store, IntegrityReporter reporter, 
+            StatisticsCollector statisticsCollector) {
         this.store = store;
         this.reporter = reporter;
+        this.sc = statisticsCollector;
     }
     
     @Override
@@ -63,6 +67,7 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
     public synchronized void performStep() {
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
         for(String pillar : pillars) {
+            Long missingFiles = 0L;
             IntegrityIssueIterator issueIterator = store.getMissingFilesAtPillarByIterator(pillar, 0, 
                     Integer.MAX_VALUE, reporter.getCollectionID());
             
@@ -70,10 +75,12 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
             while((missingFile = issueIterator.getNextIntegrityIssue()) != null) {
                 try {
                     reporter.reportMissingFile(missingFile, pillar);
+                    missingFiles++;
                 } catch (IOException e) {
                     log.error("Failed to report file: " + missingFile + " as missing", e);
                 }
             }
+            sc.getPillarCollectionStat(pillar).setMissingFiles(missingFiles);
         }
     }
 

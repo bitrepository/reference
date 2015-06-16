@@ -43,7 +43,7 @@ import org.bitrepository.common.webobjects.StatisticsPillarSize;
 import org.bitrepository.integrityservice.IntegrityServiceManager;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.cache.PillarStat;
+import org.bitrepository.integrityservice.cache.PillarCollectionStat;
 
 @Path("/Statistics")
 public class RestStatisticsService {
@@ -118,7 +118,7 @@ public class RestStatisticsService {
             stats.put(pillar, stat);
         }
         for(String collection : SettingsUtils.getAllCollectionsIDs()) {
-            for(PillarStat pillarStat : model.getLatestPillarStats(collection)) {
+            for(PillarCollectionStat pillarStat : model.getLatestPillarStats(collection)) {
                 StatisticsPillarSize stat = stats.get(pillarStat.getPillarID());
                 stat.setDataSize(stat.getDataSize() + pillarStat.getDataSize());
                 stat.setHumanSize(FileSizeUtils.toHumanShortDecimal(stat.getDataSize()));

@@ -25,12 +25,17 @@ import java.util.Date;
 
 public class CollectionStat {
     private final String collectionID;
-    private final Long fileCount;
-    private final Long dataSize;
-    private final Long checksumErrors;
-    private final Date statsTime;
+    private Long fileCount;
+    private Long dataSize;
+    private Long checksumErrors;
+    private Date latest_file_time;
+    private Date statsTime;
     /** The date that the statistics were updated */
-    private final Date updateTime;
+    private Date updateTime;
+    
+    public CollectionStat(String collectionID) {
+        this.collectionID = collectionID;
+    }
     
     public CollectionStat(String collectionID, Long fileCount, Long dataSize, Long checksumErrors, 
             Date statsTime, Date updateTime) {
@@ -66,5 +71,33 @@ public class CollectionStat {
     /** The date that the statistics were updated */
     public Date getUpdateTime() {
         return updateTime;
+    }
+
+    public void setFileCount(Long fileCount) {
+        this.fileCount = fileCount;
+    }
+
+    public void setDataSize(Long dataSize) {
+        this.dataSize = dataSize;
+    }
+
+    public void setChecksumErrors(Long checksumErrors) {
+        this.checksumErrors = checksumErrors;
+    }
+
+    public void setStatsTime(Date statsTime) {
+        this.statsTime = statsTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public Date getLatest_file_time() {
+        return latest_file_time;
+    }
+
+    public void setLatest_file_time(Date latest_file_time) {
+        this.latest_file_time = latest_file_time;
     }
 }

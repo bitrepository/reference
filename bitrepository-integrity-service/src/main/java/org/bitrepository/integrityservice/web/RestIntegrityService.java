@@ -55,7 +55,7 @@ import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.IntegrityServiceManager;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.cache.PillarStat;
+import org.bitrepository.integrityservice.cache.PillarCollectionStat;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.workflow.IntegrityCheckWorkflow;
 import org.bitrepository.service.workflow.JobID;
@@ -184,21 +184,21 @@ public class RestIntegrityService {
         JsonFactory jf = new JsonFactory();
         JsonGenerator jg = jf.createGenerator(writer);
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
-        Map<String, PillarStat> stats = new HashMap<String, PillarStat>();
-        for(PillarStat stat : model.getLatestPillarStats(collectionID)) {
+        Map<String, PillarCollectionStat> stats = new HashMap<String, PillarCollectionStat>();
+        for(PillarCollectionStat stat : model.getLatestPillarStats(collectionID)) {
             if(pillars.contains(stat.getPillarID())) {
                 stats.put(stat.getPillarID(), stat);
             }
         }
         for(String pillar : pillars) {
             if(!stats.containsKey(pillar)) {
-                PillarStat emptyStat = new PillarStat(pillar, collectionID, 0L, 0L, 0L, 0L, 
+                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, 0L, 0L, 0L, 0L, 
                         new Date(0), new Date(0));;
                 stats.put(pillar, emptyStat);
             }
         }
         jg.writeStartArray();
-        for(PillarStat stat : stats.values()) {
+        for(PillarCollectionStat stat : stats.values()) {
             writeIntegrityStatusObject(stat, jg);
         }
         jg.writeEndArray();
@@ -349,7 +349,7 @@ public class RestIntegrityService {
     }
     
     
-    private void writeIntegrityStatusObject(PillarStat stat, JsonGenerator jg) throws JsonProcessingException, IOException {
+    private void writeIntegrityStatusObject(PillarCollectionStat stat, JsonGenerator jg) throws JsonProcessingException, IOException {
         jg.writeStartObject();
         jg.writeObjectField("pillarID", stat.getPillarID());
         jg.writeObjectField("totalFileCount", stat.getFileCount());

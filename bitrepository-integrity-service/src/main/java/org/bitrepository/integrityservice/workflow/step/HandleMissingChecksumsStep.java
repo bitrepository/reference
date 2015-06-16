@@ -26,12 +26,10 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.bitrepository.common.utils.SettingsUtils;
-import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.cache.database.ChecksumState;
-import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
+import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,10 +45,13 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
     /** The report model to populate */
     private final IntegrityReporter reporter;
+    private final StatisticsCollector sc;
     
-    public HandleMissingChecksumsStep(IntegrityModel store, IntegrityReporter reporter) {
+    public HandleMissingChecksumsStep(IntegrityModel store, IntegrityReporter reporter, 
+            StatisticsCollector statisticsCollector) {
         this.store = store;
         this.reporter = reporter;
+        this.sc = statisticsCollector;
     }
     
     @Override
@@ -67,6 +68,7 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
 
         for(String pillar : pillars) {
+            Long missingChecksums = 0L;
             IntegrityIssueIterator missingChecksumsIterator 
                 = store.findFilesWithMissingChecksum(reporter.getCollectionID(), pillar);
             
@@ -75,6 +77,7 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
                 while((missingFile = missingChecksumsIterator.getNextIntegrityIssue()) != null) {
                     try {
                         reporter.reportMissingChecksum(missingFile, pillar);
+                        missingChecksums++;
                     } catch (IOException e) {
                         log.error("Failed to report file: " + missingFile + " as having a missing checksum", e);
                     }
@@ -82,6 +85,7 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
             } finally {
                     missingChecksumsIterator.close();
             }
+            sc.getPillarCollectionStat(pillar).setMissingChecksums(missingChecksums);
         }
     }
 
@@ -89,3 +93,4 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
         return "Detects and reports files that are missing a checksum from one or more pillars in the collection.";
     }
 }
+

@@ -67,6 +67,7 @@ import org.bitrepository.integrityservice.cache.database.IntegrityDatabaseCreato
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
+import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.bitrepository.integrityservice.workflow.step.FullUpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.HandleMissingChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
@@ -177,7 +178,8 @@ public class MissingChecksumTests extends ExtendedTestCase {
             }
         }).when(reporter).getCollectionID();
         
-        HandleMissingChecksumsStep missingChecksumStep = new HandleMissingChecksumsStep(model, reporter); 
+        StatisticsCollector cs = new StatisticsCollector(settings, TEST_COLLECTION);
+        HandleMissingChecksumsStep missingChecksumStep = new HandleMissingChecksumsStep(model, reporter, cs); 
         missingChecksumStep.performStep();
         for(FileInfo fi : model.getFileInfos(TEST_FILE_1, TEST_COLLECTION)) {
             assertEquals(fi.getChecksumState().name(), ChecksumState.MISSING.name());                

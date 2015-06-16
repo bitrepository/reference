@@ -23,26 +23,35 @@ package org.bitrepository.integrityservice.cache;
 
 import java.util.Date;
 
-public class PillarStat {
+public class PillarCollectionStat {
 
     /** The ID of the pillar */
-    private String pillarID;
+    private final String pillarID;
     /** The ID of the collection */
-    private String collectionID;
+    private final String collectionID;
     /** The number of files in the collection */
-    private Long fileCount;
+    private Long fileCount = 0L;
     /** The size of the collection */
-    private Long dataSize; 
+    private Long dataSize = 0L; 
     /** The number of missing files on the pillar */
-    private Long missingFiles; 
+    private Long missingFiles = 0L; 
+    /** The number of obsolete checksums on the pillar */
+    private Long obsoleteChecksums = 0L;
+    /** The number of missing checksums on the pillar */
+    private Long missingChecksums = 0L;
     /** The number of checksum errors */
-    private Long checksumErrors;
+    private Long checksumErrors = 0L;
     /** The date that the statistics were collected */
     private Date statsTime;
     /** The date that the statistics were updated */
     private Date updateTime;
     
-    public PillarStat(String pillarID, String collectionID, Long fileCount, Long dataSize, Long missingFiles, 
+    public PillarCollectionStat(String pillarID, String collectionID) {
+        this.pillarID = pillarID;
+        this.collectionID = collectionID;
+    }
+    
+    public PillarCollectionStat(String pillarID, String collectionID, Long fileCount, Long dataSize, Long missingFiles, 
             Long checksumErrors, Date statsTime, Date updateTime) {
         this.pillarID = pillarID;
         this.collectionID = collectionID;
@@ -57,14 +66,8 @@ public class PillarStat {
     public String getPillarID() {
         return pillarID;
     }
-    public void setPillarID(String pillarID) {
-        this.pillarID = pillarID;
-    }
     public String getCollectionID() {
         return collectionID;
-    }
-    public void setCollectionID(String collectionID) {
-        this.collectionID = collectionID;
     }
     public Long getFileCount() {
         return fileCount;
@@ -101,6 +104,22 @@ public class PillarStat {
     }
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Long getObsoleteChecksums() {
+        return obsoleteChecksums;
+    }
+
+    public void setObsoleteChecksums(Long obsoleteChecksums) {
+        this.obsoleteChecksums = obsoleteChecksums;
+    }
+
+    public Long getMissingChecksums() {
+        return missingChecksums;
+    }
+
+    public void setMissingChecksums(Long missingChecksums) {
+        this.missingChecksums = missingChecksums;
     }
     
 }

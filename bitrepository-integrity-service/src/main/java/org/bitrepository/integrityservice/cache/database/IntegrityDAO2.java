@@ -16,6 +16,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
+import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
@@ -95,7 +96,6 @@ public class IntegrityDAO2 {
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         
-        /* Consider getting this from a small helper table */
         String retrieveSql = "SELECT latest_file_timestamp FROM collection_progress" 
         		+ " WHERE collectionID = ? "
         		+ " AND pillarID = ?";
@@ -103,11 +103,19 @@ public class IntegrityDAO2 {
         return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionId, pillarId);
     }
     
+    public Date getLatestFileDateInCollection(String collectionId) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
+        
+        String retrieveSql = "SELECT MAX(latest_file_timestamp) FROM collection_progress"
+                + " WHERE collectionID = ?";
+        
+        return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionId);
+    }
+    
     public Date getLatestChecksumDate(String collectionId, String pillarId) {
     	ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         
-        /* Consider getting this from a small helper table */
         String retrieveSql = "SELECT latest_checksum_timestamp FROM collection_progress" 
         		+ " WHERE collectionID = ? "
         		+ " AND pillarID = ?";
@@ -225,7 +233,7 @@ public class IntegrityDAO2 {
     
     public List<FileInfo> getFileInfosForFile(String fileId, String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
-        ArgumentValidator.checkNotNullOrEmpty(fileId, "String collectionId");
+        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         
         List<FileInfo> res = new ArrayList<FileInfo>();
         String getFileInfoSql = "SELECT pillarID, filesize, checksum, file_timestamp, checksum_timestamp FROM fileinfo"
@@ -253,6 +261,53 @@ public class IntegrityDAO2 {
                     + getFileInfoSql + "'.", e);
         }
         return res;
+    }
+    
+    public void createStatistics(String collectionId, StatisticsCollector statisticsCollector) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
+        StatisticsCreator sc = new StatisticsCreator(dbConnector.getConnection(), collectionId);
+        sc.createStatistics(statisticsCollector);
+    }
+    
+    public Long getCollectionSize(String collectionId) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
+        
+        String getCollectionSizeSql = "SELECT SUM(filesize) FROM "
+                        + "(SELECT distinct(fileID), filesize from fileinfo"
+                            + " WHERE collectionID = ?) AS subselect)";
+        return DatabaseUtils.selectFirstLongValue(dbConnector, getCollectionSizeSql, collectionId);
+    }
+    
+    public Long getCollectionSizeAtPillar(String collectionId, String pillarId) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
+        ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
+
+        String getCollectionSizeAtPillarSql = "SELECT SUM(filesize) FROM fileinfo"
+                        + " WHERE collectionID = ?"
+                        + " AND pillarID = ?";
+        return DatabaseUtils.selectFirstLongValue(dbConnector, getCollectionSizeAtPillarSql, 
+                collectionId, pillarId);
+    }
+    
+    public Long getNumberOfFilesInCollection(String collectionId) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
+        
+        String getNumberOfFilesSql = "SELECT COUNT(DISTINCT(fileid)) FROM fileinfo"
+                        + " WHERE collectionID = ?";
+        
+        return DatabaseUtils.selectFirstLongValue(dbConnector, getNumberOfFilesSql, collectionId);
+    }
+    
+    public Long getNumberOfFilesInCollectionAtPillar(String collectionId, String pillarId) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
+        ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
+        
+        String getNumberOfFilesSql = "SELECT COUNT(fileid) FROM fileinfo"
+                + " WHERE collectionID = ?"
+                + " AND pillarID = ?";
+        
+        return DatabaseUtils.selectFirstLongValue(dbConnector, getNumberOfFilesSql, collectionId, pillarId);
+
     }
     
     private IntegrityIssueIterator makeIntegrityIssueIterator(String query, Object... args) {

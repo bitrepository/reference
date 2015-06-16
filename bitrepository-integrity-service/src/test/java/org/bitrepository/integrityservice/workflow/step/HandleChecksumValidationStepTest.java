@@ -45,6 +45,7 @@ import org.bitrepository.integrityservice.cache.database.ChecksumState;
 import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.reports.BasicIntegrityReporter;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
+import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.bitrepository.service.audit.AuditTrailDatabaseResults;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.testng.Assert;
@@ -82,7 +83,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         addDescription("Test the checksum integrity validator without any data in the cache.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
-        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter);
+        StatisticsCollector cs = new StatisticsCollector(settings, TEST_COLLECTION);
+        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
         
         addStep("Validate the file ids", "Should not have integrity issues.");
         step.performStep();
@@ -95,7 +97,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         addDescription("Test the checksum integrity validator when all pillars have similar data.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
-        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter);
+        StatisticsCollector cs = new StatisticsCollector(settings, TEST_COLLECTION);
+        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
@@ -120,7 +123,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         addDescription("Test the checksum integrity validator when one pillar is missing the data.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
-        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter);
+        StatisticsCollector cs = new StatisticsCollector(settings, TEST_COLLECTION);
+        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
 
         addStep("Update the cache with identitical data for both pillars.", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
@@ -139,7 +143,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         addDescription("Test the checksum integrity validator when only two pillar has data, but it it different.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
-        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter);
+        StatisticsCollector cs = new StatisticsCollector(settings, TEST_COLLECTION);
+        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData1 = createChecksumData("1234cccc4321", FILE_1);
@@ -162,7 +167,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         addDescription("Test the checksum integrity validator when all pillars have different checksums.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
-        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter);
+        StatisticsCollector cs = new StatisticsCollector(settings, TEST_COLLECTION);
+        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData1 = createChecksumData("1234cccc4321", FILE_1);
@@ -188,7 +194,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
                 + "has another checksum.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
-        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter);
+        StatisticsCollector cs = new StatisticsCollector(settings, TEST_COLLECTION);
+        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData1 = createChecksumData("1234cccc4321", FILE_1);
@@ -217,7 +224,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         addDescription("Test that a file is set to having ChecksumState UNKNOWN, when it has a file-update.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
-        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter);
+        StatisticsCollector cs = new StatisticsCollector(settings, TEST_COLLECTION);
+        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
         
         addStep("Add data to the cache", "");
         List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
@@ -254,7 +262,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
         TestAuditTrailManager auditManager = new TestAuditTrailManager();
-        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter);
+        StatisticsCollector cs = new StatisticsCollector(settings, TEST_COLLECTION);
+        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
         
         addStep("Test step on data without checksum error", "No audit trails.");
         List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);

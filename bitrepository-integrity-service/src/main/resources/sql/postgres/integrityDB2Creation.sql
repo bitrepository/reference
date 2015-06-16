@@ -124,6 +124,7 @@ CREATE TABLE collectionstats (
     file_count INT,              -- The number of files that the collection contained when the stats were made
     file_size BIGINT,            -- The total size of the files in the collection when the stats were made
     checksum_errors_count INT,   -- The number of checksum errors in the collection when the stats were made
+    latest_file_date TIMESTAMP NOT NULL, -- The latest ingested file in the collection.
     UNIQUE (stat_key),           -- Enforce that there can only be one collectionstat for a statistics
     FOREIGN KEY (stat_key) REFERENCES stats(stat_key)
                                  -- Foreign key constraint on stat_key, enforcing the presence of the referred key
@@ -144,6 +145,8 @@ CREATE TABLE pillarstats (
     file_size BIGINT,            -- The total size of the files on the pillar when the stats were made
     missing_files_count INT,     -- The number of the missing files on the pillar when the stats were made
     checksum_errors_count INT,   -- The number of checksum errors on the pillar when the stats were made
+    missing_checksums_count INT, -- The number of missing checksums on the pillar
+    obsolete_checksums_count INT, --The number of obsolete checksums on the pillar. 
     UNIQUE (stat_key, pillarID), 
                                  -- Enforce that there can only be one collectionstat for a statistics
     FOREIGN KEY (stat_key) REFERENCES stats(stat_key),

@@ -24,6 +24,7 @@ package org.bitrepository.integrityservice.workflow.step;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
@@ -31,6 +32,7 @@ import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.checking.MaxChecksumAgeProvider;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
+import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,13 +50,16 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
     /** The report model to populate */
     private final IntegrityReporter reporter;
+    private final StatisticsCollector sc;
     /** A year */
     public static final long DEFAULT_MAX_CHECKSUM_AGE = TimeUtils.MS_PER_YEAR;
     
-    public HandleObsoleteChecksumsStep(Settings settings, IntegrityModel store, IntegrityReporter reporter) {
+    public HandleObsoleteChecksumsStep(Settings settings, IntegrityModel store, IntegrityReporter reporter,
+            StatisticsCollector statisticsCollector) {
         this.settings = settings;
         this.store = store;
         this.reporter = reporter;
+        this.sc = statisticsCollector;
     }
     
     @Override
@@ -75,6 +80,7 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
         
         for(String pillar : pillars) {
+            Long obsolteteChecksums = 0L;
             long maxAge = maxChecksumAgeProvider.getMaxChecksumAge(pillar);
             if(maxAge == 0) {
                 log.info("Skipping obsolete checksums check for pillar '" + pillar + "' as it has a "
@@ -89,6 +95,7 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
                     while((file = obsoleteChecksumsIterator.getNextIntegrityIssue()) != null) {
                         try {
                             reporter.reportObsoleteChecksum(file, pillar);
+                            obsolteteChecksums++;
                         } catch (IOException e) {
                             log.error("Failed to report file: " + file + " as having an obsolete checksum", e);
                         }
@@ -97,6 +104,7 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
                     obsoleteChecksumsIterator.close();
                 }
             }
+            sc.getPillarCollectionStat(pillar).setObsoleteChecksums(obsolteteChecksums);
         }
     }
 

@@ -10,6 +10,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO2;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAOFactory;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
+import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,14 +58,12 @@ public class IntegrityDatabase2 implements IntegrityModel {
 
     @Override
     public long getNumberOfFilesInCollection(String collectionId) {
-        // TODO Auto-generated method stub
-        return 0;
+        return store.getNumberOfFilesInCollection(collectionId);
     }
 
     @Override
     public long getNumberOfFiles(String pillarId, String collectionId) {
-        // TODO Auto-generated method stub
-        return 0;
+        return store.getNumberOfFilesInCollectionAtPillar(collectionId, pillarId);
     }
 
     @Override
@@ -234,8 +233,7 @@ public class IntegrityDatabase2 implements IntegrityModel {
 
     @Override
     public Date getDateForNewestFileEntryForCollection(String collectionId) {
-        // TODO Auto-generated method stub
-        return null;
+        return store.getLatestFileDateInCollection(collectionId);
     }
 
     @Override
@@ -256,8 +254,7 @@ public class IntegrityDatabase2 implements IntegrityModel {
 
     @Override
     public Long getCollectionFileSize(String collectionId) {
-        // TODO Auto-generated method stub
-        return null;
+        return store.getCollectionSize(collectionId);
     }
 
     @Override
@@ -273,7 +270,7 @@ public class IntegrityDatabase2 implements IntegrityModel {
     }
 
     @Override
-    public List<PillarStat> getLatestPillarStats(String collectionID) {
+    public List<PillarCollectionStat> getLatestPillarStats(String collectionID) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -289,4 +286,13 @@ public class IntegrityDatabase2 implements IntegrityModel {
         store.close();
     }
 
+    @Override
+    public Long getCollectionFileSizeAtPillar(String collectionId, String pillarId) {
+        return store.getCollectionSizeAtPillar(collectionId, pillarId);
+    }
+
+    @Override
+    public void createStatistics(String collectionId, StatisticsCollector statisticsCollector) {
+        store.createStatistics(collectionId, statisticsCollector);
+    }
 }

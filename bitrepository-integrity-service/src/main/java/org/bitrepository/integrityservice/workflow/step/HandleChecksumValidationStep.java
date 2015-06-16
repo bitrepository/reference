@@ -27,13 +27,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
+import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
@@ -51,12 +54,22 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
     private final IntegrityReporter reporter;
     /** The audit trail manager.*/
     private final AuditTrailManager auditManager;
+    private final StatisticsCollector sc;
+    private final Map<String, Long> pillarChecksumErrors;
+    private Long allPillarChecksumErrors = 0L;
+    private Long collectionChecksumErrors = 0L; 
     
     public HandleChecksumValidationStep(IntegrityModel store, AuditTrailManager auditManager, 
-            IntegrityReporter reporter) {
+            IntegrityReporter reporter, StatisticsCollector statisticsCollector) {
         this.store = store;
         this.auditManager = auditManager;
         this.reporter = reporter;
+        this.sc = statisticsCollector;
+        pillarChecksumErrors = new HashMap<>();
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
+        for(String pillar : pillars) {
+            pillarChecksumErrors.put(pillar, new Long(0));
+        }
     }
     
     @Override
@@ -75,10 +88,15 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
         try {
             while((fileID = inconsistentFilesIterator.getNextIntegrityIssue()) != null) {
                 handleChecksumInconsistency(store.getFileInfos(fileID, reporter.getCollectionID()), fileID);
+                collectionChecksumErrors++;
             }
         } finally {
             inconsistentFilesIterator.close();
         }
+        for(Entry<String, Long> entry : pillarChecksumErrors.entrySet()) {
+            sc.getPillarCollectionStat(entry.getKey()).setChecksumErrors(entry.getValue() + allPillarChecksumErrors);
+        }
+        sc.getCollectionStat().setChecksumErrors(collectionChecksumErrors);
         store.setFilesWithConsistentChecksumToValid(reporter.getCollectionID());
     }
 
@@ -97,8 +115,10 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
         createAuditForInconsistentChecksum(pillarID, fileID);
         
         if(pillarID == null) {
+            allPillarChecksumErrors++;
             setChecksumInconsistencyOnAllPillars(fileID, infos);
         } else {
+            pillarChecksumErrors.put(pillarID, pillarChecksumErrors.get(pillarID) + 1);
             setChecksumInconsistencyOnlyOnSpecificPillar(fileID, infos, pillarID);
         }
     }

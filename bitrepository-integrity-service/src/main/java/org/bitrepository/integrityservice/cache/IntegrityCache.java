@@ -27,6 +27,7 @@ import org.apache.jcs.access.exception.CacheException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
+import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -273,7 +274,7 @@ public class IntegrityCache implements IntegrityModel {
     }
 
     @Override 
-    public List<PillarStat> getLatestPillarStats(String collectionID) {
+    public List<PillarCollectionStat> getLatestPillarStats(String collectionID) {
         return integrityModel.getLatestPillarStats(collectionID);
     }
 
@@ -380,5 +381,19 @@ public class IntegrityCache implements IntegrityModel {
             String pillarId, Date cutoffDate) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public Long getCollectionFileSizeAtPillar(String collectionId,
+            String pillarId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void createStatistics(String collectionId,
+            StatisticsCollector statisticsCollector) {
+        // TODO Auto-generated method stub
+        
     }
 }

@@ -88,7 +88,7 @@ public class ChecksumUpdater2 {
     public void updateChecksums(List<ChecksumDataForChecksumSpecTYPE> data) {
         try {
             init();
-            log.debug("Initialized fileUpdater");
+            log.debug("Initialized checksumUpdater");
             try {
                 Date maxDate = new Date(0);
                 for(ChecksumDataForChecksumSpecTYPE csData : data) {

@@ -1205,9 +1205,9 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertTrue(pillar2FileIDs.contains(file4));
         
         addStep("Check that the pillar stats is as expected", "The stats are as expected");
-        List<PillarStat> pillarStats = cache.getLatestPillarStats(TEST_COLLECTIONID);
+        List<PillarCollectionStat> pillarStats = cache.getLatestPillarStats(TEST_COLLECTIONID);
         Assert.assertEquals(pillarStats.size(), 2);
-        for(PillarStat stat : pillarStats) {
+        for(PillarCollectionStat stat : pillarStats) {
             Assert.assertEquals(stat.getCollectionID(), TEST_COLLECTIONID);
             if(stat.getPillarID().equals(TEST_PILLAR_1)) {
                 Assert.assertEquals((long) stat.getChecksumErrors(), 1);

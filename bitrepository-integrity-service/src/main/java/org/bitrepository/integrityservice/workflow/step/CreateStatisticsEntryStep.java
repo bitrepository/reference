@@ -21,7 +21,11 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import java.util.List;
+
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 
 /**
@@ -33,10 +37,12 @@ public class CreateStatisticsEntryStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
     /** The collectionID */
     private final String collectionId;
+    private final StatisticsCollector sc;
     
-    public CreateStatisticsEntryStep(IntegrityModel store, String collectionId) {
+    public CreateStatisticsEntryStep(IntegrityModel store, String collectionId, StatisticsCollector statisticsCollector) {
         this.store = store;        
         this.collectionId = collectionId;
+        this.sc = statisticsCollector;
     }
     
     @Override
@@ -50,7 +56,16 @@ public class CreateStatisticsEntryStep extends AbstractWorkFlowStep {
      */
     @Override
     public synchronized void performStep() {
-        store.makeStatisticsForCollection(collectionId);
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionId);
+        for(String pillar : pillars) {
+            sc.getPillarCollectionStat(pillar).setFileCount(store.getNumberOfFiles(pillar, collectionId));
+            sc.getPillarCollectionStat(pillar).setDataSize(store.getCollectionFileSizeAtPillar(collectionId, pillar));
+        }
+        sc.getCollectionStat().setFileCount(store.getNumberOfFilesInCollection(collectionId));
+        sc.getCollectionStat().setDataSize(store.getCollectionFileSize(collectionId));
+        sc.getCollectionStat().setLatest_file_time(store.getDateForNewestFileEntryForCollection(collectionId));
+        
+        store.createStatistics(collectionId, sc);
     }
 
     public static String getDescription() {
