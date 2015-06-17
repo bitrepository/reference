@@ -146,8 +146,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         step.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
                 any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
-        verify(model).setExistingChecksumsToPreviouslySeen(TEST_COLLECTION);
-        verify(model).setPreviouslySeenChecksumsToMissing(TEST_COLLECTION);
+        verify(model).resetChecksumCollectionProgress(TEST_COLLECTION);
         verify(model).addChecksums(resultingChecksums.getChecksumDataItems(), TEST_PILLAR_1, TEST_COLLECTION);
         verifyNoMoreInteractions(alerter);
     }

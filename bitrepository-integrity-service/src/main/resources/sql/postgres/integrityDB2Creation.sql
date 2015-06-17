@@ -35,14 +35,14 @@ CREATE TABLE tableversions (
     version SMALLINT NOT NULL        -- version of table
 );
 
-INSERT INTO tableversions (tablename, version) VALUES ('fileinfo', 3);
+INSERT INTO tableversions (tablename, version) VALUES ('fileinfo', 4);
 INSERT INTO tableversions (tablename, version) VALUES ('files', 2);
-INSERT INTO tableversions (tablename, version) VALUES ('pillar', 2);
-INSERT INTO tableversions (tablename, version) VALUES ('collections' ,1);
-INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 4);
-INSERT INTO tableversions (tablename, version) VALUES ('stats', 1);
-INSERT INTO tableversions (tablename, version) VALUES ('collectionstats', 1);
-INSERT INTO tableversions (tablename, version) VALUES ('pillarstats', 1);
+INSERT INTO tableversions (tablename, version) VALUES ('pillar', 3);
+INSERT INTO tableversions (tablename, version) VALUES ('collections' ,2);
+INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 5);
+INSERT INTO tableversions (tablename, version) VALUES ('stats', 2);
+INSERT INTO tableversions (tablename, version) VALUES ('collectionstats', 2);
+INSERT INTO tableversions (tablename, version) VALUES ('pillarstats', 2);
 
 --*************************************************************************--
 -- Name:     collections
@@ -89,7 +89,10 @@ CREATE TABLE collection_progress (
     collectionID VARCHAR(255) NOT NULL,
     pillarID VARCHAR(100) NOT NULL,
     latest_file_timestamp TIMESTAMP DEFAULT NULL,
-    latest_checksum_timestamp TIMESTAMP DEFAULT NULL
+    latest_checksum_timestamp TIMESTAMP DEFAULT NULL,
+
+    FOREIGN KEY (collectionID) REFERENCES collections(collectionID),
+    FOREIGN KEY (pillarID) REFERENCES pillar(pillarID)
 );
 
 --*************************************************************************--
@@ -106,7 +109,7 @@ CREATE TABLE stats (
                                  -- The last time the statistics were updated
     collectionID VARCHAR(255) NOT NULL, -- The key of the collection that the statistics belongs to 
     FOREIGN KEY (collectionID) REFERENCES collections(collectionID)
-                                 -- Foreign key constraint on collection_key, enforcing the presence of the referred key
+                                 -- Foreign key constraint on collectionID, enforcing the presence of the referred key
 );
 
 CREATE INDEX lastupdatetimeindex ON stats (last_update);
@@ -121,9 +124,9 @@ CREATE TABLE collectionstats (
     collectionstat_key SERIAL PRIMARY KEY,
                                  -- The key for the collectionstat.
     stat_key INT NOT NULL,       -- The key for the statistics entity.
-    file_count INT,              -- The number of files that the collection contained when the stats were made
+    file_count BIGINT,           -- The number of files that the collection contained when the stats were made
     file_size BIGINT,            -- The total size of the files in the collection when the stats were made
-    checksum_errors_count INT,   -- The number of checksum errors in the collection when the stats were made
+    checksum_errors_count BIGINT,   -- The number of checksum errors in the collection when the stats were made
     latest_file_date TIMESTAMP NOT NULL, -- The latest ingested file in the collection.
     UNIQUE (stat_key),           -- Enforce that there can only be one collectionstat for a statistics
     FOREIGN KEY (stat_key) REFERENCES stats(stat_key)
@@ -141,16 +144,16 @@ CREATE TABLE pillarstats (
                                  -- The key for the pillarstat.
     stat_key INT NOT NULL,       -- The key for the statistics entity.
     pillarID VARCHAR(100) NOT NULL,     -- The key of the pillar that the statistics belongs to 
-    file_count INT,              -- The number of files on the pillar when the stats were made
+    file_count BIGINT,           -- The number of files on the pillar when the stats were made
     file_size BIGINT,            -- The total size of the files on the pillar when the stats were made
-    missing_files_count INT,     -- The number of the missing files on the pillar when the stats were made
-    checksum_errors_count INT,   -- The number of checksum errors on the pillar when the stats were made
-    missing_checksums_count INT, -- The number of missing checksums on the pillar
-    obsolete_checksums_count INT, --The number of obsolete checksums on the pillar. 
+    missing_files_count BIGINT,     -- The number of the missing files on the pillar when the stats were made
+    checksum_errors_count BIGINT,   -- The number of checksum errors on the pillar when the stats were made
+    missing_checksums_count BIGINT, -- The number of missing checksums on the pillar
+    obsolete_checksums_count BIGINT, --The number of obsolete checksums on the pillar. 
     UNIQUE (stat_key, pillarID), 
                                  -- Enforce that there can only be one collectionstat for a statistics
     FOREIGN KEY (stat_key) REFERENCES stats(stat_key),
                                  -- Foreign key constraint on stat_key, enforcing the presence of the referred key
     FOREIGN KEY (pillarID) REFERENCES pillar(pillarID)
-                                 -- Foreign key constraint on collection_key, enforcing the presence of the referred key
+                                 -- Foreign key constraint on pillarID, enforcing the presence of the referred key
 );

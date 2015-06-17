@@ -28,7 +28,7 @@ public class CollectionStat {
     private Long fileCount;
     private Long dataSize;
     private Long checksumErrors;
-    private Date latest_file_time;
+    private Date latestFileTime;
     private Date statsTime;
     /** The date that the statistics were updated */
     private Date updateTime;
@@ -93,11 +93,11 @@ public class CollectionStat {
         this.updateTime = updateTime;
     }
 
-    public Date getLatest_file_time() {
-        return latest_file_time;
+    public Date getLatestFileTime() {
+        return latestFileTime;
     }
 
-    public void setLatest_file_time(Date latest_file_time) {
-        this.latest_file_time = latest_file_time;
+    public void setLatestFileTime(Date latestFileTime) {
+        this.latestFileTime = latestFileTime;
     }
 }

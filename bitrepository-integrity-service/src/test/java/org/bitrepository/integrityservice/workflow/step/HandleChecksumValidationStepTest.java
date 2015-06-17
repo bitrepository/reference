@@ -26,6 +26,7 @@ import static org.mockito.Mockito.mock;
 import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -111,10 +112,12 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
 
         addStep("Validate the file ids", "Should not have integrity issues.");
         Assert.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
+        Assert.assertTrue(cs.getCollectionStat().getChecksumErrors() == 0);
+        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors() == 0);
+        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors() == 0);
+        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors() == 0);
         for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
             Assert.assertEquals(fi.getChecksum(), "1234cccc4321");
-            Assert.assertEquals(fi.getChecksumState(), ChecksumState.VALID);
-            Assert.assertEquals(fi.getFileState(), FileState.EXISTING);
         }
     }
     
@@ -183,9 +186,10 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
 
         addStep("Validate the file ids", "Should have integrity issues.");
         Assert.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
-            Assert.assertTrue(fi.getChecksumState() == ChecksumState.ERROR);
-        }
+        Assert.assertTrue(cs.getCollectionStat().getChecksumErrors() == 1);
+        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors() == 1);
+        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors() == 1);
+        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors() == 1);
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
@@ -210,13 +214,10 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
 
         addStep("Validate the file ids", "Should only have integrity issues on pillar 3.");
         Assert.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
-            if(fi.getPillarId().equals(TEST_PILLAR_3)) {
-                Assert.assertTrue(fi.getChecksumState() == ChecksumState.ERROR, fi.toString());
-            } else {
-                Assert.assertTrue(fi.getChecksumState() == ChecksumState.VALID, fi.toString());                
-            }
-        }
+        Assert.assertTrue(cs.getCollectionStat().getChecksumErrors() == 1);
+        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors() == 1);
+        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors() == 0);
+        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors() == 0);
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
@@ -238,21 +239,18 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
 
         addStep("Validate the file ids", "No integrity issues and all should be valid");
         Assert.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
-            Assert.assertEquals(fi.getChecksumState(), ChecksumState.VALID);
-        }
+        Assert.assertTrue(cs.getCollectionStat().getChecksumErrors() == 0);
+        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors() == 0);
+        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors() == 0);
+        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors() == 0);
         
         addStep("Add new fileids for one pillar", "The given pillar should have ChecksumState 'UNKNOWN', the others 'VALID'");
         FileIDsData fileidData = createFileIdData(FILE_1);
         cache.addFileIDs(fileidData, TEST_PILLAR_3, TEST_COLLECTION);
         
-        for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
-            if(fi.getPillarId().equals(TEST_PILLAR_3)) {
-                Assert.assertEquals(fi.getChecksumState(), ChecksumState.UNKNOWN);
-            } else {
-                Assert.assertEquals(fi.getChecksumState(), ChecksumState.VALID);
-            }
-        }
+        /*List<FileInfo> fis = (List<FileInfo>) cache.getFileInfos(FILE_1, TEST_COLLECTION);
+        Assert.assertTrue(fis.size() == 1);
+        Assert.assertEquals(fis.get(0).getPillarId(), TEST_PILLAR_3);*/
     }
     
     @Test(groups = {"regressiontest", "integritytest"})

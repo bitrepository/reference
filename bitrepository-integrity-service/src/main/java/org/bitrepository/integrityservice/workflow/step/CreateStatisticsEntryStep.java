@@ -63,7 +63,7 @@ public class CreateStatisticsEntryStep extends AbstractWorkFlowStep {
         }
         sc.getCollectionStat().setFileCount(store.getNumberOfFilesInCollection(collectionId));
         sc.getCollectionStat().setDataSize(store.getCollectionFileSize(collectionId));
-        sc.getCollectionStat().setLatest_file_time(store.getDateForNewestFileEntryForCollection(collectionId));
+        sc.getCollectionStat().setLatestFileTime(store.getDateForNewestFileEntryForCollection(collectionId));
         
         store.createStatistics(collectionId, sc);
     }

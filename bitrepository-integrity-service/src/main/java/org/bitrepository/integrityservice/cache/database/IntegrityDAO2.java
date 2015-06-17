@@ -274,8 +274,9 @@ public class IntegrityDAO2 {
         
         String getCollectionSizeSql = "SELECT SUM(filesize) FROM "
                         + "(SELECT distinct(fileID), filesize from fileinfo"
-                            + " WHERE collectionID = ?) AS subselect)";
-        return DatabaseUtils.selectFirstLongValue(dbConnector, getCollectionSizeSql, collectionId);
+                            + " WHERE collectionID = ?) AS subselect";
+        Long size = DatabaseUtils.selectFirstLongValue(dbConnector, getCollectionSizeSql, collectionId);
+        return (size == null ? 0 : size);
     }
     
     public Long getCollectionSizeAtPillar(String collectionId, String pillarId) {
@@ -285,8 +286,10 @@ public class IntegrityDAO2 {
         String getCollectionSizeAtPillarSql = "SELECT SUM(filesize) FROM fileinfo"
                         + " WHERE collectionID = ?"
                         + " AND pillarID = ?";
-        return DatabaseUtils.selectFirstLongValue(dbConnector, getCollectionSizeAtPillarSql, 
+        Long size = DatabaseUtils.selectFirstLongValue(dbConnector, getCollectionSizeAtPillarSql, 
                 collectionId, pillarId);
+               
+        return (size == null ? 0 : size);
     }
     
     public Long getNumberOfFilesInCollection(String collectionId) {

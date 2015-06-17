@@ -21,17 +21,9 @@ public class FullUpdateChecksumsStep extends UpdateChecksumsStep {
         return "Collect all checksums from pillars";
     }
 
-    // Set existing checksums to previously seen.
     @Override
     protected void initialStepAction() {
-        //store.resetChecksumCollectionProgress(collectionId);
-        store.setExistingChecksumsToPreviouslySeen(collectionId);
-    }
-
-    // Set previously seen checksums to missing.
-    @Override
-    protected void finalStepAction() {
-        store.setPreviouslySeenChecksumsToMissing(collectionId);
+        store.resetChecksumCollectionProgress(collectionId);
     }
 
     /**

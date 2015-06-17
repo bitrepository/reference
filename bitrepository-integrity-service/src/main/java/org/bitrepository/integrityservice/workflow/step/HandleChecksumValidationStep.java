@@ -33,7 +33,6 @@ import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
@@ -97,7 +96,6 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
             sc.getPillarCollectionStat(entry.getKey()).setChecksumErrors(entry.getValue() + allPillarChecksumErrors);
         }
         sc.getCollectionStat().setChecksumErrors(collectionChecksumErrors);
-        store.setFilesWithConsistentChecksumToValid(reporter.getCollectionID());
     }
 
     /**
@@ -113,66 +111,20 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
         String pillarID = findSingleInconsistentPillar(checksumMap);
 
         createAuditForInconsistentChecksum(pillarID, fileID);
-        
-        if(pillarID == null) {
-            allPillarChecksumErrors++;
-            setChecksumInconsistencyOnAllPillars(fileID, infos);
-        } else {
-            pillarChecksumErrors.put(pillarID, pillarChecksumErrors.get(pillarID) + 1);
-            setChecksumInconsistencyOnlyOnSpecificPillar(fileID, infos, pillarID);
-        }
-    }
-
-    /**
-     * Sets checksum inconsistency for a given file on all pillars.
-     * @param fileID The id of the file.
-     * @param infos The list of FileInfos for the file.
-     */
-    private void setChecksumInconsistencyOnAllPillars(String fileID, Collection<FileInfo> infos) {
         try {
-            for(FileInfo info : infos) {
-                reporter.reportChecksumIssue(fileID, info.getPillarId());
-            }
-            store.setChecksumError(fileID, getPillarsFileExisting(infos), reporter.getCollectionID());
+            if(pillarID == null) {
+                allPillarChecksumErrors++;
+                for(FileInfo info : infos) {
+                    reporter.reportChecksumIssue(fileID, info.getPillarId());
+                }
+            } else {
+                pillarChecksumErrors.put(pillarID, pillarChecksumErrors.get(pillarID) + 1);
+                reporter.reportChecksumIssue(fileID, pillarID);
+            }    
         } catch (IOException e) {
             log.error("Failed to report file: " + fileID + " as having a checksum issue", e);
         }
-    }
-    
-    /**
-     * Sets the checksum inconsistency on a specific pillar, and sets all the other pillars to checksum agreement.
-     * @param fileID The id of the file.
-     * @param infos The list of FileInfos for the file.
-     * @param pillarID The id of the pillar, which are not agreeing with the other pillars.
-     */
-    private void setChecksumInconsistencyOnlyOnSpecificPillar(String fileID, Collection<FileInfo> infos, 
-            String pillarID) {
-        try {
-            reporter.reportChecksumIssue(fileID, pillarID);
-            List<String> pillarsWithoutChecksumIssue = getPillarsFileExisting(infos);
-            pillarsWithoutChecksumIssue.remove(pillarID);
-            store.setChecksumError(fileID, getPillarsFileExisting(infos), reporter.getCollectionID());
-            store.setChecksumAgreement(fileID, pillarsWithoutChecksumIssue, reporter.getCollectionID());
-        } catch (IOException e) {
-            log.error("Failed to report file: " + fileID + " as having a checksum issue", e);
-        }
-    }
-
-    /**
-     * Extract the pillars where the file has state 'EXISTING'.
-     * @param infos The FileInfo with information about the file at the different pillars. 
-     * @return The list of pillars which has the file.
-     */
-    private List<String> getPillarsFileExisting(Collection<FileInfo> infos) {
-        List<String> res = new ArrayList<String>();
         
-        for(FileInfo info : infos) {
-            if(info.getFileState() == FileState.EXISTING) {
-                res.add(info.getPillarId());
-            }
-        }
-        
-        return res;
     }
     
     /**

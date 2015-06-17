@@ -42,7 +42,7 @@ public class IntegrityDatabase2 implements IntegrityModel {
     
     @Override
     public void resetFileCollectionProgress(String collectionId) {
-        store.resetChecksumCollectionProgress(collectionId);
+        store.resetFileCollectionProgress(collectionId);
     }
     
     @Override

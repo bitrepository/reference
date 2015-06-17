@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.PillarCollectionStat;
@@ -15,12 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class to handle the update of fileIDs information in the integrity database. 
- * Does this by batching of sql statements for performance.  
- * 
- *  Implementation detail: Postgres will first feature 'upsert' functionality in version 9.5. 
- *  This means that we currently can't use the functionality, and is forced
- *  to use the two call way. I.e. the conditional update, the conditional insert 
+ * Class to handle the creation of a new statistics entry.
+ * The entries covers the entry point (stat) and detailed statistics for the collection and each of its pillars. 
  */
 public class StatisticsCreator {
 
@@ -90,7 +87,7 @@ public class StatisticsCreator {
         insertCollectionStatPS.setLong(2, cs.getFileCount());
         insertCollectionStatPS.setLong(3, cs.getDataSize());
         insertCollectionStatPS.setLong(4, cs.getChecksumErrors());
-        insertCollectionStatPS.setTimestamp(5, new Timestamp(cs.getLatest_file_time().getTime()));
+        insertCollectionStatPS.setTimestamp(5, new Timestamp(cs.getLatestFileTime().getTime()));
     }
     
     private void addPillarStat(PillarCollectionStat ps) throws SQLException {
