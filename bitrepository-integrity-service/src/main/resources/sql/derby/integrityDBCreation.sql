@@ -45,6 +45,7 @@ INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 5);
 INSERT INTO tableversions (tablename, version) VALUES ('stats', 2);
 INSERT INTO tableversions (tablename, version) VALUES ('collectionstats', 2);
 INSERT INTO tableversions (tablename, version) VALUES ('pillarstats', 2);
+INSERT INTO tableversions (tablename, version) VALUES ('collection_progress', 1);
 
 --*************************************************************************--
 -- Name:     collections
@@ -104,7 +105,10 @@ CREATE TABLE collection_progress (
     collectionID VARCHAR(255) NOT NULL,
     pillarID VARCHAR(100) NOT NULL,
     latest_file_timestamp TIMESTAMP DEFAULT NULL,
-    latest_checksum_timestamp TIMESTAMP DEFAULT NULL
+    latest_checksum_timestamp TIMESTAMP DEFAULT NULL,
+
+    FOREIGN KEY (collectionID) REFERENCES collections(collectionID),
+    FOREIGN KEY (pillarID) REFERENCES pillar(pillarID)
 );
 
 

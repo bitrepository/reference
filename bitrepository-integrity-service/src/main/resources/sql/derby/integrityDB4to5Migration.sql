@@ -20,6 +20,8 @@
 -- #L%
 ---
 
+connect 'jdbc:derby:integritydb';
+
 -- Update table versions.
 UPDATE tableversions SET version = 4 WHERE tablename = 'fileinfo';
 UPDATE tableversions SET version = 3 WHERE tablename = 'pillar';

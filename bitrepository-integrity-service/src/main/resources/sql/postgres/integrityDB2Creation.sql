@@ -43,6 +43,7 @@ INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 5);
 INSERT INTO tableversions (tablename, version) VALUES ('stats', 2);
 INSERT INTO tableversions (tablename, version) VALUES ('collectionstats', 2);
 INSERT INTO tableversions (tablename, version) VALUES ('pillarstats', 2);
+INSERT INTO tableversions (tablename, version) VALUES ('collection_progress', 1);
 
 --*************************************************************************--
 -- Name:     collections
@@ -65,7 +66,14 @@ CREATE TABLE pillar (
     pillarID VARCHAR(100) PRIMARY KEY   -- The id of the pillar.
 );
 
-
+--*************************************************************************--
+-- Name:     fileinfo
+-- Descr.:   The main table for containing the information about the files
+--           on the different pillars.
+-- Purpose:  Keeps track of the information connected to a specific file id
+--           on a specific pillar.
+-- Expected entry count: Very, very many.
+--*************************************************************************--
 CREATE TABLE fileinfo (
     fileID VARCHAR(255) NOT NULL,           -- The file ID 
     collectionID VARCHAR(255) NOT NULL,     -- The collection ID
@@ -85,6 +93,13 @@ CREATE TABLE fileinfo (
 CREATE INDEX checksumdateindex ON fileinfo(checksum_timestamp);
 CREATE INDEX lastseenindex ON fileinfo(last_seen_getfileids);
 
+--*************************************************************************--
+-- Name:     collection_progress
+-- Descr.:   Table to keep track of how far along the collection process is. 
+-- Purpose:  Keeps track of the information on what has been collected for 
+--           a given pillar in a given collection
+-- Expected entry count: few
+--*************************************************************************--
 CREATE TABLE collection_progress (
     collectionID VARCHAR(255) NOT NULL,
     pillarID VARCHAR(100) NOT NULL,
