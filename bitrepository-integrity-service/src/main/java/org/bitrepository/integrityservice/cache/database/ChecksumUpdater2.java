@@ -29,27 +29,30 @@ public class ChecksumUpdater2 {
      * tuple is not already found in the database  
      */
     private final String insertFileInfoWithChecksumSql = "INSERT INTO fileinfo ("
-    		+ " fileID, collectionID, pillarID, file_timestamp, last_seen_getfileids,"
-    		+ " checksum_timestamp, last_seen_getchecksums)"
-    		+ " (SELECT ?, ?, ?, ?, NOW(), ?, NOW()"
-    		+ " WHERE NOT EXISTS ("
-    			+ " SELECT * FROM fileinfo "
-    			+ " WHERE fileID = ?"
-    			+ " AND collectionID = ?"
-    			+ " AND pillarID = ?))";
-    		
+            + " collectionID, pillarID, fileID, file_timestamp, last_seen_getfileids,"
+            + " checksum, checksum_timestamp, last_seen_getchecksums)"
+            + " (SELECT collectionID, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, CURRENT_TIMESTAMP FROM collections"
+                + " WHERE collectionID = ?"
+                + " AND NOT EXISTS ("
+                    + " SELECT * FROM fileinfo "
+                    + " WHERE fileID = ?"
+                    + " AND collectionID = ?"
+                    + " AND pillarID = ?))";
+
     private final String updateChecksumSql = "UPDATE fileinfo "
-    		+ "	SET checksum = ?,"
-    		+ " checksum_timestamp = ?,"
-    		+ " last_seen_getchecksums = NOW()"
-    		+ " WHERE fileID = ?"
-    		+ "	AND collectionID = ?"
-    		+ " AND pillarID = ?";	
-    
+            + "	SET checksum = ?,"
+            + " checksum_timestamp = ?,"
+            + " last_seen_getchecksums = CURRENT_TIMESTAMP"
+            + " WHERE fileID = ?"
+            + "	AND collectionID = ?"
+            + " AND pillarID = ?";	
+
     private final String insertLatestChecksumTime = "INSERT INTO collection_progress "
             + "(collectionID, pillarID, latest_checksum_timestamp)"
-            + " ( SELECT ?, ?, ? "
-                + " WHERE NOT EXISTS ( SELECT * FROM collection_progress"
+            + " ( SELECT collectionID, ?, ? FROM collections"
+                + " WHERE collectionID = ?"
+                + " AND NOT EXISTS ("
+                    + " SELECT * FROM collection_progress"
                     + " WHERE collectionID = ?"
                     + " AND pillarID = ?))";
 
@@ -59,7 +62,7 @@ public class ChecksumUpdater2 {
             + " AND pillarID = ?";
 
     private Logger log = LoggerFactory.getLogger(getClass());
-    
+
     private final String collectionID;
     private final String pillar;
     private final Connection conn;
@@ -67,13 +70,13 @@ public class ChecksumUpdater2 {
     private PreparedStatement updateChecksumPS;
     private PreparedStatement insertLatestChecksumTimePS;
     private PreparedStatement updateLatestChecksumTimePS;
-    
+
     public ChecksumUpdater2(String pillar, Connection dbConnection, String collectionID) {
         this.collectionID = collectionID;
         this.pillar = pillar;
         conn = dbConnection;
     }
-    
+
     private void init() throws SQLException {
         conn.setAutoCommit(false);
         insertFileInfoPS = conn.prepareStatement(insertFileInfoWithChecksumSql);
@@ -81,7 +84,7 @@ public class ChecksumUpdater2 {
         insertLatestChecksumTimePS = conn.prepareStatement(insertLatestChecksumTime);
         updateLatestChecksumTimePS = conn.prepareStatement(updateLatestChecksumTime);
     }
-    
+
     /**
      * Method to handle the actual update.  
      */
@@ -92,9 +95,9 @@ public class ChecksumUpdater2 {
             try {
                 Date maxDate = new Date(0);
                 for(ChecksumDataForChecksumSpecTYPE csData : data) {
-                	updateChecksum(csData);
-                	addFileInfoWithChecksum(csData);
-                	maxDate = getMaxDate(maxDate, 
+                    updateChecksum(csData);
+                    addFileInfoWithChecksum(csData);
+                    maxDate = getMaxDate(maxDate, 
                             CalendarUtils.convertFromXMLGregorianCalendar(csData.getCalculationTimestamp()));                	
                 }
                 updateMaxTime(maxDate);
@@ -108,32 +111,33 @@ public class ChecksumUpdater2 {
             log.error("Failed to update files", e);
         }
     } 
-    
+
     private void addFileInfoWithChecksum(ChecksumDataForChecksumSpecTYPE item) throws SQLException {
         Timestamp calculationTime = new Timestamp(
                 CalendarUtils.convertFromXMLGregorianCalendar(item.getCalculationTimestamp()).getTime());
-        
-        insertFileInfoPS.setString(1, item.getFileID());
-    	insertFileInfoPS.setString(2, collectionID);
-    	insertFileInfoPS.setString(3, pillar);
-    	
+
+        insertFileInfoPS.setString(1, pillar);
+        insertFileInfoPS.setString(2, item.getFileID());
+
         /* This looks a bit suspicious, but we will only be forced to insert the record if arrived 
          * after the fileIDs were collected. So to prevent our checks from failing, we'll use the 
          * checksum timestamp as the file timestamp, and overwrite it whenever the file is discovered with
          * getFileIDs. */
-    	insertFileInfoPS.setTimestamp(4, calculationTime);
-    	insertFileInfoPS.setTimestamp(5, calculationTime);
-    	
-        insertFileInfoPS.setString(6, item.getFileID());
-    	insertFileInfoPS.setString(7, collectionID);
-    	insertFileInfoPS.setString(8, pillar);
-    	insertFileInfoPS.addBatch();
+        insertFileInfoPS.setTimestamp(3, calculationTime);
+        insertFileInfoPS.setString(4, Base16Utils.decodeBase16(item.getChecksumValue()));
+        insertFileInfoPS.setTimestamp(5, calculationTime);
+        insertFileInfoPS.setString(6, collectionID);
+
+        insertFileInfoPS.setString(7, item.getFileID());
+        insertFileInfoPS.setString(8, collectionID);
+        insertFileInfoPS.setString(9, pillar);
+        insertFileInfoPS.addBatch();
     }
-    
+
     private void updateChecksum(ChecksumDataForChecksumSpecTYPE item) throws SQLException {
         Timestamp calculationTime = new Timestamp(
                 CalendarUtils.convertFromXMLGregorianCalendar(item.getCalculationTimestamp()).getTime());
-        
+
         updateChecksumPS.setString(1, Base16Utils.decodeBase16(item.getChecksumValue()));
         updateChecksumPS.setTimestamp(2, calculationTime);
         updateChecksumPS.setString(3, item.getFileID());
@@ -141,19 +145,19 @@ public class ChecksumUpdater2 {
         updateChecksumPS.setString(5, pillar);
         updateChecksumPS.addBatch();
     }
-    
+
     private void updateMaxTime(Date maxDate) throws SQLException {
         updateLatestChecksumTimePS.setTimestamp(1, new Timestamp(maxDate.getTime()));
         updateLatestChecksumTimePS.setString(2, collectionID);
         updateLatestChecksumTimePS.setString(3, pillar);
-        
-        insertLatestChecksumTimePS.setString(1, collectionID);
-        insertLatestChecksumTimePS.setString(2, pillar);
-        insertLatestChecksumTimePS.setTimestamp(3, new Timestamp(maxDate.getTime()));
+
+        insertLatestChecksumTimePS.setString(1, pillar);
+        insertLatestChecksumTimePS.setTimestamp(2, new Timestamp(maxDate.getTime()));
+        insertLatestChecksumTimePS.setString(3, collectionID);
         insertLatestChecksumTimePS.setString(4, collectionID);
         insertLatestChecksumTimePS.setString(5, pillar);
     }
-    
+
     private void execute() throws SQLException {
         updateChecksumPS.executeBatch();
         insertFileInfoPS.executeBatch();
@@ -161,20 +165,20 @@ public class ChecksumUpdater2 {
         insertLatestChecksumTimePS.execute();
         conn.commit();
     }
-    
+
     private void close() throws SQLException {
         if(updateChecksumPS != null) {
             updateChecksumPS.close();
         }
         if(insertFileInfoPS != null) {
-        	insertFileInfoPS.close();
+            insertFileInfoPS.close();
         }
         if(conn != null) {
             conn.setAutoCommit(true);
             conn.close();
         }
     }
-    
+
     private Date getMaxDate(Date currentMax, Date itemDate) {
         if(itemDate.after(currentMax)) {
             return itemDate;

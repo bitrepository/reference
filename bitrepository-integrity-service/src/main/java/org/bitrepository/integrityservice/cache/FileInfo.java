@@ -24,6 +24,8 @@
  */
 package org.bitrepository.integrityservice.cache;
 
+import java.util.Date;
+
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.common.ArgumentValidator;
@@ -51,6 +53,10 @@ public class FileInfo {
     private ChecksumState checksumState;
     /** The size of the file */
     private Long fileSize;
+    /** The last time the files was seen by getFileIDs */
+    private Date lastSeenGetFileIDs;
+    /** The last time the files was seen by getChecksums */
+    private Date lastSeenGetChecksums;
     
     /**
      * Constructor for all data.
@@ -191,5 +197,21 @@ public class FileInfo {
         return "Pillar id: " + pillarId + ", File id: " + fileId + " (state: " + fileState + ", date: " 
                 + fileCreationTimestamp + "), Checksum: " + checksum + " (state: " + checksumState + ", date: " 
                 + checksumLastCheck + ")";
+    }
+
+    public Date getLastSeenGetFileIDs() {
+        return lastSeenGetFileIDs;
+    }
+
+    public void setLastSeenGetFileIDs(Date lastSeenGetFileIDs) {
+        this.lastSeenGetFileIDs = lastSeenGetFileIDs;
+    }
+
+    public Date getLastSeenGetChecksums() {
+        return lastSeenGetChecksums;
+    }
+
+    public void setLastSeenGetChecksums(Date lastSeenGetChecksums) {
+        this.lastSeenGetChecksums = lastSeenGetChecksums;
     }
 }

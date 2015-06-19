@@ -51,7 +51,7 @@ public class IntegrityDBTools extends IntegrityDAOUtils {
             throw new IntegrityDBStateException("Collection '" + collectionID +"' is not present in collection, can't remove.");
         }
         
-        Long collectionKey = retrieveCollectionKey(collectionID);
+        /*Long collectionKey = retrieveCollectionKey(collectionID);
         
         String purgeFileInfoForCollectionSql = "DELETE FROM " + FILE_INFO_TABLE
                 + " WHERE " + FI_FILE_KEY + " = ANY( SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
@@ -73,9 +73,10 @@ public class IntegrityDBTools extends IntegrityDAOUtils {
 
         String purgeStatsSql = "DELETE FROM " + STATS_TABLE + " WHERE " + COLLECTION_KEY + " = ?";
         DatabaseUtils.executeStatement(dbConnector, purgeStatsSql, collectionKey);
-        
-        String removeCollectionIDSql = "DELETE FROM " + COLLECTIONS_TABLE + " WHERE " + COLLECTION_ID + " = ?";
-        DatabaseUtils.executeStatement(dbConnector, removeCollectionIDSql, collectionID);;
+        */
+        //String removeCollectionIDSql = "DELETE FROM " + COLLECTIONS_TABLE + " WHERE " + COLLECTION_ID + " = ?";
+        String removeCollectionSql = "DELETE FROM collections WHERE collectionID = ? CASCADE";
+        DatabaseUtils.executeStatement(dbConnector, removeCollectionSql, collectionID);;
         
     }
     

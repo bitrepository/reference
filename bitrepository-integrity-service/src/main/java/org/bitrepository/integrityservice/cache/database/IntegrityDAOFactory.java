@@ -34,9 +34,9 @@ public class IntegrityDAOFactory {
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         String dbDriver = settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase().getDriverClass(); 
         if(dbDriver.equals(derbyDriver)) {
-            throw new RuntimeException("No derby version implemented yet..");    
+            return new DerbyIntegrityDAO2(dm.getConnector(), settings);    
         } else if(dbDriver.equals(postgressDriver)) {
-            return new IntegrityDAO2(dm.getConnector(), settings);
+            return new PostgresIntegrityDAO2(dm.getConnector(), settings);
         } else {
             throw new UnsupportedDatabaseTypeException("The database for driver: '" + dbDriver
                     + "' is not supported, use '" + derbyDriver + "' or '" + postgressDriver + "'");

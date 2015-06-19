@@ -77,7 +77,7 @@ CREATE TABLE pillar (
 CREATE TABLE fileinfo (
     fileID VARCHAR(255) NOT NULL,           -- The file ID 
     collectionID VARCHAR(255) NOT NULL,     -- The collection ID
-    pillarID VARCHAR(255) NOT NULL,         -- The pillar ID
+    pillarID VARCHAR(100) NOT NULL,         -- The pillar ID
     filesize BIGINT,                        -- Size of the file
     checksum VARCHAR(100),                  -- The checksum of the file
     file_timestamp TIMESTAMP,               -- The last modified time on the pillar

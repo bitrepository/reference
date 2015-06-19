@@ -41,6 +41,7 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
+import org.bitrepository.integrityservice.cache.IntegrityDatabase2;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.ChecksumState;
 import org.bitrepository.integrityservice.cache.database.FileState;
@@ -160,9 +161,12 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
 
         addStep("Validate the file ids", "Should have integrity issues. No entry should be valid.");
         Assert.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
+        Assert.assertTrue(cs.getCollectionStat().getChecksumErrors() == 1);
+        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors() == 1);
+        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors() == 1);
+        /*for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
             Assert.assertTrue(fi.getChecksumState() != ChecksumState.VALID);
-        }
+        }*/
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
@@ -248,9 +252,9 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         FileIDsData fileidData = createFileIdData(FILE_1);
         cache.addFileIDs(fileidData, TEST_PILLAR_3, TEST_COLLECTION);
         
-        /*List<FileInfo> fis = (List<FileInfo>) cache.getFileInfos(FILE_1, TEST_COLLECTION);
+        List<FileInfo> fis = (List<FileInfo>) cache.getFileInfos(FILE_1, TEST_COLLECTION);
         Assert.assertTrue(fis.size() == 1);
-        Assert.assertEquals(fis.get(0).getPillarId(), TEST_PILLAR_3);*/
+        Assert.assertEquals(fis.get(0).getPillarId(), TEST_PILLAR_3);
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
@@ -275,6 +279,12 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
                 "An audit trail with fileId and collectionId, but no pillar pointed out as cause");
         insertChecksumDataForModel(cache, createChecksumData("1234cccc4321", FILE_2), TEST_PILLAR_1, TEST_COLLECTION);
         insertChecksumDataForModel(cache, createChecksumData("cc12344321cc", FILE_2), TEST_PILLAR_2, TEST_COLLECTION);
+        
+        List<FileInfo> fis = (List<FileInfo>) cache.getFileInfos(FILE_1, TEST_COLLECTION);
+        System.out.println("number of files in the collection" + cache.getNumberOfFilesInCollection(TEST_COLLECTION));
+        System.out.println("number of fileinfos: " + fis.size());
+        Assert.assertNotNull(fis.get(0).getChecksum());
+        
         step.performStep();
         Assert.assertNotNull(auditManager.latestAuditInfo);
         Assert.assertFalse(auditManager.latestAuditInfo.contains(TEST_PILLAR_1), auditManager.latestAuditInfo);
@@ -327,7 +337,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     }
 
     private IntegrityModel getIntegrityModel() {
-        return new IntegrityDatabase(settings);
+        return new IntegrityDatabase2(settings);
     }
     
     private class TestAuditTrailManager implements AuditTrailManager {

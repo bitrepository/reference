@@ -80,14 +80,14 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void instantiationTest() throws Exception {
         addDescription("Tests that the connection can be instantaited.");
-        IntegrityDatabase integrityCache = new IntegrityDatabase(settings);
+        IntegrityDatabase2 integrityCache = new IntegrityDatabase2(settings);
         Assert.assertNotNull(integrityCache);
     }
 
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void initialStateExtractionTest() throws Exception {
         addDescription("Tests the initial state of the IntegrityModel. Should not contain any data.");
-        IntegrityModel model = new IntegrityDatabase(settings);
+        IntegrityModel model = new IntegrityDatabase2(settings);
         
         addStep("Test the 'findChecksumsOlderThan'", "Should deliver an empty collection");
         Collection<String> oldChecksums = getIssuesFromIterator(model.findChecksumsOlderThan(
@@ -136,7 +136,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void testIngestOfFileIDsData() throws Exception {
         addDescription("Tests the ingesting of file ids data");
-        IntegrityModel model = new IntegrityDatabase(settings);
+        IntegrityModel model = new IntegrityDatabase2(settings);
         
         addStep("Create data", "Should be ingested into the database");
         FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
@@ -159,7 +159,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void testIngestOfChecksumsData() throws Exception {
         addDescription("Tests the ingesting of checksums data");
-        IntegrityModel model = new IntegrityDatabase(settings);
+        IntegrityModel model = new IntegrityDatabase2(settings);
         
         addStep("Create data", "Should be ingested into the database");
         List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM);
@@ -181,7 +181,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void testDeletingEntry() throws Exception {
         addDescription("Tests the deletion of an FileID entry.");
-        IntegrityModel model = new IntegrityDatabase(settings);
+        IntegrityModel model = new IntegrityDatabase2(settings);
 
         addStep("Create data", "Should be ingested into the database");
         FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
@@ -202,7 +202,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void testSettingStateToMissing() throws Exception {
         addDescription("Tests the ability to set an file to missing at a given pillar.");
-        IntegrityModel model = new IntegrityDatabase(settings);
+        IntegrityModel model = new IntegrityDatabase2(settings);
 
         addStep("Create data", "Should be ingested into the database");
         FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
@@ -233,7 +233,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void testSettingChecksumStateToError() throws Exception {
         addDescription("Tests the ability to set the checksum stat to error for a given pillar.");
-        IntegrityModel model = new IntegrityDatabase(settings);
+        IntegrityModel model = new IntegrityDatabase2(settings);
 
         addStep("Create data", "Should be ingested into the database");
         List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM); 
@@ -264,7 +264,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void testSettingChecksumStateToValid() throws Exception {
         addDescription("Tests the ability to set the checksum stat to valid for a given pillar.");
-        IntegrityModel model = new IntegrityDatabase(settings);
+        IntegrityModel model = new IntegrityDatabase2(settings);
 
         addStep("Create data", "Should be ingested into the database");
         List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM); 

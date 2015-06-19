@@ -22,7 +22,7 @@ import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class IntegrityDAO2 {
+public abstract class IntegrityDAO2 {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
     /** The connector to the database.*/
@@ -46,31 +46,21 @@ public class IntegrityDAO2 {
     /**
      * Method to ensure that pillars found in RepositorySettings is present in the database 
      */
-    private synchronized void initializePillars() {
-    	List<String> pillars = SettingsUtils.getAllPillarIDs();
-    	for(String pillar : pillars) {
-            String sql = "INSERT INTO pillar (pillarID)"
-                    + " (SELECT ?"
-            			+ " WHERE NOT EXISTS ("
-            				+ "	SELECT pillarID FROM pillar"
-            				+ " WHERE pillarID = ?))";
-            DatabaseUtils.executeStatement(dbConnector, sql, pillar, pillar);
-    	}
-    }
+    protected abstract void initializePillars();
     
     /**
      * Method to ensure that collections found in RepositorySettings is present in the database 
      */
-    private synchronized void initializeCollections() {
-    	List<String> collections = SettingsUtils.getAllCollectionsIDs();
-    	for(String collection : collections) {
-            String sql = "INSERT INTO collections (collectionID)"
-                    + " (SELECT ?"
-            			+ " WHERE NOT EXISTS ("
-            				+ "	SELECT collectionID FROM collections"
-            				+ " WHERE collectionID = ?))";
-            DatabaseUtils.executeStatement(dbConnector, sql, collection, collection);
-    	}
+    protected abstract void initializeCollections();
+    
+    public List<String> getCollections() {
+        String sql = "SELECT collectionID FROM collections";
+        return DatabaseUtils.selectStringList(dbConnector, sql, new Object[0]);
+    }
+    
+    public List<String> getAllPillars() {
+        String sql = "SELECT pillarID FROM pillar";
+        return DatabaseUtils.selectStringList(dbConnector, sql, new Object[0]);
     }
     
     public void updateFileIDs(FileIDsData data, String pillarId, String collectionId) {
@@ -174,10 +164,10 @@ public class IntegrityDAO2 {
         String findOrphansSql = "SELECT fileID from fileinfo"
                 + " WHERE collectionID = ?"
                 + " AND pillarID = ?"
-                + " AND last_seen_getfileids < ?"
-                + " AND last_seen_getchecksums < ?";
+                + " AND last_seen_getfileids < ?";
+                //+ " AND last_seen_getchecksums < ?";
         
-        return makeIntegrityIssueIterator(findOrphansSql, collectionId, pillarId, cutoffDate, cutoffDate);
+        return makeIntegrityIssueIterator(findOrphansSql, collectionId, pillarId, cutoffDate/*, cutoffDate*/);
     }
     
     public void removeFile(String collectionId, String pillarId, String fileId) {
@@ -193,6 +183,8 @@ public class IntegrityDAO2 {
         DatabaseUtils.executeStatement(dbConnector, removeSql, collectionId, pillarId, fileId);
     }
     
+    protected abstract String getFindMissingFilesAtPillarSql();
+    
     public IntegrityIssueIterator findMissingFilesAtPillar(String collectionId, String pillarId, 
             Long firstIndex, Long maxResults) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
@@ -205,15 +197,7 @@ public class IntegrityDAO2 {
             first = firstIndex;
         }
         
-        String findMissingFilesSql = "SELECT DISTINCT(fileID) FROM fileinfo"
-                + " WHERE collectionID = ?"
-                + " EXCEPT SELECT fileID FROM fileinfo"
-                    + " WHERE collectionID = ?"
-                    + " AND pillarID = ?"
-                + " ORDER BY fileid"
-                + " OFFSET ?"
-                + " LIMIT ?";
-        
+        String findMissingFilesSql = getFindMissingFilesAtPillarSql();
         return makeIntegrityIssueIterator(findMissingFilesSql, collectionId, collectionId, pillarId,
                 first, maxResults);
     }
@@ -236,7 +220,8 @@ public class IntegrityDAO2 {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         
         List<FileInfo> res = new ArrayList<FileInfo>();
-        String getFileInfoSql = "SELECT pillarID, filesize, checksum, file_timestamp, checksum_timestamp FROM fileinfo"
+        String getFileInfoSql = "SELECT pillarID, filesize, checksum, file_timestamp,"
+                + " checksum_timestamp, last_seen_getfileids, last_seen_getchecksums FROM fileinfo"
                 + " WHERE collectionID = ?"
                 + " AND fileID = ?";
         
@@ -249,10 +234,14 @@ public class IntegrityDAO2 {
                     Date lastChecksumCheck = dbResult.getTimestamp("checksum_timestamp");
                     Long fileSize = dbResult.getLong("fileSize");
                     String pillarId = dbResult.getString("pillarID");
+                    Date lastSeenGetFileIDs = dbResult.getTimestamp("last_seen_getfileids");
+                    Date lastSeenGetChecksums = dbResult.getTimestamp("last_seen_getchecksums");
                     
                     FileInfo f = new FileInfo(fileId, CalendarUtils.getXmlGregorianCalendar(lastFileCheck), checksum, 
                             fileSize, CalendarUtils.getXmlGregorianCalendar(lastChecksumCheck), pillarId,
                             null, null);
+                    f.setLastSeenGetFileIDs(lastSeenGetFileIDs);
+                    f.setLastSeenGetChecksums(lastSeenGetChecksums);
                     res.add(f);
                 }
             } 

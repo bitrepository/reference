@@ -119,7 +119,6 @@ public final class IntegrityServiceManager {
 
         alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus, AlarmLevel.ERROR);
         model = new IntegrityDatabase2(settings);
-        //model = new IntegrityCache(new IntegrityDatabase(settings));
 
         collector = new DelegatingIntegrityInformationCollector(
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager,

@@ -89,6 +89,7 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
                 handleChecksumInconsistency(store.getFileInfos(fileID, reporter.getCollectionID()), fileID);
                 collectionChecksumErrors++;
             }
+            System.out.println("got excatly " + collectionChecksumErrors + " errors");
         } finally {
             inconsistentFilesIterator.close();
         }

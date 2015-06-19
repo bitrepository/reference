@@ -44,8 +44,10 @@ public class IntegrityDatabaseMigrator extends DatabaseMigrator {
     private static final String UPDATE_SCRIPT_VERSION_2_TO_3 = "sql/derby/integrityDB2to3migration.sql";
     /** The name of the update script for version 3 to 4.*/
     private static final String UPDATE_SCRIPT_VERSION_3_TO_4 = "sql/derby/integrityDB3to4migration.sql";
+    /** The name of the update script for version 3 to 4.*/
+    private static final String UPDATE_SCRIPT_VERSION_4_TO_5 = "sql/derby/integrityDB4to5migration.sql";
     /** The current version of the database. */
-    private final Integer currentVersion = 4;
+    private final Integer currentVersion = 5;
     
     /**
      * Constructor.
@@ -81,6 +83,10 @@ public class IntegrityDatabaseMigrator extends DatabaseMigrator {
         if(versions.get(DATABASE_VERSION_ENTRY) < 4 && versions.get(FILEINFO_TABLE_VERSION_ENTRY).equals(3)) {
             log.warn("Migrating integrityDB from version 3 to 4.");
             migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_3_TO_4);
+        }
+        if(versions.get(DATABASE_VERSION_ENTRY) < 5) {
+            log.warn("Migrating integrityDB from version 4 to 5");
+            migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_4_TO_5);
         }
     }
 

@@ -29,26 +29,37 @@ public class FileUpdater2 {
      * tuple is not already found in the database  
      */
     private final String insertFileInfoSql = "INSERT INTO fileinfo ("
-    		+ " fileID, collectionID, pillarID, filesize, file_timestamp, last_seen_getfileids)"
-    		+ " (SELECT ?, ?, ?, ?, ?, NOW()"
-    		+ " WHERE NOT EXISTS ("
+    		+ " collectionID, pillarID, fileID, filesize, file_timestamp, last_seen_getfileids)"
+    		+ " (SELECT collectionID, ?, ?, ?, ?, CURRENT_TIMESTAMP FROM collections"
+    		+ " WHERE collectionID = ? "
+    		+ " AND NOT EXISTS ("
     			+ " SELECT * FROM fileinfo "
     			+ " WHERE fileID = ?"
     			+ " AND collectionID = ?"
     			+ " AND pillarID = ?))";
     
+    // TODO fiks ovenstående til følgende form:
+    /*
+     * INSERT INTO fileinfo ( collectionID, pillarID, fileID, filesize, file_timestamp, last_seen_getfileids)
+ (SELECT collectionID, 'checksumpillar', 'foo', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP FROM collections WHERE NOT EXISTS (SELECT * FROM fileinfo WHERE fileID = 'foo' AND collectionID = 'thecollection' AND pillarID = 'checksumpillar'));
+
+     * 
+     * */
+    
+    
     private final String updateFileInfoSql = "UPDATE fileinfo "
     		+ "	SET filesize = ?,"
     		+ " file_timestamp = ?,"
-    		+ " last_seen_getfileids = NOW()"
+    		+ " last_seen_getfileids = CURRENT_TIMESTAMP"
     		+ " WHERE fileID = ?"
     		+ "	AND collectionID = ?"
     		+ " AND pillarID = ?";	
     
     private final String insertLatestFileTime = "INSERT INTO collection_progress "
             + "(collectionID, pillarID, latest_file_timestamp)"
-            + " ( SELECT ?, ?, ? "
-                + " WHERE NOT EXISTS ( SELECT * FROM collection_progress"
+            + " ( SELECT collectionID, ?, ? FROM collections"
+                + " WHERE collectionID = ?"
+                + " AND NOT EXISTS ( SELECT * FROM collection_progress"
                     + " WHERE collectionID = ?"
                     + " AND pillarID = ?))";
 
@@ -109,17 +120,17 @@ public class FileUpdater2 {
     } 
     
     private void addFileInfo(FileIDsDataItem item) throws SQLException {
-    	insertFileInfoPS.setString(1, item.getFileID());
-    	insertFileInfoPS.setString(2, collectionID);
-    	insertFileInfoPS.setString(3, pillar);
-        if(item.getFileSize() == null) {
-        	insertFileInfoPS.setNull(4, Types.BIGINT);
+        insertFileInfoPS.setString(1, pillar);
+        insertFileInfoPS.setString(2, item.getFileID());
+    	if(item.getFileSize() == null) {
+        	insertFileInfoPS.setNull(3, Types.BIGINT);
         } else {
-        	insertFileInfoPS.setLong(4, item.getFileSize().longValue());
+        	insertFileInfoPS.setLong(3, item.getFileSize().longValue());
         }
         Timestamp ts = new Timestamp(
                 CalendarUtils.convertFromXMLGregorianCalendar(item.getLastModificationTime()).getTime());
-        insertFileInfoPS.setTimestamp(5, ts);
+        insertFileInfoPS.setTimestamp(4, ts);
+        insertFileInfoPS.setString(5, collectionID);
         insertFileInfoPS.setString(6, item.getFileID());
     	insertFileInfoPS.setString(7, collectionID);
     	insertFileInfoPS.setString(8, pillar);
@@ -146,9 +157,9 @@ public class FileUpdater2 {
         updateLatestFileTimePS.setString(2, collectionID);
         updateLatestFileTimePS.setString(3, pillar);
         
-        insertLatestFileTimePS.setString(1, collectionID);
-        insertLatestFileTimePS.setString(2, pillar);
-        insertLatestFileTimePS.setTimestamp(3, new Timestamp(maxDate.getTime()));
+        insertLatestFileTimePS.setString(1, pillar);
+        insertLatestFileTimePS.setTimestamp(2, new Timestamp(maxDate.getTime()));
+        insertLatestFileTimePS.setString(3, collectionID);
         insertLatestFileTimePS.setString(4, collectionID);
         insertLatestFileTimePS.setString(5, pillar);
     }

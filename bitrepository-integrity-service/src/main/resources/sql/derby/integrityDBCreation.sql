@@ -78,7 +78,7 @@ CREATE TABLE pillar (
 CREATE TABLE fileinfo (
     fileID VARCHAR(255) NOT NULL,           -- The file ID 
     collectionID VARCHAR(255) NOT NULL,     -- The collection ID
-    pillarID VARCHAR(255) NOT NULL,         -- The pillar ID
+    pillarID VARCHAR(100) NOT NULL,         -- The pillar ID
     filesize BIGINT,                        -- Size of the file
     checksum VARCHAR(100),                  -- The checksum of the file
     file_timestamp TIMESTAMP,               -- The last modified time on the pillar
@@ -174,7 +174,7 @@ CREATE TABLE pillarstats (
                                  -- The number of checksum errors on the pillar when the stats were made
     missing_checksums_count BIGINT, -- The number of missing checksums on the pillar
     obsolete_checksums_count BIGINT, --The number of obsolete checksums on the pillar. 
-    UNIQUE (stat_key, pillar_key), 
+    UNIQUE (stat_key, pillarID), 
                                  -- Enforce that there can only be one collectionstat for a statistics
     FOREIGN KEY (stat_key) REFERENCES stats(stat_key),
                                  -- Foreign key constraint on stat_key, enforcing the presence of the referred key

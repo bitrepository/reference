@@ -70,7 +70,7 @@ public final class DatabaseConstants {
     /** The key of an entry in the pillar table. Primary automatically generated key. A long/bigint value.*/
     public static final  String PILLAR_KEY = "pillar_key";
     /** The id of the pillar. String value.*/
-    public static final  String PILLAR_ID = "pillar_id";
+    public static final  String PILLAR_ID = "pillarID";
     
     // THE COLLECTIONS TABLE
     /** The name of the collections table. */
@@ -78,7 +78,7 @@ public final class DatabaseConstants {
     /** The key of an entry in the collections table. Primary automatically generated key. A long/bigint value */
     public static final String COLLECTION_KEY = "collection_key";
     /** The id of the collection. String value. */
-    public static final String COLLECTION_ID = "collection_id";
+    public static final String COLLECTION_ID = "collectionID";
     
     // THE STATS TABLE
     /** The name of the statistics table. A long/bigint value. */
