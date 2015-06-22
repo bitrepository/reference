@@ -50,4 +50,26 @@ public class PostgresIntegrityDAO2 extends IntegrityDAO2 {
         return findMissingFilesSql;
     }
 
+    @Override
+    protected String getAllFileIDsSql() {
+        String getAllFileIDsSql = "SELECT fileID FROM fileinfo"
+                + " WHERE collectionID = ?"
+                + " AND pillarID = ?"
+                + " ORDER BY fileID"
+                + " OFFSET ?"
+                + " LIMIT ?";
+        return getAllFileIDsSql;
+    }
+
+    @Override
+    protected String getLatestCollectionStatsSql() {
+        String latestCollectionStatSql = "SELECT file_count, file_size, checksum_errors_count, latest_file_date,"
+                + " stat_time, last_update FROM collectionstats"
+                + " JOIN stats ON collectionstats.stat_key = stats.stat_key"
+                + " WHERE stats.collectionID = ?"
+                + " ORDER BY stats.stat_time"
+                + " LIMIT ?";
+        return latestCollectionStatSql;
+    }
+
 }

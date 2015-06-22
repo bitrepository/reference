@@ -38,11 +38,12 @@ public class CollectionStat {
     }
     
     public CollectionStat(String collectionID, Long fileCount, Long dataSize, Long checksumErrors, 
-            Date statsTime, Date updateTime) {
+            Date latestFile, Date statsTime, Date updateTime) {
         this.collectionID = collectionID;
         this.fileCount = fileCount;
         this.dataSize = dataSize;
         this.checksumErrors = checksumErrors;
+        this.latestFileTime = latestFile;
         this.statsTime = statsTime;
         this.updateTime = updateTime;
     }

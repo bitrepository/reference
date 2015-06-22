@@ -52,13 +52,15 @@ public class PillarCollectionStat {
     }
     
     public PillarCollectionStat(String pillarID, String collectionID, Long fileCount, Long dataSize, Long missingFiles, 
-            Long checksumErrors, Date statsTime, Date updateTime) {
+            Long checksumErrors, Long missingChecksums, Long obsoleteChecksum, Date statsTime, Date updateTime) {
         this.pillarID = pillarID;
         this.collectionID = collectionID;
         this.fileCount = fileCount;
         this.dataSize = dataSize;
         this.missingFiles = missingFiles;
         this.checksumErrors = checksumErrors;
+        this.missingChecksums = missingChecksums;
+        this.obsoleteChecksums = obsoleteChecksum;
         this.statsTime = statsTime;
         this.updateTime = updateTime;
     }

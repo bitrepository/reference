@@ -69,8 +69,7 @@ public class IntegrityDatabase2 implements IntegrityModel {
     @Override
     public IntegrityIssueIterator getFilesOnPillar(String pillarId, long firstIndex, 
             long maxResults, String collectionId) {
-        // TODO Auto-generated method stub
-        return null;
+        return store.getAllFileIDsOnPillar(collectionId, pillarId, firstIndex, maxResults);
     }
 
     @Override
@@ -265,14 +264,12 @@ public class IntegrityDatabase2 implements IntegrityModel {
 
     @Override
     public List<CollectionStat> getLatestCollectionStat(String collectionID, int count) {
-        // TODO Auto-generated method stub
-        return null;
+        return store.getLatestCollectionStats(collectionID, count);
     }
 
     @Override
     public List<PillarCollectionStat> getLatestPillarStats(String collectionID) {
-        // TODO Auto-generated method stub
-        return null;
+        return store.getLatestPillarStats(collectionID);
     }
 
     @Override

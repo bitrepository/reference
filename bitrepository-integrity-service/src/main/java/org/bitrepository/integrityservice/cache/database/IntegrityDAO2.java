@@ -14,8 +14,9 @@ import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.FileInfo;
+import org.bitrepository.integrityservice.cache.PillarCollectionStat;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
@@ -165,9 +166,8 @@ public abstract class IntegrityDAO2 {
                 + " WHERE collectionID = ?"
                 + " AND pillarID = ?"
                 + " AND last_seen_getfileids < ?";
-                //+ " AND last_seen_getchecksums < ?";
         
-        return makeIntegrityIssueIterator(findOrphansSql, collectionId, pillarId, cutoffDate/*, cutoffDate*/);
+        return makeIntegrityIssueIterator(findOrphansSql, collectionId, pillarId, cutoffDate);
     }
     
     public void removeFile(String collectionId, String pillarId, String fileId) {
@@ -213,6 +213,23 @@ public abstract class IntegrityDAO2 {
                 + " WHERE checksums > 1";
         
         return makeIntegrityIssueIterator(findInconsistentChecksumsSql, collectionId);
+    }
+    
+    protected abstract String getAllFileIDsSql();
+    
+    public IntegrityIssueIterator getAllFileIDsOnPillar(String collectionId, String pillarId, 
+            Long firstIndex, Long maxResults) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
+        ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
+        long first;
+        if(firstIndex == null) {
+            first = 0;
+        } else {
+            first = firstIndex;
+        }
+        String getAllFileIDsSql = getAllFileIDsSql();
+        return makeIntegrityIssueIterator(getAllFileIDsSql, collectionId, pillarId, first, maxResults);
+        
     }
     
     public List<FileInfo> getFileInfosForFile(String fileId, String collectionId) {
@@ -300,6 +317,78 @@ public abstract class IntegrityDAO2 {
         
         return DatabaseUtils.selectFirstLongValue(dbConnector, getNumberOfFilesSql, collectionId, pillarId);
 
+    }
+    
+    public List<PillarCollectionStat> getLatestPillarStats(String collectionID) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
+        List<PillarCollectionStat> stats = new ArrayList<>();
+        
+        String latestPillarStatsSql = "SELECT pillarID, file_count, file_size, missing_files_count,"
+                + " checksum_errors_count, missing_checksums_count, obsolete_checksums_count"
+                + " FROM pillarstats"
+                + " WHERE stat_key = ("
+                    + " SELECT MAX(stat_key) FROM stats"
+                    + " WHERE collectionID = ?)";
+                
+        try (Connection conn = dbConnector.getConnection();
+                PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, latestPillarStatsSql, collectionID)) {
+               try (ResultSet dbResult = ps.executeQuery()) {
+                   while(dbResult.next()) {
+                       String pillarID = dbResult.getString("pillarID");
+                       Long fileCount = dbResult.getLong("file_count");
+                       Long dataSize = dbResult.getLong("file_size");
+                       Long missingFiles = dbResult.getLong("missing_files_count");
+                       Long checksumErrors = dbResult.getLong("checksum_errors_count");
+                       Long missingChecksums = dbResult.getLong("missing_checksums_count");
+                       Long obsoleteChecksums = dbResult.getLong("obsolete_checksums_count");
+                       Date statsTime = null;
+                       Date updateTime = null;
+                       
+                       
+                       PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID, fileCount, dataSize, missingFiles, 
+                               checksumErrors, missingChecksums, obsoleteChecksums, statsTime, updateTime);
+                       stats.add(p);
+                   }
+               } 
+           } catch (SQLException e) {
+               throw new IllegalStateException("Could not retrieve the latest PillarCollectionStat's for '" + collectionID + "' " +
+                       "with the SQL '" + latestPillarStatsSql + "'.", e);
+           }        
+        
+        return stats;
+    }
+    
+    protected abstract String getLatestCollectionStatsSql();
+    
+    public List<CollectionStat> getLatestCollectionStats(String collectionID, int count) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
+        List<CollectionStat> stats = new ArrayList<>();
+
+        String latestCollectionStatSql = getLatestCollectionStatsSql();
+        
+        try (Connection conn = dbConnector.getConnection();
+                PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, latestCollectionStatSql, collectionID, count)) {
+               try (ResultSet dbResult = ps.executeQuery()) {
+                   while(dbResult.next()) {
+                       Long fileCount = dbResult.getLong("file_count");
+                       Long dataSize = dbResult.getLong("file_size");
+                       Long checksumErrors = dbResult.getLong("checksum_errors_count");
+                       Date latestFile = dbResult.getDate("latest_file_date");
+                       Date statsTime = dbResult.getDate("stat_time");
+                       Date updateTime = dbResult.getDate("last_update");
+                       
+                       CollectionStat stat = new CollectionStat(collectionID, fileCount, dataSize, checksumErrors, 
+                               latestFile, statsTime, updateTime);
+                       stats.add(stat);
+                   }
+               } 
+           } catch (SQLException e) {
+               throw new IllegalStateException("Could not retrieve the latest PillarStat's for '" + collectionID + "' " +
+                       "with the SQL '" + latestCollectionStatSql + "' with arguments '"
+                               + Arrays.asList(collectionID, count) + "'.", e);
+           }
+           java.util.Collections.reverse(stats);
+           return stats;
     }
     
     private IntegrityIssueIterator makeIntegrityIssueIterator(String query, Object... args) {

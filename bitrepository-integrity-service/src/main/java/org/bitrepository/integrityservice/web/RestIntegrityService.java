@@ -98,6 +98,7 @@ public class RestIntegrityService {
             @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
         
         int firstID = (pageNumber - 1) * pageSize;
+        // TODO hook this up to latest integrity report
         IntegrityIssueIterator it = model.getFilesWithChecksumErrorsAtPillar(pillarID, firstID, pageSize, collectionID);
         
         if(it != null) {
@@ -128,6 +129,7 @@ public class RestIntegrityService {
         
         int firstID = (pageNumber - 1) * pageSize;
                 
+        // TODO consider hooking this up to result from latest integrity report
         IntegrityIssueIterator it = model.getMissingFilesAtPillarByIterator(pillarID, 
                 firstID, pageSize, collectionID);
         
@@ -193,7 +195,7 @@ public class RestIntegrityService {
         for(String pillar : pillars) {
             if(!stats.containsKey(pillar)) {
                 PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, 0L, 0L, 0L, 0L, 
-                        new Date(0), new Date(0));;
+                        0L, 0L, new Date(0), new Date(0));;
                 stats.put(pillar, emptyStat);
             }
         }

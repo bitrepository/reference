@@ -1169,7 +1169,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                     String pillarID = retrievePillarIDFromKey(pillarKey);
                     
                     PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID, fileCount, dataSize, missingFiles, 
-                            checksumErrors, statsTime, updateTime);
+                            checksumErrors, 0L, 0L, statsTime, updateTime);
                     res.add(p);
                 }
             } 
@@ -1216,7 +1216,7 @@ public abstract class IntegrityDAO extends IntegrityDAOUtils {
                     Date updateTime = dbResult.getTimestamp(indexUpdateTime);
                     
                     CollectionStat stat = new CollectionStat(collectionID, fileCount, dataSize, checksumErrors, 
-                            statsTime, updateTime);
+                            null, statsTime, updateTime);
                     res.add(stat);
                 }
             } 
