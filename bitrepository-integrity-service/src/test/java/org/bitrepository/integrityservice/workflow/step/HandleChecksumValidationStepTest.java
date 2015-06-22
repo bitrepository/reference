@@ -225,39 +225,6 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
-    public void testUpdatingFileIDsForValidChecksum() throws Exception {
-        addDescription("Test that a file is set to having ChecksumState UNKNOWN, when it has a file-update.");
-        IntegrityModel cache = getIntegrityModel();
-        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
-        StatisticsCollector cs = new StatisticsCollector(settings, TEST_COLLECTION);
-        HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
-        
-        addStep("Add data to the cache", "");
-        List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
-        insertChecksumDataForModel(cache, csData, TEST_PILLAR_1, TEST_COLLECTION);
-        insertChecksumDataForModel(cache, csData, TEST_PILLAR_2, TEST_COLLECTION);
-        insertChecksumDataForModel(cache, csData, TEST_PILLAR_3, TEST_COLLECTION);
-        
-        addStep("Perform the step", "");
-        step.performStep();
-
-        addStep("Validate the file ids", "No integrity issues and all should be valid");
-        Assert.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assert.assertTrue(cs.getCollectionStat().getChecksumErrors() == 0);
-        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors() == 0);
-        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors() == 0);
-        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors() == 0);
-        
-        addStep("Add new fileids for one pillar", "The given pillar should have ChecksumState 'UNKNOWN', the others 'VALID'");
-        FileIDsData fileidData = createFileIdData(FILE_1);
-        cache.addFileIDs(fileidData, TEST_PILLAR_3, TEST_COLLECTION);
-        
-        List<FileInfo> fis = (List<FileInfo>) cache.getFileInfos(FILE_1, TEST_COLLECTION);
-        Assert.assertTrue(fis.size() == 1);
-        Assert.assertEquals(fis.get(0).getPillarId(), TEST_PILLAR_3);
-    }
-    
-    @Test(groups = {"regressiontest", "integritytest"})
     public void testAuditTrailsForChecksumErrors() throws Exception {
         addDescription("Test audit trails for checksum errors. Verify that a pillar with a single checksum will"
                 + " be pointed out as the possible cause.");
