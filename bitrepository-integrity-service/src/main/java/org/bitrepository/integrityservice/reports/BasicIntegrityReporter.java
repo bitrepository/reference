@@ -23,6 +23,7 @@ public class BasicIntegrityReporter implements IntegrityReporter {
     private final Map<String, Long> missingChecksums = new TreeMap<String, Long>();
     private final Map<String, Long> obsoleteChecksums = new TreeMap<String, Long>();
     private final IntegrityReportWriter writer;
+    private final File reportDir;
     
     public BasicIntegrityReporter(String collectionID, String workflowType,  File reportsDir) {
         this.collectionID = collectionID;
@@ -33,7 +34,7 @@ public class BasicIntegrityReporter implements IntegrityReporter {
         if(!collectionReportsDir.isDirectory()) {
             collectionReportsDir.mkdir();
         }
-        File reportDir = new File(collectionReportsDir, formatter.format(reportDate));
+        reportDir = new File(collectionReportsDir, formatter.format(reportDate));
         reportDir.mkdir();
         writer = new IntegrityReportWriter(reportDir);
     }
@@ -57,6 +58,11 @@ public class BasicIntegrityReporter implements IntegrityReporter {
         } else {
             return false;
         }
+    }
+    
+    @Override
+    public File getReportDir() {
+        return reportDir;
     }
     
     @Override

@@ -16,17 +16,6 @@ import org.slf4j.LoggerFactory;
  */
 public class IntegrityReportWriter {
     private static final Logger log = LoggerFactory.getLogger(IntegrityReportWriter.class);
-
-    private static final String DELETED_FILE = "deletedFile";
-    private static final String CHECKSUM_ISSUE = "checksumIssue";
-    private static final String MISSING_CHECKSUM = "missingChecksum";
-    private static final String OBSOLETE_CHECKSUM = "obsoleteChecksum";
-    private static final String MISSING_FILE = "missingFile";
-    private static final String REPORT_FILE = "report";
-    
-    private static final String SECTION_HEADER_START_STOP = "========";
-    private static final String PILLAR_HEADER_START_STOP = "--------";
-    private static final String NOISSUE_HEADER_START_STOP = "++++++++";
     
     private final IntegrityReportPartWriter missingFilesWriter;
     private final IntegrityReportPartWriter checksumIssuesWriter;
@@ -40,18 +29,18 @@ public class IntegrityReportWriter {
     
     public IntegrityReportWriter(File reportDir) {
         this.reportDir = reportDir;
-        missingFilesWriter = new IntegrityReportPartWriter(MISSING_FILE, reportDir);
-        checksumIssuesWriter = new IntegrityReportPartWriter(CHECKSUM_ISSUE, reportDir);
-        missingChecksumsWriter = new IntegrityReportPartWriter(MISSING_CHECKSUM, reportDir);
-        obsoleteChecksumsWriter = new IntegrityReportPartWriter(OBSOLETE_CHECKSUM, reportDir);
-        deletedFilesWriter2 = new IntegrityReportPartWriter(DELETED_FILE, reportDir);
+        missingFilesWriter = new IntegrityReportPartWriter(IntegrityReportConstants.MISSING_FILE, reportDir);
+        checksumIssuesWriter = new IntegrityReportPartWriter(IntegrityReportConstants.CHECKSUM_ISSUE, reportDir);
+        missingChecksumsWriter = new IntegrityReportPartWriter(IntegrityReportConstants.MISSING_CHECKSUM, reportDir);
+        obsoleteChecksumsWriter = new IntegrityReportPartWriter(IntegrityReportConstants.OBSOLETE_CHECKSUM, reportDir);
+        deletedFilesWriter2 = new IntegrityReportPartWriter(IntegrityReportConstants.DELETED_FILE, reportDir);
     }
     
     /**
      * Method to retrieve the path to the report file 
      */
     public String getReportFilePath() {
-        File reportFile = new File(reportDir, REPORT_FILE);
+        File reportFile = new File(reportDir, IntegrityReportConstants.REPORT_FILE);
         log.debug("getReportFilePath: Report file located at: " + reportFile.getAbsolutePath());
         return reportFile.getAbsolutePath();
     }
@@ -62,7 +51,7 @@ public class IntegrityReportWriter {
      */
     public void writeDeletedFile(String fileID) throws IOException {
         if(deletedFilesWriter == null) {
-            File deletedFilesFile = ReportWriterUtils.makeEmptyFile(reportDir, DELETED_FILE);
+            File deletedFilesFile = ReportWriterUtils.makeEmptyFile(reportDir, IntegrityReportConstants.DELETED_FILE);
             deletedFilesWriter = new BufferedWriter(new FileWriter(deletedFilesFile, true));
         }
         ReportWriterUtils.addLine(deletedFilesWriter, fileID);
@@ -115,7 +104,7 @@ public class IntegrityReportWriter {
     public void writeReport(String reportHeader) throws IOException {
         flushAll();
         if(reportFileWriter == null) {
-            File reportFile = new File(reportDir, REPORT_FILE);
+            File reportFile = new File(reportDir, IntegrityReportConstants.REPORT_FILE);
             if(reportFile.exists()) {
                 reportFile.delete();
             }
@@ -181,7 +170,8 @@ public class IntegrityReportWriter {
      * Helper method to write the header of a report section 
      */
     private void writeSectionHeader(BufferedWriter report, String sectionName) throws IOException {
-        report.append(SECTION_HEADER_START_STOP + " " + sectionName + " " + SECTION_HEADER_START_STOP);
+        report.append(IntegrityReportConstants.SECTION_HEADER_START_STOP 
+                + " " + sectionName + " " + IntegrityReportConstants.SECTION_HEADER_START_STOP);
         report.newLine();
     }
     
@@ -189,7 +179,8 @@ public class IntegrityReportWriter {
      * Helper method to write the header of a pillar part of a section 
      */
     private void writePillarHeader(BufferedWriter report, String pillarName) throws IOException {
-        report.append(PILLAR_HEADER_START_STOP + " " + pillarName + " " + PILLAR_HEADER_START_STOP);
+        report.append(IntegrityReportConstants.PILLAR_HEADER_START_STOP 
+                + " " + pillarName + " " + IntegrityReportConstants.PILLAR_HEADER_START_STOP);
         report.newLine();
     }
     
@@ -197,7 +188,8 @@ public class IntegrityReportWriter {
      * Helper method to write the no-issue header of a section 
      */
     private void writeNoIssueHeader(BufferedWriter report, String issueMessage) throws IOException {
-        report.append(NOISSUE_HEADER_START_STOP + " " + issueMessage + " " + NOISSUE_HEADER_START_STOP);
+        report.append(IntegrityReportConstants.NOISSUE_HEADER_START_STOP 
+                + " " + issueMessage + " " + IntegrityReportConstants.NOISSUE_HEADER_START_STOP);
         report.newLine();
 
     }

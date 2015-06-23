@@ -53,7 +53,6 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
     /** The context for the workflow.*/
     protected IntegrityWorkflowContext context;
     protected String collectionID;
-    protected IntegrityReporter latestReport = null;
     /**
      * Remember to call the initialise method needs to be called before the start method.
      */
@@ -71,10 +70,6 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
     protected abstract UpdateChecksumsStep getUpdateChecksumsStep();
     
     protected abstract boolean cleanDeletedFiles();
-    
-    public IntegrityReporter getLatestIntegrityReport() {
-        return latestReport;
-    }
     
     @Override
     public void start() {
@@ -135,7 +130,7 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
                 log.error("Failed to generate integrity report", e);
             }
             
-            latestReport = reporter;
+            IntegrityServiceManager.getIntegrityReportProvider().setLatestReport(collectionID, reporter.getReportDir());
             
         } finally {
             finish();

@@ -36,6 +36,7 @@ import org.bitrepository.integrityservice.cache.IntegrityDatabase2;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.DelegatingIntegrityInformationCollector;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
+import org.bitrepository.integrityservice.reports.IntegrityReportProvider;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowContext;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowManager;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -92,6 +93,7 @@ public final class IntegrityServiceManager {
     private static IntegrityInformationCollector collector;
     private static AuditTrailManager auditManager;
     private static IntegrityAlerter alarmDispatcher;
+    private static IntegrityReportProvider integrityReportProvider;
 
     /**
      * Returns the single instance of the intergity service.
@@ -125,7 +127,8 @@ public final class IntegrityServiceManager {
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager,
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()));
-
+        integrityReportProvider = new IntegrityReportProvider(integrityReportStorageDir);
+        
         workFlowManager = new IntegrityWorkflowManager(
                 new IntegrityWorkflowContext(settings, collector, model, alarmDispatcher, auditManager),
                 new TimerbasedScheduler());
@@ -207,6 +210,10 @@ public final class IntegrityServiceManager {
         return integrityReportStorageDir;
     }
 
+    public static IntegrityReportProvider getIntegrityReportProvider() {
+        return integrityReportProvider;
+    }
+    
     /**
      * Gets you the <code>WorkflowManager</code> exposing the workflow model.
      */

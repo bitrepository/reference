@@ -1,5 +1,8 @@
 package org.bitrepository.integrityservice.web;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -50,6 +53,36 @@ public class JSONStreamingTools {
                         log.error("Caught execption when closing IntegrityIssueIterator", e);
                         throw new WebApplicationException(e);
                     }
+                }
+            }
+        };
+    }
+    
+    public static StreamingOutput StreamFileParts(File source, int offset, int maxlines) {
+        final File input = source;
+        return new StreamingOutput() {
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                JsonFactory jf = new JsonFactory();
+                JsonGenerator jg = jf.createGenerator(output, JsonEncoding.UTF8);
+                
+                try (BufferedReader b = new BufferedReader(new FileReader(input));) {
+                    int linesRead = 0;
+                    jg.writeStartArray();
+                    String line;
+                    while((line = b.readLine()) != null) {
+                        if(linesRead++ <= offset) {
+                            continue;
+                        }
+                        jg.writeString(line);
+                        if(linesRead - offset >= maxlines) {
+                            break;
+                        }
+                    }
+                    jg.writeEndArray();
+                    jg.flush();
+                    jg.close();
+                } catch (Exception e) {
+                    throw new WebApplicationException(e);
                 }
             }
         };

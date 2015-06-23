@@ -57,6 +57,9 @@ import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.PillarCollectionStat;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
+import org.bitrepository.integrityservice.reports.IntegrityReportConstants;
+import org.bitrepository.integrityservice.reports.IntegrityReportProvider;
+import org.bitrepository.integrityservice.reports.IntegrityReportReader;
 import org.bitrepository.integrityservice.workflow.IntegrityCheckWorkflow;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.Workflow;
@@ -75,10 +78,12 @@ public class RestIntegrityService {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private IntegrityModel model;
     private WorkflowManager workflowManager;
+    private IntegrityReportProvider integrityReportProvider;
 
     public RestIntegrityService() {
         this.model = IntegrityServiceManager.getIntegrityModel();
         this.workflowManager = IntegrityServiceManager.getWorkflowManager();
+        this.integrityReportProvider = IntegrityServiceManager.getIntegrityReportProvider();
     }
 
     /**
@@ -98,14 +103,14 @@ public class RestIntegrityService {
             @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
         
         int firstID = (pageNumber - 1) * pageSize;
-        // TODO hook this up to latest integrity report
-        IntegrityIssueIterator it = model.getFilesWithChecksumErrorsAtPillar(pillarID, firstID, pageSize, collectionID);
-        
-        if(it != null) {
-            return JSONStreamingTools.StreamIntegrityIssues(it);
-        } else {
-            throw new WebApplicationException(Response.status(Response.Status.NO_CONTENT)
-                    .entity("Failed to get missing files from database")
+        try {
+            IntegrityReportReader reader = integrityReportProvider.getLatestIntegrityReportReader(collectionID);
+            File reportPart = reader.getReportPart(IntegrityReportConstants.CHECKSUM_ISSUE, pillarID);
+            return JSONStreamingTools.StreamFileParts(reportPart, firstID, pageSize);
+        } catch (FileNotFoundException e) {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                    .entity("No integrity 'checksum errors' report part for collection: " + collectionID 
+                            + " and pillar: " + pillarID + " found!")
                     .type(MediaType.TEXT_PLAIN)
                     .build());
         }
@@ -129,15 +134,14 @@ public class RestIntegrityService {
         
         int firstID = (pageNumber - 1) * pageSize;
                 
-        // TODO consider hooking this up to result from latest integrity report
-        IntegrityIssueIterator it = model.getMissingFilesAtPillarByIterator(pillarID, 
-                firstID, pageSize, collectionID);
-        
-        if(it != null) {
-            return JSONStreamingTools.StreamIntegrityIssues(it);
-        } else {
-            throw new WebApplicationException(Response.status(Response.Status.NO_CONTENT)
-                    .entity("Failed to get missing files from database")
+        try {
+            IntegrityReportReader reader = integrityReportProvider.getLatestIntegrityReportReader(collectionID);
+            File reportPart = reader.getReportPart(IntegrityReportConstants.MISSING_FILE, pillarID);
+            return JSONStreamingTools.StreamFileParts(reportPart, firstID, pageSize);
+        } catch (FileNotFoundException e) {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                    .entity("No integrity 'missing files' report part for collection: " + collectionID 
+                            + " and pillar: " + pillarID + " found!")
                     .type(MediaType.TEXT_PLAIN)
                     .build());
         }
@@ -255,53 +259,31 @@ public class RestIntegrityService {
     @GET
     @Path("/getLatestIntegrityReport/")
     @Produces(MediaType.TEXT_PLAIN)
-    public StreamingOutput getLatestIntegrityReport(@QueryParam("collectionID") String collectionID, 
-            @QueryParam("workflowID") String workflowID) {
-        List<JobID> jobIDs = workflowManager.getWorkflows(collectionID);
-        for(JobID jobID : jobIDs) {
-            if(jobID.getWorkflowName().equals(workflowID)) {
-                Workflow workflow = workflowManager.getWorkflow(jobID);
-                if(workflow instanceof IntegrityCheckWorkflow) {
-                    IntegrityCheckWorkflow integrityWorkflow = (IntegrityCheckWorkflow) workflow;
-                    if(integrityWorkflow.getLatestIntegrityReport() != null) {
-                        final File report;
-                        try {
-                            report = integrityWorkflow.getLatestIntegrityReport().getReport();
-                        } catch (FileNotFoundException e) {
-                            throw new WebApplicationException(e);
-
-                        }
-                        return new StreamingOutput() {
-                            public void write(OutputStream output) throws IOException, WebApplicationException {
-                                try {
-                                    int i;
-                                    byte[] data = new byte[4096];
-                                    FileInputStream is = new FileInputStream(report);
-                                    while((i = is.read(data)) >= 0) {
-                                        output.write(data, 0, i);
-                                    }
-                                    is.close();
-                                } catch (Exception e) {
-                                    throw new WebApplicationException(e);
-                                }
-                            }
-                        };
-                    } else {
-                        throw new WebApplicationException(Response.status(Response.Status.OK)
-                                .entity("No integrity report for workflow " + workflowID + " for collection: " 
-                                        + collectionID + " available yet")
-                                .type(MediaType.TEXT_PLAIN)
-                                .build());
-                    }
-                }
-            } 
+    public StreamingOutput getLatestIntegrityReport(@QueryParam("collectionID") String collectionID) {
+        final File fullReport;
+        try {
+            fullReport = integrityReportProvider.getLatestIntegrityReportReader(collectionID).getFullReport();
+        } catch (FileNotFoundException e) {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                    .entity("No integrity report for collection: " + collectionID + " found!")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build());
         }
-        
-        throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-                .entity("No integrity report for workflow: " + workflowID + " for collection: " 
-                        + collectionID + " found!")
-                .type(MediaType.TEXT_PLAIN)
-                .build());
+        return new StreamingOutput() {
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                try {
+                    int i;
+                    byte[] data = new byte[4096];
+                    FileInputStream is = new FileInputStream(fullReport);
+                    while((i = is.read(data)) >= 0) {
+                        output.write(data, 0, i);
+                    }
+                    is.close();
+                } catch (Exception e) {
+                    throw new WebApplicationException(e);
+                }
+            }
+        };
     }
 
     /**

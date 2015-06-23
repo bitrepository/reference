@@ -45,6 +45,11 @@ public interface IntegrityReporter {
     boolean hasReport();
     
     /**
+     * Method to get the directory where the report is stored.  
+     */
+    File getReportDir();
+    
+    /**
      * Retrieves the written report 
      * @throws FileNotFoundException if no report is found
      */
