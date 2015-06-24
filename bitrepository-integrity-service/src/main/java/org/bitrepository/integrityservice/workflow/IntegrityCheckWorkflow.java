@@ -99,6 +99,8 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
                 performStep(handleDeletedFilesStep);
             }
             
+            statisticsCollector.getCollectionStat().setStatsTime(new Date());
+            
             HandleMissingFilesStep handleMissingFilesStep = new HandleMissingFilesStep(context.getStore(), reporter,
                     statisticsCollector);
             performStep(handleMissingFilesStep);
