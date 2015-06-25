@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  *  This means that we currently can't use the functionality, and is forced
  *  to use the two call way. I.e. the conditional update, the conditional insert 
  */
-public class ChecksumUpdater2 {
+public class ChecksumUpdater {
 
     /**
      * SQL for conditional insert of the fileID in the files table.
@@ -71,7 +71,7 @@ public class ChecksumUpdater2 {
     private PreparedStatement insertLatestChecksumTimePS;
     private PreparedStatement updateLatestChecksumTimePS;
 
-    public ChecksumUpdater2(String pillar, Connection dbConnection, String collectionID) {
+    public ChecksumUpdater(String pillar, Connection dbConnection, String collectionID) {
         this.collectionID = collectionID;
         this.pillar = pillar;
         conn = dbConnection;

@@ -7,9 +7,9 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 
-public class PostgresIntegrityDAO2 extends IntegrityDAO2 {
+public class PostgresIntegrityDAO extends IntegrityDAO {
 
-    public PostgresIntegrityDAO2(DBConnector dbConnector, Settings settings) {
+    public PostgresIntegrityDAO(DBConnector dbConnector, Settings settings) {
         super(dbConnector, settings);
     }
 

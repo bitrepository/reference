@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  *  This means that we currently can't use the functionality, and is forced
  *  to use the two call way. I.e. the conditional update, the conditional insert 
  */
-public class FileUpdater2 {
+public class FileUpdater {
 
     /**
      * SQL for conditional insert of the fileID in the files table.
@@ -78,7 +78,7 @@ public class FileUpdater2 {
     private PreparedStatement insertLatestFileTimePS;
     private PreparedStatement updateLatestFileTimePS;
     
-    public FileUpdater2(String pillar, Connection dbConnection, String collectionID) {
+    public FileUpdater(String pillar, Connection dbConnection, String collectionID) {
         this.collectionID = collectionID;
         this.pillar = pillar;
         conn = dbConnection;

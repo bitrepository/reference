@@ -34,8 +34,8 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.cache.IntegrityDatabaseManager;
-import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO2;
-import org.bitrepository.integrityservice.cache.database.IntegrityDAO2;
+import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO;
+import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityDatabaseCreator;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
@@ -77,7 +77,7 @@ public class DatabaseStressTests extends ExtendedTestCase {
         settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0);
     }
     
-    protected void populateDatabase(IntegrityDAO2 cache) {
+    protected void populateDatabase(IntegrityDAO cache) {
         FileIDsData data = new FileIDsData();
         FileIDsDataItems items = new FileIDsDataItems();
         XMLGregorianCalendar lastModificationTime = CalendarUtils.getNow();
@@ -106,7 +106,7 @@ public class DatabaseStressTests extends ExtendedTestCase {
     @Test(groups = {"stresstest", "integritytest"})
     public void testDatabasePerformance() {
         addDescription("Testing the performance of the SQL queries to the database.");
-        IntegrityDAO2 cache = createDAO();
+        IntegrityDAO cache = createDAO();
         AssertJUnit.assertNotNull(cache);
         
         long startTime = System.currentTimeMillis();
@@ -127,10 +127,10 @@ public class DatabaseStressTests extends ExtendedTestCase {
         System.err.println("Time to find missing checksums: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
     }
     
-    private IntegrityDAO2 createDAO() {
+    private IntegrityDAO createDAO() {
         DatabaseManager dm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        return new DerbyIntegrityDAO2(dm.getConnector(), settings);
+        return new DerbyIntegrityDAO(dm.getConnector(), settings);
     }
 
 }

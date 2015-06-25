@@ -23,14 +23,14 @@ import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class IntegrityDAO2 {
+public abstract class IntegrityDAO {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
     /** The connector to the database.*/
     protected final DBConnector dbConnector;
     protected final Settings settings;
     
-    public IntegrityDAO2(DBConnector dbConnector, Settings settings) {
+    public IntegrityDAO(DBConnector dbConnector, Settings settings) {
     	this.dbConnector = dbConnector;
     	this.settings = settings;
     	initializePillars();
@@ -70,7 +70,7 @@ public abstract class IntegrityDAO2 {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         log.trace("Updating the file ids '" + data + "' for pillar '" + pillarId + "'");
         
-        FileUpdater2 fu = new FileUpdater2(pillarId, dbConnector.getConnection(), collectionId);
+        FileUpdater fu = new FileUpdater(pillarId, dbConnector.getConnection(), collectionId);
         fu.updateFiles(data.getFileIDsDataItems());
     }
     
@@ -79,7 +79,7 @@ public abstract class IntegrityDAO2 {
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         
-        ChecksumUpdater2 cu = new ChecksumUpdater2(pillarId, dbConnector.getConnection(), collectionId);
+        ChecksumUpdater cu = new ChecksumUpdater(pillarId, dbConnector.getConnection(), collectionId);
         cu.updateChecksums(data);
     }
 

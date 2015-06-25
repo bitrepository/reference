@@ -7,20 +7,20 @@ import java.util.List;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.integrityservice.cache.database.IntegrityDAO2;
+import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAOFactory;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class IntegrityDatabase2 implements IntegrityModel {
+public class IntegrityDatabase implements IntegrityModel {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final IntegrityDAO2 store;
+    private final IntegrityDAO store;
     private final Settings settings;
 
-    public IntegrityDatabase2(Settings settings) {
+    public IntegrityDatabase(Settings settings) {
         this.settings = settings;
         this.store = IntegrityDAOFactory.getDAO2Instance(settings);
     }

@@ -15,8 +15,8 @@ import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
-import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO2;
-import org.bitrepository.integrityservice.cache.database.IntegrityDAO2;
+import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO;
+import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityDBStateException;
 import org.bitrepository.integrityservice.cache.database.IntegrityDBTools;
 import org.bitrepository.service.database.DBConnector;
@@ -68,7 +68,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         DatabaseManager dm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         DBConnector dbCon = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        IntegrityDAO2 integrityDAO = new DerbyIntegrityDAO2(dm.getConnector(), settings);
+        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm.getConnector(), settings);
         IntegrityDBTools tool = new IntegrityDBTools(dbCon);
         List<String> collections = integrityDAO.getCollections();
         addStep("Extract initial list of collections", "The list contains the expected collections");
@@ -90,7 +90,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         DatabaseManager dm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         DBConnector dbCon = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        IntegrityDAO2 integrityDAO = new DerbyIntegrityDAO2(dm.getConnector(), settings);
+        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm.getConnector(), settings);
         IntegrityDBTools tool = new IntegrityDBTools(dbCon);
         List<String> collections = integrityDAO.getCollections();
         addStep("Extract initial list of collections.", "The list contains the expected collections.");
@@ -116,7 +116,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         DatabaseManager dm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         DBConnector dbCon = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        IntegrityDAO2 integrityDAO = new DerbyIntegrityDAO2(dm.getConnector(), settings);
+        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm.getConnector(), settings);
         IntegrityDBTools tool = new IntegrityDBTools(dbCon);
         List<String> collections = integrityDAO.getCollections();
         addStep("Extract initial list of collections.", "The list contains the expected collections.");
@@ -195,7 +195,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         assertFalse(integrityDAO.getLatestCollectionStats(EXTRA_COLLECTION, 1L).isEmpty());
     }*/
     
-    private void populateCollection(IntegrityDAO2 dao, String collectionID) {
+    private void populateCollection(IntegrityDAO dao, String collectionID) {
         String file2 = TEST_FILE_ID + "-2";
         String file3 = TEST_FILE_ID + "-3";
         String file4 = TEST_FILE_ID + "-4";

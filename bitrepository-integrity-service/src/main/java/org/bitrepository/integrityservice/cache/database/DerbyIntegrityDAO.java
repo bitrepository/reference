@@ -8,9 +8,9 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 
-public class DerbyIntegrityDAO2 extends IntegrityDAO2 {
+public class DerbyIntegrityDAO extends IntegrityDAO {
 
-    public DerbyIntegrityDAO2(DBConnector dbConnector, Settings settings) {
+    public DerbyIntegrityDAO(DBConnector dbConnector, Settings settings) {
         super(dbConnector, settings);
     }
 

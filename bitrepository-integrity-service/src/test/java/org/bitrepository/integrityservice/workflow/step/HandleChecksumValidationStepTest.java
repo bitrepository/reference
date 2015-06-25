@@ -39,7 +39,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
 import org.bitrepository.integrityservice.cache.FileInfo;
-import org.bitrepository.integrityservice.cache.IntegrityDatabase2;
+import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.reports.BasicIntegrityReporter;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
@@ -300,7 +300,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     }
 
     private IntegrityModel getIntegrityModel() {
-        return new IntegrityDatabase2(settings);
+        return new IntegrityDatabase(settings);
     }
     
     private class TestAuditTrailManager implements AuditTrailManager {

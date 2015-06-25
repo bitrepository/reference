@@ -60,7 +60,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.FileInfo;
-import org.bitrepository.integrityservice.cache.IntegrityDatabase2;
+import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.IntegrityDatabaseCreator;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
@@ -116,7 +116,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
         
         collector = mock(IntegrityInformationCollector.class);
         alerter = mock(IntegrityAlerter.class);
-        model = new IntegrityDatabase2(settings);
+        model = new IntegrityDatabase(settings);
         
         reporter = mock(IntegrityReporter.class);
         
