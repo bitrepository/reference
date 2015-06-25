@@ -35,14 +35,15 @@ CREATE TABLE tableversions (
     version SMALLINT NOT NULL        -- version of table
 );
 
-INSERT INTO tableversions (tablename, version) VALUES ('fileinfo', 3);
+INSERT INTO tableversions (tablename, version) VALUES ('fileinfo', 4);
 INSERT INTO tableversions (tablename, version) VALUES ('files', 2);
-INSERT INTO tableversions (tablename, version) VALUES ('pillar', 2);
-INSERT INTO tableversions (tablename, version) VALUES ('collections' ,1);
-INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 4);
-INSERT INTO tableversions (tablename, version) VALUES ('stats', 1);
-INSERT INTO tableversions (tablename, version) VALUES ('collectionstats', 1);
-INSERT INTO tableversions (tablename, version) VALUES ('pillarstats', 1);
+INSERT INTO tableversions (tablename, version) VALUES ('pillar', 3);
+INSERT INTO tableversions (tablename, version) VALUES ('collections' ,2);
+INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 5);
+INSERT INTO tableversions (tablename, version) VALUES ('stats', 2);
+INSERT INTO tableversions (tablename, version) VALUES ('collectionstats', 2);
+INSERT INTO tableversions (tablename, version) VALUES ('pillarstats', 2);
+INSERT INTO tableversions (tablename, version) VALUES ('collection_progress', 1);
 
 --*************************************************************************--
 -- Name:     collections
@@ -51,39 +52,9 @@ INSERT INTO tableversions (tablename, version) VALUES ('pillarstats', 1);
 -- Expected entry count: Few
 --*************************************************************************--
 CREATE TABLE collections (
-    collection_key SERIAL PRIMARY KEY, 
-                                 -- The key for a given collection.
-    collection_id VARCHAR(255) NOT NULL,
-                                 -- The id for the collection.
-    UNIQUE (collection_id)
+    collectionID VARCHAR(255) PRIMARY KEY  -- The id for the collection.
 );
 
-CREATE INDEX collectionindex ON collections (collection_id);
-
---*************************************************************************--
--- Name:     files
--- Descr.:   Contains the information about the files.
--- Purpose:  Keeps track of the names of the files within the system.
--- Expected entry count: Very, very many.
---*************************************************************************--
-CREATE TABLE files (
-    file_key SERIAL PRIMARY KEY,
-                                 -- The key for a given file.
-    file_id VARCHAR(255) NOT NULL,
-                                 -- The id for the file.
-    creation_date TIMESTAMP,     -- The date for the creation of the file.
-                                 -- Or the time where it was first seen by
-                                 -- the integrity client.
-    collection_key INT NOT NULL, -- The key of the collection that the file belongs to. 
-    FOREIGN KEY (collection_key) REFERENCES collections(collection_key),
-                                 -- Foreign key constraint on collection_key, enforcing the presence of the reffered id
-    UNIQUE (file_id, collection_key)
-                                 -- Enforce that a file can only exist once in a collection
-    
-);
-
-CREATE INDEX fileindex ON files (file_id);
-CREATE INDEX filedateindex ON files (file_id, creation_date);
 
 --*************************************************************************--
 -- Name:     pillar
@@ -92,14 +63,8 @@ CREATE INDEX filedateindex ON files (file_id, creation_date);
 -- Expected entry count: Few
 --*************************************************************************--
 CREATE TABLE pillar (
-    pillar_key SERIAL PRIMARY KEY,
-                                 -- The key for the pillar.
-    pillar_id VARCHAR(100) NOT NULL,
-                                 -- The id of the pillar.
-    UNIQUE (pillar_id)
+    pillarID VARCHAR(100) PRIMARY KEY   -- The id of the pillar.
 );
-
-CREATE INDEX pillarindex ON pillar (pillar_id);
 
 --*************************************************************************--
 -- Name:     fileinfo
@@ -110,30 +75,40 @@ CREATE INDEX pillarindex ON pillar (pillar_id);
 -- Expected entry count: Very, very many.
 --*************************************************************************--
 CREATE TABLE fileinfo (
-    fileinfo_key SERIAL PRIMARY KEY,
-                                 -- The unique id for a specific file on a specific pillar.
-    file_key INT NOT NULL,       -- The key for the file.
-    pillar_key INT NOT NULL,     -- The key for the pillar.
-    checksum VARCHAR(100),       -- The checksum for the given file on the given pillar.
-    file_size BIGINT,            -- The size of the file. 
-    last_file_update TIMESTAMP,  -- The last time a 'GetFileIDs' for the fileinfo has been answered.
-    last_checksum_update TIMESTAMP,
-                                 -- The date for the latest checksum calculation.
-    file_state SMALLINT,         -- The state of the file. 0 For EXISTING, 1 for MISSING, 
-                                 -- 2 for PREVIOUSLY_SEEN, and everything else for UNKNOWN.
-    checksum_state SMALLINT,     -- Checksum integrity state. Either 0 for VALID, 1 for INCONSISTENT,
-                                 -- and everything else for UNKNOWN.
-    FOREIGN KEY (file_key) REFERENCES files(file_key),
-                                 -- Foreign key constraint on file_key, enforcing the presence of the referred id
-    FOREIGN KEY (pillar_key) REFERENCES pillar(pillar_key),
-                                 -- Foreign key constraint on pillar_key, enforcing the presence of the referred id
-    UNIQUE (file_key, pillar_key)
-                                 -- Enforce that a file only can exist once on a pillar
+    fileID VARCHAR(255) NOT NULL,           -- The file ID 
+    collectionID VARCHAR(255) NOT NULL,     -- The collection ID
+    pillarID VARCHAR(100) NOT NULL,         -- The pillar ID
+    filesize BIGINT,                        -- Size of the file
+    checksum VARCHAR(100),                  -- The checksum of the file
+    file_timestamp TIMESTAMP,               -- The last modified time on the pillar
+    checksum_timestamp TIMESTAMP,           -- The calculation timestamp of the checksum
+    last_seen_getfileids TIMESTAMP,         -- The last time the file was seen on a list of fileIDs for the pillar
+    last_seen_getchecksums TIMESTAMP,       -- The last time the files was seen on a list of checksums for the pillar
+
+    PRIMARY KEY (collectionID, pillarID, fileID),
+    FOREIGN KEY (collectionID) REFERENCES collections(collectionID),
+    FOREIGN KEY (pillarID) REFERENCES pillar(pillarID)
 );
 
-CREATE INDEX checksumdateindex ON fileinfo (last_checksum_update);
-CREATE INDEX filestateindex ON fileinfo (file_state);
-CREATE INDEX checksumstateindex ON fileinfo (checksum_state);
+CREATE INDEX checksumdateindex ON fileinfo(checksum_timestamp);
+CREATE INDEX lastseenindex ON fileinfo(last_seen_getfileids);
+
+--*************************************************************************--
+-- Name:     collection_progress
+-- Descr.:   Table to keep track of how far along the collection process is. 
+-- Purpose:  Keeps track of the information on what has been collected for 
+--           a given pillar in a given collection
+-- Expected entry count: few
+--*************************************************************************--
+CREATE TABLE collection_progress (
+    collectionID VARCHAR(255) NOT NULL,
+    pillarID VARCHAR(100) NOT NULL,
+    latest_file_timestamp TIMESTAMP DEFAULT NULL,
+    latest_checksum_timestamp TIMESTAMP DEFAULT NULL,
+
+    FOREIGN KEY (collectionID) REFERENCES collections(collectionID),
+    FOREIGN KEY (pillarID) REFERENCES pillar(pillarID)
+);
 
 --*************************************************************************--
 -- Name:     statistics 
@@ -147,9 +122,9 @@ CREATE TABLE stats (
                                  -- The time the statistics entry were made.
     last_update TIMESTAMP NOT NULL,
                                  -- The last time the statistics were updated
-    collection_key INT NOT NULL, -- The key of the collection that the statistics belongs to 
-    FOREIGN KEY (collection_key) REFERENCES collections(collection_key)
-                                 -- Foreign key constraint on collection_key, enforcing the presence of the referred key
+    collectionID VARCHAR(255) NOT NULL, -- The key of the collection that the statistics belongs to 
+    FOREIGN KEY (collectionID) REFERENCES collections(collectionID)
+                                 -- Foreign key constraint on collectionID, enforcing the presence of the referred key
 );
 
 CREATE INDEX lastupdatetimeindex ON stats (last_update);
@@ -164,9 +139,10 @@ CREATE TABLE collectionstats (
     collectionstat_key SERIAL PRIMARY KEY,
                                  -- The key for the collectionstat.
     stat_key INT NOT NULL,       -- The key for the statistics entity.
-    file_count INT,              -- The number of files that the collection contained when the stats were made
+    file_count BIGINT,           -- The number of files that the collection contained when the stats were made
     file_size BIGINT,            -- The total size of the files in the collection when the stats were made
-    checksum_errors_count INT,   -- The number of checksum errors in the collection when the stats were made
+    checksum_errors_count BIGINT,   -- The number of checksum errors in the collection when the stats were made
+    latest_file_date TIMESTAMP NOT NULL, -- The latest ingested file in the collection.
     UNIQUE (stat_key),           -- Enforce that there can only be one collectionstat for a statistics
     FOREIGN KEY (stat_key) REFERENCES stats(stat_key)
                                  -- Foreign key constraint on stat_key, enforcing the presence of the referred key
@@ -182,15 +158,17 @@ CREATE TABLE pillarstats (
     pillarstat_key SERIAL PRIMARY KEY,
                                  -- The key for the pillarstat.
     stat_key INT NOT NULL,       -- The key for the statistics entity.
-    pillar_key INT NOT NULL,     -- The key of the pillar that the statistics belongs to 
-    file_count INT,              -- The number of files on the pillar when the stats were made
+    pillarID VARCHAR(100) NOT NULL,     -- The key of the pillar that the statistics belongs to 
+    file_count BIGINT,           -- The number of files on the pillar when the stats were made
     file_size BIGINT,            -- The total size of the files on the pillar when the stats were made
-    missing_files_count INT,     -- The number of the missing files on the pillar when the stats were made
-    checksum_errors_count INT,   -- The number of checksum errors on the pillar when the stats were made
-    UNIQUE (stat_key, pillar_key), 
+    missing_files_count BIGINT,     -- The number of the missing files on the pillar when the stats were made
+    checksum_errors_count BIGINT,   -- The number of checksum errors on the pillar when the stats were made
+    missing_checksums_count BIGINT, -- The number of missing checksums on the pillar
+    obsolete_checksums_count BIGINT, --The number of obsolete checksums on the pillar. 
+    UNIQUE (stat_key, pillarID), 
                                  -- Enforce that there can only be one collectionstat for a statistics
     FOREIGN KEY (stat_key) REFERENCES stats(stat_key),
                                  -- Foreign key constraint on stat_key, enforcing the presence of the referred key
-    FOREIGN KEY (pillar_key) REFERENCES pillar(pillar_key)
-                                 -- Foreign key constraint on collection_key, enforcing the presence of the referred key
+    FOREIGN KEY (pillarID) REFERENCES pillar(pillarID)
+                                 -- Foreign key constraint on pillarID, enforcing the presence of the referred key
 );
