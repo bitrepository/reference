@@ -8,8 +8,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.TimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +22,12 @@ import org.slf4j.LoggerFactory;
  *  Implementation detail: Postgres will first feature 'upsert' functionality in version 9.5. 
  *  This means that we currently can't use the functionality, and is forced
  *  to use the two call way. I.e. the conditional update, the conditional insert 
+ *  
+ *  When updating checksums, if a file was not known by the database it is inserted and the 
+ *  timestamp for the file is set to the checksum timestamp. 
+ *  This should be no problem since 1) it will get overwritten the next time the files is reported
+ *  and 2) the pillar calculated a checksum meaning that at that time the pillar must have had the 
+ *  file.  
  */
 public class ChecksumUpdater {
 
@@ -87,8 +95,10 @@ public class ChecksumUpdater {
 
     /**
      * Method to handle the actual update.  
+     * @param data The date to update the database with
      */
     public void updateChecksums(List<ChecksumDataForChecksumSpecTYPE> data) {
+        ArgumentValidator.checkNotNull(data, "data");
         try {
             init();
             log.debug("Initialized checksumUpdater");
@@ -97,7 +107,7 @@ public class ChecksumUpdater {
                 for(ChecksumDataForChecksumSpecTYPE csData : data) {
                     updateChecksum(csData);
                     addFileInfoWithChecksum(csData);
-                    maxDate = getMaxDate(maxDate, 
+                    maxDate = TimeUtils.getMaxDate(maxDate, 
                             CalendarUtils.convertFromXMLGregorianCalendar(csData.getCalculationTimestamp()));                	
                 }
                 updateMaxTime(maxDate);
@@ -118,16 +128,10 @@ public class ChecksumUpdater {
 
         insertFileInfoPS.setString(1, pillar);
         insertFileInfoPS.setString(2, item.getFileID());
-
-        /* This looks a bit suspicious, but we will only be forced to insert the record if arrived 
-         * after the fileIDs were collected. So to prevent our checks from failing, we'll use the 
-         * checksum timestamp as the file timestamp, and overwrite it whenever the file is discovered with
-         * getFileIDs. */
         insertFileInfoPS.setTimestamp(3, calculationTime);
         insertFileInfoPS.setString(4, Base16Utils.decodeBase16(item.getChecksumValue()));
         insertFileInfoPS.setTimestamp(5, calculationTime);
         insertFileInfoPS.setString(6, collectionID);
-
         insertFileInfoPS.setString(7, item.getFileID());
         insertFileInfoPS.setString(8, collectionID);
         insertFileInfoPS.setString(9, pillar);
@@ -176,14 +180,6 @@ public class ChecksumUpdater {
         if(conn != null) {
             conn.setAutoCommit(true);
             conn.close();
-        }
-    }
-
-    private Date getMaxDate(Date currentMax, Date itemDate) {
-        if(itemDate.after(currentMax)) {
-            return itemDate;
-        } else {
-            return currentMax;
         }
     }
 }

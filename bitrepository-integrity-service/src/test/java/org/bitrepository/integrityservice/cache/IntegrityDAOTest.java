@@ -627,9 +627,9 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         cache.updateFileIDs(data2, TEST_PILLAR_2, TEST_COLLECTIONID);
         cache.updateFileIDs(data3, TEST_PILLAR_2, TEST_COLLECTIONID);
         
-        Long pillar1Size = size1 + size2;
-        Long pillar2Size = size2 + size3;
-        Long collectionSize = size1 + size2 + size3;
+        long pillar1Size = size1 + size2;
+        long pillar2Size = size2 + size3;
+        long collectionSize = size1 + size2 + size3;
         
         addStep("Check the reported size of the first pillar in the collection", "The reported size matches the precalculated");
         Assert.assertEquals(cache.getCollectionSizeAtPillar(TEST_COLLECTIONID, TEST_PILLAR_1), pillar1Size);

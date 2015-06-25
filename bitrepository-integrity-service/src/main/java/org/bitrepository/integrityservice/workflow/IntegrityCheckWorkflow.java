@@ -88,7 +88,7 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
         
         super.start();
         try {
-            StatisticsCollector statisticsCollector = new StatisticsCollector(context.getSettings(), collectionID);
+            StatisticsCollector statisticsCollector = new StatisticsCollector(collectionID);
             
             UpdateFileIDsStep updateFileIDsStep = getUpdateFileIDsStep();
             performStep(updateFileIDsStep);

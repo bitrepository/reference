@@ -77,13 +77,6 @@ public interface IntegrityReporter {
     
     /**
      * Report that a file has been deleted from the collection. Note this is not considered a integrity issue.
-     * @param fileID The ID of the file that has been removed 
-     * @throws IOException if writing fails
-     */
-    void reportDeletedFile(String fileID) throws IOException;
-    
-    /**
-     * Report that a file has been deleted from the collection. Note this is not considered a integrity issue.
      * @param pillarID The  ID of the pillar on which the file was removed
      * @param fileID The ID of the file that has been removed 
      * @throws IOException if writing fails

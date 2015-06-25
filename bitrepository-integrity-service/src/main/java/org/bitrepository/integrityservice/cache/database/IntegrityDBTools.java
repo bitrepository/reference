@@ -38,31 +38,7 @@ public class IntegrityDBTools extends IntegrityDAOUtils {
         if(!existingCollections.contains(collectionID)) {
             throw new IntegrityDBStateException("Collection '" + collectionID +"' is not present in collection, can't remove.");
         }
-        
-        /*Long collectionKey = retrieveCollectionKey(collectionID);
-        
-        String purgeFileInfoForCollectionSql = "DELETE FROM " + FILE_INFO_TABLE
-                + " WHERE " + FI_FILE_KEY + " = ANY( SELECT " + FILES_KEY + " FROM " + FILES_TABLE 
-                    + " WHERE " + COLLECTION_KEY + " = ? )";
-        DatabaseUtils.executeStatement(dbConnector, purgeFileInfoForCollectionSql, collectionKey);
-                
-        String purgeFilesForCollectionSql = "DELETE FROM files WHERE collection_key = ?";
-        DatabaseUtils.executeStatement(dbConnector, purgeFilesForCollectionSql, collectionKey);
-        
-        String purgeCollectionStatsSql = "DELETE FROM " + COLLECTION_STATS_TABLE
-                + " WHERE " + STATS_KEY + " = ANY(SELECT " + STATS_KEY + " FROM " + STATS_TABLE 
-                    + " WHERE " + COLLECTION_KEY + " = ?)";
-        DatabaseUtils.executeStatement(dbConnector, purgeCollectionStatsSql, collectionKey);
-                
-        String purgePillarStatsSql = "DELETE FROM " + PILLAR_STATS_TABLE
-                + " WHERE " + STATS_KEY + " = ANY(SELECT " + STATS_KEY + " FROM " + STATS_TABLE 
-                + " WHERE " + COLLECTION_KEY + " = ?)";
-        DatabaseUtils.executeStatement(dbConnector, purgePillarStatsSql, collectionKey);
 
-        String purgeStatsSql = "DELETE FROM " + STATS_TABLE + " WHERE " + COLLECTION_KEY + " = ?";
-        DatabaseUtils.executeStatement(dbConnector, purgeStatsSql, collectionKey);
-        */
-        //String removeCollectionIDSql = "DELETE FROM " + COLLECTIONS_TABLE + " WHERE " + COLLECTION_ID + " = ?";
         String removeCollectionSql = "DELETE FROM collections WHERE collectionID = ? CASCADE";
         DatabaseUtils.executeStatement(dbConnector, removeCollectionSql, collectionID);;
         

@@ -144,4 +144,12 @@ public final class TimeUtils {
     public static String shortDate(XMLGregorianCalendar cal) {
         return formatter.format(cal.toGregorianCalendar().getTime());
     }
+    
+    public static Date getMaxDate(Date currentMax, Date itemDate) {
+        if(itemDate.after(currentMax)) {
+            return itemDate;
+        } else {
+            return currentMax;
+        }
+    }
 }

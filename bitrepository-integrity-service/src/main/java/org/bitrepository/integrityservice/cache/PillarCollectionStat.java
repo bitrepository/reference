@@ -23,6 +23,9 @@ package org.bitrepository.integrityservice.cache;
 
 import java.util.Date;
 
+/**
+ * Statistics class for holding the statistics data going in and out of the database 
+ */
 public class PillarCollectionStat {
 
     /** The ID of the pillar */

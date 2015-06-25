@@ -10,6 +10,7 @@ import java.util.Date;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.TimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,15 +38,6 @@ public class FileUpdater {
     			+ " WHERE fileID = ?"
     			+ " AND collectionID = ?"
     			+ " AND pillarID = ?))";
-    
-    // TODO fiks ovenstående til følgende form:
-    /*
-     * INSERT INTO fileinfo ( collectionID, pillarID, fileID, filesize, file_timestamp, last_seen_getfileids)
- (SELECT collectionID, 'checksumpillar', 'foo', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP FROM collections WHERE NOT EXISTS (SELECT * FROM fileinfo WHERE fileID = 'foo' AND collectionID = 'thecollection' AND pillarID = 'checksumpillar'));
-
-     * 
-     * */
-    
     
     private final String updateFileInfoSql = "UPDATE fileinfo "
     		+ "	SET filesize = ?,"
@@ -104,7 +96,7 @@ public class FileUpdater {
                 for(FileIDsDataItem item : dataItems.getFileIDsDataItem()) {
                 	updateFileInfo(item);
                 	addFileInfo(item);
-                	maxDate = getMaxDate(maxDate, 
+                	maxDate = TimeUtils.getMaxDate(maxDate, 
                 	        CalendarUtils.convertFromXMLGregorianCalendar(item.getLastModificationTime()));
                 }
                 updateMaxTime(maxDate);
@@ -184,12 +176,5 @@ public class FileUpdater {
             conn.close();
         }
     }
-    
-    private Date getMaxDate(Date currentMax, Date itemDate) {
-        if(itemDate.after(currentMax)) {
-            return itemDate;
-        } else {
-            return currentMax;
-        }
-    }
+
 }

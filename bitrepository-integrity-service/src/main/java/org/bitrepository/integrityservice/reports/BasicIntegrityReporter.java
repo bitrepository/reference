@@ -140,12 +140,6 @@ public class BasicIntegrityReporter implements IntegrityReporter {
     public String getCollectionID() {
         return collectionID;
     }
-
-    @Override
-    public void reportDeletedFile(String fileID) throws IOException {
-        deletedFilesCount++;
-        writer.writeDeletedFile(fileID);
-    }
     
     @Override
     public void reportDeletedFile(String pillarID, String fileID) throws IOException {

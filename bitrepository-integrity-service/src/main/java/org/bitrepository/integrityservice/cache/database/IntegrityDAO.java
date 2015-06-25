@@ -274,7 +274,7 @@ public abstract class IntegrityDAO {
         sc.createStatistics(statisticsCollector);
     }
     
-    public Long getCollectionSize(String collectionId) {
+    public long getCollectionSize(String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         
         String getCollectionSizeSql = "SELECT SUM(filesize) FROM "
@@ -284,7 +284,7 @@ public abstract class IntegrityDAO {
         return (size == null ? 0 : size);
     }
     
-    public Long getCollectionSizeAtPillar(String collectionId, String pillarId) {
+    public long getCollectionSizeAtPillar(String collectionId, String pillarId) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
 

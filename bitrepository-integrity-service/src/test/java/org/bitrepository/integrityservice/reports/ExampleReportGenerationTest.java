@@ -37,7 +37,8 @@ public class ExampleReportGenerationTest extends ExtendedTestCase {
         reporter.reportChecksumIssue(CHECKSUM_ISSUE1, PILLAR2);
         reporter.reportChecksumIssue(CHECKSUM_ISSUE2, PILLAR2);
         
-        reporter.reportDeletedFile(DELETED_FILE);
+        reporter.reportDeletedFile(DELETED_FILE, PILLAR1);
+        reporter.reportDeletedFile(DELETED_FILE, PILLAR2);
         
         reporter.reportMissingFile(MISSING_FILE1, PILLAR1);
         reporter.reportMissingFile(MISSING_FILE2, PILLAR2);

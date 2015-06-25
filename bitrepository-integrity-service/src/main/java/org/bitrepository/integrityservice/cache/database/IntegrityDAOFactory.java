@@ -25,7 +25,6 @@ public class IntegrityDAOFactory {
             throw new UnsupportedDatabaseTypeException("The database for driver: '" + dbDriver
                     + "' is not supported, use '" + derbyDriver + "' or '" + postgressDriver + "'");
         }
-        
-        
     }
+    
 }

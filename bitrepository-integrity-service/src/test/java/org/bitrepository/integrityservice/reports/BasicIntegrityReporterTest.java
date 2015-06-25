@@ -40,7 +40,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
         addStep("Report a delete file for a new Reporter", "hasIntegrityIssues() should return false and the summary " +
                 "report should inform that no issues where found.");
         BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues", "test", new File("target/"));
-        reporter.reportDeletedFile("TestFile");
+        reporter.reportDeletedFile("TestFile", "Pillar1");
         assertFalse("Reporter interpreted delete file as a integrity issue", reporter.hasIntegrityIssues());
         String expectedReport = "No integrity issues found";
         assertEquals("Reporter didn't create clean report", expectedReport, reporter.generateSummaryOfReport());

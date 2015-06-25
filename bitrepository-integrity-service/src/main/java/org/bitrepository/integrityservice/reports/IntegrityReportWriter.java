@@ -23,7 +23,6 @@ public class IntegrityReportWriter {
     private final IntegrityReportPartWriter obsoleteChecksumsWriter;
     private final IntegrityReportPartWriter deletedFilesWriter2;
     
-    private BufferedWriter deletedFilesWriter;
     private BufferedWriter reportFileWriter;
     private final File reportDir;
     
@@ -43,18 +42,6 @@ public class IntegrityReportWriter {
         File reportFile = new File(reportDir, IntegrityReportConstants.REPORT_FILE);
         log.debug("getReportFilePath: Report file located at: " + reportFile.getAbsolutePath());
         return reportFile.getAbsolutePath();
-    }
-        
-    /**
-     * Method to handle writing of a deleted file entry to on-disk storage 
-     * @param fileID The ID of the file to be added to the report as deleted from system.
-     */
-    public void writeDeletedFile(String fileID) throws IOException {
-        if(deletedFilesWriter == null) {
-            File deletedFilesFile = ReportWriterUtils.makeEmptyFile(reportDir, IntegrityReportConstants.DELETED_FILE);
-            deletedFilesWriter = new BufferedWriter(new FileWriter(deletedFilesFile, true));
-        }
-        ReportWriterUtils.addLine(deletedFilesWriter, fileID);
     }
     
     public void writeDeletedFile(String pillarID, String fileID) throws IOException {
@@ -113,12 +100,6 @@ public class IntegrityReportWriter {
         reportFileWriter.append(reportHeader);
         reportFileWriter.newLine();
         
-        /*writeSectionHeader(reportFileWriter, "Deleted files");
-        if(deletedFilesWriter != null) {
-            writeSectionPart(reportFileWriter, new File(reportDir, DELETED_FILE));
-        } else {
-            writeNoIssueHeader(reportFileWriter, "No deleted files detected");
-        }*/
         writeReportSection(reportFileWriter, deletedFilesWriter2.getSectionFiles(), "Deleted files",
                 "No deleted files detected");        
         writeReportSection(reportFileWriter, missingFilesWriter.getSectionFiles(), "Missing files", 
@@ -138,9 +119,7 @@ public class IntegrityReportWriter {
      * Flushes all open files 
      */
     private void flushAll() throws IOException {
-        if(deletedFilesWriter != null) {
-            deletedFilesWriter.flush();
-        }
+        deletedFilesWriter2.flushAll();
         missingChecksumsWriter.flushAll();
         checksumIssuesWriter.flushAll();
         missingFilesWriter.flushAll();
@@ -156,10 +135,7 @@ public class IntegrityReportWriter {
             reportFileWriter.close();
         }
         
-        if(deletedFilesWriter != null) {
-            deletedFilesWriter.close();
-        }
-        
+        deletedFilesWriter2.closeAll();
         missingChecksumsWriter.closeAll();
         checksumIssuesWriter.closeAll();
         missingFilesWriter.closeAll();
