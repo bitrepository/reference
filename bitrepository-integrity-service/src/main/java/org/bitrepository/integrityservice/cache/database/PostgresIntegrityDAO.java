@@ -7,6 +7,9 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 
+/**
+ * Class handling the specifics of IntegrityDAO when the database is based on Postgresql 
+ */
 public class PostgresIntegrityDAO extends IntegrityDAO {
 
     public PostgresIntegrityDAO(DBConnector dbConnector, Settings settings) {

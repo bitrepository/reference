@@ -8,6 +8,9 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 
+/**
+ * Class handling the specifics of IntegrityDAO when the database is based on Derby 
+ */
 public class DerbyIntegrityDAO extends IntegrityDAO {
 
     public DerbyIntegrityDAO(DBConnector dbConnector, Settings settings) {

@@ -54,16 +54,29 @@ public abstract class IntegrityDAO {
      */
     protected abstract void initializeCollections();
     
+    /**
+     * Get all known collectionIDs from the database 
+     */
     public List<String> getCollections() {
         String sql = "SELECT collectionID FROM collections";
         return DatabaseUtils.selectStringList(dbConnector, sql, new Object[0]);
     }
     
+    /**
+     * Get all known pillarIDs from the database 
+     */
     public List<String> getAllPillars() {
         String sql = "SELECT pillarID FROM pillar";
         return DatabaseUtils.selectStringList(dbConnector, sql, new Object[0]);
     }
     
+    /**
+     * Update the database with a batch of fileIDs data from a pillar for a given collection. 
+     * If the fileIDs is not already present in the database a new record will be created
+     * @param data The FileIDsData to update the database with
+     * @param pillarId The ID of the pillar to update the with the FileIDsData
+     * @param collectionId The ID of the collection to update with the FileIDsData 
+     */
     public void updateFileIDs(FileIDsData data, String pillarId, String collectionId) {
         ArgumentValidator.checkNotNull(data, "FileIDsData data");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
@@ -74,6 +87,12 @@ public abstract class IntegrityDAO {
         fu.updateFiles(data.getFileIDsDataItems());
     }
     
+    /**
+     * Update the database with a batch of checksum data from a pillar for a given collection. 
+     * @param data The list of ChecksumDataForChecksumSpecTYPE to update the database with
+     * @param pillarId The ID of the pillar to update with the data
+     * @param collectionId The ID of the collection to update with the data
+     */
     public void updateChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarId, String collectionId) {
     	ArgumentValidator.checkNotNull(data, "List<ChecksumDataForChecksumSpecTYPE> data");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
@@ -83,6 +102,12 @@ public abstract class IntegrityDAO {
         cu.updateChecksums(data);
     }
 
+    /**
+     * Get the date of latest file known on the given pillar in the given collection.
+     * @param collectionId The ID of the collection 
+     * @param pillarId  The ID of the pillar
+     * @return The date for the latest file in the collection on the pillar
+     */
     public Date getLatestFileDate(String collectionId, String pillarId) {
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
@@ -94,6 +119,11 @@ public abstract class IntegrityDAO {
         return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionId, pillarId);
     }
     
+    /**
+     * Get the date of the latest file in the given collection
+     * @param collectionId The ID of the collection
+     * @return The date of the latest file in the collection. 
+     */
     public Date getLatestFileDateInCollection(String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         
@@ -103,6 +133,12 @@ public abstract class IntegrityDAO {
         return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionId);
     }
     
+    /**
+     * Get the date of latest known checksum on the given pillar in the given collection.
+     * @param collectionId The ID of the collection 
+     * @param pillarId  The ID of the pillar
+     * @return The date for the latest checksum in the collection on the pillar
+     */
     public Date getLatestChecksumDate(String collectionId, String pillarId) {
     	ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
@@ -114,6 +150,10 @@ public abstract class IntegrityDAO {
         return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionId, pillarId);
     }
     
+    /**
+     * Reset the file collection progress for a given collection
+     * @param collectionId The ID of the collection to reset file collection progress for 
+     */
     public void resetFileCollectionProgress(String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         String resetSql = "UPDATE collection_progress"
@@ -123,6 +163,10 @@ public abstract class IntegrityDAO {
         DatabaseUtils.executeStatement(dbConnector, resetSql, collectionId);
     }
     
+    /**
+     * Reset the checksum collection progress for a given collection
+     * @param collectionId The ID of the collection to reset checksum collection progress for 
+     */
     public void resetChecksumCollectionProgress(String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         String resetSql = "UPDATE collection_progress"
@@ -132,6 +176,12 @@ public abstract class IntegrityDAO {
         DatabaseUtils.executeStatement(dbConnector, resetSql, collectionId);
     }
     
+    /**
+     * Get fileIDs for those files which have outdated checksums
+     * @param collectionId The ID of the collection to get fileIDs from
+     * @param pillarId The ID of the pillar to get fileIDs from
+     * @param maxDate The date prior to which checksums are considered outdated
+     */
     public IntegrityIssueIterator getFilesWithOutdatedChecksums(String collectionId, String pillarId, Date maxDate) {
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
@@ -145,6 +195,14 @@ public abstract class IntegrityDAO {
         return makeIntegrityIssueIterator(retrieveSql, collectionId, pillarId, maxDate);
     }
     
+    /**
+     * Get the fileIDs of the files on a given pillar in a given collection which is missing their checksum. 
+     * A checksum is considered missing if it's entry in the database is either NULL or the checksum have
+     * not been seen after a certain cutoff date. 
+     * @param collectionId The ID of the collection to look for missing checksums
+     * @param pillarId The ID of the pillar on which to look for missing checksums
+     * @param cutoffDate The date after which the checksum should have been seen to not be considered missing
+     */
     public IntegrityIssueIterator getFilesWithMissingChecksums(String collectionId, String pillarId, Date cutoffDate) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
@@ -158,6 +216,12 @@ public abstract class IntegrityDAO {
         return makeIntegrityIssueIterator(retrieveSql, collectionId, pillarId, cutoffDate);
     }
     
+    /**
+     * Get the fileIDs of files that are no longer on the given pillar in the given collection
+     * @param collectionId The ID of the collection to look for orphan files
+     * @param pillarId The ID of the pillar to look for orphan files
+     * @param cutoffDate The date that a file should have been seen to not be considered orphan
+     */
     public IntegrityIssueIterator getOrphanFilesOnPillar(String collectionId, String pillarId, Date cutoffDate) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
@@ -171,6 +235,12 @@ public abstract class IntegrityDAO {
         return makeIntegrityIssueIterator(findOrphansSql, collectionId, pillarId, cutoffDate);
     }
     
+    /**
+     * Remove the file entry for a given pillar in a given collection from the database
+     * @param collectionId The ID of the collection
+     * @param pillarId The ID of the pillar
+     * @param fileId The ID of the file
+     */
     public void removeFile(String collectionId, String pillarId, String fileId) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
@@ -184,8 +254,17 @@ public abstract class IntegrityDAO {
         DatabaseUtils.executeStatement(dbConnector, removeSql, collectionId, pillarId, fileId);
     }
     
+    /**
+     * Method that should deliver the database specific SQL for finding missing files at a pillar 
+     */
     protected abstract String getFindMissingFilesAtPillarSql();
     
+    /**
+     * Method to find files in a given collection missing on a given pillar
+     * @param collectionId The ID of the collection
+     * @param pillarId The ID of the pillar
+     * @return Iterator with the fileIDs that could not be found on the pillar
+     */
     public IntegrityIssueIterator findMissingFilesAtPillar(String collectionId, String pillarId, 
             Long firstIndex, Long maxResults) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
@@ -203,6 +282,11 @@ public abstract class IntegrityDAO {
                 first, maxResults);
     }
     
+    /**
+     * Method to find the files in a collection where the pillars does not agree upon the checksum
+     * @param collectionId The ID of the collection
+     * @return Iterator with the fileIds that have checksum inconsistencies 
+     */
     public IntegrityIssueIterator findFilesWithChecksumInconsistincies(String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
                 
@@ -215,8 +299,17 @@ public abstract class IntegrityDAO {
         return makeIntegrityIssueIterator(findInconsistentChecksumsSql, collectionId);
     }
     
+    /**
+     * Method that should deliver the database specific SQL for all files at a pillar
+     */
     protected abstract String getAllFileIDsSql();
     
+    /**
+     * Get the files present on a pillar in a given collection
+     * @param collectionId The ID of the collection
+     * @param pillarId The ID of the pillar
+     * @return The iterator with fileIDs present on the pillar in the given collection.
+     */
     public IntegrityIssueIterator getAllFileIDsOnPillar(String collectionId, String pillarId, 
             Long firstIndex, Long maxResults) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
@@ -232,6 +325,12 @@ public abstract class IntegrityDAO {
         
     }
     
+    /**
+     * Get the list of FileInfo's for a given file in a given collection
+     * @param fileId The ID of the file
+     * @param collectionId The ID of the collection
+     * @return The list of FileInfo objects 
+     */
     public List<FileInfo> getFileInfosForFile(String fileId, String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
@@ -268,12 +367,23 @@ public abstract class IntegrityDAO {
         return res;
     }
     
+    /**
+     * Method to create a new set of statistics entries.
+     * @param collectionId The ID of the collection
+     * @param statisticsCollector The statisticsCollector object containing the data to create
+     * the statistics on
+     */
     public void createStatistics(String collectionId, StatisticsCollector statisticsCollector) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         StatisticsCreator sc = new StatisticsCreator(dbConnector.getConnection(), collectionId);
         sc.createStatistics(statisticsCollector);
     }
     
+    /**
+     * Get the size of a given collection
+     * @param collectionId The ID of the collection
+     * @return The size of the collection 
+     */
     public long getCollectionSize(String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         
@@ -284,6 +394,12 @@ public abstract class IntegrityDAO {
         return (size == null ? 0 : size);
     }
     
+    /**
+     * Get the size of a collection on a given pillar
+     * @param collectionId The ID of the collection
+     * @param pillarId The ID of the pillar
+     * @return The size of the collection on the pillar 
+     */
     public long getCollectionSizeAtPillar(String collectionId, String pillarId) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
@@ -297,6 +413,11 @@ public abstract class IntegrityDAO {
         return (size == null ? 0 : size);
     }
     
+    /**
+     * Get the number of files in a given collection
+     * @param collectionId The ID of the collection
+     * @return The number of files in the collection 
+     */
     public Long getNumberOfFilesInCollection(String collectionId) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         
@@ -306,6 +427,12 @@ public abstract class IntegrityDAO {
         return DatabaseUtils.selectFirstLongValue(dbConnector, getNumberOfFilesSql, collectionId);
     }
     
+    /**
+     * Get the number of files in a given collection
+     * @param collectionId The ID of the collection
+     * @param pillarId The ID of the pillar
+     * @return The number of files in the collection at the given pillar 
+     */
     public Long getNumberOfFilesInCollectionAtPillar(String collectionId, String pillarId) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
@@ -318,6 +445,11 @@ public abstract class IntegrityDAO {
 
     }
     
+    /**
+     * Get the latest pillar statistics for a given collection
+     * @param collectionID The ID of the collection
+     * @return A list of the latest PillarCollectionStat for the given collection 
+     */
     public List<PillarCollectionStat> getLatestPillarStats(String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         List<PillarCollectionStat> stats = new ArrayList<>();
@@ -357,8 +489,17 @@ public abstract class IntegrityDAO {
         return stats;
     }
     
+    /**
+     * Method that should deliver the database specific SQL for getting the latest N collection statistics
+     */
     protected abstract String getLatestCollectionStatsSql();
     
+    /**
+     *  Method to get the latest N collection statistics for a given collection
+     *  @param collectionID The ID of the collection to get statistics for
+     *  @param count The maximum number of statistics (N)
+     *  @return The list of CollectionStat's
+     */
     public List<CollectionStat> getLatestCollectionStats(String collectionID, int count) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         List<CollectionStat> stats = new ArrayList<>();

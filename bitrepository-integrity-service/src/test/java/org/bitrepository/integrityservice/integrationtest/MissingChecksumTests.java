@@ -137,7 +137,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
             }
         }).when(reporter).getCollectionID();
         
-        StatisticsCollector cs = new StatisticsCollector(settings, TEST_COLLECTION);
+        StatisticsCollector cs = new StatisticsCollector(TEST_COLLECTION);
         HandleMissingChecksumsStep missingChecksumStep = new HandleMissingChecksumsStep(model, reporter, cs, new Date(0)); 
         missingChecksumStep.performStep();
         for(String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTION)) {
