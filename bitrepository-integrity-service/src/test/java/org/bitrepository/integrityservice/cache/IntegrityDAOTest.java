@@ -38,11 +38,7 @@ import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
-import org.bitrepository.integrityservice.cache.database.ChecksumState;
-import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO2;
-import org.bitrepository.integrityservice.cache.database.FileState;
-import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO2;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.service.database.DatabaseManager;
@@ -353,7 +349,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     public void testMissingChecksums() throws Exception {
         addDescription("Testing the checksum validation, when only one pillar has a checksum for a file.");
         IntegrityDAO2 cache = createDAO();
-        
+
+        Date testStart = new Date();
         addStep("Update the database with 1 file, missing its checksum on one pillar.", 
                 "Ingesting the data into the database");
         cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_1, TEST_COLLECTIONID);
@@ -366,12 +363,55 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertEquals(filesWithChecksumError, Arrays.asList());
         
         List<String> fileWithMissingChecksumPillar1 
-            = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_1));
+            = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_1, testStart));
         Assert.assertEquals(fileWithMissingChecksumPillar1, Arrays.asList());
         List<String> fileWithMissingChecksumPillar2 
-            = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_2));
+            = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_2, testStart));
         Assert.assertEquals(fileWithMissingChecksumPillar2, Arrays.asList(TEST_FILE_ID));
     }
+    
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testMissingChecksumsChecksumNotUpdated() throws Exception {
+        addDescription("Testing the checksum validation, when only one pillar has a checksum for a file.");
+        IntegrityDAO2 cache = createDAO();
+
+        Date testStart = new Date();
+        addStep("Update the database with 1 file, no missing checksums.", 
+                "Ingesting the data into the database");
+        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateChecksums(getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM), TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateChecksums(getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM), TEST_PILLAR_2, TEST_COLLECTIONID);
+        
+        addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
+        List<String> filesWithChecksumError 
+            = getIssuesFromIterator(cache.findFilesWithChecksumInconsistincies(TEST_COLLECTIONID));      
+        Assert.assertEquals(filesWithChecksumError, Arrays.asList());
+        
+        List<String> fileWithMissingChecksumPillar1 
+            = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_1, testStart));
+        Assert.assertEquals(fileWithMissingChecksumPillar1, Arrays.asList());
+        List<String> fileWithMissingChecksumPillar2 
+            = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_2, testStart));
+        Assert.assertEquals(fileWithMissingChecksumPillar2, Arrays.asList());
+        
+        addStep("Updating the checksum for one pillar, and checking that the other pillars checksum is now missing",
+                "The second pillar is reported to be missing the checksum for the file");
+        Date secondUpdate = new Date();
+        Thread.sleep(1000);
+        cache.updateChecksums(getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM), TEST_PILLAR_1, TEST_COLLECTIONID);
+        addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
+        filesWithChecksumError = getIssuesFromIterator(cache.findFilesWithChecksumInconsistincies(TEST_COLLECTIONID));      
+        Assert.assertEquals(filesWithChecksumError, Arrays.asList());
+        
+        fileWithMissingChecksumPillar1 
+            = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_1, secondUpdate));
+        Assert.assertEquals(fileWithMissingChecksumPillar1, Arrays.asList());
+        fileWithMissingChecksumPillar2 
+            = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_2, secondUpdate));
+        Assert.assertEquals(fileWithMissingChecksumPillar2, Arrays.asList(TEST_FILE_ID));
+    }
+    
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void testOutdatedChecksums() throws Exception {

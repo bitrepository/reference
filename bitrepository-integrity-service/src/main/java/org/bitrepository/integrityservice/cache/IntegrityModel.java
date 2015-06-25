@@ -62,13 +62,6 @@ public interface IntegrityModel {
     Collection<FileInfo> getFileInfos(String fileId, String collectionId);
     
     /**
-     * Retrieves all the file ids in the collection.
-     * @param collectiondId The ID of the collection from which to get all fileIDs
-     * @return The collection of file ids.
-     */
-    Collection<String> getAllFileIDs(String collectionId);
-    
-    /**
      * Reset the status of fileID collection
      * @param collectionId The collection to reset the fileID collection status of
      */
@@ -106,13 +99,6 @@ public interface IntegrityModel {
     IntegrityIssueIterator getFilesOnPillar(String pillarId, long firstIndex, long maxResults, String collectionId);
     
     /**
-     * @param pillarId The pillar.
-     * @param collectionId The collection to look for missing files in
-     * @return Retrieves the number of files in the state 'MISSING' at a given pillar.
-     */
-    long getNumberOfMissingFiles(String pillarId, String collectionId);
-    
-    /**
      * An IntegrityIssueIterator for missing files for a given pillar, restricted by min and max ids.
      * @param pillarId The id of the pillar.
      * @param firstIndex The first index to get results from.
@@ -124,55 +110,6 @@ public interface IntegrityModel {
             String collectionId);
     
     /**
-     * @param pillarId The pillar.
-     * @param collectionId The ID of the collection to look for checksum errors in
-     * @return The number of files with checksum state 'ERROR' for the given pillar.
-     */
-    long getNumberOfChecksumErrors(String pillarId, String collectionId);
-    
-    
-    /**
-     * A list of files with checksum error for a given pillar, restricted by min and max ids.
-     * @param pillarId The id of the pillar.
-     * @param firstIndex The first index to get results from.
-     * @param maxResults The maximum number of results.
-     * @param collectionId The ID of the collection to get checksum errors from
-     * @return An iterator for the ids of the files with checksum errors for the pillar, between min and max.
-     */
-    IntegrityIssueIterator getFilesWithChecksumErrorsAtPillar(String pillarId, long firstIndex, long maxResults, String collectionId);
-
-    /**
-     * Sets the file to be missing at the given pillars.
-     * @param fileId The id of the file, which is missing at some pillars.
-     * @param pillarIds The ids of the pillars, where the file is missing.
-     * @param collectionId The ID of the collection where the file belongs
-     */
-    void setFileMissing(String fileId, Collection<String> pillarIds, String collectionId);
-    
-    /**
-     * Sets the checksum state of the file to be erroneous at the given pillars.
-     * @param fileId The id of the file, which has erroneous checksum at some pillars.
-     * @param pillarIds The ids of the pillars, where the file has a erroneous checksum.
-     * @param collectionId The ID of the collection where the file belongs
-     */
-    void setChecksumError(String fileId, Collection<String> pillarIds, String collectionId);
-    
-    /**
-     * Sets the checksum state of the file to be valid at the given pillars.
-     * @param fileId The id of the file, which has valid checksum at some pillars.
-     * @param pillarIds The ids of the pillars, where the file has a valid checksum.
-     * @param collectionId The ID of the collection that the file belongs to
-     */
-    void setChecksumAgreement(String fileId, Collection<String> pillarIds, String collectionId);
-    
-    /**
-     * Removes a given file id from the cache.
-     * @param fileId The id of the file to be removed from cache.
-     * @param collectionId The id of the collection the file belongs to.
-     */
-    void deleteFileIdEntry(String fileId, String collectionId);
-    
-    /**
      * Removes the record of the given fileId for the given pillar
      * @param collectionId The id of the collection the file belongs to.
      * @param pillarId The id of the pillar that the record is about
@@ -181,25 +118,15 @@ public interface IntegrityModel {
     void deleteFileIdEntry(String collectionId, String pillarId, String fileId);
     
     /**
-     * Locates the files which exists but are missing their checksum at any pillar.
-     * @param collectionId The collection in which to look for missing checksums
-     * @return The IntegrityIssueIterator of file ids for the files which exists but are missing their checksum at any pillar.
-     */
-    IntegrityIssueIterator findFilesWithMissingChecksum(String collectionId);
-
-    /**
      * Locates the files which exists but are missing their checksum on a given pillar.
+     * Checksums are considered missing if they are not present (NULL in the database), or the checksum
+     * entry have not been updated since a given date. 
      * @param collectionId The collection in which to look for missing checksums
      * @param pillarId The pillar on which to look for missing checksums
+     * @param cutoffDate The latest date that the checksums should have been seen to not be considered missing
      * @return The IntegrityIssueIterator of file ids for the files which exists but are missing their checksum at any pillar.
      */
-    IntegrityIssueIterator findFilesWithMissingChecksum(String collectionId, String pillarId);
-    
-    /**
-     * Moves all files with unknown checksum state to missing.
-     * @param collectionId The collection set unknown checksum to missing checksum.
-     */
-    void setFilesWithUnknownChecksumToMissing(String collectionId);
+    IntegrityIssueIterator findFilesWithMissingChecksum(String collectionId, String pillarId, Date cutoffDate);
     
     /**
      * Locates the id of all the files which are older than a given date.
@@ -211,20 +138,6 @@ public interface IntegrityModel {
     IntegrityIssueIterator findChecksumsOlderThan(Date date, String pillarID, String collectionId);
     
     /**
-     * Locates the files which are missing at any pillar.
-     * @param collectionId The ID of the collection in which to search for missing files
-     * @return The IntegrityIssueIterator of file ids for the files which are missing at any pillar.
-     */
-    IntegrityIssueIterator findMissingFiles(String collectionId);
-    
-    /**
-     * Finds orphan files within a collection, i.e. files that no longer exists on any pillar
-     * @param collectionId, The ID of the collection in which to find orphan files.
-     * @return The list of orphan files   
-     */
-    IntegrityIssueIterator findOrphanFiles(String collectionID);
-    
-    /**
      * Finds orphan files on a pillar in a given collection, i.e. files that no longer exists on the pillar
      * @param collectionId, The ID of the collection in which to find orphan files.
      * @param pillarId The ID of the pillar on which to look for orphan files.
@@ -234,79 +147,12 @@ public interface IntegrityModel {
     IntegrityIssueIterator findOrphanFiles(String collectionID, String pillarId, Date cutoffDate);
     
     /**
-     * Checks whether a given file is missing and returns the list of pillars, where it is missing.
-     * @param fileId The id of the file to check whether it is missing.
-     * @param collectiondId The ID of the collection where the file belongs
-     * @return The list of pillars where it is missing (empty list, if not missing at any pillar).
-     */
-    List<String> getPillarsMissingFile(String fileId, String collectionId);
-    
-    /**
      * Retrieves the list of file ids for the files, where the pillars does not agree about the checksums.
      * @param The ID of the collection in which to get files from.
      * @return The IntegrityIssueIterator of file ids for the files with inconsistent checksums.
      */
     IntegrityIssueIterator getFilesWithInconsistentChecksums(String collectionId);
-    
-    /**
-     * Set the checksum state of a file to 'valid' its entries if the different checksums are unanimous.
-     * @param collectionId The ID of the collection in which to change the state
-     */
-    void setFilesWithConsistentChecksumToValid(String collectionId);
-    
-    /**
-     * Set the file state of all files in state 'Existing' to 'Previously_Seen'.
-     * @param collectionId The ID of the collection to work on.
-     */
-    void setExistingFilesToPreviouslySeenFileState(String collectionId);
-
-    /**
-     * Set the checksum state of all files which are not missing their checksum to state 'Previously_Seen'.
-     * @param collectionId The ID of the collection to work on.
-     */
-    void setExistingChecksumsToPreviouslySeen(String collectionId);
-
-    /**
-     * Set all files with checksum state 'Previously_Seen' to state 'Missing'.
-     * @param collectionId The ID of the collection to work on.
-     */
-    void setPreviouslySeenChecksumsToMissing(String collectionId);
-
-    /**
-     * Set the file state of all unknown files to 'missing' if the file-date is newer than the grace period.
-     * @param collectionId The ID of the collection to work on
-     */
-    void setOldUnknownFilesToMissing(String collectionId);
-    
-    /**
-     * Set the file state of all 'PreviouslySeen' files to 'missing'.
-     * @param collectionId
-     */
-    void setPreviouslySeenFilesToMissing(String collectionId);
-    
-    /**
-     * Set the file state of all 'PreviouslySeen' files of a given pillar to 'existing'.
-     * This is to be used when a is not responding during a update of the filelist.
-     * @param collectionId The id of the collection.
-     * @param pillar The id of the pillar.
-     */
-    void setPreviouslySeenFilesToExisting(String collectionId, String pillarId);
-    
-    /**
-     * Set the files with checksum state 'PreviouslySeen' to state 'Unknown'.
-     * This is to be used when a is not responding during a update of the checksums.
-     * @param collectionId The id of the collection.
-     * @param pillar The id of the pillar.
-     */
-    void setPreviouslySeenChecksumsToUnknown(String collectionId, String pillarId);
-
-    /**
-     * @param fileId The id of the file.
-     * @param collectionId The id of the collection.
-     * @return Whether the given file is within the given collection.
-     */
-    boolean hasFile(String fileId, String collectionId);
-    
+      
     /**
      * Retrieves the date for the latest file entry for a given collection.
      * E.g. the date for the latest file which has been positively identified as existing in the collection.  
@@ -332,13 +178,6 @@ public interface IntegrityModel {
      * @return The requested date.
      */
     Date getDateForNewestChecksumEntryForPillar(String pillarId, String collectionId);
-
-    /**
-     * Sets the timestamp for checksums in a given collection to epoc to indicate that they are 
-     * not collected / should be collected
-     * @param collectionID the ID of the collection to mark the checksums for re-collection
-     */
-    void setChecksumTimestampsToEpocForCollection(String collectionID);
     
     /**
      * Retrieves the accumulated size of the files in the given collection
@@ -355,13 +194,6 @@ public interface IntegrityModel {
     Long getCollectionFileSizeAtPillar(String collectionId, String pillarId);
     
     /**
-     * Retrieves the accumulated data size of the files on a given pillar
-     * @param pillarID The ID of the pillar
-     * @return The accumulated data size for the pillar
-     */
-    Long getPillarDataSize(String pillarID);
-    
-    /**
      *  Retrieves the latest collection statistics for the given collection
      *  @param collectionID The ID of the collection
      *  @return {@link CollectionStat} The latest collection statistics object for the collection
@@ -374,12 +206,6 @@ public interface IntegrityModel {
      * @return {@link PillarCollectionStat} The latest pillar statistics for the pillars in the collection 
      */
     List<PillarCollectionStat> getLatestPillarStats(String collectionID);
-    
-    /**
-     * Method to create a new set of statistics entries for a given collection
-     * @param collectionID The ID of the collection
-     */
-    void makeStatisticsForCollection(String collectionID);
     
     /**
      * Shutdown the model. This will typically consist of closing DB connections.

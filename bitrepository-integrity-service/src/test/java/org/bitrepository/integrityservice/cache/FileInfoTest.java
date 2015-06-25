@@ -25,8 +25,6 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.integrityservice.cache.database.ChecksumState;
-import org.bitrepository.integrityservice.cache.database.FileState;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -46,8 +44,7 @@ public class FileInfoTest extends ExtendedTestCase {
     public void testFileInfo() {
         addDescription("Tests the FileInfo element. Adds all data and extracts it again.");
         addStep("Setup the file info.", "Should be possible to extract all the data again.");
-        FileInfo fi = new FileInfo(FILE_ID, LAST_FILE_CHECK, CHECKSUM, FILE_SIZE, LAST_CHECKSUM_CHECK, PILLAR_ID,
-                FileState.UNKNOWN, ChecksumState.UNKNOWN);
+        FileInfo fi = new FileInfo(FILE_ID, LAST_FILE_CHECK, CHECKSUM, FILE_SIZE, LAST_CHECKSUM_CHECK, PILLAR_ID);
         
         Assert.assertEquals(fi.getFileId(), FILE_ID);
         Assert.assertEquals(fi.getDateForLastFileIDCheck().toGregorianCalendar().getTimeInMillis(), LAST_FILE_CHECK_MILLIS);
@@ -75,15 +72,5 @@ public class FileInfoTest extends ExtendedTestCase {
         fi.setDateForLastChecksumCheck(newLastChecksumCheck);
         Assert.assertFalse(LAST_CHECKSUM_CHECK.compare(newLastChecksumCheck) == DatatypeConstants.EQUAL);
         Assert.assertEquals(fi.getDateForLastChecksumCheck().toGregorianCalendar().getTimeInMillis(), newLastChecksumMillis);
-        
-        addStep("Change the FileState", "Should be possible to extract it again");
-        FileState fs = FileState.EXISTING;
-        fi.setFileState(fs);
-        Assert.assertEquals(fs, fi.getFileState());
-        
-        addStep("Change the ChecksumState", "Should be possible to extract it again");
-        ChecksumState cs = ChecksumState.VALID;
-        fi.setChecksumState(cs);
-        Assert.assertEquals(cs, fi.getChecksumState());
     }
 }

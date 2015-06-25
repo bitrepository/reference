@@ -53,6 +53,7 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
     /** The context for the workflow.*/
     protected IntegrityWorkflowContext context;
     protected String collectionID;
+    protected Date workflowStart;
     /**
      * Remember to call the initialise method needs to be called before the start method.
      */
@@ -71,10 +72,12 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
     
     protected abstract boolean cleanDeletedFiles();
     
+    protected abstract Date getChecksumUpdateCutoffDate();
+    
     @Override
     public void start() {
         
-        Date workflowStart = new Date();
+        workflowStart = new Date();
         
         if (context == null) {
             throw new IllegalStateException("The workflow can not be started before the initialise method has been " +
@@ -111,7 +114,7 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             performStep(handleChecksumValidationStep);
             
             HandleMissingChecksumsStep handleMissingChecksumsStep 
-                    = new HandleMissingChecksumsStep(context.getStore(), reporter, statisticsCollector);
+                    = new HandleMissingChecksumsStep(context.getStore(), reporter, statisticsCollector, getChecksumUpdateCutoffDate());
             performStep(handleMissingChecksumsStep);
             
             HandleObsoleteChecksumsStep handleObsoleteChecksumsStep 

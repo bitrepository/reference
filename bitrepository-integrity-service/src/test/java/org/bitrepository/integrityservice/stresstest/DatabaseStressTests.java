@@ -21,10 +21,6 @@
  */
 package org.bitrepository.integrityservice.stresstest;
 
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILE_INFO_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_TABLE;
-
 import java.math.BigInteger;
 import java.util.Date;
 
@@ -38,8 +34,8 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.cache.IntegrityDatabaseManager;
-import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO;
-import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
+import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO2;
+import org.bitrepository.integrityservice.cache.database.IntegrityDAO2;
 import org.bitrepository.integrityservice.cache.database.IntegrityDatabaseCreator;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
@@ -81,7 +77,7 @@ public class DatabaseStressTests extends ExtendedTestCase {
         settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0);
     }
     
-    protected void populateDatabase(IntegrityDAO cache) {
+    protected void populateDatabase(IntegrityDAO2 cache) {
         FileIDsData data = new FileIDsData();
         FileIDsDataItems items = new FileIDsDataItems();
         XMLGregorianCalendar lastModificationTime = CalendarUtils.getNow();
@@ -103,15 +99,14 @@ public class DatabaseStressTests extends ExtendedTestCase {
     @AfterMethod (alwaysRun = true)
     public void clearDatabase() throws Exception {
         DBConnector connector = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        DatabaseUtils.executeStatement(connector, "DELETE FROM " + FILE_INFO_TABLE, new Object[0]);
-        DatabaseUtils.executeStatement(connector, "DELETE FROM " + FILES_TABLE, new Object[0]);
-        DatabaseUtils.executeStatement(connector, "DELETE FROM " + PILLAR_TABLE, new Object[0]);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM fileinfo", new Object[0]);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM pillar", new Object[0]);
     }
     
     @Test(groups = {"stresstest", "integritytest"})
     public void testDatabasePerformance() {
         addDescription("Testing the performance of the SQL queries to the database.");
-        IntegrityDAO cache = createDAO();
+        IntegrityDAO2 cache = createDAO();
         AssertJUnit.assertNotNull(cache);
         
         long startTime = System.currentTimeMillis();
@@ -119,26 +114,23 @@ public class DatabaseStressTests extends ExtendedTestCase {
         System.err.println("Time to ingest '" + NUMBER_OF_FILES + "' files: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
         
         startTime = System.currentTimeMillis();
-        cache.setExistingFilesToPreviouslySeenFileState(settings.getRepositorySettings().getCollections().getCollection().get(0).getID());
-        System.err.println("Time to set all files to unknown: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
-        
-        startTime = System.currentTimeMillis();
-        cache.setOldUnknownFilesToMissing(new Date(), settings.getRepositorySettings().getCollections().getCollection().get(0).getID());
-        System.err.println("Time to set all files to missing: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
-        
-        startTime = System.currentTimeMillis();
-        cache.findMissingFiles(settings.getRepositorySettings().getCollections().getCollection().get(0).getID());
+        String collection = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
+        for(String pillar : settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()) {
+            cache.findMissingFilesAtPillar(collection, pillar, 0L, Long.MAX_VALUE);    
+        }
         System.err.println("Time to find missing files: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
 
         startTime = System.currentTimeMillis();
-        cache.findFilesWithMissingChecksum(settings.getRepositorySettings().getCollections().getCollection().get(0).getID());
+        for(String pillar : settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()) {
+            cache.getFilesWithMissingChecksums(collection, pillar, new Date(0));    
+        }
         System.err.println("Time to find missing checksums: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
     }
     
-    private IntegrityDAO createDAO() {
+    private IntegrityDAO2 createDAO() {
         DatabaseManager dm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        return new DerbyIntegrityDAO(dm, settings.getRepositorySettings().getCollections());
+        return new DerbyIntegrityDAO2(dm.getConnector(), settings);
     }
 
 }

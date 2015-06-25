@@ -21,6 +21,8 @@
  */
 package org.bitrepository.integrityservice.workflow;
 
+import java.util.Date;
+
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.integrityservice.workflow.step.IncrementalUpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.IncrementalUpdateFileIDsStep;
@@ -63,5 +65,10 @@ public class IncrementalIntegrityCheck extends IntegrityCheckWorkflow {
     @Override
     protected boolean cleanDeletedFiles() {
         return false;
+    }
+
+    @Override
+    protected Date getChecksumUpdateCutoffDate() {
+        return new Date(0);
     }
 }

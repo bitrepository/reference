@@ -1,8 +1,11 @@
 package org.bitrepository.integrityservice.cache;
 
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
@@ -12,9 +15,7 @@ import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
-import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO2;
-import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO2;
 import org.bitrepository.integrityservice.cache.database.IntegrityDBStateException;
 import org.bitrepository.integrityservice.cache.database.IntegrityDBTools;
@@ -22,8 +23,6 @@ import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import static org.testng.Assert.*;
 
 public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
 
@@ -91,9 +90,9 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         DatabaseManager dm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         DBConnector dbCon = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm, settings.getRepositorySettings().getCollections());
+        IntegrityDAO2 integrityDAO = new DerbyIntegrityDAO2(dm.getConnector(), settings);
         IntegrityDBTools tool = new IntegrityDBTools(dbCon);
-        List<String> collections = integrityDAO.retrieveCollectionsInDatabase();
+        List<String> collections = integrityDAO.getCollections();
         addStep("Extract initial list of collections.", "The list contains the expected collections.");
         assertTrue(collections.contains(TEST_COLLECTIONID));
         assertTrue(collections.contains(EXTRA_COLLECTION));
@@ -105,7 +104,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         } catch(IntegrityDBStateException e) {
             
         }
-        collections = integrityDAO.retrieveCollectionsInDatabase();
+        collections = integrityDAO.getCollections();
         assertTrue(collections.contains(TEST_COLLECTIONID));
         assertTrue(collections.contains(EXTRA_COLLECTION));
     }
@@ -196,7 +195,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         assertFalse(integrityDAO.getLatestCollectionStats(EXTRA_COLLECTION, 1L).isEmpty());
     }*/
     
-    private void populateCollection(IntegrityDAO dao, String collectionID) {
+    private void populateCollection(IntegrityDAO2 dao, String collectionID) {
         String file2 = TEST_FILE_ID + "-2";
         String file3 = TEST_FILE_ID + "-3";
         String file4 = TEST_FILE_ID + "-4";
@@ -243,13 +242,9 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         dao.updateFileIDs(data3, TEST_PILLAR_2, collectionID);
         dao.updateFileIDs(data4, TEST_PILLAR_2, collectionID);
 
-        insertChecksumDataForDAO(dao, csDataPillar1, TEST_PILLAR_1, collectionID);
-        insertChecksumDataForDAO(dao, csDataPillar2, TEST_PILLAR_2, collectionID);
+        dao.updateChecksums(csDataPillar1, TEST_PILLAR_1, collectionID);
+        dao.updateChecksums(csDataPillar2, TEST_PILLAR_2, collectionID);
         
-        dao.setOldUnknownFilesToMissing(new Date(), collectionID);
-        dao.setFilesWithConsistentChecksumsToValid(collectionID);
-        dao.setChecksumError(file3, TEST_PILLAR_1, collectionID);
-        dao.makeStatisticsEntry(collectionID);
     }
     
     private FileIDsData makeFileIDsDataWithGivenFileSize(String fileID, Long size) {

@@ -111,9 +111,6 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
         } catch (InterruptedException e) {
             log.warn("Interrupted while collecting file ids.", e);
         }
-        log.debug("Settings old unknown and previously seen files to missing.");
-        store.setOldUnknownFilesToMissing(collectionId);
-        store.setPreviouslySeenFilesToMissing(collectionId);
     }
     
     /**

@@ -51,12 +51,6 @@ public class IntegrityDatabase2 implements IntegrityModel {
     }
 
     @Override
-    public Collection<String> getAllFileIDs(String collectionId) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public long getNumberOfFilesInCollection(String collectionId) {
         return store.getNumberOfFilesInCollection(collectionId);
     }
@@ -73,91 +67,24 @@ public class IntegrityDatabase2 implements IntegrityModel {
     }
 
     @Override
-    public long getNumberOfMissingFiles(String pillarId, String collectionId) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
     public IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarId, long firstIndex, 
             long maxResults, String collectionId) {
         return store.findMissingFilesAtPillar(collectionId, pillarId, firstIndex, maxResults);
-    }
-
-    @Override
-    public long getNumberOfChecksumErrors(String pillarId, String collectionId) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public IntegrityIssueIterator getFilesWithChecksumErrorsAtPillar(String pillarId, long firstIndex, 
-            long maxResults, String collectionId) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void setFileMissing(String fileId, Collection<String> pillarIds, String collectionId) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void setChecksumError(String fileId, Collection<String> pillarIds, String collectionId) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void setChecksumAgreement(String fileId, Collection<String> pillarIds, String collectionId) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void deleteFileIdEntry(String fileId, String collectionId) {
-        // TODO Auto-generated method stub
-
     }
     
     @Override
     public void deleteFileIdEntry(String collectionId, String pillarId, String fileId) {
         store.removeFile(collectionId, pillarId, fileId);
     }
-
-    @Override
-    public IntegrityIssueIterator findFilesWithMissingChecksum(String collectionId) {
-        // TODO Auto-generated method stub
-        return null;
-    }
     
     @Override
-    public IntegrityIssueIterator findFilesWithMissingChecksum(String collectionId, String pillarId) {
-        return store.getFilesWithMissingChecksums(collectionId, pillarId);
-    }
-
-    @Override
-    public void setFilesWithUnknownChecksumToMissing(String collectionId) {
-        // TODO Auto-generated method stub
-
+    public IntegrityIssueIterator findFilesWithMissingChecksum(String collectionId, String pillarId, Date cutoffDate) {
+        return store.getFilesWithMissingChecksums(collectionId, pillarId, cutoffDate);
     }
 
     @Override
     public IntegrityIssueIterator findChecksumsOlderThan(Date date, String pillarID, String collectionId) {
         return store.getFilesWithOutdatedChecksums(collectionId, pillarID, date);
-    }
-
-    @Override
-    public IntegrityIssueIterator findMissingFiles(String collectionId) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public IntegrityIssueIterator findOrphanFiles(String collectionID) {
-        // TODO Auto-generated method stub
-        return null;
     }
     
     @Override
@@ -166,68 +93,8 @@ public class IntegrityDatabase2 implements IntegrityModel {
     }
 
     @Override
-    public List<String> getPillarsMissingFile(String fileId, String collectionId) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public IntegrityIssueIterator getFilesWithInconsistentChecksums(String collectionId) {
         return store.findFilesWithChecksumInconsistincies(collectionId);
-    }
-
-    @Override
-    public void setFilesWithConsistentChecksumToValid(String collectionId) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void setExistingFilesToPreviouslySeenFileState(String collectionId) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void setExistingChecksumsToPreviouslySeen(String collectionId) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void setPreviouslySeenChecksumsToMissing(String collectionId) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void setOldUnknownFilesToMissing(String collectionId) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void setPreviouslySeenFilesToMissing(String collectionId) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void setPreviouslySeenFilesToExisting(String collectionId, String pillarId) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void setPreviouslySeenChecksumsToUnknown(String collectionId, String pillarId) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public boolean hasFile(String fileId, String collectionId) {
-        // TODO Auto-generated method stub
-        return false;
     }
 
     @Override
@@ -246,20 +113,8 @@ public class IntegrityDatabase2 implements IntegrityModel {
     }
 
     @Override
-    public void setChecksumTimestampsToEpocForCollection(String collectionID) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public Long getCollectionFileSize(String collectionId) {
         return store.getCollectionSize(collectionId);
-    }
-
-    @Override
-    public Long getPillarDataSize(String pillarID) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override
@@ -270,12 +125,6 @@ public class IntegrityDatabase2 implements IntegrityModel {
     @Override
     public List<PillarCollectionStat> getLatestPillarStats(String collectionID) {
         return store.getLatestPillarStats(collectionID);
-    }
-
-    @Override
-    public void makeStatisticsForCollection(String collectionID) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override

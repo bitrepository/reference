@@ -21,9 +21,6 @@
  */
 package org.bitrepository.integrityservice.cache;
 
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.DATABASE_VERSION_ENTRY;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILEINFO_TABLE_VERSION_ENTRY;
-
 import java.util.Map;
 
 import org.bitrepository.service.database.DBConnector;
@@ -40,6 +37,10 @@ public class IntegrityDatabaseMigrator extends DatabaseMigrator {
     /** The log.*/
     private static Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
     
+    /** The name of the version table entry for the database.*/
+    private final static String DATABASE_VERSION_ENTRY = "integritydb";
+    /** The name of the version entry for the fileinfo table.*/
+    private final static String FILEINFO_TABLE_VERSION_ENTRY = "fileinfo";
     /** The name of the update script for version 2 to 3.*/
     private static final String UPDATE_SCRIPT_VERSION_2_TO_3 = "sql/derby/integrityDB2to3migration.sql";
     /** The name of the update script for version 3 to 4.*/

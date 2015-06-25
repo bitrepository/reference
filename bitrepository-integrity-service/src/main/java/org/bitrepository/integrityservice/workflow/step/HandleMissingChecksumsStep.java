@@ -23,6 +23,7 @@ package org.bitrepository.integrityservice.workflow.step;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.common.utils.SettingsUtils;
@@ -46,12 +47,14 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
     /** The report model to populate */
     private final IntegrityReporter reporter;
     private final StatisticsCollector sc;
+    private final Date cutoff;
     
     public HandleMissingChecksumsStep(IntegrityModel store, IntegrityReporter reporter, 
-            StatisticsCollector statisticsCollector) {
+            StatisticsCollector statisticsCollector, Date latestChecksumUpdate) {
         this.store = store;
         this.reporter = reporter;
         this.sc = statisticsCollector;
+        this.cutoff = latestChecksumUpdate;
     }
     
     @Override
@@ -70,7 +73,7 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
         for(String pillar : pillars) {
             Long missingChecksums = 0L;
             IntegrityIssueIterator missingChecksumsIterator 
-                = store.findFilesWithMissingChecksum(reporter.getCollectionID(), pillar);
+                = store.findFilesWithMissingChecksum(reporter.getCollectionID(), pillar, cutoff);
             
             String missingFile;
             try {

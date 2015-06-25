@@ -96,8 +96,6 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         step.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(alerter).operationFailed(anyString(), eq(TEST_COLLECTION));
-        verify(model).setPreviouslySeenChecksumsToUnknown(eq(TEST_COLLECTION), anyString());
-        verify(model).setPreviouslySeenChecksumsToUnknown(eq(TEST_COLLECTION), anyString());
     }
     
     @Test(groups = {"regressiontest"})

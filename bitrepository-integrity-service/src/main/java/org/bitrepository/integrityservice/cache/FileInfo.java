@@ -30,8 +30,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.integrityservice.cache.database.ChecksumState;
-import org.bitrepository.integrityservice.cache.database.FileState;
 
 /**
  * Class for containing the information about a given file at a given pillar.
@@ -47,10 +45,6 @@ public class FileInfo {
     private XMLGregorianCalendar checksumLastCheck;
     /** The id of the pillar.*/
     private final String pillarId;
-    /** The state of the file.*/
-    private FileState fileState;
-    /** The state of the checksum.*/
-    private ChecksumState checksumState;
     /** The size of the file */
     private Long fileSize;
     /** The last time the files was seen by getFileIDs */
@@ -69,7 +63,7 @@ public class FileInfo {
      * @param checksumState The state for the checksum.
      */
     public FileInfo(String fileId, XMLGregorianCalendar fileLastCheck, String checksum, Long fileSize, 
-            XMLGregorianCalendar checksumLastCheck, String pillarId, FileState fileState, ChecksumState checksumState) {
+            XMLGregorianCalendar checksumLastCheck, String pillarId) {
         ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileID");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         this.fileId = fileId;
@@ -78,8 +72,6 @@ public class FileInfo {
         this.fileSize = fileSize;
         this.checksumLastCheck = checksumLastCheck;
         this.pillarId = pillarId;
-        this.fileState = fileState;
-        this.checksumState = checksumState;
         
         // If file id date is null, then replace with epoch.
         if(fileLastCheck == null) {
@@ -98,7 +90,7 @@ public class FileInfo {
      * @param pillarId The id of the pillar.
      */
     public FileInfo(String fileId, String pillarId) {
-        this(fileId, null, null, null, null, pillarId, FileState.UNKNOWN, ChecksumState.UNKNOWN);
+        this(fileId, null, null, null, null, pillarId);
     }
     
     /**
@@ -151,34 +143,6 @@ public class FileInfo {
     }
     
     /**
-     * @return The current state of the file.
-     */
-    public FileState getFileState() {
-        return fileState;
-    }
-    
-    /**
-     * @param fileState The new state of the file.
-     */
-    public void setFileState(FileState fileState) {
-        this.fileState = fileState;
-    }
-    
-    /**
-     * @return The current state of the checksum.
-     */
-    public ChecksumState getChecksumState() {
-        return checksumState;
-    }
-    
-    /**
-     * @param checksumState The new state of the checksum.
-     */
-    public void setChecksumState(ChecksumState checksumState) {
-        this.checksumState = checksumState;
-    }
-    
-    /**
      * @return The id of the pillar.
      */
     public String getPillarId() {
@@ -194,9 +158,10 @@ public class FileInfo {
     
     @Override
     public String toString() {
-        return "Pillar id: " + pillarId + ", File id: " + fileId + " (state: " + fileState + ", date: " 
-                + fileCreationTimestamp + "), Checksum: " + checksum + " (state: " + checksumState + ", date: " 
-                + checksumLastCheck + ")";
+        return "Pillar id: " + pillarId + ", File id: " + fileId + " (date: " 
+                + fileCreationTimestamp + "), Checksum: " + checksum + " (date: " 
+                + checksumLastCheck + ", lastSeenGetFileIDs: " + lastSeenGetFileIDs 
+                + ", lastSeenGetChecksums: " + lastSeenGetChecksums + ")";
     }
 
     public Date getLastSeenGetFileIDs() {

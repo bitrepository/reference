@@ -30,8 +30,6 @@ import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlarmDispatcher;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
-import org.bitrepository.integrityservice.cache.IntegrityCache;
-import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase2;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.DelegatingIntegrityInformationCollector;

@@ -1,17 +1,5 @@
 package org.bitrepository.integrityservice.cache.database;
 
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTIONS_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_ID;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_KEY;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILE_INFO_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FI_FILE_KEY;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.FILES_KEY;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.COLLECTION_STATS_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.PILLAR_STATS_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_TABLE;
-import static org.bitrepository.integrityservice.cache.database.DatabaseConstants.STATS_KEY;
-
 import java.util.List;
 
 import org.bitrepository.service.database.DBConnector;
@@ -34,7 +22,7 @@ public class IntegrityDBTools extends IntegrityDAOUtils {
             throw new IntegrityDBStateException("Collection '" + collectionID +"' already exists in integrityDB, can't add.");
         }
         
-        String sql = "INSERT INTO " + COLLECTIONS_TABLE + " ( " + COLLECTION_ID + " ) VALUES ( ? )";
+        String sql = "INSERT INTO collections ( collectionID ) VALUES ( ? )";
         DatabaseUtils.executeStatement(dbConnector, sql, collectionID);
         
     }

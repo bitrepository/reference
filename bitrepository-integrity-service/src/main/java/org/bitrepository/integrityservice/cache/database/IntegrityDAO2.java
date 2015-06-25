@@ -145,16 +145,17 @@ public abstract class IntegrityDAO2 {
         return makeIntegrityIssueIterator(retrieveSql, collectionId, pillarId, maxDate);
     }
     
-    public IntegrityIssueIterator getFilesWithMissingChecksums(String collectionId, String pillarId) {
+    public IntegrityIssueIterator getFilesWithMissingChecksums(String collectionId, String pillarId, Date cutoffDate) {
         ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
         ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
         
         String retrieveSql = "SELECT fileID from fileinfo"
                 + " WHERE collectionID = ?"
                 + " AND pillarID = ?"
-                + " AND checksum is NULL";
+                + " AND (checksum is NULL"
+                + " OR last_seen_getchecksums < ?)";
         
-        return makeIntegrityIssueIterator(retrieveSql, collectionId, pillarId);
+        return makeIntegrityIssueIterator(retrieveSql, collectionId, pillarId, cutoffDate);
     }
     
     public IntegrityIssueIterator getOrphanFilesOnPillar(String collectionId, String pillarId, Date cutoffDate) {
@@ -209,7 +210,6 @@ public abstract class IntegrityDAO2 {
                 + " SELECT fileID, count(distinct(checksum)) as checksums FROM fileinfo"
                 + " WHERE collectionID = ?"
                 + " GROUP BY fileID) as subselect"
-                //+ " GROUP BY fileID, collectionID) as subselect"
                 + " WHERE checksums > 1";
         
         return makeIntegrityIssueIterator(findInconsistentChecksumsSql, collectionId);
@@ -255,8 +255,7 @@ public abstract class IntegrityDAO2 {
                     Date lastSeenGetChecksums = dbResult.getTimestamp("last_seen_getchecksums");
                     
                     FileInfo f = new FileInfo(fileId, CalendarUtils.getXmlGregorianCalendar(lastFileCheck), checksum, 
-                            fileSize, CalendarUtils.getXmlGregorianCalendar(lastChecksumCheck), pillarId,
-                            null, null);
+                            fileSize, CalendarUtils.getXmlGregorianCalendar(lastChecksumCheck), pillarId);
                     f.setLastSeenGetFileIDs(lastSeenGetFileIDs);
                     f.setLastSeenGetChecksums(lastSeenGetChecksums);
                     res.add(f);

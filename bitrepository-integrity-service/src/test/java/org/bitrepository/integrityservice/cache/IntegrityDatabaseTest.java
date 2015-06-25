@@ -24,9 +24,10 @@
  */
 package org.bitrepository.integrityservice.cache;
 
+import static org.mockito.Mockito.mock;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -39,15 +40,11 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
-import org.bitrepository.integrityservice.cache.database.ChecksumState;
-import org.bitrepository.integrityservice.cache.database.FileState;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import static org.mockito.Mockito.mock;
 
 public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     AuditTrailManager auditManager;
@@ -98,7 +95,8 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         
         addStep("Test the 'findMissingChecksums'", "Should deliver an empty collection");
         for(String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTIONID)) {
-            Collection<String> missingChecksums = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTIONID, pillar));
+            Collection<String> missingChecksums 
+                = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTIONID, pillar, new Date(0)));
             Assert.assertNotNull(missingChecksums);
             Assert.assertEquals(missingChecksums.size(), 0);    
         }

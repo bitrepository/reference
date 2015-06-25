@@ -81,20 +81,12 @@ public class IntegrityCollectorEventHandler implements EventHandler {
             finalEventQueue.add(event);
         } else if(event.getEventType() == OperationEventType.FAILED) {
             log.warn("Failure: " + event.toString());
-            alerter.operationFailed("Failed integrity operation: " + event.toString(), event.getCollectionID());
-            
-            for(String pillarId : SettingsUtils.getPillarIDsForCollection(event.getCollectionID())) {
-                store.setPreviouslySeenFilesToExisting(event.getCollectionID(), pillarId);
-                store.setPreviouslySeenChecksumsToUnknown(event.getCollectionID(), pillarId);
-            }
-            
+            alerter.operationFailed("Failed integrity operation: " + event.toString(), event.getCollectionID());            
             finalEventQueue.add(event);
         } else if(event.getEventType() == OperationEventType.COMPONENT_FAILED) {
             ContributorFailedEvent cfe = (ContributorFailedEvent) event;
             log.warn("Component failure for '" + cfe.getContributorID() 
                     + "'. Settings previously seen files to existing.");
-            store.setPreviouslySeenFilesToExisting(cfe.getCollectionID(), cfe.getContributorID());
-            store.setPreviouslySeenChecksumsToUnknown(cfe.getCollectionID(), cfe.getContributorID());
         } else {
             log.debug("Received event: " + event.toString());
         }
