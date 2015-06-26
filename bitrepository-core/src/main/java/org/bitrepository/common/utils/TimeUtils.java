@@ -145,6 +145,12 @@ public final class TimeUtils {
         return formatter.format(cal.toGregorianCalendar().getTime());
     }
     
+    /**
+     * Get the latest date of the two inputs
+     * @param currentMax The current latest date 
+     * @param itemDate The new candidate latest
+     * @return The date object that was the latest of the two inputs. 
+     */
     public static Date getMaxDate(Date currentMax, Date itemDate) {
         if(itemDate.after(currentMax)) {
             return itemDate;

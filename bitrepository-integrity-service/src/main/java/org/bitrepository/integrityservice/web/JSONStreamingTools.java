@@ -58,6 +58,13 @@ public class JSONStreamingTools {
         };
     }
     
+    /**
+     * Helper method to stream whole or parts of a files content as a JSON formatted list
+     * (one list entry per line)
+     * @param source The source file
+     * @param offset The number of lines to skip
+     * @param maxlines The maximum number of lines to output 
+     */
     public static StreamingOutput StreamFileParts(File source, int offset, int maxlines) {
         final File input = source;
         return new StreamingOutput() {

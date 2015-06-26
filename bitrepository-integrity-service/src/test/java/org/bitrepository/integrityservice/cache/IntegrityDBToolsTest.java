@@ -68,7 +68,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         DatabaseManager dm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         DBConnector dbCon = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm.getConnector(), settings);
+        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm.getConnector());
         IntegrityDBTools tool = new IntegrityDBTools(dbCon);
         List<String> collections = integrityDAO.getCollections();
         addStep("Extract initial list of collections", "The list contains the expected collections");
@@ -90,7 +90,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         DatabaseManager dm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         DBConnector dbCon = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm.getConnector(), settings);
+        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm.getConnector());
         IntegrityDBTools tool = new IntegrityDBTools(dbCon);
         List<String> collections = integrityDAO.getCollections();
         addStep("Extract initial list of collections.", "The list contains the expected collections.");
@@ -116,7 +116,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         DatabaseManager dm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         DBConnector dbCon = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm.getConnector(), settings);
+        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm.getConnector());
         IntegrityDBTools tool = new IntegrityDBTools(dbCon);
         List<String> collections = integrityDAO.getCollections();
         addStep("Extract initial list of collections.", "The list contains the expected collections.");

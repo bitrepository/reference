@@ -18,10 +18,8 @@ public class IntegrityDatabase implements IntegrityModel {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final IntegrityDAO store;
-    private final Settings settings;
 
     public IntegrityDatabase(Settings settings) {
-        this.settings = settings;
         this.store = IntegrityDAOFactory.getDAO2Instance(settings);
     }
 

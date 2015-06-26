@@ -12,7 +12,6 @@ import java.util.List;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.FileInfo;
@@ -23,16 +22,18 @@ import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Common parts of the implementation of the access to the integrity db. 
+ * Database specific backends are abstracted out in concrete classes.  
+ */
 public abstract class IntegrityDAO {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
     /** The connector to the database.*/
     protected final DBConnector dbConnector;
-    protected final Settings settings;
     
-    public IntegrityDAO(DBConnector dbConnector, Settings settings) {
+    public IntegrityDAO(DBConnector dbConnector) {
     	this.dbConnector = dbConnector;
-    	this.settings = settings;
     	initializePillars();
     	initializeCollections();
     }

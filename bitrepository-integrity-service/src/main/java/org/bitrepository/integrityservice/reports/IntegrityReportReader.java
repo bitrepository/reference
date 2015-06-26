@@ -3,6 +3,9 @@ package org.bitrepository.integrityservice.reports;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+/**
+ * Class to support reading integrity reports and parts of them. 
+ */
 public class IntegrityReportReader {
 
     private final File reportDir;
@@ -39,6 +42,5 @@ public class IntegrityReportReader {
             throw new FileNotFoundException("Could not retrieve report part '" + part + "' for '" + pillarID + "'");
         }
     }
-    
     
 }

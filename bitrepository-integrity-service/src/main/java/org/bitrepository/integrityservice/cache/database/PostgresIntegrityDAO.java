@@ -2,7 +2,6 @@ package org.bitrepository.integrityservice.cache.database;
 
 import java.util.List;
 
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
@@ -12,8 +11,8 @@ import org.bitrepository.service.database.DatabaseUtils;
  */
 public class PostgresIntegrityDAO extends IntegrityDAO {
 
-    public PostgresIntegrityDAO(DBConnector dbConnector, Settings settings) {
-        super(dbConnector, settings);
+    public PostgresIntegrityDAO(DBConnector dbConnector) {
+        super(dbConnector);
     }
 
     @Override

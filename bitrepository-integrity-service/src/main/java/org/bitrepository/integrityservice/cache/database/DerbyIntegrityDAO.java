@@ -3,7 +3,6 @@ package org.bitrepository.integrityservice.cache.database;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
@@ -13,8 +12,8 @@ import org.bitrepository.service.database.DatabaseUtils;
  */
 public class DerbyIntegrityDAO extends IntegrityDAO {
 
-    public DerbyIntegrityDAO(DBConnector dbConnector, Settings settings) {
-        super(dbConnector, settings);
+    public DerbyIntegrityDAO(DBConnector dbConnector) {
+        super(dbConnector);
     }
 
     @Override
