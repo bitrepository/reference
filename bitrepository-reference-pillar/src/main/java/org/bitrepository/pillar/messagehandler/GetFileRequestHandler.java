@@ -41,9 +41,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
-import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.MessageContext;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -54,7 +52,6 @@ import org.slf4j.LoggerFactory;
  * Class for performing the GetFile operation.
  */
 public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest> {
-    /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
     /**
@@ -132,8 +129,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
             }
 
             log.info("Uploading file: " + requestedFile.getFileID() + " to " + message.getFileAddress());
-            FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(getSettings());
-            fe.uploadToServer(is, new URL(message.getFileAddress()));
+            context.getFileExchange().putFile(is, new URL(message.getFileAddress()));
         } catch (IOException e) {
             log.warn("The file '" + message.getFileID() + "' from collection '" + message.getCollectionID() 
                     + "' could not be uploaded at '" + message.getFileAddress() + "'");

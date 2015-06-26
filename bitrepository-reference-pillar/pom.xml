@@ -150,7 +150,7 @@
                         <configuration>
                             <suiteXmlFiles>
                                 <suiteXmlFile>src/test/resources/testprops/full-pillar-test.xml</suiteXmlFile>
-                                <!--suiteXmlFile>src/test/resources/testprops/checksum-pillar-test.xml</suiteXmlFile-->
+                                <suiteXmlFile>src/test/resources/testprops/checksum-pillar-test.xml</suiteXmlFile>
                             </suiteXmlFiles>
                         </configuration>
                         <executions>

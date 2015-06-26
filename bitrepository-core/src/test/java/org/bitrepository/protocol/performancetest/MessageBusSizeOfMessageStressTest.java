@@ -119,8 +119,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
 
     /**
      * Tests the amount of messages send through a local messagebus. 
-     * It should be at least 20 per second. 
-     * @throws Exception
+     * It should be at least 20 per second.
      */
     @Test( groups = {"StressTest"} )
     public void SendLargeMessagesLocally() throws Exception {

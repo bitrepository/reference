@@ -41,6 +41,8 @@ import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.pillar.store.checksumcache.MemoryCacheMock;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.filearchive.CollectionArchiveManager;
+import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.LocalFileExchange;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
@@ -82,13 +84,15 @@ public abstract class DefaultPillarTest extends DefaultFixturePillarTest {
         archives = new CollectionArchiveManager(settingsForCUT);
         alarmDispatcher = new AlarmDispatcher(settingsForCUT, messageBus);
         audits = new MockAuditManager();
+        FileExchange fileExchange = new LocalFileExchange("src/test/resources");
         context = new MessageHandlerContext(
                 settingsForCUT,
                 SettingsHelper.getPillarCollections(settingsForCUT.getComponentID(), settingsForCUT.getCollections()),
                 new ResponseDispatcher(settingsForCUT, messageBus),
                 new PillarAlarmDispatcher(settingsForCUT, messageBus),
-                audits);
-        model = new FileStorageModel(archives, csCache, alarmDispatcher, settingsForCUT);
+                audits,
+                fileExchange);
+        model = new FileStorageModel(archives, csCache, alarmDispatcher, settingsForCUT, fileExchange);
         mediator = new PillarMediator(messageBus, context, model);
         mediator.start();
         try {

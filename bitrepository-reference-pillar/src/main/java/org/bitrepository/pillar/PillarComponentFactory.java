@@ -120,7 +120,8 @@ public final class PillarComponentFactory {
                 SettingsHelper.getPillarCollections(settings.getComponentID(), settings.getCollections()),
                 responseDispatcher,
                 alarmDispatcher,
-                audits);
+                audits,
+                ProtocolComponentFactory.getInstance().getFileExchange(settings));
         
         return new Pillar(messageBus, settings, pillarModel, context);        
     }
@@ -178,10 +179,12 @@ public final class PillarComponentFactory {
     private StorageModel getPillarModel(Settings settings, ChecksumStore cache, AlarmDispatcher alarmDispatcher) {
         PillarType pillarType = settings.getReferenceSettings().getPillarSettings().getPillarType();
         if(pillarType == PillarType.CHECKSUM) {
-            return new ChecksumStorageModel(cache, alarmDispatcher, settings);
+            return new ChecksumStorageModel(cache, alarmDispatcher, settings,
+                    ProtocolComponentFactory.getInstance().getFileExchange(settings));
         } else if(pillarType == PillarType.FILE) {
             FileStore archive = getFileStore(settings);
-            return new FileStorageModel(archive, cache, alarmDispatcher, settings);
+            return new FileStorageModel(archive, cache, alarmDispatcher, settings,
+                    ProtocolComponentFactory.getInstance().getFileExchange(settings));
         } else {
             throw new IllegalStateException("Cannot instantiate a pillar of type '" + pillarType + "'.");
         }

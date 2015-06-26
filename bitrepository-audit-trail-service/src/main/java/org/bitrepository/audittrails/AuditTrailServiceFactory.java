@@ -120,7 +120,7 @@ public final class AuditTrailServiceFactory {
                 
                 ContributorMediator mediator = new SimpleContributorMediator(
                         ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
-                        settings, null);
+                        settings, null, ProtocolComponentFactory.getInstance().getFileExchange(settings));
                 
                 PutFileClient putClient = ModifyComponentFactory.getInstance().retrievePutClient(settings, 
                         securityManager, "audit-trail-preserver");

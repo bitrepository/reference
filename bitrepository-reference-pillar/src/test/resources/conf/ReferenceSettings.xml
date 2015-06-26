@@ -55,9 +55,7 @@
     <VerifyDataConsistencyOnMessage>true</VerifyDataConsistencyOnMessage>
   </PillarSettings>
   <FileExchangeSettings>
-    <ProtocolType>HTTP</ProtocolType>
-    <ServerName>sandkasse-01.kb.dk</ServerName>
-    <Port>80</Port>
-    <Path>/dav</Path>
+    <ProtocolType>FILE</ProtocolType>
+    <Path>/src/test/resources</Path>
   </FileExchangeSettings>
 </ReferenceSettings>

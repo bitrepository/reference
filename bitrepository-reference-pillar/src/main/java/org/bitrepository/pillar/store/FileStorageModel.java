@@ -48,7 +48,6 @@ import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
 import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.IllegalOperationException;
@@ -61,8 +60,6 @@ import org.slf4j.LoggerFactory;
  * The storage model for a pillar with a file store, where it can store its actual files.
  */
 public class FileStorageModel extends StorageModel {
-
-    /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /**
@@ -72,9 +69,9 @@ public class FileStorageModel extends StorageModel {
      * @param settings The settings.
      */
     public FileStorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher,
-            Settings settings) {
-        super(archives, cache, alarmDispatcher, settings);
-        log.info("Instantiating the FullReferencePillar: " + getPillarID());
+            Settings settings, FileExchange fileExchange) {
+        super(archives, cache, alarmDispatcher, settings, fileExchange);
+        log.info("Instantiating the FileStorageModel: " + getPillarID());
     }
 
     @Override
@@ -181,7 +178,7 @@ public class FileStorageModel extends StorageModel {
     @Override
     public void putFile(String collectionID, String fileID, String fileAddress,
             ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
-        downloadFileToTmp(fileID, collectionID, fileAddress);
+        transferFileToTmp(fileID, collectionID, fileAddress);
         verifyFileInTmp(fileID, collectionID, expectedChecksum);
         fileArchive.moveToArchive(fileID, collectionID);
         verifyFileToCacheConsistency(fileID, collectionID);
@@ -190,7 +187,7 @@ public class FileStorageModel extends StorageModel {
     @Override
     public void replaceFile(String fileID, String collectionID, String fileAddress,
             ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
-        downloadFileToTmp(fileID, collectionID, fileAddress);
+        transferFileToTmp(fileID, collectionID, fileAddress);
         verifyFileInTmp(fileID, collectionID, expectedChecksum);
         fileArchive.replaceFile(fileID, collectionID);
         verifyFileToCacheConsistency(fileID, collectionID);
@@ -222,8 +219,8 @@ public class FileStorageModel extends StorageModel {
 
     /**
      * TODO this should be in the database instead.
-     * @param minTimeStamp The minimum date for the timestamp of the extracted file ids entries.
-     * @param maxTimeStamp The maximum date for the timestamp of the extracted file ids entries.
+     * @param minTime The minimum date for the timestamp of the extracted file ids entries.
+     * @param maxTime The maximum date for the timestamp of the extracted file ids entries.
      * @param maxNumberOfResults The maximum number of results.
      * @param collectionId The id of the collection.
      * @return The requested file ids.
@@ -321,13 +318,12 @@ public class FileStorageModel extends StorageModel {
      * @param fileAddress The address to download the file from.
      * @throws RequestHandlerException If the download fails.
      */
-    private void downloadFileToTmp(String fileID, String collectionID, String fileAddress) throws RequestHandlerException {
+    private void transferFileToTmp(String fileID, String collectionID, String fileAddress) throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + fileAddress + "'");
-        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(settings);
 
         try {
             fileArchive.downloadFileForValidation(fileID, collectionID,
-                    fe.downloadFromServer(new URL(fileAddress)));
+                    fileExchange.getFile(new URL(fileAddress)));
         } catch (IOException e) {
             String errMsg = "Could not retrieve the file from '" + fileAddress + "'";
             log.error(errMsg, e);

@@ -141,7 +141,7 @@ public class GetFileCmd extends CommandLineClient {
             outputFile = new File(cmdHandler.getOptionValue(Constants.FILE_ID_ARG));
         }
         FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
-        fileexchange.downloadFromServer(outputFile, fileUrl.toExternalForm());
+        fileexchange.getFile(outputFile, fileUrl.toExternalForm());
     }
 
     /**

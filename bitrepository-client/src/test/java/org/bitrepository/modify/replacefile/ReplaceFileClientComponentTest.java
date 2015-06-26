@@ -86,7 +86,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
         checksumRequest.setChecksumType(ChecksumType.SHA1);
 
-        URL address = httpServer.getURL(DEFAULT_FILE_ID);
+        URL address = httpServerConfiguration.getURL(DEFAULT_FILE_ID);
 
         addStep("Request a file to be replaced on all pillars (which means only the default pillar).",
                 "A IdentifyPillarsForReplaceFileRequest should be sent to the pillar.");
@@ -151,17 +151,17 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
     @Test(groups = {"regressiontest"})
     public void replaceClientIdentificationTimeout() throws Exception {
         addDescription("Tests the handling of a failed identification for the ReplaceClient");
-        addStep("Initialise the number of pillars and the DeleteClient. Sets the identification timeout to 1 sec.",
+        addStep("Initialise the number of pillars and the DeleteClient. Sets the identification timeout to 100 ms.",
                 "Should be OK.");
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
-        settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(1000L));
+        settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(100L));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         ReplaceFileClient replaceClient = createReplaceFileClient();
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
         checksumRequest.setChecksumType(ChecksumType.SHA1);
 
-        URL address = httpServer.getURL(DEFAULT_FILE_ID);
+        URL address = httpServerConfiguration.getURL(DEFAULT_FILE_ID);
 
         addStep("Request a file to be replaced on the default pillar.",
                 "A IdentifyPillarsForReplaceFileRequest should be sent to the pillar.");
@@ -182,18 +182,18 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
     @Test(groups = {"regressiontest"})
     public void replaceClientOperationTimeout() throws Exception {
         addDescription("Tests the handling of a failed operation for the ReplaceClient");
-        addStep("Initialise the number of pillars and the DeleteClient. Sets the operation timeout to 1 sec.",
+        addStep("Initialise the number of pillars and the DeleteClient. Sets the operation timeout to 100 ms.",
                 "Should be OK.");
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
-        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(1000L));
+        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(100L));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         ReplaceFileClient replaceClient = createReplaceFileClient();
 
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
         checksumRequest.setChecksumType(ChecksumType.SHA1);
 
-        URL address = httpServer.getURL(DEFAULT_FILE_ID);
+        URL address = httpServerConfiguration.getURL(DEFAULT_FILE_ID);
 
         addStep("Request a file to be replaced on the default pillar.",
                 "A IdentifyPillarsForReplaceFileRequest should be sent to the pillar.");
@@ -240,7 +240,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
         checksumRequest.setChecksumType(ChecksumType.SHA1);
 
-        URL address = httpServer.getURL(DEFAULT_FILE_ID);
+        URL address = httpServerConfiguration.getURL(DEFAULT_FILE_ID);
 
         addStep("Request a file to be replaced on the default pillar.",
                 "A IdentifyPillarsForReplaceFileRequest should be sent to the pillar.");
@@ -298,7 +298,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         checksumRequest.setChecksumType(ChecksumType.MD5);
         checksumRequest.setChecksumSalt(Base16Utils.encodeBase16("aa"));
         replaceClient.replaceFile(collectionID, DEFAULT_FILE_ID, PILLAR1_ID, DEFAULT_OLD_CHECKSUM_DATA, null,
-                httpServer.getURL(DEFAULT_FILE_ID), 0, DEFAULT_NEW_CHECKSUM_DATA, checksumRequest, testEventHandler,
+                httpServerConfiguration.getURL(DEFAULT_FILE_ID), 0, DEFAULT_NEW_CHECKSUM_DATA, checksumRequest, testEventHandler,
                 null);
 
         IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(

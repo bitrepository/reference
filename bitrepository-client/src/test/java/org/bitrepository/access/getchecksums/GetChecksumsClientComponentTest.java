@@ -167,7 +167,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
 
         addStep("Ensure the delivery file isn't already present on the http server",
                 "Should be remove if it already exists.");
-        URL deliveryUrl = httpServer.getURL(deliveryFilename);
+        URL deliveryUrl = httpServerConfiguration.getURL(deliveryFilename);
 
         addStep("Request the delivery of the checksum of a file from all pillars.",
                 "A IdentifyPillarsForGetChecksumsRequest should be sent and a IDENTIFY_REQUEST_SENT should be generated.");

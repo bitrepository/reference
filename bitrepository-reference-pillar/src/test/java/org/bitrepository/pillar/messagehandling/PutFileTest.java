@@ -28,6 +28,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
@@ -74,12 +75,14 @@ public class PutFileTest extends MockedPillarTest {
         addStep("Setup for not already having the file and delivering pillar id", 
                 "Should return false, when requesting file-id existence.");
         doAnswer(new Answer() {
-            public Boolean answer(InvocationOnMock invocation) {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
                 return false;
             }
         }).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(new Answer() {
-            public String answer(InvocationOnMock invocation) {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
                 return settingsForCUT.getComponentID();
             }
         }).when(model).getPillarID();
@@ -273,24 +276,14 @@ public class PutFileTest extends MockedPillarTest {
 
         addStep("Setup for not already having the file and delivering pillar id, and delivering an answer for the checksum request", 
                 "Should return false, when requesting file-id existence.");
-        doAnswer(new Answer() {
-            public Boolean answer(InvocationOnMock invocation) {
-                return false;
-            }
-        }).when(model).hasFileID(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
-            public String answer(InvocationOnMock invocation) {
-                return settingsForCUT.getComponentID();
-            }
-        }).when(model).getPillarID();
-        doAnswer(new Answer() {
-            public ChecksumDataForFileTYPE answer(InvocationOnMock invocation) {
-                ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
-                res.setChecksumSpec(csSpec);
-                res.setCalculationTimestamp(CalendarUtils.getNow());
-                res.setChecksumValue(Base16Utils.encodeBase16(DEFAULT_MD5_CHECKSUM));
-                return res;
-            }            
+        when(model.hasFileID(eq(FILE_ID), anyString())).thenReturn(false);
+        when(model.getPillarID()).thenReturn(settingsForCUT.getComponentID());
+        doAnswer(invocation -> {
+            ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
+            res.setChecksumSpec(csSpec);
+            res.setCalculationTimestamp(CalendarUtils.getNow());
+            res.setChecksumValue(Base16Utils.encodeBase16(DEFAULT_MD5_CHECKSUM));
+            return res;
         }).when(model).getChecksumDataForFile(eq(FILE_ID), anyString(), any(ChecksumSpecTYPE.class));
 
         addStep("Create and send the identify request message.",
@@ -312,7 +305,7 @@ public class PutFileTest extends MockedPillarTest {
         assertEquals(finalResponse.getFileID(), FILE_ID);
         assertNotNull(finalResponse.getChecksumDataForNewFile());
         assertEquals(finalResponse.getChecksumDataForNewFile().getChecksumSpec(), csSpec);
-        
+
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(audits.getCallsForAuditEvent(), 1, "Should make 1 put-file audit trail");
     }

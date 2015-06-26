@@ -22,20 +22,23 @@
 package org.bitrepository.service.contributor;
 
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.service.AlarmDispatcher;
 
 /**
  * The context for the contributor mediator.
  */
 public class ContributorContext {
+    protected final FileExchange fileExchange;
     private final ResponseDispatcher responseDispatcher;
     private final AlarmDispatcher alarmDispatcher;
     private final Settings settings;
 
-    public ContributorContext(ResponseDispatcher responseDispatcher, AlarmDispatcher alarmDispatcher, Settings settings) {
+    public ContributorContext(ResponseDispatcher responseDispatcher, AlarmDispatcher alarmDispatcher, Settings settings,
+                              FileExchange fileExchange) {
         this.responseDispatcher = responseDispatcher; this.alarmDispatcher = alarmDispatcher;
-
         this.settings = settings;
+        this.fileExchange = fileExchange;
     }
 
     public ResponseDispatcher getResponseDispatcher() {
@@ -48,5 +51,9 @@ public class ContributorContext {
 
     public Settings getSettings() {
         return settings;
+    }
+
+    public FileExchange getFileExchange() {
+        return fileExchange;
     }
 }

@@ -34,6 +34,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 /**
  * Tests the general client functionality. A number of abstract methods with needs to be implemented with concrete
@@ -129,8 +130,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
     public void oneContributorNotRespondingTest() throws Exception {
         addDescription("Verify that the client works correct without receiving identification responses from all " +
                 "contributors.");
-        addFixture("Set the a identification timeout to 3 second.");
-        settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
+        addFixture("Set the a identification timeout to 100 ms.");
+        settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(100));
 
         addStep("Start the operation.",
                 "A IDENTIFY_REQUEST_SENT should be generate and a identification request should be sent.");
@@ -144,10 +145,9 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         messageBus.sendMessage(identifyResponse1);
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
 
-        addStep("Wait 5 seconds.",
+        addStep("Wait 1 second.",
                 "A IDENTIFY_TIMEOUT event should be generated, followed by a IDENTIFICATION_COMPLETE.");
-        assertEquals(testEventHandler.waitForEvent(
-                5, TimeUnit.SECONDS).getEventType(), OperationEventType.IDENTIFY_TIMEOUT);
+        assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_TIMEOUT);
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
 
@@ -171,16 +171,15 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         addDescription("Tests the the client handles lack of a IdentifyResponse gracefully. " +
                 "More concrete this means that the occurrence of a identification timeout should be handled correctly");
 
-        addStep("Set a 1 second timeout for identifying contributors.", "");
-        settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(3000));
+        addStep("Set a 100 ms timeout for identifying contributors.", "");
+        settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(100));
 
         addStep("Start the operation.", "A IDENTIFY_REQUEST_SENT event should be generated.");
         startOperation(testEventHandler);
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
-        addStep("Wait for 3 seconds", "An IdentifyPillarTimeout event should be received followed by a FAILED event");
-        assertEquals(testEventHandler.waitForEvent(3, TimeUnit.SECONDS).getEventType(),
-                OperationEventType.IDENTIFY_TIMEOUT);
+        addStep("Wait for 1 second", "An IdentifyPillarTimeout event should be received followed by a FAILED event");
+        assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_TIMEOUT);
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
@@ -191,8 +190,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
     public void operationTimeoutTest() throws Exception {
         addDescription("Tests the the client handles lack of final responses gracefully.");
 
-        addStep("Set a 3 second operation timeout.", "");
-        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
+        addStep("Set a 100 ms operation timeout.", "");
+        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(100));
 
         addStep("Start the operation",
                 "A IDENTIFY_REQUEST_SENT event should be received.");
@@ -215,8 +214,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         waitForRequest(pillar1Receiver);
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
 
-        addStep("Wait for 5 seconds", "An FAILED event should be received");
-        assertEquals(testEventHandler.waitForEvent(5, TimeUnit.SECONDS).getEventType(),
+        addStep("Wait for 1 second", "An FAILED event should be received");
+        assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEventType.FAILED);
     }
     
@@ -224,8 +223,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
     public void collectionIDIncludedInEventsTest() throws Exception {
         addDescription("Tests the the client provides collectionID in events.");
 
-        addStep("Set a 3 second operation timeout.", "");
-        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(3000));
+        addStep("Set a 0.5 second operation timeout.", "");
+        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(500));
 
         addStep("Start the operation", "A IDENTIFY_REQUEST_SENT event should be received.");
         startOperation(testEventHandler);
@@ -264,8 +263,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         assertEquals(event5.getEventType(), OperationEventType.REQUEST_SENT);
         assertEquals(event5.getCollectionID(), collectionID);
 
-        addStep("Wait for 5 seconds", "An FAILED event should be received");
-        OperationEvent event6 = testEventHandler.waitForEvent(5, TimeUnit.SECONDS);
+        addStep("Wait for 1 second", "An FAILED event should be received");
+        OperationEvent event6 = testEventHandler.waitForEvent();
         assertEquals(event6.getEventType(), OperationEventType.FAILED);
         assertEquals(event6.getCollectionID(), collectionID);
     }    
@@ -274,17 +273,16 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
     public void conversationTimeoutTest() throws Exception {
         addDescription("Tests the the client handles lack of IdentifyPillarResponses gracefully  ");
 
-        addStep("Set a 3 second ConversationTimeout.", "");
-        settingsForCUT.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(3000));
+        addStep("Set a 100 ms ConversationTimeout.", "");
+        settingsForCUT.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(100));
         renewConversationMediator();
 
         addStep("Start the operation",
-                "A IDENTIFY_REQUEST_SENT event should be generated followed by a FAILED event after 2 seconds.");
+                "A IDENTIFY_REQUEST_SENT event should be generated followed by a FAILED event after 100 ms.");
         startOperation(testEventHandler);
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
-        Assert.assertNotNull(waitForIdentifyRequest());
-        assertEquals(testEventHandler.waitForEvent(5, TimeUnit.SECONDS).getEventType(),
-                OperationEventType.FAILED);
+        assertNotNull(waitForIdentifyRequest());
+        assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
 

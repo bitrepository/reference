@@ -56,17 +56,12 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
     public void initializeSuite(ITestContext testContext) {
         super.initializeSuite(testContext);
         defineMetricAppenders();
-        initializeCollectionHelper();
     }
 
     private void defineMetricAppenders() {
         MetricAppender consoleAppender = new ConsoleMetricAppender();
         consoleAppender.disableSingleMeasurement(true);
         metricAppenders.add(consoleAppender);
-    }
-
-    private void initializeCollectionHelper() {
-        collectionHelper = new CollectionTestHelper(settingsForCUT, httpServer);
     }
 
     @Override

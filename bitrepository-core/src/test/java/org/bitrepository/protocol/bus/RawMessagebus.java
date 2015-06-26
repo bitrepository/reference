@@ -71,16 +71,6 @@ public class RawMessagebus {
         }
     }
 
-    public void signMessage(Message msg) throws JMSException {
-        String messageSignature = null;
-        try {
-            messageSignature = securityManager.signMessage(((TextMessage) msg).getText());
-        } catch (MessageSigningException e) {
-            throw new RuntimeException(e);
-        }
-        msg.setStringProperty(ActiveMQMessageBus.MESSAGE_SIGNATURE_KEY, messageSignature);
-    }
-
     public void addHeader(Message msg,
                           String messageClass,
                           String replyTo,
@@ -95,17 +85,13 @@ public class RawMessagebus {
 
     public Message createMessage(org.bitrepository.bitrepositorymessages.Message message) throws JMSException {
         JaxbHelper jaxbHelper = new JaxbHelper("xsd/", "BitRepositoryMessages.xsd");
-        String xmlContent = null;
+        String xmlContent;
         try {
             xmlContent = jaxbHelper.serializeToXml(message);
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
         return producerSession.createTextMessage(xmlContent);
-    }
-
-    public Message createMessage(String content) throws JMSException {
-        return producerSession.createTextMessage(content);
     }
 
     public void sendMessage(String destinationID, Message msg) throws JMSException {
