@@ -50,7 +50,7 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
     private final static String FINISH = "FINISH";
     private BlockingQueue<String> finishQueue = new LinkedBlockingQueue<String>(1);
     MultiMessageListener listener;
-
+    
     @Override
     protected void setupMessageBus() {
         if (useEmbeddedMessageBus() && broker == null) {

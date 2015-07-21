@@ -28,10 +28,12 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+
 import javax.jms.JMSException;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
+
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -52,6 +54,7 @@ import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
@@ -98,7 +101,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         collectionID = settingsForTestClient.getCollections().get(0).getID();
 
         securityManager = createSecurityManager();
-        setupMessageBus();
         DEFAULT_FILE_ID = "DefaultFile";
         try {
             DEFAULT_FILE_URL = httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID);
@@ -121,6 +123,11 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         receiverManager.addReceiver(receiver);
     }
 
+    @BeforeClass(alwaysRun = true) 
+    public void initMessagebus() {
+        setupMessageBus();
+    }
+    
     @AfterSuite(alwaysRun = true)
     public void shutdownSuite() {
         teardownMessageBus();
