@@ -38,12 +38,11 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.StreamUtils;
@@ -180,7 +179,7 @@ public class HttpFileExchange implements FileExchange {
      * that the transaction has not been successful.
      */
     private void performUpload(InputStream in, URL url) throws IOException {
-        HttpClient httpClient = null;
+        CloseableHttpClient httpClient = null;
         try {
             httpClient = getHttpClient();
             HttpPut httpPut = new HttpPut(url.toExternalForm());
@@ -198,7 +197,7 @@ public class HttpFileExchange implements FileExchange {
                     + "received the response line '" + response.getStatusLine() + "'.");
         } finally {
             if(httpClient != null) {
-                httpClient.getConnectionManager().shutdown();
+                httpClient.close();
             }
         }
     }
@@ -240,20 +239,20 @@ public class HttpFileExchange implements FileExchange {
      * For HTTPS this should be overridden with SSL context.
      * @return The HttpClient for this FileExchange.
      */
-    protected HttpClient getHttpClient() {
-        return new DefaultHttpClient();
+    protected CloseableHttpClient getHttpClient() {
+        return HttpClientBuilder.create().build();
     }
 
     @Override
     public void deleteFile(URL url) throws IOException, URISyntaxException {
-        HttpClient httpClient = null;
+        CloseableHttpClient httpClient = null;
         try {
             httpClient = getHttpClient();
             HttpDelete deleteOperation = new HttpDelete(url.toURI()); 
             httpClient.execute(deleteOperation);
         } finally {
             if(httpClient != null) {
-                httpClient.getConnectionManager().shutdown();
+                httpClient.close();
             }
         }
     }
