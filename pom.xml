@@ -195,6 +195,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <groups>regressiontest</groups>
+                    <runOrder>random</runOrder>
                 </configuration>
             </plugin>
             <plugin>

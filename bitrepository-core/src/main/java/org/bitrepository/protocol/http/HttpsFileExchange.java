@@ -33,11 +33,8 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.CoordinationLayerException;
 
@@ -86,17 +83,14 @@ public class HttpsFileExchange extends HttpFileExchange {
     };
 
     @Override
-    protected HttpClient getHttpClient() {
-        HttpClient client = new DefaultHttpClient();
+    protected CloseableHttpClient getHttpClient() {
+        HttpClientBuilder builder = HttpClientBuilder.create();
         try {
-            SSLSocketFactory socketFactory = new SSLSocketFactory(SSLContext.getDefault());
-            Scheme sch = new Scheme("https", 
-                    settings.getReferenceSettings().getFileExchangeSettings().getPort().intValue(), socketFactory);
-            client.getConnectionManager().getSchemeRegistry().register(sch);
+            builder.setSslcontext(SSLContext.getDefault());
         } catch (Exception e) {
             throw new IllegalStateException("Could not make Https Client.", e);
         }
     
-        return client;
+        return builder.build();
     }
 }
