@@ -1,22 +1,22 @@
 package org.bitrepository.protocol.bus;
 
+import static org.testng.Assert.assertEquals;
+
+import java.util.Arrays;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
+
+import javax.jms.Message;
+import javax.jms.MessageListener;
+
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
-import org.bitrepository.protocol.messagebus.SimpleMessageBus;
 import org.testng.annotations.Test;
-
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import java.util.Arrays;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.TimeUnit;
-
-import static org.testng.Assert.assertEquals;
 
 public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
     

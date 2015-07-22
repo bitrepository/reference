@@ -339,6 +339,8 @@ public class RestIntegrityService {
         jg.writeObjectField("totalFileCount", stat.getFileCount());
         jg.writeObjectField("missingFilesCount", stat.getMissingFiles());
         jg.writeObjectField("checksumErrorCount", stat.getChecksumErrors());
+        jg.writeObjectField("obsoleteChecksumsCount", stat.getObsoleteChecksums());
+        jg.writeObjectField("missingChecksumsCount", stat.getMissingChecksums());
         jg.writeEndObject();
     }
 

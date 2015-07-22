@@ -24,6 +24,7 @@ package org.bitrepository.protocol.bus;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.ExceptionListener;
@@ -32,14 +33,13 @@ import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
-import javax.jms.TextMessage;
 import javax.xml.bind.JAXBException;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.protocol.security.exception.MessageSigningException;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
