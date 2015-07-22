@@ -171,6 +171,7 @@ public class HttpFileExchange implements FileExchange {
      * 
      * TODO perhaps make it synchronized around the URL, to prevent data from 
      * trying to uploaded several times to the same location simultaneously. 
+     * Though it would not prevent synchronous upload from independent machines or JVMs. 
      * 
      * @param in The data to put into the url.
      * @param url The place to put the data.
@@ -179,6 +180,9 @@ public class HttpFileExchange implements FileExchange {
      * that the transaction has not been successful.
      */
     private void performUpload(InputStream in, URL url) throws IOException {
+        ArgumentValidator.checkNotNull(in, "InputStream in");
+        ArgumentValidator.checkNotNull(url, "URL url");
+        
         CloseableHttpClient httpClient = null;
         try {
             httpClient = getHttpClient();
@@ -211,7 +215,6 @@ public class HttpFileExchange implements FileExchange {
         try {
             String urlEncodedFilename = URLEncoder.encode(filename, "UTF-8");
 
-            // create the URL based on hardcoded values (change to using settings!)
             URL res = new URL(feSettings.getProtocolType().value(), feSettings.getServerName(), 
                     feSettings.getPort().intValue(), feSettings.getPath() + "/" + urlEncodedFilename);
             return res;
