@@ -8,6 +8,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
+
+import org.bitrepository.integrityservice.reports.IntegrityReportConstants.ReportPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,11 +30,11 @@ public class IntegrityReportWriter {
     
     public IntegrityReportWriter(File reportDir) {
         this.reportDir = reportDir;
-        missingFilesWriter = new IntegrityReportPartWriter(IntegrityReportConstants.MISSING_FILE, reportDir);
-        checksumIssuesWriter = new IntegrityReportPartWriter(IntegrityReportConstants.CHECKSUM_ISSUE, reportDir);
-        missingChecksumsWriter = new IntegrityReportPartWriter(IntegrityReportConstants.MISSING_CHECKSUM, reportDir);
-        obsoleteChecksumsWriter = new IntegrityReportPartWriter(IntegrityReportConstants.OBSOLETE_CHECKSUM, reportDir);
-        deletedFilesWriter2 = new IntegrityReportPartWriter(IntegrityReportConstants.DELETED_FILE, reportDir);
+        missingFilesWriter = new IntegrityReportPartWriter(ReportPart.MISSING_FILE, reportDir);
+        checksumIssuesWriter = new IntegrityReportPartWriter(ReportPart.CHECKSUM_ISSUE, reportDir);
+        missingChecksumsWriter = new IntegrityReportPartWriter(ReportPart.MISSING_CHECKSUM, reportDir);
+        obsoleteChecksumsWriter = new IntegrityReportPartWriter(ReportPart.OBSOLETE_CHECKSUM, reportDir);
+        deletedFilesWriter2 = new IntegrityReportPartWriter(ReportPart.DELETED_FILE, reportDir);
     }
     
     /**

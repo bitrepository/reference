@@ -80,6 +80,8 @@
               <th>Pillar ID</th>
               <th>Total number of files</th>
               <th>Number of missing files</th>
+              <th>Number of missing checksums</th>
+              <th>Number of obsolete checksums</th>
               <th>Number of checksum errors</th>
             </tr>
           </thead>
@@ -227,11 +229,21 @@
         title = type + " on " + id;
         member = "missingFilesCount";
         url += "getMissingFileIDs/";
-      } else if(type == "Checksum errors") {
-        element = "#" + id + "-checksumErrors";
+      } else if(type == "Missing checksums") {
+        element = "#" + id + "-missingChecksums";
         title = type + " on " + id;
-        member = "checksumErrorCount";
-        url += "getChecksumErrorFileIDs/";
+        member = "missingChecksumsCount";
+        url += "getMissingChecksumsFileIDs/";
+      } else if(type == "Obsolete checksums") {
+          element = "#" + id + "-obsoleteChecksums";
+          title = type + " on " + id;
+          member = "obsoleteChecksumsCount";
+          url += "getObsoleteChecksumsFileIDs/";
+      } else if(type == "Checksum errors") {
+          element = "#" + id + "-checksumErrors";
+          title = type + " on " + id;
+          member = "checksumErrorCount";
+          url += "getChecksumErrorFileIDs/";
       }
       url += "?pillarID=" + id + "&collectionID=" + getCollectionID();
       if(element != null) {
@@ -239,19 +251,23 @@
       }      
     }
 
-    function makePillarRow(id, totalFileCount, missingFilesCount, checksumErrorCount) {
+    function makePillarRow(id, totalFileCount, missingFilesCount, missingChecksumsCount, obsoleteChecksumsCount, checksumErrorCount) {
       var html = "";
       html += "<tr id=\"" + id + "-row\">";
       html += "<td><div style=\"padding:5px\">" + id + "</div></td>";
       html += "<td><a class=\"btn btn-link\" id=\"" + id + "-totalFileCount\">" + totalFileCount + "</a></td>";
       html += "<td><a class=\"btn btn-link\" id=\"" + id + "-missingFiles\">" + missingFilesCount + "</a></td>";
+      html += "<td><a class=\"btn btn-link\" id=\"" + id + "-missingChecksums\">" + missingChecksumsCount + "</a></td>";
+      html += "<td><a class=\"btn btn-link\" id=\"" + id + "-obsoleteChecksums\">" + obsoleteChecksumsCount + "</a></td>";
       html += "<td><a class=\"btn btn-link\" id=\"" + id + "-checksumErrors\">" + checksumErrorCount + "</a></td></tr>";
       return html;
     }
 
-    function updatePillarRow(id, totalFileCount, missingFilesCount, checksumErrorCount) {
+    function updatePillarRow(id, totalFileCount, missingFilesCount, missingChecksumsCount, obsoleteChecksumsCount, checksumErrorCount) {
       $("#" + id + "-totalFileCount").html(totalFileCount);
       $("#" + id + "-missingFiles").html(missingFilesCount);
+      $("#" + id + "-missingChecksums").html(missingChecksumsCount);
+      $("#" + id + "-obsoleteChecksums").html(obsoleteChecksumsCount);
       $("#" + id + "-checksumErrors").html(checksumErrorCount);
     }
 
@@ -263,17 +279,25 @@
         for (var i = 0; i < j.length; i++) {
           if(pillars[j[i].pillarID] == null) {
             $("#integrity-status-table-body").append(makePillarRow(j[i].pillarID, 
-                j[i].totalFileCount, j[i].missingFilesCount, j[i].checksumErrorCount));
+                j[i].totalFileCount, j[i].missingFilesCount, j[i].missingChecksumsCount, 
+                j[i].obsoleteChecksumsCount, j[i].checksumErrorCount));
             pillars[j[i].pillarID] = {totalFileCount : j[i].totalFileCount,
                                       missingFilesCount : j[i].missingFilesCount,
+                                      missingChecksumsCount : j[i].missingChecksumsCount,
+                                      obsoleteChecksumsCount : j[i].obsoleteChecksumsCount,
                                       checksumErrorCount : j[i].checksumErrorCount};
             attachButtonAction(j[i].pillarID, "Total files");
             attachButtonAction(j[i].pillarID, "Missing files");
+            attachButtonAction(j[i].pillarID, "Missing checksums");
+            attachButtonAction(j[i].pillarID, "Obsolete checksums");
             attachButtonAction(j[i].pillarID, "Checksum errors");
           } else {
-            updatePillarRow(j[i].pillarID, j[i].totalFileCount, j[i].missingFilesCount, j[i].checksumErrorCount);
+            updatePillarRow(j[i].pillarID, j[i].totalFileCount, j[i].missingFilesCount, j[i].missingChecksumsCount, 
+                    j[i].obsoleteChecksumsCount, j[i].checksumErrorCount);
             pillars[j[i].pillarID].totalFileCount = j[i].totalFileCount;
             pillars[j[i].pillarID].missingFilesCount = j[i].missingFilesCount;
+            pillars[j[i].pillarID].missingChecksumsCount = j[i].missingChecksumsCount;
+            pillars[j[i].pillarID].obsoleteChecksumsCount = j[i].obsoleteChecksumsCount;
             pillars[j[i].pillarID].checksumErrorCount = j[i].checksumErrorCount;
           }
         }

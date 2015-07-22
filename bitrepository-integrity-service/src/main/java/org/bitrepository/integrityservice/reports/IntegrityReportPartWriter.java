@@ -8,13 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.bitrepository.integrityservice.reports.IntegrityReportConstants.ReportPart;
+
 /**
  * Class to write files for a specific part of the report. 
  * Files are written as list of fileIDs per component (one file per component) 
  */
 public class IntegrityReportPartWriter {
 
-    private final String partName;
+    private final ReportPart part;
     private final File reportDir;
     private final Map<String, BufferedWriter> pillarParts = new TreeMap<String, BufferedWriter>();
 
@@ -23,8 +25,8 @@ public class IntegrityReportPartWriter {
      * @param partName The name of the part (e.g. checksumIssues, missingFiles, etc.)
      * @param reportDir The directory to store the files in
      */
-    public IntegrityReportPartWriter(String partName, File reportDir) {
-        this.partName = partName;
+    public IntegrityReportPartWriter(ReportPart part, File reportDir) {
+        this.part = part;
         this.reportDir = reportDir;
     }
     
@@ -36,7 +38,7 @@ public class IntegrityReportPartWriter {
     public void writeIssue(String pillarID, String fileID) throws IOException {
         BufferedWriter issueWriter;
         if(!pillarParts.containsKey(pillarID)) {
-            File checksumIssueFile = ReportWriterUtils.makeEmptyFile(reportDir, partName + "-" + pillarID);
+            File checksumIssueFile = ReportWriterUtils.makeEmptyFile(reportDir, part.getPostFix() + "-" + pillarID);
             issueWriter = new BufferedWriter(new FileWriter(checksumIssueFile, true));
             pillarParts.put(pillarID, issueWriter);
         } else {
@@ -70,7 +72,7 @@ public class IntegrityReportPartWriter {
     public Map<String, File> getSectionFiles() {
         Map<String, File> files = new HashMap<String, File>();
         for(String part : pillarParts.keySet()) {
-            File f = new File(reportDir, partName + "-" + part);
+            File f = new File(reportDir, this.part.getPostFix() + "-" + part);
             files.put(part, f);
         }
         return files;
