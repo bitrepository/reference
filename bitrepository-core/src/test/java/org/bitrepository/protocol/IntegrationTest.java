@@ -234,13 +234,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * Hooks up the message bus.
      */
     protected void setupMessageBus() {
-//        if (useEmbeddedMessageBus() && broker == null) {
-//            broker = new LocalActiveMQBroker(settingsForTestClient.getMessageBusConfiguration());
-//            broker.start();
-//        }
-
         messageBus = new SimpleMessageBus();
-                //new MessageBusWrapper(ProtocolComponentFactory.getInstance().getMessageBus(settingsForTestClient, securityManager), testEventManager);
     }
 
     /**
