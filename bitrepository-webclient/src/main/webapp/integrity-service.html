@@ -209,6 +209,7 @@
       return function() {
         pager = new Pager(getPagingLimit(myID, myMember), 20, myUrl, "#modalPager", "#modalPagerBody");
         $("#modalPagerLabel").html(myTitle);
+        $("#modalPagerBody").html("<p>Loading</p>");
         pager.getPage(1)();
         $("#modalPagerDialog").modal('show');
       }
