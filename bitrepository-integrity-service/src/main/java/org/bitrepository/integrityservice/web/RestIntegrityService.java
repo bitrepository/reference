@@ -129,10 +129,10 @@ public class RestIntegrityService {
     
     /**
      * Method to get the list of missing checksums per pillar in a given collection. 
-     * @param collectionID, the collectionID from which to return missing files
-     * @param pillarID, the ID of the pillar in the collection from which to return missing files
+     * @param collectionID, the collectionID
+     * @param pillarID, the ID of the pillar in the collection 
      * @param pageNumber, the page number for calculating offsets (@see pageSize)
-     * @param pageSize, the number of checksum errors per page. 
+     * @param pageSize, the maximum number of results per page. 
      */
     @GET
     @Path("/getMissingChecksumsFileIDs/")
@@ -168,23 +168,6 @@ public class RestIntegrityService {
             
         return streamPartFromLatestReport(ReportPart.OBSOLETE_CHECKSUM, collectionID, pillarID, firstID, pageSize);
     }
-    
-    
-    private StreamingOutput streamPartFromLatestReport(ReportPart part, String collectionID, String pillarID, 
-            int firstID, int maxLines) {
-        try {
-            IntegrityReportReader reader = integrityReportProvider.getLatestIntegrityReportReader(collectionID);
-            File reportPart = reader.getReportPart(part.getPostFix(), pillarID);
-            return JSONStreamingTools.StreamFileParts(reportPart, firstID, maxLines);
-        } catch (FileNotFoundException e) {
-            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-                    .entity("No integrity '" + part.getHumanString() + "' report part for collection: " + collectionID 
-                            + " and pillar: " + pillarID + " found!")
-                    .type(MediaType.TEXT_PLAIN)
-                    .build());
-        }
-    }
-    
     
     /**
      * Method to get the list of present files on a pillar in a given collection. 
@@ -371,6 +354,28 @@ public class RestIntegrityService {
         return writer.toString();
     }
     
+    /**
+     * Private method to help stream parts from a given ReportPart, collection and pillar. 
+     * @param part The part to stream issues from
+     * @param collectionID The ID of the collection
+     * @param pillarID The ID of the pillar 
+     * @param firstID Index of the first result
+     * @param maxLines The maximum number of lines to stream
+     */
+    private StreamingOutput streamPartFromLatestReport(ReportPart part, String collectionID, String pillarID, 
+            int firstID, int maxLines) {
+        try {
+            IntegrityReportReader reader = integrityReportProvider.getLatestIntegrityReportReader(collectionID);
+            File reportPart = reader.getReportPart(part.getPartname(), pillarID);
+            return JSONStreamingTools.StreamFileParts(reportPart, firstID, maxLines);
+        } catch (FileNotFoundException e) {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                    .entity("No integrity '" + part.getHumanString() + "' report part for collection: " + collectionID 
+                            + " and pillar: " + pillarID + " found!")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build());
+        }
+    }
     
     private void writeIntegrityStatusObject(PillarCollectionStat stat, JsonGenerator jg) throws JsonProcessingException, IOException {
         jg.writeStartObject();

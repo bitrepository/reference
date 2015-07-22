@@ -38,7 +38,7 @@ public class IntegrityReportPartWriter {
     public void writeIssue(String pillarID, String fileID) throws IOException {
         BufferedWriter issueWriter;
         if(!pillarParts.containsKey(pillarID)) {
-            File checksumIssueFile = ReportWriterUtils.makeEmptyFile(reportDir, part.getPostFix() + "-" + pillarID);
+            File checksumIssueFile = ReportWriterUtils.makeEmptyFile(reportDir, part.getPartname() + "-" + pillarID);
             issueWriter = new BufferedWriter(new FileWriter(checksumIssueFile, true));
             pillarParts.put(pillarID, issueWriter);
         } else {
@@ -72,7 +72,7 @@ public class IntegrityReportPartWriter {
     public Map<String, File> getSectionFiles() {
         Map<String, File> files = new HashMap<String, File>();
         for(String part : pillarParts.keySet()) {
-            File f = new File(reportDir, this.part.getPostFix() + "-" + part);
+            File f = new File(reportDir, this.part.getPartname() + "-" + part);
             files.put(part, f);
         }
         return files;
