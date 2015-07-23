@@ -129,6 +129,16 @@ create table preservation (
                                     -- Enforce that each contributor only can exist once per collection.
 );
 
+
+create table collection_progress (
+    collectionID VARCHAR(255) NOT NULL,
+    contributorID VARCHAR(255) NOT NULL,
+    latest_sequence_number BITINT,
+   
+    FOREIGN KEY (collectionID) REFERENCES collection(collectionid),
+    FOREIGN KEY (contributorID) REFERENCES contributor(contributor_id),
+    UNIQUE (collectionID, contributorID)
+);
 --*************************************************************************--
 -- Name:     audittrail
 -- Descr.:   Container for the audits with their sequence number, the guid

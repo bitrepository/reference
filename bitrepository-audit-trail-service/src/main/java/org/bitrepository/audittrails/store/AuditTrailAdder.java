@@ -107,6 +107,19 @@ public class AuditTrailAdder {
                 + " WHERE " + ACTOR_NAME + " = ?)," 
                 + " ?, ?, ?, ?, ?, ? )";
     
+    private final String insertLatestSequence = "INSERT INTO collection_progress "
+            + "(collectionID, contributorID, latest_sequence_number)"
+            + " ( SELECT collectionID, ?, ? FROM collections"
+                + " WHERE collectionID = ?"
+                + " AND NOT EXISTS ( SELECT * FROM collection_progress"
+                    + " WHERE collectionID = ?"
+                    + " AND contributorID = ?))";
+
+    private final String updateLatestSequence = "UPDATE collection_progress"
+            + " SET latest_sequence_number = ? "
+            + " WHERE collectionID = ?"
+            + " AND contributorID = ?";
+    
     private Logger log = LoggerFactory.getLogger(getClass());
     
     private final String collectionID;

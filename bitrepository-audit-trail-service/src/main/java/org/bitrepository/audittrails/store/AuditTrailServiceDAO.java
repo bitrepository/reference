@@ -122,6 +122,18 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         }
         return 0;
     }    
+    
+    public long largestSequenceNumber2(String contributorID, String collectionID) {
+        ArgumentValidator.checkNotNullOrEmpty(contributorID, "String contributorId");
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionId");
+        
+        String sql = "SELECT latest_sequence_number FROM collection_progress"
+                + " WHERE collectionID = ?"
+                + " AND contributorID = ?";
+        
+        Long seq = DatabaseUtils.selectFirstLongValue(dbConnector, sql, contributorID, collectionID);
+        return (seq != null ? seq.longValue() : 0);
+    }
 
     @Override
     public long getPreservationSequenceNumber(String contributorId, String collectionId) {
