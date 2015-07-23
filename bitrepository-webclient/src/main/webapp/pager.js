@@ -77,9 +77,9 @@
           $(contentElement).html(html);
           self.makePager(page);
         }).fail(function() {
-        	var html = "<div class=\"alert alert-error\">"
-        		html += "Failed to load page";
-        		html += "</div>"
+            var html = "<div class=\"alert alert-error\">"
+            html += "Failed to load page";
+            html += "</div>"
             $(contentElement).html(html);		
         });
       };
