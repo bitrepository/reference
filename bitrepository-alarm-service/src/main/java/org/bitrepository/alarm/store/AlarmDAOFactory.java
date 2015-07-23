@@ -16,9 +16,9 @@ public class AlarmDAOFactory {
                 settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
         String dbDriver = settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase().getDriverClass();
         if(dbDriver.equals(derbyDriver)) {
-            return new AlarmServiceDAO(dm);
+            return new DerbyAlarmServiceDAO(dm);
         } else if(dbDriver.equals(postgressDriver)) {
-            return new AlarmServiceDAO(dm);
+            return new PostgresAlarmServiceDAO(dm);
         } else {
             throw new UnsupportedDatabaseTypeException("The database for driver: '" + dbDriver
                     + "' is not supported, use '" + derbyDriver + "' or '" + postgressDriver + "'");
