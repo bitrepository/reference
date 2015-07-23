@@ -78,14 +78,15 @@ public final class ProtocolComponentFactory {
         if (fileExchange == null) {
             if((settings.getReferenceSettings().getFileExchangeSettings() != null )) {
                 ProtocolType protocolType = settings.getReferenceSettings().getFileExchangeSettings().getProtocolType();
-                if(protocolType == ProtocolType.HTTPS) {
+                if(protocolType == ProtocolType.HTTP) {
+                    fileExchange = new HttpFileExchange(settings);
+                } else if (protocolType == ProtocolType.HTTPS) {
                     fileExchange = new HttpsFileExchange(settings);
                 } else if (protocolType == ProtocolType.FILE) {
                     fileExchange = new LocalFileExchange(
                             settings.getReferenceSettings().getFileExchangeSettings().getPath());
                 }
-            }
-            else {
+            } else {
                 fileExchange = new HttpFileExchange(settings);
             }
         }

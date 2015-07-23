@@ -27,12 +27,14 @@ package org.bitrepository.protocol.http;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.bitrepository.common.settings.Settings;
@@ -43,7 +45,7 @@ import org.bitrepository.protocol.CoordinationLayerException;
  */
 public class HttpsFileExchange extends HttpFileExchange {
     /** The verifier for all the hostnames.*/
-    private final AllHostnameVerifier hostnameVerifier;
+    private final X509HostnameVerifier hostnameVerifier;
     
     /**
      * Initialise HTTP file exchange.
@@ -51,7 +53,7 @@ public class HttpsFileExchange extends HttpFileExchange {
      */
     public HttpsFileExchange(Settings settings) {
         super(settings);
-        hostnameVerifier = new AllHostnameVerifier();
+        hostnameVerifier = new AllowAllHostnameVerifier();
     }
     
     /**
@@ -71,23 +73,15 @@ public class HttpsFileExchange extends HttpFileExchange {
             throw new CoordinationLayerException("Could not open the connection to the url '" + url + "'", e);
         }
     }
-    
-    /**
-     * A HostnameVerifier which verifies all hostnames.
-     */
-    private class AllHostnameVerifier implements HostnameVerifier {  
-        @Override
-        public boolean verify(String string, SSLSession sslSession) {
-            return true;
-        }
-    };
 
     @Override
     protected CloseableHttpClient getHttpClient() {
         HttpClientBuilder builder = HttpClientBuilder.create();
         try {
-            builder.setSslcontext(SSLContext.getDefault());
-        } catch (Exception e) {
+            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(SSLContext.getDefault(), 
+                    hostnameVerifier);
+            builder.setSSLSocketFactory(sslsf);
+        } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("Could not make Https Client.", e);
         }
     

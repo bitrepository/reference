@@ -306,6 +306,7 @@ public abstract class CommandLineClient {
      */
     protected File findTheFile() {
         if(!cmdHandler.hasOption(Constants.FILE_ARG)) {
+            output.warn("No file argument was given, so no file can be found.");
             return null;
         }
         String filePath = cmdHandler.getOptionValue(Constants.FILE_ARG);
