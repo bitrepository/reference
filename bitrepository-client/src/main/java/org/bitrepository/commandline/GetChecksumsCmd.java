@@ -87,16 +87,6 @@ public class GetChecksumsCmd extends CommandLineClient {
     }
 
     /**
-     * Run the default validation, and validates that only file or URL is given.
-     * Also, if it is an URL is given, then it must also be given the checksum and the file id.
-     */
-    @Override
-    protected void validateArguments() {
-        super.validateArguments();
-        validateRequestChecksumSpec();
-    }
-
-    /**
      * Perform the GetChecksums operation.
      */
     @Override

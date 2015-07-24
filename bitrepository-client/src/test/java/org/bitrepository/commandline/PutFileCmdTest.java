@@ -153,19 +153,6 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
         new PutFileCmd(args);
     }
 
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
-    public void badChecksumAlgorithmArgumentTest() throws Exception {
-        addDescription("Test failure giving non-existing checksum algorithm as argument.");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
-                "-C" + DEFAULT_CHECKSUM,
-                "-c" + DEFAULT_COLLECTION_ID, 
-                "-i" + DEFAULT_FILE_ID,
-                "-R" + "NonExistingChecksumType"};
-        new PutFileCmd(args);
-    }
-
     @Test(groups = { "regressiontest" })
     public void checksumArgumentNonSaltAlgorithmWitoutSaltTest() throws Exception {
         addDescription("Test MD5 checksum without salt -> no failure");
@@ -176,20 +163,6 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-i" + DEFAULT_FILE_ID,
                 "-R" + "MD5"};
-        new PutFileCmd(args);
-    }
-
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
-    public void checksumArgumentNonSaltAlgorithmWithSaltTest() throws Exception {
-        addDescription("Test SHA1 checksum with salt -> failure");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
-                "-C" + DEFAULT_CHECKSUM,
-                "-c" + DEFAULT_COLLECTION_ID, 
-                "-i" + DEFAULT_FILE_ID,
-                "-R" + "SHA1",
-                "-S" + "SALT"};
         new PutFileCmd(args);
     }
 
@@ -204,18 +177,6 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
                 "-i" + DEFAULT_FILE_ID,
                 "-R" + "HMAC_SHA256",
                 "-S" + "SALT"};
-        new PutFileCmd(args);
-    }
-
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
-    public void checksumArgumentSaltAlgorithmWithoutSaltTest() throws Exception {
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
-                "-C" + DEFAULT_CHECKSUM,
-                "-c" + DEFAULT_COLLECTION_ID, 
-                "-i" + DEFAULT_FILE_ID,
-                "-R" + "HMAC_SHA512"};
         new PutFileCmd(args);
     }
 }

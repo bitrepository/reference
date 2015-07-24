@@ -35,9 +35,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.commandline.output.DefaultOutputHandler;
 import org.bitrepository.commandline.output.OutputHandler;
+import org.bitrepository.commandline.utils.ChecksumExtractionUtils;
 import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.Base16Utils;
@@ -184,36 +184,6 @@ public abstract class CommandLineClient {
     }
 
     /**
-     * Validates the requested checksum specification.
-     */
-    protected void validateRequestChecksumSpec() {
-        if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
-            try {
-                ChecksumType algorithm = ChecksumType.valueOf(
-                        cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG));
-                if (ChecksumUtils.requiresSalt(algorithm) 
-                        && !cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
-                    throw new IllegalArgumentException("A salted checksum cannot be requested without providing the "
-                            + "salt. Needs parameter: '" + Constants.REQUEST_CHECKSUM_SALT_ARG + "'");
-                }
-                if (!ChecksumUtils.requiresSalt(algorithm) 
-                        && cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
-                    throw new IllegalArgumentException("The given checksum algorithm cannot handle a salt. "
-                            + "Change algorithm for parameter '" + Constants.REQUEST_CHECKSUM_TYPE_ARG + "', or "
-                            + "remove the salt parameter '" + Constants.REQUEST_CHECKSUM_SALT_ARG + "'.");
-                }
-            } catch (NoSuchAlgorithmException e) {
-                throw new IllegalArgumentException("Invalid arguments for the requested checksum.", e);
-            }
-        }
-        if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG) 
-                && !cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
-            throw new IllegalArgumentException("Cannot have a salt without a checksum algorithm. Needs argument '" 
-                    + Constants.REQUEST_CHECKSUM_TYPE_ARG + "'");
-        }
-    }
-
-    /**
      * @return The file ids to request. If a specific file has been given as argument, then it will be returned,
      * otherwise all file ids will be requested.
      */
@@ -257,10 +227,6 @@ public abstract class CommandLineClient {
      * @return The requested checksum spec, or the default checksum from settings if the arguments does not exist.
      */
     protected ChecksumSpecTYPE getRequestChecksumSpecOrDefault() {
-        if(!cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
-            return ChecksumUtils.getDefault(settings);
-        }
-
         return getRequestChecksumSpec();
     }
 
@@ -283,7 +249,7 @@ public abstract class CommandLineClient {
      */
     private ChecksumSpecTYPE getRequestChecksumSpec() {
         ChecksumSpecTYPE res = new ChecksumSpecTYPE();
-        res.setChecksumType(ChecksumType.fromValue(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG)));
+        res.setChecksumType(ChecksumExtractionUtils.extractChecksumType(cmdHandler, settings, output));
 
         if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
             res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(

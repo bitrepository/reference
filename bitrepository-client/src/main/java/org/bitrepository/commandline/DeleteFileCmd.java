@@ -97,7 +97,6 @@ public class DeleteFileCmd extends CommandLineClient {
             throw new IllegalArgumentException("Checksum argument (-C) are mandatory for delete and replace operations" +
                     "as defined in RepositorySettings.");
         }
-        validateRequestChecksumSpec();
     }
 
     /**

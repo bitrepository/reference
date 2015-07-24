@@ -143,8 +143,6 @@ public class ReplaceFileCmd extends CommandLineClient {
             throw new IllegalArgumentException("The URL argument requires also the argument for the ID of the "
                     + "file (-i).");
         }
-
-        validateRequestChecksumSpec();
     }
 
     @Override

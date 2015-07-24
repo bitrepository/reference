@@ -33,20 +33,21 @@ public class CommandLineTest extends ExtendedTestCase {
     private static final String KEY_FILE = "KeyFile";
     private static final String DUMMY_DATA = "DummyData";
 
-    @Test(groups = { "regressiontest" })
-    public void argumentsTester() throws Exception {
+    @Test(groups = { "regressiontest" }, expectedExceptions = Exception.class)
+    public void argumentsTesterUnknownArgument() throws Exception {
         addDescription("Test the handling of arguments by the CommandLineArgumentHandler.");
         CommandLineArgumentsHandler clah = new CommandLineArgumentsHandler();
 
         addStep("Validate arguments without any options.", "Ok, when no arguments, but fails when arguments given.");
         clah.parseArguments(new String[0]);
 
-        try {
-            clah.parseArguments("-Xunknown...");
-            fail("Should fail.");
-        } catch (Exception e) {
-            // expected.
-        }
+        clah.parseArguments("-Xunknown...");
+    }
+
+    @Test(groups = { "regressiontest" }, expectedExceptions = Exception.class)
+    public void argumentsTesterWrongArgument() throws Exception {
+        addDescription("Test the handling of arguments by the CommandLineArgumentHandler.");
+        CommandLineArgumentsHandler clah = new CommandLineArgumentsHandler();
 
         addStep("Validate the default options", "Ok, when both given. Fails if either is missing");
         clah = new CommandLineArgumentsHandler();
@@ -57,12 +58,7 @@ public class CommandLineTest extends ExtendedTestCase {
 
         clah = new CommandLineArgumentsHandler();
         clah.createDefaultOptions();
-        try {
-            clah.parseArguments();
-            fail("Should throw exception, since missing argument.");
-        } catch(Exception e) {
-            // expected
-        }
+        clah.parseArguments();
     }
 
     @Test(groups = { "regressiontest" })

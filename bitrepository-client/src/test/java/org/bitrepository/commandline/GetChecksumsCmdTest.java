@@ -89,17 +89,6 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
         new GetChecksumsCmd(args);
     }
 
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
-    public void badChecksumAlgorithmArgumentTest() throws Exception {
-        addDescription("Test failure giving non-existing checksum algorithm as argument.");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-c" + DEFAULT_COLLECTION_ID, 
-                "-i" + DEFAULT_FILE_ID,
-                "-R" + "NonExistingChecksumType"};
-        new GetChecksumsCmd(args);
-    }
-
     @Test(groups = { "regressiontest" })
     public void checksumArgumentNonSaltAlgorithmWitoutSaltTest() throws Exception {
         addDescription("Test MD5 checksum without salt -> no failure");
@@ -108,18 +97,6 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-i" + DEFAULT_FILE_ID,
                 "-R" + "MD5"};
-        new GetChecksumsCmd(args);
-    }
-
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
-    public void checksumArgumentNonSaltAlgorithmWithSaltTest() throws Exception {
-        addDescription("Test SHA1 checksum with salt -> failure");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-c" + DEFAULT_COLLECTION_ID, 
-                "-i" + DEFAULT_FILE_ID,
-                "-R" + "SHA1",
-                "-S" + "SALT"};
         new GetChecksumsCmd(args);
     }
 
@@ -132,16 +109,6 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
                 "-i" + DEFAULT_FILE_ID,
                 "-R" + "HMAC_SHA256",
                 "-S" + "SALT"};
-        new GetChecksumsCmd(args);
-    }
-
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
-    public void checksumArgumentSaltAlgorithmWithoutSaltTest() throws Exception {
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-c" + DEFAULT_COLLECTION_ID, 
-                "-i" + DEFAULT_FILE_ID,
-                "-R" + "HMAC_SHA512"};
         new GetChecksumsCmd(args);
     }
 }
