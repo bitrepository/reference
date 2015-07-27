@@ -3,6 +3,7 @@ package org.bitrepository.integrityservice.cache.database;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.IntegrityDatabaseManager;
 import org.bitrepository.service.database.DatabaseManager;
+import org.bitrepository.service.database.UnsupportedDatabaseTypeException;
 
 
 /**
