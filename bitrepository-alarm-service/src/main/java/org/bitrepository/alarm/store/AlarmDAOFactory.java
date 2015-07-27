@@ -11,6 +11,9 @@ public class AlarmDAOFactory {
     private static final String derbyDriver = "org.apache.derby.jdbc.EmbeddedDriver";
     private static final String postgressDriver = "org.postgresql.Driver";
     
+    /**
+     * Obtain an instance of AlarmServiceDAO appropriate for the specific database backend. 
+     */
     public static AlarmServiceDAO getAlarmServiceDAOInstance(Settings settings) {
         AlarmDatabaseManager dm = new AlarmDatabaseManager(
                 settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());

@@ -23,6 +23,4 @@ public class PostgresAlarmServiceDAO extends AlarmServiceDAO {
         return extractor.extractAlarms();
     }
 
-
-
 }

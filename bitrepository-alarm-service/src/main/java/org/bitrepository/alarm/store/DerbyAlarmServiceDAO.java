@@ -23,6 +23,4 @@ public class DerbyAlarmServiceDAO extends AlarmServiceDAO {
         return extractor.extractAlarms();
     }
 
-
-
 }
