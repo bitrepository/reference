@@ -57,8 +57,9 @@ public interface AuditTrailStore {
      * ingest audit trails into the store. 
      * @param newAuditTrails The audit trails to be ingested into the store.
      * @param collectionID The id of the collection, where the audit trail events belong.
+     * @param contributorID The id of the contributor, that the audit trail event belongs to.
      */
-    public void addAuditTrails(AuditTrailEvents auditTrailsEvents, String collectionID);
+    public void addAuditTrails(AuditTrailEvents auditTrailsEvents, String collectionID, String contributorID);
     
     /**
      * Retrieves the largest sequence number for a given contributor.

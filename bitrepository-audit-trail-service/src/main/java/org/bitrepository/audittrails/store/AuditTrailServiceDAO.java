@@ -91,11 +91,12 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     }
     
     @Override
-    public void addAuditTrails(AuditTrailEvents auditTrailEvents, String collectionID) {
+    public void addAuditTrails(AuditTrailEvents auditTrailEvents, String collectionID, String contributorID) {
         ArgumentValidator.checkNotNull(auditTrailEvents, "AuditTrailEvents auditTrailEvents");
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
+        ArgumentValidator.checkNotNullOrEmpty(contributorID, "String contributorID");
         
-        AuditTrailAdder adder = new AuditTrailAdder(dbConnector.getConnection(), collectionID);
+        AuditTrailAdder adder = new AuditTrailAdder(dbConnector.getConnection(), collectionID, contributorID);
         adder.addAuditTrails(auditTrailEvents);
     }
     

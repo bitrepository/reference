@@ -109,7 +109,7 @@ public class AuditTrailAdder {
     
     private final String insertLatestSequence = "INSERT INTO collection_progress "
             + "(collectionID, contributorID, latest_sequence_number)"
-            + " ( SELECT collectionID, ?, ? FROM collections"
+            + " ( SELECT collectionID, ?, ? FROM collection"
                 + " WHERE collectionID = ?"
                 + " AND NOT EXISTS ( SELECT * FROM collection_progress"
                     + " WHERE collectionID = ?"
@@ -123,6 +123,7 @@ public class AuditTrailAdder {
     private Logger log = LoggerFactory.getLogger(getClass());
     
     private final String collectionID;
+    private final String contributorID;
     
     private final Connection conn;
     private PreparedStatement addCollectionIDPs;
@@ -130,10 +131,13 @@ public class AuditTrailAdder {
     private PreparedStatement addContributorIDPs;
     private PreparedStatement addFileIDPs;
     private PreparedStatement addAuditTrailPs;
+    private PreparedStatement addLatestSeqPs;
+    private PreparedStatement updateLatestSeqPs;
     
-    public AuditTrailAdder(Connection dbConnection, String collectionID) {
+    public AuditTrailAdder(Connection dbConnection, String collectionID, String contributorID) {
         this.conn = dbConnection;
         this.collectionID = collectionID;
+        this.contributorID = contributorID;
     }
     
     private void init() throws SQLException {
@@ -143,6 +147,8 @@ public class AuditTrailAdder {
         addContributorIDPs = conn.prepareStatement(addContributorSql);
         addFileIDPs = conn.prepareStatement(addFileIDSql);
         addAuditTrailPs = conn.prepareStatement(addAuditTrailSql);
+        updateLatestSeqPs = conn.prepareStatement(updateLatestSequence);
+        addLatestSeqPs = conn.prepareStatement(insertLatestSequence);
     }
     
     /**
@@ -152,14 +158,17 @@ public class AuditTrailAdder {
         try {
             init();
             log.debug("Initialized AuditTrailAdder");
+            Long latestSeq = 0L;
             try {
                 addCollectionID(collectionID);
+                addContributor(contributorID);
                 for(AuditTrailEvent event : events.getAuditTrailEvent()) {
                     addActor(event);
-                    addContributor(event);
                     addFileID(event);
                     addAuditTrail(event);
+                    latestSeq = Math.max(event.getSequenceNumber().longValue(), latestSeq);
                 }
+                updateMaxSeq(latestSeq);
                 log.debug("Done building audit trail batch insert");
                 execute();
                 log.debug("Done executing audit trail batch insert");
@@ -184,10 +193,9 @@ public class AuditTrailAdder {
         addActorNamePs.addBatch();
     }
     
-    private void addContributor(AuditTrailEvent event) throws SQLException {
-        addContributorIDPs.setString(1, event.getReportingComponent());
-        addContributorIDPs.setString(2, event.getReportingComponent());
-        addContributorIDPs.addBatch();
+    private void addContributor(String contributor) throws SQLException {
+        addContributorIDPs.setString(1, contributor);
+        addContributorIDPs.setString(2, contributor);
     }
     
     private void addFileID(AuditTrailEvent event) throws SQLException {
@@ -214,12 +222,26 @@ public class AuditTrailAdder {
         addAuditTrailPs.addBatch();
     }
     
+    private void updateMaxSeq(Long seq) throws SQLException {
+        updateLatestSeqPs.setLong(1, seq);
+        updateLatestSeqPs.setString(2, collectionID);
+        updateLatestSeqPs.setString(3, contributorID);
+        
+        addLatestSeqPs.setString(1, contributorID);
+        addLatestSeqPs.setLong(2, seq);
+        addLatestSeqPs.setString(3, collectionID);
+        addLatestSeqPs.setString(4, collectionID);
+        addLatestSeqPs.setString(5, contributorID);
+    }
+    
     private void execute() throws SQLException {
         addCollectionIDPs.execute();
         addActorNamePs.executeBatch();
-        addContributorIDPs.executeBatch();
+        addContributorIDPs.execute();
         addFileIDPs.executeBatch();
         addAuditTrailPs.executeBatch();
+        updateLatestSeqPs.execute();
+        addLatestSeqPs.execute();
         conn.commit();
     }
     
@@ -238,6 +260,12 @@ public class AuditTrailAdder {
         }
         if(addAuditTrailPs != null) {
             addAuditTrailPs.close();
+        }
+        if(updateLatestSeqPs != null) {
+            updateLatestSeqPs.close();
+        }
+        if(addLatestSeqPs != null) {
+            addLatestSeqPs.close();
         }
         if(conn != null) {
             conn.setAutoCommit(true);

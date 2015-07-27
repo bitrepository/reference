@@ -36,7 +36,7 @@ public class MockAuditStore implements AuditTrailStore {
     
     private int callsToAddAuditTrails = 0;
     @Override
-    public void addAuditTrails(AuditTrailEvents newAuditTrails, String collectionId) {
+    public void addAuditTrails(AuditTrailEvents newAuditTrails, String collectionId, String contributorID) {
         callsToAddAuditTrails++;
         if(newAuditTrails != null) {
             events.addAll(newAuditTrails.getAuditTrailEvent());
