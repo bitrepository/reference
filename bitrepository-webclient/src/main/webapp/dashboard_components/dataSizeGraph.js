@@ -10,6 +10,7 @@
     var graphDataPool = new Object();
     var url = dataUrl;
     var yAxisText = "y-axis text";
+    var isFloatData = true;
     var mySelf = this;
     var msPerDay = 86400 * 1000;
 
@@ -72,9 +73,15 @@
             var x = item.datapoint[0];
             var y = item.datapoint[1];
             var formated_date = moment.utc(x).format("YYYY/MM/DD HH:mm");
+            var formattedValue;
+            if(isFloatData) {
+                formattedValue = y.toFixed(4);
+            } else {
+                formattedValue = parseInt(y);
+            }
             showTooltip(item.pageX, 
                         item.pageY,
-                        formated_date  + "<br/><strong>" + y.toFixed(4) + " " + yAxisText +  "</strong>");
+                        formated_date  + "<br/><strong>" + formattedValue + " " + yAxisText +  "</strong>");
           }
         } else {
           $("#tooltip").remove();
@@ -105,15 +112,19 @@
       if($(graphType).val() == "data") {
         dataField = "data";
         dMaxField = "dataMax";
+        isFloatData = true;
       } else if($(graphType).val() == "datadelta") {
         dataField = "deltaData";
-        dMaxField = "deltaMax";       
+        dMaxField = "deltaMax";
+        isFloatData = true;
       } else if($(graphType).val() == "filecount") {
         dataField = "fileCount";
-        dMaxField = "fileCountMax";       
+        dMaxField = "fileCountMax";
+        isFloatData = false;
       } else if($(graphType).val() == "filedelta") {
         dataField = "deltaCount";
-        dMaxField = "deltaCountMax";       
+        dMaxField = "deltaCountMax";
+        isFloatData = true;
       }
       
       for(i in collectionIDs) {
