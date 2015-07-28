@@ -30,8 +30,8 @@ import org.bitrepository.access.ContributorQuery;
  * Encapsulates the information need to communicate with a Bit Repository component over the message bus.
  */
 public class AuditTrailQuery extends ContributorQuery {
-    private final Integer minSequenceNumber;
-    private final Integer maxSequenceNumber;
+    private final Long minSequenceNumber;
+    private final Long maxSequenceNumber;
 
     /**
      * Queries for all Audit Trails with sequence number between minSequenceNumber and maxSequenceNumber.
@@ -41,7 +41,7 @@ public class AuditTrailQuery extends ContributorQuery {
      * the lowest sequence numbers are returned
      * @param componentID The ID of the component to query.
      */
-    public AuditTrailQuery(String componentID, Integer minSequenceNumber, Integer maxSequenceNumber,
+    public AuditTrailQuery(String componentID, Long minSequenceNumber, Long maxSequenceNumber,
                            Integer maxNumberOfResults) {
         super(componentID, null, null, maxNumberOfResults );
         if (minSequenceNumber != null && maxSequenceNumber != null && minSequenceNumber > maxSequenceNumber)
@@ -55,14 +55,14 @@ public class AuditTrailQuery extends ContributorQuery {
     /**
      * @see AuditTrailQuery#AuditTrailQuery(String, Integer, Integer, Integer)
      */
-    public Integer getMinSequenceNumber() {
+    public Long getMinSequenceNumber() {
         return minSequenceNumber;
     }
 
     /**
      * @see AuditTrailQuery#AuditTrailQuery(String, Integer, Integer, Integer)
      */
-    public Integer getMaxSequenceNumber() {
+    public Long getMaxSequenceNumber() {
         return maxSequenceNumber;
     }
 

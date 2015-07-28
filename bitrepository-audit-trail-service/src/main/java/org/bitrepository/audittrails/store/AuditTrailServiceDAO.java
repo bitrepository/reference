@@ -101,30 +101,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     }
     
     @Override
-    public int largestSequenceNumber(String contributorId, String collectionId) {
-        ArgumentValidator.checkNotNullOrEmpty(contributorId, "String contributorId");
-        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
-        
-        // Indirectly extracts contributor and collection keys, and joins with the file table where the query can be
-        // limited by collection
-        String sql = "SELECT MAX(" + AUDITTRAIL_SEQUENCE_NUMBER + ") FROM " + AUDITTRAIL_TABLE 
-                + " JOIN " + FILE_TABLE 
-                + " ON " + AUDITTRAIL_TABLE + "." + AUDITTRAIL_FILE_KEY + " = " + FILE_TABLE + "." + FILE_KEY
-                + " WHERE "  + AUDITTRAIL_TABLE + "." + AUDITTRAIL_CONTRIBUTOR_KEY + " = ("
-                    + " SELECT " + CONTRIBUTOR_KEY + " FROM " + CONTRIBUTOR_TABLE 
-                    + " WHERE " + CONTRIBUTOR_ID + " = ? )"
-                + " AND " + FILE_TABLE + "." + FILE_COLLECTION_KEY + " = (" 
-                    + " SELECT " + COLLECTION_KEY + " FROM " + COLLECTION_TABLE 
-                    + " WHERE " + COLLECTION_ID + " = ? )";
-        
-        Long seq = DatabaseUtils.selectFirstLongValue(dbConnector, sql, contributorId, collectionId);
-        if(seq != null) {
-            return seq.intValue();
-        }
-        return 0;
-    }    
-    
-    public long largestSequenceNumber2(String contributorID, String collectionID) {
+    public long largestSequenceNumber(String contributorID, String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(contributorID, "String contributorId");
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionId");
         
@@ -132,7 +109,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
                 + " WHERE collectionID = ?"
                 + " AND contributorID = ?";
         
-        Long seq = DatabaseUtils.selectFirstLongValue(dbConnector, sql, contributorID, collectionID);
+        Long seq = DatabaseUtils.selectFirstLongValue(dbConnector, sql, collectionID, contributorID);
         return (seq != null ? seq.longValue() : 0);
     }
 

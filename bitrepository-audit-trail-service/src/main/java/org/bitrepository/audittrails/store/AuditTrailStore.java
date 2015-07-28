@@ -68,7 +68,7 @@ public interface AuditTrailStore {
      * @param collectionId The id of the collection for the sequence number of the contributor.
      * @return The largest sequence number.
      */
-    public int largestSequenceNumber(String contributorId, String collectionId);
+    public long largestSequenceNumber(String contributorId, String collectionId);
     
     /**
      * Retrieves the preservation sequence number for the given contributor, which tells how far the preservation

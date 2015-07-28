@@ -103,7 +103,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
                 "The full list of audit events should be returned.");
         int smallestSequenceNumber = originalAuditTrailEventList.get(0).getSequenceNumber().intValue();
         AuditTrailQuery firstSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
-                new Integer(smallestSequenceNumber), null, null);
+                new Long(smallestSequenceNumber), null, null);
         List<AuditTrailEvent> limitedEventList = getAuditTrails(firstSequenceNumberQuery, null);
         assertEquals(limitedEventList, originalAuditTrailEventList,
                 "Different list return when MinSequenceNumber set to first event");
@@ -113,7 +113,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         int largestSequenceNumber = originalAuditTrailEventList.get(originalAuditTrailEventList.size()-1)
                 .getSequenceNumber().intValue();
         AuditTrailQuery lastSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
-                new Integer(largestSequenceNumber), null, null);
+                new Long(largestSequenceNumber), null, null);
         limitedEventList = getAuditTrails(lastSequenceNumberQuery, null);
         assertEquals(limitedEventList.get(0).getSequenceNumber().intValue(), largestSequenceNumber,
                 "First event in second page different from last element in first page");
@@ -137,7 +137,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         int largestSequenceNumber = originalAuditTrailEventList.get(originalAuditTrailEventList.size()-1)
                 .getSequenceNumber().intValue();
         AuditTrailQuery lastSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
-                null, new Integer(largestSequenceNumber), null);
+                null, new Long(largestSequenceNumber), null);
         List<AuditTrailEvent> limitedEventList = getAuditTrails(lastSequenceNumberQuery, null);
         assertEquals(limitedEventList, originalAuditTrailEventList,
                 "Different list return when MaxSequenceNumber set to last event");
@@ -146,7 +146,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
                 "Only the first event is returned.");
         int smallestSequenceNumber = originalAuditTrailEventList.get(0).getSequenceNumber().intValue();
         AuditTrailQuery firstSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
-                null, new Integer(smallestSequenceNumber), null);
+                null, new Long(smallestSequenceNumber), null);
         limitedEventList = getAuditTrails(firstSequenceNumberQuery, null);
         assertEquals(limitedEventList.size(), 1, "Received list with size of " + limitedEventList.size() + " " +
                 "when requesting audit trail with MaxSequenceNumber set to first event (expected 1 event)");
