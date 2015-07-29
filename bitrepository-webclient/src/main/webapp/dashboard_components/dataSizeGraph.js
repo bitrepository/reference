@@ -10,6 +10,7 @@
     var graphDataPool = new Object();
     var url = dataUrl;
     var yAxisText = "y-axis text";
+    var tooltipText;
     var isFloatData = true;
     var mySelf = this;
     var msPerDay = 86400 * 1000;
@@ -81,7 +82,7 @@
             }
             showTooltip(item.pageX, 
                         item.pageY,
-                        formated_date  + "<br/><strong>" + formattedValue + " " + yAxisText +  "</strong>");
+                        formated_date  + "<br/><strong>" + formattedValue + " " + tooltipText +  "</strong>");
           }
         } else {
           $("#tooltip").remove();
@@ -157,12 +158,16 @@
 
       if($(graphType).val() == "data") {
         yAxisText = unitSuffix;
+        tooltipText = unitSuffix;
       } else if($(graphType).val() == "datadelta") {
         yAxisText = unitSuffix + " per day";
+        tooltipText = unitSuffix + " per day";
       } else if($(graphType).val() == "filecount") {
         yAxisText = "Number of files";
+        tooltipText = "files";
       } else if($(graphType).val() == "filedelta") {
         yAxisText = "Files per day";
+        tooltipText = "files per day";
       }
 
       var options = {
