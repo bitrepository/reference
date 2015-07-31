@@ -82,7 +82,7 @@
               <th>Number of missing files</th>
               <th>Number of missing checksums</th>
               <th>Number of obsolete checksums</th>
-              <th>Number of checksum errors</th>
+              <th>Number of inconsistent checksums</th>
             </tr>
           </thead>
           <tbody id="integrity-status-table-body"></tbody>
@@ -240,7 +240,7 @@
           title = type + " on " + id;
           member = "obsoleteChecksumsCount";
           url += "getObsoleteChecksumsFileIDs/";
-      } else if(type == "Checksum errors") {
+      } else if(type == "Inconsistent checksums") {
           element = "#" + id + "-checksumErrors";
           title = type + " on " + id;
           member = "checksumErrorCount";
@@ -291,7 +291,7 @@
             attachButtonAction(j[i].pillarID, "Missing files");
             attachButtonAction(j[i].pillarID, "Missing checksums");
             attachButtonAction(j[i].pillarID, "Obsolete checksums");
-            attachButtonAction(j[i].pillarID, "Checksum errors");
+            attachButtonAction(j[i].pillarID, "Inconsistent checksums");
           } else {
             updatePillarRow(j[i].pillarID, j[i].totalFileCount, j[i].missingFilesCount, j[i].missingChecksumsCount, 
                     j[i].obsoleteChecksumsCount, j[i].checksumErrorCount);

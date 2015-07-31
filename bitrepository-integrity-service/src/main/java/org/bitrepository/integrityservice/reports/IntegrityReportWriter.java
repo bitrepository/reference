@@ -106,8 +106,8 @@ public class IntegrityReportWriter {
                 "No deleted files detected");        
         writeReportSection(reportFileWriter, missingFilesWriter.getSectionFiles(), "Missing files", 
                 "No missing files detected");
-        writeReportSection(reportFileWriter, checksumIssuesWriter.getSectionFiles(), "Checksum issues", 
-                "No checksum issues detected");
+        writeReportSection(reportFileWriter, checksumIssuesWriter.getSectionFiles(), "Inconsistent checksums", 
+                "No inconsistent checksums detected");
         writeReportSection(reportFileWriter, missingChecksumsWriter.getSectionFiles(), "Missing checksums", 
                 "No missing checksums detected");
         writeReportSection(reportFileWriter, obsoleteChecksumsWriter.getSectionFiles(), "Obsolete checksums", 

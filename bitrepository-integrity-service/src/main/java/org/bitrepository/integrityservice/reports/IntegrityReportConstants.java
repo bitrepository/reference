@@ -12,7 +12,7 @@ public class IntegrityReportConstants {
         },
         CHECKSUM_ISSUE {
             public String getPartname() { return "checksumIssue"; }
-            public String getHumanString() { return "checksum errors"; }
+            public String getHumanString() { return "inconsistent checksums"; }
         },
         MISSING_CHECKSUM {
             public String getPartname() { return "missingChecksum"; }
