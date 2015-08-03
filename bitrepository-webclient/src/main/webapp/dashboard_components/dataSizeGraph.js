@@ -76,9 +76,9 @@
             var formated_date = moment.utc(x).format("YYYY/MM/DD HH:mm");
             var formattedValue;
             if(isFloatData) {
-                formattedValue = y.toFixed(4);
+                formattedValue = numeral(y).format('0,0.0[000]');
             } else {
-                formattedValue = parseInt(y);
+                formattedValue = numeral(y).format('0,0');
             }
             showTooltip(item.pageX, 
                         item.pageY,

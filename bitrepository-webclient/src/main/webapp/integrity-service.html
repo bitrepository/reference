@@ -110,6 +110,7 @@
   <script type="text/javascript" src="pager.js"></script>
   <script type="text/javascript" src="utils.js"></script>
   <script type="text/javascript" src="CollectionNameMapper.js"></script>
+  <script src="numeral.min.js"></script>
 
   <script>
     
@@ -120,6 +121,10 @@
     var nameMapper;
     var integrityServiceUrl;
 
+    function formatInt(number) {
+    	return numeral(number).format('0,0');
+    }
+    
     function loadWorkflows() {
       var url = integrityServiceUrl + '/integrity/IntegrityService/getWorkflowList/?collectionID=' + getCollectionID();
       $.getJSON(url, {}, function(j) {
@@ -256,22 +261,22 @@
       var html = "";
       html += "<tr id=\"" + id + "-row\">";
       html += "<td><div style=\"padding:5px\">" + id + "</div></td>";
-      html += "<td><a class=\"btn btn-link\" id=\"" + id + "-totalFileCount\">" + totalFileCount + "</a></td>";
-      html += "<td><a class=\"btn btn-link\" id=\"" + id + "-missingFiles\">" + missingFilesCount + "</a></td>";
-      html += "<td><a class=\"btn btn-link\" id=\"" + id + "-missingChecksums\">" + missingChecksumsCount + "</a></td>";
-      html += "<td><a class=\"btn btn-link\" id=\"" + id + "-obsoleteChecksums\">" + obsoleteChecksumsCount + "</a></td>";
-      html += "<td><a class=\"btn btn-link\" id=\"" + id + "-checksumErrors\">" + checksumErrorCount + "</a></td></tr>";
+      html += "<td><a class=\"btn btn-link\" id=\"" + id + "-totalFileCount\">" + formatInt(totalFileCount) + "</a></td>";
+      html += "<td><a class=\"btn btn-link\" id=\"" + id + "-missingFiles\">" + formatInt(missingFilesCount) + "</a></td>";
+      html += "<td><a class=\"btn btn-link\" id=\"" + id + "-missingChecksums\">" + formatInt(missingChecksumsCount) + "</a></td>";
+      html += "<td><a class=\"btn btn-link\" id=\"" + id + "-obsoleteChecksums\">" + formatInt(obsoleteChecksumsCount) + "</a></td>";
+      html += "<td><a class=\"btn btn-link\" id=\"" + id + "-checksumErrors\">" + formatInt(checksumErrorCount) + "</a></td></tr>";
       return html;
     }
 
     function updatePillarRow(id, totalFileCount, missingFilesCount, missingChecksumsCount, obsoleteChecksumsCount, checksumErrorCount) {
-      $("#" + id + "-totalFileCount").html(totalFileCount);
-      $("#" + id + "-missingFiles").html(missingFilesCount);
-      $("#" + id + "-missingChecksums").html(missingChecksumsCount);
-      $("#" + id + "-obsoleteChecksums").html(obsoleteChecksumsCount);
-      $("#" + id + "-checksumErrors").html(checksumErrorCount);
+      $("#" + id + "-totalFileCount").html(formatInt(totalFileCount));
+      $("#" + id + "-missingFiles").html(formatInt(missingFilesCount));
+      $("#" + id + "-missingChecksums").html(formatInt(missingChecksumsCount));
+      $("#" + id + "-obsoleteChecksums").html(formatInt(obsoleteChecksumsCount));
+      $("#" + id + "-checksumErrors").html(formatInt(checksumErrorCount));
     }
-
+    
     function getIntegrityStatus() {
       var url = integrityServiceUrl + "/integrity/IntegrityService/getIntegrityStatus/?collectionID=" 
             + getCollectionID();
@@ -318,7 +323,7 @@
       $.getJSON(url, {}, function(j) {
         var infoHtml = "<span><b> Latest ingest: " + j.lastIngest + " &nbsp; &nbsp; ";
         infoHtml += " Size: " + j.collectionSize + " &nbsp; &nbsp; ";
-        infoHtml += " Number of files: " + j.numberOfFiles + "</b></span>";
+        infoHtml += " Number of files: " + formatInt(j.numberOfFiles) + "</b></span>";
       
         $("#collectionInfoDiv").html(infoHtml);
       });
