@@ -77,7 +77,7 @@ public class DerbyIntegrityDAO extends IntegrityDAO {
                 + " stat_time, last_update FROM collectionstats"
                 + " JOIN stats ON collectionstats.stat_key = stats.stat_key"
                 + " WHERE stats.collectionID = ?"
-                + " ORDER BY stats.stat_time"
+                + " ORDER BY stats.stat_time DESC"
                 + " FETCH FIRST ? ROWS ONLY";
         return latestCollectionStatSql;
     }
