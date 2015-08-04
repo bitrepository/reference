@@ -219,62 +219,70 @@
         $("#modalPagerDialog").modal('show');
       }
     }
-
-    function attachButtonAction(id, type) {
-      var element;
-      var title;
-      var member;
-      var url = integrityServiceUrl + "/integrity/IntegrityService/";
-      if(type == "Total files") {
-        element = "#" + id + "-totalFileCount";
-        title = type + " on " + id;
-        member = "totalFileCount";
-        url += "getAllFileIDs/";
-      } else if(type == "Missing files") {
-        element = "#" + id + "-missingFiles";
-        title = type + " on " + id;
-        member = "missingFilesCount";
-        url += "getMissingFileIDs/";
-      } else if(type == "Missing checksums") {
-        element = "#" + id + "-missingChecksums";
-        title = type + " on " + id;
-        member = "missingChecksumsCount";
-        url += "getMissingChecksumsFileIDs/";
-      } else if(type == "Obsolete checksums") {
-          element = "#" + id + "-obsoleteChecksums";
-          title = type + " on " + id;
-          member = "obsoleteChecksumsCount";
-          url += "getObsoleteChecksumsFileIDs/";
-      } else if(type == "Inconsistent checksums") {
-          element = "#" + id + "-checksumErrors";
-          title = type + " on " + id;
-          member = "checksumErrorCount";
-          url += "getChecksumErrorFileIDs/";
+    
+    function getCellContext(id, type) {
+    	var context = {};
+        context.url = integrityServiceUrl + "/integrity/IntegrityService/";
+        if(type == "Total files") {
+          context.element = id + "-totalFileCount";
+          context.title = type + " on " + id;
+          context.member = "totalFileCount";
+          context.url += "getAllFileIDs/";
+        } else if(type == "Missing files") {
+          context.element = id + "-missingFiles";
+          context.title = type + " on " + id;
+          context.member = "missingFilesCount";
+          context.url += "getMissingFileIDs/";
+        } else if(type == "Missing checksums") {
+          context.element = id + "-missingChecksums";
+          context.title = type + " on " + id;
+          context.member = "missingChecksumsCount";
+          context.url += "getMissingChecksumsFileIDs/";
+        } else if(type == "Obsolete checksums") {
+          context.element = id + "-obsoleteChecksums";
+          context.title = type + " on " + id;
+          context.member = "obsoleteChecksumsCount";
+          context.url += "getObsoleteChecksumsFileIDs/";
+        } else if(type == "Inconsistent checksums") {
+          context.element = id + "-checksumErrors";
+          context.title = type + " on " + id;
+          context.member = "checksumErrorCount";
+          context.url += "getChecksumErrorFileIDs/";
+        }
+        context.url += "?pillarID=" + id + "&collectionID=" + getCollectionID();
+        return context;      
       }
-      url += "?pillarID=" + id + "&collectionID=" + getCollectionID();
-      if(element != null) {
-        $(element).click(showModalPager(id, member, title, url));
-      }      
-    }
-
-    function makePillarRow(id, totalFileCount, missingFilesCount, missingChecksumsCount, obsoleteChecksumsCount, checksumErrorCount) {
+    
+    function makePillarRow2(id) {
       var html = "";
       html += "<tr id=\"" + id + "-row\">";
       html += "<td><div style=\"padding:5px\">" + id + "</div></td>";
-      html += "<td><a class=\"btn btn-link\" id=\"" + id + "-totalFileCount\">" + formatInt(totalFileCount) + "</a></td>";
-      html += "<td><a class=\"btn btn-link\" id=\"" + id + "-missingFiles\">" + formatInt(missingFilesCount) + "</a></td>";
-      html += "<td><a class=\"btn btn-link\" id=\"" + id + "-missingChecksums\">" + formatInt(missingChecksumsCount) + "</a></td>";
-      html += "<td><a class=\"btn btn-link\" id=\"" + id + "-obsoleteChecksums\">" + formatInt(obsoleteChecksumsCount) + "</a></td>";
-      html += "<td><a class=\"btn btn-link\" id=\"" + id + "-checksumErrors\">" + formatInt(checksumErrorCount) + "</a></td></tr>";
+      html += "<td id=\"" + id + "-totalFileCount\"></td>";
+      html += "<td id=\"" + id + "-missingFiles\"></td>";
+      html += "<td id=\"" + id + "-missingChecksums\"></td>";
+      html += "<td id=\"" + id + "-obsoleteChecksums\"></td>";
+      html += "<td id=\"" + id + "-checksumErrors\"></td></tr>";
       return html;
     }
 
-    function updatePillarRow(id, totalFileCount, missingFilesCount, missingChecksumsCount, obsoleteChecksumsCount, checksumErrorCount) {
-      $("#" + id + "-totalFileCount").html(formatInt(totalFileCount));
-      $("#" + id + "-missingFiles").html(formatInt(missingFilesCount));
-      $("#" + id + "-missingChecksums").html(formatInt(missingChecksumsCount));
-      $("#" + id + "-obsoleteChecksums").html(formatInt(obsoleteChecksumsCount));
-      $("#" + id + "-checksumErrors").html(formatInt(checksumErrorCount));
+    function updateCell(id, type, cellValue) {
+    	var context = getCellContext(id, type);
+    	if(cellValue == 0) {
+    		$("#" + context.element).html(formatInt(cellValue));
+    	} else {
+    		var innerElement = context.element + "-a";
+    		var html = "<a class=\"btn btn-link\" id=\"" + innerElement + "\">" + formatInt(cellValue) + "</a>";
+    		$("#" + context.element).html(html);
+    		$("#" + innerElement).click(showModalPager(id, context.member, context.title, context.url));
+    	}
+    }
+    
+    function updateCells(pillarID) {
+        updateCell(pillarID, "Total files", pillars[pillarID].totalFileCount);
+        updateCell(pillarID, "Missing files", pillars[pillarID].missingFilesCount);
+        updateCell(pillarID, "Missing checksums", pillars[pillarID].missingChecksumsCount);
+        updateCell(pillarID, "Obsolete checksums", pillars[pillarID].obsoleteChecksumsCount);
+        updateCell(pillarID, "Inconsistent checksums", pillars[pillarID].checksumErrorCount);
     }
     
     function getIntegrityStatus() {
@@ -284,28 +292,14 @@
         var htmlTable;
         for (var i = 0; i < j.length; i++) {
           if(pillars[j[i].pillarID] == null) {
-            $("#integrity-status-table-body").append(makePillarRow(j[i].pillarID, 
-                j[i].totalFileCount, j[i].missingFilesCount, j[i].missingChecksumsCount, 
-                j[i].obsoleteChecksumsCount, j[i].checksumErrorCount));
-            pillars[j[i].pillarID] = {totalFileCount : j[i].totalFileCount,
-                                      missingFilesCount : j[i].missingFilesCount,
-                                      missingChecksumsCount : j[i].missingChecksumsCount,
-                                      obsoleteChecksumsCount : j[i].obsoleteChecksumsCount,
-                                      checksumErrorCount : j[i].checksumErrorCount};
-            attachButtonAction(j[i].pillarID, "Total files");
-            attachButtonAction(j[i].pillarID, "Missing files");
-            attachButtonAction(j[i].pillarID, "Missing checksums");
-            attachButtonAction(j[i].pillarID, "Obsolete checksums");
-            attachButtonAction(j[i].pillarID, "Inconsistent checksums");
-          } else {
-            updatePillarRow(j[i].pillarID, j[i].totalFileCount, j[i].missingFilesCount, j[i].missingChecksumsCount, 
-                    j[i].obsoleteChecksumsCount, j[i].checksumErrorCount);
-            pillars[j[i].pillarID].totalFileCount = j[i].totalFileCount;
-            pillars[j[i].pillarID].missingFilesCount = j[i].missingFilesCount;
-            pillars[j[i].pillarID].missingChecksumsCount = j[i].missingChecksumsCount;
-            pillars[j[i].pillarID].obsoleteChecksumsCount = j[i].obsoleteChecksumsCount;
-            pillars[j[i].pillarID].checksumErrorCount = j[i].checksumErrorCount;
+        	$("#integrity-status-table-body").append(makePillarRow2(j[i].pillarID));
           }
+          pillars[j[i].pillarID] = {totalFileCount : j[i].totalFileCount,
+                  missingFilesCount : j[i].missingFilesCount,
+                  missingChecksumsCount : j[i].missingChecksumsCount,
+                  obsoleteChecksumsCount : j[i].obsoleteChecksumsCount,
+                  checksumErrorCount : j[i].checksumErrorCount};
+          updateCells(j[i].pillarID);
         }
       });
     }
