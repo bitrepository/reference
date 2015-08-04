@@ -268,7 +268,8 @@
     function updateCell(id, type, cellValue) {
     	var context = getCellContext(id, type);
     	if(cellValue == 0) {
-    		$("#" + context.element).html(formatInt(cellValue));
+    		var html = "<button class=\"btn btn-link\" disabled>" + formatInt(cellValue) + "</button>";
+    		$("#" + context.element).html(html);
     	} else {
     		var innerElement = context.element + "-a";
     		var html = "<a class=\"btn btn-link\" id=\"" + innerElement + "\">" + formatInt(cellValue) + "</a>";
