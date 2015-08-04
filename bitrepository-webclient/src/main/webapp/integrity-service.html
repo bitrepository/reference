@@ -253,7 +253,7 @@
         return context;      
       }
     
-    function makePillarRow2(id) {
+    function makePillarRow(id) {
       var html = "";
       html += "<tr id=\"" + id + "-row\">";
       html += "<td><div style=\"padding:5px\">" + id + "</div></td>";
@@ -293,7 +293,7 @@
         var htmlTable;
         for (var i = 0; i < j.length; i++) {
           if(pillars[j[i].pillarID] == null) {
-        	$("#integrity-status-table-body").append(makePillarRow2(j[i].pillarID));
+        	$("#integrity-status-table-body").append(makePillarRow(j[i].pillarID));
           }
           pillars[j[i].pillarID] = {totalFileCount : j[i].totalFileCount,
                   missingFilesCount : j[i].missingFilesCount,
