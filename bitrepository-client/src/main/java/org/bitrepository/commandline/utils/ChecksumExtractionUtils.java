@@ -28,9 +28,19 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.ChecksumUtils;
 
 /**
- * Interface for handling the command line arguments.
+ * Utility class for extraction of checksum parameters from the commandline arguments.
  */
 public class ChecksumExtractionUtils {
+    /**
+     * Extracts the checksum type from the commandline arguments.
+     * Ensures, that the HMAC checksum types is used, when a salt is given, 
+     * and also that it is not the HMAC checksum type, which is used, when no salt is given.
+     * Also, ignores cases for the checksum types.  
+     * @param cmdHandler Contains the arguments from the commansline.
+     * @param settings The settings, containing the default checksum type (if no checksum type is given).
+     * @param output The OutputHandler, where output and logging information is delivered.
+     * @return The checksum type.
+     */
     public static ChecksumType extractChecksumType(CommandLineArgumentsHandler cmdHandler, Settings settings,
             OutputHandler output) {
         String type;
@@ -43,12 +53,12 @@ public class ChecksumExtractionUtils {
         if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
             if(!type.startsWith("HMAC_")) {
                 type = "HMAC_" + type;
+                output.debug("Non-HMAC checksum spec given, but also salt. Thus using '" + type + "' instead.");
             }
         } else {
             if(type.startsWith("HMAC_")) {
-                String[] split = type.split("_");
-                type = split[split.length - 1];
-                output.error("HMAC checksum spec given, but no salt given. Using '" + type + "' instead");
+                type = type.replace("HMAC_", "");
+                output.warn("HMAC checksum spec given, but no salt given. Using '" + type + "' instead.");
             }
         }
         
