@@ -41,7 +41,8 @@ insert into tableversions ( tablename, version ) values ( 'file', 2);
 insert into tableversions ( tablename, version ) values ( 'contributor', 2);
 insert into tableversions ( tablename, version ) values ( 'actor', 2);
 insert into tableversions ( tablename, version ) values ( 'collection', 1);
-insert into tableversions ( tablename, version ) values ( 'auditservicedb', 4);
+insert into tableversions ( tablename, version ) values ( 'collection_progress', 1);
+insert into tableversions ( tablename, version ) values ( 'auditservicedb', 5);
 
 --*************************************************************************--
 -- Name:     collection
@@ -128,6 +129,26 @@ create table preservation (
     UNIQUE (collection_key, contributor_key)        
                                     -- Enforce that each contributor only can exist once per collection.
 );
+
+
+--*************************************************************************--
+-- Name:     collection_progress
+-- Descr.:   Table to keep track of audit trail collection progress
+-- Purpose:  Keeps track of the sequence number reached by the audit collection
+--           for each contributor per collection. 
+-- Expected entry count: Few. Only the pillars and services for each 
+--                       collection are contributors of audit trails.
+--*************************************************************************--
+create table collection_progress (
+    collectionID VARCHAR(255) NOT NULL,
+    contributorID VARCHAR(255) NOT NULL,
+    latest_sequence_number BIGINT,
+   
+    FOREIGN KEY (collectionID) REFERENCES collection(collectionid),
+    FOREIGN KEY (contributorID) REFERENCES contributor(contributor_id),
+    UNIQUE (collectionID, contributorID)
+);
+
 
 --*************************************************************************--
 -- Name:     audittrail

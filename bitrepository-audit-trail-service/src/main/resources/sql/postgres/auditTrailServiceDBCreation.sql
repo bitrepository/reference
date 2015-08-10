@@ -39,7 +39,8 @@ INSERT INTO tableversions ( tablename, version ) VALUES ( 'file', 2);
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'contributor', 2);
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'actor', 2);
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'collection', 1);
-INSERT INTO tableversions ( tablename, version ) VALUES ( 'auditservicedb', 4);
+INSERT INTO tableversions ( tablename, version ) VALUES ( 'collection_progress', 1);
+INSERT INTO tableversions ( tablename, version ) VALUES ( 'auditservicedb', 5);
 
 --*************************************************************************--
 -- Name:     collection
@@ -123,6 +124,16 @@ CREATE TABLE preservation (
                                     -- Foreign key constraint on pillar_key, enforcing the presence of the referred id
     UNIQUE (collection_key, contributor_key)        
                                     -- Enforce that each contributor only can exist once per collection.
+);
+
+create table collection_progress (
+    collectionID VARCHAR(255) NOT NULL,
+    contributorID VARCHAR(255) NOT NULL,
+    latest_sequence_number BIGINT,
+   
+    FOREIGN KEY (collectionID) REFERENCES collection(collectionid),
+    FOREIGN KEY (contributorID) REFERENCES contributor(contributor_id),
+    UNIQUE (collectionID, contributorID)
 );
 
 --*************************************************************************--

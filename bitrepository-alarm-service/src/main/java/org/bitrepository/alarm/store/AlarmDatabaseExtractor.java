@@ -50,7 +50,7 @@ import static org.bitrepository.alarm.store.AlarmDatabaseConstants.*;
  * ALARM_FILE_ID
  * ALARM_COLLECTION_ID
  */
-public class AlarmDatabaseExtractor {
+public abstract class AlarmDatabaseExtractor {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
@@ -90,17 +90,22 @@ public class AlarmDatabaseExtractor {
      * @return The alarms requested through the ExtractModel.
      */
     public List<Alarm> extractAlarms() {
-        String sql = createSelectString() + " FROM " + ALARM_TABLE + createRestriction() + createOrder();
+        StringBuilder sqlBuilder = new StringBuilder();
+        sqlBuilder.append(createSelectString());
+        sqlBuilder.append(" FROM " + ALARM_TABLE);
+        sqlBuilder.append(createRestriction());
+        sqlBuilder.append(createOrder());
+        sqlBuilder.append(getResultNumberLimitations());
+        String sql = sqlBuilder.toString();
         
         try (Connection conn = dbConnector.getConnection();
              PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql, extractArgumentsFromModel())) {
             List<Alarm> res = new ArrayList<Alarm>();
+            ps.setFetchSize(100);
             try (ResultSet result = ps.executeQuery()) {
-                log.debug("Extracting sql '" + sql + "' with arguments '" + Arrays.asList(extractArgumentsFromModel()));
-                int i = 0;
-                while(result.next() && i < model.getMaxCount()) {
+                log.debug("Extracting sql '" + sql + "' with arguments '" + Arrays.asList(extractArgumentsFromModel()) + "'");
+                while(result.next()) {
                     res.add(extractAlarm(result));
-                    i++;
                 }
             } 
             log.debug("Extracted the alarms: {}", res);
@@ -152,6 +157,8 @@ public class AlarmDatabaseExtractor {
         
         return res.toString();
     }
+    
+    protected abstract String getResultNumberLimitations();
     
     /**
      * Create the restriction part of the SQL statement for extracting the requested data from the database.
@@ -236,7 +243,8 @@ public class AlarmDatabaseExtractor {
         if(model.getCollectionID() != null) {
             res.add(model.getCollectionID());
         }
-            
+        
+        res.add(model.getMaxCount());
         
         return res.toArray();
     }

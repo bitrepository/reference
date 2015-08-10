@@ -36,7 +36,7 @@ public class MockAuditStore implements AuditTrailStore {
     
     private int callsToAddAuditTrails = 0;
     @Override
-    public void addAuditTrails(AuditTrailEvents newAuditTrails, String collectionId) {
+    public void addAuditTrails(AuditTrailEvents newAuditTrails, String collectionId, String contributorID) {
         callsToAddAuditTrails++;
         if(newAuditTrails != null) {
             events.addAll(newAuditTrails.getAuditTrailEvent());
@@ -49,7 +49,7 @@ public class MockAuditStore implements AuditTrailStore {
     private int callsToLargestSequenceNumber = 0;
     private int largestSequenceNumber = 0;
     @Override
-    public int largestSequenceNumber(String contributorId, String collectionId) {
+    public long largestSequenceNumber(String contributorId, String collectionId) {
         callsToLargestSequenceNumber++;
         return largestSequenceNumber;
     }

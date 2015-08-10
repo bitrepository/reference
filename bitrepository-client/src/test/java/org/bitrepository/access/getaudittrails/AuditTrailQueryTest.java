@@ -43,7 +43,7 @@ public class AuditTrailQueryTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest"})
     public void testOnlyMinSequenceNumber() throws Exception {
         addDescription("Test the creation of a AuditTrailQuery with only the minSequenceNumber");
-        Integer minSeq = 1;
+        Long minSeq = 1L;
         AuditTrailQuery query = new AuditTrailQuery(componentId, minSeq, null, DEFAULT_MAX_NUMBER_OF_RESULTS);
         assertEquals(query.getComponentID(), componentId);
         assertEquals(query.getMinSequenceNumber(), minSeq);
@@ -53,24 +53,19 @@ public class AuditTrailQueryTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest"})
     public void testBothSequenceNumberSuccess() throws Exception {
         addDescription("Test the creation of a AuditTrailQuery with both SequenceNumber, where max is larger than min.");
-        Integer minSeq = 1;
-        Integer maxSeq = 2;
+        Long minSeq = 1L;
+        Long maxSeq = 2L;
         AuditTrailQuery query = new AuditTrailQuery(componentId, minSeq, maxSeq, DEFAULT_MAX_NUMBER_OF_RESULTS);
         assertEquals(query.getComponentID(), componentId);
         assertEquals(query.getMinSequenceNumber(), minSeq);
         assertEquals(query.getMaxSequenceNumber(), maxSeq);
     }
     
-    @Test(groups = {"regressiontest"})
+    @Test(groups = {"regressiontest"}, expectedExceptions=IllegalArgumentException.class)
     public void testBothSequenceNumberFailure() throws Exception {
         addDescription("Test the creation of a AuditTrailQuery with both SequenceNumber, where max is smalle than min.");
-        Integer minSeq = 2;
-        Integer maxSeq = 1;
-        try {
-            new AuditTrailQuery(componentId, minSeq, maxSeq, DEFAULT_MAX_NUMBER_OF_RESULTS);
-            fail("Should throw an exception here.");
-        } catch(IllegalArgumentException e) {
-            // expected.
-        }
+        Long minSeq = 2L;
+        Long maxSeq = 1L;
+        new AuditTrailQuery(componentId, minSeq, maxSeq, DEFAULT_MAX_NUMBER_OF_RESULTS);
     }
 }

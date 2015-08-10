@@ -119,18 +119,18 @@
   function updateCollectionRow(collection) {
     var id = collection.collectionID;
     $("#" + id + "-name").html(collection.collectionName);
-    $("#" + id + "-numFiles").html(collection.numFiles);
+    $("#" + id + "-numFiles").html(numeral(collection.numFiles).format('0,0'));
     $("#" + id + "-latestIngest").html(collection.latestIngest);
     $("#" + id + "-collectionSize").html(collection.collectionSize);
     $("#" + id + "-pillars").html(collection.pillars);
     $("#" + id + "-latestCheck").html(collection.lastCheck);
-    $("#" + id + "-numChecksumErrors").html(collection.numChecksumErrors);
+    $("#" + id + "-numChecksumErrors").html(numeral(collection.numChecksumErrors).format('0,0'));
     if(collection.numChecksumErrors > 0) {
       $("#" + id + "-numChecksumErrors").addClass("badge badge-important pull-right");
     } else {
       $("#" + id + "-numChecksumErrors").removeClass("badge badge-important pull-right");
     }
-    $("#" + id + "-numMissingFiles").html(collection.numMissingFiles);
+    $("#" + id + "-numMissingFiles").html(numeral(collection.numMissingFiles).format('0,0'));
     if(collection.numMissingFiles > 0) {
       $("#" + id + "-numMissingFiles").addClass("badge badge-important pull-right");
     } else {

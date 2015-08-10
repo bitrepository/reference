@@ -1,4 +1,4 @@
-package org.bitrepository.integrityservice.cache.database;
+package org.bitrepository.service.database;
 
 /**
  * Exception to indicate that a given database type is not supported.  

@@ -32,9 +32,9 @@ import org.bitrepository.service.database.DatabaseManager;
 /**
  * The interface to the database for storing the Alarms.
  */
-public class AlarmServiceDAO implements AlarmStore {
+public abstract class AlarmServiceDAO implements AlarmStore {
     /** The connector to the database.*/
-    private DBConnector dbConnector;
+    protected DBConnector dbConnector;
     
     /** 
      * Constructor.
@@ -51,15 +51,8 @@ public class AlarmServiceDAO implements AlarmStore {
     }
     
     @Override
-    public List<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate,
-            String fileID, String collectionID, Integer count, boolean ascending) {
-        AlarmDatabaseExtractionModel extractModel = new AlarmDatabaseExtractionModel(collectionID, componentID, alarmCode, 
-                minDate, maxDate, fileID, count, ascending);
-        
-        AlarmDatabaseExtractor extractor = new AlarmDatabaseExtractor(extractModel, dbConnector);
-        return extractor.extractAlarms();
-    }
-
+    public abstract List<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate,
+            String fileID, String collectionID, Integer count, boolean ascending); 
 
     @Override
     public void start() {
