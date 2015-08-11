@@ -48,9 +48,6 @@
             <email>mss@statsbiblioteket.dk</email>
             <organization>The Danish State and University Library</organization>
             <organizationUrl>http://en.statsbiblioteket.dk</organizationUrl>
-            <roles>
-                <role>Project Manager</role>
-            </roles>
         </developer>
         <developer>
             <name>Kim Teglgaard Christensen   </name>
@@ -58,7 +55,7 @@
             <organization>The Danish State and University Library</organization>
             <organizationUrl>http://en.statsbiblioteket.dk</organizationUrl>
             <roles>
-                <role>Developer</role>
+                <role>Project Manager and Developer</role>
             </roles>
         </developer>
         <developer>
@@ -69,6 +66,12 @@
             <roles>
                 <role>Developer</role>
             </roles>
+        </developer>
+        <developer>
+            <name>Asger Askov-Blekinge</name>
+            <email>abr@statsbiblioteket.dk</email>
+            <organization>The Danish State and University Library</organization>
+            <organizationUrl>http://en.statsbiblioteket.dk</organizationUrl>
         </developer>
     </developers>
 

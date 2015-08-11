@@ -81,7 +81,6 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
                 "-" + Constants.REQUEST_CHECKSUM_SALT_ARG + "0110"});
         ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
         assertNotEquals(type, enteredType);
-        assertTrue(type.name().contains("HMAC"));
         assertEquals(type.name(), "HMAC_" + enteredType.name());
     }
 
@@ -95,7 +94,7 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
         assertNotEquals(type, enteredType);
         assertTrue(enteredType.name().contains("HMAC"));
-        assertEquals("HMAC_" + type.name(), enteredType.name());
+        assertEquals(type.name(), enteredType.name().replace("HMAC_", ""));
     }
 
     @Test(groups = { "regressiontest" })
@@ -108,7 +107,5 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
                 "-" + Constants.REQUEST_CHECKSUM_SALT_ARG + "0110"});
         ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
         assertEquals(type, enteredType);
-        assertTrue(type.name().contains("HMAC"));
-        assertTrue(enteredType.name().contains("HMAC"));
     }
 }
