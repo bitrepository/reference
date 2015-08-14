@@ -21,6 +21,7 @@
  */
 package org.bitrepository.service.workflow;
 
+import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,18 +54,21 @@ public abstract class Workflow implements SchedulableJob {
      * @param step The step to start.
      */
     protected void performStep(WorkflowStep step) {
-        this.currentState = WorkflowState.RUNNING;
-        this.currentStep = step;
-        log.info("Starting step: '" + step.getName() + "'");
-        try {
-            statistics.startSubStatistic(step.getName());
-            step.performStep();
-            statistics.finishSubStatistic();
-            log.info(statistics.getCurrentSubStatistic().toString());
-
-        } catch (Exception e) {
-            log.error("Failure in step: '" + step.getName() + "'.", e);
-            throw new RuntimeException("Failed to run step " + step.getName(), e);
+        if(currentState != WorkflowState.ABORTED) {
+            this.currentState = WorkflowState.RUNNING;
+            this.currentStep = step;
+            log.info("Starting step: '" + step.getName() + "'");
+            try {
+                statistics.startSubStatistic(step.getName());
+                step.performStep();
+                statistics.finishSubStatistic();
+                log.info(statistics.getCurrentSubStatistic().toString());
+            } catch (WorkflowAbortedException e) {
+                this.currentState = WorkflowState.ABORTED;
+            } catch (Exception e) {
+                log.error("Failure in step: '" + step.getName() + "'.", e);
+                throw new RuntimeException("Failed to run step " + step.getName(), e);
+            }
         }
     }
     

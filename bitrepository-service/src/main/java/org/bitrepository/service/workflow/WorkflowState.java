@@ -34,4 +34,6 @@ public enum WorkflowState {
     WAITING,
     /** When the workflow is running.*/
     RUNNING,
+    /** When an execution of the workflow has been aborted */
+    ABORTED,
 }

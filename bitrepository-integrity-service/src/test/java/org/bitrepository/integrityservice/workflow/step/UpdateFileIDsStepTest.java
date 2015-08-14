@@ -32,6 +32,7 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -49,7 +50,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
     public static final String TEST_FILE_1 = "test-file-1";
 
     @Test(groups = {"regressiontest"})
-    public void testPositiveReply() {
+    public void testPositiveReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids can handle COMPLETE operation event.");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
@@ -70,7 +71,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
     }
 
     @Test(groups = {"regressiontest"})
-    public void testNegativeReply() {
+    public void testNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids can handle FAILED operation event.");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
@@ -91,7 +92,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
     }
 
     @Test(groups = {"regressiontest"})
-    public void testIngestOfResults() {
+    public void testIngestOfResults() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids can ingest the data correctly into the store.");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);
         doAnswer(new Answer() {
@@ -114,7 +115,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
 
 
     @Test(groups = {"regressiontest"})
-    public void testPartialResults() {
+    public void testPartialResults() throws WorkflowAbortedException {
         addDescription("Test that the number of partial is used for generating more than one request.");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);
 

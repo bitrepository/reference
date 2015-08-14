@@ -24,12 +24,15 @@ package org.bitrepository.integrityservice.workflow.step;
 
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.client.eventhandler.OperationEvent;
+import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityCollectorEventHandler;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
+import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +60,8 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
     private final Integer maxNumberOfResultsPerConversation;
     /** The collectionID */
     protected final String collectionId;
+    /** Continue with checks in case of failure, defaults to false */
+    private boolean continueInCaseOfFailure = false;
     
     /** The default value for the maximum number of results for each conversation. Is case the setting is missing.*/
     private final Integer DEFAULT_MAX_RESULTS = 10000;
@@ -83,6 +88,9 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
         } else {
             this.maxNumberOfResultsPerConversation = DEFAULT_MAX_RESULTS;
         }
+        if(settings.getReferenceSettings().getIntegrityServiceSettings().isSetContinueOnFailedContributor()) {
+            continueInCaseOfFailure = settings.getReferenceSettings().getIntegrityServiceSettings().isContinueOnFailedContributor();
+        }
     }
     
     /**
@@ -91,7 +99,7 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
     protected void initialStepAction() {}
     
     @Override
-    public synchronized void performStep() {
+    public synchronized void performStep() throws WorkflowAbortedException {
         initialStepAction();
 
         try {
@@ -105,6 +113,15 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
                         "IntegrityService: " + getName(), queries, eventHandler);
                 
                 OperationEvent event = eventHandler.getFinish();
+                if(event.getEventType() == OperationEventType.FAILED) {
+                    OperationFailedEvent ofe = (OperationFailedEvent) event;
+                    if(continueInCaseOfFailure) {
+                        // handle the removal of the pillar from pillars to be cleaned 
+                    } else {
+                        throw new WorkflowAbortedException("Aborting workflow due to failure to collect fileIDs. "
+                                + "Cause: " + ofe.toString());
+                    }
+                }
                 log.debug("Collection of file ids had the final event: " + event);
                 pillarsToCollectFrom = new ArrayList<String>(eventHandler.getPillarsWithPartialResult());
             }
