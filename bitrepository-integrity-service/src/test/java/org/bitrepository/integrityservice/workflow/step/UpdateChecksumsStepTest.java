@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import org.bitrepository.access.ContributorQuery;
@@ -49,6 +50,7 @@ import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -61,7 +63,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     public static final String DEFAULT_CHECKSUM = "0123456789";
 
     @Test(groups = {"regressiontest"})
-    public void testPositiveReply() {
+    public void testPositiveReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the checksums can handle COMPLETE operation event.");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
@@ -73,14 +75,18 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
 
-        UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        when(integrityContributors.getActiveContributors()).thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)));
+        when(integrityContributors.getActiveContributors()).thenReturn(new HashSet<>());
+        
+        UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
+                settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
     }
 
     @Test(groups = {"regressiontest"})
-    public void testNegativeReply() {
+    public void testNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the checksums can handle FAILURE operation event.");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
@@ -92,14 +98,18 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
 
-        UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        when(integrityContributors.getActiveContributors())
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
+        
+        UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
+                settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(alerter).operationFailed(anyString(), eq(TEST_COLLECTION));
     }
     
     @Test(groups = {"regressiontest"})
-    public void testIngestOfResults() {
+    public void testIngestOfResults() throws WorkflowAbortedException {
         addDescription("Test the step for updating the checksums delivers the results to the integrity model.");
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
         doAnswer(new Answer() {
@@ -115,7 +125,13 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
 
-        UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        when(integrityContributors.getActiveContributors())
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
+        when(integrityContributors.getActiveContributors())
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
+        
+        UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
+                settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
                 any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
@@ -124,7 +140,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     }
 
     @Test(groups = {"regressiontest"})
-    public void testCallForChangingChecksumStates() {
+    public void testCallForChangingChecksumStates() throws WorkflowAbortedException {
         addDescription("Test the step for updating the checksums delivers the results to the integrity model.");
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
         doAnswer(new Answer() {
@@ -140,7 +156,11 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
 
-        UpdateChecksumsStep step = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        when(integrityContributors.getActiveContributors())
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
+        
+        UpdateChecksumsStep step = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
+                settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
                 any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
@@ -150,7 +170,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     }
     
     @Test(groups = {"regressiontest"})
-    public void testPartialResults() {
+    public void testPartialResults() throws WorkflowAbortedException {
         addDescription("Test that the number of partial is used for generating more than one request.");
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
 
@@ -173,7 +193,13 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
 
-        UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        when(integrityContributors.getActiveContributors())
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>());
+        
+        UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
+                settings, TEST_COLLECTION, integrityContributors);
 
         step.performStep();
         verify(model, times(2)).addChecksums(resultingChecksums.getChecksumDataItems(), TEST_PILLAR_1, TEST_COLLECTION);
@@ -182,7 +208,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     }
     
     @Test(groups = {"regressiontest"})
-    public void testFullChecksumCollection() {
+    public void testFullChecksumCollection() throws WorkflowAbortedException {
         addDescription("Test that the full list of checksums is requested.");
         
         doAnswer(new Answer() {
@@ -196,8 +222,11 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 any(ContributorQuery[].class), any(EventHandler.class));
 
         when(model.getDateForNewestChecksumEntryForPillar(anyString(), anyString())).thenReturn(new Date(0));
+        when(integrityContributors.getActiveContributors())
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
         
-        UpdateChecksumsStep step = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        UpdateChecksumsStep step = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
+                settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
         
         ContributorQuery[] expectedContributorQueries = 
@@ -209,7 +238,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     }
     
     @Test(groups = {"regressiontest"})
-    public void testIncrementalChecksumCollection() {
+    public void testIncrementalChecksumCollection() throws WorkflowAbortedException {
         addDescription("Test that only the list of new checksums is requested.");
         
         doAnswer(new Answer() {
@@ -221,8 +250,12 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
-
-        UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        
+        when(integrityContributors.getActiveContributors())
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
+        
+        UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
+                settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
         
         ContributorQuery[] expectedContributorQueries = 

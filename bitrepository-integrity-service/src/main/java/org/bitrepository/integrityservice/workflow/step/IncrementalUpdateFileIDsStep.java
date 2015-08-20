@@ -4,12 +4,13 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
+import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 
 public class IncrementalUpdateFileIDsStep extends UpdateFileIDsStep {
 
     public IncrementalUpdateFileIDsStep(IntegrityInformationCollector collector, IntegrityModel store, 
-            IntegrityAlerter alerter, Settings settings, String collectionId) {
-        super(collector, store, alerter, settings, collectionId);
+            IntegrityAlerter alerter, Settings settings, String collectionId, IntegrityContributors integrityContributors) {
+        super(collector, store, alerter, settings, collectionId, integrityContributors);
     }
 
     @Override

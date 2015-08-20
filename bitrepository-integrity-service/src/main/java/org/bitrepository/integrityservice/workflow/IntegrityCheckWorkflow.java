@@ -24,6 +24,7 @@ package org.bitrepository.integrityservice.workflow;
 import java.io.IOException;
 import java.util.Date;
 
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.IntegrityServiceManager;
 import org.bitrepository.integrityservice.reports.BasicIntegrityReporter;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
@@ -53,6 +54,7 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
     /** The context for the workflow.*/
     protected IntegrityWorkflowContext context;
     protected String collectionID;
+    protected IntegrityContributors integrityContributors;
     protected Date workflowStart;
     /**
      * Remember to call the initialise method needs to be called before the start method.
@@ -89,16 +91,19 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
         super.start();
         try {
             StatisticsCollector statisticsCollector = new StatisticsCollector(collectionID);
+             integrityContributors = new IntegrityContributors(SettingsUtils.getPillarIDsForCollection(collectionID));
             
             UpdateFileIDsStep updateFileIDsStep = getUpdateFileIDsStep();
             performStep(updateFileIDsStep);
+            
+            integrityContributors.reloadActiveContributors();
             
             UpdateChecksumsStep updateChecksumStep = getUpdateChecksumsStep();
             performStep(updateChecksumStep);
 
             if(cleanDeletedFiles()) {
-                HandleDeletedFilesStep handleDeletedFilesStep 
-                    = new HandleDeletedFilesStep(context.getStore(), reporter, workflowStart);
+                HandleDeletedFilesStep handleDeletedFilesStep = new HandleDeletedFilesStep(context.getStore(), 
+                        reporter, workflowStart, integrityContributors.getFinishedContributors());
                 performStep(handleDeletedFilesStep);
             }
             
@@ -113,8 +118,8 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
                             statisticsCollector);
             performStep(handleChecksumValidationStep);
             
-            HandleMissingChecksumsStep handleMissingChecksumsStep 
-                    = new HandleMissingChecksumsStep(context.getStore(), reporter, statisticsCollector, getChecksumUpdateCutoffDate());
+            HandleMissingChecksumsStep handleMissingChecksumsStep = new HandleMissingChecksumsStep(context.getStore(), 
+                    reporter, statisticsCollector, getChecksumUpdateCutoffDate());
             performStep(handleMissingChecksumsStep);
             
             HandleObsoleteChecksumsStep handleObsoleteChecksumsStep 

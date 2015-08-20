@@ -23,9 +23,8 @@ package org.bitrepository.integrityservice.workflow.step;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
-import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
@@ -44,13 +43,17 @@ public class HandleDeletedFilesStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
     /** The report model to populate */
     private final IntegrityReporter reporter;
-    /** */
+    /** Start time of the workflow */
     private final Date workflowStart;
+    /** Pillars to clean */
+    private final Set<String> pillarsToClean;
     
-    public HandleDeletedFilesStep(IntegrityModel store, IntegrityReporter reporter, Date workflowStart) {
+    public HandleDeletedFilesStep(IntegrityModel store, IntegrityReporter reporter, Date workflowStart, 
+            Set<String> pillarsToClean) {
         this.store = store;
         this.reporter = reporter;
         this.workflowStart = workflowStart;
+        this.pillarsToClean = pillarsToClean;
     }
     
     @Override
@@ -63,8 +66,7 @@ public class HandleDeletedFilesStep extends AbstractWorkFlowStep {
      */
     @Override
     public synchronized void performStep() throws Exception {
-        List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
-        for(String pillar : pillars) {
+        for(String pillar : pillarsToClean) {
             IntegrityIssueIterator deletedFilesIterator = store.findOrphanFiles(reporter.getCollectionID(), 
                     pillar, workflowStart);
             String deletedFile;

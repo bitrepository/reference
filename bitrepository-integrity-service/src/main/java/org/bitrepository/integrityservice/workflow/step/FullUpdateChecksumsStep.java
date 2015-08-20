@@ -5,6 +5,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
+import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 
 /**
  * Workflow step class to handle the full collection of checksums 
@@ -12,8 +13,8 @@ import org.bitrepository.integrityservice.collector.IntegrityInformationCollecto
 public class FullUpdateChecksumsStep extends UpdateChecksumsStep {
 
     public FullUpdateChecksumsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
-            ChecksumSpecTYPE checksumType, Settings settings, String collectionId) {
-        super(collector, store, alerter, checksumType, settings, collectionId);
+            ChecksumSpecTYPE checksumType, Settings settings, String collectionId, IntegrityContributors integrityContributors) {
+        super(collector, store, alerter, checksumType, settings, collectionId, integrityContributors);
     }
 
     @Override

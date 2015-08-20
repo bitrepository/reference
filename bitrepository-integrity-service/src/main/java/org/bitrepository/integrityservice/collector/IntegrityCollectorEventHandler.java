@@ -21,8 +21,6 @@
  */
 package org.bitrepository.integrityservice.collector;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -33,9 +31,9 @@ import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,8 +54,8 @@ public class IntegrityCollectorEventHandler implements EventHandler {
     
     /** The queue used to store the received operation events. */
     private final BlockingQueue<OperationEvent> finalEventQueue = new LinkedBlockingQueue<OperationEvent>();
-    /** The list of contributors which has only delivered a partial result set.*/
-    private final List<String> contributorsWithPartialResults = new ArrayList<String>();
+    /** The integrity contributors, keeps track of who have failed, are active or finished */
+    private final IntegrityContributors integrityContributors;
     
     /**
      * Constructor.
@@ -65,10 +63,12 @@ public class IntegrityCollectorEventHandler implements EventHandler {
      * @param alerter The alerter for sending failures.
      * @param timeout The maximum amount of millisecond to wait for an result.
      */
-    public IntegrityCollectorEventHandler(IntegrityModel model, IntegrityAlerter alerter, long timeout) {
+    public IntegrityCollectorEventHandler(IntegrityModel model, IntegrityAlerter alerter, long timeout, 
+            IntegrityContributors integrityContributors) {
         this.store = model;
         this.alerter = alerter;
         this.timeout = timeout;
+        this.integrityContributors = integrityContributors;
     }
     
     @Override
@@ -85,8 +85,8 @@ public class IntegrityCollectorEventHandler implements EventHandler {
             finalEventQueue.add(event);
         } else if(event.getEventType() == OperationEventType.COMPONENT_FAILED) {
             ContributorFailedEvent cfe = (ContributorFailedEvent) event;
-            log.warn("Component failure for '" + cfe.getContributorID() 
-                    + "'. Settings previously seen files to existing.");
+            log.warn("Component failure for '" + cfe.getContributorID() + "'.");
+            integrityContributors.finishContributor(cfe.getContributorID());
         } else {
             log.debug("Received event: " + event.toString());
         }
@@ -103,13 +103,6 @@ public class IntegrityCollectorEventHandler implements EventHandler {
     }
     
     /**
-     * @return The list of pillars with only a partial result set.
-     */
-    public List<String> getPillarsWithPartialResult() {
-        return contributorsWithPartialResults;
-    }
-    
-    /**
      * Handle the results of the GetChecksums operation at a single pillar.
      * @param event The event for the completion of a GetChecksums for a single pillar.
      */
@@ -120,16 +113,16 @@ public class IntegrityCollectorEventHandler implements EventHandler {
                     checksumEvent.getChecksums().getChecksumDataItems().toString());
             store.addChecksums(checksumEvent.getChecksums().getChecksumDataItems(), checksumEvent.getContributorID(), 
                     checksumEvent.getCollectionID());
-            if(checksumEvent.isPartialResult()) {
-                contributorsWithPartialResults.add(checksumEvent.getContributorID());
+            if(!checksumEvent.isPartialResult()) {
+                integrityContributors.finishContributor(checksumEvent.getContributorID());
             }
         } else if(event instanceof FileIDsCompletePillarEvent) {
             FileIDsCompletePillarEvent fileidEvent = (FileIDsCompletePillarEvent) event;
             log.trace("Receiving GetFileIDs result: {}", fileidEvent.getFileIDs().getFileIDsData().toString());
             store.addFileIDs(fileidEvent.getFileIDs().getFileIDsData(), fileidEvent.getContributorID(),
                     fileidEvent.getCollectionID());
-            if(fileidEvent.isPartialResult()) {
-                contributorsWithPartialResults.add(fileidEvent.getContributorID());
+            if(!fileidEvent.isPartialResult()) {
+                integrityContributors.finishContributor(fileidEvent.getContributorID());
             }
         } else {
             log.warn("Unexpected component complete event: " + event.toString());

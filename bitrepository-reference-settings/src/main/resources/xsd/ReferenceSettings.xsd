@@ -707,14 +707,14 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="ContinueOnFailedContributor" type="xs:boolean" minOccurs="0">
+        <xs:element name="AbortOnFailedContributor" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:documentation xml:lang="en">
               Control how the integrity service should behave in case of a contributor failing to deliver 
               FileIDs or Checksum data.
               If set to true, stop the integrity check and send an alarm, if false, continue the check on 
               a incomplete set of data, and alert by sending an alarm.
-              The service defaults to false.
+              The service defaults to true.
             </xs:documentation>
           </xs:annotation>
         </xs:element>

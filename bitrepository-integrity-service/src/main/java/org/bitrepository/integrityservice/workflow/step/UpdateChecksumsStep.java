@@ -24,16 +24,20 @@ package org.bitrepository.integrityservice.workflow.step;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.OperationEvent;
+import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityCollectorEventHandler;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
+import org.bitrepository.integrityservice.workflow.IntegrityContributors;
+import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +63,10 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
     private final Integer maxNumberOfResultsPerConversation;
     /** The collectionID */
     protected final String collectionId;
+    /** Continue with checks in case of failure, defaults to false */
+    private boolean abortInCaseOfFailure = true;
+    /** Contributors for collecting information */
+    private final IntegrityContributors integrityContributors;
     
     /** The default value for the maximum number of results for each conversation. Is case the setting is missing.*/
     public static final Integer DEFAULT_MAX_RESULTS = 10000;
@@ -71,12 +79,13 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
      * @param checksumType The type of checksum to collect.
      */
     public UpdateChecksumsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
-            ChecksumSpecTYPE checksumType, Settings settings, String collectionId) {
+            ChecksumSpecTYPE checksumType, Settings settings, String collectionId, IntegrityContributors integrityContributors) {
         this.collector = collector;
         this.store = store;
         this.checksumType = checksumType;
         this.alerter = alerter;
         this.collectionId = collectionId;
+        this.integrityContributors = integrityContributors;
         this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
                 + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
         if(settings.getReferenceSettings().getIntegrityServiceSettings().getMaximumNumberOfResultsPerConversation() 
@@ -85,6 +94,9 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
                     .getMaximumNumberOfResultsPerConversation().intValue();
         } else {
             this.maxNumberOfResultsPerConversation = DEFAULT_MAX_RESULTS;
+        }
+        if(settings.getReferenceSettings().getIntegrityServiceSettings().isSetAbortOnFailedContributor()) {
+            abortInCaseOfFailure = settings.getReferenceSettings().getIntegrityServiceSettings().isAbortOnFailedContributor();
         }
     }
     
@@ -99,23 +111,30 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
     protected void finalStepAction() {}
     
     @Override
-    public synchronized void performStep() {
+    public synchronized void performStep() throws WorkflowAbortedException {
         try {
             initialStepAction();
 
-            List<String> pillarsToCollectFrom = new ArrayList<String>(
-                    SettingsUtils.getPillarIDsForCollection(collectionId));
+            Set<String> pillarsToCollectFrom =  integrityContributors.getActiveContributors();
             log.debug("Collecting checksums from '" + pillarsToCollectFrom + "' for collection '" 
                     + collectionId + "'.");
             while (!pillarsToCollectFrom.isEmpty()) {
                 IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, 
-                        alerter, timeout);
+                        alerter, timeout, integrityContributors);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
                 collector.getChecksums(collectionId, pillarsToCollectFrom, checksumType, "IntegrityService: " 
                         + getName(), queries, eventHandler);
+                
                 OperationEvent event = eventHandler.getFinish();
+                if(event.getEventType() == OperationEventType.FAILED) {
+                    if(abortInCaseOfFailure) {
+                        OperationFailedEvent ofe = (OperationFailedEvent) event;
+                        throw new WorkflowAbortedException("Aborting workflow due to failure collecting checksums. "
+                                + "Cause: " + ofe.toString());
+                    }
+                }
                 log.debug("Collecting of checksums ids had the final event: " + event);
-                pillarsToCollectFrom = new ArrayList<String>(eventHandler.getPillarsWithPartialResult());
+                pillarsToCollectFrom = integrityContributors.getActiveContributors();
             }
             
             finalStepAction();
@@ -129,7 +148,7 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
      * @param pillars The pillars to collect from.
      * @return The queries for the pillars for collecting the file ids.
      */
-    private ContributorQuery[] getQueries(List<String> pillars) {
+    private ContributorQuery[] getQueries(Set<String> pillars) {
         List<ContributorQuery> res = new ArrayList<ContributorQuery>();
         for(String pillar : pillars) {
             Date latestChecksumEntry = store.getDateForNewestChecksumEntryForPillar(pillar, collectionId);

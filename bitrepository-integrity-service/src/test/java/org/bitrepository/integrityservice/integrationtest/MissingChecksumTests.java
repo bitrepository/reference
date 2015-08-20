@@ -28,6 +28,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -67,10 +69,12 @@ import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
+import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 import org.bitrepository.integrityservice.workflow.step.FullUpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.HandleMissingChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
+import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.jaccept.structure.ExtendedTestCase;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
@@ -93,6 +97,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
     protected IntegrityInformationCollector collector;
     protected IntegrityAlerter alerter;
     protected IntegrityModel model;
+    protected IntegrityContributors integrityContributors;
     
     IntegrityReporter reporter;
     
@@ -119,6 +124,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
         model = new IntegrityDatabase(settings);
         
         reporter = mock(IntegrityReporter.class);
+        integrityContributors = mock(IntegrityContributors.class);
         
         SettingsUtils.initialize(settings);
     }
@@ -146,7 +152,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
-    public void testMissingChecksumForFirstGetChecksums() {
+    public void testMissingChecksumForFirstGetChecksums() throws WorkflowAbortedException {
         addDescription("Test that checksums are set to missing, when not found during GetChecksum.");
         addStep("Ingest file to database", "");
         Date testStart = new Date();
@@ -167,7 +173,11 @@ public class MissingChecksumTests extends ExtendedTestCase {
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
 
-        UpdateChecksumsStep step = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        when(integrityContributors.getActiveContributors())
+            .thenReturn(new HashSet<>(Arrays.asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
+        
+        UpdateChecksumsStep step = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
+                settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
                 any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
@@ -188,7 +198,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
-    public void testMissingChecksumDuringSecondIngest() {
+    public void testMissingChecksumDuringSecondIngest() throws WorkflowAbortedException {
         addDescription("Test that checksums are set to missing, when not found during GetChecksum, "
                 + "even though they have been found before.");
         addStep("Ingest file to database", "");
@@ -211,8 +221,12 @@ public class MissingChecksumTests extends ExtendedTestCase {
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
-
-        UpdateChecksumsStep step1 = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        
+        when(integrityContributors.getActiveContributors())
+            .thenReturn(new HashSet<>(Arrays.asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
+                
+        UpdateChecksumsStep step1 = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
+                settings, TEST_COLLECTION, integrityContributors);
         step1.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
                 any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
@@ -241,8 +255,12 @@ public class MissingChecksumTests extends ExtendedTestCase {
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
 
+        when(integrityContributors.getActiveContributors())
+            .thenReturn(new HashSet<>(Arrays.asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
+        
         Date secondUpdate = new Date();
-        UpdateChecksumsStep step2 = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), settings, TEST_COLLECTION);
+        UpdateChecksumsStep step2 = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
+                settings, TEST_COLLECTION, integrityContributors);
         step2.performStep();
         verifyNoMoreInteractions(alerter);
         

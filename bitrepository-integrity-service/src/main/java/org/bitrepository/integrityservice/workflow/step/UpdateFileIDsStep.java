@@ -22,24 +22,25 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityCollectorEventHandler;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
+import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * The step for collecting of all file ids from all pillars.
@@ -61,7 +62,9 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
     /** The collectionID */
     protected final String collectionId;
     /** Continue with checks in case of failure, defaults to false */
-    private boolean continueInCaseOfFailure = false;
+    private boolean abortInCaseOfFailure = true;
+    /** Contributors for collecting information */
+    private final IntegrityContributors integrityContributors;
     
     /** The default value for the maximum number of results for each conversation. Is case the setting is missing.*/
     private final Integer DEFAULT_MAX_RESULTS = 10000;
@@ -74,11 +77,12 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
      * @param settings The settings to use.
      */
     public UpdateFileIDsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
-            Settings settings, String collectionId) {
+            Settings settings, String collectionId, IntegrityContributors integrityContributors) {
         this.collector = collector;
         this.store = store;
         this.alerter = alerter;
         this.collectionId = collectionId;
+        this.integrityContributors = integrityContributors;
         this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
                 + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
         if(settings.getReferenceSettings().getIntegrityServiceSettings().getMaximumNumberOfResultsPerConversation() 
@@ -88,8 +92,8 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
         } else {
             this.maxNumberOfResultsPerConversation = DEFAULT_MAX_RESULTS;
         }
-        if(settings.getReferenceSettings().getIntegrityServiceSettings().isSetContinueOnFailedContributor()) {
-            continueInCaseOfFailure = settings.getReferenceSettings().getIntegrityServiceSettings().isContinueOnFailedContributor();
+        if(settings.getReferenceSettings().getIntegrityServiceSettings().isSetAbortOnFailedContributor()) {
+            abortInCaseOfFailure = settings.getReferenceSettings().getIntegrityServiceSettings().isAbortOnFailedContributor();
         }
     }
     
@@ -103,27 +107,25 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
         initialStepAction();
 
         try {
-            List<String> pillarsToCollectFrom =
-                    new ArrayList<String>(SettingsUtils.getPillarIDsForCollection(collectionId));
+            Set<String> pillarsToCollectFrom = integrityContributors.getActiveContributors();
             log.debug("Collecting fileIDs from: " + pillarsToCollectFrom);
             while (!pillarsToCollectFrom.isEmpty()) {
-                IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, alerter, timeout);
+                IntegrityCollectorEventHandler eventHandler 
+                    = new IntegrityCollectorEventHandler(store, alerter, timeout, integrityContributors);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
                 collector.getFileIDs(collectionId, pillarsToCollectFrom,
                         "IntegrityService: " + getName(), queries, eventHandler);
                 
                 OperationEvent event = eventHandler.getFinish();
                 if(event.getEventType() == OperationEventType.FAILED) {
-                    OperationFailedEvent ofe = (OperationFailedEvent) event;
-                    if(continueInCaseOfFailure) {
-                        // handle the removal of the pillar from pillars to be cleaned 
-                    } else {
-                        throw new WorkflowAbortedException("Aborting workflow due to failure to collect fileIDs. "
+                    if(abortInCaseOfFailure) {
+                        OperationFailedEvent ofe = (OperationFailedEvent) event;
+                        throw new WorkflowAbortedException("Aborting workflow due to failure collecting fileIDs. "
                                 + "Cause: " + ofe.toString());
                     }
                 }
                 log.debug("Collection of file ids had the final event: " + event);
-                pillarsToCollectFrom = new ArrayList<String>(eventHandler.getPillarsWithPartialResult());
+                pillarsToCollectFrom = integrityContributors.getActiveContributors();
             }
         } catch (InterruptedException e) {
             log.warn("Interrupted while collecting file ids.", e);
@@ -135,7 +137,7 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
      * @param pillars The pillars to collect from.
      * @return The queries for the pillars for collecting the file ids.
      */
-    private ContributorQuery[] getQueries(List<String> pillars) {
+    private ContributorQuery[] getQueries(Set<String> pillars) {
         List<ContributorQuery> res = new ArrayList<ContributorQuery>();
         for(String pillar : pillars) {
             Date latestFileIDEntry = store.getDateForNewestFileEntryForPillar(pillar, collectionId);
