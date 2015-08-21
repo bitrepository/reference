@@ -40,6 +40,7 @@ import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowContext;
+import org.bitrepository.service.workflow.WorkflowState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,17 +132,18 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
                     context.getStore(), collectionID, statisticsCollector);
             performStep(createStatistics);
 
-            if(reporter.hasIntegrityIssues()) {
-                context.getAlerter().integrityFailed(reporter.generateSummaryOfReport(), collectionID);
+            if(currentState() != WorkflowState.ABORTED) {
+                if(reporter.hasIntegrityIssues()) {
+                    context.getAlerter().integrityFailed(reporter.generateSummaryOfReport(), collectionID);
+                }
+                try {
+                    reporter.generateReport();
+                } catch (IOException e) {
+                    log.error("Failed to generate integrity report", e);
+                }
+                
+                IntegrityServiceManager.getIntegrityReportProvider().setLatestReport(collectionID, reporter.getReportDir());
             }
-            try {
-                reporter.generateReport();
-            } catch (IOException e) {
-                log.error("Failed to generate integrity report", e);
-            }
-            
-            IntegrityServiceManager.getIntegrityReportProvider().setLatestReport(collectionID, reporter.getReportDir());
-            
         } finally {
             finish();
         }
