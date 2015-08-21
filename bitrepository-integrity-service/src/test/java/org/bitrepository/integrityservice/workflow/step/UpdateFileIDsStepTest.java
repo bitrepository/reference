@@ -193,7 +193,9 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
-            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>());
 
         UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION, 
                 integrityContributors);

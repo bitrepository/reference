@@ -75,19 +75,21 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
 
-        when(integrityContributors.getActiveContributors()).thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)));
-        when(integrityContributors.getActiveContributors()).thenReturn(new HashSet<>());
+        when(integrityContributors.getActiveContributors())
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
         
         UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
                 settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
-        verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+        verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), 
+                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
     }
 
-    @Test(groups = {"regressiontest"})
-    public void testNegativeReply() throws WorkflowAbortedException {
-        addDescription("Test the step for updating the checksums can handle FAILURE operation event.");
+    @Test(groups = {"regressiontest"}, expectedExceptions = WorkflowAbortedException.class)
+    public void testAbortWorkflowWhenNegativeReply() throws WorkflowAbortedException {
+        addDescription("Test the step for updating the checksums will abort the workflow in case "
+                + "of FAILURE operation event and AbortOnFailedContributor = true .");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
@@ -101,6 +103,32 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         when(integrityContributors.getActiveContributors())
             .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
         
+        settings.getReferenceSettings().getIntegrityServiceSettings().setAbortOnFailedContributor(true);
+        UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
+                settings, TEST_COLLECTION, integrityContributors);
+        step.performStep();
+        verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+        verify(alerter).operationFailed(anyString(), eq(TEST_COLLECTION));
+    }
+    
+    @Test(groups = {"regressiontest"})
+    public void testContinueWorkflowNegativeReply() throws WorkflowAbortedException {
+        addDescription("Test the step for updating the checksums will continue the workflow in case "
+                + "of FAILURE operation event and AbortOnFailedContributor = false .");
+        doAnswer(new Answer() {
+            public Void answer(InvocationOnMock invocation) {
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Problem encountered", null));
+                return null;
+            }
+        }).when(collector).getChecksums(
+                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
+                any(ContributorQuery[].class), any(EventHandler.class));
+
+        when(integrityContributors.getActiveContributors())
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
+        
+        settings.getReferenceSettings().getIntegrityServiceSettings().setAbortOnFailedContributor(false);
         UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
                 settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
