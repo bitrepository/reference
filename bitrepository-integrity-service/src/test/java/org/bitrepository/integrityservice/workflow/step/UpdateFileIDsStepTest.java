@@ -132,7 +132,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 integrityContributors);
         
         step.performStep();
-        verify(alerter).operationFailed(anyString(), anyString());
+        verify(alerter).integrityFailed(anyString(), anyString());
         verify(collector).getFileIDs(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
                 any(EventHandler.class));

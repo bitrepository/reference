@@ -133,7 +133,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
-        verify(alerter).operationFailed(anyString(), eq(TEST_COLLECTION));
+        verify(alerter).integrityFailed(anyString(), eq(TEST_COLLECTION));
     }
     
     @Test(groups = {"regressiontest"})

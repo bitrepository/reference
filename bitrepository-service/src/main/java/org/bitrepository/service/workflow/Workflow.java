@@ -65,6 +65,7 @@ public abstract class Workflow implements SchedulableJob {
                 log.info(statistics.getCurrentSubStatistic().toString());
             } catch (WorkflowAbortedException e) {
                 this.currentState = WorkflowState.ABORTED;
+                log.warn("Failure occured, aborting workflow", e);
             } catch (Exception e) {
                 log.error("Failure in step: '" + step.getName() + "'.", e);
                 throw new RuntimeException("Failed to run step " + step.getName(), e);

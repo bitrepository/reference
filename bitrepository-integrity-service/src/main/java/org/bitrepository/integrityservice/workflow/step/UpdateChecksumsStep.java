@@ -120,7 +120,7 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
                     + collectionId + "'.");
             while (!pillarsToCollectFrom.isEmpty()) {
                 IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, 
-                        alerter, timeout, integrityContributors);
+                        timeout, integrityContributors);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
                 collector.getChecksums(collectionId, pillarsToCollectFrom, checksumType, "IntegrityService: " 
                         + getName(), queries, eventHandler);
@@ -129,8 +129,13 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
                 if(event.getEventType() == OperationEventType.FAILED) {
                     if(abortInCaseOfFailure) {
                         OperationFailedEvent ofe = (OperationFailedEvent) event;
+                        alerter.integrityFailed("Integrity check aborted due to failures: " + event.toString(), collectionId);
                         throw new WorkflowAbortedException("Aborting workflow due to failure collecting checksums. "
                                 + "Cause: " + ofe.toString());
+                    } else {
+                        log.info("Failure occured collecting fileIDs, continuing collecting checksums. Failure {}", event.toString());
+                        alerter.integrityFailed("Failure while collecting checksums, the check will continue "
+                                + "with the information available. The failure was: " + event.toString(), collectionId);
                     }
                 }
                 log.debug("Collecting of checksums ids had the final event: " + event);

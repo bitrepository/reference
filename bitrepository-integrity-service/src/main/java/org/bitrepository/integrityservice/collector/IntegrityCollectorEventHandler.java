@@ -47,8 +47,6 @@ public class IntegrityCollectorEventHandler implements EventHandler {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The model where the integrity data is stored.*/
     private final IntegrityModel store;
-    /** The alerter for issuing alarms.*/
-    private final IntegrityAlerter alerter;
     /** The amount of milliseconds before the results are required.*/
     private final long timeout;
     
@@ -63,10 +61,9 @@ public class IntegrityCollectorEventHandler implements EventHandler {
      * @param alerter The alerter for sending failures.
      * @param timeout The maximum amount of millisecond to wait for an result.
      */
-    public IntegrityCollectorEventHandler(IntegrityModel model, IntegrityAlerter alerter, long timeout, 
+    public IntegrityCollectorEventHandler(IntegrityModel model, long timeout, 
             IntegrityContributors integrityContributors) {
         this.store = model;
-        this.alerter = alerter;
         this.timeout = timeout;
         this.integrityContributors = integrityContributors;
     }
@@ -81,7 +78,6 @@ public class IntegrityCollectorEventHandler implements EventHandler {
             finalEventQueue.add(event);
         } else if(event.getEventType() == OperationEventType.FAILED) {
             log.warn("Failure: " + event.toString());
-            alerter.operationFailed("Failed integrity operation: " + event.toString(), event.getCollectionID());            
             finalEventQueue.add(event);
         } else if(event.getEventType() == OperationEventType.COMPONENT_FAILED) {
             ContributorFailedEvent cfe = (ContributorFailedEvent) event;

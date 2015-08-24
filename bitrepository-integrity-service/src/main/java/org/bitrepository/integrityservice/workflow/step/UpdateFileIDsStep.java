@@ -111,17 +111,22 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
             log.debug("Collecting fileIDs from: " + pillarsToCollectFrom);
             while (!pillarsToCollectFrom.isEmpty()) {
                 IntegrityCollectorEventHandler eventHandler 
-                    = new IntegrityCollectorEventHandler(store, alerter, timeout, integrityContributors);
+                    = new IntegrityCollectorEventHandler(store, timeout, integrityContributors);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
                 collector.getFileIDs(collectionId, pillarsToCollectFrom,
                         "IntegrityService: " + getName(), queries, eventHandler);
                 
                 OperationEvent event = eventHandler.getFinish();
                 if(event.getEventType() == OperationEventType.FAILED) {
+                    OperationFailedEvent ofe = (OperationFailedEvent) event;
                     if(abortInCaseOfFailure) {
-                        OperationFailedEvent ofe = (OperationFailedEvent) event;
+                        alerter.integrityFailed("Integrity check aborted due to failures: " + event.toString(), collectionId);
                         throw new WorkflowAbortedException("Aborting workflow due to failure collecting fileIDs. "
                                 + "Cause: " + ofe.toString());
+                    } else {
+                        log.info("Failure occured collecting fileIDs, continuing collecting fileIDs. Failure {}", event.toString());
+                        alerter.integrityFailed("Failure while collecting fileIDs, the check will continue "
+                                + "with the information available. The failure was: " + event.toString(), collectionId);
                     }
                 }
                 log.debug("Collection of file ids had the final event: " + event);
