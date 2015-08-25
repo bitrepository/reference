@@ -29,6 +29,7 @@ import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
+import org.bitrepository.service.exception.StepFailedException;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,7 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
      * Updates database model to reflect the discovered situation. 
      */
     @Override
-    public synchronized void performStep() {
+    public synchronized void performStep() throws StepFailedException {
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
         for(String pillar : pillars) {
             Long missingFiles = 0L;
@@ -77,7 +78,7 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
                     reporter.reportMissingFile(missingFile, pillar);
                     missingFiles++;
                 } catch (IOException e) {
-                    log.error("Failed to report file: " + missingFile + " as missing", e);
+                    throw new StepFailedException("Failed to report file: " + missingFile + " as missing", e);
                 }
             }
             sc.getPillarCollectionStat(pillar).setMissingFiles(missingFiles);

@@ -28,12 +28,13 @@ import java.util.Set;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
+import org.bitrepository.service.exception.StepFailedException;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A workflow step for finding missing checksums.
+ * A workflow step for removing files no longer present.
  * Uses the IntegrityChecker to perform the actual check.
  */
 public class HandleDeletedFilesStep extends AbstractWorkFlowStep {
@@ -76,7 +77,7 @@ public class HandleDeletedFilesStep extends AbstractWorkFlowStep {
                     try {
                         reporter.reportDeletedFile(pillar, deletedFile);
                     } catch (IOException e) {
-                        log.error("Failed to report file: " + deletedFile + " as deleted", e);
+                        throw new StepFailedException("Failed to report file: " + deletedFile + " as deleted", e);
                     }
                 }
             } finally {

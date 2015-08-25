@@ -92,7 +92,7 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
         super.start();
         try {
             StatisticsCollector statisticsCollector = new StatisticsCollector(collectionID);
-             integrityContributors = new IntegrityContributors(SettingsUtils.getPillarIDsForCollection(collectionID));
+            integrityContributors = new IntegrityContributors(SettingsUtils.getPillarIDsForCollection(collectionID));
             
             UpdateFileIDsStep updateFileIDsStep = getUpdateFileIDsStep();
             performStep(updateFileIDsStep);
@@ -138,11 +138,11 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
                 }
                 try {
                     reporter.generateReport();
+                    IntegrityServiceManager.getIntegrityReportProvider().setLatestReport(collectionID, reporter.getReportDir());
                 } catch (IOException e) {
                     log.error("Failed to generate integrity report", e);
-                }
-                
-                IntegrityServiceManager.getIntegrityReportProvider().setLatestReport(collectionID, reporter.getReportDir());
+                    context.getAlerter().integrityComponentFailure("Failed to generate integrity report", collectionID);
+                }   
             }
         } finally {
             finish();

@@ -31,7 +31,6 @@ import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 import org.slf4j.Logger;
@@ -82,7 +81,7 @@ public class IntegrityCollectorEventHandler implements EventHandler {
         } else if(event.getEventType() == OperationEventType.COMPONENT_FAILED) {
             ContributorFailedEvent cfe = (ContributorFailedEvent) event;
             log.warn("Component failure for '" + cfe.getContributorID() + "'.");
-            integrityContributors.finishContributor(cfe.getContributorID());
+            integrityContributors.failContributor(cfe.getContributorID());
         } else {
             log.debug("Received event: " + event.toString());
         }

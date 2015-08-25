@@ -76,9 +76,8 @@ public class JobTimerTask extends TimerTask {
     /**
      * Runs the job.
      * Resets the date for the next run of the job.
-     * @return String
      */
-    public String runJob() {
+    public void runJob() {
         try {
             if (job.currentState().equals(WorkflowState.NOT_RUNNING)) {
                 log.info("Starting job: " + job.getJobID());
@@ -88,15 +87,13 @@ public class JobTimerTask extends TimerTask {
                     nextRun = new Date(System.currentTimeMillis() + interval);
                 }
                 notifyListenersAboutFinishedJob(job);
-                return "Job '" + job.getJobID() + "' finished";
+                return;
             } else {
                 log.info("Ignoring start request for " + job.getJobID() + " the job is already running");
-                return "Can not start " + job.getJobID() + ", it is already running in state "
-                        + job.currentState();
+                return;
             }
         } catch (Throwable e) {
             log.error("Fault barrier for '" + job.getJobID() + "' caught unexpected exception.", e);
-            throw new RuntimeException("Failed to run job" + e.getMessage() + ", see server log for details.");
         }
     }
 
@@ -119,13 +116,9 @@ public class JobTimerTask extends TimerTask {
 
     @Override
     public void run() {
-        try {
-            if( nextRun != null &&
-                getNextRun().getTime() <= System.currentTimeMillis()) {
-                runJob();
-            }
-        } catch (Exception e) {
-            log.error("Failed to run job", e);
+        if( nextRun != null &&
+            getNextRun().getTime() <= System.currentTimeMillis()) {
+            runJob();
         }
     }
 }

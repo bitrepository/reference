@@ -92,7 +92,7 @@ public class TimerbasedScheduler implements JobScheduler {
         JobTimerTask task = new JobTimerTask(timeBetweenRuns, job, jobListeners);
         timer.scheduleAtFixedRate(task, NO_DELAY, SCHEDULE_INTERVAL);
         intervalTasks.put(job.getJobID(), task);
-        return null;
+        return "Job scheduled";
     }
 
     @Override

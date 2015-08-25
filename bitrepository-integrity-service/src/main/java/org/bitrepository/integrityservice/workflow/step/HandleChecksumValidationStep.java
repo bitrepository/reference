@@ -37,6 +37,7 @@ import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.bitrepository.service.audit.AuditTrailManager;
+import org.bitrepository.service.exception.StepFailedException;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,8 +106,9 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
      * Otherwise all the pillars will be set to checksum error for the file.
      * @param infos The FileInfos
      * @param fileID The id of the file.
+     * @throws StepFailedException 
      */
-    private void handleChecksumInconsistency(Collection<FileInfo> infos, String fileID) {
+    private void handleChecksumInconsistency(Collection<FileInfo> infos, String fileID) throws StepFailedException {
         Map<String, List<String>> checksumMap = getChecksumMapping(infos);
         String pillarID = findSingleInconsistentPillar(checksumMap);
 
@@ -122,7 +124,7 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
                 reporter.reportChecksumIssue(fileID, pillarID);
             }    
         } catch (IOException e) {
-            log.error("Failed to report file: " + fileID + " as having a checksum issue", e);
+            throw new StepFailedException("Failed to report file: " + fileID + " as having a checksum issue", e);
         }
         
     }

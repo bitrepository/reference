@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.workflow.step;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -127,15 +128,17 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
                 
                 OperationEvent event = eventHandler.getFinish();
                 if(event.getEventType() == OperationEventType.FAILED) {
+                    OperationFailedEvent ofe = (OperationFailedEvent) event;
                     if(abortInCaseOfFailure) {
-                        OperationFailedEvent ofe = (OperationFailedEvent) event;
-                        alerter.integrityFailed("Integrity check aborted due to failures: " + event.toString(), collectionId);
+                        alerter.integrityFailed("Integrity check aborted while getting checksums due to failed contributors: " 
+                                + integrityContributors.getFailedContributors(), collectionId);
                         throw new WorkflowAbortedException("Aborting workflow due to failure collecting checksums. "
                                 + "Cause: " + ofe.toString());
                     } else {
-                        log.info("Failure occured collecting fileIDs, continuing collecting checksums. Failure {}", event.toString());
+                        log.info("Failure occured collecting fileIDs, continuing collecting checksums. Failure {}", ofe.toString());
                         alerter.integrityFailed("Failure while collecting checksums, the check will continue "
-                                + "with the information available. The failure was: " + event.toString(), collectionId);
+                                + "with the information available. The failed contributors was: " 
+                                + integrityContributors.getFailedContributors(), collectionId);
                     }
                 }
                 log.debug("Collecting of checksums ids had the final event: " + event);
@@ -153,7 +156,7 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
      * @param pillars The pillars to collect from.
      * @return The queries for the pillars for collecting the file ids.
      */
-    private ContributorQuery[] getQueries(Set<String> pillars) {
+    private ContributorQuery[] getQueries(Collection<String> pillars) {
         List<ContributorQuery> res = new ArrayList<ContributorQuery>();
         for(String pillar : pillars) {
             Date latestChecksumEntry = store.getDateForNewestChecksumEntryForPillar(pillar, collectionId);

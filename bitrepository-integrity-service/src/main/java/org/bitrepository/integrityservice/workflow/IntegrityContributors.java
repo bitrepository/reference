@@ -30,7 +30,7 @@ public class IntegrityContributors {
     /**
      * Move all finished contributors to active contributors 
      */
-    public void reloadActiveContributors() {
+    public synchronized void reloadActiveContributors() {
         activeContributors.addAll(finishedContributors);
         finishedContributors.clear();
     }
@@ -59,17 +59,20 @@ public class IntegrityContributors {
     /**
      * Mark an contributor as failed 
      */
-    public void failContributor(String contributor) {
-        failedContributors.add(contributor);
-        activeContributors.remove(contributor);
+    public synchronized void failContributor(String contributor) {
+        if(activeContributors.remove(contributor)) {
+            failedContributors.add(contributor);
+        }
+        
     }
     
     /**
      * Mark an contributor as finished 
      */
-    public void finishContributor(String contributor) {
-        finishedContributors.add(contributor);
-        activeContributors.remove(contributor);
+    public synchronized void finishContributor(String contributor) {
+        if(activeContributors.remove(contributor)) {
+            finishedContributors.add(contributor);    
+        }
     }
     
 }

@@ -63,4 +63,13 @@ public class IntegrityAlarmDispatcher extends AlarmDispatcher implements Integri
         ad.setCollectionID(collectionID);
         error(ad);        
     }
+    
+    @Override
+    public void integrityComponentFailure(String summary, String collectionID) {
+        Alarm ad = new Alarm();
+        ad.setAlarmCode(AlarmCode.COMPONENT_FAILURE);
+        ad.setAlarmText(summary);
+        ad.setCollectionID(collectionID);
+        error(ad);
+    }
 }

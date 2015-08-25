@@ -37,4 +37,11 @@ public interface IntegrityAlerter {
      * @param collectionID The ID of the collection that the alarm belongs to, may be null
      */
     void operationFailed(String issue, String collectionID);
+    
+    /**
+     * Send an alarm due to a failure in the service
+     * @param summary The description of the failure
+     * @param collectionID The collection which the failure regards 
+     */
+    void integrityComponentFailure(String summary, String collectionID); 
 }

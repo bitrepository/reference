@@ -40,8 +40,10 @@ import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEve
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.client.eventhandler.CompleteEvent;
+import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
@@ -50,6 +52,7 @@ import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 @SuppressWarnings("rawtypes")
@@ -82,13 +85,14 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(alerter);
     }
 
-    @Test(groups = {"regressiontest"}, expectedExceptions = WorkflowAbortedException.class)
-    public void testAbortWorkflowWhenNegativeReply() throws WorkflowAbortedException {
+    @Test(groups = {"regressiontest"})
+    public void testAbortWorkflowWhenNegativeReply() {
         addDescription("Test the step for updating the file ids will throw an WorkflowAbortedException"
-                + "when AbortOnFailedContributor is set to true and a FAILED .");
+                + "when AbortOnFailedContributor is set to true and a FAILED event is received.");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[4];
+                eventHandler.handleEvent(new ContributorFailedEvent(TEST_PILLAR_1, TEST_COLLECTION, ResponseCode.FAILURE));
                 eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Operation failed", null));
                 return null;
             }
@@ -103,11 +107,19 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION, 
                 integrityContributors);
         
-        step.performStep();
-        verify(alerter).operationFailed(anyString(), anyString());
+        try {
+            step.performStep();
+            Assert.fail("The step should have thrown an WorkflowAbortedException");
+        } catch (WorkflowAbortedException e) {
+            // nothing to do here
+        }
+        
         verify(collector).getFileIDs(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
                 any(EventHandler.class));
+        verify(integrityContributors).failContributor(eq(TEST_PILLAR_1));
+        verify(alerter).integrityFailed(anyString(), anyString());
+        
     }
     
     @Test(groups = {"regressiontest"})
@@ -117,6 +129,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[4];
+                eventHandler.handleEvent(new ContributorFailedEvent(TEST_PILLAR_1, TEST_COLLECTION, ResponseCode.FAILURE));
                 eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Operation failed", null));
                 return null;
             }
@@ -132,6 +145,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 integrityContributors);
         
         step.performStep();
+        verify(integrityContributors).failContributor(eq(TEST_PILLAR_1));
         verify(alerter).integrityFailed(anyString(), anyString());
         verify(collector).getFileIDs(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),

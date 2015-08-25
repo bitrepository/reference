@@ -31,6 +31,7 @@ import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
+import org.bitrepository.service.exception.StepFailedException;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +83,7 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
                         reporter.reportMissingChecksum(missingFile, pillar);
                         missingChecksums++;
                     } catch (IOException e) {
-                        log.error("Failed to report file: " + missingFile + " as having a missing checksum", e);
+                        throw new StepFailedException("Failed to report file: " + missingFile + " as having a missing checksum", e);
                     }
                 }
             } finally {

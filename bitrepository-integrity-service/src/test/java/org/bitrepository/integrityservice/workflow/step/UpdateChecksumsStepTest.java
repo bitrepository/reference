@@ -42,8 +42,10 @@ import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePilla
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.client.eventhandler.CompleteEvent;
+import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
@@ -54,6 +56,7 @@ import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 @SuppressWarnings("rawtypes")
@@ -86,13 +89,14 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(alerter);
     }
 
-    @Test(groups = {"regressiontest"}, expectedExceptions = WorkflowAbortedException.class)
-    public void testAbortWorkflowWhenNegativeReply() throws WorkflowAbortedException {
+    @Test(groups = {"regressiontest"})
+    public void testAbortWorkflowWhenNegativeReply() {
         addDescription("Test the step for updating the checksums will abort the workflow in case "
                 + "of FAILURE operation event and AbortOnFailedContributor = true .");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                eventHandler.handleEvent(new ContributorFailedEvent(TEST_PILLAR_1, TEST_COLLECTION, ResponseCode.FAILURE));
                 eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Problem encountered", null));
                 return null;
             }
@@ -106,9 +110,15 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         settings.getReferenceSettings().getIntegrityServiceSettings().setAbortOnFailedContributor(true);
         UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
                 settings, TEST_COLLECTION, integrityContributors);
-        step.performStep();
+        try {
+            step.performStep();
+            Assert.fail("The step should have thrown an WorkflowAbortedException");
+        } catch (WorkflowAbortedException e) {
+            // nothing to do here
+        }
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
-        verify(alerter).operationFailed(anyString(), eq(TEST_COLLECTION));
+        verify(integrityContributors).failContributor(eq(TEST_PILLAR_1));
+        verify(alerter).integrityFailed(anyString(), eq(TEST_COLLECTION));
     }
     
     @Test(groups = {"regressiontest"})
@@ -118,6 +128,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                eventHandler.handleEvent(new ContributorFailedEvent(TEST_PILLAR_1, TEST_COLLECTION, ResponseCode.FAILURE));
                 eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Problem encountered", null));
                 return null;
             }
@@ -132,6 +143,8 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
                 settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
+        
+        verify(integrityContributors).failContributor(eq(TEST_PILLAR_1));
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(alerter).integrityFailed(anyString(), eq(TEST_COLLECTION));
     }
