@@ -128,7 +128,7 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
                     } else {
                         log.info("Failure occured collecting fileIDs, continuing collecting fileIDs. Failure {}", ofe.toString());
                         alerter.integrityFailed("Failure while collecting fileIDs, the check will continue "
-                                + "with the information available. The failed contributors was: " 
+                                + "with the information available. The failed contributors were: " 
                                 + integrityContributors.getFailedContributors(), collectionId);
                     }
                 }
