@@ -41,3 +41,4 @@ GROUP BY collectionid, contributor_id);
 
 UPDATE tableversions SET version = 5 WHERE tablename = 'auditservicedb';
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'collection_progress', 1); 
+ALTER TABLE audittrail ADD UNIQUE ( sequence_number, contributor_key, file_key);

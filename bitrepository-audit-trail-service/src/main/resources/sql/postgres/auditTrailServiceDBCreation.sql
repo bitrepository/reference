@@ -163,8 +163,9 @@ CREATE TABLE audittrail (
                                  -- Foreign key constraint on pillar_key, enforcing the presence of the referred id
     FOREIGN KEY (file_key) REFERENCES file(file_key),
                                  -- Foreign key constraint on file_key, enforcing the presence of the referred id                                 
-    FOREIGN KEY (actor_key) REFERENCES actor(actor_key)
+    FOREIGN KEY (actor_key) REFERENCES actor(actor_key),
                                  -- Foreign key constraint on pillar_key, enforcing the presence of the referred id
+    UNIQUE ( sequence_number, contributor_key, file_key)
 );
 
 CREATE INDEX dateindex ON audittrail ( operation_date );
