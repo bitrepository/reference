@@ -24,6 +24,7 @@ package org.bitrepository.audittrails.collector;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -95,6 +96,16 @@ public class IncrementalCollector {
      */
     public void performCollection(Collection<String> contributors) {
         collectedAudits = 0;
+        long start = System.currentTimeMillis(); 
+                
+        log.debug("Starting collection of audittrails for collection '{}'", collectionID);
+        collect(contributors);
+        log.debug("Finished collecting audittrails for collection '{}', collected {} audit trails it took " 
+                + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - start)+".", 
+                collectionID, collectedAudits);
+    }
+    
+    private void collect(Collection<String> contributors) {
         List<AuditTrailQuery> queries = new ArrayList<AuditTrailQuery>();
         
         for(String contributorId : contributors) {
@@ -102,17 +113,21 @@ public class IncrementalCollector {
             queries.add(new AuditTrailQuery(contributorId, seq + 1, null, maxNumberOfResults));
         }
 
+        log.debug("Collecting of audittrails for '{}' with ContributorQueries: {}", collectionID, queries);
+        
         AuditCollectorEventHandler handler = new AuditCollectorEventHandler();
         try {
             client.getAuditTrails(collectionID, queries.toArray(new AuditTrailQuery[queries.size()]), NO_FILE_ID,
                     NO_DELIVERY_URL, handler, clientID);
 
         } catch (NegativeResponseException e) {
-            log.error("Problem in collecting audit trails, collection will not be complete", e);
+            log.error("Problem in collecting audittrails, collection will not be complete for collection '{}'",
+                    collectionID, e);
         }
         if (!handler.contributorsWithPartialResults.isEmpty()) {
-            performCollection(handler.contributorsWithPartialResults);
+            collect(handler.contributorsWithPartialResults);
         }
+        
     }
 
     /**
@@ -136,13 +151,13 @@ public class IncrementalCollector {
                     contributorsWithPartialResults.add(auditResult.getContributorID());
                 }
                 AuditTrailEvents events = auditResult.getAuditTrailEvents().getAuditTrailEvents();
-                store.addAuditTrails(events, collectionID, auditResult.getContributorID());
-                if (events != null && events.getAuditTrailEvent() != null) {
+                if (events != null && events.getAuditTrailEvent() != null && !events.getAuditTrailEvent().isEmpty()) {
+                    store.addAuditTrails(events, collectionID, auditResult.getContributorID());
                     collectedAudits += events.getAuditTrailEvent().size();
                     log.debug("Collected and stored " + events.getAuditTrailEvent().size() +
-                            " audit trail event from " + auditResult.getContributorID() + " in " +
+                            " audit trail event(s) for '{}' from " + auditResult.getContributorID() + " in " +
                             TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime) 
-                            + " (PartialResult=" + auditResult.isPartialResult() + ".");
+                            + " (PartialResult=" + auditResult.isPartialResult() + ").", collectionID);
                 }
             } else if (event.getEventType() == OperationEvent.OperationEventType.COMPONENT_FAILED ||
                 event.getEventType() == OperationEvent.OperationEventType.FAILED ||

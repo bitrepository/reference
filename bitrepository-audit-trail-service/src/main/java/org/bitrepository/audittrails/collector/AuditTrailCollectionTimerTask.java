@@ -58,7 +58,7 @@ public class AuditTrailCollectionTimerTask extends TimerTask {
         schedule.start();
         collector.performCollection(SettingsUtils.getAuditContributorsForCollection(collector.getCollectionID()));
         schedule.finish();
-        log.info("Scheduled next collection of audit trails for " + schedule.getNextRun());
+        log.info("Scheduled next collection of audit trails from {} for {}", collector.getCollectionID(), schedule.getNextRun());
     }
 
     @Override
