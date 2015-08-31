@@ -77,7 +77,7 @@ public class JSONStreamingTools {
                     jg.writeStartArray();
                     String line;
                     while((line = b.readLine()) != null) {
-                        if(linesRead++ <= offset) {
+                        if(linesRead++ < offset) {
                             continue;
                         }
                         jg.writeString(line);
