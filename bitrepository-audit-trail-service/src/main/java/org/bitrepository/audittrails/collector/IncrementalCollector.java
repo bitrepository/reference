@@ -24,7 +24,6 @@ package org.bitrepository.audittrails.collector;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,11 +32,14 @@ import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getaudittrails.BlockingAuditTrailClient;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.audittrails.store.AuditTrailStore;
+import org.bitrepository.bitrepositoryelements.Alarm;
+import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.common.utils.TimeUtils;
+import org.bitrepository.service.AlarmDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +53,7 @@ public class IncrementalCollector {
     private final BlockingAuditTrailClient client;
     private final AuditTrailStore store;
     private final int maxNumberOfResults;
+    private final AlarmDispatcher alarmDispatcher;
 
     /** When no file id is wanted for the collecting of audit trails.*/
     private static final String NO_FILE_ID = null;
@@ -69,13 +72,14 @@ public class IncrementalCollector {
      * {}
      */
     public IncrementalCollector(String collectionID, String clientID, AuditTrailClient client, AuditTrailStore store,
-                                BigInteger maxNumberOfResults) {
+                                BigInteger maxNumberOfResults, AlarmDispatcher alarmDispatcher) {
         this.collectionID = collectionID;
         this.clientID = clientID;
         this.client = new BlockingAuditTrailClient(client);
         this.store = store;
         this.maxNumberOfResults = (maxNumberOfResults != null)?
             maxNumberOfResults.intValue() : DEFAULT_MAX_NUMBER_OF_RESULTS;
+        this.alarmDispatcher = alarmDispatcher;
     }
 
     /**
@@ -100,9 +104,8 @@ public class IncrementalCollector {
                 
         log.debug("Starting collection of audittrails for collection '{}'", collectionID);
         collect(contributors);
-        log.debug("Finished collecting audittrails for collection '{}', collected {} audit trails it took " 
-                + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - start)+".", 
-                collectionID, collectedAudits);
+        log.debug("Finished collecting audittrails for collection '{}', collected {} audit trails it took {}.", 
+                collectionID, collectedAudits, TimeUtils.millisecondsToHuman(System.currentTimeMillis() - start));
     }
     
     private void collect(Collection<String> contributors) {
@@ -123,13 +126,18 @@ public class IncrementalCollector {
         } catch (NegativeResponseException e) {
             log.error("Problem in collecting audittrails, collection will not be complete for collection '{}'",
                     collectionID, e);
+            Alarm alarm = new Alarm();
+            alarm.setAlarmCode(AlarmCode.COMPONENT_FAILURE);
+            alarm.setAlarmText("Failed to collect audit trails. Error was: '" + e.toString() + "'");
+            alarm.setCollectionID(collectionID);
+            alarmDispatcher.error(alarm);
         }
         if (!handler.contributorsWithPartialResults.isEmpty()) {
             collect(handler.contributorsWithPartialResults);
         }
         
     }
-
+    
     /**
      * Event handler for the audit trail collector. The results of an audit trail operation will be ingested into the
      * audit trail store.
@@ -143,8 +151,8 @@ public class IncrementalCollector {
             if(event instanceof AuditTrailResult) {
                 AuditTrailResult auditResult = (AuditTrailResult) event;
                 if (!auditResult.getCollectionID().equals(collectionID)) {
-                    log.warn("Received bad collection id! Expected '" + collectionID + "', but got '"
-                            + auditResult.getCollectionID() + "'.");
+                    log.warn("Received bad collection id! Expected '{}', but got '{}'.", 
+                            collectionID, auditResult.getCollectionID());
                     return;
                 }
                 if (auditResult.isPartialResult()) {
@@ -154,17 +162,17 @@ public class IncrementalCollector {
                 if (events != null && events.getAuditTrailEvent() != null && !events.getAuditTrailEvent().isEmpty()) {
                     store.addAuditTrails(events, collectionID, auditResult.getContributorID());
                     collectedAudits += events.getAuditTrailEvent().size();
-                    log.debug("Collected and stored " + events.getAuditTrailEvent().size() +
-                            " audit trail event(s) for '{}' from " + auditResult.getContributorID() + " in " +
-                            TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime) 
-                            + " (PartialResult=" + auditResult.isPartialResult() + ").", collectionID);
+                    log.debug("Collected and stored {} audit trail event(s) for '{}' from {} in {} (PartialResult={}).", 
+                            events.getAuditTrailEvent().size(), collectionID, auditResult.getContributorID(), 
+                            TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime), 
+                            auditResult.isPartialResult());
                 }
             } else if (event.getEventType() == OperationEvent.OperationEventType.COMPONENT_FAILED ||
                 event.getEventType() == OperationEvent.OperationEventType.FAILED ||
                 event.getEventType() == OperationEvent.OperationEventType.IDENTIFY_TIMEOUT) {
-                log.warn("Event: " + event.toString());
+                log.warn("Event: {}", event.toString());
             } else {
-                log.debug("Event:" + event.toString());
+                log.debug("Event: {}", event.toString());
             }
         }
     }

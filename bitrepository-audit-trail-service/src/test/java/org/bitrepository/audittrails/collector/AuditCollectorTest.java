@@ -21,6 +21,8 @@
  */
 package org.bitrepository.audittrails.collector;
 
+import static org.mockito.Mockito.mock;
+
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.audittrails.MockAuditClient;
 import org.bitrepository.audittrails.MockAuditStore;
@@ -30,6 +32,7 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -63,7 +66,8 @@ public class AuditCollectorTest extends ExtendedTestCase {
         SettingsUtils.initialize(settings);
         MockAuditClient client = new MockAuditClient();
         MockAuditStore store = new MockAuditStore();
-        AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
+        AlarmDispatcher alarmDispatcher = mock(AlarmDispatcher.class);
+        AuditTrailCollector collector = new AuditTrailCollector(settings, client, store, alarmDispatcher);
         Assert.assertEquals(client.getCallsToGetAuditTrails(), 0);
         Thread.sleep(1000);
         EventHandler eventHandler = client.getLatestEventHandler();

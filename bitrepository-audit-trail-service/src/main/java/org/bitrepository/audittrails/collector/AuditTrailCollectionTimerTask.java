@@ -22,7 +22,7 @@ public class AuditTrailCollectionTimerTask extends TimerTask {
     public AuditTrailCollectionTimerTask(IncrementalCollector collector, long interval, int gracePeriod) {
         this.schedule = new CollectionSchedule(interval, gracePeriod);
         this.collector = collector;
-        log.info("Scheduled next collection of audit trails for " + schedule.getNextRun());
+        log.info("Scheduled next collection of audit trails for {}", schedule.getNextRun());
     }
     
     /**
@@ -54,7 +54,7 @@ public class AuditTrailCollectionTimerTask extends TimerTask {
      * Run the operation and when finished set the date for the next collection.
      */
     public synchronized void runCollection() {
-        log.info("Starting collection of audit trails for collection: '" + collector.getCollectionID() + "'");
+        log.info("Starting collection of audit trails for collection: '{}'", collector.getCollectionID());
         schedule.start();
         collector.performCollection(SettingsUtils.getAuditContributorsForCollection(collector.getCollectionID()));
         schedule.finish();

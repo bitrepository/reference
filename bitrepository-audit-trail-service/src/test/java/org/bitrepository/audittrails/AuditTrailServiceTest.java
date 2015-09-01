@@ -21,6 +21,8 @@
  */
 package org.bitrepository.audittrails;
 
+import static org.mockito.Mockito.mock;
+
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -29,6 +31,7 @@ import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.jaccept.structure.ExtendedTestCase;
@@ -64,8 +67,10 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
 
         MockAuditStore store = new MockAuditStore();
         MockAuditClient client = new MockAuditClient();
+        AlarmDispatcher alarmDispatcher = mock(AlarmDispatcher.class);
+
         ContributorMediator mediator = new MockContributorMediator();
-        AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
+        AuditTrailCollector collector = new AuditTrailCollector(settings, client, store, alarmDispatcher);
         
         addStep("Instantiate the service.", "Should work.");
         AuditTrailService service = new AuditTrailService(store, collector, mediator, settings);

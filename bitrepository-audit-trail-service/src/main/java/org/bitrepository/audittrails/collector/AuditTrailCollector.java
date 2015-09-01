@@ -35,8 +35,8 @@ import org.bitrepository.audittrails.webservice.CollectorInfo;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.TimeUtils;
+import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.settings.repositorysettings.Collection;
-import org.bitrepository.audittrails.collector.AuditTrailCollectionTimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +60,8 @@ public class AuditTrailCollector {
      * @param client The client for handling the conversation for collecting the audit trails.
      * @param store The storage of the audit trails data.
      */
-    public AuditTrailCollector(Settings settings, AuditTrailClient client, AuditTrailStore store) {
+    public AuditTrailCollector(Settings settings, AuditTrailClient client, AuditTrailStore store, 
+            AlarmDispatcher alarmDispatcher) {
         ArgumentValidator.checkNotNull(settings, "settings");
         ArgumentValidator.checkNotNull(client, "AuditTrailClient client");
         ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
@@ -73,7 +74,8 @@ public class AuditTrailCollector {
             IncrementalCollector collector = new IncrementalCollector(c.getID(),
                     settings.getReferenceSettings().getAuditTrailServiceSettings().getID(),
                     client, store,
-                    settings.getReferenceSettings().getAuditTrailServiceSettings().getMaxNumberOfEventsInRequest());
+                    settings.getReferenceSettings().getAuditTrailServiceSettings().getMaxNumberOfEventsInRequest(), 
+                    alarmDispatcher);
             AuditTrailCollectionTimerTask collectorTask = new AuditTrailCollectionTimerTask( 
                     collector, collectionInterval, getGracePeriod());
             log.info("Will start collection of audit trail every " +

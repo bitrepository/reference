@@ -91,7 +91,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
                 + " AND contributorID = ?";
         
         Long seq = DatabaseUtils.selectFirstLongValue(dbConnector, sql, collectionID, contributorID);
-        log.debug("Looked up latest seq number for {} in collection '{}', it was: " + seq, contributorID, collectionID);
+        log.debug("Looked up latest seq number for {} in collection '{}', it was: {}", contributorID, collectionID, seq);
         return (seq != null ? seq.longValue() : 0L);
     }
 

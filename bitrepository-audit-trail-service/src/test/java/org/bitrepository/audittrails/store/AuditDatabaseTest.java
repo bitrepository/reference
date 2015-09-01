@@ -224,14 +224,14 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         addStep("Test ingesting with all data", "No failure");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
+                "actor", "auditInfo", "fileId", "info", pillarId, new BigInteger("1"), operationID1, fingerprint1));
         database.addAuditTrails(events, collectionId, pillarId);
         
         
         addStep("Test ingesting with no timestamp", "No failure");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(null, FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
+                "actor", "auditInfo", "fileId", "info", pillarId, new BigInteger("2"), operationID1, fingerprint1));
         try {
             database.addAuditTrails(events, collectionId, pillarId);
             Assert.fail("Should throw an exception.");
@@ -242,7 +242,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         addStep("Test ingesting with no file action", "No failure");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), null, 
-                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
+                "actor", "auditInfo", "fileId", "info", pillarId, new BigInteger("3"), operationID1, fingerprint1));
         try {
             database.addAuditTrails(events, collectionId, pillarId);
             Assert.fail("Should throw an exception.");
@@ -253,7 +253,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         addStep("Test ingesting with no actor", "Throws exception");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                null, "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
+                null, "auditInfo", "fileId", "info", pillarId, new BigInteger("4"), operationID1, fingerprint1));
         try {
             database.addAuditTrails(events, collectionId, pillarId);
             Assert.fail("Should throw an exception.");
@@ -264,13 +264,13 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         addStep("Test ingesting with no audit info", "No failure");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", null, "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
+                "actor", null, "fileId", "info", pillarId, new BigInteger("5"), operationID1, fingerprint1));
         database.addAuditTrails(events, collectionId, pillarId);
 
         addStep("Test ingesting with no file id", "Throws exception");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", null, "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
+                "actor", "auditInfo", null, "info", pillarId, new BigInteger("6"), operationID1, fingerprint1));
         try {
             database.addAuditTrails(events, collectionId, pillarId);
             Assert.fail("Should throw an exception.");
@@ -281,13 +281,13 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         addStep("Test ingesting with no info", "No failure");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", null, pillarId, BigInteger.ONE, operationID1, fingerprint1));
+                "actor", "auditInfo", "fileId", null, pillarId, new BigInteger("7"), operationID1, fingerprint1));
         database.addAuditTrails(events, collectionId, pillarId);
 
         addStep("Test ingesting with no component id", "Throws exception");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", "info", null, BigInteger.ONE, operationID1, fingerprint1));
+                "actor", "auditInfo", "fileId", "info", null, new BigInteger("8"), operationID1, fingerprint1));
         try {
             database.addAuditTrails(events, collectionId, pillarId);
             Assert.fail("Should throw an exception.");
@@ -311,13 +311,13 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         addStep("Test ingest with very long auditInfo (255+)", "Not failing any more");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", veryLongString, "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
+                "actor", veryLongString, "fileId", "info", pillarId, new BigInteger("9"), operationID1, fingerprint1));
         database.addAuditTrails(events, collectionId, pillarId);
         
         addStep("Test ingest with very long info (255+)", "Not failing any more");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", veryLongString, pillarId, BigInteger.ONE, operationID1, fingerprint1));
+                "actor", "auditInfo", "fileId", veryLongString, pillarId, new BigInteger("10"), operationID1, fingerprint1));
         database.addAuditTrails(events, collectionId, pillarId);
     }
     
@@ -333,13 +333,13 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         addStep("Build test data", "No failure");
         AuditTrailEvents events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.PUT_FILE, 
-                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, fingerprint1));
+                "actor", "auditInfo", "fileId", "info", pillarId, new BigInteger("1"), operationID1, fingerprint1));
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, operationID1, null));
+                "actor", "auditInfo", "fileId", "info", pillarId, new BigInteger("2"), operationID1, null));
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.REPLACE_FILE, 
-                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, null, fingerprint1));
+                "actor", "auditInfo", "fileId", "info", pillarId, new BigInteger("3"), null, fingerprint1));
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED, 
-                "actor", "auditInfo", "fileId", "info", pillarId, BigInteger.ONE, null, null));
+                "actor", "auditInfo", "fileId", "info", pillarId, new BigInteger("4"), null, null));
         
         database.addAuditTrails(events, collectionId, pillarId);
         
@@ -351,11 +351,11 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         AuditTrailEvents events = new AuditTrailEvents();
         
         AuditTrailEvent event1 = createSingleEvent(CalendarUtils.getEpoch(), FileAction.INCONSISTENCY, actor1, 
-                "I AM AUDIT", fileId, null, pillarId, BigInteger.ONE, operationID1, fingerprint1);
+                "I AM AUDIT", fileId, null, pillarId, new BigInteger("1"), operationID1, fingerprint1);
         events.getAuditTrailEvent().add(event1);
         
         AuditTrailEvent event2 = createSingleEvent(CalendarUtils.getNow(), FileAction.FAILURE, actor2, null, fileId2, 
-                "WHAT AM I DOING?", pillarId, BigInteger.TEN, operationID2, fingerprint2);
+                "WHAT AM I DOING?", pillarId, new BigInteger("10"), operationID2, fingerprint2);
         events.getAuditTrailEvent().add(event2);
 
         return events;

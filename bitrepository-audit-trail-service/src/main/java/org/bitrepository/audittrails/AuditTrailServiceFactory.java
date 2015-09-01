@@ -40,9 +40,11 @@ import org.bitrepository.audittrails.store.AuditTrailServiceDAO;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
 import org.bitrepository.protocol.security.BasicMessageSigner;
 import org.bitrepository.protocol.security.BasicOperationAuthorizor;
@@ -52,10 +54,12 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.ServiceSettingsProvider;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
 import org.bitrepository.service.database.DatabaseManager;
+import org.bitrepository.settings.referencesettings.AuditTrailServiceSettings;
 import org.bitrepository.settings.referencesettings.ServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +82,12 @@ public final class AuditTrailServiceFactory {
     private static final String CONFIGFILE = "audittrails.properties";
     /** Property key to tell where to locate the path and filename to the private key file. */
     private static final String PRIVATE_KEY_FILE = "org.bitrepository.audit-trail-service.privateKeyFile";
-        
+       
+    private static AlarmDispatcher alarmDispatcher;
+    private static Settings settings;
+    private static SecurityManager securityManager;
+    private static MessageBus messageBus;
+    
     /**
      * Private constructor as the class is meant to be used in a static way.
      */
@@ -90,6 +99,10 @@ public final class AuditTrailServiceFactory {
      */
     public static synchronized void init(String confDir) {
         configurationDir = confDir;
+        loadSettings();
+        createSecurityManager();
+        messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
+        alarmDispatcher = new AlarmDispatcher(settings, messageBus);
     }
     
     /**
@@ -98,67 +111,79 @@ public final class AuditTrailServiceFactory {
      */
     public static synchronized AuditTrailService getAuditTrailService() {
         if(auditTrailService == null) {
-            MessageAuthenticator authenticator;
-            MessageSigner signer;
-            OperationAuthorizor authorizer;
-            PermissionStore permissionStore;
-            SecurityManager securityManager;
-            ServiceSettingsProvider settingsLoader =
-                    new ServiceSettingsProvider(
-                            new XMLFileSettingsLoader(configurationDir), ServiceType.AUDIT_TRAIL_SERVICE);
-
-            Settings settings = settingsLoader.getSettings();
-            try {
-                loadProperties();
-                permissionStore = new PermissionStore();
-                authenticator = new BasicMessageAuthenticator(permissionStore);
-                signer = new BasicMessageSigner();
-                authorizer = new BasicOperationAuthorizor(permissionStore);
-                securityManager = new BasicSecurityManager(settings.getRepositorySettings(), privateKeyFile,
-                        authenticator, signer, authorizer, permissionStore, 
-                        settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
-                
-                ContributorMediator mediator = new SimpleContributorMediator(
-                        ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
-                        settings, null, ProtocolComponentFactory.getInstance().getFileExchange(settings));
-                
-                PutFileClient putClient = ModifyComponentFactory.getInstance().retrievePutClient(settings, 
-                        securityManager, "audit-trail-preserver");
-                
-                DatabaseManager auditTrailServiceDatabaseManager = new AuditTrailDatabaseManager(
-                        settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
-                AuditTrailStore store = new AuditTrailServiceDAO(auditTrailServiceDatabaseManager);
-                AuditTrailClient client = AccessComponentFactory.getInstance().createAuditTrailClient(settings, 
-                        securityManager, settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
-
-                AuditTrailCollector collector = new AuditTrailCollector(settings, client, store);
-                AuditTrailPreserver preserver;
-                if (settings.getReferenceSettings().getAuditTrailServiceSettings().isSetAuditTrailPreservation()) {
-                    preserver = new LocalAuditTrailPreserver(
-                            settings, store, putClient, ProtocolComponentFactory.getInstance().getFileExchange(settings));
-                    preserver.start();
-                } else {
-                    log.info("Audit trail preservation disabled, no configuration defined.");
-                }
-                
-                auditTrailService = new AuditTrailService(store, collector, mediator, settings);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            ContributorMediator mediator = new SimpleContributorMediator(
+                    ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
+                    settings, null, ProtocolComponentFactory.getInstance().getFileExchange(settings));
+            
+            PutFileClient putClient = ModifyComponentFactory.getInstance().retrievePutClient(settings, 
+                    securityManager, "audit-trail-preserver");
+            
+            AuditTrailServiceSettings serviceSettings = settings.getReferenceSettings().getAuditTrailServiceSettings();
+            
+            DatabaseManager auditTrailServiceDatabaseManager = new AuditTrailDatabaseManager(
+                    serviceSettings.getAuditTrailServiceDatabase());
+            AuditTrailStore store = new AuditTrailServiceDAO(auditTrailServiceDatabaseManager);
+            AuditTrailClient client = AccessComponentFactory.getInstance().createAuditTrailClient(settings, 
+                    securityManager, serviceSettings.getID());
+            
+            AuditTrailCollector collector = new AuditTrailCollector(settings, client, store, alarmDispatcher);
+            AuditTrailPreserver preserver;
+            if (serviceSettings.isSetAuditTrailPreservation()) {
+                preserver = new LocalAuditTrailPreserver(
+                        settings, store, putClient, ProtocolComponentFactory.getInstance().getFileExchange(settings));
+                preserver.start();
+            } else {
+                log.info("Audit trail preservation disabled, no configuration defined.");
             }
+            
+            auditTrailService = new AuditTrailService(store, collector, mediator, settings);
         }
         
         return auditTrailService;
     }
     
     /**
+     * Instantiated the security manager for the integrity service.
+     * @see {@link BasicSecurityManager}
+     */
+    private static void createSecurityManager() {
+            PermissionStore permissionStore = new PermissionStore();
+            MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
+            MessageSigner signer = new BasicMessageSigner();
+            OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
+            securityManager = new BasicSecurityManager(settings.getRepositorySettings(), privateKeyFile,
+                    authenticator, signer, authorizer, permissionStore,
+                    settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
+    }
+    
+    /**
+     * Retrieves the shared settings based on the directory specified in the {@link #initialize(String)} method.
+     * @return The settings to used for the integrity service.
+     */
+    private static void loadSettings() {
+        if(configurationDir == null) {
+            throw new IllegalStateException("No configuration directory has been set!");
+        }
+        loadProperties();
+        ServiceSettingsProvider settingsLoader =
+                new ServiceSettingsProvider(new XMLFileSettingsLoader(configurationDir), ServiceType.AUDIT_TRAIL_SERVICE);
+        settings = settingsLoader.getSettings();
+        SettingsUtils.initialize(settings);        
+    }
+    
+    /**
      * Loads the properties.
      * @throws IOException If any input/output issues occurs.
      */
-    private static void loadProperties() throws IOException {
+    private static void loadProperties() {
+        try {
         Properties properties = new Properties();
         File propertiesFile = new File(configurationDir, CONFIGFILE);
         BufferedReader propertiesReader = new BufferedReader(new FileReader(propertiesFile));
         properties.load(propertiesReader);
         privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not instantiate the properties.", e);
+        }
     }
 }
