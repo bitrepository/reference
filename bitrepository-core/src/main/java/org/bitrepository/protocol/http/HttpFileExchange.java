@@ -24,6 +24,7 @@
  */
 package org.bitrepository.protocol.http;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -40,9 +41,12 @@ import java.net.URLEncoder;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.config.SocketConfig;
+import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.StreamUtils;
@@ -62,6 +66,8 @@ public class HttpFileExchange implements FileExchange {
     private static final int HTTP_ERROR_CODE_BARRIER = 300;
     /** Default buffer size 1MB */
     protected int HTTP_BUFFER_SIZE = 1024 * 1024;
+    /** Default chunk size 64K */
+    private static final int HTTP_CHUNK_SIZE = 64 * 1024;
     /** The settings for the file exchange.*/
     protected final Settings settings;
     
@@ -251,7 +257,7 @@ public class HttpFileExchange implements FileExchange {
                 .setSndBufSize(HTTP_BUFFER_SIZE)
                 .setRcvBufSize(HTTP_BUFFER_SIZE);
         builder.setDefaultSocketConfig(scb.build());
-        HttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(new ChunkFactory.CustomManagedHttpClientConnectionFactory(chunkSize));
+        HttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(new ChunkFactory.CustomManagedHttpClientConnectionFactory(HTTP_CHUNK_SIZE));
         builder.setConnectionManager(connManager);
         return builder.build();
     }
