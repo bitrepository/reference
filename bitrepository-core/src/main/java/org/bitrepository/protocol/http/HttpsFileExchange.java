@@ -28,19 +28,27 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
+import org.apache.http.config.RegistryBuilder;
 import org.apache.http.config.SocketConfig;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.CoordinationLayerException;
+
+import static org.bitrepository.protocol.http.HttpFileExchange.HTTP_CHUNK_SIZE;
 
 /**
  * Simple interface for data transfer between an application and a HTTPS server.
@@ -83,12 +91,24 @@ public class HttpsFileExchange extends HttpFileExchange {
             SSLContext sslContext = SSLContext.getDefault(); 
             SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext,
                     NoopHostnameVerifier.INSTANCE);
-            builder.setSSLSocketFactory(sslsf);
-            
+
+            final PoolingHttpClientConnectionManager poolingmgr = new PoolingHttpClientConnectionManager(
+                    RegistryBuilder.<ConnectionSocketFactory>create()
+                            .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                            .register("https", sslsf)
+                            .build(),
+                    new ChunkFactory.CustomManagedHttpClientConnectionFactory(HTTP_CHUNK_SIZE),
+                    null,
+                    null,
+                    -1,
+                   TimeUnit.MILLISECONDS);
+
             SocketConfig.Builder scb = SocketConfig.custom()
                     .setSndBufSize(HTTP_BUFFER_SIZE)
                     .setRcvBufSize(HTTP_BUFFER_SIZE);
-            builder.setDefaultSocketConfig(scb.build());
+            poolingmgr.setDefaultSocketConfig(scb.build());
+
+            builder.setConnectionManager(poolingmgr);
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("Could not make Https Client.", e);
         }

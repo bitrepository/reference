@@ -67,7 +67,7 @@ public class HttpFileExchange implements FileExchange {
     /** Default buffer size 1MB */
     protected int HTTP_BUFFER_SIZE = 1024 * 1024;
     /** Default chunk size 64K */
-    private static final int HTTP_CHUNK_SIZE = 64 * 1024;
+    protected static final int HTTP_CHUNK_SIZE = 64 * 1024;
     /** The settings for the file exchange.*/
     protected final Settings settings;
     
@@ -253,12 +253,15 @@ public class HttpFileExchange implements FileExchange {
     protected CloseableHttpClient getHttpClient() {
         HttpClientBuilder builder = HttpClientBuilder.create();
         
+        PoolingHttpClientConnectionManager poolingmgr = new PoolingHttpClientConnectionManager(
+                new ChunkFactory.CustomManagedHttpClientConnectionFactory(HTTP_CHUNK_SIZE));
         SocketConfig.Builder scb = SocketConfig.custom()
                 .setSndBufSize(HTTP_BUFFER_SIZE)
                 .setRcvBufSize(HTTP_BUFFER_SIZE);
-        builder.setDefaultSocketConfig(scb.build());
-        HttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(new ChunkFactory.CustomManagedHttpClientConnectionFactory(HTTP_CHUNK_SIZE));
-        builder.setConnectionManager(connManager);
+        poolingmgr.setDefaultSocketConfig(scb.build());
+
+        builder.setConnectionManager(poolingmgr);
+
         return builder.build();
     }
 
