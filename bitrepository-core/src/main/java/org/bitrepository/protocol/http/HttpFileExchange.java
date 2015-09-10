@@ -25,6 +25,7 @@
 package org.bitrepository.protocol.http;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -42,10 +43,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.config.SocketConfig;
-import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.ChunkyManagedHttpClientConnectionFactory;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
@@ -103,14 +105,8 @@ public class HttpFileExchange implements FileExchange {
             // generate the URL for the file.
             URL url = getURL(dataFile.getName());
             
-            InputStream fis = null;
-            try {
-                fis = new BufferedInputStream(new FileInputStream(dataFile), HTTP_BUFFER_SIZE);
-                performUpload(fis, url);
-            } finally {
-                if(fis != null) {
-                    fis.close();
-                }
+            try (InputStream in = new BufferedInputStream(new FileInputStream(dataFile), HTTP_BUFFER_SIZE)){
+                performUpload(in, url);
             }
             return url;
         } catch (IOException e) {
@@ -130,10 +126,10 @@ public class HttpFileExchange implements FileExchange {
         try {
             // retrieve the url and the outputstream for the file.
             URL url = new URL(fileAddress);
-            FileOutputStream fos = new FileOutputStream(outputFile);
-            
-            // download the file.
-            performDownload(fos, url);
+            try (OutputStream out = new BufferedOutputStream(new FileOutputStream(outputFile))) {
+                // download the file.
+                performDownload(out, url);
+            }
         } catch (IOException e) {
             throw new CoordinationLayerException("Could not download data "
                     + "from '" + fileAddress + "' to the file '" 
@@ -191,15 +187,14 @@ public class HttpFileExchange implements FileExchange {
         ArgumentValidator.checkNotNull(in, "InputStream in");
         ArgumentValidator.checkNotNull(url, "URL url");
         
-        CloseableHttpClient httpClient = null;
-        try {
-            httpClient = getHttpClient();
+
+        try (CloseableHttpClient httpClient = getHttpClient()) {
             HttpPut httpPut = new HttpPut(url.toExternalForm());
-            InputStreamEntity reqEntity = new LargeChunkedInputStreamEntity(in, -1);
+            InputStreamEntity reqEntity = new LargeChunkedInputStreamEntity(in);
             reqEntity.setChunked(true);
             httpPut.setEntity(reqEntity);
             HttpResponse response = httpClient.execute(httpPut);
-            
+
             // HTTP code >= 300 means error!
             if(response.getStatusLine().getStatusCode() >= HTTP_ERROR_CODE_BARRIER) {
                 throw new IOException("Could not upload file to URL '" + url.toExternalForm() + "'. got status code '" 
@@ -207,10 +202,6 @@ public class HttpFileExchange implements FileExchange {
             }
             log.debug("Uploaded datastream to url '" + url.toString() + "' and "
                     + "received the response line '" + response.getStatusLine() + "'.");
-        } finally {
-            if(httpClient != null) {
-                httpClient.close();
-            }
         }
     }
     
@@ -251,31 +242,23 @@ public class HttpFileExchange implements FileExchange {
      * @return The HttpClient for this FileExchange.
      */
     protected CloseableHttpClient getHttpClient() {
-        HttpClientBuilder builder = HttpClientBuilder.create();
-        
+        HttpClientBuilder builder = HttpClients.custom();
         PoolingHttpClientConnectionManager poolingmgr = new PoolingHttpClientConnectionManager(
-                new ChunkFactory.CustomManagedHttpClientConnectionFactory(HTTP_CHUNK_SIZE));
-        SocketConfig.Builder scb = SocketConfig.custom()
+                new ChunkyManagedHttpClientConnectionFactory(HTTP_CHUNK_SIZE));
+        SocketConfig socketConfig = SocketConfig.custom()
                 .setSndBufSize(HTTP_BUFFER_SIZE)
-                .setRcvBufSize(HTTP_BUFFER_SIZE);
-        poolingmgr.setDefaultSocketConfig(scb.build());
-
+                .setRcvBufSize(HTTP_BUFFER_SIZE)
+                .build();
+        poolingmgr.setDefaultSocketConfig(socketConfig);
         builder.setConnectionManager(poolingmgr);
-
         return builder.build();
     }
 
     @Override
     public void deleteFile(URL url) throws IOException, URISyntaxException {
-        CloseableHttpClient httpClient = null;
-        try {
-            httpClient = getHttpClient();
-            HttpDelete deleteOperation = new HttpDelete(url.toURI()); 
+        try (CloseableHttpClient httpClient = getHttpClient()) {
+            HttpDelete deleteOperation = new HttpDelete(url.toURI());
             httpClient.execute(deleteOperation);
-        } finally {
-            if(httpClient != null) {
-                httpClient.close();
-            }
         }
     }
 }

@@ -24,38 +24,34 @@
  */
 package org.bitrepository.protocol.http;
 
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.config.SocketConfig;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.ChunkyManagedHttpClientConnectionFactory;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.impl.conn.SystemDefaultDnsResolver;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.CoordinationLayerException;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.config.SocketConfig;
-import org.apache.http.conn.HttpClientConnectionManager;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.CoordinationLayerException;
-
-import static org.bitrepository.protocol.http.HttpFileExchange.HTTP_CHUNK_SIZE;
 
 /**
  * Simple interface for data transfer between an application and a HTTPS server.
  */
 public class HttpsFileExchange extends HttpFileExchange {
     /** The verifier for all the hostnames.*/
-    private final X509HostnameVerifier hostnameVerifier;
+    private final javax.net.ssl.HostnameVerifier hostnameVerifier;
     
     /**
      * Initialise HTTP file exchange.
@@ -63,7 +59,7 @@ public class HttpsFileExchange extends HttpFileExchange {
      */
     public HttpsFileExchange(Settings settings) {
         super(settings);
-        hostnameVerifier = new AllowAllHostnameVerifier();
+        hostnameVerifier = NoopHostnameVerifier.INSTANCE;
     }
     
     /**
@@ -88,25 +84,21 @@ public class HttpsFileExchange extends HttpFileExchange {
     protected CloseableHttpClient getHttpClient() {
         HttpClientBuilder builder = HttpClientBuilder.create();
         try {
-            SSLContext sslContext = SSLContext.getDefault(); 
-            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext,
-                    NoopHostnameVerifier.INSTANCE);
-
+            Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                    .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                    .register("https", new SSLConnectionSocketFactory(
+                            SSLContext.getDefault(),
+                            hostnameVerifier))
+                    .build();
             final PoolingHttpClientConnectionManager poolingmgr = new PoolingHttpClientConnectionManager(
-                    RegistryBuilder.<ConnectionSocketFactory>create()
-                            .register("http", PlainConnectionSocketFactory.getSocketFactory())
-                            .register("https", sslsf)
-                            .build(),
-                    new ChunkFactory.CustomManagedHttpClientConnectionFactory(HTTP_CHUNK_SIZE),
-                    null,
-                    null,
-                    -1,
-                   TimeUnit.MILLISECONDS);
+                    socketFactoryRegistry,
+                    new ChunkyManagedHttpClientConnectionFactory(HTTP_CHUNK_SIZE),
+                    SystemDefaultDnsResolver.INSTANCE);
 
-            SocketConfig.Builder scb = SocketConfig.custom()
+            SocketConfig socketConfig = SocketConfig.custom()
                     .setSndBufSize(HTTP_BUFFER_SIZE)
-                    .setRcvBufSize(HTTP_BUFFER_SIZE);
-            poolingmgr.setDefaultSocketConfig(scb.build());
+                    .setRcvBufSize(HTTP_BUFFER_SIZE).build();
+            poolingmgr.setDefaultSocketConfig(socketConfig);
 
             builder.setConnectionManager(poolingmgr);
         } catch (NoSuchAlgorithmException e) {
