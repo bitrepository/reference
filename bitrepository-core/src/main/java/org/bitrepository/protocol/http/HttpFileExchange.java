@@ -24,6 +24,7 @@
  */
 package org.bitrepository.protocol.http;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -40,6 +41,7 @@ import java.net.URLEncoder;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.config.SocketConfig;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -60,6 +62,8 @@ public class HttpFileExchange implements FileExchange {
     
     /** The lower boundary for the error codes of the HTTP codes.*/
     private static final int HTTP_ERROR_CODE_BARRIER = 300;
+    /** Default buffer size 1MB */
+    protected int HTTP_BUFFER_SIZE = 1024 * 1024;
     /** The settings for the file exchange.*/
     protected final Settings settings;
     
@@ -95,9 +99,9 @@ public class HttpFileExchange implements FileExchange {
             // generate the URL for the file.
             URL url = getURL(dataFile.getName());
             
-            FileInputStream fis = null;
+            InputStream fis = null;
             try {
-                fis = new FileInputStream(dataFile);
+                fis = new BufferedInputStream(new FileInputStream(dataFile), HTTP_BUFFER_SIZE);
                 performUpload(fis, url);
             } finally {
                 if(fis != null) {
@@ -187,7 +191,7 @@ public class HttpFileExchange implements FileExchange {
         try {
             httpClient = getHttpClient();
             HttpPut httpPut = new HttpPut(url.toExternalForm());
-            InputStreamEntity reqEntity = new InputStreamEntity(in, -1);
+            InputStreamEntity reqEntity = new LargeChunkedInputStreamEntity(in, -1);
             reqEntity.setChunked(true);
             httpPut.setEntity(reqEntity);
             HttpResponse response = httpClient.execute(httpPut);
@@ -243,7 +247,14 @@ public class HttpFileExchange implements FileExchange {
      * @return The HttpClient for this FileExchange.
      */
     protected CloseableHttpClient getHttpClient() {
-        return HttpClientBuilder.create().build();
+        HttpClientBuilder builder = HttpClientBuilder.create();
+        
+        SocketConfig.Builder scb = SocketConfig.custom()
+                .setSndBufSize(HTTP_BUFFER_SIZE)
+                .setRcvBufSize(HTTP_BUFFER_SIZE);
+        builder.setDefaultSocketConfig(scb.build());
+        
+        return builder.build();
     }
 
     @Override

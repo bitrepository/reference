@@ -32,7 +32,9 @@ import java.security.NoSuchAlgorithmException;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
+import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -78,9 +80,15 @@ public class HttpsFileExchange extends HttpFileExchange {
     protected CloseableHttpClient getHttpClient() {
         HttpClientBuilder builder = HttpClientBuilder.create();
         try {
-            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(SSLContext.getDefault(), 
-                    hostnameVerifier);
+            SSLContext sslContext = SSLContext.getDefault(); 
+            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext,
+                    NoopHostnameVerifier.INSTANCE);
             builder.setSSLSocketFactory(sslsf);
+            
+            SocketConfig.Builder scb = SocketConfig.custom()
+                    .setSndBufSize(HTTP_BUFFER_SIZE)
+                    .setRcvBufSize(HTTP_BUFFER_SIZE);
+            builder.setDefaultSocketConfig(scb.build());
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("Could not make Https Client.", e);
         }
