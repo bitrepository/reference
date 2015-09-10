@@ -37,18 +37,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-import org.apache.http.HttpConnectionFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.conn.HttpClientConnectionManager;
-import org.apache.http.conn.ManagedHttpClientConnection;
-import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.StreamUtils;
@@ -66,6 +60,8 @@ public class HttpFileExchange implements FileExchange {
     
     /** The lower boundary for the error codes of the HTTP codes.*/
     private static final int HTTP_ERROR_CODE_BARRIER = 300;
+    /** Default buffer size 1MB */
+    protected int HTTP_BUFFER_SIZE = 1024 * 1024;
     /** The settings for the file exchange.*/
     protected final Settings settings;
     
@@ -101,9 +97,9 @@ public class HttpFileExchange implements FileExchange {
             // generate the URL for the file.
             URL url = getURL(dataFile.getName());
             
-            FileInputStream fis = null;
+            InputStream fis = null;
             try {
-                fis = new FileInputStream(dataFile);
+                fis = new BufferedInputStream(new FileInputStream(dataFile), HTTP_BUFFER_SIZE);
                 performUpload(fis, url);
             } finally {
                 if(fis != null) {
@@ -193,7 +189,7 @@ public class HttpFileExchange implements FileExchange {
         try {
             httpClient = getHttpClient();
             HttpPut httpPut = new HttpPut(url.toExternalForm());
-            InputStreamEntity reqEntity = new InputStreamEntity(in, -1);
+            InputStreamEntity reqEntity = new LargeChunkedInputStreamEntity(in, -1);
             reqEntity.setChunked(true);
             httpPut.setEntity(reqEntity);
             HttpResponse response = httpClient.execute(httpPut);
@@ -249,9 +245,15 @@ public class HttpFileExchange implements FileExchange {
      * @return The HttpClient for this FileExchange.
      */
     protected CloseableHttpClient getHttpClient() {
-        int chunkSize = 1024;
+        HttpClientBuilder builder = HttpClientBuilder.create();
+        
+        SocketConfig.Builder scb = SocketConfig.custom()
+                .setSndBufSize(HTTP_BUFFER_SIZE)
+                .setRcvBufSize(HTTP_BUFFER_SIZE);
+        builder.setDefaultSocketConfig(scb.build());
         HttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(new ChunkFactory.CustomManagedHttpClientConnectionFactory(chunkSize));
-        return HttpClientBuilder.create().setConnectionManager(connManager).build();
+        builder.setConnectionManager(connManager);
+        return builder.build();
     }
 
     @Override
