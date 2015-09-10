@@ -37,12 +37,18 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import org.apache.http.HttpConnectionFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.ManagedHttpClientConnection;
+import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.StreamUtils;
@@ -243,7 +249,9 @@ public class HttpFileExchange implements FileExchange {
      * @return The HttpClient for this FileExchange.
      */
     protected CloseableHttpClient getHttpClient() {
-        return HttpClientBuilder.create().build();
+        int chunkSize = 1024;
+        HttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(new ChunkFactory.CustomManagedHttpClientConnectionFactory(chunkSize));
+        return HttpClientBuilder.create().setConnectionManager(connManager).build();
     }
 
     @Override
