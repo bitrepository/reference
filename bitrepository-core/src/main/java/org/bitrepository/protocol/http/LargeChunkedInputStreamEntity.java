@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.util.Args;
 
@@ -21,11 +22,23 @@ public class LargeChunkedInputStreamEntity extends InputStreamEntity {
         super(instream, length);
     }
 
+    public LargeChunkedInputStreamEntity(InputStream instream, ContentType contentType) {
+        super(instream, contentType);
+    }
+
+    public LargeChunkedInputStreamEntity(InputStream instream, long length, ContentType contentType) {
+        super(instream, length, contentType);
+    }
+
+    public LargeChunkedInputStreamEntity(InputStream instream) {
+        super(instream);
+    }
+
     @Override
     public void writeTo(final OutputStream outstream) throws IOException {
         Args.notNull(outstream, "Output stream");
         final InputStream instream = getContent();
-        final long length = getContentLength(); 
+        final long length = getContentLength();
         try {
             final byte[] buffer = new byte[OUTPUT_BUFFER_SIZE];
             int l;
