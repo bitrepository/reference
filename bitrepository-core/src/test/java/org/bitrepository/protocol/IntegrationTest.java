@@ -123,7 +123,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         receiverManager.addReceiver(receiver);
     }
 
-    @BeforeClass(alwaysRun = true) 
+    @BeforeClass(alwaysRun = true)
     public void initMessagebus() {
         setupMessageBus();
     }
@@ -234,7 +234,9 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * Hooks up the message bus.
      */
     protected void setupMessageBus() {
-        messageBus = new SimpleMessageBus();
+        if (messageBus == null) {
+            messageBus = new SimpleMessageBus();
+        }
     }
 
     /**
@@ -242,11 +244,13 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      */
     private void teardownMessageBus() {
         MessageBusManager.clear();
-        try {
-            messageBus.close();
-            messageBus = null;
-        } catch (JMSException e) {
-            throw new RuntimeException(e);
+        if (messageBus != null) {
+            try {
+                messageBus.close();
+                messageBus = null;
+            } catch (JMSException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         if(broker != null) {

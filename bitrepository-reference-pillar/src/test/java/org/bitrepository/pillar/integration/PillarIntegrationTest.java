@@ -43,6 +43,7 @@ import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 
 import java.util.Arrays;
@@ -82,7 +83,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         clientEventHandler = new ClientEventLogger(testEventManager);
     }
 
-    @BeforeSuite(alwaysRun = true)
+    @BeforeClass(alwaysRun = true)
     @Override
     public void initializeSuite(ITestContext testContext) {
         testConfiguration =
