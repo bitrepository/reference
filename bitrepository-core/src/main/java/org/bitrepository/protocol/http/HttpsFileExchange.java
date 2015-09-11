@@ -39,6 +39,7 @@ import org.apache.http.impl.conn.SystemDefaultDnsResolver;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.CoordinationLayerException;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
@@ -51,7 +52,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public class HttpsFileExchange extends HttpFileExchange {
     /** The verifier for all the hostnames.*/
-    private final javax.net.ssl.HostnameVerifier hostnameVerifier;
+    private final HostnameVerifier hostnameVerifier;
     
     /**
      * Initialise HTTP file exchange.
