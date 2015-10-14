@@ -101,8 +101,8 @@ INSERT INTO fileinfo2 (fileID, collectionID, pillarID, filesize, checksum, file_
     JOIN files ON fileinfo.file_key = files.file_key
     JOIN pillar ON fileinfo.pillar_key = pillar.pillar_key
     JOIN collections ON files.collection_key = collections.collection_key);
-CREATE INDEX checksumdateindex ON fileinfo(checksum_timestamp);
-CREATE INDEX lastseenindex ON fileinfo(last_seen_getfileids);
+CREATE INDEX checksumdateindex ON fileinfo2(checksum_timestamp);
+CREATE INDEX lastseenindex ON fileinfo2(last_seen_getfileids);
 
 CREATE TABLE collection_progress (
     collectionID VARCHAR(255) NOT NULL,
