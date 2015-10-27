@@ -90,6 +90,10 @@ public class IncrementalCollector {
         return collectionID;
     }
     
+    /**
+     * Get the number of collected audit trails during this collection 
+     * @return long The number of collected audit trails
+     */
     public long getNumberOfCollectedAudits() {
         return collectedAudits;
     }
@@ -140,7 +144,7 @@ public class IncrementalCollector {
             alarm.setCollectionID(collectionID);
             alarmDispatcher.error(alarm);
         }
-        return handler.contributorsWithPartialResults;
+        return handler.getContributorsWithPartialResults();
     }
     
     /**
@@ -151,6 +155,10 @@ public class IncrementalCollector {
         List<String> contributorsWithPartialResults = new LinkedList<String>();
         private final long startTime = System.currentTimeMillis();
 
+        Collection<String> getContributorsWithPartialResults() {
+            return contributorsWithPartialResults;
+        }
+        
         @Override
         public void handleEvent(OperationEvent event) {
             if(event instanceof AuditTrailResult) {
