@@ -103,12 +103,20 @@ public class IncrementalCollector {
         long start = System.currentTimeMillis(); 
                 
         log.debug("Starting collection of audittrails for collection '{}'", collectionID);
-        collect(contributors);
+        Collection<String> activeContributors = contributors;
+        while(!activeContributors.isEmpty()) {
+            activeContributors = collect(activeContributors);
+        }
         log.debug("Finished collecting audittrails for collection '{}', collected {} audit trails it took {}.", 
                 collectionID, collectedAudits, TimeUtils.millisecondsToHuman(System.currentTimeMillis() - start));
     }
     
-    private void collect(Collection<String> contributors) {
+    /**
+     * Collect a page of audit trails from the active contributors
+     * @param contributors The contributors to collect from
+     * @return Collection<String> the contributors that have more audits to collect 
+     */
+    private Collection<String> collect(Collection<String> contributors) {
         List<AuditTrailQuery> queries = new ArrayList<AuditTrailQuery>();
         
         for(String contributorId : contributors) {
@@ -132,10 +140,7 @@ public class IncrementalCollector {
             alarm.setCollectionID(collectionID);
             alarmDispatcher.error(alarm);
         }
-        if (!handler.contributorsWithPartialResults.isEmpty()) {
-            collect(handler.contributorsWithPartialResults);
-        }
-        
+        return handler.contributorsWithPartialResults;
     }
     
     /**
