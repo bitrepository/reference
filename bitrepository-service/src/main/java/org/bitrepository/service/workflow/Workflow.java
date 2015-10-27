@@ -61,7 +61,6 @@ public abstract class Workflow implements SchedulableJob {
             try {
                 statistics.startSubStatistic(step.getName());
                 step.performStep();
-                statistics.finishSubStatistic();
                 log.info(statistics.getCurrentSubStatistic().toString());
             } catch (WorkflowAbortedException e) {
                 this.currentState = WorkflowState.ABORTED;
@@ -69,6 +68,8 @@ public abstract class Workflow implements SchedulableJob {
             } catch (Exception e) {
                 log.error("Failure in step: '" + step.getName() + "'.", e);
                 throw new RuntimeException("Failed to run step " + step.getName(), e);
+            } finally {
+                statistics.finishSubStatistic();
             }
         }
     }
