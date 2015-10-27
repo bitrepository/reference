@@ -71,7 +71,7 @@ public final class TimeUtils {
      * @return The milliseconds converted into minutes.
      */
     public static String millisecondsToMinutes(long ms) {
-        int minutes = (int) (ms / ( MS_PER_S * S_PER_M ));
+        int minutes = (int) (ms / MS_PER_MINUTE );
         return minutes + "m";
     }
     
@@ -81,7 +81,7 @@ public final class TimeUtils {
      * @return The milliseconds converted into hours.
      */
     public static String millisecondsToHours(long ms) {
-        int hours = (int) (ms /( MS_PER_S * S_PER_M * M_PER_H ));
+        int hours = (int) (ms / MS_PER_HOUR);
         return hours + "h";
     }
     
@@ -91,7 +91,7 @@ public final class TimeUtils {
      * @return The milliseconds converted into days.
      */
     public static String millisecondsToDays(long ms) {
-        int days = (int) (ms /( MS_PER_S * S_PER_M * M_PER_H * H_PER_D));
+        int days = (int) (ms / MS_PER_DAY);
         return days + "d";
     }
     
