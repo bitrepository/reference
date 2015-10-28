@@ -54,6 +54,7 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.audit.AuditDatabaseManager;
 import org.bitrepository.service.audit.AuditTrailContributerDAO;
+import org.bitrepository.service.audit.AuditTrailContributerDAOFactory;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.database.DatabaseManager;
@@ -142,9 +143,9 @@ public final class PillarComponentFactory {
      * @return The AuditTrailManager.
      */
     private AuditTrailManager getAuditTrailManager(Settings settings) {
-        DatabaseManager auditDatabaseManager = new AuditDatabaseManager(
-                settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase());
-        return new AuditTrailContributerDAO(settings, auditDatabaseManager);        
+        return AuditTrailContributerDAOFactory.getAuditTrailContributerDAOInstance(
+                settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase(),
+                settings.getComponentID());
     }
 
     

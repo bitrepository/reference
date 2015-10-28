@@ -32,7 +32,6 @@ import java.util.List;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
@@ -47,7 +46,7 @@ import static org.bitrepository.service.audit.AuditDatabaseConstants.*;
  *
  * In the case of 'All-FileIDs', then the 'fileId' is given the string-value 'null'. 
  */
-public class AuditTrailContributerDAO implements AuditTrailManager {
+public abstract class AuditTrailContributerDAO implements AuditTrailManager {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The connection to the database.*/
@@ -59,11 +58,11 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
      * Constructor.
      * @param settings The settings.
      */
-    public AuditTrailContributerDAO(Settings settings, DatabaseManager manager) {
-        ArgumentValidator.checkNotNull(settings, "settings");
+    public AuditTrailContributerDAO(DatabaseManager manager, String componentID) {
+        ArgumentValidator.checkNotNull(componentID, "componentID");
         
-        this.componentID = settings.getComponentID();
         this.dbConnector = manager.getConnector();
+        this.componentID = componentID;
         
         getConnection();
     }
@@ -130,7 +129,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
     public AuditTrailDatabaseResults getAudits(String collectionId, String fileId, Long minSeqNumber, 
             Long maxSeqNumber, Date minDate, Date maxDate, Long maxNumberOfResults) {
         return extractEvents(new AuditTrailExtractor(collectionId, fileId, minSeqNumber, maxSeqNumber, minDate, 
-                maxDate), maxNumberOfResults);
+                maxDate, maxNumberOfResults));
     }
 
     /**
@@ -155,6 +154,8 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
 
         }
     }
+    
+    public abstract String createQueryResultsLimit();
 
     /**
      * Extracts the the audit trail information based on the given sql query and arguments.
@@ -162,7 +163,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
      * @param maxNumberOfResults The maximum number of results.
      * @return The extracted audit trails.
      */
-    private AuditTrailDatabaseResults extractEvents(AuditTrailExtractor extractor, Long maxNumberOfResults) {
+    private AuditTrailDatabaseResults extractEvents(AuditTrailExtractor extractor) {
 
         final int sequencePosition = 1;
         final int filePosition = 2;
@@ -192,10 +193,10 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         AuditTrailDatabaseResults auditResults = new AuditTrailDatabaseResults();
         try (Connection conn = getConnection();
              PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql, extractor.getArguments())) {
+            conn.setAutoCommit(false);
+            ps.setFetchSize(100);
             try (ResultSet results = ps.executeQuery()) {     
-                int count = 0;
-                while(results.next() && (maxNumberOfResults == null || count < maxNumberOfResults)) {
-                    count++;
+                while(results.next()) {
                     AuditTrailEvent event = new AuditTrailEvent();
 
                     event.setSequenceNumber(BigInteger.valueOf(results.getLong(sequencePosition)));
@@ -211,11 +212,17 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
                     auditResults.addAuditTrailEvent(event);
                 }
                 
-                if(maxNumberOfResults != null && count >= maxNumberOfResults) {
-                    log.debug("More than the maximum {} results found.", maxNumberOfResults);
+                Long maxResults = extractor.getMaxResults();
+                if(maxResults != null && auditResults.getAuditTrailEvents().getAuditTrailEvent().size() >= maxResults) {
+                    log.debug("More than the maximum {} results found.", maxResults);
                     auditResults.reportMoreResultsFound();
                 }
-            } 
+            } finally {
+                if(conn != null) {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                }
+            }
         } catch (Exception e) {
             throw new IllegalStateException("Could not extract the audit trails events.", e);
         }
@@ -298,6 +305,8 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         private Date minDate;
         /** The maxmimum date limitation for the request.*/
         private Date maxDate;
+        /** The maximum number of results */
+        private Long maxResults;
 
         /**
          * @param collectionId The id of the collection to retrieve the audit trails for.
@@ -308,13 +317,18 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
          * @param maxDate The maximum date limitation for the request.
          */
         public AuditTrailExtractor(String collectionId, String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate,
-                                   Date maxDate) {
+                                   Date maxDate, Long maxResults) {
             this.collectionId = collectionId;
             this.fileId = fileId;
             this.minSeqNumber = minSeqNumber;
             this.maxSeqNumber = maxSeqNumber;
             this.minDate = minDate;
             this.maxDate = maxDate;
+            this.maxResults = maxResults;
+        }
+        
+        public Long getMaxResults() {
+            return maxResults;
         }
 
         /**
@@ -323,7 +337,7 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
         public String createRestriction() {
             // Handle the case with no restrictions.
             if(collectionId == null && fileId == null && minSeqNumber == null && maxSeqNumber == null 
-                    && minDate == null && maxDate == null) {
+                    && minDate == null && maxDate == null && maxResults == null) {
                 return "";
             }
 
@@ -357,6 +371,10 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
             if(maxDate != null) {
                 nextArgument(res);
                 res.append(AUDITTRAIL_OPERATION_DATE + " <= ?");
+            }
+            
+            if(maxResults != null) {
+                res.append(createQueryResultsLimit());
             }
 
             return res.toString();
@@ -397,7 +415,10 @@ public class AuditTrailContributerDAO implements AuditTrailManager {
             if(maxDate != null) {
                 res.add(maxDate);
             }
-
+            if(maxResults != null) {
+                res.add(maxResults);
+            }
+                
             return res.toArray();
         }
     }
