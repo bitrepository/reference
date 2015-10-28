@@ -1,27 +1,25 @@
 package org.bitrepository.service.audit;
 
-import org.bitrepository.service.database.UnsupportedDatabaseTypeException;
+import org.bitrepository.service.database.DAO;
+import org.bitrepository.service.database.DatabaseFactory;
+import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 
-public class AuditTrailContributerDAOFactory {
+public class AuditTrailContributerDAOFactory extends DatabaseFactory {
 
-    private static final String derbyDriver = "org.apache.derby.jdbc.EmbeddedDriver";
-    private static final String postgressDriver = "org.postgresql.Driver";
-    
-    /**
-     * Obtain an instance of AlarmServiceDAO appropriate for the specific database backend. 
-     */
-    public static AuditTrailContributerDAO getAuditTrailContributerDAOInstance(DatabaseSpecifics ds, String componentID) {
-        AuditDatabaseManager dm = new AuditDatabaseManager(ds);
-        String dbDriver = ds.getDriverClass();
-        if(dbDriver.equals(derbyDriver)) {
-            return new DerbyAuditTrailContributorDAO(dm, componentID);
-        } else if(dbDriver.equals(postgressDriver)) {
-            return new PostgresAuditTrailContributorDAO(dm, componentID);
-        } else {
-            throw new UnsupportedDatabaseTypeException("The database for driver: '" + dbDriver
-                    + "' is not supported, use '" + derbyDriver + "' or '" + postgressDriver + "'");
-        }
+    @Override
+    protected DAO getDerbyDAO(DatabaseManager dm) {
+        return new DerbyAuditTrailContributorDAO(dm);
+    }
+
+    @Override
+    protected DAO getPostgresDAO(DatabaseManager dm) {
+        return new PostgresAuditTrailContributorDAO(dm);
+    }
+
+    @Override
+    protected DatabaseManager getDatabaseManager(DatabaseSpecifics ds) {
+        return new AuditDatabaseManager(ds);
     }
     
 }

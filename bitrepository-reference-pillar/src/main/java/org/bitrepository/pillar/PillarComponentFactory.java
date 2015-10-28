@@ -52,7 +52,6 @@ import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.AlarmDispatcher;
-import org.bitrepository.service.audit.AuditDatabaseManager;
 import org.bitrepository.service.audit.AuditTrailContributerDAO;
 import org.bitrepository.service.audit.AuditTrailContributerDAOFactory;
 import org.bitrepository.service.audit.AuditTrailManager;
@@ -143,9 +142,11 @@ public final class PillarComponentFactory {
      * @return The AuditTrailManager.
      */
     private AuditTrailManager getAuditTrailManager(Settings settings) {
-        return AuditTrailContributerDAOFactory.getAuditTrailContributerDAOInstance(
-                settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase(),
-                settings.getComponentID());
+        AuditTrailContributerDAO dao = (AuditTrailContributerDAO) (new AuditTrailContributerDAOFactory()).getDAOInstance(
+                settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase());
+        dao.initialize(settings.getComponentID());
+        
+        return dao;
     }
 
     

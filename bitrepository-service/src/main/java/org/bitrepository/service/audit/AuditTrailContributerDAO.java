@@ -33,6 +33,7 @@ import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.service.database.DAO;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseUtils;
@@ -46,25 +47,25 @@ import static org.bitrepository.service.audit.AuditDatabaseConstants.*;
  *
  * In the case of 'All-FileIDs', then the 'fileId' is given the string-value 'null'. 
  */
-public abstract class AuditTrailContributerDAO implements AuditTrailManager {
+public abstract class AuditTrailContributerDAO implements AuditTrailManager, DAO {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The connection to the database.*/
     private DBConnector dbConnector;
     /** The componentID.*/
-    private final String componentID;
+    private String componentID;
 
     /**
      * Constructor.
      * @param settings The settings.
      */
-    public AuditTrailContributerDAO(DatabaseManager manager, String componentID) {
-        ArgumentValidator.checkNotNull(componentID, "componentID");
-        
+    public AuditTrailContributerDAO(DatabaseManager manager) {
         this.dbConnector = manager.getConnector();
-        this.componentID = componentID;
-        
         getConnection();
+    }
+    
+    public void initialize(String componentID) {
+        this.componentID = componentID;
     }
 
     /**

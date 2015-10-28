@@ -49,13 +49,11 @@ import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.ServiceSettingsProvider;
-import org.bitrepository.service.audit.AuditDatabaseManager;
 import org.bitrepository.service.audit.AuditTrailContributerDAO;
 import org.bitrepository.service.audit.AuditTrailContributerDAOFactory;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
-import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
 import org.bitrepository.service.workflow.WorkflowManager;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
@@ -115,10 +113,10 @@ public final class IntegrityServiceManager {
         createSecurityManager();
         messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
         
-        auditManager = AuditTrailContributerDAOFactory.getAuditTrailContributerDAOInstance(
-                settings.getReferenceSettings().getIntegrityServiceSettings().getAuditTrailContributerDatabase(),
-                settings.getComponentID());
-                
+        AuditTrailContributerDAOFactory daoFactory = new AuditTrailContributerDAOFactory(); 
+        auditManager = (AuditTrailContributerDAO) daoFactory.getDAOInstance(
+                settings.getReferenceSettings().getIntegrityServiceSettings().getAuditTrailContributerDatabase());
+        
         alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus, AlarmLevel.ERROR);
         model = new IntegrityDatabase(settings);
 

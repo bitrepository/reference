@@ -65,7 +65,8 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         String operationID = "op1";
         String certificateID = "aa";
         DatabaseManager dm = new AuditDatabaseManager(databaseSpecifics);
-        AuditTrailContributerDAO daba = new DerbyAuditTrailContributorDAO(dm, settings.getComponentID());
+        AuditTrailContributerDAO daba = new DerbyAuditTrailContributorDAO(dm);
+        daba.initialize(settings.getComponentID());
         
         addStep("Populate the database.", "Should be inserted into database.");
         daba.addAuditEvent(firstCollectionID, fileId1, actor, info, auditTrail, FileAction.PUT_FILE, operationID, certificateID);
@@ -132,7 +133,8 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         }
 
         DatabaseManager dm = new AuditDatabaseManager(databaseSpecifics);
-        AuditTrailContributerDAO daba = new DerbyAuditTrailContributorDAO(dm, settings.getComponentID());
+        AuditTrailContributerDAO daba = new DerbyAuditTrailContributorDAO(dm);
+        daba.initialize(settings.getComponentID());
         
         addStep("Test with all data.", "No failures");
         daba.addAuditEvent(firstCollectionID, fileId1, actor, info, auditTrail, FileAction.FAILURE, operationID, certificateID);

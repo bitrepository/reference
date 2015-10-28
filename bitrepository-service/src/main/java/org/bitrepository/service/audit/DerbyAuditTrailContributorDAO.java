@@ -4,8 +4,8 @@ import org.bitrepository.service.database.DatabaseManager;
 
 public class DerbyAuditTrailContributorDAO extends AuditTrailContributerDAO {
 
-    public DerbyAuditTrailContributorDAO(DatabaseManager manager, String componentID) {
-        super(manager, componentID);
+    public DerbyAuditTrailContributorDAO(DatabaseManager manager) {
+        super(manager);
     }
 
     @Override
