@@ -69,7 +69,7 @@ public abstract class Workflow implements SchedulableJob {
                 log.error("Failure in step: '" + step.getName() + "'.", e);
                 throw new RuntimeException("Failed to run step " + step.getName(), e);
             } finally {
-                statistics.finishSubStatistic();
+                statistics.finishSubStatistic(getFinishedWorkflowStatus());
             }
         }
     }
@@ -78,10 +78,14 @@ public abstract class Workflow implements SchedulableJob {
      * For telling that the workflow has finished its task.
      */
     protected void finish() {
-        statistics.finish();
+        statistics.finish(getFinishedWorkflowStatus());
         this.currentState = WorkflowState.NOT_RUNNING;
         this.currentStep = null;
         log.info(statistics.getFullStatistics());
+    }
+    
+    private WorkflowState getFinishedWorkflowStatus() {
+        return (currentState == WorkflowState.ABORTED ? WorkflowState.ABORTED : WorkflowState.SUCCEEDED);
     }
     
     @Override

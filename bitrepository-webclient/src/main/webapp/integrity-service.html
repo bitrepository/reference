@@ -134,19 +134,21 @@
       });
     }
 
-    function makeWorkflowRow(workflowID, nextRun, lastRun, executionInterval, currentState) {
+    function makeWorkflowRow(workflowID, nextRun, lastRun, executionInterval, currentState, lastRunState) {
       var html = "";
       html += "<tr><td><a class=\"btn btn-link\" id=\"" + workflowID + "-details\">" + workflowID + "</a></td>";
       html += "<td><div id=\"" + workflowID + "-nextRun\" style=\"padding:5px\">" + nextRun + "</div></td>";
-      html += "<td><a class=\"btn btn-link\" id=\"" + workflowID + "-lastRun\">" + lastRun + "</a></td>";   
+      html += "<td><a class=\"btn btn-link\" id=\"" + workflowID + "-lastRun\">" + lastRun 
+               + "</a> (<span id=\"" + workflowID + "-lastRunState\">" + lastRunState + "</span>)</td>";   
       html += "<td><div id=\"" + workflowID + "-executionInterval\" style=\"padding:5px\">" + executionInterval + "</div></td>";
       html += "<td><div id=\"" + workflowID + "-currentState\" style=\"padding:5px\">" + currentState + "</div></td></tr>";
       return html;
     }
     
-    function updateWorkflowRow(workflowID, nextRun, lastRun, executionInterval, currentState) {
+    function updateWorkflowRow(workflowID, nextRun, lastRun, executionInterval, currentState, lastRunState) {
       $("#" + workflowID + "-nextRun").html(nextRun);
       $("#" + workflowID + "-lastRun").html(lastRun);
+      $("#" + workflowID + "-lastRunState").html(lastRunState);
       $("#" + workflowID + "-executionInterval").html(executionInterval);
       $("#" + workflowID + "-currentState").html(currentState);
     }
@@ -184,13 +186,15 @@
         for (var i = 0; i < j.length; i++) {
           if(workflows[j[i].workflowID] == null) {
             $("#workflow-status-table-body").append(
-                makeWorkflowRow(j[i].workflowID, j[i].nextRun, j[i].lastRun, j[i].executionInterval, j[i].currentState));
+                makeWorkflowRow(j[i].workflowID, j[i].nextRun, j[i].lastRun, j[i].executionInterval, 
+                		j[i].currentState, j[i].lastRunFinishState));
             workflows[j[i].workflowID] = {workflowDescription : j[i].workflowDescription,
                                           lastRunDetails : j[i].lastRunDetails};
             attachWorkflowInfoButton(j[i].workflowID, "workflowDescription");
             attachWorkflowInfoButton(j[i].workflowID, "lastRunDetails");
           } else {
-            updateWorkflowRow(j[i].workflowID, j[i].nextRun, j[i].lastRun, j[i].executionInterval, j[i].currentState);
+            updateWorkflowRow(j[i].workflowID, j[i].nextRun, j[i].lastRun, j[i].executionInterval, 
+            		j[i].currentState, j[i].lastRunFinishState);
             workflows[j[i].workflowID].workflowDescription = j[i].workflowDescription;
             workflows[j[i].workflowID].lastRunDetails = j[i].lastRunDetails;
           }

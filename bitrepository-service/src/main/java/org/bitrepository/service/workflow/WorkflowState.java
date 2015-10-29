@@ -24,16 +24,33 @@
  */
 package org.bitrepository.service.workflow;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * States for a workflow.
  */
+@XmlRootElement
 public enum WorkflowState {
     /** When the workflow is not running.*/
-    NOT_RUNNING,
+    NOT_RUNNING("Not running"),
     /** When the workflow is waiting to be run.*/
-    WAITING,
+    WAITING("Waiting"),
     /** When the workflow is running.*/
-    RUNNING,
+    RUNNING("Running"),
     /** When an execution of the workflow has been aborted */
-    ABORTED,
+    ABORTED("Aborted"),
+    /** When the workflow have finished */
+    SUCCEEDED("Succeeded");
+    
+    
+    WorkflowState(String humanName) {
+        this.humanName = humanName;
+    }
+    
+    private String humanName;
+    
+    @Override 
+    public String toString() {
+        return humanName;
+    }
 }
