@@ -234,8 +234,10 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * Hooks up the message bus.
      */
     protected void setupMessageBus() {
-        if (messageBus == null) {
-            messageBus = new SimpleMessageBus();
+        if(useEmbeddedMessageBus()) {
+            if (messageBus == null) {
+                messageBus = new SimpleMessageBus();
+            }
         }
     }
 
