@@ -89,7 +89,8 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         testConfiguration =
                 new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
         super.initializeSuite(testContext);
-        MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
+        //MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
+        setupMessageBus();
         startEmbeddedPillar(testContext);
         reloadMessageBus();
         clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
@@ -109,6 +110,15 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     public void addFailureContextInfo(ITestResult result) {
     }
 
+    protected void setupMessageBus(ITestContext testContext) {
+        if(!useEmbeddedMessageBus()) {
+            MessageBusManager.clear();
+            messageBus = MessageBusManager.getMessageBus(settingsForCUT, securityManager);
+        } else {
+            MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);    
+        }
+    }
+    
     /**
      * Will start an embedded reference pillar if specified in the <code>pillar-integration-test.properties</code>.<p>
      * The type of pillar (full or checksum) is baed on the test group used, eg. if the group is
