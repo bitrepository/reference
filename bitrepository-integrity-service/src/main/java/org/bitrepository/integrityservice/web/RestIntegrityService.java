@@ -398,9 +398,11 @@ public class RestIntegrityService {
         if (lastRunStatistic == null) {
             jg.writeObjectField("lastRun", "Workflow hasn't finished a run yet");
             jg.writeObjectField("lastRunDetails", "Workflow hasn't finished a run yet");
+            jg.writeObjectField("lastRunFinishState", "Pending");
         } else {
             jg.writeObjectField("lastRun", TimeUtils.shortDate(lastRunStatistic.getFinish()));
             jg.writeObjectField("lastRunDetails", lastRunStatistic.getFullStatistics());
+            jg.writeObjectField("lastRunFinishState", lastRunStatistic.getFinishState().toString());
         }
         long runInterval = workflowManager.getRunInterval(workflowID);
         String intervalString;

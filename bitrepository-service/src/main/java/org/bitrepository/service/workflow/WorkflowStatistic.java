@@ -33,6 +33,7 @@ import org.bitrepository.common.utils.TimeUtils;
  */
 public class WorkflowStatistic {
     private final String name;
+    private WorkflowState finishState;
     private Date start;
     private Date finish;
     private final List<WorkflowStatistic> subStatistics = new LinkedList<WorkflowStatistic>();
@@ -66,8 +67,8 @@ public class WorkflowStatistic {
     /**
      * Marks the end time of a sub step of the statistics statistics.
      */
-    public void finishSubStatistic() {
-        getCurrentSubStatistic().finish();
+    public void finishSubStatistic(WorkflowState state) {
+        getCurrentSubStatistic().finish(state);
     }
 
     /**
@@ -115,15 +116,34 @@ public class WorkflowStatistic {
         } else return subStatistics.get(subStatistics.size()-1);
     }
 
+    /**
+     * Get the start date of the statistics 
+     */
     public Date getStart() {
         return start;
     }
 
+    /**
+     * Get the finish date of the statistics 
+     */
     public Date getFinish() {
         return finish;
     }
-    public void finish() {
+    
+    /**
+     * Get the final state of the workflow  
+     */
+    public WorkflowState getFinishState() {
+        return finishState;
+    }
+    
+    /**
+     * Mark this part of the workflow as finished
+     * @param finishState The state at which the workflow (or step) finished at
+     */
+    public void finish(WorkflowState finishState) {
         this.finish = new Date();
+        this.finishState = finishState;
     }
 
     public String getName() {

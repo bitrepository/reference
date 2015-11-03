@@ -61,7 +61,6 @@ public abstract class Workflow implements SchedulableJob {
             try {
                 statistics.startSubStatistic(step.getName());
                 step.performStep();
-                log.info(statistics.getCurrentSubStatistic().toString());
             } catch (WorkflowAbortedException e) {
                 this.currentState = WorkflowState.ABORTED;
                 log.warn("Failure occured, aborting workflow", e);
@@ -69,7 +68,8 @@ public abstract class Workflow implements SchedulableJob {
                 log.error("Failure in step: '" + step.getName() + "'.", e);
                 throw new RuntimeException("Failed to run step " + step.getName(), e);
             } finally {
-                statistics.finishSubStatistic();
+                statistics.finishSubStatistic(getFinishedWorkflowStatus());
+                log.info(statistics.getCurrentSubStatistic().toString());
             }
         }
     }
@@ -78,10 +78,17 @@ public abstract class Workflow implements SchedulableJob {
      * For telling that the workflow has finished its task.
      */
     protected void finish() {
-        statistics.finish();
+        statistics.finish(getFinishedWorkflowStatus());
         this.currentState = WorkflowState.NOT_RUNNING;
         this.currentStep = null;
         log.info(statistics.getFullStatistics());
+    }
+    
+    /**
+     * Get the final state of the workflow
+     */
+    private WorkflowState getFinishedWorkflowStatus() {
+        return (currentState == WorkflowState.ABORTED ? WorkflowState.ABORTED : WorkflowState.SUCCEEDED);
     }
     
     @Override
