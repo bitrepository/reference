@@ -93,6 +93,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
             getContext().getMonitor().complete();
             return new FinishedState(getContext());
         } else {
+            getContext().getMonitor().timeoutRemainingContributors(getOutstandingComponents());
             throw new UnableToFinishException("All contributors haven't responded. Missing contributors " +
                     getOutstandingComponents());
         }

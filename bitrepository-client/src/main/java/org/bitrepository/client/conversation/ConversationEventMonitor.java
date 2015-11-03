@@ -182,6 +182,16 @@ public class ConversationEventMonitor {
         contributorFailedEvents.add(failedEvent);
         notifyEventListerners(failedEvent);
     }
+    
+    /**
+     * A contributor timed-out handling the performing state
+     * @param contributorID The ID of the contributor
+     */
+    public void timeoutRemainingContributors(Collection<String> contributorIDs) {
+        for(String contributorID : contributorIDs) {
+            contributorFailed("Contributor timedout performing operation", contributorID, null);
+        }
+    }
 
     /**
      * An operation has completed. Will generate a failed event, if any of the contributers have failed.
