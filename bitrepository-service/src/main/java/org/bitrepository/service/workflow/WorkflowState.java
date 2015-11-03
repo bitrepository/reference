@@ -42,11 +42,17 @@ public enum WorkflowState {
     /** When the workflow have finished */
     SUCCEEDED("Succeeded");
     
-    
+    /**
+     * Constructor
+     * @param humanName Human readable form of the enum 
+     */
     WorkflowState(String humanName) {
         this.humanName = humanName;
     }
     
+    /**
+     * Human readable text of the enum 
+     */
     private String humanName;
     
     @Override 

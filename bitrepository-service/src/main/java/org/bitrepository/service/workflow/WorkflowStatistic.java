@@ -116,18 +116,31 @@ public class WorkflowStatistic {
         } else return subStatistics.get(subStatistics.size()-1);
     }
 
+    /**
+     * Get the start date of the statistics 
+     */
     public Date getStart() {
         return start;
     }
 
+    /**
+     * Get the finish date of the statistics 
+     */
     public Date getFinish() {
         return finish;
     }
     
+    /**
+     * Get the final state of the workflow  
+     */
     public WorkflowState getFinishState() {
         return finishState;
     }
     
+    /**
+     * Mark this part of the workflow as finished
+     * @param finishState The state at which the workflow (or step) finished at
+     */
     public void finish(WorkflowState finishState) {
         this.finish = new Date();
         this.finishState = finishState;

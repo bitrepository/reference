@@ -84,6 +84,9 @@ public abstract class Workflow implements SchedulableJob {
         log.info(statistics.getFullStatistics());
     }
     
+    /**
+     * Get the final state of the workflow
+     */
     private WorkflowState getFinishedWorkflowStatus() {
         return (currentState == WorkflowState.ABORTED ? WorkflowState.ABORTED : WorkflowState.SUCCEEDED);
     }
