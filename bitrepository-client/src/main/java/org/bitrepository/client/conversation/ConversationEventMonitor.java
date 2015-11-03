@@ -184,8 +184,8 @@ public class ConversationEventMonitor {
     }
     
     /**
-     * A contributor timed-out handling the performing state
-     * @param contributorID The ID of the contributor
+     * Timeout contributors that have not responded in the performing state
+     * @param contributorIDs The collection of IDs for the contributors
      */
     public void timeoutRemainingContributors(Collection<String> contributorIDs) {
         for(String contributorID : contributorIDs) {
