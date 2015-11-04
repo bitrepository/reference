@@ -94,7 +94,9 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         Date restrictionDate = new Date(123456789); // Sometime between epoch and now!
         
         addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
-        AlarmServiceDAO database = AlarmDAOFactory.getAlarmServiceDAOInstance(settings);
+        AlarmDAOFactory alarmDAOFactory = new AlarmDAOFactory();
+        AlarmServiceDAO database = alarmDAOFactory.getAlarmServiceDAOInstance(
+                settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
         
         addStep("Populate the database with two alarms.", "Should be inserted.");
         for(Alarm alarm : makeAlarms()) {
@@ -180,7 +182,9 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
     public void AlarmDatabaseLargeIngestionTest() throws Exception {
         addDescription("Testing the ingestion of a large texts into the database");
         addStep("Setup and create alarm", "");
-        AlarmServiceDAO database = AlarmDAOFactory.getAlarmServiceDAOInstance(settings);
+        AlarmDAOFactory alarmDAOFactory = new AlarmDAOFactory();
+        AlarmServiceDAO database = alarmDAOFactory.getAlarmServiceDAOInstance(
+                settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
         
         Alarm alarm = new Alarm();
         alarm.setAlarmCode(AlarmCode.CHECKSUM_ALARM);

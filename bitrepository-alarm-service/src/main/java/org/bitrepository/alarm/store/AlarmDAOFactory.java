@@ -1,31 +1,36 @@
 package org.bitrepository.alarm.store;
 
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.service.database.UnsupportedDatabaseTypeException;
+import org.bitrepository.service.database.DAO;
+import org.bitrepository.service.database.DatabaseFactory;
+import org.bitrepository.service.database.DatabaseManager;
+import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 
 /**
  * Factory class for obtaining the appropriate DAO for the specific database backend 
  */
-public class AlarmDAOFactory {
-    
-    private static final String derbyDriver = "org.apache.derby.jdbc.EmbeddedDriver";
-    private static final String postgressDriver = "org.postgresql.Driver";
+public class AlarmDAOFactory extends DatabaseFactory {
     
     /**
      * Obtain an instance of AlarmServiceDAO appropriate for the specific database backend. 
      */
-    public static AlarmServiceDAO getAlarmServiceDAOInstance(Settings settings) {
-        AlarmDatabaseManager dm = new AlarmDatabaseManager(
-                settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
-        String dbDriver = settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase().getDriverClass();
-        if(dbDriver.equals(derbyDriver)) {
-            return new DerbyAlarmServiceDAO(dm);
-        } else if(dbDriver.equals(postgressDriver)) {
-            return new PostgresAlarmServiceDAO(dm);
-        } else {
-            throw new UnsupportedDatabaseTypeException("The database for driver: '" + dbDriver
-                    + "' is not supported, use '" + derbyDriver + "' or '" + postgressDriver + "'");
-        }
+    public AlarmServiceDAO getAlarmServiceDAOInstance(DatabaseSpecifics ds) {
+        AlarmServiceDAO dao = (AlarmServiceDAO) getDAOInstance(ds);
+        return dao;
+    }
+
+    @Override
+    protected DAO getDerbyDAO(DatabaseManager dm) {
+        return new DerbyAlarmServiceDAO(dm);
+    }
+
+    @Override
+    protected DAO getPostgresDAO(DatabaseManager dm) {
+        return new PostgresAlarmServiceDAO(dm);
+    }
+
+    @Override
+    protected DatabaseManager getDatabaseManager(DatabaseSpecifics ds) {
+        return new AlarmDatabaseManager(ds);
     }
     
 }
