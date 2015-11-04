@@ -33,7 +33,6 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.service.database.DBConnector;
-import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.jaccept.structure.ExtendedTestCase;
