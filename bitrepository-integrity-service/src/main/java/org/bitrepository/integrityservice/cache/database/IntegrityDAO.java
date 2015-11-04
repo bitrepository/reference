@@ -17,6 +17,7 @@ import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.PillarCollectionStat;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
+import org.bitrepository.service.database.DAO;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * Common parts of the implementation of the access to the integrity db. 
  * Database specific backends are abstracted out in concrete classes.  
  */
-public abstract class IntegrityDAO {
+public abstract class IntegrityDAO implements DAO {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
     /** The connector to the database.*/
