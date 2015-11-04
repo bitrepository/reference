@@ -10,7 +10,7 @@ public abstract class DatabaseFactory {
     /**
      * Obtain the appropriate DAO instance for the concrete backend. 
      */
-    public DAO getDAOInstance(DatabaseSpecifics ds) {
+    protected DAO getDAOInstance(DatabaseSpecifics ds) {
         DatabaseManager dm = getDatabaseManager(ds);
         String dbDriver = ds.getDriverClass();
         if(dbDriver.equals(derbyDriver)) {

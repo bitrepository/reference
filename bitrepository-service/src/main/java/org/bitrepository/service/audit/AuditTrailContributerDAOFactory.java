@@ -7,6 +7,12 @@ import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 
 public class AuditTrailContributerDAOFactory extends DatabaseFactory {
 
+    public AuditTrailContributerDAO getAuditTrailContributorDAO(DatabaseSpecifics ds, String componentID) {
+        AuditTrailContributerDAO dao = (AuditTrailContributerDAO) getDAOInstance(ds);
+        dao.initialize(componentID);
+        return dao;
+    }
+    
     @Override
     protected DAO getDerbyDAO(DatabaseManager dm) {
         return new DerbyAuditTrailContributorDAO(dm);
