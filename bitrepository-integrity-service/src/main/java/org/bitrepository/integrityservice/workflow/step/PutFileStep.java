@@ -54,10 +54,12 @@ public class PutFileStep extends AbstractWorkFlowStep {
     @Override
     public void performStep() throws WorkflowAbortedException {
         CompleteEventAwaiter eventHandler = new GetFileEventHandler(context.getSettings(), null);
+        
         ChecksumDataForFileTYPE checksumValidationData = new ChecksumDataForFileTYPE();
         checksumValidationData.setCalculationTimestamp(CalendarUtils.getNow());
         checksumValidationData.setChecksumSpec(ChecksumUtils.getDefault(context.getSettings()));
         checksumValidationData.setChecksumValue(Base16Utils.encodeBase16(checksum));
+        
         context.getCollector().putFile(collectionId, fileId, uploadUrl, checksumValidationData, eventHandler, "IntegrityService: " 
                 + getName());
 

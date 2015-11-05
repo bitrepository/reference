@@ -2,10 +2,14 @@ package org.bitrepository.protocol.messagebus;
 
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.MessageContext;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.jms.JMSException;
-import java.util.*;
 
 public class SimpleMessageBus implements MessageBus {
     Map<String,Set<MessageListener>> listeners = new HashMap<>();

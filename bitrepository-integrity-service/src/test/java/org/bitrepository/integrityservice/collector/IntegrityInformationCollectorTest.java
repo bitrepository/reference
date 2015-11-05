@@ -52,7 +52,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         
         addStep("Setup a GetFileIDsClient for test purpose.", "Should be OK.");
         MockGetFileIDsClient getFileIDs = new MockGetFileIDsClient();
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(getFileIDs, null);
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(getFileIDs, null, null, null);
         
         addStep("Call the getFileIDs on the collector.", "Should go directly to the GetFileIDsClient");
         collector.getFileIDs(collectionID, Arrays.asList(pillarId), auditTrailInformation, contributorQueries, null);
@@ -81,7 +81,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         addStep("Setup a GetChecksumsClient for test purpose.", "Should be OK.");
         MockGetChecksumsClient getChecksumsClient = new MockGetChecksumsClient();
         IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(
-                null, getChecksumsClient);
+                null, getChecksumsClient, null, null);
         
         addStep("Call the getChecksumsClient on the collector.", "Should go directly to the GetChecksumsClient");
         collector.getChecksums(collectionID, Arrays.asList(pillarId), csType, auditTrailInformation, contributorQueries, null);
@@ -137,7 +137,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         addStep("Setup a FailingGetChecksumClient for test purpose.", "Should be OK.");
         DyingGetChecksumClient getDyingChecksumsClient = new DyingGetChecksumClient();
         IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(
-                null, getDyingChecksumsClient);
+                null, getDyingChecksumsClient, null, null);
         
         addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
                 "Should not throw an unexpected exception");
@@ -164,7 +164,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         addStep("Setup a FailingGetChecksumClient for test purpose.", "Should be OK.");
         DyingGetFileIDsClient getDyingFileIDsClient = new DyingGetFileIDsClient();
         IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(
-                getDyingFileIDsClient, null);
+                getDyingFileIDsClient, null, null, null);
         
         addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
                 "Should not throw an unexpected exception");

@@ -55,7 +55,7 @@ public class RepairMissingFilesWorkflow extends Workflow {
     protected String description;
     protected WorkflowStep step = null;
     
-    private Long maxResults = 100L;
+    private static final Long MAX_RESULTS_PER_PILLAR = 100L;
 
     /**
      * Remember to call the initialise method needs to be called before the start method.
@@ -96,15 +96,16 @@ public class RepairMissingFilesWorkflow extends Workflow {
      */
     private void repairMissingFilesForPillar(String pillarId) {
         IntegrityIssueIterator iterator = context.getStore().getMissingFilesAtPillarByIterator(pillarId, 0L, 
-                maxResults, collectionID);
+                MAX_RESULTS_PER_PILLAR, collectionID);
         String fileId;
         while((fileId = iterator.getNextIntegrityIssue()) != null) {
             description = "Repairing the missing file '" + fileId + "'.";
             try {
+                // TODO validate, that the file is missing.
                 String checksum = getChecksumForFile(fileId);
                 URL url = createURL(fileId);
-                getFileToUrl(fileId, url);
-                putFile(fileId, url, checksum);
+                getFileStep(fileId, url);
+                putFileStep(fileId, url, checksum);
                 deleteUrl(url);
             } catch (Exception e) {
                 // Fault barrier. Just try to continue
@@ -155,7 +156,7 @@ public class RepairMissingFilesWorkflow extends Workflow {
      * @param fileId The id of the file.
      * @param url The URL 
      */
-    private void getFileToUrl(String fileId, URL url) {
+    private void getFileStep(String fileId, URL url) {
         try {
             step = new GetFileStep(context, collectionID, fileId, url);
             performStep(step);
@@ -165,12 +166,12 @@ public class RepairMissingFilesWorkflow extends Workflow {
     }
     
     /**
-     * 
-     * @param fileId
-     * @param url
-     * @param checksum
+     * Performs the put file step, where the file at the URL at put at all the pillars, who are missing it.
+     * @param fileId The id of the file.
+     * @param url The URL for the put file.
+     * @param checksum The checksum of the file.
      */
-    private void putFile(String fileId, URL url, String checksum) {
+    private void putFileStep(String fileId, URL url, String checksum) {
         try {
             step = new PutFileStep(context, collectionID, fileId, url, checksum);
             performStep(step);
