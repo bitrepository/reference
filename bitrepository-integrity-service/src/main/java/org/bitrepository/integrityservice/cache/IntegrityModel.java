@@ -108,7 +108,7 @@ public interface IntegrityModel {
      */
     IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarId, long firstIndex, long maxResults, 
             String collectionId);
-    
+
     /**
      * Removes the record of the given fileId for the given pillar
      * @param collectionId The id of the collection the file belongs to.

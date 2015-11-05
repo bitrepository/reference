@@ -24,6 +24,12 @@
  */
 package org.bitrepository.integrityservice;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
+
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
@@ -37,6 +43,7 @@ import org.bitrepository.integrityservice.collector.IntegrityInformationCollecto
 import org.bitrepository.integrityservice.reports.IntegrityReportProvider;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowContext;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowManager;
+import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
@@ -49,25 +56,16 @@ import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.ServiceSettingsProvider;
-import org.bitrepository.service.audit.AuditDatabaseManager;
-import org.bitrepository.service.audit.AuditTrailContributerDAO;
 import org.bitrepository.service.audit.AuditTrailContributerDAOFactory;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
-import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
 import org.bitrepository.service.workflow.WorkflowManager;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.bitrepository.settings.referencesettings.ServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
 
 /**
  * Provides access to the different component in the integrity module.
@@ -126,6 +124,10 @@ public final class IntegrityServiceManager {
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager,
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager,
+                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
+                AccessComponentFactory.getInstance().createGetFileClient(settings, securityManager,
+                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
+                ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager,
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()));
         integrityReportProvider = new IntegrityReportProvider(integrityReportStorageDir);
         

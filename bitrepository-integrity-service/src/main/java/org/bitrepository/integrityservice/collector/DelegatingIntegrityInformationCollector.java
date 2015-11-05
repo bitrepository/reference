@@ -24,15 +24,19 @@
  */
 package org.bitrepository.integrityservice.collector;
 
+import java.net.URL;
+import java.util.Collection;
+
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
+import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.modify.putfile.PutFileClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
 
 /**
  * Integrity information collector that delegates collecting information to the clients.
@@ -46,6 +50,10 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     private final GetFileIDsClient getFileIDsClient;
     /** The client for retrieving checksums. */
     private final GetChecksumsClient getChecksumsClient;
+    /** The client for performing GetFile operations.*/
+    private final GetFileClient getFileClient;
+    /** The client for putting files.*/
+    private final PutFileClient putFileClient;
     /** The audit trail manager.*/
     
     /**
@@ -54,9 +62,13 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
      */
     public DelegatingIntegrityInformationCollector(
             GetFileIDsClient getFileIDsClient,
-            GetChecksumsClient getChecksumsClient) {
+            GetChecksumsClient getChecksumsClient,
+            GetFileClient getFileClient,
+            PutFileClient putFileClient) {
         this.getFileIDsClient = getFileIDsClient;
         this.getChecksumsClient = getChecksumsClient;
+        this.getFileClient = getFileClient;
+        this.putFileClient = putFileClient;
     }
 
     @Override
@@ -78,6 +90,28 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
                     auditTrailInformation);
         } catch (Exception e) {
             log.error("Unexpected failure!", e);
+        }
+    }
+    
+    @Override
+    public synchronized void getFile(String collectionID, String fileId, URL uploadUrl, EventHandler eventHandler, 
+            String auditTrailInformation) {
+        try {
+            getFileClient.getFileFromFastestPillar(collectionID, fileId, null, uploadUrl, eventHandler, 
+                    auditTrailInformation);
+        } catch (Exception e) {
+            log.error("Unexåected failure!", e);
+        }
+    }
+    
+    @Override
+    public synchronized void putFile(String collectionID, String fileId, URL uploadUrl, 
+            ChecksumDataForFileTYPE checksumValidationData, EventHandler eventHandler, String auditTrailInformation) {
+        try {
+            putFileClient.putFile(collectionID, uploadUrl, fileId, 0, checksumValidationData, null, eventHandler, 
+                    auditTrailInformation);
+        } catch (Exception e) {
+            log.error("Unexåected failure!", e);
         }
     }
 }
