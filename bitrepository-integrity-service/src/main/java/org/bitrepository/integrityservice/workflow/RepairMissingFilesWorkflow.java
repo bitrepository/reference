@@ -25,7 +25,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
@@ -43,7 +45,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Simple workflow for repairing missing files.
- * Repairs at most 100 files for each pillar at each run. 
+ * Repairs at most 100 files across all pillars. 
  */
 public class RepairMissingFilesWorkflow extends Workflow {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -55,10 +57,12 @@ public class RepairMissingFilesWorkflow extends Workflow {
     protected String description;
     protected WorkflowStep step = null;
     
-    private static final Long MAX_RESULTS_PER_PILLAR = 100L;
-
+    private static final int MAX_RESULTS = 100;
+    /** List to keep track over the files, which have been */
+    protected List<String> repairedFiles = new ArrayList<String>(MAX_RESULTS);
+    
     /**
-     * Remember to call the initialise method needs to be called before the start method.
+     * Remember to call the initialize method needs to be called before the start method.
      */
     public RepairMissingFilesWorkflow() {
     	description = "Not initialized";
@@ -86,7 +90,7 @@ public class RepairMissingFilesWorkflow extends Workflow {
             }
         } finally {
             finish();
-            description = "Finished repairing missing files.";
+            description = "Not running.";
         }
     }
     
@@ -95,13 +99,19 @@ public class RepairMissingFilesWorkflow extends Workflow {
      * @param pillarId The pillar to repair.
      */
     private void repairMissingFilesForPillar(String pillarId) {
+        List<String> filesNotRepaired = new ArrayList<String>();
         IntegrityIssueIterator iterator = context.getStore().getMissingFilesAtPillarByIterator(pillarId, 0L, 
-                MAX_RESULTS_PER_PILLAR, collectionID);
+                MAX_RESULTS, collectionID);
         String fileId;
-        while((fileId = iterator.getNextIntegrityIssue()) != null) {
+        while((fileId = iterator.getNextIntegrityIssue()) != null && repairedFiles.size() < MAX_RESULTS) {
+            // Do not try to repair file, which has already been repaired.
+            if(repairedFiles.contains(fileId)) {
+                continue;
+            }
+            repairedFiles.add(fileId);
+            
             description = "Repairing the missing file '" + fileId + "'.";
             try {
-                // TODO validate, that the file is missing.
                 String checksum = getChecksumForFile(fileId);
                 URL url = createURL(fileId);
                 getFileStep(fileId, url);
@@ -109,8 +119,13 @@ public class RepairMissingFilesWorkflow extends Workflow {
                 deleteUrl(url);
             } catch (Exception e) {
                 // Fault barrier. Just try to continue
-                log.warn("Error occured during repair of missing file, '" + pillarId + "'. Tries to continue.", e);
+                log.warn("Error occured during repair of missing file, '" + fileId + "'. Tries to continue.", e);
+                filesNotRepaired.add(fileId);
             }
+        }
+        
+        if(!filesNotRepaired.isEmpty()) {
+            context.getAlerter().operationFailed("Failed to repair the files '" + filesNotRepaired + "'.", collectionID);
         }
     }
     
@@ -186,9 +201,14 @@ public class RepairMissingFilesWorkflow extends Workflow {
      * @throws IOException If an issue occur while deleting the file.
      * @throws URISyntaxException If the URL is invalid.
      */
-    private void deleteUrl(URL url) throws IOException, URISyntaxException {
+    private void deleteUrl(URL url) throws URISyntaxException {
         FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(context.getSettings());
-        fe.deleteFile(url);
+        try {
+            fe.deleteFile(url);
+        } catch(IOException e) {
+            // Not critical, if we cannot remove the file.
+            log.warn("Issue deleting file from FileExchange", e);
+        }
     }
 
 	@Override

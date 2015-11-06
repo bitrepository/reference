@@ -5,13 +5,11 @@ import java.net.URL;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
-import org.bitrepository.commandline.eventhandler.GetFileEventHandler;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
+import org.bitrepository.integrityservice.collector.IntegrityEventCompleteAwaiter;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowContext;
-import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 
 /**
@@ -52,8 +50,8 @@ public class PutFileStep extends AbstractWorkFlowStep {
     }
 
     @Override
-    public void performStep() throws WorkflowAbortedException {
-        CompleteEventAwaiter eventHandler = new GetFileEventHandler(context.getSettings(), null);
+    public void performStep() {
+        IntegrityEventCompleteAwaiter eventHandler = new IntegrityEventCompleteAwaiter(context.getSettings());
         
         ChecksumDataForFileTYPE checksumValidationData = new ChecksumDataForFileTYPE();
         checksumValidationData.setCalculationTimestamp(CalendarUtils.getNow());
@@ -65,7 +63,7 @@ public class PutFileStep extends AbstractWorkFlowStep {
 
         OperationEvent event = eventHandler.getFinish();
         if(event.getEventType() == OperationEventType.FAILED) {
-            throw new WorkflowAbortedException("Aborting workflow due to failure putting the file '" + fileId + "'. "
+            throw new IllegalStateException("Aborting workflow due to failure putting the file '" + fileId + "'. "
                     + "Cause: " + event.toString());
         }
     }

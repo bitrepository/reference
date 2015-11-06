@@ -4,10 +4,8 @@ import java.net.URL;
 
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
-import org.bitrepository.commandline.eventhandler.GetFileEventHandler;
+import org.bitrepository.integrityservice.collector.IntegrityEventCompleteAwaiter;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowContext;
-import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 
 /**
@@ -44,14 +42,14 @@ public class GetFileStep extends AbstractWorkFlowStep {
     }
 
     @Override
-    public void performStep() throws WorkflowAbortedException {
-        CompleteEventAwaiter eventHandler = new GetFileEventHandler(context.getSettings(), null);
+    public void performStep() {
+        IntegrityEventCompleteAwaiter eventHandler = new IntegrityEventCompleteAwaiter(context.getSettings());
         context.getCollector().getFile(collectionId, fileId, uploadUrl, eventHandler, "IntegrityService: " 
                 + getName());
 
         OperationEvent event = eventHandler.getFinish();
         if(event.getEventType() == OperationEventType.FAILED) {
-            throw new WorkflowAbortedException("Aborting workflow due to failure getting the file '" + fileId + "'. "
+            throw new IllegalStateException("Aborting workflow due to failure getting the file '" + fileId + "'. "
                     + "Cause: " + event.toString());
         }
     }
