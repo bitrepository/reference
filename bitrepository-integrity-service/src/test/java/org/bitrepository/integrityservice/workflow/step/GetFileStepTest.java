@@ -68,7 +68,7 @@ public class GetFileStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(model);
     }
     
-    @Test(groups = {"regressiontest"}, expectedExceptions = WorkflowAbortedException.class)
+    @Test(groups = {"regressiontest"}, expectedExceptions = IllegalStateException.class)
     public void testNegativeReply() throws Exception {
         addDescription("Test the step for getting the file can handle FAILURE operation event.");
         doAnswer(new Answer() {
