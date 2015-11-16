@@ -59,7 +59,7 @@ public class RepairMissingFilesWorkflow extends Workflow {
     
     private static final int MAX_RESULTS = 100;
     /** List to keep track over the files, which have been */
-    protected List<String> repairedFiles = new ArrayList<String>(MAX_RESULTS);
+    protected List<String> repairedFiles;
     
     /**
      * Remember to call the initialize method needs to be called before the start method.
@@ -83,7 +83,9 @@ public class RepairMissingFilesWorkflow extends Workflow {
                     "called.");
         }
         super.start();
-        
+
+        repairedFiles = new ArrayList<String>(MAX_RESULTS);
+
         try {
             for(String pillarId : SettingsUtils.getPillarIDsForCollection(collectionID)) {
                 repairMissingFilesForPillar(pillarId);
