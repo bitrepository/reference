@@ -532,6 +532,22 @@ public abstract class IntegrityDAO {
            return stats;
     }
     
+    /**
+     *  Method to obtain the earliest date that a file has on any pillar in the specific collection
+     *  @param collectionID The ID of the collection
+     *  @param fileID The ID of the file
+     */
+    public Date getEarliestFileDate(String collectionID, String fileID) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        
+        String getEarliestFileDateSql = "SELECT MIN(file_timestamp) FROM fileinfo"
+                + " WHERE collectionID = ?"
+                + " AND fileID = ?";
+        
+        return DatabaseUtils.selectFirstDateValue(dbConnector, getEarliestFileDateSql, collectionID, fileID);
+    }
+    
     private IntegrityIssueIterator makeIntegrityIssueIterator(String query, Object... args) {
         PreparedStatement ps = null;
         Connection conn = null;
