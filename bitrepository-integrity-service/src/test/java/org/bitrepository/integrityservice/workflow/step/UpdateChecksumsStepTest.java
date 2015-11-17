@@ -105,7 +105,9 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
-            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>());
+        when(integrityContributors.getFailedContributors()).thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)));
         
         settings.getReferenceSettings().getIntegrityServiceSettings().setAbortOnFailedContributor(true);
         UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
@@ -119,6 +121,49 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(integrityContributors).failContributor(eq(TEST_PILLAR_1));
         verify(alerter).integrityFailed(anyString(), eq(TEST_COLLECTION));
+    }
+    
+    @Test(groups = {"regressiontest"})
+    public void testRetryCollectionWhenNegativeReply() throws WorkflowAbortedException {
+        addDescription("Test the step for updating the file ids will retry on a FAILED event");
+        
+        final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
+        doAnswer(new Answer() {
+            boolean firstAnswer = true;
+            public Void answer(InvocationOnMock invocation) {
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                if(firstAnswer) {
+                    firstAnswer = false;
+                    eventHandler.handleEvent(new ContributorFailedEvent(TEST_PILLAR_1, TEST_COLLECTION, ResponseCode.FAILURE));
+                    eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Problem encountered", null));
+                } else {
+                    eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(TEST_PILLAR_1)));
+                    eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION,
+                            resultingChecksums, createChecksumSpecTYPE(), false));
+                    eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+                }
+                return null;
+            }
+        }).when(collector).getChecksums(
+                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
+                any(ContributorQuery[].class), any(EventHandler.class));
+
+        when(integrityContributors.getActiveContributors())
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>());
+        when(integrityContributors.getFailedContributors()).thenReturn(new HashSet<>());
+
+        UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
+                settings, TEST_COLLECTION, integrityContributors);
+        step.performStep();
+        verify(collector, times(2)).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
+                any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+        verify(model).addChecksums(resultingChecksums.getChecksumDataItems(), TEST_PILLAR_1, TEST_COLLECTION);
+        verifyNoMoreInteractions(alerter);
+        verify(integrityContributors).failContributor(eq(TEST_PILLAR_1));
+        verify(integrityContributors).finishContributor(eq(TEST_PILLAR_1));
+        
     }
     
     @Test(groups = {"regressiontest"})
@@ -137,7 +182,9 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
-            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>());
+        when(integrityContributors.getFailedContributors()).thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)));
         
         settings.getReferenceSettings().getIntegrityServiceSettings().setAbortOnFailedContributor(false);
         UpdateChecksumsStep step = new IncrementalUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
