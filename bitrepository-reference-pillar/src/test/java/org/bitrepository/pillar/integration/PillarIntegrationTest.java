@@ -41,12 +41,15 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 
 import java.util.Arrays;
+
+import javax.jms.JMSException;
 
 /**
  * Super class for all tests which should test functionality on a single pillar.
@@ -99,6 +102,21 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         putDefaultFile();
     }
 
+    @AfterClass(alwaysRun = true)
+    public void shutdownRealMessageBus() {
+        if(!useEmbeddedMessageBus()) {
+            MessageBusManager.clear();
+            if(messageBus != null) {
+                try {
+                    messageBus.close();
+                } catch (JMSException e) {
+                    e.printStackTrace();
+                }
+                messageBus = null;
+            }
+        }
+    }
+    
     @AfterSuite(alwaysRun = true)
     @Override
     public void shutdownSuite() {
