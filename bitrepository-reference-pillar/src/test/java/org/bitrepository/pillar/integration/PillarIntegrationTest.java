@@ -220,7 +220,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
     @Override
     protected String getComponentID() {
-        return getPillarID();
+        return getPillarID() + "-test-client";
     }
 
     protected void reloadMessageBus() {
