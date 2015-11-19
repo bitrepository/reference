@@ -141,4 +141,9 @@ public class IntegrityDatabase implements IntegrityModel {
     public void createStatistics(String collectionId, StatisticsCollector statisticsCollector) {
         store.createStatistics(collectionId, statisticsCollector);
     }
+
+    @Override
+    public Date getEarlistFileDate(String collectionId, String fileID) {
+        return store.getEarliestFileDate(collectionId, fileID);
+    }
 }

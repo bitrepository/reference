@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.workflow.step;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.bitrepository.common.utils.SettingsUtils;
@@ -46,12 +47,15 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
     /** The report model to populate */
     private final IntegrityReporter reporter;
     private final StatisticsCollector sc;
+    /** The period in which a file should not be considered as missing */
+    private final Long gracePeriod;
     
     public HandleMissingFilesStep(IntegrityModel store, IntegrityReporter reporter, 
-            StatisticsCollector statisticsCollector) {
+            StatisticsCollector statisticsCollector, Long missingFileGracePeriod) {
         this.store = store;
         this.reporter = reporter;
         this.sc = statisticsCollector;
+        this.gracePeriod = missingFileGracePeriod;
     }
     
     @Override
@@ -67,18 +71,26 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
     @Override
     public synchronized void performStep() throws StepFailedException {
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
+        Date missingAfterDate = new Date(System.currentTimeMillis() - gracePeriod);
         for(String pillar : pillars) {
+            log.info("Checking for missing files on pillar {}, files needs to be older than {} to be considered missing.", 
+                    pillar, missingAfterDate);
             Long missingFiles = 0L;
             IntegrityIssueIterator issueIterator = store.getMissingFilesAtPillarByIterator(pillar, 0, 
                     Integer.MAX_VALUE, reporter.getCollectionID());
             
             String missingFile;
             while((missingFile = issueIterator.getNextIntegrityIssue()) != null) {
-                try {
-                    reporter.reportMissingFile(missingFile, pillar);
-                    missingFiles++;
-                } catch (IOException e) {
-                    throw new StepFailedException("Failed to report file: " + missingFile + " as missing", e);
+                Date earliestDate = store.getEarlistFileDate(reporter.getCollectionID(), missingFile);
+                if(earliestDate.after(missingAfterDate)) {
+                    try {
+                        reporter.reportMissingFile(missingFile, pillar);
+                        missingFiles++;
+                    } catch (IOException e) {
+                        throw new StepFailedException("Failed to report file: " + missingFile + " as missing", e);
+                    }
+                } else {
+                    log.info("The file '{}' was too recent ({}) to be considered missing.", missingFile, earliestDate);
                 }
             }
             sc.getPillarCollectionStat(pillar).setMissingFiles(missingFiles);

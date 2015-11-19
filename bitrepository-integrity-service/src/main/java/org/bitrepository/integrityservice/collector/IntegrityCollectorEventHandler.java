@@ -110,6 +110,8 @@ public class IntegrityCollectorEventHandler implements EventHandler {
                     checksumEvent.getCollectionID());
             if(!checksumEvent.isPartialResult()) {
                 integrityContributors.finishContributor(checksumEvent.getContributorID());
+            } else {
+                integrityContributors.succeedContributor(checksumEvent.getContributorID());
             }
         } else if(event instanceof FileIDsCompletePillarEvent) {
             FileIDsCompletePillarEvent fileidEvent = (FileIDsCompletePillarEvent) event;
@@ -118,6 +120,8 @@ public class IntegrityCollectorEventHandler implements EventHandler {
                     fileidEvent.getCollectionID());
             if(!fileidEvent.isPartialResult()) {
                 integrityContributors.finishContributor(fileidEvent.getContributorID());
+            } else {
+                integrityContributors.succeedContributor(fileidEvent.getContributorID());
             }
         } else {
             log.warn("Unexpected component complete event: " + event.toString());
