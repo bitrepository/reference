@@ -52,19 +52,23 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
     /** The connection to the database.*/
     private DBConnector dbConnector;
     /** The componentID.*/
-    private final String componentID;
+    private String componentID;
 
     /**
      * Constructor.
      * @param settings The settings.
      */
-    public AuditTrailContributerDAO(DatabaseManager manager, String componentID) {
-        ArgumentValidator.checkNotNull(componentID, "componentID");
-        
+    public AuditTrailContributerDAO(DatabaseManager manager) {
         this.dbConnector = manager.getConnector();
-        this.componentID = componentID;
-        
         getConnection();
+    }
+    
+    /**
+     * Initialization method, needed to setup the instance
+     * @param componentID The ID of the component using the AuditTrailContributerDAO instance 
+     */
+    public void initialize(String componentID) {
+        this.componentID = componentID;
     }
 
     /**
@@ -155,7 +159,11 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
         }
     }
     
-    public abstract String createQueryResultsLimit();
+    /**
+     * Method to obtain the database specific sql to limit the number of results 
+     * @return string The database specific SQL to limit the number of results in a database query 
+     */
+    protected abstract String createQueryResultsLimit();
 
     /**
      * Extracts the the audit trail information based on the given sql query and arguments.
@@ -327,6 +335,9 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
             this.maxResults = maxResults;
         }
         
+        /**
+         * Getter method to obtain the maximum number of results 
+         */
         public Long getMaxResults() {
             return maxResults;
         }

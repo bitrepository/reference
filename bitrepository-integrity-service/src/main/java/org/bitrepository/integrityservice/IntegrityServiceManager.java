@@ -113,7 +113,8 @@ public final class IntegrityServiceManager {
         createSecurityManager();
         messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
         
-        auditManager = AuditTrailContributerDAOFactory.getAuditTrailContributerDAOInstance(
+        AuditTrailContributerDAOFactory daoFactory = new AuditTrailContributerDAOFactory();
+        auditManager = daoFactory.getAuditTrailContributorDAO(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getAuditTrailContributerDatabase(),
                 settings.getComponentID());
                 

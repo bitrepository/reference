@@ -32,8 +32,6 @@ import java.util.Properties;
 
 import org.bitrepository.alarm.handling.handlers.AlarmStorer;
 import org.bitrepository.alarm.store.AlarmDAOFactory;
-import org.bitrepository.alarm.store.AlarmDatabaseManager;
-import org.bitrepository.alarm.store.AlarmServiceDAO;
 import org.bitrepository.alarm.store.AlarmStore;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
@@ -51,7 +49,6 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.ServiceSettingsProvider;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
-import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.settings.referencesettings.ServiceType;
 
 /**
@@ -112,8 +109,9 @@ public class AlarmServiceFactory {
                 MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, 
                         securityManager);
                 ContributorMediator contributorMediator = new SimpleContributorMediator(messageBus, settings, null, null);
-                
-                AlarmStore store = AlarmDAOFactory.getAlarmServiceDAOInstance(settings);
+                AlarmDAOFactory alarmDAOFactory = new AlarmDAOFactory();
+                AlarmStore store = alarmDAOFactory.getAlarmServiceDAOInstance(
+                        settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
                 alarmService = new BasicAlarmService(messageBus, settings, store, contributorMediator);
                 
                 // Add the default handler for putting the alarms into the database.

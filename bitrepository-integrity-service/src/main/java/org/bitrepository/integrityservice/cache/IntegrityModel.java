@@ -217,4 +217,11 @@ public interface IntegrityModel {
      * @param statisticsCollector the collection with information needed to create the statistics entries. 
      */
     void createStatistics(String collectionId,  StatisticsCollector statisticsCollector);
+    
+    /**
+     * Get the earliest date a specific file on any pillar in a given collection. 
+     * @param collectionId The ID of the collection
+     * @param fileID The ID of the file
+     */
+    Date getEarlistFileDate(String collectionId, String fileID);
 }

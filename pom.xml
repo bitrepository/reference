@@ -196,8 +196,8 @@
                     <useMissingFile>true</useMissingFile>
                     <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
                     <includes>
-                        <include>java</include>
-                        <include>xsd</include>
+                        <include>**/*.java</include>
+                        <include>**/*.xsd</include>
                     </includes>
                     <extraExtensions>
                         <xsd>xml</xsd>

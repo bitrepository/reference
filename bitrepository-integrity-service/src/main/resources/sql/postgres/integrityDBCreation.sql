@@ -35,11 +35,11 @@ CREATE TABLE tableversions (
     version SMALLINT NOT NULL        -- version of table
 );
 
-INSERT INTO tableversions (tablename, version) VALUES ('fileinfo', 4);
+INSERT INTO tableversions (tablename, version) VALUES ('fileinfo', 5);
 INSERT INTO tableversions (tablename, version) VALUES ('files', 2);
 INSERT INTO tableversions (tablename, version) VALUES ('pillar', 3);
 INSERT INTO tableversions (tablename, version) VALUES ('collections' ,2);
-INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 5);
+INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 6);
 INSERT INTO tableversions (tablename, version) VALUES ('stats', 2);
 INSERT INTO tableversions (tablename, version) VALUES ('collectionstats', 2);
 INSERT INTO tableversions (tablename, version) VALUES ('pillarstats', 2);
@@ -92,6 +92,7 @@ CREATE TABLE fileinfo (
 
 CREATE INDEX checksumdateindex ON fileinfo(checksum_timestamp);
 CREATE INDEX lastseenindex ON fileinfo(last_seen_getfileids);
+CREATE INDEX collectionfileidx ON fileinfo(collectionid, fileid);
 
 --*************************************************************************--
 -- Name:     collection_progress

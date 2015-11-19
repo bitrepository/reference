@@ -41,7 +41,9 @@ public class IntegrityDatabase implements IntegrityModel {
     private final IntegrityDAO store;
 
     public IntegrityDatabase(Settings settings) {
-        this.store = IntegrityDAOFactory.getDAO2Instance(settings);
+        IntegrityDAOFactory daoFactory = new IntegrityDAOFactory();
+        this.store = daoFactory.getIntegrityDAOInstance(
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
     }
 
     @Override
@@ -159,5 +161,10 @@ public class IntegrityDatabase implements IntegrityModel {
     @Override
     public void createStatistics(String collectionId, StatisticsCollector statisticsCollector) {
         store.createStatistics(collectionId, statisticsCollector);
+    }
+
+    @Override
+    public Date getEarlistFileDate(String collectionId, String fileID) {
+        return store.getEarliestFileDate(collectionId, fileID);
     }
 }
