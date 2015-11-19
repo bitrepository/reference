@@ -57,6 +57,8 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
     protected String collectionID;
     protected IntegrityContributors integrityContributors;
     protected Date workflowStart;
+    /** The default number of retries if none is set in ReferenceSettings */
+    private static final int DEFAULT_MAX_RETRIES = 3;
     /**
      * Remember to call the initialise method needs to be called before the start method.
      */
@@ -92,7 +94,10 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
         super.start();
         try {
             StatisticsCollector statisticsCollector = new StatisticsCollector(collectionID);
-            integrityContributors = new IntegrityContributors(SettingsUtils.getPillarIDsForCollection(collectionID));
+            Integer maxRetries 
+                = context.getSettings().getReferenceSettings().getIntegrityServiceSettings().getComponentRetries();
+            integrityContributors = new IntegrityContributors(SettingsUtils.getPillarIDsForCollection(collectionID), 
+                    maxRetries == null ? DEFAULT_MAX_RETRIES : maxRetries);
             
             UpdateFileIDsStep updateFileIDsStep = getUpdateFileIDsStep();
             performStep(updateFileIDsStep);

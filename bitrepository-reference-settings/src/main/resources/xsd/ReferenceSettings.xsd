@@ -718,6 +718,14 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element name="ComponentRetries" type="xs:int" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Control how many times a contributor should be retried before being considered as failing.
+              If the setting is not set the system defaults to 3.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
         <xs:element name="IntegrityDatabase" type="DatabaseSpecifics">
           <xs:annotation>
             <xs:documentation xml:lang="en">

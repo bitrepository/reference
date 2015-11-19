@@ -128,18 +128,7 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
                 
                 OperationEvent event = eventHandler.getFinish();
                 if(event.getEventType() == OperationEventType.FAILED) {
-                    OperationFailedEvent ofe = (OperationFailedEvent) event;
-                    if(abortInCaseOfFailure) {
-                        alerter.integrityFailed("Integrity check aborted while getting checksums due to failed contributors: " 
-                                + integrityContributors.getFailedContributors(), collectionId);
-                        throw new WorkflowAbortedException("Aborting workflow due to failure collecting checksums. "
-                                + "Cause: " + ofe.toString());
-                    } else {
-                        log.info("Failure occured collecting fileIDs, continuing collecting checksums. Failure {}", ofe.toString());
-                        alerter.integrityFailed("Failure while collecting checksums, the check will continue "
-                                + "with the information available. The failed contributors were: " 
-                                + integrityContributors.getFailedContributors(), collectionId);
-                    }
+                    handleFailureEvent(event);
                 }
                 log.debug("Collecting of checksums ids had the final event: " + event);
                 pillarsToCollectFrom = integrityContributors.getActiveContributors();
@@ -148,6 +137,29 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
             finalStepAction();
         } catch (InterruptedException e) {
             log.warn("Interrupted while collecting checksums.", e);
+        }
+    }
+    
+    /**
+     * Handle a failure event. This includes checking if any contributors have failed (if not just retry), 
+     * checking to see if the workflow should be aborted, and sending alarms if needed.  
+     */
+    private void handleFailureEvent(OperationEvent event) throws WorkflowAbortedException {
+        if(integrityContributors.getFailedContributors().isEmpty()) {
+            log.info("Get failure event, but no contributors marked as failed, retrying");
+        } else {
+            OperationFailedEvent ofe = (OperationFailedEvent) event;
+            if(abortInCaseOfFailure) {
+                alerter.integrityFailed("Integrity check aborted while getting checksums due to failed contributors: " 
+                        + integrityContributors.getFailedContributors(), collectionId);
+                throw new WorkflowAbortedException("Aborting workflow due to failure collecting checksums. "
+                        + "Cause: " + ofe.toString());
+            } else {
+                log.info("Failure occured collecting fileIDs, continuing collecting checksums. Failure {}", ofe.toString());
+                alerter.integrityFailed("Failure while collecting checksums, the check will continue "
+                        + "with the information available. The failed contributors were: " 
+                        + integrityContributors.getFailedContributors(), collectionId);
+            }
         }
     }
     
