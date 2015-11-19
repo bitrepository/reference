@@ -26,14 +26,13 @@ import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
-import org.bitrepository.service.database.DAO;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
 
 /**
  * The interface to the database for storing the Alarms.
  */
-public abstract class AlarmServiceDAO implements AlarmStore, DAO {
+public abstract class AlarmServiceDAO implements AlarmStore {
     /** The connector to the database.*/
     protected DBConnector dbConnector;
     

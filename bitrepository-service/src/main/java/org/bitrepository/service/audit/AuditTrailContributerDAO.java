@@ -33,7 +33,6 @@ import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.service.database.DAO;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseUtils;
@@ -47,7 +46,7 @@ import static org.bitrepository.service.audit.AuditDatabaseConstants.*;
  *
  * In the case of 'All-FileIDs', then the 'fileId' is given the string-value 'null'. 
  */
-public abstract class AuditTrailContributerDAO implements AuditTrailManager, DAO {
+public abstract class AuditTrailContributerDAO implements AuditTrailManager {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The connection to the database.*/

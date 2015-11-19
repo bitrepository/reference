@@ -1,6 +1,5 @@
 package org.bitrepository.alarm.store;
 
-import org.bitrepository.service.database.DAO;
 import org.bitrepository.service.database.DatabaseFactory;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
@@ -8,23 +7,23 @@ import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 /**
  * Factory class for obtaining the appropriate DAO for the specific database backend 
  */
-public class AlarmDAOFactory extends DatabaseFactory {
+public class AlarmDAOFactory extends DatabaseFactory<AlarmServiceDAO> {
     
     /**
      * Obtain an instance of AlarmServiceDAO appropriate for the specific database backend. 
      */
     public AlarmServiceDAO getAlarmServiceDAOInstance(DatabaseSpecifics ds) {
-        AlarmServiceDAO dao = (AlarmServiceDAO) getDAOInstance(ds);
+        AlarmServiceDAO dao = getDAOInstance(ds);
         return dao;
     }
 
     @Override
-    protected DAO getDerbyDAO(DatabaseManager dm) {
+    protected AlarmServiceDAO getDerbyDAO(DatabaseManager dm) {
         return new DerbyAlarmServiceDAO(dm);
     }
 
     @Override
-    protected DAO getPostgresDAO(DatabaseManager dm) {
+    protected AlarmServiceDAO getPostgresDAO(DatabaseManager dm) {
         return new PostgresAlarmServiceDAO(dm);
     }
 

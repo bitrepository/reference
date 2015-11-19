@@ -2,7 +2,7 @@ package org.bitrepository.service.database;
 
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 
-public abstract class DatabaseFactory {
+public abstract class DatabaseFactory<T> {
 
     public static final String derbyDriver = "org.apache.derby.jdbc.EmbeddedDriver";
     public static final String postgressDriver = "org.postgresql.Driver";
@@ -10,7 +10,7 @@ public abstract class DatabaseFactory {
     /**
      * Obtain the appropriate DAO instance for the concrete backend. 
      */
-    protected DAO getDAOInstance(DatabaseSpecifics ds) {
+    protected T getDAOInstance(DatabaseSpecifics ds) {
         DatabaseManager dm = getDatabaseManager(ds);
         String dbDriver = ds.getDriverClass();
         if(dbDriver.equals(derbyDriver)) {
@@ -23,9 +23,9 @@ public abstract class DatabaseFactory {
         }
     }
     
-    protected abstract DAO getDerbyDAO(DatabaseManager dm);
+    protected abstract T getDerbyDAO(DatabaseManager dm);
     
-    protected abstract DAO getPostgresDAO(DatabaseManager dm);
+    protected abstract T getPostgresDAO(DatabaseManager dm);
     
     protected abstract DatabaseManager getDatabaseManager(DatabaseSpecifics ds);
 }
