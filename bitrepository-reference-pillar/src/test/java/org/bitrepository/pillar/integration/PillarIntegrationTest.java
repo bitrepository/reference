@@ -41,12 +41,15 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 
 import java.util.Arrays;
+
+import javax.jms.JMSException;
 
 /**
  * Super class for all tests which should test functionality on a single pillar.
@@ -90,7 +93,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
                 new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
         super.initializeSuite(testContext);
         //MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
-        setupMessageBus();
+        setupRealMessageBus();
         startEmbeddedPillar(testContext);
         reloadMessageBus();
         clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
@@ -99,6 +102,21 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         putDefaultFile();
     }
 
+    @AfterClass(alwaysRun = true)
+    public void shutdownRealMessageBus() {
+        if(!useEmbeddedMessageBus()) {
+            MessageBusManager.clear();
+            if(messageBus != null) {
+                try {
+                    messageBus.close();
+                } catch (JMSException e) {
+                    e.printStackTrace();
+                }
+                messageBus = null;
+            }
+        }
+    }
+    
     @AfterSuite(alwaysRun = true)
     @Override
     public void shutdownSuite() {
@@ -110,7 +128,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     public void addFailureContextInfo(ITestResult result) {
     }
 
-    protected void setupMessageBus(ITestContext testContext) {
+    protected void setupRealMessageBus() {
         if(!useEmbeddedMessageBus()) {
             MessageBusManager.clear();
             messageBus = MessageBusManager.getMessageBus(settingsForCUT, securityManager);
@@ -118,7 +136,19 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);    
         }
     }
-    
+
+    @Override
+    protected void setupMessageBus() {
+        //Shortcircuit this so the messagebus is NOT INITIALISED BEFORE THE CONFIGURATION
+        //super.setupMessageBus();
+    }
+
+    @Override
+    public void initMessagebus() {
+        //Shortcircuit this so the messagebus is NOT INITIALISED BEFORE THE CONFIGURATION
+        //super.initMessagebus();
+    }
+
     /**
      * Will start an embedded reference pillar if specified in the <code>pillar-integration-test.properties</code>.<p>
      * The type of pillar (full or checksum) is baed on the test group used, eg. if the group is
@@ -190,7 +220,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
     @Override
     protected String getComponentID() {
-        return getPillarID();
+        return getPillarID() + "-test-client";
     }
 
     protected void reloadMessageBus() {

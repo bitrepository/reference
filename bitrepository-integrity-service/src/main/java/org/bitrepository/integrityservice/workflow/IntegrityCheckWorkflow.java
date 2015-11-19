@@ -114,9 +114,10 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             }
             
             statisticsCollector.getCollectionStat().setStatsTime(new Date());
-            
+            Long missingFileGracePeriod 
+                = context.getSettings().getReferenceSettings().getIntegrityServiceSettings().getTimeBeforeMissingFileCheck();
             HandleMissingFilesStep handleMissingFilesStep = new HandleMissingFilesStep(context.getStore(), reporter,
-                    statisticsCollector);
+                    statisticsCollector, missingFileGracePeriod);
             performStep(handleMissingFilesStep);
             
             HandleChecksumValidationStep handleChecksumValidationStep 
