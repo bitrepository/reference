@@ -58,7 +58,7 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
     protected IntegrityContributors integrityContributors;
     protected Date workflowStart;
     /** The default number of retries if none is set in ReferenceSettings */
-    private final static int DEFAULT_MAX_RETRIES = 3;
+    private static final int DEFAULT_MAX_RETRIES = 3;
     /**
      * Remember to call the initialise method needs to be called before the start method.
      */

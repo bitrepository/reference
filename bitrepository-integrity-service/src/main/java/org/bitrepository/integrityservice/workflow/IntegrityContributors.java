@@ -20,6 +20,7 @@ public class IntegrityContributors {
 
     Set<String> finishedContributors = Collections.synchronizedSet(new HashSet<>());
     Set<String> failedContributors = Collections.synchronizedSet(new HashSet<>());
+    /** Mapping between active contributors and how many times they each have failed in a row */
     Map<String, Integer> activeContributors = Collections.synchronizedMap(new HashMap<>()); 
     private int maxContributorFailures;
     
@@ -67,6 +68,7 @@ public class IntegrityContributors {
     
     /**
      * Mark an contributor as having failed an attempt 
+     * @param contributor The contributor which have failed
      */
     public synchronized void failContributor(String contributor) {
         Integer failures = activeContributors.get(contributor);
