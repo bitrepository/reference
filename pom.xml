@@ -195,8 +195,8 @@
                     <useMissingFile>true</useMissingFile>
                     <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
                     <includes>
-                        <include>java</include>
-                        <include>xsd</include>
+                        <include>**/*.java</include>
+                        <include>**/*.xsd</include>
                     </includes>
                     <extraExtensions>
                         <xsd>xml</xsd>
@@ -267,7 +267,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>license-maven-plugin</artifactId>
-                    <version>1.6</version>
+                    <version>1.8</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
