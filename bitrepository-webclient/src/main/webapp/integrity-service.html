@@ -139,7 +139,7 @@
       html += "<tr><td><a class=\"btn btn-link\" id=\"" + workflowID + "-details\">" + workflowID + "</a></td>";
       html += "<td><div id=\"" + workflowID + "-nextRun\" style=\"padding:5px\">" + nextRun + "</div></td>";
       html += "<td><a class=\"btn btn-link\" id=\"" + workflowID + "-lastRun\">" + lastRun 
-               + "</a> (<span id=\"" + workflowID + "-lastRunState\">" + lastRunState + "</span>)</td>";   
+               + "</a> <span id=\"" + workflowID + "-lastRunState\">(" + lastRunState + ")</span></td>";   
       html += "<td><div id=\"" + workflowID + "-executionInterval\" style=\"padding:5px\">" + executionInterval + "</div></td>";
       html += "<td><div id=\"" + workflowID + "-currentState\" style=\"padding:5px\">" + currentState + "</div></td></tr>";
       return html;
@@ -148,7 +148,7 @@
     function updateWorkflowRow(workflowID, nextRun, lastRun, executionInterval, currentState, lastRunState) {
       $("#" + workflowID + "-nextRun").html(nextRun);
       $("#" + workflowID + "-lastRun").html(lastRun);
-      $("#" + workflowID + "-lastRunState").html(lastRunState);
+      $("#" + workflowID + "-lastRunState").html("(" + lastRunState + ")");
       $("#" + workflowID + "-executionInterval").html(executionInterval);
       $("#" + workflowID + "-currentState").html(currentState);
     }
