@@ -828,13 +828,6 @@
             <xs:documentation>The time in milliseconds between the workflow is run. If it is a non-positive number, then the workflow will not be scheduled.</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="RunAtStartUp" type="xs:boolean" minOccurs="0">
-          <xs:annotation>
-            <xs:documentation>
-              Whether or not to run the workflow at startup. Default is true.
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
         <xs:element ref="Collections" minOccurs="0">
           <xs:annotation>
             <xs:documentation>

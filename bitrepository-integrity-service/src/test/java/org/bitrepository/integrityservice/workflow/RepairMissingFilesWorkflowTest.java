@@ -107,7 +107,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         addStep("Prepare for calls to mocks", "");
         when(model.getMissingFilesAtPillarByIterator(anyString(), anyInt(), anyInt(), eq(TEST_COLLECTION))).thenReturn(createMockIterator(new String[0]));
 
-        addStep("Run missing checksum step.", "The file should be marked as missing at all pillars.");
+        addStep("Run workflow for repairing missing files.", "Should not try to repair anything.");
 
         Workflow workflow = new RepairMissingFilesWorkflow();
         IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
@@ -125,8 +125,8 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testSuccesRepair() throws Exception {
-        addDescription("Test that the workflow makes calls to the ");
-        addStep("Prepare for calls to mocks", "");
+        addDescription("Test that the workflow makes calls to the collector, when a file is missing");
+        addStep("Prepare for calls to mocks to handle a repair", "");
         when(model.getMissingFilesAtPillarByIterator(anyString(), anyInt(), anyInt(), eq(TEST_COLLECTION))).thenReturn(createMockIterator(TEST_FILE_1));
 
         when(model.getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION))).thenReturn(createMockFileInfo(TEST_FILE_1, DEFAULT_CHECKSUM, PILLAR_1));
@@ -149,7 +149,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         }).when(collector).putFile(
                 anyString(), anyString(), any(URL.class), any(ChecksumDataForFileTYPE.class), any(EventHandler.class), anyString());
 
-        addStep("Run missing checksum step.", "The file should be marked as missing at all pillars.");
+        addStep("Run workflow for repairing missing files.", "Should find one missing file and try to repair it by using put-file and get-file operations on the collector.");
 
         Workflow workflow = new RepairMissingFilesWorkflow();
         IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
@@ -171,8 +171,8 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testFailedGetFile() throws Exception {
-        addDescription("Test that the workflow makes calls to the ");
-        addStep("Prepare for calls to mocks", "");
+        addDescription("Test that the workflow does not try to put a file, if it fails to get it.");
+        addStep("Prepare for calls to mocks to fail when performing get-file", "");
         when(model.getMissingFilesAtPillarByIterator(anyString(), anyInt(), anyInt(), eq(TEST_COLLECTION))).thenReturn(createMockIterator(TEST_FILE_1));
 
         when(model.getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION))).thenReturn(createMockFileInfo(TEST_FILE_1, DEFAULT_CHECKSUM, PILLAR_1));
@@ -186,7 +186,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         }).when(collector).getFile(
                 anyString(), anyString(), any(URL.class), any(EventHandler.class), anyString());
         
-        addStep("Run missing checksum step.", "The file should be marked as missing at all pillars.");
+        addStep("Run missing checksum step.", "Should fail during get-file, thus not performing put-file. Also workflow should send an alarm.");
 
         Workflow workflow = new RepairMissingFilesWorkflow();
         IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
@@ -209,7 +209,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testFailedPutFile() throws Exception {
-        addDescription("Test that the workflow makes calls to the ");
+        addDescription("Test that the workflow makes calls to the collector for get and put file, even when put file fails.");
         addStep("Prepare for calls to mocks", "");
         when(model.getMissingFilesAtPillarByIterator(anyString(), anyInt(), anyInt(), eq(TEST_COLLECTION))).thenReturn(createMockIterator(TEST_FILE_1));
 
@@ -234,7 +234,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         }).when(collector).putFile(
                 anyString(), anyString(), any(URL.class), any(ChecksumDataForFileTYPE.class), any(EventHandler.class), anyString());
 
-        addStep("Run missing checksum step.", "The file should be marked as missing at all pillars.");
+        addStep("Run workflow to repair missing files.", "Should both get-file and put-file, but fail at put-file and then send an alarm.");
 
         Workflow workflow = new RepairMissingFilesWorkflow();
         IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);

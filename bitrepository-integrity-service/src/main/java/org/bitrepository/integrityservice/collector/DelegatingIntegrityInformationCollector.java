@@ -100,7 +100,7 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
             getFileClient.getFileFromFastestPillar(collectionID, fileId, null, uploadUrl, eventHandler, 
                     auditTrailInformation);
         } catch (Exception e) {
-            log.error("Unexåected failure!", e);
+            log.error("Unexpected failure!", e);
         }
     }
     
@@ -111,7 +111,7 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
             putFileClient.putFile(collectionID, uploadUrl, fileId, 0, checksumValidationData, null, eventHandler, 
                     auditTrailInformation);
         } catch (Exception e) {
-            log.error("Unexåected failure!", e);
+            log.error("Unexpected failure!", e);
         }
     }
 }

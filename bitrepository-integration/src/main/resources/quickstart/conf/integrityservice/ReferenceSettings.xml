@@ -62,7 +62,8 @@
         <WorkflowClass>RepairMissingFilesWorkflow</WorkflowClass>
         <Schedules>
           <Schedule>
-            <WorkflowInterval>604800000</WorkflowInterval>  
+            <!-- Only run manually -->  
+            <WorkflowInterval>-1</WorkflowInterval>
             <Collections>
               <CollectionID>books</CollectionID>
               <CollectionID>dvds</CollectionID>             

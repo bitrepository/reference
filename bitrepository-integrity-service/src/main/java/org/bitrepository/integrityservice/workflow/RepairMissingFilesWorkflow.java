@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Simple workflow for repairing missing files.
- * Repairs at most 100 files across all pillars. 
+ * Repairs 100 files per pillars. 
  */
 public class RepairMissingFilesWorkflow extends Workflow {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -73,7 +73,7 @@ public class RepairMissingFilesWorkflow extends Workflow {
         this.context = (IntegrityWorkflowContext)context;
         this.collectionID = collectionID;
         jobID = new JobID(getClass().getSimpleName(), collectionID);
-        description = "Awaiting first run.";
+        description = "Ready to repair 100 files per pillar.";
     }
     
     @Override
@@ -83,16 +83,18 @@ public class RepairMissingFilesWorkflow extends Workflow {
                     "called.");
         }
         super.start();
+        
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
 
-        repairedFiles = new ArrayList<String>(MAX_RESULTS);
+        repairedFiles = new ArrayList<String>(MAX_RESULTS * pillars.size());
 
         try {
-            for(String pillarId : SettingsUtils.getPillarIDsForCollection(collectionID)) {
+            for(String pillarId : pillars) {
                 repairMissingFilesForPillar(pillarId);
             }
         } finally {
             finish();
-            description = "Not running.";
+            description = "Ready to repair 100 files per pillar.";
         }
     }
     
@@ -105,12 +107,14 @@ public class RepairMissingFilesWorkflow extends Workflow {
         IntegrityIssueIterator iterator = context.getStore().getMissingFilesAtPillarByIterator(pillarId, 0L, 
                 MAX_RESULTS, collectionID);
         String fileId;
-        while((fileId = iterator.getNextIntegrityIssue()) != null && repairedFiles.size() < MAX_RESULTS) {
+        int i = 0;
+        while((fileId = iterator.getNextIntegrityIssue()) != null && i < MAX_RESULTS) {
             // Do not try to repair file, which has already been repaired.
             if(repairedFiles.contains(fileId)) {
                 continue;
             }
             repairedFiles.add(fileId);
+            i++;
             
             description = "Repairing the missing file '" + fileId + "'.";
             try {

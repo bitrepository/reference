@@ -72,7 +72,10 @@ public class TimerbasedScheduler implements JobScheduler {
                 + TimeUtils.millisecondsToHuman(interval));
         
         JobTimerTask task = new JobTimerTask(interval, workflow, Collections.unmodifiableList(jobListeners));
-        timer.scheduleAtFixedRate(task, NO_DELAY, SCHEDULE_INTERVAL);
+        if(interval > 0) {
+            scheduleJob(task);
+        }
+
         intervalTasks.put(workflow.getJobID(), task);
     }
 
@@ -90,7 +93,7 @@ public class TimerbasedScheduler implements JobScheduler {
         }
 
         JobTimerTask task = new JobTimerTask(timeBetweenRuns, job, jobListeners);
-        timer.scheduleAtFixedRate(task, NO_DELAY, SCHEDULE_INTERVAL);
+        scheduleJob(task);
         intervalTasks.put(job.getJobID(), task);
         return "Job scheduled";
     }
@@ -123,5 +126,18 @@ public class TimerbasedScheduler implements JobScheduler {
         task.cancel();
 
         return task;
+    }
+    
+    /**
+     * Schedules a task. 
+     * If the interval for the task is > 0, then it should be scheduled 
+     * @param task
+     */
+    private void scheduleJob(JobTimerTask task) {
+        if(task.getIntervalBetweenRuns() > 0) {
+            timer.scheduleAtFixedRate(task, NO_DELAY, SCHEDULE_INTERVAL);            
+        } else {
+            timer.schedule(task, NO_DELAY, SCHEDULE_INTERVAL);
+        }
     }
 }

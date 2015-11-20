@@ -121,14 +121,16 @@ public final class IntegrityServiceManager {
         alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus, AlarmLevel.ERROR);
         model = new IntegrityDatabase(settings);
 
+        AccessComponentFactory acf = AccessComponentFactory.getInstance();
+        ModifyComponentFactory mcf = ModifyComponentFactory.getInstance();
         collector = new DelegatingIntegrityInformationCollector(
-                AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager,
+                acf.createGetFileIDsClient(settings, securityManager,
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager,
+                acf.createGetChecksumsClient(settings, securityManager,
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                AccessComponentFactory.getInstance().createGetFileClient(settings, securityManager,
+                acf.createGetFileClient(settings, securityManager,
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                ModifyComponentFactory.getInstance().retrievePutClient(settings, securityManager,
+                mcf.retrievePutClient(settings, securityManager,
                         settings.getReferenceSettings().getIntegrityServiceSettings().getID()));
         integrityReportProvider = new IntegrityReportProvider(integrityReportStorageDir);
         
