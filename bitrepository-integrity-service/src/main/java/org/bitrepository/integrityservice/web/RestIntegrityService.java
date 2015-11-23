@@ -317,6 +317,7 @@ public class RestIntegrityService {
     @Produces("text/html")
     public String startWorkflow(@FormParam("workflowID") String workflowID,
                                 @FormParam("collectionID") String collectionID) {
+        log.debug("Starting workflow '" + workflowID + "' on collection '" + collectionID + "'.");
         return workflowManager.startWorkflow(new JobID(workflowID, collectionID));
     }
 
@@ -394,7 +395,12 @@ public class RestIntegrityService {
         jg.writeStartObject();
         jg.writeObjectField("workflowID", workflowID.getWorkflowName());
         jg.writeObjectField("workflowDescription", workflow.getDescription());
-        jg.writeObjectField("nextRun", TimeUtils.shortDate(workflowManager.getNextScheduledRun(workflowID)));
+        Date nextScheduledRun = workflowManager.getNextScheduledRun(workflowID);
+        if(nextScheduledRun == null) {
+            jg.writeObjectField("nextRun", "Must be run manually");
+        } else {
+            jg.writeObjectField("nextRun", TimeUtils.shortDate(nextScheduledRun));
+        }
         if (lastRunStatistic == null) {
             jg.writeObjectField("lastRun", "Workflow hasn't finished a run yet");
             jg.writeObjectField("lastRunDetails", "Workflow hasn't finished a run yet");

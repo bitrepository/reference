@@ -120,8 +120,8 @@ public class JobTimerTask extends TimerTask {
 
     @Override
     public void run() {
-        if( nextRun != null &&
-            getNextRun().getTime() <= System.currentTimeMillis()) {
+        if( nextRun != null && (getNextRun() == null || 
+            getNextRun().getTime() <= System.currentTimeMillis())) {
             runJob();
         }
     }

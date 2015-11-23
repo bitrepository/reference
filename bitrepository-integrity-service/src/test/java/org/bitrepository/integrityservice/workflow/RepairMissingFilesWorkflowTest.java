@@ -69,7 +69,6 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     
     private static final String DEFAULT_CHECKSUM = "0123456789";
     private static final String TEST_FILE_1 = "test-file-1";
-    private static final String TEST_FILE_2 = "test-file-2";
     private String TEST_COLLECTION;
 
     protected Settings settings;

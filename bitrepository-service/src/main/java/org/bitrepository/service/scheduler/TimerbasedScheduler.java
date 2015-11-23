@@ -81,6 +81,7 @@ public class TimerbasedScheduler implements JobScheduler {
 
     @Override
     public String startJob(SchedulableJob job) {
+        log.debug("Starting job: " + job);
         if(job.currentState() != WorkflowState.NOT_RUNNING) {
             log.info("Cannot schedule job,'" + job.getJobID() + "', which is in state '" 
                     + job.currentState() + "'");
@@ -92,7 +93,7 @@ public class TimerbasedScheduler implements JobScheduler {
             timeBetweenRuns = oldTask.getIntervalBetweenRuns();
         }
 
-        JobTimerTask task = new JobTimerTask(timeBetweenRuns, job, jobListeners);
+        JobTimerTask task = new JobTimerTask(timeBetweenRuns, job, Collections.unmodifiableList(jobListeners));
         scheduleJob(task);
         intervalTasks.put(job.getJobID(), task);
         return "Job scheduled";
@@ -137,7 +138,7 @@ public class TimerbasedScheduler implements JobScheduler {
         if(task.getIntervalBetweenRuns() > 0) {
             timer.scheduleAtFixedRate(task, NO_DELAY, SCHEDULE_INTERVAL);            
         } else {
-            timer.schedule(task, NO_DELAY, SCHEDULE_INTERVAL);
+            timer.schedule(task, NO_DELAY);
         }
     }
 }

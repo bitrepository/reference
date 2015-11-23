@@ -54,7 +54,6 @@ public class RepairMissingFilesWorkflow extends Workflow {
     protected String collectionID;
     protected IntegrityContributors integrityContributors;
     protected Date workflowStart;
-    protected String description;
     protected WorkflowStep step = null;
     
     private static final int MAX_RESULTS = 100;
@@ -64,16 +63,13 @@ public class RepairMissingFilesWorkflow extends Workflow {
     /**
      * Remember to call the initialize method needs to be called before the start method.
      */
-    public RepairMissingFilesWorkflow() {
-    	description = "Not initialized";
-    }
+    public RepairMissingFilesWorkflow() { }
 
     @Override
     public void initialise(WorkflowContext context, String collectionID) {
         this.context = (IntegrityWorkflowContext)context;
         this.collectionID = collectionID;
         jobID = new JobID(getClass().getSimpleName(), collectionID);
-        description = "Ready to repair 100 files per pillar.";
     }
     
     @Override
@@ -94,7 +90,6 @@ public class RepairMissingFilesWorkflow extends Workflow {
             }
         } finally {
             finish();
-            description = "Ready to repair 100 files per pillar.";
         }
     }
     
@@ -116,7 +111,6 @@ public class RepairMissingFilesWorkflow extends Workflow {
             repairedFiles.add(fileId);
             i++;
             
-            description = "Repairing the missing file '" + fileId + "'.";
             try {
                 String checksum = getChecksumForFile(fileId);
                 URL url = createURL(fileId);
@@ -219,9 +213,6 @@ public class RepairMissingFilesWorkflow extends Workflow {
 
 	@Override
 	public String getDescription() {
-	    if(step != null) {
-	        return step.getName();
-	    }
-		return description;
+		return "Can repair 100 files per pillar.";
 	}
 }
