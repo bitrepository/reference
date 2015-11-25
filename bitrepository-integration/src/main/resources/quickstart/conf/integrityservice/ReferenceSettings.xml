@@ -58,6 +58,19 @@
           </Schedule>
         </Schedules>
       </Workflow>
+      <Workflow>
+        <WorkflowClass>RepairMissingFilesWorkflow</WorkflowClass>
+        <Schedules>
+          <Schedule>
+            <!-- Only run manually -->  
+            <WorkflowInterval>-1</WorkflowInterval>
+            <Collections>
+              <CollectionID>books</CollectionID>
+              <CollectionID>dvds</CollectionID>             
+            </Collections>
+          </Schedule>
+        </Schedules>
+      </Workflow>
     </Workflows>
     <IntegrityDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>

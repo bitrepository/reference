@@ -72,12 +72,16 @@ public class TimerbasedScheduler implements JobScheduler {
                 + TimeUtils.millisecondsToHuman(interval));
         
         JobTimerTask task = new JobTimerTask(interval, workflow, Collections.unmodifiableList(jobListeners));
-        timer.scheduleAtFixedRate(task, NO_DELAY, SCHEDULE_INTERVAL);
+        if(interval > 0) {
+            scheduleJob(task);
+        }
+
         intervalTasks.put(workflow.getJobID(), task);
     }
 
     @Override
     public String startJob(SchedulableJob job) {
+        log.debug("Starting job: " + job);
         if(job.currentState() != WorkflowState.NOT_RUNNING) {
             log.info("Cannot schedule job,'" + job.getJobID() + "', which is in state '" 
                     + job.currentState() + "'");
@@ -89,8 +93,8 @@ public class TimerbasedScheduler implements JobScheduler {
             timeBetweenRuns = oldTask.getIntervalBetweenRuns();
         }
 
-        JobTimerTask task = new JobTimerTask(timeBetweenRuns, job, jobListeners);
-        timer.scheduleAtFixedRate(task, NO_DELAY, SCHEDULE_INTERVAL);
+        JobTimerTask task = new JobTimerTask(timeBetweenRuns, job, Collections.unmodifiableList(jobListeners));
+        scheduleJob(task);
         intervalTasks.put(job.getJobID(), task);
         return "Job scheduled";
     }
@@ -123,5 +127,19 @@ public class TimerbasedScheduler implements JobScheduler {
         task.cancel();
 
         return task;
+    }
+    
+    /**
+     * Schedules a task. 
+     * If the interval for the task is > 0, then it should be scheduled to run at fixed interval, 
+     * but it if has a non-positive interval, then it should only be scheduled for one run.
+     * @param task The task to schedule.
+     */
+    private void scheduleJob(JobTimerTask task) {
+        if(task.getIntervalBetweenRuns() > 0) {
+            timer.scheduleAtFixedRate(task, NO_DELAY, SCHEDULE_INTERVAL);            
+        } else {
+            timer.schedule(task, NO_DELAY);
+        }
     }
 }
