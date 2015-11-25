@@ -123,15 +123,12 @@ public final class IntegrityServiceManager {
 
         AccessComponentFactory acf = AccessComponentFactory.getInstance();
         ModifyComponentFactory mcf = ModifyComponentFactory.getInstance();
+        String id = settings.getReferenceSettings().getIntegrityServiceSettings().getID();
         collector = new DelegatingIntegrityInformationCollector(
-                acf.createGetFileIDsClient(settings, securityManager,
-                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                acf.createGetChecksumsClient(settings, securityManager,
-                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                acf.createGetFileClient(settings, securityManager,
-                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                mcf.retrievePutClient(settings, securityManager,
-                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()));
+                acf.createGetFileIDsClient(settings, securityManager, id),
+                acf.createGetChecksumsClient(settings, securityManager, id),
+                acf.createGetFileClient(settings, securityManager, id),
+                mcf.retrievePutClient(settings, securityManager, id));
         integrityReportProvider = new IntegrityReportProvider(integrityReportStorageDir);
         
         workFlowManager = new IntegrityWorkflowManager(

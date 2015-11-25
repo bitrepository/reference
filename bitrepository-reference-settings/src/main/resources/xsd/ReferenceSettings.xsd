@@ -825,7 +825,11 @@
       <xs:sequence>
         <xs:element name="WorkflowInterval" type="xs:long">
           <xs:annotation>
-            <xs:documentation>The time in milliseconds between the workflow is run. If it is a non-positive number, then the workflow will not be scheduled.</xs:documentation>
+            <xs:documentation>
+              The time in milliseconds between the workflow is run. 
+              If it is a non-positive number, then the workflow will not be scheduled, but it will be possible to run manually from the UI.
+              Also workflows with a positive interval will be run at start-up, whereas workflows with a non-positive interval will not.
+            </xs:documentation>
           </xs:annotation>
         </xs:element>
         <xs:element ref="Collections" minOccurs="0">

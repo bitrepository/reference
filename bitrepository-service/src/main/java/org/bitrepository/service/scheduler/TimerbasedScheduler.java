@@ -131,8 +131,9 @@ public class TimerbasedScheduler implements JobScheduler {
     
     /**
      * Schedules a task. 
-     * If the interval for the task is > 0, then it should be scheduled 
-     * @param task
+     * If the interval for the task is > 0, then it should be scheduled to run at fixed interval, 
+     * but it if has a non-positive interval, then it should only be scheduled for one run.
+     * @param task The task to schedule.
      */
     private void scheduleJob(JobTimerTask task) {
         if(task.getIntervalBetweenRuns() > 0) {
