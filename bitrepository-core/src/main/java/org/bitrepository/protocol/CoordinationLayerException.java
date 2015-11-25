@@ -34,15 +34,15 @@ public class CoordinationLayerException extends RuntimeException {
      * Constructor for this exception based on a causing exception and described by a message.
      * @param message The message for the exception.
      */
-    public CoordinationLayerException(String arg0, Throwable arg1) {
-        super(arg0, arg1);
+    public CoordinationLayerException(String message, Throwable arg1) {
+        super(message, arg1);
     }
 
     /**
      * Constructor for this exception based on a text message.
      * @param message The message for the exception.
      */
-    public CoordinationLayerException(String arg0) {
-        super(arg0);
+    public CoordinationLayerException(String message) {
+        super(message);
     }
 }

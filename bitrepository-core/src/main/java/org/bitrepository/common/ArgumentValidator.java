@@ -136,7 +136,7 @@ public final class ArgumentValidator {
     /**
      * Check if a array argument is not null and the list is not empty.
      *
-     * @param c argument to check
+     * @param array argument to check
      * @param name the name and type of the value being checked.
      * @throws IllegalArgumentException if validation fails
      */

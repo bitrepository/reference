@@ -68,6 +68,7 @@ public final class CalendarUtils {
 
     /**
      * Method for easier retrieving the current date in XML format.
+     * @param gregorianCalendar the calendar
      * @return The current date in XML format
      */
     public static XMLGregorianCalendar getXmlGregorianCalendar(GregorianCalendar gregorianCalendar) {

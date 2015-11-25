@@ -33,7 +33,7 @@ import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.bitrepository.common.ArgumentValidator;
 
 /**
- * Provides helper method for accessing {@link TimeMeasurementTYPE} objects. 
+ * Provides helper method for accessing {@link TimeMeasureTYPE} objects.
  */
 public class TimeMeasurementUtils {
 
@@ -68,8 +68,8 @@ public class TimeMeasurementUtils {
     /**
      * Compares its two arguments for order. Returns a negative integer, zero, or a positive integer as the first 
      * argument is less than, equal to, or greater than the second.
-     * @param time1
-     * @param time2
+     * @param time1 time1
+     * @param time2 time2
      * @return a negative integer, zero, or a positive integer as the first argument is less than, equal to, or 
      * greater than the second.
      * @see Comparator

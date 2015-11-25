@@ -90,7 +90,9 @@ public final class ChecksumUtils {
 
     /**
      * Wrapper method for the #generateChecksum(File,ChecksumSpecTYPE) method non-salted checksums.
-     * @param checksumType Defines checksum algorithme.
+     * @param file the file to checksum
+     * @param checksumType Defines checksum algorithm.
+     * @return the checksum as a string
      */
     public static String generateChecksum(File file, ChecksumType checksumType) {
         return generateChecksum(file, checksumType, null);

@@ -61,6 +61,7 @@ public class SettingsUtils {
     
     /**
      * Finds the complete list of collections in the repository.
+     * @return all collections in the repository
      */
     public static List<String> getAllCollectionsIDs() {
         List<String> res = new ArrayList<String>();
@@ -73,6 +74,7 @@ public class SettingsUtils {
     /**
      * Get's the name of a given collection. If no name is given in the settings, 
      * the ID of the collection is returned
+     * @param collectionID the collection id
      * @return The name of the collection 
      */
     public static String getCollectionName(String collectionID) {

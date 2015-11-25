@@ -56,7 +56,8 @@ public class Settings {
     }
 
     /**
-     * @return the first Collections ID.
+     * @return the first Collections ID as a list of .
+     * TODO singular vs. plural
      */
     public List<Collection> getCollections() {
         return getRepositorySettings().getCollections().getCollection();
@@ -64,6 +65,7 @@ public class Settings {
     
     /**
      * Wraps the {@link org.bitrepository.settings.repositorysettings.ProtocolSettings#getAlarmDestination()} method.
+     * @return the alarm destination
      */
     public String getAlarmDestination() {
         return getRepositorySettings().getProtocolSettings().getAlarmDestination();
@@ -71,6 +73,7 @@ public class Settings {
     
     /**
      * Wraps the {@link org.bitrepository.settings.repositorysettings.ProtocolSettings#getCollectionDestination()} method.
+     * @return the collection destination
      */
     public String getCollectionDestination() {
         return getRepositorySettings().getProtocolSettings().getCollectionDestination();
@@ -78,6 +81,7 @@ public class Settings {
     
     /**
      * Wraps the {@link org.bitrepository.settings.repositorysettings.ProtocolSettings#getMessageBusConfiguration()} method.
+     * @return the message bus configuration
      */
     public MessageBusConfiguration getMessageBusConfiguration() {
         return getRepositorySettings().getProtocolSettings().getMessageBusConfiguration();
@@ -85,6 +89,7 @@ public class Settings {
     
     /**
      * Wraps the {@link org.bitrepository.settings.repositorysettings.PermissionSet#getPermission()}} method.
+     * @return the list of Permissions
      */
     public List<Permission> getPermissions() {
         return getRepositorySettings().getPermissionSet().getPermission();
@@ -92,6 +97,8 @@ public class Settings {
     
     /**
      * Wraps the {@link org.bitrepository.settings.repositorysettings.ClientSettings#getIdentificationTimeout()} method.
+     * @return the timeout
+     * @see org.bitrepository.settings.repositorysettings.ClientSettings#getIdentificationTimeout()
      */
     public long getIdentificationTimeout() {
         return getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue();

@@ -35,6 +35,7 @@ public interface FileStore {
     /**
      * Retrieves the wanted file.
      * @param fileID The id of the wanted file.
+     * @param collectionId the collection id
      * @return The requested file.
      */
     FileInfo getFileInfo(String fileID, String collectionId);
@@ -42,14 +43,16 @@ public interface FileStore {
     /**
      * Method to check whether a file already exists.
      * @param fileID The id of the file.
+     * @param collectionId the collection id
      * @return Whether it already exists within the archive.
      */
     boolean hasFile(String fileID, String collectionId);
 
     /**
      * Retrieves id of all the files within the storage.
+     * @param collectionId the collection id
      * @return The collection of file ids in the storage.
-     * @throws Exception If anything unexpected occurs.
+     * @throws RuntimeException If anything unexpected occurs.
      */
     Collection<String> getAllFileIds(String collectionId);
 
@@ -57,6 +60,7 @@ public interface FileStore {
      * Stores a file given through an InputStream. The file is only intended to be stored in a temporary zone until it 
      * has been validated. Then it should be archived through the 'moveToArchive' method.
      * @param fileID The id of the file to store.
+     * @param collectionId the collection id
      * @param inputStream The InputStream with the content of the file.
      * @return The downloaded file, which should be validated before it is moved to the archive.
      * @throws IOException If anything unexpected occurs (e.g. file already exists, not enough space, etc.)
@@ -67,7 +71,8 @@ public interface FileStore {
     /**
      * Moves a file from the temporary file zone to the archive.
      * @param fileID The id of the file to move to archive.
-     * @throws Exception If anything unexpected occurs (e.g. file already exists, not enough space, etc.)
+     * @param collectionId the collection id
+     * @throws RuntimeException If anything unexpected occurs (e.g. file already exists, not enough space, etc.)
      * @see #downloadFileForValidation(String, String, InputStream)
      */
     void moveToArchive(String fileID, String collectionId);
@@ -75,7 +80,8 @@ public interface FileStore {
     /**
      * Removes a file from the storage area.
      * @param fileID The id of the file to remove.
-     * @throws Exception If anything unexpected occurs (e.g. no such file).
+     * @param collectionId the collection id
+     * @throws RuntimeException If anything unexpected occurs (e.g. no such file).
      */
     void deleteFile(String fileID, String collectionId);
     
@@ -84,11 +90,13 @@ public interface FileStore {
      * Removes the archived file from its directory, and moves the tmpFile into the archive dir.
      * 
      * @param fileID The id of the file to perform the replace function upon.
+     * @param collectionId the collection id
      */
     void replaceFile(String fileID, String collectionId);
     
     /**
      * For retrieval of the size left in this archive.
+     * @param collectionId the collection id
      * @return The number of bytes left in the archive.
      */
     long sizeLeftInArchive(String collectionId);
@@ -96,6 +104,7 @@ public interface FileStore {
     /**
      * Retrieves the file within a tmpDir.
      * @param fileId The id of the file to locate within the tmpDir.
+     * @param collectionId the collection id
      * @return The file in the tmpDir.
      */
     FileInfo getFileInTmpDir(String fileId, String collectionId);
@@ -104,6 +113,7 @@ public interface FileStore {
      * Ensures that no such file exists within the tmp directory.
      * 
      * @param fileId The id of the file to clean up after.
+     * @param collectionId the collection for the fileID
      */
     void ensureFileNotInTmpDir(String fileId, String collectionId);
     

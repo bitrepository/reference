@@ -88,6 +88,7 @@ public class SettingsProvider {
 
     /**
      * Provides extension point for subclass componentID generation.
+     * @param referenceSettings the reference settings
      * @return generate ComponentID
      */
     protected String getComponentID(ReferenceSettings referenceSettings) {
@@ -96,6 +97,8 @@ public class SettingsProvider {
     
     /**
      * Provides extension point for subclass receiver destination generation.
+     * @param referenceSettings the reference settings
+     * @param repositorySettings the repository settings
      * @return generate receiver destination
      */
     protected String getReceiverDestination(ReferenceSettings referenceSettings, RepositorySettings repositorySettings) {

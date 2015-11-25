@@ -82,6 +82,7 @@ public final class JaxbHelper {
     /**
      * Uses JAXB to create a object representation of an xml file. The class used to load the XML has been generated
      * based on the xsd for the xml.
+     * @param <T> The root class to deserialize to.
      * @param xmlroot The root class to deserialize to.
      * @param inputStream The input stream containing the xml data.
      * @return Returns a new object representation of the xml data. 

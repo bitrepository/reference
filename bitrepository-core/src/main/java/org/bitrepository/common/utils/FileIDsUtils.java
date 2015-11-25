@@ -44,7 +44,8 @@ public class FileIDsUtils {
     }
     
     /**
-     * @return The FileIDs for a specific file id.
+     * @param fileId the file id for a specific file. Must not be null
+     * @return The FileIDs object for a specific file id.
      */
     public static FileIDs getSpecificFileIDs(String fileId) {
         ArgumentValidator.checkNotNull(fileId,"fileId");
@@ -54,7 +55,8 @@ public class FileIDsUtils {
     }
 
     /**
-     * @return Return a fileID for allFIles if null is supplied, else a FileID for the specific file.
+     * @param fileId a specific fileId or null
+     * @return Return a FileID object for allFiles if null is supplied, else a FileID object for the specific file.
      */
     public static FileIDs createFileIDs(String fileId) {
         if (fileId == null) return getAllFileIDs();

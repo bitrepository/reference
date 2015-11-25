@@ -125,7 +125,9 @@ public class FileSizeUtils {
 
     /**
      * Formats bytes to standards
-     * i.e. 2283 bytes -> 2.23 KB 
+     * i.e. 2283 bytes becomes 2.23 KB
+     * @param size the number of bytes, as a long
+     * @return the byte size as a human readable value
      */
     public static String toHumanShortDecimal(Long size) {
         if (size == null) {
