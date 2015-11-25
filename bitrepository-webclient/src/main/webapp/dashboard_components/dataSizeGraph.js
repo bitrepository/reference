@@ -145,7 +145,7 @@
         if(collectionIDs[i].state == "active" && graphDataPool[collectionID] != null) {
           var dataArray;
           //Avoid scaling y-axis data when working with filecount.
-          if($(graphType).val() == "filecount") {
+          if($(graphType).val() == "filecount" || $(graphType).val() == "filedelta") {
             dataArray = graphDataPool[collectionID][dataField];
           } else {
             dataArray = scaleAndCopyData(graphDataPool[collectionID][dataField], scale);          
