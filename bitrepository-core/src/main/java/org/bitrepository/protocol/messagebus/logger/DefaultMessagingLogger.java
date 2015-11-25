@@ -68,7 +68,9 @@ public class DefaultMessagingLogger implements MessageLogger {
 
     /**
      *
-     Indicated whether the full message should be logged. Can be overridden in custom loggers.
+     * Indicated whether the full message should be logged. Can be overridden in custom loggers.
+     * @param message The message to log
+     * @return whether to log the message or not
      */
     protected boolean shouldLogFullMessage(Message message) {
         return log.isTraceEnabled();
@@ -77,7 +79,6 @@ public class DefaultMessagingLogger implements MessageLogger {
     /**
      * Log the full message at trace level. May be overridden to log at a different level for concrete messages.
      * @param message The message string to log.
-     * @return Whether the
      */
     protected void logFullMessage(String message) {
         log.trace(message);

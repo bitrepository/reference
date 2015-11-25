@@ -169,12 +169,16 @@ public abstract class GeneralConversationState implements ConversationState {
         }
     }
 
-    /** Returns a list of components where a identify response hasn't been received. */
+    /**
+     * @return the list of components where a identify response hasn't been received.
+     */
     protected Collection<String> getOutstandingComponents() {
         return responseStatus.getOutstandComponents();
     }
 
-    /** Must be implemented by subclasses to log informative timeout information */
+    /** Must be implemented by subclasses to log informative timeout information 
+     * @throws UnableToFinishException when failing to finish in due time 
+     */
     protected abstract void logStateTimeout() throws UnableToFinishException ;
 
     /**
@@ -185,12 +189,14 @@ public abstract class GeneralConversationState implements ConversationState {
     /**
      * Implement by concrete states. Only messages from the indicated contributors and with the right type
      * will be delegate to this method.
+     * @param response The MessageResponse to process
      * @return boolean Return true if response should be considered a final response, false if not. 
      *      This is intended for use when a failure response results in a retry, so the component is not finished. 
      * @throws UnexpectedResponseException The response could not be processed successfully.
+     * @throws UnableToFinishException when unable to finish 
      */
-    protected abstract boolean processMessage(MessageResponse response)
-            throws UnexpectedResponseException, UnableToFinishException;
+    protected abstract boolean processMessage(MessageResponse response) throws UnexpectedResponseException, 
+        UnableToFinishException;
 
     /**
      * @return The conversation context used for this conversation.
@@ -208,11 +214,12 @@ public abstract class GeneralConversationState implements ConversationState {
 
     /**
      * Gives access to the concrete timeout for the state.
+     * @return the number of milliseconds before timeout
      */
     protected abstract long getTimeoutValue();
 
     /**
-     * Informative naming of the process this state is performing. Used for logging. Examples are 'Delete files',
+     * @return The informative naming of the process this state is performing. Used for logging. Examples are 'Delete files',
      * 'Identify contributers for Audit Trails'
      */
     protected abstract String getPrimitiveName();

@@ -91,7 +91,8 @@ public abstract class IdentifyingState extends GeneralConversationState {
     }
 
     /**
-     * @return The concrete selector from the implementing subclass.
+     * Set the concrete selector from the implementing subclass.
+     * @param customSelector The concrete selector 
      */
     protected void setSelector(ComponentSelector customSelector) {
         selector = customSelector;
@@ -99,12 +100,15 @@ public abstract class IdentifyingState extends GeneralConversationState {
 
     /**
      * @return The performing state object to be used after the identification is finished.
+     * @throws UnableToFinishException When unable to finish
      */
     protected abstract GeneralConversationState getOperationState() throws UnableToFinishException;
 
     /**
-     * Implements the default handling of failure responses. May be overridden by operation specific behaviour,
-     * idempotent behaviour f.ex,.
+     * Implements the default handling of failure responses. May be overridden by operation specific behavior,
+     * idempotent behavior f.ex,.
+     * @param msg The failure response to handle
+     * @throws UnableToFinishException When unable to finish
      */
     protected void handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
         getContext().getMonitor().contributorFailed(
@@ -121,7 +125,7 @@ public abstract class IdentifyingState extends GeneralConversationState {
     }
 
     /**
-     * Indicates whether the identification state can finish, eg. can continue to the operation phase.
+     * @return An indication whether the identification state can finish, eg. can continue to the operation phase.
      * The default implementation is to return true if at least one a contributor has identified.
      * has been selected. May be overridden by concrete classes.
      */
@@ -132,6 +136,7 @@ public abstract class IdentifyingState extends GeneralConversationState {
     /**
      * Can be used by some operation to mark the responding pillar as checksum pillar if this is relevant for the
      * operation. The default implementation is to do nothing
+     * @param msg The message to check if is coming from a checksumpillar
      */
     protected void checkForChecksumPillar(MessageResponse msg) {
 

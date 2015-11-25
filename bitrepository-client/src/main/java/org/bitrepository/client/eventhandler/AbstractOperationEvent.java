@@ -70,22 +70,30 @@ public abstract class AbstractOperationEvent implements OperationEvent {
         return conversationID;
     }
 
-    /** @see #getEventType */
+    /** @see #getEventType 
+     * @param type The {@link OperationEventType}  to set as the event type
+     */
     public void setEventType(OperationEventType type) {
         this.type = type;
     }
 
-    /** @see #getOperationType */
+    /** @see #getOperationType 
+     * @param operationType The {@link OperationType} to set as the operation type 
+     */
     public void setOperationType(OperationType operationType) {
         this.operationType = operationType;
     }
 
-    /** @see #getFileID */
+    /** @see #getFileID 
+     * @param fileID The ID of the file 
+     */
     public void setFileID(String fileID) {
         this.fileID = fileID;
     }
 
-    /** @see #getInfo */
+    /** @see #getInfo 
+     * @param info The content of the info field 
+     */
     public void setInfo(String info) {
         this.info = info;
     }
@@ -116,7 +124,7 @@ public abstract class AbstractOperationEvent implements OperationEvent {
     }
     
     /**
-     * Deliver additional information in a string form. The string returned will be appended to the toString value.
+     * @return The additional information in a string form. The string returned will be appended to the toString value.
      */
     abstract protected String additionalInfo();
 }

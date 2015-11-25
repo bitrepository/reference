@@ -27,16 +27,13 @@ package org.bitrepository.access;
 import java.util.Date;
 
 /**
- * Used to limit a request for information elements from components in a collection.
- * <br>
- * The ContributorQuery functionality can be used to request results in chunks. This is useful if the number of
+ * <p>Used to limit a request for information elements from components in a collection.
+ * <p>The ContributorQuery functionality can be used to request results in chunks. This is useful if the number of
  * potential results might be very large, which might cause OutOfMemory problems. A full result can be listed though
  * paging through the chunks by: <ol>
  *     <li>Making a request with <code>maxNumberOfResults</code> set to the </li>
  * </ol>
- *
- * </br>
- *
+ * 
  */
 public class ContributorQuery {
     private final String componentID;

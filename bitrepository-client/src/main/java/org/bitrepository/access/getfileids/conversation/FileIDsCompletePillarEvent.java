@@ -36,8 +36,10 @@ public class FileIDsCompletePillarEvent extends ContributorCompleteEvent {
     private final boolean isPartialResult;
 
     /**
-     * @param result The result returned by the pillar.
      * @param pillarID The pillar which generated the result
+     * @param collectionID The ID of the collection
+     * @param result The result returned by the pillar.
+     * @param isPartialResult Indication if the event contains partial results
      */
     public FileIDsCompletePillarEvent(String pillarID, String collectionID, ResultingFileIDs result, boolean isPartialResult) {
         super(pillarID, collectionID);
@@ -52,6 +54,9 @@ public class FileIDsCompletePillarEvent extends ContributorCompleteEvent {
         return result;
     }
 
+    /**
+     * @return Indication if the results are partial 
+     */
     public boolean isPartialResult() {
         return isPartialResult;
     }

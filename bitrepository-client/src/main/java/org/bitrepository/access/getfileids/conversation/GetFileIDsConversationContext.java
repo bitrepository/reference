@@ -41,7 +41,9 @@ public class GetFileIDsConversationContext extends ConversationContext {
     /**
      * Extends the {@link ConversationContext} constructor with
      * {@link org.bitrepository.access.getfileids.GetFileIDsClient} specific parameters.
+     * @param collectionID The ID for the collection
      * @param contributorQueries See {@link org.bitrepository.access.getfileids.GetFileIDsClient} for details.
+     * @param fileID The ID of the file to get
      * @param urlForResult See {@link org.bitrepository.access.getfileids.GetFileIDsClient} for details.
      */
     public GetFileIDsConversationContext(String collectionID, ContributorQuery[] contributorQueries, String fileID,
@@ -54,10 +56,16 @@ public class GetFileIDsConversationContext extends ConversationContext {
         this.urlForResult = urlForResult;
     }
 
+    /**
+     * @return The contextual {@link ContributorQuery}'s 
+     */
     public ContributorQuery[] getContributorQueries() {
         return contributorQueries;
     }
 
+    /**
+     *  @return The URL where the results are placed (if using URL delivery)
+     */
     public URL getUrlForResult() {
         return urlForResult;
     }

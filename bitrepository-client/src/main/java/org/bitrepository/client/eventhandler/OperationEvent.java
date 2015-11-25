@@ -63,8 +63,7 @@ public interface OperationEvent {
     }
     
     /**
-     * A string representation of what has happened
-     * @return
+     * @return A string representation of what has happened
      */
     String getInfo();
     
@@ -87,12 +86,12 @@ public interface OperationEvent {
     String getFileID();
 
     /**
-     * Deliver the conversation ID of the event.
+     * @return The conversation ID of the event.
      */
     String getConversationID();
     
     /**
-     * The ID of the collection that the  
+     * @return The ID of the collection that the  
      */
     String getCollectionID();
 }

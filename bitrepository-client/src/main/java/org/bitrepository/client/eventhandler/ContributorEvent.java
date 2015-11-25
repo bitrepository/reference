@@ -40,7 +40,7 @@ public class ContributorEvent extends AbstractOperationEvent {
     }
 
     /**
-     * Returns the ID of the pillar this event relates to.
+     * @return The ID of the pillar this event relates to.
      */
     public String getContributorID() {
         return contributorID;

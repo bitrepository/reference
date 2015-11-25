@@ -53,6 +53,10 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
 
     /**
      * @see AbstractClient
+     * @param messageBus The message bus used in the communication
+     * @param conversationMediator The {@link ConversationMediator} used to keep track of conversations
+     * @param settings The settings for the client
+     * @param clientID The ID of the client
      */
     public ConversationBasedGetFileIDsClient(MessageBus messageBus, ConversationMediator conversationMediator,
                                              Settings settings, String clientID) {

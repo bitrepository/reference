@@ -47,6 +47,13 @@ public class BlockingGetFileIDsClient {
 
     /**
      * @see GetFileIDsClient#getFileIDs
+     * @param collectionId The ID of the collection
+     * @param contributorQueries The {@link ContributorQuery} for the GetFileIDs request
+     * @param fileID The ID of the file that the request is about
+     * @param addressForResult The address of where to deliver the result
+     * @param eventHandler The event handler to handle incoming events
+     * @return The list of {@link ContributorEvent}'s 
+     * @throws NegativeResponseException if the operation failed
      */
     public List<ContributorEvent> getGetFileIDs(
             String collectionId,

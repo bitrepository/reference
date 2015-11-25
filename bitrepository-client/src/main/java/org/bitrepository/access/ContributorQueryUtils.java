@@ -29,6 +29,7 @@ public class ContributorQueryUtils {
 
     /**
      * Used to create a <code>AuditTrailQuery[]</code> array in case no array is defined.
+     * @param contributorIDs The collection of contributor IDs to create ContributorQueries for
      * @return A <code>AuditTrailQuery[]</code> array requesting all audit trails from all the defined contributers.
      */
     public static ContributorQuery[] createFullContributorQuery(Collection<String> contributorIDs) {
@@ -40,7 +41,9 @@ public class ContributorQueryUtils {
     }
 
     /**
-     * Extracts the collection of nonPillarContributorIDs from the query object.
+     * Extracts the collection of ContributorIDs from the ContribytorQueries.
+     * @param queries The contributor queries to extract nonPillarContributors from
+     * @return The list of ContributorIDs in the supplied queries
      */
     public static Collection<String> getContributors(ContributorQuery[] queries) {
         Collection<String> contributors = new HashSet<String>();

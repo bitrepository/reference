@@ -70,6 +70,8 @@ public final class AccessComponentFactory {
      * Method for getting a GetFileClient as defined in the access configuration.<p>
      *
      * @param settings The settings for the GetFileClient.
+     * @param securityManager The SecurityManager for the client
+     * @param clientID The ID of the client
      * @return A GetFileClient.
      */
     public GetFileClient createGetFileClient(Settings settings, SecurityManager securityManager, String clientID) {
@@ -82,6 +84,8 @@ public final class AccessComponentFactory {
     /**
      * Method for instantiating a GetChecksumsClient as defined in the access configurations.
      * @param settings The settings for the GetChecksumsClient.
+     * @param securityManager The SecurityManager for the client
+     * @param clientID The ID of the client
      * @return The GetChecksumsClient
      */
     public GetChecksumsClient createGetChecksumsClient(Settings settings, SecurityManager securityManager, String clientID) {
@@ -93,7 +97,9 @@ public final class AccessComponentFactory {
 
     /**
      * Method for getting a GetFileIDsClient as defined in the access configuration.<p>
-     *
+     * @param settings The settings for the GetFileIDsClient.
+     * @param securityManager The SecurityManager for the client
+     * @param clientID The ID of the client
      * @return A GetFileIDsClient.
      */
     public GetFileIDsClient createGetFileIDsClient(Settings settings, SecurityManager securityManager, String clientID) {
@@ -105,7 +111,9 @@ public final class AccessComponentFactory {
     
     /**
      * Method for getting a GetStatusClient as defined in the access configuration.<p>
-     *
+     * @param settings The settings for the GetStatusClient.
+     * @param securityManager The SecurityManager for the client
+     * @param clientID The ID of the client
      * @return A GetStatusClient.
      */
     public GetStatusClient createGetStatusClient(Settings settings, SecurityManager securityManager, String clientID) {
@@ -116,8 +124,10 @@ public final class AccessComponentFactory {
     }
 
     /**
-     * Method for getting a AUditTrailClient as defined in the access configuration.<p>
-     *
+     * Method for getting a AuditTrailClient as defined in the access configuration.<p>
+     * @param settings The settings for the AuditTrailClient.
+     * @param securityManager The SecurityManager for the client
+     * @param clientID The ID of the client
      * @return A AuditTrailClient.
      */
     public AuditTrailClient createAuditTrailClient(Settings settings, SecurityManager securityManager, String clientID) {

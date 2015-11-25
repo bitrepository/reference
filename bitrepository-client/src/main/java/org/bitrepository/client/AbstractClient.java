@@ -78,6 +78,7 @@ public class AbstractClient implements BitrepositoryClient {
     /**
      * Starts the conversation.
      * @param context The context for the new conversion.
+     * @param startState The starting state
      */
     protected void startConversation(ConversationContext context, GeneralConversationState startState) {
         context.setState(startState);

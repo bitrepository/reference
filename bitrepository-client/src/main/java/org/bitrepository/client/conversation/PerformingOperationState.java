@@ -104,7 +104,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
      * @param msg The final response to process into result event.
      * @throws UnexpectedResponseException Unable to generate a result event based on the supplied message.
      */
-    protected abstract void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException, UnableToFinishException;
+    protected abstract void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException;
 
     private static Collection<String> toComponentIDs(Collection<SelectedComponentInfo> contributors) {
         Collection<String> componentIDs = new HashSet<String>();
@@ -116,8 +116,10 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     /**
      * Implements the default handling of failure responses which is is to do nothing
      * (besides being registered in the event monitor, which is handled by the parent class).
+     * @param msg The failure message to handle
+     * @return true
      */
-    protected boolean handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
+    protected boolean handleFailureResponse(MessageResponse msg) {
         getContext().getMonitor().contributorFailed(
                 msg.getResponseInfo().getResponseText(), msg.getFrom(), 
                 msg.getResponseInfo().getResponseCode());

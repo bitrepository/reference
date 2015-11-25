@@ -34,6 +34,8 @@ public class StatusCompleteContributorEvent extends ContributorCompleteEvent {
     
     /**
      * Constructor.
+     * @param contributorID The ID of the contributor
+     * @param collectionID The ID of the collection
      * @param status The status for the contributor.
      */
     public StatusCompleteContributorEvent(String contributorID, String collectionID, ResultingStatus status) {

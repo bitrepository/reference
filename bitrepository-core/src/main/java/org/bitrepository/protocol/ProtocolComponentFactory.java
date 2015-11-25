@@ -62,6 +62,8 @@ public final class ProtocolComponentFactory {
     /**
      * Gets you an <code>MessageBus</code> instance for accessing the Bitrepositorys message bus. If a messagebus 
      * already exists for the collection ID defined in the settings, the existing instance is returned.
+     * @param settings The settings to get the MessageBus 
+     * @param securityManager The SecurityManager for the messagebus
      * @return The messagebus for this collection.
      */
     public MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
