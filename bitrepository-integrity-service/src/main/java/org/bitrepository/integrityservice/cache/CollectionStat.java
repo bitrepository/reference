@@ -49,27 +49,27 @@ public class CollectionStat {
     }
 
 
-    /** The ID of the collection */
+    /** @return The ID of the collection */
     public String getCollectionID() {
         return collectionID;
     }
-    /** The number of files in the collection */
+    /** @return The number of files in the collection */
     public Long getFileCount() {
         return fileCount;
     }
-    /** The size of the collection */
+    /** @return The size of the collection */
     public Long getDataSize() {
         return dataSize;
     }
-    /** The number of checksum errors */
+    /** @return The number of checksum errors */
     public Long getChecksumErrors() {
         return checksumErrors;
     }
-    /** The date that the statistics were collected */
+    /** @return The date that the statistics were collected */
     public Date getStatsTime() {
         return statsTime;
     }
-    /** The date that the statistics were updated */
+    /** @return The date that the statistics were updated */
     public Date getUpdateTime() {
         return updateTime;
     }

@@ -45,14 +45,14 @@ import org.slf4j.LoggerFactory;
 public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    /** The settings */
+    /** The settings. */
     private final Settings settings;
     /** The Integrity Model. */
     private final IntegrityModel store;
-    /** The report model to populate */
+    /** The report model to populate. */
     private final IntegrityReporter reporter;
     private final StatisticsCollector sc;
-    /** A year */
+    /** A year. */
     public static final long DEFAULT_MAX_CHECKSUM_AGE = TimeUtils.MS_PER_YEAR;
     
     public HandleObsoleteChecksumsStep(Settings settings, IntegrityModel store, IntegrityReporter reporter,
@@ -74,7 +74,7 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
      * by having a maxChecksumAge of 0. 
      */
     @Override
-    public synchronized void performStep() throws Exception {
+    public synchronized void performStep() throws StepFailedException {
         MaxChecksumAgeProvider maxChecksumAgeProvider = new MaxChecksumAgeProvider(DEFAULT_MAX_CHECKSUM_AGE,
                 settings.getReferenceSettings().getIntegrityServiceSettings().getObsoleteChecksumSettings());
         

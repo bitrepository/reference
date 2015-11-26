@@ -36,7 +36,7 @@ public class DestinationHelper {
      * @param componentID The componentID to use for the destination.
      * @param receiverDestinationIDFactoryClass The class to use for constructing receiverDestinationID.
      *                                          See {@link ReceiverDestinationIDFactory} for possible subclasses.
-     * @param collectionDestinationID
+     * @param collectionDestinationID The collection ID for the destination
      */
     public DestinationHelper(String componentID, String receiverDestinationIDFactoryClass, String collectionDestinationID) {
         this.componentID = componentID;
@@ -46,7 +46,7 @@ public class DestinationHelper {
     }
 
     /**
-     * Will generate the destinationID to use for receiving messages for the indicated component.
+     * @return the destinationID to use for receiving messages for the indicated component.
      */
     public String getReceiverDestinationID() {
         return receiverDestinationIDFactory.getReceiverDestinationID(componentID, collectionDestinationID);

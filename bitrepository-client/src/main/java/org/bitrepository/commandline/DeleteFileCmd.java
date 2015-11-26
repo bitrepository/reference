@@ -120,19 +120,19 @@ public class DeleteFileCmd extends CommandLineClient {
      * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
      */
     private OperationEvent deleteTheFile() {
-        String fileId = cmdHandler.getOptionValue(Constants.FILE_ID_ARG);
+        String fileID = cmdHandler.getOptionValue(Constants.FILE_ID_ARG);
 
         ChecksumDataForFileTYPE validationChecksum = getChecksumDataForDeleteValidation();
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpecOrNull();
 
         output.debug("Initiating the DeleteFile conversation.");
         CompleteEventAwaiter eventHandler = new DeleteFileEventHandler(settings, output);
-        String pillarId = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
+        String pillarID = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
 
         if (requestChecksum != null) {
             output.resultHeader("PillarId \t Checksum");
         }
-        client.deleteFile(getCollectionID(), fileId, pillarId, validationChecksum, requestChecksum, eventHandler, null);
+        client.deleteFile(getCollectionID(), fileID, pillarID, validationChecksum, requestChecksum, eventHandler, null);
 
         return eventHandler.getFinish();
     }

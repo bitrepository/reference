@@ -78,10 +78,10 @@ public class SqlScriptRunner {
     /**
      * Runs an SQL script (read in using the Reader parameter)
      *
-     * @param reader
-     *            - the source of the script
+     * @param reader the source of the script
+     * @throws RuntimeException if the script could not be run for any reason
      */
-    public void runScript(Reader reader) throws IOException, SQLException {
+    public void runScript(Reader reader) {
         try {
             boolean originalAutoCommit = connection.getAutoCommit();
             if (originalAutoCommit != this.autoCommit) {
@@ -103,93 +103,87 @@ public class SqlScriptRunner {
      * @throws SQLException if any SQL errors occur.
      * @throws IOException if there is an error reading from the Reader.
      */
-    private void runScript(Connection conn, Reader reader) throws IOException,
-            SQLException {
+    private void runScript(Connection conn, Reader reader) throws IOException, SQLException {
         StringBuffer command = null;
-        try {
-            LineNumberReader lineReader = new LineNumberReader(reader);
-            String line = null;
-            while ((line = lineReader.readLine()) != null) {
-                if (command == null) {
-                    command = new StringBuffer();
+        LineNumberReader lineReader = new LineNumberReader(reader);
+        String line = null;
+        while ((line = lineReader.readLine()) != null) {
+            if (command == null) {
+                command = new StringBuffer();
+            }
+            String trimmedLine = line.trim();
+            if (trimmedLine.startsWith("--") ||
+                    trimmedLine.startsWith("//")) {
+                // Ignore comment line
+            } else if (trimmedLine.length() == 0) {
+                // Ignore empty line.
+            } else if (trimmedLine.contains("connect")) {
+                // Ignore connect statement as this is handled in the supplied connection.
+            } else if (!fullLineDelimiter
+                    && trimmedLine.endsWith(getDelimiter())
+                    || fullLineDelimiter
+                    && trimmedLine.equals(getDelimiter())) {
+
+                command.append(trimLineForComment(line).substring(0, line
+                        .lastIndexOf(getDelimiter())));
+                command.append(" ");
+
+                Statement statement = conn.createStatement();
+
+                log.debug("Executing statement: " + command.toString());
+
+                boolean hasResults = false;
+                if (stopOnError) {
+                    hasResults = statement.execute(command.toString());
+                } else {
+                    try {
+                        statement.execute(command.toString());
+                    } catch (SQLException e) {
+                        e.fillInStackTrace();
+                        log.error("Error executing: " + command, e);
+                    }
                 }
-                String trimmedLine = line.trim();
-                if (trimmedLine.startsWith("--") ||
-                        trimmedLine.startsWith("//")) {
-                    // Ignore comment line
-                } else if (trimmedLine.length() == 0) {
-                    // Ignore empty line.
-                } else if (trimmedLine.contains("connect")) {
-                    // Ignore connect statement as this is handled in the supplied connection.
-                } else if (!fullLineDelimiter
-                        && trimmedLine.endsWith(getDelimiter())
-                        || fullLineDelimiter
-                        && trimmedLine.equals(getDelimiter())) {
 
-                    command.append(trimLineForComment(line).substring(0, line
-                            .lastIndexOf(getDelimiter())));
-                    command.append(" ");
+                if (autoCommit && !conn.getAutoCommit()) {
+                    conn.commit();
+                }
 
-                    Statement statement = conn.createStatement();
-
-                    log.debug("Executing statement: " + command.toString());
-
-                    boolean hasResults = false;
-                    if (stopOnError) {
-                        hasResults = statement.execute(command.toString());
-                    } else {
-                        try {
-                            statement.execute(command.toString());
-                        } catch (SQLException e) {
-                            e.fillInStackTrace();
-                            log.error("Error executing: " + command, e);
-                        }
+                ResultSet rs = statement.getResultSet();
+                StringBuilder resultSB = new StringBuilder();
+                if (hasResults && rs != null) {
+                    ResultSetMetaData md = rs.getMetaData();
+                    int cols = md.getColumnCount();
+                    for (int i = 0; i < cols; i++) {
+                        String name = md.getColumnLabel(i);
+                        resultSB.append(name + "\t");
                     }
-
-                    if (autoCommit && !conn.getAutoCommit()) {
-                        conn.commit();
-                    }
-
-                    ResultSet rs = statement.getResultSet();
-                    StringBuilder resultSB = new StringBuilder();
-                    if (hasResults && rs != null) {
-                        ResultSetMetaData md = rs.getMetaData();
-                        int cols = md.getColumnCount();
+                    resultSB.append("\n");
+                    while (rs.next()) {
                         for (int i = 0; i < cols; i++) {
-                            String name = md.getColumnLabel(i);
-                            resultSB.append(name + "\t");
+                            String value = rs.getString(i);
+                            resultSB.append(value + "\t");
                         }
                         resultSB.append("\n");
-                        while (rs.next()) {
-                            for (int i = 0; i < cols; i++) {
-                                String value = rs.getString(i);
-                                resultSB.append(value + "\t");
-                            }
-                            resultSB.append("\n");
-                        }
-                        log.info("Result: " + resultSB.toString());
                     }
-
-                    command = null;
-                    try {
-                        statement.close();
-                    } catch (Exception e) {
-                        // Ignore to workaround a bug in Jakarta DBCP
-                    }
-                    Thread.yield();
-                } else {
-                    command.append(trimLineForComment(line));
-                    command.append(" ");
+                    log.info("Result: " + resultSB.toString());
                 }
+
+                command = null;
+                try {
+                    statement.close();
+                } catch (Exception e) {
+                    // Ignore to workaround a bug in Jakarta DBCP
+                }
+                Thread.yield();
+            } else {
+                command.append(trimLineForComment(line));
+                command.append(" ");
             }
-            if (!autoCommit) {
-                conn.commit();
-            }
-        } catch (SQLException e) {
-            throw e;
-        } catch (IOException e) {
-            throw e;
         }
+        if (!autoCommit) {
+            conn.commit();
+        }
+
     }
 
     private String trimLineForComment(String line) {

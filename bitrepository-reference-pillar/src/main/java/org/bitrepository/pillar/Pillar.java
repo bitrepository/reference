@@ -94,9 +94,9 @@ public class Pillar {
             interval = settings.getReferenceSettings().getPillarSettings()
                     .getRecalculateOldChecksumsInterval().longValue();
         }
-        for(String collectionId : SettingsUtils.getCollectionIDsForPillar(
+        for(String collectionID : SettingsUtils.getCollectionIDsForPillar(
                 settings.getReferenceSettings().getPillarSettings().getPillarID())) {
-            SchedulableJob workflow = new RecalculateChecksumJob(collectionId, pillarModel);
+            SchedulableJob workflow = new RecalculateChecksumJob(collectionID, pillarModel);
             scheduler.schedule(workflow, interval);
         }
     }

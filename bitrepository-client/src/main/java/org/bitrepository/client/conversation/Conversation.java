@@ -36,13 +36,13 @@ import org.bitrepository.protocol.messagebus.MessageListener;
  * 
  * The following concerns needs to be addressed by classes implementing this interface.
  * 
- * <h4>Timeouts</h3>
+ * <h4>Threadsafe</h4>
  * Note that conversation needs to be thread safe as multiple messages and timer event may occur in parallel. 
  * 
- * <h4>Timeouts</h3>
+ * <h4>Timeouts</h4>
  * The conversation implementation should include timeouts for the different conversation phases.
  * 
- * <h4>Error handling</h3>
+ * <h4>Error handling</h4>
  * As conversation will normally be called in either a asynchronously manor using a callback listener or synchronous, 
  * the error handling needs to behave differently in the two cases. This means a error handling block will typically 
  * contain a <code>if (callbackListener == null) { ... } else {...}</code> block.

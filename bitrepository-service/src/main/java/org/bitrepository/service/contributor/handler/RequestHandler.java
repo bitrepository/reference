@@ -21,22 +21,26 @@
  */
 package org.bitrepository.service.contributor.handler;
 
+import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.protocol.*;
 import org.bitrepository.service.exception.RequestHandlerException;
 
 /**
  * Provides functionality for handling a single type of request.
+ * @param <T> the type request handled by this handler
  */
-public interface RequestHandler<T> {
-    /** Return the request class which is handled by this handler. */
+public interface RequestHandler<T extends MessageRequest> {
+    /** Return the request class which is handled by this handler.
+     * @return the class of requests handled by this RequestHandler
+     * */
     public Class<T> getRequestClass();
 
     /**
      * Implements the concrete handling of a received request.
      *
      * @param request The request to handle.
-     * @param messageContext
+     * @param messageContext the message context
      * @throws RequestHandlerException If something goes wrong while handling the
      */
     public void processRequest(T request, MessageContext messageContext) throws RequestHandlerException;
@@ -44,6 +48,7 @@ public interface RequestHandler<T> {
     /**
      * Used for creating responses signaling general failures to handle the request.
      * The response is missing the response info field.
+     * @param request the request to create a response for
      * @return The failure response.
      */
     public MessageResponse generateFailedResponse(T request);

@@ -33,7 +33,7 @@ import org.bitrepository.service.contributor.ContributorContext;
  * The interface for the request handlers.
  * @param <T> The request class for the specific type of requests to be handled by this request handler.
  */
-public abstract class AbstractRequestHandler<T> implements RequestHandler<T> {
+public abstract class AbstractRequestHandler<T extends MessageRequest> implements RequestHandler<T> {
     /** The constant for the VERSION of the messages.*/
     protected static final BigInteger VERSION = ProtocolVersionLoader.loadProtocolVersion().getVersion();
     /** The constant for the MIN_VERSION of the messages.*/
@@ -65,8 +65,10 @@ public abstract class AbstractRequestHandler<T> implements RequestHandler<T> {
 
     /**
      * Delegates to the response dispatchers dispatchResponse method.
+     * @param request the request
+     * @param response the response
      */
-    protected void dispatchResponse(MessageResponse response, MessageRequest request) {
+    protected void dispatchResponse(MessageResponse response, T request) {
         context.getResponseDispatcher().dispatchResponse(response, request);
     }
 
@@ -74,7 +76,7 @@ public abstract class AbstractRequestHandler<T> implements RequestHandler<T> {
      * Validates that the collectionID has been set.
      * @param request The request to check the collectionID for.
      */
-    protected void validateCollectionID(MessageRequest request) {
+    protected void validateCollectionID(T request) {
         if(!request.isSetCollectionID()) {
             throw new IllegalArgumentException(request.getClass().getSimpleName() +
                     "'s requires a CollectionID");

@@ -51,8 +51,8 @@ public class BlockingReplaceFileClient {
      * (String, String, String, ChecksumDataForFileTYPE, ChecksumSpecTYPE, URL, long, ChecksumDataForFileTYPE,
      * ChecksumSpecTYPE, EventHandler, String)} method.
      * @param collectionID The ID of the collection
-     * @param fileId The ID of the file
-     * @param pillarId The ID of the pillar
+     * @param fileID The ID of the file
+     * @param pillarID The ID of the pillar
      * @param checksumForDeleteAtPillar The checksum data for pillar side verification of the existing file
      * @param checksumRequestedForDeletedFile The checksum request for the existing file
      * @param url The url of where to find the replacement file
@@ -62,16 +62,16 @@ public class BlockingReplaceFileClient {
      * @param eventHandler The {@link EventHandler} to handle incoming events
      * @param auditTrailInformation The audit trail information for the pillar
      * @return The list of received {@link ContributorEvent}'s
-     * @throws org.bitrepository.common.exceptions.OperationFailedException The operation didn't complete successfully.
+     * @throws OperationFailedException The operation didn't complete successfully.
      */
     public List<ContributorEvent> replaceFile(
-            String collectionID, String fileId, String pillarId, ChecksumDataForFileTYPE checksumForDeleteAtPillar,
+            String collectionID, String fileID, String pillarID, ChecksumDataForFileTYPE checksumForDeleteAtPillar,
     ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile,
     ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile,
     EventHandler eventHandler, String auditTrailInformation)
             throws OperationFailedException {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
-        client.replaceFile(collectionID, fileId, pillarId, checksumForDeleteAtPillar,
+        client.replaceFile(collectionID, fileID, pillarID, checksumForDeleteAtPillar,
                 checksumRequestedForDeletedFile, url, sizeOfNewFile, checksumForNewFileValidationAtPillar,
                 checksumRequestsForNewFile,
                 blocker, auditTrailInformation);

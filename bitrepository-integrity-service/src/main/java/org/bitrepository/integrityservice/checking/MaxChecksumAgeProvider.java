@@ -39,13 +39,14 @@ public class MaxChecksumAgeProvider {
     }
 
     /**
-     * Returns the MaxChecksumAge for a pillar as: <ol>
+     * Returns the MaxChecksumAge for a pillar as:
+     * <ol>
      *     <li>The ObsoleteChecksumSettings.getMaxChecksumAgeForPillar setting if defined for the indicated
      *     pillar.</li>
      *     <li>The ObsoleteChecksumSettings.getDefaultMaxChecksumAge setting if defined</li>
      *     <li>The defaultMaxAge.</li>
      * </ol>
-     * @param pillarID
+     * @param pillarID the ID of the pillar
      * @return The MaxChecksumAge for the indicated pillar.
      */
     public long getMaxChecksumAge(String pillarID) {
@@ -66,7 +67,10 @@ public class MaxChecksumAgeProvider {
     }
 
     /**
-     * Provides one line construction og MaxChecksumAgeForPillar objects.
+     * Provides one line construction of MaxChecksumAgeForPillar objects.
+     * @param pillarID the pillar ID to set
+     * @param value the max checksum age to set
+     * @return a new MaxCheckAgeForPillar Object
      */
     public static MaxChecksumAgeForPillar createMaxChecksumAgeForPillar(String pillarID, long value) {
         MaxChecksumAgeForPillar maxChecksumAgeForPillar = new MaxChecksumAgeForPillar();

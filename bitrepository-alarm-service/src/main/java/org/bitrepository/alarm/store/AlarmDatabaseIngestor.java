@@ -154,6 +154,7 @@ public class AlarmDatabaseIngestor {
 
     
     /**
+     * @param alarm the alarm
      * @return The list of elements in the model which are not null.
      */
     private Object[] extractArgumentsFromEvent(Alarm alarm) {

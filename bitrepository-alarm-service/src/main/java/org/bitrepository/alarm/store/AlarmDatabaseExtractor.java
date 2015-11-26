@@ -122,6 +122,7 @@ public abstract class AlarmDatabaseExtractor {
      * tables in the database in the request.
      * @param resultSet The result set to extract the Alarm from.
      * @return The extracted alarm.
+     * @throws SQLException if data could not be retrieved from the resultset
      */
     private Alarm extractAlarm(ResultSet resultSet) throws SQLException {
         Alarm alarm = new Alarm();

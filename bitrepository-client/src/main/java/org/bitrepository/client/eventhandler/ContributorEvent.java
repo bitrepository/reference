@@ -32,6 +32,7 @@ public class ContributorEvent extends AbstractOperationEvent {
     
     /**
      * @param contributorID The contributorID for which this event concerns.
+     * @param collectionID the collectionID for which this event concerns.
      */
     public ContributorEvent(String contributorID, String collectionID) {
         super();

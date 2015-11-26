@@ -57,7 +57,7 @@ public class ConversationContext {
      * @param fileID Optional fileID to use in this conversation context.
      * @param contributors The contributors to use in this conversation context.
      * @param eventHandler The eventHandler to use in this conversation context.
-     * @param auditTrailInformation
+     * @param auditTrailInformation the audit trail information
      */
     public ConversationContext(
             String collectionID,

@@ -112,6 +112,7 @@ public class BasicSecurityManager implements SecurityManager {
      * @param signer MessageSigner for signing messages.
      * @param authorizer OperationAuthorizer to authorize operations
      * @param permissionStore the PermissionStore to hold certificates and adjoining permissions
+     * @param componentID the component ID
      */
     public BasicSecurityManager(RepositorySettings repositorySettings, String privateKeyFile, MessageAuthenticator authenticator,
             MessageSigner signer, OperationAuthorizor authorizer, PermissionStore permissionStore, String componentID) {
@@ -256,7 +257,7 @@ public class BasicSecurityManager implements SecurityManager {
     
     /**
      * Attempts to load the pillars private key and certificate from a PEM formatted file. 
-     * @param privateKeyFile, path to the file containing the components private key and certificate, may be null
+     * @param privateKeyFile path to the file containing the components private key and certificate, may be null
      * @throws IOException if the file cannot be found or read. 
      * @throws KeyStoreException if there is problems with adding the privateKeyEntry to keyStore
      * @throws CertificateException 
@@ -307,7 +308,8 @@ public class BasicSecurityManager implements SecurityManager {
     }
 
     /**
-     * Load the appropriate certificates from PermissionSet into trust/keystore 
+     * Load the appropriate certificates from PermissionSet into trust/keystore
+     * @param permissions the permission set
      * @throws CertificateException if certificate cannot be created from the data
      * @throws KeyStoreException if certificate cannot be put into the keyStore
      */
@@ -348,13 +350,12 @@ public class BasicSecurityManager implements SecurityManager {
     
     /**
      * Sets up the Default SSL context  
-     * @throws NoSuchAlgorithmException
-     * @throws KeyStoreException
-     * @throws UnrecoverableKeyException
-     * @throws KeyManagementException
+     * @throws NoSuchAlgorithmException if the TrustStoreFactory does now know the TrustStoreAlgorithm
+     * @throws KeyStoreException if the TrustManagerFactory cannot be init'ed
+     * @throws UnrecoverableKeyException If the password is wrong
+     * @throws KeyManagementException if the SSL Context cannot be init'ed
      */
-    private void setupDefaultSSLContext() throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException, 
-            KeyManagementException {
+    private void setupDefaultSSLContext() throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException, KeyManagementException {
         TrustManagerFactory tmf;
         KeyManagerFactory kmf;
         SSLContext context;

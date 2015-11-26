@@ -45,7 +45,7 @@ public class IdentifyContributorExceptionTest extends ExtendedTestCase {
             Assert.assertEquals(e.getMessage(), errMsg);
             Assert.assertEquals(((IdentifyContributorException) e).getResponseInfo().getResponseCode(), errCode);
             Assert.assertEquals(((IdentifyContributorException) e).getResponseInfo().getResponseText(), errMsg);
-            Assert.assertEquals(((IdentifyContributorException) e).getCollectionId(), TEST_COLLECTION_ID);
+            Assert.assertEquals(((IdentifyContributorException) e).getCollectionID(), TEST_COLLECTION_ID);
             Assert.assertNull(e.getCause());
         }
         
@@ -57,7 +57,7 @@ public class IdentifyContributorExceptionTest extends ExtendedTestCase {
             Assert.assertEquals(e.getMessage(), errMsg);
             Assert.assertEquals(((IdentifyContributorException) e).getResponseInfo().getResponseCode(), errCode);
             Assert.assertEquals(((IdentifyContributorException) e).getResponseInfo().getResponseText(), errMsg);
-            Assert.assertEquals(((IdentifyContributorException) e).getCollectionId(), TEST_COLLECTION_ID);
+            Assert.assertEquals(((IdentifyContributorException) e).getCollectionID(), TEST_COLLECTION_ID);
             Assert.assertNotNull(e.getCause());
             Assert.assertTrue(e.getCause() instanceof IllegalArgumentException);
             Assert.assertEquals(e.getCause().getMessage(), causeMsg);

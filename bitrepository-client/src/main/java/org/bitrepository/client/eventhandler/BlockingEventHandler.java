@@ -63,11 +63,12 @@ public class BlockingEventHandler implements EventHandler {
 
     /**
      * Will block until a <code>COMPLETE</code> or <code>FAILED</code> event is received.
+     * @return the operationEvent
      */
     public synchronized OperationEvent awaitFinished() {
         try {
             this.wait();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
         }
         return finishEvent;
     }

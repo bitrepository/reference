@@ -29,6 +29,8 @@ public class ContributorFailedEvent extends ContributorEvent {
     private final ResponseCode responseCode;
 
     /**
+     * @param contributorID the contributor
+     * @param collectionID the collection
      * @param responseCode The response code from any response indicating the failure. Might be null, if no relevant
      *                     response exists.
      */

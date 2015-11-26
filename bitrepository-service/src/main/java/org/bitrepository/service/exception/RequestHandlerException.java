@@ -32,35 +32,35 @@ public abstract class RequestHandlerException extends Exception {
     /** The ResponseInfo wrapped by this exception. Tells the reason for the exception.*/
     private final ResponseInfo responseInfo;
     /** The id of the collection, which this exception is relevant for, if any. */
-    private String collectionId;
+    private String collectionID;
     
     /**
      * Constructor.
      * @param rCode The response code.
      * @param rText The text for the response info.
-     * @param collectionId The id of the collection.
+     * @param collectionID The id of the collection.
      */
-    public RequestHandlerException(ResponseCode rCode, String rText, String collectionId) {
+    public RequestHandlerException(ResponseCode rCode, String rText, String collectionID) {
         super(rText);
         this.responseInfo = new ResponseInfo();
         this.responseInfo.setResponseCode(rCode);
         this.responseInfo.setResponseText(rText);
-        this.collectionId = collectionId;
+        this.collectionID = collectionID;
     }
     
     /**
      * Constructor.
      * @param rCode The response code.
      * @param rText The text for the response info.
-     * @param collectionId The id of the collection.
+     * @param collectionID The id of the collection.
      * @param e The exception to wrap into the StackTrace.
      */
-    public RequestHandlerException(ResponseCode rCode, String rText, String collectionId, Exception e) {
+    public RequestHandlerException(ResponseCode rCode, String rText, String collectionID, Exception e) {
         super(rText, e);
         this.responseInfo = new ResponseInfo();
         this.responseInfo.setResponseCode(rCode);
         this.responseInfo.setResponseText(rText);
-        this.collectionId = collectionId;
+        this.collectionID = collectionID;
     }
     
     /**
@@ -73,15 +73,15 @@ public abstract class RequestHandlerException extends Exception {
     /**
      * @return The id of the collection regarding this exception.
      */
-    public String getCollectionId() {
-        return collectionId;
+    public String getCollectionID() {
+        return collectionID;
     }
     
     /**
-     * @param collectionId The id of the collection.
+     * @param collectionID The id of the collection.
      */
-    public void setCollectionId(String collectionId) {
-        this.collectionId = collectionId;
+    public void setCollectionID(String collectionID) {
+        this.collectionID = collectionID;
     }
     
     @Override

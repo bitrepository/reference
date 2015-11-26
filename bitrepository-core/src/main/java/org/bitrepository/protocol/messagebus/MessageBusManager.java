@@ -52,6 +52,8 @@ public final class MessageBusManager {
     private MessageBusManager() {}
 
     /**
+     * @param settings
+     * @param securityManager
      * @return A the default message bus instance based on the supplied configuration. If the default message bus
      * doesn't already exist, it is created.
      */

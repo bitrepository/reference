@@ -60,6 +60,8 @@ public class DatabaseUtils {
      * @param query The query for retrieving the integer value.
      * @param args The arguments for the database statement.
      * @return The integer value from the given statement.
+     * @throws IllegalStateException if the connection could not be established,
+     * if the prepared statement could not be created, or the execution failed
      */
     public static Integer selectIntValue(DBConnector dbConnector, String query, Object... args) {
         ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
@@ -94,6 +96,8 @@ public class DatabaseUtils {
      * @param query The query for retrieving the long value.
      * @param args The arguments for the database statement.
      * @return The long value from the given statement.
+     * @throws IllegalStateException if the connection could not be established,
+     * if the prepared statement could not be created, or the execution failed
      */
     public static Long selectLongValue(DBConnector dbConnector, String query, Object... args) {
         ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
@@ -131,6 +135,8 @@ public class DatabaseUtils {
      * @param query The query for retrieving the long value.
      * @param args The arguments for the database statement.
      * @return The long value from the given statement.
+     * @throws IllegalStateException if the connection could not be established,
+     * if the prepared statement could not be created, or the execution failed
      */
     public static Long selectFirstLongValue(DBConnector dbConnector, String query, Object... args) {
         ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
@@ -164,6 +170,8 @@ public class DatabaseUtils {
      * @param query The query for retrieving the long value.
      * @param args The arguments for the database statement.
      * @return The list of long values from the given statement.
+     * @throws IllegalStateException if the connection could not be established,
+     * if the prepared statement could not be created, or the execution failed
      */
     public static List<Long> selectLongList(DBConnector dbConnector, String query, Object... args) {
         ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
@@ -192,6 +200,8 @@ public class DatabaseUtils {
      * @param query The query for retrieving the date.
      * @param args The arguments for the database statement.
      * @return The date from the given statement.
+     * @throws IllegalStateException if the connection could not be established,
+     * if the prepared statement could not be created, or the execution failed
      */
     public static Date selectDateValue(DBConnector dbConnector, String query, Object... args) {
         return retrieveDateValue(dbConnector, true, query, args);
@@ -206,6 +216,8 @@ public class DatabaseUtils {
      * @param query The query for retrieving the date.
      * @param args The arguments for the database statement.
      * @return The date from the given statement.
+     * @throws IllegalStateException if the connection could not be established,
+     * if the prepared statement could not be created, or the execution failed
      */
     public static Date selectFirstDateValue(DBConnector dbConnector, String query, Object... args) {
         return retrieveDateValue(dbConnector, false, query, args);
@@ -218,6 +230,8 @@ public class DatabaseUtils {
      * @param query The query for retrieving the date.
      * @param args The arguments for the database statement.
      * @return The date from the given statement.
+     * @throws IllegalStateException if the connection could not be established,
+     * if the prepared statement could not be created, or the execution failed
      */
     private static Date retrieveDateValue(DBConnector dbConnector, boolean mustHaveOnlyOneResult, String query, Object... args) {
         ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
@@ -254,6 +268,8 @@ public class DatabaseUtils {
      * @param query The query to extract the String value.
      * @param args The arguments for the statement.
      * @return The requested string value, or null if no such value could be found.
+     * @throws IllegalStateException if the connection could not be established,
+     * if the prepared statement could not be created, or the execution failed
      */
     public static String selectStringValue(DBConnector dbConnector, String query, Object... args) {
         ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
@@ -282,6 +298,8 @@ public class DatabaseUtils {
      * @param query The SQL query for retrieving the strings.
      * @param args The arguments for the statement.
      * @return The requested list of strings. If no strings were found, then the list is empty.
+     * @throws IllegalStateException if the connection could not be established,
+     * if the prepared statement could not be created, or the execution failed
      */
     public static List<String> selectStringList(DBConnector dbConnector, String query, Object... args) {
         ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
@@ -309,8 +327,10 @@ public class DatabaseUtils {
      * @param dbConnector For connecting to the database.
      * @param query The SQL query to execute.
      * @param args The arguments for the SQL statement.
+     * @throws IllegalStateException if the connection could not be established,
+     * if the prepared statement could not be created, or the execution failed
      */
-    public static void executeStatement(DBConnector dbConnector, String query, Object... args) {
+    public static void executeStatement(DBConnector dbConnector, String query, Object... args) throws IllegalStateException {
         ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
         ArgumentValidator.checkNotNullOrEmpty(query, "String query");
         ArgumentValidator.checkNotNull(args, "Object... args");
@@ -333,6 +353,7 @@ public class DatabaseUtils {
      * @param args some args to insert into this query string (must not be null)
      * @return a prepared statement
      * @throws SQLException If unable to prepare a statement
+     * @throws IllegalStateException if any of the args is of an unknown type
      */
     public static PreparedStatement createPreparedStatement(Connection dbConnection, String query, Object... args)
             throws SQLException {
@@ -379,7 +400,9 @@ public class DatabaseUtils {
     }
     
     /**
-     * Method to provide safe dump of database specifics (so we won't leak passwords). 
+     * Method to provide safe dump of database specifics (so we won't leak passwords).
+     * @param databaseSpecifics the specifics of the database, containing sensitive passwords
+     * @return the cleaned database specifics as a string
      */
     public static String getDatabaseSpecificsDump(DatabaseSpecifics databaseSpecifics) {
         return "DatabaseSpecifics [driverClass=" + databaseSpecifics.getDriverClass()

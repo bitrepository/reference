@@ -90,9 +90,13 @@ public class AuditTrailService implements LifeCycledService {
      * @param fromDate Restrict the results to only provide events after this point in time
      * @param toDate Restrict the results to only provide events up till this point in time
      * @param fileID Restrict the results to only be about this fileID
+     * @param collectionID restrict the results to this collection
      * @param reportingComponent Restrict the results to only be reported by this component
      * @param actor Restrict the results to only be events caused by this actor
      * @param action Restrict the results to only be about this type of action
+     * @param fingerprint the fingerprint
+     * @param operationID Restrict the results to only this operationID
+     * @return an iterator to all AuditTrailEvents matching the criteria from the parameters
      */
     public AuditEventIterator queryAuditTrailEventsByIterator(Date fromDate, Date toDate, String fileID, 
             String collectionID, String reportingComponent, String actor, FileAction action, 

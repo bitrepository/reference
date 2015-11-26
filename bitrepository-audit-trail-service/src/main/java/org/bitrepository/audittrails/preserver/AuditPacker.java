@@ -50,7 +50,7 @@ public class AuditPacker {
     /** The audit trail store.*/
     private final AuditTrailStore store;
     /** The id of the collection to pack audits for.*/
-    private final String collectionId;
+    private final String collectionID;
     /** The list of contributors for this collection. */
     private final List<String> contributors = new ArrayList<String>();
     /** The directory where the temporary files are stored.*/
@@ -64,12 +64,14 @@ public class AuditPacker {
     /**
      * Constructor.
      * @param store The audit trail store
+     * @param settings the settings
+     * @param collectionID the collection ID
      */
-    public AuditPacker(AuditTrailStore store, AuditTrailPreservation settings, String collectionId) {
+    public AuditPacker(AuditTrailStore store, AuditTrailPreservation settings, String collectionID) {
         this.store = store;
-        this.collectionId = collectionId;
+        this.collectionID = collectionID;
         this.directory = FileUtils.retrieveDirectory(settings.getAuditTrailPreservationTemporaryDirectory());
-        this.contributors.addAll(SettingsUtils.getAuditContributorsForCollection(collectionId));
+        this.contributors.addAll(SettingsUtils.getAuditContributorsForCollection(collectionID));
         
         initialiseReachedSequenceNumbers();
     }
@@ -87,7 +89,7 @@ public class AuditPacker {
      */
     private void initialiseReachedSequenceNumbers() {
         for(String contributor : contributors) {
-            Long seq = store.getPreservationSequenceNumber(contributor, collectionId);
+            Long seq = store.getPreservationSequenceNumber(contributor, collectionID);
             seqReached.put(contributor, seq);
         }
     }
@@ -99,7 +101,7 @@ public class AuditPacker {
      * @return A compressed file with all the audit trails. 
      */
     public synchronized File createNewPackage() {
-        File container = new File(directory, collectionId + "-audit-trails-" + System.currentTimeMillis());
+        File container = new File(directory, collectionID + "-audit-trails-" + System.currentTimeMillis());
         try {
             container.createNewFile();
             packContributors(container);
@@ -138,14 +140,13 @@ public class AuditPacker {
      * Writes all the newest audit trails for a single contributor to the PrintWriter.
      * @param contributorId The id of the contributor to write the files for.
      * @param writer The PrinterWriter where the output will be written.
-     * @return The sequence number reached +1 (to tell which sequence number is next).
      */
     private void packContributor(String contributorId, PrintWriter writer) {
-        long nextSeqNumber = store.getPreservationSequenceNumber(contributorId, collectionId);
+        long nextSeqNumber = store.getPreservationSequenceNumber(contributorId, collectionID);
         long largestSeqNumber = -1;
         long numPackedAudits = 0;
-        log.debug("Starting to pack audittrails for contributor: " + contributorId + " for collection: " + collectionId);
-        AuditEventIterator iterator = store.getAuditTrailsByIterator(null, collectionId, contributorId, nextSeqNumber, 
+        log.debug("Starting to pack audittrails for contributor: " + contributorId + " for collection: " + collectionID);
+        AuditEventIterator iterator = store.getAuditTrailsByIterator(null, collectionID, contributorId, nextSeqNumber,
                 null, null, null, null, null, null, null);
         Long timeStart = System.currentTimeMillis();
         long logInterval = 1000;

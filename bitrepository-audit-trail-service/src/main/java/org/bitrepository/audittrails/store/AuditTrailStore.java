@@ -36,7 +36,7 @@ public interface AuditTrailStore {
     /** 
      * Obtain AuditEventIterator for extracting audit trails from the store.
      * When done with the iterator, the user should ensure that it is closed. 
-     * @param fileId [OPTIONAL] The id of the file for restricting the extraction.
+     * @param fileID [OPTIONAL] The id of the file for restricting the extraction.
      * @param collectionID [OPTIONAL] The id of the collection from which to retrieve audit trails. 
      * @param contributorId [OPTIONAL] The id of the contributor for restricting the extraction.
      * @param minSeqNumber [OPTIONAL] The minimum sequence number for restricting the extraction.
@@ -49,13 +49,13 @@ public interface AuditTrailStore {
      * @param operationID [OPTIONAL] The ID of the operation (conversationID) for the audits
      * @return The requested audit trails from the store.
      */
-    public AuditEventIterator getAuditTrailsByIterator(String fileId, String collectionID, String contributorId, 
+    public AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorId,
             Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation, Date startDate, 
             Date endDate, String fingerprint, String operationID);
     
     /**
      * ingest audit trails into the store. 
-     * @param newAuditTrails The audit trails to be ingested into the store.
+     * @param auditTrailsEvents The audit trails to be ingested into the store.
      * @param collectionID The id of the collection, where the audit trail events belong.
      * @param contributorID The id of the contributor, that the audit trail event belongs to.
      */
@@ -65,29 +65,29 @@ public interface AuditTrailStore {
      * Retrieves the largest sequence number for a given contributor.
      * 
      * @param contributorId The id of the contributor to retrieve the largest sequence number from.
-     * @param collectionId The id of the collection for the sequence number of the contributor.
+     * @param collectionID The id of the collection for the sequence number of the contributor.
      * @return The largest sequence number.
      */
-    public long largestSequenceNumber(String contributorId, String collectionId);
+    public long largestSequenceNumber(String contributorId, String collectionID);
     
     /**
      * Retrieves the preservation sequence number for the given contributor, which tells how far the preservation
      * of the audit trails has gotten.
      *  
      * @param contributorId The id of the contributor.
-     * @param collectionId The id of the collection for the sequence number of the contributor.
+     * @param collectionID The id of the collection for the sequence number of the contributor.
      * @return The preservation sequence number for the given contributor.
      */
-    public long getPreservationSequenceNumber(String contributorId, String collectionId);
+    public long getPreservationSequenceNumber(String contributorId, String collectionID);
     
     /**
      * Set the preservation sequence number for the given contributor.
      * 
      * @param contributorId The id of the contributor.
-     * @param collectionId The id of the collection for the sequence number of the contributor.
+     * @param collectionID The id of the collection for the sequence number of the contributor.
      * @param seqNumber The new preservation sequence number for the given contributor.
      */
-    public void setPreservationSequenceNumber(String contributorId, String collectionId, long seqNumber);
+    public void setPreservationSequenceNumber(String contributorId, String collectionID, long seqNumber);
 
     /**
      * Check to see if the database knows a contributor

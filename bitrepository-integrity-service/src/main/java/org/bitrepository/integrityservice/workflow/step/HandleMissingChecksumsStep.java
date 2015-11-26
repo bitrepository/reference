@@ -45,7 +45,7 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The Integrity Model. */
     private final IntegrityModel store;
-    /** The report model to populate */
+    /** The report model to populate. */
     private final IntegrityReporter reporter;
     private final StatisticsCollector sc;
     private final Date cutoff;
@@ -65,19 +65,20 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
 
     /**
      * Queries the IntegrityModel for files with missing checksums. Reports them if any is returned.
-     * @throws SQLException 
+     * @throws StepFailedException if the report file could not be written
+     * @throws IllegalStateException if there was a problem with the database
      */
     @Override
-    public synchronized void performStep() throws Exception {
+    public synchronized void performStep() throws StepFailedException {
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
 
         for(String pillar : pillars) {
             Long missingChecksums = 0L;
-            IntegrityIssueIterator missingChecksumsIterator 
-                = store.findFilesWithMissingChecksum(reporter.getCollectionID(), pillar, cutoff);
+
             
             String missingFile;
-            try {
+            try (IntegrityIssueIterator missingChecksumsIterator
+                         = store.findFilesWithMissingChecksum(reporter.getCollectionID(), pillar, cutoff)){
                 while((missingFile = missingChecksumsIterator.getNextIntegrityIssue()) != null) {
                     try {
                         reporter.reportMissingChecksum(missingFile, pillar);
@@ -86,8 +87,6 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
                         throw new StepFailedException("Failed to report file: " + missingFile + " as having a missing checksum", e);
                     }
                 }
-            } finally {
-                    missingChecksumsIterator.close();
             }
             sc.getPillarCollectionStat(pillar).setMissingChecksums(missingChecksums);
         }

@@ -35,7 +35,7 @@ public class SelectedComponentInfo {
 
     /**
      * @param componentID The ID of the pillar
-     * @param componentTopic
+     * @param componentTopic the topic for communication with the selected pillar
      */
     public SelectedComponentInfo(String componentID, String componentTopic) {
         super();

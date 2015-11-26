@@ -94,8 +94,9 @@ public class DBConnector {
     /**
      * Creates and connects to the database.
      * @return The connection to the database.
+     * @throws IllegalStateException if the database connection could not be established
      */
-    public Connection getConnection() {
+    public Connection getConnection() throws IllegalStateException {
         try {
             return connectionPool.getConnection();
         } catch (SQLException e) {

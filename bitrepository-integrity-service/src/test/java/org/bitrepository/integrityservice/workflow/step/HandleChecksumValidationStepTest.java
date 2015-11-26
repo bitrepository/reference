@@ -239,7 +239,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         Assert.assertNull(auditManager.latestAuditInfo);
         
         addStep("Test step on data where only two pillars have the file and they disagree about the checksum.",
-                "An audit trail with fileId and collectionId, but no pillar pointed out as cause");
+                "An audit trail with fileID and collectionID, but no pillar pointed out as cause");
         insertChecksumDataForModel(cache, createChecksumData("1234cccc4321", FILE_2), TEST_PILLAR_1, TEST_COLLECTION);
         insertChecksumDataForModel(cache, createChecksumData("cc12344321cc", FILE_2), TEST_PILLAR_2, TEST_COLLECTION);
         
@@ -260,7 +260,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         auditManager.latestAuditInfo = null;
         
         addStep("Test step on data where two pillars have one checksum and the last pillar has a different one",
-                "An audit trail with fileId and collectionId, and the lone pillar is pointed out as possible cause");
+                "An audit trail with fileID and collectionID, and the lone pillar is pointed out as possible cause");
         insertChecksumDataForModel(cache, createChecksumData("1234cccc4321", FILE_2), TEST_PILLAR_1, TEST_COLLECTION);
         insertChecksumDataForModel(cache, createChecksumData("cc12344321cc", FILE_2), TEST_PILLAR_2, TEST_COLLECTION);
         insertChecksumDataForModel(cache, createChecksumData("cc12344321cc", FILE_2), TEST_PILLAR_3, TEST_COLLECTION);
@@ -289,11 +289,11 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     
     private List<ChecksumDataForChecksumSpecTYPE> createChecksumData(String checksum, String ... fileids) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
-        for(String fileId : fileids) {
+        for(String fileID : fileids) {
             ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
             csData.setCalculationTimestamp(CalendarUtils.getNow());
             csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
-            csData.setFileID(fileId);
+            csData.setFileID(fileID);
             res.add(csData);
         }
         return res;
@@ -307,15 +307,15 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         String latestAuditInfo;
 
         @Override
-        public void addAuditEvent(String collectionId, String fileId,
+        public void addAuditEvent(String collectionID, String fileID,
                 String actor, String info, String auditTrail,
                 FileAction operation, String operationID, String certificateID) {
             latestAuditInfo = info;
         }
 
         @Override
-        public AuditTrailDatabaseResults getAudits(String collectionId,
-                String fileId, Long minSeqNumber, Long maxSeqNumber,
+        public AuditTrailDatabaseResults getAudits(String collectionID,
+                String fileID, Long minSeqNumber, Long maxSeqNumber,
                 Date minDate, Date maxDate, Long maxNumberOfResults) {
             return null;
         }

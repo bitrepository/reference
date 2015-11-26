@@ -36,12 +36,12 @@ public class CreateStatisticsEntryStep extends AbstractWorkFlowStep {
     /** The Integrity Model. */
     private final IntegrityModel store;
     /** The collectionID */
-    private final String collectionId;
+    private final String collectionID;
     private final StatisticsCollector sc;
     
-    public CreateStatisticsEntryStep(IntegrityModel store, String collectionId, StatisticsCollector statisticsCollector) {
+    public CreateStatisticsEntryStep(IntegrityModel store, String collectionID, StatisticsCollector statisticsCollector) {
         this.store = store;        
-        this.collectionId = collectionId;
+        this.collectionID = collectionID;
         this.sc = statisticsCollector;
     }
     
@@ -56,16 +56,16 @@ public class CreateStatisticsEntryStep extends AbstractWorkFlowStep {
      */
     @Override
     public synchronized void performStep() {
-        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionId);
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         for(String pillar : pillars) {
-            sc.getPillarCollectionStat(pillar).setFileCount(store.getNumberOfFiles(pillar, collectionId));
-            sc.getPillarCollectionStat(pillar).setDataSize(store.getCollectionFileSizeAtPillar(collectionId, pillar));
+            sc.getPillarCollectionStat(pillar).setFileCount(store.getNumberOfFiles(pillar, collectionID));
+            sc.getPillarCollectionStat(pillar).setDataSize(store.getCollectionFileSizeAtPillar(collectionID, pillar));
         }
-        sc.getCollectionStat().setFileCount(store.getNumberOfFilesInCollection(collectionId));
-        sc.getCollectionStat().setDataSize(store.getCollectionFileSize(collectionId));
-        sc.getCollectionStat().setLatestFileTime(store.getDateForNewestFileEntryForCollection(collectionId));
+        sc.getCollectionStat().setFileCount(store.getNumberOfFilesInCollection(collectionID));
+        sc.getCollectionStat().setDataSize(store.getCollectionFileSize(collectionID));
+        sc.getCollectionStat().setLatestFileTime(store.getDateForNewestFileEntryForCollection(collectionID));
         
-        store.createStatistics(collectionId, sc);
+        store.createStatistics(collectionID, sc);
     }
 
     public static String getDescription() {

@@ -70,7 +70,6 @@ public class AuditPreservationEventHandler implements EventHandler {
     
     /**
      * Update the store with the results.
-     * @param collectionId The id of the collection.
      */
     private void updateStoreWithResults() {
         for(Map.Entry<String, Long> entry : seqNumbers.entrySet()) {

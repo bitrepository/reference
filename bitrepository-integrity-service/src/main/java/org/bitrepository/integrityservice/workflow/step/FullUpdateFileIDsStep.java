@@ -9,8 +9,8 @@ import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 public class FullUpdateFileIDsStep extends UpdateFileIDsStep {
 
     public FullUpdateFileIDsStep(IntegrityInformationCollector collector, IntegrityModel store, 
-            IntegrityAlerter alerter, Settings settings, String collectionId, IntegrityContributors integrityContributors) {
-        super(collector, store, alerter, settings, collectionId, integrityContributors);
+            IntegrityAlerter alerter, Settings settings, String collectionID, IntegrityContributors integrityContributors) {
+        super(collector, store, alerter, settings, collectionID, integrityContributors);
     }
 
     @Override
@@ -20,7 +20,7 @@ public class FullUpdateFileIDsStep extends UpdateFileIDsStep {
     
     @Override
     protected void initialStepAction() {
-        store.resetFileCollectionProgress(collectionId);
+        store.resetFileCollectionProgress(collectionID);
     }
 
 

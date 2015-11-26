@@ -29,20 +29,28 @@ import org.bitrepository.bitrepositoryelements.AlarmCode;
  * Container for the extraction of data from the alarm database.
  */
 public class AlarmDatabaseExtractionModel {
-    /** @see getFileId(). */
+
+    /** @see #getComponentId()  */
     private String componentId;
-    /** @see getContributorId(). */
+
+    /** @see #getAlarmCode()  */
     private AlarmCode alarmCode;
-    /** @see getStartDate(). */
+
+    /** @see #getStartDate(). */
     private Date startDate;
-    /** @see getEndDate(). */
+
+    /** @see #getEndDate(). */
     private Date endDate;
-    /** @see getActorName(). */
+
+    /** @see #getFileID() . */
     private String fileID;
-    /** @see getOperation(). */
+
+    /** @see #getMaxCount() */
     private int maxCount;
-    /** @see getAscending().*/
+
+    /** @see #getAscending().*/
     private boolean ascending;
+
     /** @see #getCollectionID(). */
     private String collectionID;
     
@@ -55,6 +63,7 @@ public class AlarmDatabaseExtractionModel {
      * @param endDate The latest date to restrict the extraction.
      * @param fileID The id of the file.
      * @param maxCount The maximum count of alarms to extract. If null, then set to maximum value for Integer.
+     * @param ascending if true sorted in ascending order, otherwise descending
      */
     public AlarmDatabaseExtractionModel(String collectionID, String componentId, AlarmCode alarmCode, Date startDate, Date endDate, 
             String fileID, Integer maxCount, boolean ascending) {
@@ -81,7 +90,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @See getComponentId();
+     * @see #getComponentId();
      * @param componentId The new component id.
      */
     public void setComponentId(String componentId) {
@@ -96,7 +105,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @See getAlarmCode();
+     * @see #getAlarmCode();
      * @param alarmCode The new alarm code.
      */
     public void setAlarmCode(AlarmCode alarmCode) {
@@ -111,7 +120,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @See getStartDate();
+     * @see #getStartDate();
      * @param startDate The startDate.
      */
     public void setStartDate(Date startDate) {
@@ -126,7 +135,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @See getEndDate();
+     * @see #getEndDate();
      * @param endDate The endDate.
      */
     public void setEndDate(Date endDate) {
@@ -141,7 +150,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @See getFileID();
+     * @see #getFileID();
      * @param fileID The new file id.
      */
     public void setFileID(String fileID) {
@@ -156,7 +165,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @See getMaxCount();
+     * @see #getMaxCount();
      * @param maxCount The new max count.
      */
     public void setMaxCount(Integer maxCount) {
@@ -171,7 +180,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @See getAscending();
+     * @see #getAscending();
      * @param ascending Whether the results should be ascending (or alternatively descending).
      */
     public void setAscending(boolean ascending) {
@@ -186,7 +195,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @See getCollectionID(); 
+     * @see #getCollectionID();
      * @param collectionID The ID of the collection.
      */
     public void setCollectionID(String collectionID) {

@@ -246,6 +246,7 @@ public class ActiveMQMessageBus implements MessageBus {
      *
      * @param destinationID Name of destination to send message to.
      * @param replyTo       The queue to reply to.
+     * @param recipient     The recipient of the message
      * @param collectionID  The collection ID of the message.
      * @param correlationID The correlation ID of the message.
      * @param content       JAXB-serializable object to send.
@@ -336,6 +337,7 @@ public class ActiveMQMessageBus implements MessageBus {
      * Given a destination ID, retrieve the destination object.
      *
      * @param destinationID ID of the destination.
+     * @param session session
      * @return The object representing that destination. Will always return the same destination object for the same destination ID.
      */
     private Destination getDestination(String destinationID, Session session) {

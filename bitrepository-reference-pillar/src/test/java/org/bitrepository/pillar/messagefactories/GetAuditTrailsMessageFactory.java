@@ -77,7 +77,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
     }
     
     public GetAuditTrailsRequest createGetAuditTrailsRequest(String auditTrail, String contributorId, 
-            String correlationId, String fileId, String from, BigInteger maxNumberOfResults, BigInteger maxSequence, 
+            String correlationId, String fileID, String from, BigInteger maxNumberOfResults, BigInteger maxSequence,
             XMLGregorianCalendar maxTime, BigInteger minSequence, XMLGregorianCalendar minTime, String replyTo, 
             String url, String toTopic) {
         GetAuditTrailsRequest res = new GetAuditTrailsRequest();
@@ -86,7 +86,7 @@ public class GetAuditTrailsMessageFactory extends ClientTestMessageFactory {
         res.setCollectionID(collectionID);
         res.setContributor(contributorId);
         res.setCorrelationID(correlationId);
-        res.setFileID(fileId);
+        res.setFileID(fileID);
         res.setFrom(from);
         res.setMaxNumberOfResults(maxNumberOfResults);
         res.setMaxSequenceNumber(maxSequence);

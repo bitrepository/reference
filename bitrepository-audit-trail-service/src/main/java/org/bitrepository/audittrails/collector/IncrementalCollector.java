@@ -65,11 +65,12 @@ public class IncrementalCollector {
     private long collectedAudits = 0;
 
     /**
+     * @param collectionID the collection ID
      * @param clientID The clientID to use for the requests.
      * @param client The client to use for the operations.
      * @param store Where to persist the received results.
-     * @param maxNumberOfResults A optional limit on the number of audit trail events to request. If not set,
-     * {}
+     * @param maxNumberOfResults A optional limit on the number of audit trail events to request. If not set, {}
+     * @param alarmDispatcher the alarm dispatcher
      */
     public IncrementalCollector(String collectionID, String clientID, AuditTrailClient client, AuditTrailStore store,
                                 BigInteger maxNumberOfResults, AlarmDispatcher alarmDispatcher) {
@@ -101,6 +102,7 @@ public class IncrementalCollector {
     /**
      * Setup and initiates the collection of audit trails through the client.
      * Adds one to the sequence number to request only newer audit trails.
+     * @param contributors the collection of IDs of contributor
      */
     public void performCollection(Collection<String> contributors) {
         collectedAudits = 0;

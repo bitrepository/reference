@@ -270,19 +270,19 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 any(EventHandler.class));
     }
 
-    private ResultingFileIDs createResultingFileIDs(String ... fileIds) {
+    private ResultingFileIDs createResultingFileIDs(String ... fileIDs) {
         ResultingFileIDs res = new ResultingFileIDs();
-        res.setFileIDsData(getFileIDsData(fileIds));
+        res.setFileIDsData(getFileIDsData(fileIDs));
         return res;
     }
 
-    private FileIDsData getFileIDsData(String... fileIds) {
+    private FileIDsData getFileIDsData(String... fileIDs) {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems items = new FileIDsDataItems();
 
-        for(String fileId : fileIds) {
+        for(String fileID : fileIDs) {
             FileIDsDataItem dataItem = new FileIDsDataItem();
-            dataItem.setFileID(fileId);
+            dataItem.setFileID(fileID);
             dataItem.setFileSize(BigInteger.valueOf(items.getFileIDsDataItem().size() + 1));
             dataItem.setLastModificationTime(CalendarUtils.getNow());
             items.getFileIDsDataItem().add(dataItem);

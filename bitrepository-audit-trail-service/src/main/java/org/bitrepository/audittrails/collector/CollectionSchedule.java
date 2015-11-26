@@ -28,29 +28,29 @@ public class CollectionSchedule {
     }
 
     /**
-     * Get the date of the next scheduled collection 
+     * @return  the date of the next scheduled collection
      */
     public Date getNextRun() {
         return nextRun;
     }
     
     /**
-     * Get the date of the last finished collection, or the current collection if non has finished yet. 
-     * May return null, if the first collection has not yet been started.  
+     * @return  the date of the last finished collection, or the current collection if non has finished yet.
+     * May return null, if the first collection has not yet been started.
      */
     public Date getLastStart() {
         return lastStart;
     }
     
     /**
-     * Get the date of the last finished collection. Returns null if no collection has finished yet. 
+     * @return  the date of the last finished collection. Returns null if no collection has finished yet.
      */
     public Date getLastFinish() {
         return lastFinish;
     }
     
     /**
-     * Get the date of the currently running collection. Returns null, if no collection is currently running. 
+     * @return  the date of the currently running collection. Returns null, if no collection is currently running.
      */
     public Date getCurrentStart() {
         return currentStart;

@@ -40,8 +40,8 @@ public interface ReplaceFileClient extends BitrepositoryClient {
      * It is similar to performing the DeleteFile followed by the PutFile operations.
      * Since both of these takes two checksum arguments each, then this takes four!
      * @param collectionID The collection to replace the file in.
-     * @param fileId The id of the file to replace.
-     * @param pillarId The id of the pillar, where the file should be replaced.
+     * @param fileID The id of the file to replace.
+     * @param pillarID The id of the pillar, where the file should be replaced.
      * @param checksumForDeleteAtPillar The checksum of the file on the pillar which should be replaced. Used for 
      * validating at pillar-side.
      * @param checksumRequestedForDeletedFile [OPTIONAL] Request for calculation of the checksum of the file which 
@@ -59,7 +59,7 @@ public interface ReplaceFileClient extends BitrepositoryClient {
      * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation 
      * call.
      */
-    void replaceFile(String collectionID, String fileId, String pillarId, ChecksumDataForFileTYPE checksumForDeleteAtPillar,
+    void replaceFile(String collectionID, String fileID, String pillarID, ChecksumDataForFileTYPE checksumForDeleteAtPillar,
             ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile, 
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile, 
             EventHandler eventHandler, String auditTrailInformation);

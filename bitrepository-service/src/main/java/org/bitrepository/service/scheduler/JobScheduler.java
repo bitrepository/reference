@@ -36,15 +36,15 @@ import java.util.Date;
 public interface JobScheduler {
     /**
      * Adds a job for the scheduler to schedule.
-     * @param job The jo to schedule.
-     * @param interval The interval for how often the workflow should be triggered.
+     * @param job The job to schedule.
+     * @param interval The interval for how often the job should be triggered.
      */
     void schedule(SchedulableJob job, Long interval);
 
     /**
-     * Cancels the workflow with the given name.
+     * Cancels the job with the given name.
      *
-     * @param jobId The ID of the workflow to cancelJob.
+     * @param jobId The ID of the job to cancel
      * @return The canceled JobTimerTask.
      */
     JobTimerTask cancelJob(JobID jobId);
@@ -52,18 +52,20 @@ public interface JobScheduler {
 
     /**
      * Reschedules the job to start now,
-     * @param job
-     * @return A string indicating the result of the attempt to start the workflow.
+     * @param job the jobn to start
+     * @return A string indicating the result of the attempt to start the job.
      */
     String startJob(SchedulableJob job);
 
     /**
-     * Return the date for the next run of the indicated workflow. Return null if the workflow isn't scheduled.
+     * @param jobId the indicated job
+     * @return the date for the next run of the indicated job. Return null if the job isn't scheduled.
      */
     Date getNextRun(JobID jobId);
 
     /**
-     * Returns the interval between runs for the indicated workflow. The interval is in milliseconds.
+     * @param jobId the indicated job
+     * @return the interval between runs for the indicated job. The interval is in milliseconds.
      */
     long getRunInterval(JobID jobId);
 

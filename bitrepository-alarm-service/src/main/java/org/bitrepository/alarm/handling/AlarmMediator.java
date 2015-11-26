@@ -63,7 +63,7 @@ public class AlarmMediator implements MessageListener {
     
     /**
      * Adds a given alarm handler to handle the .
-     * @param handler
+     * @param handler the handler
      */
     public void addHandler(AlarmHandler handler) {
         handlers.add(handler);

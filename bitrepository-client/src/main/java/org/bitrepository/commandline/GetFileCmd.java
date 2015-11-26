@@ -108,17 +108,17 @@ public class GetFileCmd extends CommandLineClient {
      * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
      */
     private OperationEvent performConversation() {
-        String fileId = cmdHandler.getOptionValue(Constants.FILE_ID_ARG);
-        fileUrl = extractUrl(fileId);
+        String fileID = cmdHandler.getOptionValue(Constants.FILE_ID_ARG);
+        fileUrl = extractUrl(fileID);
 
         CompleteEventAwaiter eventHandler = new GetFileEventHandler(settings, output);
         output.debug("Initiating the GetFile conversation.");
 
         if(cmdHandler.hasOption(Constants.PILLAR_ARG)) {
-            String pillarId = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
-            client.getFileFromSpecificPillar(getCollectionID(), fileId, null, fileUrl, pillarId, eventHandler, null);
+            String pillarID = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
+            client.getFileFromSpecificPillar(getCollectionID(), fileID, null, fileUrl, pillarID, eventHandler, null);
         } else {
-            client.getFileFromFastestPillar(getCollectionID(), fileId, null, fileUrl, eventHandler, null);
+            client.getFileFromFastestPillar(getCollectionID(), fileID, null, fileUrl, eventHandler, null);
         }
 
         return eventHandler.getFinish();
@@ -146,15 +146,15 @@ public class GetFileCmd extends CommandLineClient {
 
     /**
      * Extracts the URL for where the file should be delivered from the GetFile operation.
-     * @param fileId The id of the file.
+     * @param fileID The id of the file.
      * @return The URL where the file should be located.
      */
-    private URL extractUrl(String fileId) {
+    private URL extractUrl(String fileID) {
         try {
             FileExchange fileexchange = new HttpFileExchange(settings);
-            return fileexchange.getURL(fileId);
+            return fileexchange.getURL(fileID);
         } catch (MalformedURLException e) {
-            throw new IllegalStateException("Could not make an URL for the file '" + fileId + "'.", e);
+            throw new IllegalStateException("Could not make an URL for the file '" + fileID + "'.", e);
         }
     }
 }

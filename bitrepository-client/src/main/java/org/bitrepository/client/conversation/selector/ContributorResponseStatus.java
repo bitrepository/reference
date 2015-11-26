@@ -51,9 +51,9 @@ public class ContributorResponseStatus {
 
     /**
      * Maintains the bookkeeping regarding which components have responded.
-     *
+     * @param response the response that was received
      */
-    public final void responseReceived(MessageResponse response) throws UnexpectedResponseException {
+    public final void responseReceived(MessageResponse response) {
         if (MessageUtils.isEndMessageForPrimitive(response)) {
             String componentID = response.getFrom();
             log.debug("Received response from: " + componentID);
@@ -68,13 +68,15 @@ public class ContributorResponseStatus {
         }
     }
 
-    /** Returns a list of components where a identify response hasen't been received. */ 
+    /** Get components where a identify response hasn't been received.
+     * @return a list of components where a identify response hasn't been received.
+     * */
     public Collection<String> getOutstandComponents() {
         return Collections.unmodifiableCollection(componentsWithOutstandingResponse);
     }
 
     /**
-     * @return true all components have responded.
+     * @return true if all components have responded. False otherwise
      */
     public final boolean haveAllComponentsResponded() {
         log.debug("Expected contributors: " + componentsWhichShouldRespond + ", components that have not answered: " + componentsWithOutstandingResponse);

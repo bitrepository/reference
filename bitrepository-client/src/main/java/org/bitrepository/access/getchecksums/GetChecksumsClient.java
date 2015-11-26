@@ -42,8 +42,8 @@ public interface GetChecksumsClient extends BitrepositoryClient {
      * If the number of fileIDs in a collection is large (10.000's) the fileIDs should  be retrieved in chunks by
      * using the <code>ContributorQuery</code> functionality.
      * <p>
-     * Since every pillar cannot upload their checksums to the same URL, it is extended with the pillarId for the given
-     * pillar, e.g.: 'http://upload.url/mypath' + '-pillarId'.
+     * Since every pillar cannot upload their checksums to the same URL, it is extended with the pillarID for the given
+     * pillar, e.g.: 'http://upload.url/mypath' + '-pillarID'.
      * <p>
      * The results are returned through as a ChecksumsCompletePillarCompete event as the results are returned by the
      * pillars.

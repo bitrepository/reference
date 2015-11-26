@@ -83,13 +83,13 @@ public class PuttingFile extends PerformingOperationState {
     }
 
     /**
-     * Method to send the PutFileRequest to a given pillar.
-     * @param pillar The pillarID to which should have the message sent.  
+     * Method to send the PutFileRequest to a given pillarID.
+     * @param pillarID The pillarID to which should have the message sent.
      */
-    private void sendPillarRequest(String pillar) {
-        PutFileRequest msg = createRequest(pillar);
+    private void sendPillarRequest(String pillarID) {
+        PutFileRequest msg = createRequest(pillarID);
         if (context.getChecksumRequestForValidation() != null) {
-            if (!context.isChecksumPillar(pillar) ||
+            if (!context.isChecksumPillar(pillarID) ||
                     context.getChecksumRequestForValidation().equals(ChecksumUtils.getDefault(context.getSettings()))) {
                 msg.setChecksumRequestForNewFile(context.getChecksumRequestForValidation());
             }
@@ -100,16 +100,18 @@ public class PuttingFile extends PerformingOperationState {
     /**
      * Will create a PutFileRequest based on the context. The ChecksumRequestForNewFile parameter is not added as this
      * should only be added in case of full pillars.
+     * @param pillarID the Pillar ID
+     * @return a PutFileRequest
      */
-    private PutFileRequest createRequest(String pillar) {
+    private PutFileRequest createRequest(String pillarID) {
         PutFileRequest request = new PutFileRequest();
         initializeMessage(request);
         request.setFileAddress(context.getUrlForFile().toExternalForm());
         request.setFileID(context.getFileID());
         request.setFileSize(context.getFileSize());
         request.setChecksumDataForNewFile(context.getChecksumForValidationAtPillar());
-        request.setPillarID(pillar);
-        request.setDestination(activeContributors.get(pillar));
+        request.setPillarID(pillarID);
+        request.setDestination(activeContributors.get(pillarID));
         return request;
     }
 

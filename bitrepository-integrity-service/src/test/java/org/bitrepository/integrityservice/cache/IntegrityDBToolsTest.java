@@ -259,13 +259,13 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         return res;
     }
     
-    private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileId, String checksum) {
+    private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileID, String checksum) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         
         ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
         csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
         csData.setCalculationTimestamp(CalendarUtils.getNow());
-        csData.setFileID(fileId);
+        csData.setFileID(fileID);
         res.add(csData);
         return res;
     }

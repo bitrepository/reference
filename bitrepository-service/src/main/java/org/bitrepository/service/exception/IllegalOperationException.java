@@ -29,18 +29,18 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
  */
 @SuppressWarnings("serial")
 public class IllegalOperationException extends RequestHandlerException {
-    private String fileId;
+    private String fileID;
     
     /**
      * Constructor.
      * @param rCode The response code.
      * @param rText The text for the response info.
      * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
-     * @param fileId The id of the file regarding the illegal operation. Use null, if no file.
+     * @param fileID The id of the file regarding the illegal operation. Use null, if no file.
      */
-    public IllegalOperationException(ResponseCode rCode, String rText, String collectionId, String fileId) {
-        super(rCode, rText, collectionId);
-        this.fileId = fileId;
+    public IllegalOperationException(ResponseCode rCode, String rText, String collectionID, String fileID) {
+        super(rCode, rText, collectionID);
+        this.fileID = fileID;
     }
     
     /**
@@ -48,18 +48,18 @@ public class IllegalOperationException extends RequestHandlerException {
      * @param rCode The response code.
      * @param rText The text for the response info.
      * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
-     * @param fileId The id of the file regarding the illegal operation. Use null, if no file.
+     * @param fileID The id of the file regarding the illegal operation. Use null, if no file.
      * @param e The exception to wrap into the StackTrace.
      */
-    public IllegalOperationException(ResponseCode rCode, String rText, String collectionId, String fileId, Exception e) {
-        super(rCode, rText, collectionId, e);
-        this.fileId = fileId;
+    public IllegalOperationException(ResponseCode rCode, String rText, String collectionID, String fileID, Exception e) {
+        super(rCode, rText, collectionID, e);
+        this.fileID = fileID;
     }
     
     /**
-     * @return The fileId
+     * @return The fileID
      */
     public String getFileId() {
-        return fileId;
+        return fileID;
     }
 }

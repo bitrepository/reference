@@ -44,11 +44,13 @@ public class MessageDispatcher {
     /**
      * Completes and sends a given message.
      * All the values of the specific response elements has to be set, including the ResponseInfo.
-     * <br/> Sets the fields:
-     * <br/> CollectionID
-     * <br/> From
-     * <br/> MinVersion
-     * <br/> Version
+     * Sets the fields:
+     * <ul>
+     * <li> CollectionID </li>
+     * <li> From </li>
+     * <li> MinVersion </li>
+     * <li> Version </li>
+     * </ul>
      *
      * @param message The message which only needs the basic information to be send.
      */

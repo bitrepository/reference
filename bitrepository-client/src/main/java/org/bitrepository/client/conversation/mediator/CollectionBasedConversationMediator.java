@@ -96,10 +96,12 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     }
 
     /**
-     * Will try to fail a conversation gracefully. This entitles: <ul>
+     * Will try to fail a conversation gracefully. This entitles:
+     * <ul>
      * <li> Removing the conversation from the list of conversations.
      * <li> Attempt to call the failConversation operation on the conversation. The call is made in a separate thread to 
      * avoid having the failing conversation blocking the calling thread.
+     * </ul>
      * @param conversation The conversation to fail.
      * @param message A message describing the failure symptoms.
      */

@@ -48,7 +48,7 @@ import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_TAB
 public class AlarmDatabaseTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
-    String fileId = "TEST-FILE-ID-" + new Date().getTime();
+    String fileID = "TEST-FILE-ID-" + new Date().getTime();
     String component1 = "ACTOR-1";
     String component2 = "ACTOR-2";
     String collection1 = "collection1";
@@ -118,7 +118,7 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         Assert.assertEquals(extractedAlarms.size(), 1);
         Assert.assertEquals(extractedAlarms.get(0).getAlarmRaiser(), component2);
         Assert.assertEquals(extractedAlarms.get(0).getAlarmCode(), AlarmCode.CHECKSUM_ALARM);
-        Assert.assertEquals(extractedAlarms.get(0).getFileID(), fileId);
+        Assert.assertEquals(extractedAlarms.get(0).getFileID(), fileID);
         
         addStep("Try to extract the alarms for the alarm code 'COMPONENT_FAILURE'.", "Should deliver one alarm.");
         extractedAlarms = database.extractAlarms(null, AlarmCode.COMPONENT_FAILURE, null, null, null, null, null, false);
@@ -132,14 +132,14 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         Assert.assertEquals(extractedAlarms.size(), 1);
         Assert.assertEquals(extractedAlarms.get(0).getAlarmRaiser(), component2);
         Assert.assertEquals(extractedAlarms.get(0).getAlarmCode(), AlarmCode.CHECKSUM_ALARM);
-        Assert.assertEquals(extractedAlarms.get(0).getFileID(), fileId);
+        Assert.assertEquals(extractedAlarms.get(0).getFileID(), fileID);
         
         addStep("Try to extract the new alarm.", "Should deliver one alarm.");
         extractedAlarms = database.extractAlarms(null, null, restrictionDate, null, null, null, null, false);
         Assert.assertEquals(extractedAlarms.size(), 1);
         Assert.assertEquals(extractedAlarms.get(0).getAlarmRaiser(), component2);
         Assert.assertEquals(extractedAlarms.get(0).getAlarmCode(), AlarmCode.CHECKSUM_ALARM);
-        Assert.assertEquals(extractedAlarms.get(0).getFileID(), fileId);
+        Assert.assertEquals(extractedAlarms.get(0).getFileID(), fileID);
         
         addStep("Try to extract the old alarm.", "Should deliver one alarm.");
         extractedAlarms = database.extractAlarms(null, null, null, restrictionDate, null, null, null, false);
@@ -149,11 +149,11 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         Assert.assertNull(extractedAlarms.get(0).getFileID());
 
         addStep("Try to extract the alarms for the file id.", "Should deliver one alarm.");
-        extractedAlarms = database.extractAlarms(null, null, null, null, fileId, null, null, false);
+        extractedAlarms = database.extractAlarms(null, null, null, null, fileID, null, null, false);
         Assert.assertEquals(extractedAlarms.size(), 1);
         Assert.assertEquals(extractedAlarms.get(0).getAlarmRaiser(), component2);
         Assert.assertEquals(extractedAlarms.get(0).getAlarmCode(), AlarmCode.CHECKSUM_ALARM);
-        Assert.assertEquals(extractedAlarms.get(0).getFileID(), fileId);
+        Assert.assertEquals(extractedAlarms.get(0).getFileID(), fileID);
         
         addStep("Try to extract the alarms for the collection id.", "Should deliver one alarm.");
         extractedAlarms = database.extractAlarms(null, null, null, null, null, collection1, null, false);
@@ -174,7 +174,7 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         Assert.assertEquals(extractedAlarms.size(), 1);
         Assert.assertEquals(extractedAlarms.get(0).getAlarmRaiser(), component2);
         Assert.assertEquals(extractedAlarms.get(0).getAlarmCode(), AlarmCode.CHECKSUM_ALARM);
-        Assert.assertEquals(extractedAlarms.get(0).getFileID(), fileId);
+        Assert.assertEquals(extractedAlarms.get(0).getFileID(), fileID);
     }
 
     @Test(groups = {"regressiontest", "databasetest"})
@@ -188,7 +188,7 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         Alarm alarm = new Alarm();
         alarm.setAlarmCode(AlarmCode.CHECKSUM_ALARM);
         alarm.setAlarmRaiser("TEST");
-        alarm.setFileID(fileId);
+        alarm.setFileID(fileID);
         alarm.setOrigDateTime(CalendarUtils.getEpoch());
         
         StringBuilder text = new StringBuilder();
@@ -224,7 +224,7 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         alarm2.setAlarmCode(AlarmCode.CHECKSUM_ALARM);
         alarm2.setAlarmRaiser(component2);
         alarm2.setAlarmText("The second alarm: Current checksum alarm.");
-        alarm2.setFileID(fileId);
+        alarm2.setFileID(fileID);
         alarm2.setOrigDateTime(CalendarUtils.getNow());
         alarm2.setCollectionID(collection2);
         res.add(alarm2);

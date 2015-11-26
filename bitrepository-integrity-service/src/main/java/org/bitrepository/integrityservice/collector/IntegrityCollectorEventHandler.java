@@ -57,8 +57,8 @@ public class IntegrityCollectorEventHandler implements EventHandler {
     /**
      * Constructor.
      * @param model The integrity model, where the results of GetChecksums or GetFileIDs are to be delivered.
-     * @param alerter The alerter for sending failures.
      * @param timeout The maximum amount of millisecond to wait for an result.
+     * @param integrityContributors the integrity contributors
      */
     public IntegrityCollectorEventHandler(IntegrityModel model, long timeout, 
             IntegrityContributors integrityContributors) {

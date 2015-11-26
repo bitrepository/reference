@@ -103,7 +103,7 @@ public class GetAuditTrailsTest extends MockedPillarTest {
                 + "where a specific audit trail are requested.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String auditTrail = "";
-        String FILE_ID = "fileId" + new Date().getTime();
+        String FILE_ID = "fileID" + new Date().getTime();
         String ACTOR = "ACTOR";
         String INFO = "InFo";
         String AUDITTRAIL = "auditTrails";
@@ -175,7 +175,7 @@ public class GetAuditTrailsTest extends MockedPillarTest {
                 + "where a limited number of audit trails are requested.");
         addStep("Set up constants and variables.", "Should not fail here!");
         final String auditTrail = "";
-        final String FILE_ID = "fileId" + new Date().getTime();
+        final String FILE_ID = "fileID" + new Date().getTime();
         final String ACTOR = "ACTOR";
         final String INFO = "InFo";
         final String AUDITTRAIL = "auditTrails";

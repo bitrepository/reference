@@ -200,23 +200,23 @@ public class ReferenceArchive {
     
     /**
      * Retrieves the file within a tmpDir.
-     * @param fileId The id of the file to locate within the tmpDir.
+     * @param fileID The id of the file to locate within the tmpDir.
      * @return The file in the tmpDir.
      */
-    public File getFileInTmpDir(String fileId) {
-        return getDirWithTmpFile(fileId).getFileInTempDir(fileId);
+    public File getFileInTmpDir(String fileID) {
+        return getDirWithTmpFile(fileID).getFileInTempDir(fileID);
     }
     
     /**
      * Ensures that no such file exists within the tmp directory.
      * 
-     * @param fileId The id of the file to clean up after.
+     * @param fileID The id of the file to clean up after.
      */
-    public void ensureFileNotInTmpDir(String fileId) {
+    public void ensureFileNotInTmpDir(String fileID) {
         for(ArchiveDirectory dir : directories) {
-            if(dir.hasFileInTempDir(fileId)) {
-                log.info("Removing tmp file '" + fileId + "' from tmp dir '" + dir + "'.");
-                dir.removeFileFromTmp(fileId);
+            if(dir.hasFileInTempDir(fileID)) {
+                log.info("Removing tmp file '" + fileID + "' from tmp dir '" + dir + "'.");
+                dir.removeFileFromTmp(fileID);
             }
         }
     }
@@ -240,32 +240,32 @@ public class ReferenceArchive {
     
     /**
      * Finds the archive directory with the given file within its archive directory.
-     * @param fileId The id of the file.
+     * @param fileID The id of the file.
      * @return The archive directory with the file.
      */
-    private ArchiveDirectory getDirWithFile(String fileId) {
+    private ArchiveDirectory getDirWithFile(String fileID) {
         for(ArchiveDirectory dir : directories) {
-            if(dir.hasFile(fileId)) {
+            if(dir.hasFile(fileID)) {
                 return dir;
             }
         }
         
-        throw new IllegalStateException("Does not have the file '" + fileId + "' within any archive dirs.");
+        throw new IllegalStateException("Does not have the file '" + fileID + "' within any archive dirs.");
     }
 
     /**
      * Finds the archive directory with the given file within its tmp directory, ready for archival.
-     * @param fileId The id of the file.
+     * @param fileID The id of the file.
      * @return The archive directory with the file in its tmp dir.
      */
-    private ArchiveDirectory getDirWithTmpFile(String fileId) {
+    private ArchiveDirectory getDirWithTmpFile(String fileID) {
         for(ArchiveDirectory dir : directories) {
-            if(dir.hasFileInTempDir(fileId)) {
+            if(dir.hasFileInTempDir(fileID)) {
                 return dir;
             }
         }
         
-        throw new IllegalStateException("Does not have the file '" + fileId + "' within any archive dirs.");
+        throw new IllegalStateException("Does not have the file '" + fileID + "' within any archive dirs.");
     }
     
     /**

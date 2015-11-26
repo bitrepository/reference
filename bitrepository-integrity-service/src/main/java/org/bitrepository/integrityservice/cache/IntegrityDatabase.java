@@ -26,95 +26,95 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public void addFileIDs(FileIDsData data, String pillarId, String collectionId) {
-        store.updateFileIDs(data, pillarId, collectionId);
+    public void addFileIDs(FileIDsData data, String pillarID, String collectionID) {
+        store.updateFileIDs(data, pillarID, collectionID);
     }
 
     @Override
-    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarId, String collectionId) {
-        store.updateChecksums(data, pillarId, collectionId);
+    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarID, String collectionID) {
+        store.updateChecksums(data, pillarID, collectionID);
     }
 
     @Override
-    public Collection<FileInfo> getFileInfos(String fileId, String collectionId) {
-        return store.getFileInfosForFile(fileId, collectionId);
+    public Collection<FileInfo> getFileInfos(String fileID, String collectionID) {
+        return store.getFileInfosForFile(fileID, collectionID);
     }
     
     @Override
-    public void resetFileCollectionProgress(String collectionId) {
-        store.resetFileCollectionProgress(collectionId);
+    public void resetFileCollectionProgress(String collectionID) {
+        store.resetFileCollectionProgress(collectionID);
     }
     
     @Override
-    public void resetChecksumCollectionProgress(String collectionId) {
-        store.resetChecksumCollectionProgress(collectionId);
+    public void resetChecksumCollectionProgress(String collectionID) {
+        store.resetChecksumCollectionProgress(collectionID);
     }
 
     @Override
-    public long getNumberOfFilesInCollection(String collectionId) {
-        return store.getNumberOfFilesInCollection(collectionId);
+    public long getNumberOfFilesInCollection(String collectionID) {
+        return store.getNumberOfFilesInCollection(collectionID);
     }
 
     @Override
-    public long getNumberOfFiles(String pillarId, String collectionId) {
-        return store.getNumberOfFilesInCollectionAtPillar(collectionId, pillarId);
+    public long getNumberOfFiles(String pillarID, String collectionID) {
+        return store.getNumberOfFilesInCollectionAtPillar(collectionID, pillarID);
     }
 
     @Override
-    public IntegrityIssueIterator getFilesOnPillar(String pillarId, long firstIndex, 
-            long maxResults, String collectionId) {
-        return store.getAllFileIDsOnPillar(collectionId, pillarId, firstIndex, maxResults);
+    public IntegrityIssueIterator getFilesOnPillar(String pillarID, long firstIndex,
+            long maxResults, String collectionID) {
+        return store.getAllFileIDsOnPillar(collectionID, pillarID, firstIndex, maxResults);
     }
 
     @Override
-    public IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarId, long firstIndex, 
-            long maxResults, String collectionId) {
-        return store.findMissingFilesAtPillar(collectionId, pillarId, firstIndex, maxResults);
+    public IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarID, long firstIndex,
+            long maxResults, String collectionID) {
+        return store.findMissingFilesAtPillar(collectionID, pillarID, firstIndex, maxResults);
     }
     
     @Override
-    public void deleteFileIdEntry(String collectionId, String pillarId, String fileId) {
-        store.removeFile(collectionId, pillarId, fileId);
+    public void deleteFileIdEntry(String collectionID, String pillarID, String fileID) {
+        store.removeFile(collectionID, pillarID, fileID);
     }
     
     @Override
-    public IntegrityIssueIterator findFilesWithMissingChecksum(String collectionId, String pillarId, Date cutoffDate) {
-        return store.getFilesWithMissingChecksums(collectionId, pillarId, cutoffDate);
+    public IntegrityIssueIterator findFilesWithMissingChecksum(String collectionID, String pillarID, Date cutoffDate) {
+        return store.getFilesWithMissingChecksums(collectionID, pillarID, cutoffDate);
     }
 
     @Override
-    public IntegrityIssueIterator findChecksumsOlderThan(Date date, String pillarID, String collectionId) {
-        return store.getFilesWithOutdatedChecksums(collectionId, pillarID, date);
+    public IntegrityIssueIterator findChecksumsOlderThan(Date date, String pillarID, String collectionID) {
+        return store.getFilesWithOutdatedChecksums(collectionID, pillarID, date);
     }
     
     @Override
-    public IntegrityIssueIterator findOrphanFiles(String collectionId, String pillarId, Date cutoffDate) {
-        return store.getOrphanFilesOnPillar(collectionId, pillarId, cutoffDate);
+    public IntegrityIssueIterator findOrphanFiles(String collectionID, String pillarID, Date cutoffDate) {
+        return store.getOrphanFilesOnPillar(collectionID, pillarID, cutoffDate);
     }
 
     @Override
-    public IntegrityIssueIterator getFilesWithInconsistentChecksums(String collectionId) {
-        return store.findFilesWithChecksumInconsistincies(collectionId);
+    public IntegrityIssueIterator getFilesWithInconsistentChecksums(String collectionID) {
+        return store.findFilesWithChecksumInconsistincies(collectionID);
     }
 
     @Override
-    public Date getDateForNewestFileEntryForCollection(String collectionId) {
-        return store.getLatestFileDateInCollection(collectionId);
+    public Date getDateForNewestFileEntryForCollection(String collectionID) {
+        return store.getLatestFileDateInCollection(collectionID);
     }
 
     @Override
-    public Date getDateForNewestFileEntryForPillar(String pillarId, String collectionId) {
-        return store.getLatestFileDate(collectionId, pillarId);
+    public Date getDateForNewestFileEntryForPillar(String pillarID, String collectionID) {
+        return store.getLatestFileDate(collectionID, pillarID);
     }
 
     @Override
-    public Date getDateForNewestChecksumEntryForPillar(String pillarId, String collectionId) {
-        return store.getLatestChecksumDate(collectionId, pillarId);
+    public Date getDateForNewestChecksumEntryForPillar(String pillarID, String collectionID) {
+        return store.getLatestChecksumDate(collectionID, pillarID);
     }
 
     @Override
-    public Long getCollectionFileSize(String collectionId) {
-        return store.getCollectionSize(collectionId);
+    public Long getCollectionFileSize(String collectionID) {
+        return store.getCollectionSize(collectionID);
     }
 
     @Override
@@ -133,17 +133,17 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public Long getCollectionFileSizeAtPillar(String collectionId, String pillarId) {
-        return store.getCollectionSizeAtPillar(collectionId, pillarId);
+    public Long getCollectionFileSizeAtPillar(String collectionID, String pillarID) {
+        return store.getCollectionSizeAtPillar(collectionID, pillarID);
     }
 
     @Override
-    public void createStatistics(String collectionId, StatisticsCollector statisticsCollector) {
-        store.createStatistics(collectionId, statisticsCollector);
+    public void createStatistics(String collectionID, StatisticsCollector statisticsCollector) {
+        store.createStatistics(collectionID, statisticsCollector);
     }
 
     @Override
-    public Date getEarlistFileDate(String collectionId, String fileID) {
-        return store.getEarliestFileDate(collectionId, fileID);
+    public Date getEarlistFileDate(String collectionID, String fileID) {
+        return store.getEarliestFileDate(collectionID, fileID);
     }
 }

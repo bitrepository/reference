@@ -40,14 +40,14 @@ public interface PutFileClient extends BitrepositoryClient {
      *
      * @param collectionID The ID of the collection to put the file to.
      * @param url The URL where the file to be put is located.
-     * @param fileId The id of the file.
+     * @param fileID The id of the file.
      * @param sizeOfFile The number of bytes the file requires.
      * @param checksumForValidationAtPillar The checksum for validating at pillar side.
      * @param checksumRequestsForValidation The checksum for validating at client side.
      * @param eventHandler The EventHandler for the operation.
      * @param auditTrailInformation The audit trail information.
      */
-    void putFile(String collectionID, URL url, String fileId, long sizeOfFile, ChecksumDataForFileTYPE checksumForValidationAtPillar,
+    void putFile(String collectionID, URL url, String fileID, long sizeOfFile, ChecksumDataForFileTYPE checksumForValidationAtPillar,
             ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation);
     
 }

@@ -54,51 +54,51 @@ public class ChecksumDAO implements ChecksumStore {
     }
     
     @Override
-    public void insertChecksumCalculation(String fileId, String collectionId, String checksum, Date calculationDate) {
-        ArgumentValidator.checkNotNull(fileId, "String fileId");
-        ArgumentValidator.checkNotNull(collectionId, "String collectionId");
+    public void insertChecksumCalculation(String fileID, String collectionID, String checksum, Date calculationDate) {
+        ArgumentValidator.checkNotNull(fileID, "String fileID");
+        ArgumentValidator.checkNotNull(collectionID, "String collectionID");
         
-        if(extractor.hasFile(fileId, collectionId)) {
-            ingestor.updateEntry(fileId, collectionId, checksum, calculationDate);
+        if(extractor.hasFile(fileID, collectionID)) {
+            ingestor.updateEntry(fileID, collectionID, checksum, calculationDate);
         } else {
-            ingestor.insertNewEntry(fileId, collectionId, checksum, calculationDate);
+            ingestor.insertNewEntry(fileID, collectionID, checksum, calculationDate);
         }
     }
 
     @Override
-    public void deleteEntry(String fileId, String collectionId) {
-        ArgumentValidator.checkNotNull(fileId, "String fileId");
-        ArgumentValidator.checkNotNull(collectionId, "String collectionId");
+    public void deleteEntry(String fileID, String collectionID) {
+        ArgumentValidator.checkNotNull(fileID, "String fileID");
+        ArgumentValidator.checkNotNull(collectionID, "String collectionID");
 
-        if(!extractor.hasFile(fileId, collectionId)) {
-            throw new IllegalStateException("No entry for file '" + fileId + "' to delete.");
+        if(!extractor.hasFile(fileID, collectionID)) {
+            throw new IllegalStateException("No entry for file '" + fileID + "' to delete.");
         }
-        ingestor.removeEntry(fileId, collectionId);
+        ingestor.removeEntry(fileID, collectionID);
     }
 
     @Override
-    public ChecksumEntry getEntry(String fileId, String collectionId) {
-        ArgumentValidator.checkNotNull(fileId, "String fileId");
-        ArgumentValidator.checkNotNull(collectionId, "String collectionId");
+    public ChecksumEntry getEntry(String fileID, String collectionID) {
+        ArgumentValidator.checkNotNull(fileID, "String fileID");
+        ArgumentValidator.checkNotNull(collectionID, "String collectionID");
         
-        return extractor.extractSingleEntry(fileId, collectionId);
+        return extractor.extractSingleEntry(fileID, collectionID);
     }
     
     @Override
     public ExtractedChecksumResultSet getChecksumResults(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            Long maxNumberOfResults, String collectionId) {
-        ArgumentValidator.checkNotNull(collectionId, "String collectionId");
-        return extractor.extractEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults, collectionId);
+            Long maxNumberOfResults, String collectionID) {
+        ArgumentValidator.checkNotNull(collectionID, "String collectionID");
+        return extractor.extractEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults, collectionID);
     }
     
     @Override
-    public Date getCalculationDate(String fileId, String collectionId) {
-        ArgumentValidator.checkNotNull(fileId, "String fileId");
-        ArgumentValidator.checkNotNull(collectionId, "String collectionId");
+    public Date getCalculationDate(String fileID, String collectionID) {
+        ArgumentValidator.checkNotNull(fileID, "String fileID");
+        ArgumentValidator.checkNotNull(collectionID, "String collectionID");
 
-        Date res = extractor.extractDateForFile(fileId, collectionId);
+        Date res = extractor.extractDateForFile(fileID, collectionID);
         if(res == null) {
-            throw new IllegalStateException("No entry for file '" + fileId + "' to delete.");
+            throw new IllegalStateException("No entry for file '" + fileID + "' to delete.");
         }
         return res;
         
@@ -106,35 +106,35 @@ public class ChecksumDAO implements ChecksumStore {
     
     @Override
     public ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            Long maxNumberOfResults, String fileId, String collectionId) {
-        ArgumentValidator.checkNotNull(collectionId, "String collectionId");
-        return extractor.getFileIDs(minTimeStamp, maxTimeStamp, maxNumberOfResults, fileId, collectionId);
+            Long maxNumberOfResults, String fileID, String collectionID) {
+        ArgumentValidator.checkNotNull(collectionID, "String collectionID");
+        return extractor.getFileIDs(minTimeStamp, maxTimeStamp, maxNumberOfResults, fileID, collectionID);
     }
 
     @Override
-    public boolean hasFile(String fileId, String collectionId) {
-        ArgumentValidator.checkNotNull(fileId, "String fileId");
-        ArgumentValidator.checkNotNull(collectionId, "String collectionId");
+    public boolean hasFile(String fileID, String collectionID) {
+        ArgumentValidator.checkNotNull(fileID, "String fileID");
+        ArgumentValidator.checkNotNull(collectionID, "String collectionID");
 
-        return extractor.hasFile(fileId, collectionId);
+        return extractor.hasFile(fileID, collectionID);
     }
 
     @Override
-    public String getChecksum(String fileId, String collectionId) {
-        ArgumentValidator.checkNotNull(fileId, "String fileId");
-        ArgumentValidator.checkNotNull(collectionId, "String collectionId");
+    public String getChecksum(String fileID, String collectionID) {
+        ArgumentValidator.checkNotNull(fileID, "String fileID");
+        ArgumentValidator.checkNotNull(collectionID, "String collectionID");
 
-        String res = extractor.extractChecksumForFile(fileId, collectionId);
+        String res = extractor.extractChecksumForFile(fileID, collectionID);
         if(res == null) {
-            throw new IllegalStateException("No entry for file '" + fileId + "' to delete.");
+            throw new IllegalStateException("No entry for file '" + fileID + "' to delete.");
         }
         return res;
     }
 
     @Override
-    public java.util.Collection<String> getAllFileIDs(String collectionId) {
-        ArgumentValidator.checkNotNull(collectionId, "String collectionId");
-        return extractor.extractAllFileIDs(collectionId);
+    public java.util.Collection<String> getAllFileIDs(String collectionID) {
+        ArgumentValidator.checkNotNull(collectionID, "String collectionID");
+        return extractor.extractAllFileIDs(collectionID);
     }
 
     @Override

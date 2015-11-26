@@ -59,8 +59,8 @@ public class GetChecksumsResultModel {
     
     /**
      * Add a set of results from a contributor
-     * @param contributor, the contributor from which the results are from
-     * @param results, the results from the contributor. 
+     * @param contributor the contributor from which the results are from
+     * @param results the results from the contributor.
      */
     public void addResults(String contributor, ResultingChecksums results) {
         Date latestContribution = latestContributorDate.get(contributor);
@@ -119,8 +119,8 @@ public class GetChecksumsResultModel {
     
     /**
      * Get the Date of the latest checksum by the contributor
-     * @param contributor, the contributor to get the Date of the latest contribution.
-     * @return Date, the date of the latest contribution by the given contributor
+     * @param contributor the contributor to get the Date of the latest contribution.
+     * @return Date the date of the latest contribution by the given contributor
      */
     public Date getLatestContribution(String contributor) {
         return latestContributorDate.get(contributor);

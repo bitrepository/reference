@@ -45,21 +45,21 @@ public class GetFileClientTestWrapper implements GetFileClient {
     }
 
     @Override
-    public void getFileFromFastestPillar(String collectionID,String fileId, FilePart filePart, URL uploadUrl,
+    public void getFileFromFastestPillar(String collectionID,String fileID, FilePart filePart, URL uploadUrl,
                                          EventHandler eventHandler,
                                          String auditTrailInformation) {
-        testEventManager.addStimuli("Calling getFileFromFastestPillar(" + fileId + ", " + uploadUrl + ")");
+        testEventManager.addStimuli("Calling getFileFromFastestPillar(" + fileID + ", " + uploadUrl + ")");
         createGetFileClient.getFileFromFastestPillar(collectionID,
-                fileId, filePart, uploadUrl, eventHandler, auditTrailInformation);
+                fileID, filePart, uploadUrl, eventHandler, auditTrailInformation);
     }
 
     @Override
-    public void getFileFromSpecificPillar(String collectionID,String fileId, FilePart filePart, URL uploadUrl,
-                                          String pillarId,
+    public void getFileFromSpecificPillar(String collectionID,String fileID, FilePart filePart, URL uploadUrl,
+                                          String pillarID,
                                           EventHandler eventHandler, String auditTrailInformation) {
         testEventManager.addStimuli("Calling getFileFromSpecificPillar(" + 
-                fileId + ", " + uploadUrl + ", " + pillarId + ")");
+                fileID + ", " + uploadUrl + ", " + pillarID + ")");
         createGetFileClient.getFileFromSpecificPillar(collectionID,
-                fileId, filePart, uploadUrl, pillarId, eventHandler, auditTrailInformation);
+                fileID, filePart, uploadUrl, pillarID, eventHandler, auditTrailInformation);
     }
 }

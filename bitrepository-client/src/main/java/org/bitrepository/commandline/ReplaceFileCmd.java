@@ -165,7 +165,7 @@ public class ReplaceFileCmd extends CommandLineClient {
      */
     private OperationEvent replaceTheFile() {
         URL url = getURLOrUploadFile();
-        String fileId = retrieveFileID();
+        String fileID = retrieveFileID();
 
         ChecksumDataForFileTYPE replaceValidationChecksum = getChecksumDataForDeleteValidation();
         ChecksumDataForFileTYPE newValidationChecksum = getValidationChecksum();
@@ -173,13 +173,13 @@ public class ReplaceFileCmd extends CommandLineClient {
 
         output.debug("Initiating the ReplaceFile conversation.");
         CompleteEventAwaiter eventHandler = new ReplaceFileEventHandler(settings, output);
-        String pillarId = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
+        String pillarID = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
 
         if (requestChecksum != null) {
             output.resultHeader("PillarId results");
         }
 
-        client.replaceFile(getCollectionID(), fileId, pillarId, replaceValidationChecksum, 
+        client.replaceFile(getCollectionID(), fileID, pillarID, replaceValidationChecksum,
                 requestChecksum, url, getSizeOfFileOrZero(), newValidationChecksum, 
                 requestChecksum, eventHandler, null);
 

@@ -39,22 +39,26 @@ public abstract class AbstractBitrepositoryContextListener implements ServletCon
     private final Logger log = LoggerFactory.getLogger(getClass());
         
     /**
-     * Return the path to the service's configuration directory 
+     * Return the path to the service's configuration directory
+     * @return the path to the service's configuration directory
      */
     public abstract String getSettingsParameter();
     
     /**
      * Method to get an instance of the service for the context
+     * @return an instance of the service for the context
      */
     public abstract LifeCycledService getService();
     
     /**
-     * Sets up the configuration 
+     * Sets up the configuration
+     * @param configurationDir the configuration dir
      */
     public abstract void initialize(String configurationDir);
     
     /**
-     * Method called at servlet initialization 
+     * Method called at servlet initialization
+     * @param sce the servlet context event for the initialization
      */
     public void contextInitialized(ServletContextEvent sce) {
         String confDir = sce.getServletContext().getInitParameter(getSettingsParameter());
@@ -83,7 +87,8 @@ public abstract class AbstractBitrepositoryContextListener implements ServletCon
     }
     
     /**
-     * Method called at servlet shutdown. 
+     * Method called at servlet shutdown.
+     * @param sce the servlet context event for the shutdown
      */
     public void contextDestroyed(ServletContextEvent sce) {
         getService().shutdown();

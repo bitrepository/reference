@@ -301,11 +301,11 @@ public class MissingChecksumTests extends ExtendedTestCase {
     
     private List<ChecksumDataForChecksumSpecTYPE> createChecksumData(String checksum, String ... fileids) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
-        for(String fileId : fileids) {
+        for(String fileID : fileids) {
             ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
             csData.setCalculationTimestamp(CalendarUtils.getNow());
             csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
-            csData.setFileID(fileId);
+            csData.setFileID(fileID);
             res.add(csData);
         }
         return res;

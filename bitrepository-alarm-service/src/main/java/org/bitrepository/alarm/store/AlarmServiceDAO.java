@@ -38,7 +38,7 @@ public abstract class AlarmServiceDAO implements AlarmStore {
     
     /** 
      * Constructor.
-     * @param settings The settings.
+     * @param databaseManager the database manager
      */
     public AlarmServiceDAO(DatabaseManager databaseManager) {
         dbConnector = databaseManager.getConnector();

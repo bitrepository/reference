@@ -50,7 +50,7 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The Integrity Model. */
     private final IntegrityModel store;
-    /** The report model to populate */
+    /** The report model to populate. */
     private final IntegrityReporter reporter;
     /** The audit trail manager.*/
     private final AuditTrailManager auditManager;
@@ -81,7 +81,7 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
      * Queries the IntegrityModel for missing files on each pillar. Reports them if any is returned.
      */
     @Override
-    public synchronized void performStep() throws Exception {
+    public synchronized void performStep() throws StepFailedException {
         IntegrityIssueIterator inconsistentFilesIterator 
             = store.getFilesWithInconsistentChecksums(reporter.getCollectionID());
         String fileID;
@@ -133,23 +133,23 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
      * Creates a audit-trail for inconsistency between checksums.
      * If only one pillar is alone with a checksum compared to all the others, then it is pointed out at the possible 
      * cause.
-     * @param pillarId The id of the pillar, which is inconsistent with the other pillars. Or null, if no single pillar
+     * @param pillarID The id of the pillar, which is inconsistent with the other pillars. Or null, if no single pillar
      * is causing the inconsistency.
-     * @param fileId The id of the file.
+     * @param fileID The id of the file.
      */
-    private void createAuditForInconsistentChecksum(String pillarId, String fileId) {
+    private void createAuditForInconsistentChecksum(String pillarID, String fileID) {
         String auditText;
         
-        if(pillarId != null) {
-            auditText = "Checksum inconsistency for the file '" + fileId + "' at collection '" 
-                    + reporter.getCollectionID() + "'. Possibly corrupt at pillar '" + pillarId 
+        if(pillarID != null) {
+            auditText = "Checksum inconsistency for the file '" + fileID + "' at collection '"
+                    + reporter.getCollectionID() + "'. Possibly corrupt at pillar '" + pillarID
                     + "', since all the other pillars agree upon another checksum.";
         } else {
-            auditText = "Checksum inconsistency for the file '" + fileId + "' at collection '" 
+            auditText = "Checksum inconsistency for the file '" + fileID + "' at collection '"
                     + reporter.getCollectionID() + "'. The pillars have registered more than one unique "
                     + "checksum for the file.";
         }
-        auditManager.addAuditEvent(reporter.getCollectionID(), fileId, "IntegrityService", 
+        auditManager.addAuditEvent(reporter.getCollectionID(), fileID, "IntegrityService",
                 auditText, "IntegrityService validating the checksums.", FileAction.INCONSISTENCY, null, null);
     }
     
@@ -161,14 +161,14 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
     private Map<String, List<String>> getChecksumMapping(Collection<FileInfo> infos) {
         Map<String, List<String>> checksumMap = new HashMap<String, List<String>>();
         for(FileInfo info : infos) {
-            List<String> pillarIdsForChecksum;
+            List<String> pillarIDsForChecksum;
             if(checksumMap.containsKey(info.getChecksum())) {
-                pillarIdsForChecksum = checksumMap.get(info.getChecksum());
+                pillarIDsForChecksum = checksumMap.get(info.getChecksum());
             } else {
-                pillarIdsForChecksum = new ArrayList<String>();
+                pillarIDsForChecksum = new ArrayList<String>();
             }
-            pillarIdsForChecksum.add(info.getPillarId());
-            checksumMap.put(info.getChecksum(), pillarIdsForChecksum);
+            pillarIDsForChecksum.add(info.getPillarId());
+            checksumMap.put(info.getChecksum(), pillarIDsForChecksum);
         }
         
         return checksumMap;

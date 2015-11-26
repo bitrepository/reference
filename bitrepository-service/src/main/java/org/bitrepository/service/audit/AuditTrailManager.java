@@ -34,8 +34,8 @@ import org.bitrepository.bitrepositoryelements.FileAction;
 public interface AuditTrailManager {
     /**
      * Adds an audit trail event to the manager.
-     * @param collectionId The id of the collection for whom the audit applies.
-     * @param fileId The id of the file, where the operation has been performed.
+     * @param collectionID The id of the collection for whom the audit applies.
+     * @param fileID The id of the file, where the operation has been performed.
      * Use the argument null for indicating all file ids. 
      * @param actor The name of the actor.
      * @param info Information about the reason for the audit trail to be logged.
@@ -44,13 +44,13 @@ public interface AuditTrailManager {
      * @param operationID The conversationID of the operation
      * @param certificateID The certificate fingerprint for the message.
      */
-    void addAuditEvent(String collectionId, String fileId, String actor, String info, String auditTrail,
+    void addAuditEvent(String collectionID, String fileID, String actor, String info, String auditTrail,
                        FileAction operation, String operationID, String certificateID);
     
     /**
      * Method for extracting all the audit trails.
-     * @param collectionId The id of the collection for whom the audit applies.
-     * @param fileId [OPTIONAL] The id of the file to request audits for.
+     * @param collectionID The id of the collection for whom the audit applies.
+     * @param fileID [OPTIONAL] The id of the file to request audits for.
      * @param minSeqNumber [OPTIONAL] The lower sequence number requested. 
      * @param maxSeqNumber [OPTIONAL] The upper sequence number requested.
      * @param minDate [OPTIONAL] The earliest date requested.
@@ -58,6 +58,6 @@ public interface AuditTrailManager {
      * @param maxNumberOfResults [OPTIONAL] The maximum number of results.
      * @return The audit trails corresponding to the requested arguments.
      */
-    AuditTrailDatabaseResults getAudits(String collectionId, String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate, 
+    AuditTrailDatabaseResults getAudits(String collectionID, String fileID, Long minSeqNumber, Long maxSeqNumber, Date minDate,
             Date maxDate, Long maxNumberOfResults);
 }

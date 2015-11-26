@@ -8,9 +8,14 @@ public abstract class DatabaseFactory<T> {
     public static final String postgressDriver = "org.postgresql.Driver";
     
     /**
-     * Obtain the appropriate DAO instance for the concrete backend. 
+     * Obtain the appropriate DAO instance for the concrete backend.
+     * @param ds the database specifics
+     * @return the appropriate DAO instance for the concrete backend.
+     * @throws UnsupportedDatabaseTypeException if the driver is not either derby or postgres
+     * @see #derbyDriver
+     * @see #postgressDriver
      */
-    protected T getDAOInstance(DatabaseSpecifics ds) {
+    protected T getDAOInstance(DatabaseSpecifics ds) throws UnsupportedDatabaseTypeException{
         DatabaseManager dm = getDatabaseManager(ds);
         String dbDriver = ds.getDriverClass();
         if(dbDriver.equals(derbyDriver)) {

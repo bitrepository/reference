@@ -62,11 +62,11 @@ public class ExtractedFileIDsResultSet {
     /**
      * Inserts a file id with date, but without the size.
      * Intended for the ChecksumPillar, which cannot deliver any size.
-     * @param fileId The id of the file.
+     * @param fileID The id of the file.
      * @param lastModified The last modified timestamp.
      */
-    public void insertFileID(String fileId, Date lastModified) {
-        insertFileID(fileId, null, CalendarUtils.getXmlGregorianCalendar(lastModified));
+    public void insertFileID(String fileID, Date lastModified) {
+        insertFileID(fileID, null, CalendarUtils.getXmlGregorianCalendar(lastModified));
     }
     
     /**

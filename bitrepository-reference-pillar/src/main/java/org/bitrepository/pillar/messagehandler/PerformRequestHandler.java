@@ -1,11 +1,12 @@
 package org.bitrepository.pillar.messagehandler;
 
+import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.RequestHandlerException;
 
-public abstract class PerformRequestHandler<MessageRequest> extends PillarMessageHandler<MessageRequest> {
+public abstract class PerformRequestHandler<T extends MessageRequest> extends PillarMessageHandler<T> {
 
     /**
      * Constructor.
@@ -17,7 +18,7 @@ public abstract class PerformRequestHandler<MessageRequest> extends PillarMessag
     }
 
     @Override
-    public void processRequest(MessageRequest request, MessageContext requestContext)
+    public void processRequest(T request, MessageContext requestContext)
             throws RequestHandlerException {
         validateRequest(request, requestContext);
         sendProgressResponse(request, requestContext);
@@ -30,7 +31,7 @@ public abstract class PerformRequestHandler<MessageRequest> extends PillarMessag
      * @param requestContext The context for the request.
      * @throws RequestHandlerException If something in the request is inconsistent with the possibilities of the pillar.
      */
-    protected abstract void validateRequest(MessageRequest request, MessageContext requestContext)
+    protected abstract void validateRequest(T request, MessageContext requestContext)
             throws RequestHandlerException ;
     
     /**
@@ -39,7 +40,7 @@ public abstract class PerformRequestHandler<MessageRequest> extends PillarMessag
      * @param requestContext The context for the request.
      * @throws RequestHandlerException If something data necessary for the progress response could not be extracted. 
      */
-    protected abstract void sendProgressResponse(MessageRequest request, MessageContext requestContext)
+    protected abstract void sendProgressResponse(T request, MessageContext requestContext)
             throws RequestHandlerException ;
     
     /**
@@ -48,6 +49,6 @@ public abstract class PerformRequestHandler<MessageRequest> extends PillarMessag
      * @param requestContext The context for the request.
      * @throws RequestHandlerException If the request is unable to be performed.
      */
-    protected abstract void performOperation(MessageRequest request, MessageContext requestContext)
+    protected abstract void performOperation(T request, MessageContext requestContext)
             throws RequestHandlerException ;
 }

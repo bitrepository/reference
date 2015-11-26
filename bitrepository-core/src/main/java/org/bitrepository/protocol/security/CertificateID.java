@@ -96,14 +96,16 @@ public class CertificateID {
     }
 
     /**
-     * @see CertificateID constructor 
+     * @see CertificateID constructor
+     * @return Identifying object of the issuer of a certificate
      */
     public X500Principal getIssuer() {
         return issuer;
     }
 
     /**
-     * @see CertificateID constructor 
+     * @see CertificateID constructor
+     * @return The serial number of a certificate (unique within an issuer)
      */
     public BigInteger getSerial() {
         return serial;

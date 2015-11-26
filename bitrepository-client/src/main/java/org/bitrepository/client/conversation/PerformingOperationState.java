@@ -117,9 +117,10 @@ public abstract class PerformingOperationState extends GeneralConversationState 
      * Implements the default handling of failure responses which is is to do nothing
      * (besides being registered in the event monitor, which is handled by the parent class).
      * @param msg The failure message to handle
+     * @throws UnableToFinishException if the operation is unable to finish
      * @return true
      */
-    protected boolean handleFailureResponse(MessageResponse msg) {
+    protected boolean handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
         getContext().getMonitor().contributorFailed(
                 msg.getResponseInfo().getResponseText(), msg.getFrom(), 
                 msg.getResponseInfo().getResponseCode());

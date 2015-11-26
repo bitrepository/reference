@@ -226,6 +226,8 @@ public abstract class GeneralConversationState implements ConversationState {
 
     /**
      * Implemented by concrete classes to indicate whether the state expects responses of this type.
+     * @param response the response, whose type to check
+     * @return true if the response type can be handled
      */
     private boolean canHandleResponseType(MessageResponse response) {
         String responseType = response.getClass().getSimpleName();

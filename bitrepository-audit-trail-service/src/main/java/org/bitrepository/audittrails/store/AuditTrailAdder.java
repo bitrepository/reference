@@ -128,7 +128,8 @@ public class AuditTrailAdder {
     }
     
     /**
-     * Method to handle the actual addition of audit trails 
+     * Method to handle the actual addition of audit trails
+     * @param events the audit trail events
      */
     public void addAuditTrails(AuditTrailEvents events) {
         try {

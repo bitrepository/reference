@@ -44,10 +44,10 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The Integrity Model. */
     private final IntegrityModel store;
-    /** The report model to populate */
+    /** The report model to populate. */
     private final IntegrityReporter reporter;
     private final StatisticsCollector sc;
-    /** The period in which a file should not be considered as missing */
+    /** The period in which a file should not be considered as missing. */
     private final Long gracePeriod;
     
     public HandleMissingFilesStep(IntegrityModel store, IntegrityReporter reporter, 

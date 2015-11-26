@@ -26,21 +26,21 @@ public class AuditTrailCollectionTimerTask extends TimerTask {
     }
     
     /**
-     * Get the next scheduled collection 
+     * @return the next scheduled collection
      */
     public Date getNextScheduledRun() {
         return schedule.getNextRun();
     }
     
     /**
-     * Get the date of the last started collection 
+     * @return the date of the last started collection
      */
     public Date getLastCollectionStart() {
         return schedule.getLastStart();
     }
     
     /**
-     * Get the date of the last finished collection 
+     * @return  the date of the last finished collection
      */
     public Date getLastCollectionFinish() {
         return schedule.getLastFinish();

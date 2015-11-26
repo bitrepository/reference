@@ -44,23 +44,23 @@ public class FileIDsUtils {
     }
     
     /**
-     * @param fileId the file id for a specific file. Must not be null
+     * @param fileID the file id for a specific file. Must not be null
      * @return The FileIDs object for a specific file id.
      */
-    public static FileIDs getSpecificFileIDs(String fileId) {
-        ArgumentValidator.checkNotNull(fileId,"fileId");
+    public static FileIDs getSpecificFileIDs(String fileID) {
+        ArgumentValidator.checkNotNull(fileID,"fileID");
         FileIDs fileids = new FileIDs();
-        fileids.setFileID(fileId);
+        fileids.setFileID(fileID);
         return fileids;
     }
 
     /**
-     * @param fileId a specific fileId or null
+     * @param fileID a specific fileID or null
      * @return Return a FileID object for allFiles if null is supplied, else a FileID object for the specific file.
      */
-    public static FileIDs createFileIDs(String fileId) {
-        if (fileId == null) return getAllFileIDs();
-        else return getSpecificFileIDs(fileId);
+    public static FileIDs createFileIDs(String fileID) {
+        if (fileID == null) return getAllFileIDs();
+        else return getSpecificFileIDs(fileID);
     }
 
     public static String asString(FileIDs fileIDs) {

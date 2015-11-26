@@ -71,8 +71,8 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
             return null;
         }
         
-        public void validatePillarID(String pillarId) throws RequestHandlerException {
-            super.validatePillarId(pillarId);
+        public void validatePillarID(String pillarID) throws RequestHandlerException {
+            super.validatePillarId(pillarID);
         }
     }
 }

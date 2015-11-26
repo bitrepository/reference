@@ -1,11 +1,12 @@
 package org.bitrepository.pillar.messagehandler;
 
+import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.RequestHandlerException;
 
-public abstract class IdentifyRequestHandler<MessageRequest> extends PillarMessageHandler<MessageRequest> {
+public abstract class IdentifyRequestHandler<T extends MessageRequest> extends PillarMessageHandler<T> {
 
     /**
      * Constructor.
@@ -17,7 +18,7 @@ public abstract class IdentifyRequestHandler<MessageRequest> extends PillarMessa
     }
 
     @Override
-    public void processRequest(MessageRequest request, MessageContext requestContext)
+    public void processRequest(T request, MessageContext requestContext)
             throws RequestHandlerException {
         validateRequest(request, requestContext);
         sendPositiveResponse(request, requestContext);
@@ -29,7 +30,7 @@ public abstract class IdentifyRequestHandler<MessageRequest> extends PillarMessa
      * @param requestContext The context for the request.
      * @throws RequestHandlerException If something in the request is inconsistent with the possibilities of the pillar.
      */
-    protected abstract void validateRequest(MessageRequest request, MessageContext requestContext)
+    protected abstract void validateRequest(T request, MessageContext requestContext)
             throws RequestHandlerException ;
     
     /**
@@ -38,6 +39,6 @@ public abstract class IdentifyRequestHandler<MessageRequest> extends PillarMessa
      * @param requestContext The context for the request.
      * @throws RequestHandlerException If the positive response could not be created.
      */
-    protected abstract void sendPositiveResponse(MessageRequest request, MessageContext requestContext)
+    protected abstract void sendPositiveResponse(T request, MessageContext requestContext)
             throws RequestHandlerException;
 }

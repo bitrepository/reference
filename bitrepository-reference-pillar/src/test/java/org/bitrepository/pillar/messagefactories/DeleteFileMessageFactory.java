@@ -36,22 +36,22 @@ public class DeleteFileMessageFactory extends PillarTestMessageFactory {
         super(collectionID, clientSettings, pillarID, pillarDestination);
     }
 
-    public IdentifyPillarsForDeleteFileRequest createIdentifyPillarsForDeleteFileRequest(String fileId) {
+    public IdentifyPillarsForDeleteFileRequest createIdentifyPillarsForDeleteFileRequest(String fileID) {
         IdentifyPillarsForDeleteFileRequest request = new IdentifyPillarsForDeleteFileRequest();
         initializeIdentifyRequest(request);
-        request.setFileID(fileId);
+        request.setFileID(fileID);
         return request;
     }
 
     public DeleteFileRequest createDeleteFileRequest(
             ChecksumDataForFileTYPE existingData,
             ChecksumSpecTYPE csRequest,
-            String fileId) {
+            String fileID) {
         DeleteFileRequest request = new DeleteFileRequest();
         initializeOperationRequest(request);
         request.setChecksumDataForExistingFile(existingData);
         request.setChecksumRequestForExistingFile(csRequest);
-        request.setFileID(fileId);
+        request.setFileID(fileID);
         request.setPillarID(pillarID);
         return request;
     }

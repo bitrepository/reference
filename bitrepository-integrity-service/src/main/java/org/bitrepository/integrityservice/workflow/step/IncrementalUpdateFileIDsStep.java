@@ -9,8 +9,8 @@ import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 public class IncrementalUpdateFileIDsStep extends UpdateFileIDsStep {
 
     public IncrementalUpdateFileIDsStep(IntegrityInformationCollector collector, IntegrityModel store, 
-            IntegrityAlerter alerter, Settings settings, String collectionId, IntegrityContributors integrityContributors) {
-        super(collector, store, alerter, settings, collectionId, integrityContributors);
+            IntegrityAlerter alerter, Settings settings, String collectionID, IntegrityContributors integrityContributors) {
+        super(collector, store, alerter, settings, collectionID, integrityContributors);
     }
 
     @Override

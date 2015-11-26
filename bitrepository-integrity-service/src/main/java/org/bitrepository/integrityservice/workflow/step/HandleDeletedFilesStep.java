@@ -44,9 +44,9 @@ public class HandleDeletedFilesStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
     /** The report model to populate */
     private final IntegrityReporter reporter;
-    /** Start time of the workflow */
+    /** Start time of the workflow. */
     private final Date workflowStart;
-    /** Pillars to clean */
+    /** Pillars to clean. */
     private final Set<String> pillarsToClean;
     
     public HandleDeletedFilesStep(IntegrityModel store, IntegrityReporter reporter, Date workflowStart, 
@@ -66,7 +66,7 @@ public class HandleDeletedFilesStep extends AbstractWorkFlowStep {
      * Queries the IntegrityModel for 'orphan files'. Reports and removes them if any is returned.
      */
     @Override
-    public synchronized void performStep() throws Exception {
+    public synchronized void performStep() throws StepFailedException {
         for(String pillar : pillarsToClean) {
             IntegrityIssueIterator deletedFilesIterator = store.findOrphanFiles(reporter.getCollectionID(), 
                     pillar, workflowStart);

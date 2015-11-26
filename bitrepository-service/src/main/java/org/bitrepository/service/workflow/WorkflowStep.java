@@ -21,6 +21,9 @@
  */
 package org.bitrepository.service.workflow;
 
+import org.bitrepository.service.exception.StepFailedException;
+import org.bitrepository.service.exception.WorkflowAbortedException;
+
 /**
  * The interface for a step for a workflow.
  */
@@ -32,6 +35,8 @@ public interface WorkflowStep {
     
     /**
      * Perform the task wrapped in this step.
+     * @throws StepFailedException if the task failed
+     * @throws WorkflowAbortedException if the workflow was aborted
      */
-    void performStep() throws Exception;
+    void performStep() throws StepFailedException, WorkflowAbortedException;
 }

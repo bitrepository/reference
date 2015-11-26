@@ -36,7 +36,7 @@ import org.bitrepository.common.utils.CalendarUtils;
  */
 public class FileInfo {
     /** The id of the file.*/
-    private final String fileId;
+    private final String fileID;
     /** The date for the last check for the file ID.*/
     private XMLGregorianCalendar fileCreationTimestamp;
     /** The checksum of the file.*/
@@ -44,7 +44,7 @@ public class FileInfo {
     /** The date for the last check of the checksum.*/
     private XMLGregorianCalendar checksumLastCheck;
     /** The id of the pillar.*/
-    private final String pillarId;
+    private final String pillarID;
     /** The size of the file */
     private Long fileSize;
     /** The last time the files was seen by getFileIDs */
@@ -54,24 +54,23 @@ public class FileInfo {
     
     /**
      * Constructor for all data.
-     * @param fileId The id of the file (may not be null)
+     * @param fileID The id of the file (may not be null)
      * @param fileLastCheck The date for the last check of the file id (if null, replaced by Epoch).
      * @param checksum The checksum of the file.
+     * @param fileSize The size for the file, in Bytes
      * @param checksumLastCheck The date for the last check of the checksum (if null, replaced by Epoch).
-     * @param pillarId The id of the pillar (may not be null)
-     * @param fileState The state for the file.
-     * @param checksumState The state for the checksum.
+     * @param pillarID The id of the pillar (may not be null)
      */
-    public FileInfo(String fileId, XMLGregorianCalendar fileLastCheck, String checksum, Long fileSize, 
-            XMLGregorianCalendar checksumLastCheck, String pillarId) {
-        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileID");
-        ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
-        this.fileId = fileId;
+    public FileInfo(String fileID, XMLGregorianCalendar fileLastCheck, String checksum, Long fileSize,
+            XMLGregorianCalendar checksumLastCheck, String pillarID) {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
+        this.fileID = fileID;
         this.fileCreationTimestamp = fileLastCheck;
         this.checksum = checksum;
         this.fileSize = fileSize;
         this.checksumLastCheck = checksumLastCheck;
-        this.pillarId = pillarId;
+        this.pillarID = pillarID;
         
         // If file id date is null, then replace with epoch.
         if(fileLastCheck == null) {
@@ -86,18 +85,18 @@ public class FileInfo {
     
     /**
      * Constructor for only file id and pillar id.
-     * @param fileId The id of the file.
-     * @param pillarId The id of the pillar.
+     * @param fileID The id of the file.
+     * @param pillarID The id of the pillar.
      */
-    public FileInfo(String fileId, String pillarId) {
-        this(fileId, null, null, null, null, pillarId);
+    public FileInfo(String fileID, String pillarID) {
+        this(fileID, null, null, null, null, pillarID);
     }
     
     /**
      * @return The id of the file.
      */
     public String getFileId() {
-        return fileId;
+        return fileID;
     }
     
     /**
@@ -146,7 +145,7 @@ public class FileInfo {
      * @return The id of the pillar.
      */
     public String getPillarId() {
-        return pillarId;
+        return pillarID;
     }
     
     /**
@@ -158,7 +157,7 @@ public class FileInfo {
     
     @Override
     public String toString() {
-        return "Pillar id: " + pillarId + ", File id: " + fileId + " (date: " 
+        return "Pillar id: " + pillarID + ", File id: " + fileID + " (date: "
                 + fileCreationTimestamp + "), Checksum: " + checksum + " (date: " 
                 + checksumLastCheck + ", lastSeenGetFileIDs: " + lastSeenGetFileIDs 
                 + ", lastSeenGetChecksums: " + lastSeenGetChecksums + ")";

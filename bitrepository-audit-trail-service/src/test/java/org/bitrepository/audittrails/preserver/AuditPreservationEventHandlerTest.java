@@ -31,7 +31,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class AuditPreservationEventHandlerTest extends ExtendedTestCase {
-    String PILLARID = "pillarId";
+    String PILLARID = "pillarID";
     public static final String TEST_COLLECTION = "dummy-collection";
 
     @Test(groups = {"regressiontest"})

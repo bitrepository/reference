@@ -157,7 +157,7 @@ public class PutFileCmd extends CommandLineClient {
     private OperationEvent putTheFile() {
         output.debug("Uploading the file to the FileExchange.");
         URL url = getURLOrUploadFile();
-        String fileId = retrieveFileID();
+        String fileID = retrieveFileID();
 
         output.debug("Initiating the PutFile conversation.");
         ChecksumDataForFileTYPE validationChecksum = getValidationChecksum();
@@ -166,7 +166,7 @@ public class PutFileCmd extends CommandLineClient {
         boolean printChecksums = cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG);
 
         CompleteEventAwaiter eventHandler = new PutFileEventHandler(settings, output, printChecksums);
-        client.putFile(getCollectionID(), url, fileId, getSizeOfFileOrZero(), validationChecksum, requestChecksum, eventHandler, null);
+        client.putFile(getCollectionID(), url, fileID, getSizeOfFileOrZero(), validationChecksum, requestChecksum, eventHandler, null);
 
         OperationEvent finalEvent = eventHandler.getFinish(); 
 

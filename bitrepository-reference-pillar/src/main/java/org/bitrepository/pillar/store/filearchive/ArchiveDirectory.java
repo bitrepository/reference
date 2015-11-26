@@ -67,11 +67,11 @@ public class ArchiveDirectory {
     }
     
     /**
-     * @param fileId The id of the file to retrieve.
+     * @param fileID The id of the file to retrieve.
      * @return The requested file, or a null if no such file exists.
      */
-    public File getFile(String fileId) {
-        File res = new File(fileDir, fileId);
+    public File getFile(String fileID) {
+        File res = new File(fileDir, fileID);
         
         if(res.isFile()) {
             return res;
@@ -81,11 +81,11 @@ public class ArchiveDirectory {
     }
     
     /**
-     * @param fileId The file id to test whether it exists.
+     * @param fileID The file id to test whether it exists.
      * @return Whether the given file exists within the archive.
      */
-    public boolean hasFile(String fileId) {
-        return new File(fileDir, fileId).isFile();
+    public boolean hasFile(String fileID) {
+        return new File(fileDir, fileID).isFile();
     }
     
     /**
@@ -103,23 +103,23 @@ public class ArchiveDirectory {
     }
     
     /**
-     * @param fileId The id of the file
+     * @param fileID The id of the file
      * @return A new file in the temporary directory.
      */
-    public File getFileInTempDir(String fileId) {
-        File res = new File(tmpDir, fileId);
+    public File getFileInTempDir(String fileID) {
+        File res = new File(tmpDir, fileID);
         if(!res.exists()) {
-            throw new IllegalStateException("The file '" + fileId + "' does not exist within the tmpDir.");
+            throw new IllegalStateException("The file '" + fileID + "' does not exist within the tmpDir.");
         }
         return res;
     }
     
     /**
-     * @param fileId The id of the file
+     * @param fileID The id of the file
      * @return A new file in the temporary directory.
      */
-    public File getNewFileInTempDir(String fileId) {
-        File res = new File(tmpDir, fileId);
+    public File getNewFileInTempDir(String fileID) {
+        File res = new File(tmpDir, fileID);
         if(res.exists()) {
             throw new IllegalStateException("Cannot create a new file in the temporary directory.");
         }
@@ -127,26 +127,26 @@ public class ArchiveDirectory {
     }
     
     /**
-     * @param fileId The id of the file.
+     * @param fileID The id of the file.
      * @return Whether a given file exist in the temporary directory.
      */
-    public boolean hasFileInTempDir(String fileId) {
-        return new File(tmpDir, fileId).isFile();
+    public boolean hasFileInTempDir(String fileID) {
+        return new File(tmpDir, fileID).isFile();
     }
     
     /**
      * Moves a file from the tmpDir to the archive dir.
-     * @param fileId The id of the file to 
+     * @param fileID The id of the file to
      */
-    public void moveFromTmpToArchive(String fileId) {
-        File tmpFile = new File(tmpDir, fileId);
-        File archiveFile = new File(fileDir, fileId);
+    public void moveFromTmpToArchive(String fileID) {
+        File tmpFile = new File(tmpDir, fileID);
+        File archiveFile = new File(fileDir, fileID);
         
         if(!tmpFile.isFile()) {
-            throw new IllegalStateException("The file '" + fileId + "' does not exist within the tmpDir.");
+            throw new IllegalStateException("The file '" + fileID + "' does not exist within the tmpDir.");
         }
         if(archiveFile.isFile()) {
-            throw new IllegalStateException("The file '" + fileId + "' does already exist within the fileDir.");
+            throw new IllegalStateException("The file '" + fileID + "' does already exist within the fileDir.");
         }
         
         // Move the file to the fileDir.
@@ -155,14 +155,14 @@ public class ArchiveDirectory {
     
     /**
      * The file to remove from the archive. The file is just moved from the fileDir to the retainDir. 
-     * @param fileId The id of the file to remove from archive.
+     * @param fileID The id of the file to remove from archive.
      */
-    public void removeFileFromArchive(String fileId) {
-        File oldFile = new File(fileDir, fileId);
+    public void removeFileFromArchive(String fileID) {
+        File oldFile = new File(fileDir, fileID);
         if(!oldFile.isFile()) {
             throw new IllegalStateException("Cannot locate the file to delete '" + oldFile.getAbsolutePath() + "'!");
         }
-        File retainFile = new File(retainDir, fileId);
+        File retainFile = new File(retainDir, fileID);
         
         // If a version of the file already has been retained, then it should be deprecated.
         if(retainFile.exists()) {
@@ -175,14 +175,14 @@ public class ArchiveDirectory {
     /**
      * The file to remove from the temporary directory. The file is just moved from the fileDir to the retainDir.
      * This should be used e.g. to clean up after a failed PutFile. 
-     * @param fileId The id of the file to remove from tmpdir.
+     * @param fileID The id of the file to remove from tmpdir.
      */
-    public void removeFileFromTmp(String fileId) {
-        File oldFile = new File(tmpDir, fileId);
+    public void removeFileFromTmp(String fileID) {
+        File oldFile = new File(tmpDir, fileID);
         if(!oldFile.isFile()) {
             throw new IllegalStateException("Cannot locate the file to delete '" + oldFile.getAbsolutePath() + "'!");
         }
-        File retainFile = new File(retainDir, fileId);
+        File retainFile = new File(retainDir, fileID);
         
         // If a version of the file already has been retained, then it should be deprecated.
         if(retainFile.exists()) {

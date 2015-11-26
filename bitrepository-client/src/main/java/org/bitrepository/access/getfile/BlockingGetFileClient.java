@@ -45,7 +45,7 @@ public class BlockingGetFileClient {
 
     /**
      * @see GetFileClient#getFileFromFastestPillar
-     * @param collectionId The ID of the collection
+     * @param collectionID The ID of the collection
      * @param fileID The ID of the file to get
      * @param filePart The FilePart specification if only requesting parts of a file
      * @param uploadUrl The URL to upload the file to
@@ -54,7 +54,7 @@ public class BlockingGetFileClient {
      * @throws NegativeResponseException in case the operation fails
      */
     public void getFileFromFastestPillar(
-            String collectionId,
+            String collectionID,
             String fileID,
             FilePart filePart,
             URL uploadUrl,
@@ -62,7 +62,7 @@ public class BlockingGetFileClient {
             String auditTrailInformation)
             throws NegativeResponseException {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
-        client.getFileFromFastestPillar(collectionId, fileID, filePart, uploadUrl, blocker, auditTrailInformation);
+        client.getFileFromFastestPillar(collectionID, fileID, filePart, uploadUrl, blocker, auditTrailInformation);
         OperationEvent finishEvent = blocker.awaitFinished();
         if(finishEvent.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
             return;
@@ -73,26 +73,26 @@ public class BlockingGetFileClient {
 
     /**
      * @see GetFileClient#getFileFromSpecificPillar
-     * @param collectionId The ID of the collection
+     * @param collectionID The ID of the collection
      * @param fileID The ID of the file to get
      * @param filePart The FilePart specification if only requesting parts of a file
      * @param uploadUrl The URL to upload the file to
-     * @param pillarId The ID of the specific pillar to get the file from
+     * @param pillarID The ID of the specific pillar to get the file from
      * @param eventHandler The EventHandler to handle incoming events
      * @param auditTrailInformation The audittrail information for the contributors
      * @throws NegativeResponseException in case the operation fails
      */
     public void getFileFromSpecificPillar(
-            String collectionId,
+            String collectionID,
             String fileID,
             FilePart filePart,
             URL uploadUrl,
-            String pillarId,
+            String pillarID,
             EventHandler eventHandler,
             String auditTrailInformation)
             throws NegativeResponseException {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
-        client.getFileFromSpecificPillar(collectionId, fileID, filePart, uploadUrl, pillarId, blocker, auditTrailInformation);
+        client.getFileFromSpecificPillar(collectionID, fileID, filePart, uploadUrl, pillarID, blocker, auditTrailInformation);
         OperationEvent finishEvent = blocker.awaitFinished();
         if(finishEvent.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
             return;

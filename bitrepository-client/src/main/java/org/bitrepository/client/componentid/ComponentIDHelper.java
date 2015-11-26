@@ -35,14 +35,13 @@ public class ComponentIDHelper {
     /**
      * Create a <code>ClientIDHelper</code> object with the specified charactaristica
      * @param clientIDFactoryClass The class to use for constructing clientID.
-     *                                          See {@link ClientIDFactoryClass} for possible subclasses.
      */
     public ComponentIDHelper(String clientIDFactoryClass) {
         clientIDFactory = createClientIDFactory(clientIDFactoryClass);
     }
 
     /**
-     * Will generate the clientID to use for receiving messages for the indicated component.
+     * @return a generated clientID to use for receiving messages for the indicated component.
      */
     public String getComponentID() {
         return clientIDFactory.getComponentID();

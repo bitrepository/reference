@@ -71,6 +71,7 @@ public class ConversationEventMonitor {
     private boolean failOnComponentFailure = true;
 
     /**
+     * @param collectionID The Collection ID
      * @param conversationID Used for adding conversation context information to the information distributed. Will be
      *                       shorted to increase readability.
      * @param operationType The operation type to include in the events og logs.
@@ -105,6 +106,7 @@ public class ConversationEventMonitor {
 
     /**
      * Indicates a identify request has timeout without all contributors responding.
+     * @param unrespondingContributors the unresponding contributors
      */
     public void identifyContributorsTimeout(Collection<String> unrespondingContributors) {
         StringBuilder failureMessage = new StringBuilder("Time has run out for looking up contributors");
@@ -147,6 +149,7 @@ public class ConversationEventMonitor {
     /**
      * New information regarding the progress of the operation has been received
      * @param progressInfo Contains information regarding the progress
+     * @param contributorID the contributor that is progressed
      */
     public void progress(String progressInfo, String contributorID) {
         notifyEventListerners(createContributorEvent(PROGRESS, progressInfo, contributorID));
@@ -176,6 +179,7 @@ public class ConversationEventMonitor {
      * A pillar has failed to handle a request successfully.
      * @param info Cause information
      * @param contributorID The ID of the contributor
+     * @param responseCode the response code of the contributor
      */
     public void contributorFailed(String info, String contributorID, ResponseCode responseCode) {
         ContributorFailedEvent failedEvent = createContributorFailedEvent(info, contributorID, responseCode);
@@ -235,6 +239,7 @@ public class ConversationEventMonitor {
 
     /**
      * A message has been received with isn't consistent with the current conversation state.
+     * @param message the message
      */
     public void outOfSequenceMessage(Message message) {
         log.warn("Can not handle messages of type " + message.getClass().getSimpleName());
@@ -271,15 +276,16 @@ public class ConversationEventMonitor {
     /**
      * Logs debug information.
      * @param info The debug info to log.
-     *
+     * @param e the Exception to log
      */
     public void debug(String info, Exception e) {
         log.debug(info, e);
     }
 
     /**
-     * Returns a shorted conversationID. Only the first part up til the first '-' is used
+     * @return  a shorted conversationID. Only the first part up til the first '-' is used
      * (but at least 4 long).
+     * @param fullConversationID the full conversationID to shorten
      */
     private String getShortConversationID(String fullConversationID) {
         return fullConversationID.substring(0, fullConversationID.indexOf("-", 4));
@@ -328,9 +334,10 @@ public class ConversationEventMonitor {
 
     /**
      * Adds the general operation context information for the conversation to the event.
-     * @return
+     * @param event the event to update
+     * @return the updated event
      */
-    private OperationEvent addContextInfo(AbstractOperationEvent event) {
+    private AbstractOperationEvent addContextInfo(AbstractOperationEvent event) {
         event.setConversationID(conversationID);
         event.setFileID(fileID);
         event.setOperationType(operationType);
@@ -339,8 +346,9 @@ public class ConversationEventMonitor {
     /**
      * Indicates whether a operation should be consider failed because one or more of the contributors have failed.
      * This is <code>true</code> by default.
-     *
+     *<p>
      * Note that the operation can be falied explicitly by calling the operationFailed method.
+     * @param failOnComponentFailure true if the conversation should be marked as failed if a contributor have failed
      */
     public void markAsFailedOnContributorFailure(boolean failOnComponentFailure) {
         this.failOnComponentFailure = failOnComponentFailure;
@@ -351,29 +359,41 @@ public class ConversationEventMonitor {
      */
     protected class ConversationLogger {
 
-        /** Delegates to the normal logger debug */
-        public void debug(String info) {
-            eventLogger.debug(conversationID + ": " + contextInfo() + ":" +info);
+        /** Delegates to the normal logger debug
+         * @param msg the message to log
+         * */
+        public void debug(String msg) {
+            eventLogger.debug(conversationID + ": " + contextInfo() + ":" +msg);
         }
 
-        /** Delegates to the normal logger debug */
-        public void debug(String info, Exception e) {
-            eventLogger.debug(conversationID + ": " + contextInfo() + ":" + info, e);
+        /** Delegates to the normal logger debug
+         * @param msg the message to log
+         * @param e the Exception to log
+         * */
+        public void debug(String msg, Exception e) {
+            eventLogger.debug(conversationID + ": " + contextInfo() + ":" + msg, e);
         }
 
-        /** Delegates to the normal logger info */
-        public void info(String info) {
-            eventLogger.info(conversationID + ": " + contextInfo() + ":" +info);
+        /** Delegates to the normal logger info
+         * @param msg the message to log
+         * */
+        public void info(String msg) {
+            eventLogger.info(conversationID + ": " + contextInfo() + ":" +msg);
         }
 
-        /** Delegates to the normal logger warn */
-        public void warn(String info, Throwable e) {
-            eventLogger.warn(conversationID + ": " + contextInfo() + ":" +info, e);
+        /** Delegates to the normal logger warn
+         * @param msg the message to log
+         * @param e throwable to log
+         * */
+        public void warn(String msg, Throwable e) {
+            eventLogger.warn(conversationID + ": " + contextInfo() + ":" +msg, e);
         }
 
-        /** Delegates to the normal logger warn */
-        public void warn(String info) {
-            eventLogger.warn(conversationID + ": " + contextInfo() + ":" +info);
+        /** Delegates to the normal logger warn
+         * @param msg the message to log
+         * */
+        public void warn(String msg) {
+            eventLogger.warn(conversationID + ": " + contextInfo() + ":" +msg);
         }
 
         private String contextInfo() {

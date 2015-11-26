@@ -102,7 +102,7 @@ public class ChecksumStorageModel extends StorageModel {
     }
 
     @Override
-    protected String getNonDefaultChecksum(String fileId, String collectionID, ChecksumSpecTYPE csType) 
+    protected String getNonDefaultChecksum(String fileID, String collectionID, ChecksumSpecTYPE csType)
             throws RequestHandlerException {
         throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "The ChecksumPillar cannot handle a "
                 + "non-default checksum specification '" + csType + "'.'", collectionID);

@@ -458,24 +458,24 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         
         addStep("Extract all the existing file ids for the pillar for collection '" + TEST_COLLECTIONID + "'", "Both file ids is found.");
         IntegrityIssueIterator it = cache.getAllFileIDsOnPillar(TEST_COLLECTIONID, TEST_PILLAR_1, new Long(0), Long.MAX_VALUE);
-        Collection<String> fileIds = getIssuesFromIterator(it);
-        Assert.assertTrue(fileIds.size() == 2, "Number of files: " + fileIds.size());
-        Assert.assertTrue(fileIds.contains(TEST_FILE_ID));
-        Assert.assertTrue(fileIds.contains(file2));
-        Assert.assertFalse(fileIds.contains(file3));
+        Collection<String> fileIDs = getIssuesFromIterator(it);
+        Assert.assertTrue(fileIDs.size() == 2, "Number of files: " + fileIDs.size());
+        Assert.assertTrue(fileIDs.contains(TEST_FILE_ID));
+        Assert.assertTrue(fileIDs.contains(file2));
+        Assert.assertFalse(fileIDs.contains(file3));
 
         addStep("Extract the single fileID for the extra collection", "Only the one file id exists");
         it = cache.getAllFileIDsOnPillar(EXTRA_COLLECTION, TEST_PILLAR_1,  new Long(0), Long.MAX_VALUE);
-        fileIds = getIssuesFromIterator(it);
-        Assert.assertTrue(fileIds.size() == 1, "Number of files: " + fileIds.size());
-        Assert.assertTrue(fileIds.contains(file3));
-        Assert.assertFalse(fileIds.contains(file2));
-        Assert.assertFalse(fileIds.contains(TEST_FILE_ID));
+        fileIDs = getIssuesFromIterator(it);
+        Assert.assertTrue(fileIDs.size() == 1, "Number of files: " + fileIDs.size());
+        Assert.assertTrue(fileIDs.contains(file3));
+        Assert.assertFalse(fileIDs.contains(file2));
+        Assert.assertFalse(fileIDs.contains(TEST_FILE_ID));
                
         addStep("Extract all the existing file ids for another pillar", "No files are found.");
         it = cache.getAllFileIDsOnPillar(TEST_COLLECTIONID, TEST_PILLAR_2, new Long(0), Long.MAX_VALUE);
-        fileIds = getIssuesFromIterator(it);
-        Assert.assertTrue(fileIds.isEmpty());
+        fileIDs = getIssuesFromIterator(it);
+        Assert.assertTrue(fileIDs.isEmpty());
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
@@ -489,15 +489,15 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
 
         addStep("Extract with a maximum of 1", "The first file.");
         IntegrityIssueIterator it = cache.getAllFileIDsOnPillar(TEST_COLLECTIONID, TEST_PILLAR_1, new Long(0), new Long(1));
-        Collection<String> fileIds = getIssuesFromIterator(it);
-        Assert.assertTrue(fileIds.size() == 1);
-        Assert.assertTrue(fileIds.contains(TEST_FILE_ID));
+        Collection<String> fileIDs = getIssuesFromIterator(it);
+        Assert.assertTrue(fileIDs.size() == 1);
+        Assert.assertTrue(fileIDs.contains(TEST_FILE_ID));
         
         addStep("Extract with a minimum of 1 and maximum of infinite", "The last file.");
         it = cache.getAllFileIDsOnPillar(TEST_COLLECTIONID, TEST_PILLAR_1, new Long(1), Long.MAX_VALUE);
-        fileIds = getIssuesFromIterator(it);
-        Assert.assertTrue(fileIds.size() == 1);
-        Assert.assertTrue(fileIds.contains(file2));
+        fileIDs = getIssuesFromIterator(it);
+        Assert.assertTrue(fileIDs.size() == 1);
+        Assert.assertTrue(fileIDs.contains(file2));
     }
 
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
@@ -543,15 +543,15 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
 
         addStep("Extract with a maximum of 1", "The first file.");
         IntegrityIssueIterator it = cache.findMissingFilesAtPillar(TEST_COLLECTIONID, TEST_PILLAR_2, 0L, 1L);
-        Collection<String> fileIds = getIssuesFromIterator(it);
-        Assert.assertTrue(fileIds.size() == 1);
-        Assert.assertTrue(fileIds.contains(file2));
+        Collection<String> fileIDs = getIssuesFromIterator(it);
+        Assert.assertTrue(fileIDs.size() == 1);
+        Assert.assertTrue(fileIDs.contains(file2));
         
         addStep("Extract with a minimum of 1 and maximum of infinite", "The last file.");
         it = cache.findMissingFilesAtPillar(TEST_COLLECTIONID, TEST_PILLAR_2, 1L, Long.MAX_VALUE);
-        fileIds = getIssuesFromIterator(it);
-        Assert.assertTrue(fileIds.size() == 1);
-        Assert.assertTrue(fileIds.contains(file3));
+        fileIDs = getIssuesFromIterator(it);
+        Assert.assertTrue(fileIDs.size() == 1);
+        Assert.assertTrue(fileIDs.contains(file3));
     }
 
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
@@ -808,24 +808,24 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         return res;
     }
     
-    private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileId, String checksum) {
+    private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileID, String checksum) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         
         ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
         csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
         csData.setCalculationTimestamp(CalendarUtils.getNow());
-        csData.setFileID(fileId);
+        csData.setFileID(fileID);
         res.add(csData);
         return res;
     }
     
-    private FileIDsData getFileIDsData(String... fileIds) {
+    private FileIDsData getFileIDsData(String... fileIDs) {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems items = new FileIDsDataItems();
         
-        for(String fileId : fileIds) {
+        for(String fileID : fileIDs) {
             FileIDsDataItem dataItem = new FileIDsDataItem();
-            dataItem.setFileID(fileId);
+            dataItem.setFileID(fileID);
             dataItem.setFileSize(BigInteger.valueOf(items.getFileIDsDataItem().size() + 1));
             dataItem.setLastModificationTime(CalendarUtils.getNow());
             items.getFileIDsDataItem().add(dataItem);

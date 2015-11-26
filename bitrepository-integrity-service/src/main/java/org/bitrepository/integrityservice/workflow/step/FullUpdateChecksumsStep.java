@@ -8,13 +8,13 @@ import org.bitrepository.integrityservice.collector.IntegrityInformationCollecto
 import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 
 /**
- * Workflow step class to handle the full collection of checksums 
+ * Workflow step class to handle the full collection of checksums.
  */
 public class FullUpdateChecksumsStep extends UpdateChecksumsStep {
 
     public FullUpdateChecksumsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
-            ChecksumSpecTYPE checksumType, Settings settings, String collectionId, IntegrityContributors integrityContributors) {
-        super(collector, store, alerter, checksumType, settings, collectionId, integrityContributors);
+            ChecksumSpecTYPE checksumType, Settings settings, String collectionID, IntegrityContributors integrityContributors) {
+        super(collector, store, alerter, checksumType, settings, collectionID, integrityContributors);
     }
 
     @Override
@@ -24,7 +24,7 @@ public class FullUpdateChecksumsStep extends UpdateChecksumsStep {
 
     @Override
     protected void initialStepAction() {
-        store.resetChecksumCollectionProgress(collectionId);
+        store.resetChecksumCollectionProgress(collectionID);
     }
 
     /**

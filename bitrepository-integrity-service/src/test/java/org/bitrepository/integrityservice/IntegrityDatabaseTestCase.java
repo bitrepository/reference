@@ -71,13 +71,13 @@ public abstract class IntegrityDatabaseTestCase extends ExtendedTestCase {
      * Inserts the checksumdata, but ensures that the data can be inserted, by inserting the file-id-data before. 
      * @param cache The integrity cache.
      * @param csData The checksum data.
-     * @param pillarId The id of the pillar.
-     * @param collectionId The id of the collection.
+     * @param pillarID The id of the pillar.
+     * @param collectionID The id of the collection.
      */
     protected void insertChecksumDataForModel(IntegrityModel cache, List<ChecksumDataForChecksumSpecTYPE> csData, 
-            String pillarId, String collectionId) {
-        insertMissingFilesInChecksumDataForModel(cache, csData, pillarId, collectionId);
-        cache.addChecksums(csData, pillarId, collectionId);
+            String pillarID, String collectionID) {
+        insertMissingFilesInChecksumDataForModel(cache, csData, pillarID, collectionID);
+        cache.addChecksums(csData, pillarID, collectionID);
     }
     
     /**
@@ -85,7 +85,7 @@ public abstract class IntegrityDatabaseTestCase extends ExtendedTestCase {
      * @param csData The checksum data to convert.
      */
     protected void insertMissingFilesInChecksumDataForModel(IntegrityModel cache, List<ChecksumDataForChecksumSpecTYPE> csData, 
-            String pillarId, String collectionId) {
+            String pillarID, String collectionID) {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems items = new FileIDsDataItems();
         
@@ -98,7 +98,7 @@ public abstract class IntegrityDatabaseTestCase extends ExtendedTestCase {
         } 
         
         res.setFileIDsDataItems(items);
-        cache.addFileIDs(res, pillarId, collectionId);
+        cache.addFileIDs(res, pillarID, collectionID);
     }
     
     /**

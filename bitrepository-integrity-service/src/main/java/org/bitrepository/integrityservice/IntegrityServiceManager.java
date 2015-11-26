@@ -105,6 +105,7 @@ public final class IntegrityServiceManager {
     /**
      * Initializes the integrity service
      * Should only be run at initialization time.
+     * @param configurationDir the configuration dir
      */
     public static synchronized void initialize(String configurationDir) {
         confDir = configurationDir;
@@ -202,7 +203,7 @@ public final class IntegrityServiceManager {
     }
     
     /**
-     *  Gets the directory for integrity report storage. 
+     *  @return Gets the directory for integrity report storage.
      */
     public static File getIntegrityReportStorageDir() {
         return integrityReportStorageDir;
@@ -213,7 +214,7 @@ public final class IntegrityServiceManager {
     }
     
     /**
-     * Gets you the <code>WorkflowManager</code> exposing the workflow model.
+     * @return Gets you the <code>WorkflowManager</code> exposing the workflow model.
      */
     public static WorkflowManager getWorkflowManager() {
         return workFlowManager;

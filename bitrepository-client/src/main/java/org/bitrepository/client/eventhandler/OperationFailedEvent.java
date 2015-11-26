@@ -34,6 +34,7 @@ public class OperationFailedEvent extends AbstractOperationEvent {
     private final List<ContributorEvent> componentResults;
 
     /**
+     * @param collectionID the collection ID
      * @param info See {@link #getInfo()}
      * @param componentResults The aggregated list of <code>COMPONENT_COMPLETE</code> events generated during
      *                         the operation.
@@ -46,7 +47,7 @@ public class OperationFailedEvent extends AbstractOperationEvent {
     }
 
     /**
-     * Returns the results for the individual components contributing to this operation. The list is just
+     * @return  the results for the individual components contributing to this operation. The list is just
      * aggregation of the <code>COMPONENT_COMPLETE</code> events generated during the operation.
      */
     public List<ContributorEvent> getComponentResults() {

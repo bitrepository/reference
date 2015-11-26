@@ -46,6 +46,7 @@ public class AlarmDispatcher extends MessageDispatcher {
     /**
      * @param sender Used for sending the alarms.
      * @param settings The configuration.
+     * @param alarmLevel The alarm level, if null set to ERROR
      */
     public AlarmDispatcher(Settings settings, MessageSender sender, AlarmLevel alarmLevel) {
         super(settings, sender);
@@ -58,6 +59,8 @@ public class AlarmDispatcher extends MessageDispatcher {
 
     /**
      * Delegates to #AlarmDispatcher(MessageSender, AlarmLevel) with a ERROR alarm level.
+     * @param sender Used for sending the alarms.
+     * @param settings The configuration.
      */
     public AlarmDispatcher(Settings settings, MessageSender sender) {
         this(settings, sender, AlarmLevel.ERROR);

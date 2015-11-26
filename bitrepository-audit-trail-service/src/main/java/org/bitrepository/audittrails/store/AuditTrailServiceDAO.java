@@ -51,11 +51,11 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     }
     
     @Override
-    public AuditEventIterator getAuditTrailsByIterator(String fileId, String collectionID, String contributorId, 
+    public AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorId,
             Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation, Date startDate, 
             Date endDate, String fingerprint, String operationID) {
         ExtractModel model = new ExtractModel();
-        model.setFileId(fileId);
+        model.setFileId(fileID);
         model.setCollectionId(collectionID);
         model.setContributorId(contributorId);
         model.setMinSeqNumber(minSeqNumber);
@@ -84,7 +84,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     @Override
     public long largestSequenceNumber(String contributorID, String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(contributorID, "String contributorId");
-        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionId");
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         
         String sql = "SELECT latest_sequence_number FROM collection_progress"
                 + " WHERE collectionID = ?"
@@ -96,9 +96,9 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     }
 
     @Override
-    public long getPreservationSequenceNumber(String contributorId, String collectionId) {
+    public long getPreservationSequenceNumber(String contributorId, String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(contributorId, "String contributorId");
-        ArgumentValidator.checkNotNullOrEmpty(collectionId, "String collectionId");
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         
         String sql = "SELECT preserved_seq_number FROM preservation" 
                 + " WHERE contributor_key = (" 
@@ -108,7 +108,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
                     + " SELECT collection_key FROM collection" 
                     + " WHERE collectionid = ? )";
         
-        Long seq = DatabaseUtils.selectLongValue(dbConnector, sql, contributorId, collectionId);
+        Long seq = DatabaseUtils.selectLongValue(dbConnector, sql, contributorId, collectionID);
         if(seq != null) {
             return seq.intValue();
         }
@@ -116,12 +116,12 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     }
 
     @Override
-    public void setPreservationSequenceNumber(String contributorId, String collectionId, long seqNumber) {
+    public void setPreservationSequenceNumber(String contributorId, String collectionID, long seqNumber) {
         ArgumentValidator.checkNotNullOrEmpty(contributorId, "String contributorId");
         ArgumentValidator.checkNotNegative(seqNumber, "int seqNumber");
-        long preservationKey = retrievePreservationKey(contributorId, collectionId);
+        long preservationKey = retrievePreservationKey(contributorId, collectionID);
         log.debug("Updating preservation sequence number for contributor: " + contributorId 
-                + " in collection: " + collectionId + " to seq: " + seqNumber);
+                + " in collection: " + collectionID + " to seq: " + seqNumber);
         
         String sqlUpdate = "UPDATE preservation SET preserved_seq_number = ?"
                 + " WHERE preservation_key = ?";
@@ -150,10 +150,10 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
      * Retrieves the key of the preservation table entry for the given collection and contributor.
      * 
      * @param contributorId The contributor of the preservation table entry.
-     * @param collectionId The collection of the preservation table entry.
+     * @param collectionID The collection of the preservation table entry.
      * @return The key of the entry in the preservation table.
      */
-    private Long retrievePreservationKey(String contributorId, String collectionId) {
+    private Long retrievePreservationKey(String contributorId, String collectionID) {
         String sqlRetrieve = "SELECT preservation_key FROM preservation" 
                 + " WHERE contributor_key = (" 
                     + " SELECT contributor_key FROM contributor" 
@@ -161,11 +161,11 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
                 + " AND collection_key = ("
                     + " SELECT collection_key FROM collection"
                     + " WHERE collectionid = ? )";
-        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, contributorId, collectionId);
+        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, contributorId, collectionID);
         
         if(guid == null) {
             log.debug("Inserting preservation entry for contributor '" + contributorId + "' and collection '" 
-                    + collectionId + "' into the preservation table.");
+                    + collectionID + "' into the preservation table.");
             String sqlInsert = "INSERT INTO preservation ( contributor_key, collection_key)"
                     + " VALUES ( "
                         + "(SELECT contributor_key FROM contributor"
@@ -174,14 +174,14 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
                         + "( SELECT collection_key FROM collection"
                         + " WHERE collectionid" + " = ? )"
                     + ")";
-            DatabaseUtils.executeStatement(dbConnector, sqlInsert, contributorId, collectionId);
+            DatabaseUtils.executeStatement(dbConnector, sqlInsert, contributorId, collectionID);
             
-            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, contributorId, collectionId);
+            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, contributorId, collectionID);
         }
         
         if(guid == null) {
             throw new IllegalStateException("PreservationKey cannot be obtained for contributor: " + contributorId +
-                    " in collection: " + collectionId);
+                    " in collection: " + collectionID);
         }
         
         return guid;

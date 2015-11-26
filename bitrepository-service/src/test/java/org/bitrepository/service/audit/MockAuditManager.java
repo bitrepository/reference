@@ -36,7 +36,7 @@ public class MockAuditManager implements AuditTrailManager {
     
     private int callsForAuditEvent = 0;
     @Override
-    public void addAuditEvent(String collectionId, String fileId, String actor, String info, String auditTrail,
+    public void addAuditEvent(String collectionID, String fileID, String actor, String info, String auditTrail,
                               FileAction operation, String operationID, String certificateID) {
         callsForAuditEvent++;
         AuditTrailEvent audit = new AuditTrailEvent();
@@ -44,7 +44,7 @@ public class MockAuditManager implements AuditTrailManager {
         audit.setActionOnFile(operation);
         audit.setActorOnFile(actor);
         audit.setAuditTrailInformation(auditTrail);
-        audit.setFileID(fileId);
+        audit.setFileID(fileID);
         audit.setInfo(info);
         audit.setReportingComponent("MOCK-AUDIT-MANAGER");
         audit.setSequenceNumber(BigInteger.valueOf(events.size() + 1));
@@ -61,12 +61,12 @@ public class MockAuditManager implements AuditTrailManager {
 
     private int callsForGetAudits = 0;
     @Override
-    public AuditTrailDatabaseResults getAudits(String collectionId, String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate, 
+    public AuditTrailDatabaseResults getAudits(String collectionID, String fileID, Long minSeqNumber, Long maxSeqNumber, Date minDate,
             Date maxDate, Long maxNumberOfResults) {
         callsForGetAudits++;
         AuditTrailDatabaseResults res = new AuditTrailDatabaseResults();
         for(AuditTrailEvent event : events) {
-            if(fileId != null && !event.getFileID().equals(fileId)) {
+            if(fileID != null && !event.getFileID().equals(fileID)) {
                 continue;
             }
             if(minSeqNumber != null && event.getSequenceNumber().longValue() < minSeqNumber) {

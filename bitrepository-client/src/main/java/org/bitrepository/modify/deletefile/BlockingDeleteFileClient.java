@@ -47,7 +47,7 @@ public class BlockingDeleteFileClient {
      * Method for performing a blocking delete file operation.
      *
      * @param collectionID The ID of the collection
-     * @param fileId The id of the file.
+     * @param fileID The id of the file.
      * @param pillarID The id of the pillar to delete the file on.
      * @param checksumForValidationAtPillar The checksum for validating at pillar side.
      * @param checksumRequestsForValidation The checksum for validating at client side.
@@ -58,7 +58,7 @@ public class BlockingDeleteFileClient {
      */
     public List<ContributorEvent> deleteFile(
             String collectionID,
-            String fileId,
+            String fileID,
             String pillarID,
             ChecksumDataForFileTYPE checksumForValidationAtPillar,
             ChecksumSpecTYPE checksumRequestsForValidation,
@@ -66,7 +66,7 @@ public class BlockingDeleteFileClient {
             String auditTrailInformation)
             throws OperationFailedException {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
-        client.deleteFile(collectionID,  fileId, pillarID, checksumForValidationAtPillar,
+        client.deleteFile(collectionID,  fileID, pillarID, checksumForValidationAtPillar,
                 checksumRequestsForValidation,
                 blocker, auditTrailInformation);
         OperationEvent finishEvent = blocker.awaitFinished();

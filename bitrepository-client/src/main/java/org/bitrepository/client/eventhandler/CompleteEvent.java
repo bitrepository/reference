@@ -35,6 +35,7 @@ public class CompleteEvent extends AbstractOperationEvent {
     private final List<ContributorEvent> componentResults;
 
     /**
+     * @param collectionID the collection ID
      * @param componentResults The aggregated list of <code>COMPONENT_COMPLETE</code> events generated during
      *                         the operation.
     */
@@ -46,7 +47,7 @@ public class CompleteEvent extends AbstractOperationEvent {
     }
 
     /**
-     * Returns the results for the individual components contributing to this operation. The list is just
+     * @return the results for the individual components contributing to this operation. The list is just
      * aggregation of the <code>COMPONENT_COMPLETE</code> events generated during the operation.
      */
     public List<ContributorEvent> getComponentResults() {

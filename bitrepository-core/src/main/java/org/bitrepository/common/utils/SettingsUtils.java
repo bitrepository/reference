@@ -109,9 +109,9 @@ public class SettingsUtils {
     public static List<String> getAllPillarIDs() {
         List<String> res = new ArrayList<String>();
         for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
-            for(String pillarId : c.getPillarIDs().getPillarID()) {
-                if(!res.contains(pillarId)) {
-                    res.add(pillarId);
+            for(String pillarID : c.getPillarIDs().getPillarID()) {
+                if(!res.contains(pillarID)) {
+                    res.add(pillarID);
                 }
             }
         }

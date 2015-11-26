@@ -78,12 +78,12 @@ public class TestPutFileMessageFactory extends ClientTestMessageFactory {
      * @return The requested IdentifyPillarsForPutFileRequest.
      */
     public IdentifyPillarsForPutFileRequest createIdentifyPillarsForPutFileRequest(String correlationID, 
-            String replyTo, String toTopic, String fileId, long fileSize, String auditTrailInformation, String from) {
+            String replyTo, String toTopic, String fileID, long fileSize, String auditTrailInformation, String from) {
         IdentifyPillarsForPutFileRequest identifyPillarsForPutFileRequest = createIdentifyPillarsForPutFileRequest(from);
         identifyPillarsForPutFileRequest.setCorrelationID(correlationID);
         identifyPillarsForPutFileRequest.setReplyTo(replyTo);
         identifyPillarsForPutFileRequest.setDestination(toTopic);
-        identifyPillarsForPutFileRequest.setFileID(fileId);
+        identifyPillarsForPutFileRequest.setFileID(fileID);
         identifyPillarsForPutFileRequest.setFileSize(BigInteger.valueOf(fileSize));
         identifyPillarsForPutFileRequest.setAuditTrailInformation(auditTrailInformation);
         return identifyPillarsForPutFileRequest;
@@ -92,22 +92,22 @@ public class TestPutFileMessageFactory extends ClientTestMessageFactory {
     /**
      * Creates a IdentifyPillarsForPutFileResponse based on a request and some constants.
      * @param receivedIdentifyRequestMessage The request to base the response on.
-     * @param pillarId The id of the pillar, which responds.
+     * @param pillarID The id of the pillar, which responds.
      * @param pillarDestinationId The destination for this pillar.
      * @return The requested IdentifyPillarsForPutFileResponse.
      */
     public IdentifyPillarsForPutFileResponse createIdentifyPillarsForPutFileResponse(
             IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage,
-            String pillarId, String pillarDestinationId) {
+            String pillarID, String pillarDestinationId) {
         IdentifyPillarsForPutFileResponse ipfpfResponse = new IdentifyPillarsForPutFileResponse();
         initializeMessageDetails(ipfpfResponse);
         ipfpfResponse.setDestination(receivedIdentifyRequestMessage.getReplyTo());
         ipfpfResponse.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
-        ipfpfResponse.setPillarID(pillarId);
+        ipfpfResponse.setPillarID(pillarID);
         ipfpfResponse.setReplyTo(pillarDestinationId);
         ipfpfResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
         ipfpfResponse.setResponseInfo(createPositiveIdentificationResponseInfo());
-        ipfpfResponse.setFrom(pillarId);
+        ipfpfResponse.setFrom(pillarID);
 
         ipfpfResponse.setPillarChecksumSpec(null);
 
@@ -129,7 +129,7 @@ public class TestPutFileMessageFactory extends ClientTestMessageFactory {
 
     /**
      * Method to create specific PutFileRequest.
-     * @param pillarId The id of the pillar to request for Put.
+     * @param pillarID The id of the pillar to request for Put.
      * @param toTopic The destination to send the message.
      * @param replyTo The where responses should be received.
      * @param correlationId The id of the message.
@@ -137,16 +137,16 @@ public class TestPutFileMessageFactory extends ClientTestMessageFactory {
      * @param filesize The size of the file.
      * @return The requested PutFileRequest.
      */
-    public PutFileRequest createPutFileRequest(String pillarId, String toTopic, String replyTo, String correlationId,
-            String fileAddress, BigInteger filesize, String fileId, String auditTrailInformation, String from) {
+    public PutFileRequest createPutFileRequest(String pillarID, String toTopic, String replyTo, String correlationId,
+            String fileAddress, BigInteger filesize, String fileID, String auditTrailInformation, String from) {
         PutFileRequest putFileRequest = createPutFileRequest(from);
-        putFileRequest.setPillarID(pillarId);
+        putFileRequest.setPillarID(pillarID);
         putFileRequest.setDestination(toTopic);
         putFileRequest.setReplyTo(replyTo);
         putFileRequest.setCorrelationID(correlationId);
         putFileRequest.setFileAddress(fileAddress);
         putFileRequest.setFileSize(filesize);
-        putFileRequest.setFileID(fileId);
+        putFileRequest.setFileID(fileID);
         putFileRequest.setAuditTrailInformation(auditTrailInformation);
         
         putFileRequest.setChecksumDataForNewFile(null);
@@ -158,23 +158,23 @@ public class TestPutFileMessageFactory extends ClientTestMessageFactory {
     /**
      * Method to create a ProgressResponse to the put operation based on a PutFileRequest.
      * @param request The PutFileRequest to base the final response on.
-     * @param pillarId The id of the pillar to respond.
+     * @param pillarID The id of the pillar to respond.
      * @param pillarDestinationId The destination for the responding pillar.
      * @return The requested PutFileProgressResponse.
      */
     public PutFileProgressResponse createPutFileProgressResponse(PutFileRequest request, 
-            String pillarId, String pillarDestinationId) {
+            String pillarID, String pillarDestinationId) {
         PutFileProgressResponse progressResponse = new PutFileProgressResponse();
         initializeMessageDetails(progressResponse);
         progressResponse.setDestination(request.getReplyTo());
         progressResponse.setCorrelationID(request.getCorrelationID());
         progressResponse.setReplyTo(pillarDestinationId);
-        progressResponse.setPillarID(pillarId);
+        progressResponse.setPillarID(pillarID);
         progressResponse.setFileAddress(request.getFileAddress());
         progressResponse.setFileID(request.getFileID());
         progressResponse.setPillarChecksumSpec(null);
         progressResponse.setResponseInfo(PROGRESS_INFO_DEFAULT);
-        progressResponse.setFrom(pillarId);
+        progressResponse.setFrom(pillarID);
         
         return progressResponse;
     }
@@ -183,23 +183,23 @@ public class TestPutFileMessageFactory extends ClientTestMessageFactory {
      * Method to create a FinalResponse to the put operation based on a PutFileRequest.
      * 
      * @param request The PutFileRequest to base the final response on.
-     * @param pillarId The id of the pillar to respond.
+     * @param pillarID The id of the pillar to respond.
      * @param pillarDestinationId The destination for the responding pillar.
      * @return The requested PutFileFinalResponse.
      */
     public PutFileFinalResponse createPutFileFinalResponse(PutFileRequest request,
-            String pillarId, String pillarDestinationId) {
+            String pillarID, String pillarDestinationId) {
         PutFileFinalResponse finalResponse = new PutFileFinalResponse();
         initializeMessageDetails(finalResponse);
         finalResponse.setDestination(request.getReplyTo());
         finalResponse.setCorrelationID(request.getCorrelationID());
         finalResponse.setReplyTo(pillarDestinationId);
-        finalResponse.setPillarID(pillarId);
+        finalResponse.setPillarID(pillarID);
         finalResponse.setFileAddress(request.getFileAddress());
         finalResponse.setFileID(request.getFileID());
         finalResponse.setPillarChecksumSpec(null);
         finalResponse.setResponseInfo(createCompleteResponseInfo());
-        finalResponse.setFrom(pillarId);
+        finalResponse.setFrom(pillarID);
         
         return finalResponse;
     }

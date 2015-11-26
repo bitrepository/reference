@@ -38,14 +38,16 @@ public class ResponseDispatcher extends MessageDispatcher {
     /**
      * Completes and sends a given response.
      * All the values of the specific response elements has to be set, including the ResponseInfo.
-     * <br/> Sets the fields:
-     * <br/> CollectionID
-     * <br/> CorrelationID
-     * <br/> From
-     * <br/> MinVersion
-     * <br/> ReplyTo
-     * <br/> To
-     * <br/> Version
+     * Sets the fields:
+     * <ul>
+     *     <li>CollectionID</li>
+     *     <li>CorrelationID</li>
+     *     <li>From</li>
+     *     <li>MinVersion</li>
+     *     <li>ReplyTo</li>
+     *     <li>To</li>
+     *     <li>Version</li>
+     * </ul>
      *
      * @param response The response which only needs the basic information to be send.
      * @param request The original request to respond to.

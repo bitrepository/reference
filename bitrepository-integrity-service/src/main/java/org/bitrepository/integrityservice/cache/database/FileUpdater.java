@@ -85,7 +85,8 @@ public class FileUpdater {
     }
     
     /**
-     * Method to handle the actual update.  
+     * Method to handle the actual update.
+     * @param dataItems the FileIDs to update
      */
     public void updateFiles(FileIDsDataItems dataItems) {
         try {

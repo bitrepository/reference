@@ -10,7 +10,9 @@ import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 public class AlarmDAOFactory extends DatabaseFactory<AlarmServiceDAO> {
     
     /**
-     * Obtain an instance of AlarmServiceDAO appropriate for the specific database backend. 
+     * Obtain an instance of AlarmServiceDAO appropriate for the specific database backend.
+     * @param ds the specific database backend
+     * @return an instance of AlarmServiceDAO appropriate for the specific database backend.
      */
     public AlarmServiceDAO getAlarmServiceDAOInstance(DatabaseSpecifics ds) {
         AlarmServiceDAO dao = getDAOInstance(ds);

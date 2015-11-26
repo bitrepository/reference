@@ -94,7 +94,7 @@ public class PillarAlarmDispatcher extends AlarmDispatcher {
         }
 
         alarm.setAlarmText(e.getResponseInfo().getResponseText());
-        alarm.setCollectionID(e.getCollectionId());
+        alarm.setCollectionID(e.getCollectionID());
         
         if(e instanceof IllegalOperationException) {
             IllegalOperationException ioe = (IllegalOperationException) e;

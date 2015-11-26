@@ -49,12 +49,12 @@ public class DeleteFileClientTestWrapper implements DeleteFileClient {
     }
 
     @Override
-    public void deleteFile(String collectionID, String fileId, String pillarId,
+    public void deleteFile(String collectionID, String fileID, String pillarID,
                            ChecksumDataForFileTYPE checksumForPillar,
             ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) {
-        testEventManager.addStimuli("Calling deleteFile(" + fileId + ", " + pillarId + ", " + checksumForPillar + ", " 
+        testEventManager.addStimuli("Calling deleteFile(" + fileID + ", " + pillarID + ", " + checksumForPillar + ", "
             + checksumRequested + ", eventHandler, " + auditTrailInformation + ")");
-        wrappedDeleteClient.deleteFile(collectionID, fileId, pillarId, checksumForPillar, checksumRequested,
+        wrappedDeleteClient.deleteFile(collectionID, fileID, pillarID, checksumForPillar, checksumRequested,
                 eventHandler,
                 auditTrailInformation);        
     }

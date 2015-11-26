@@ -139,18 +139,18 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
      * finally use the PutFileClient to ingest the package into the collection.
      * When the 'put' has completed the Store is updated with the newest preservation sequence numbers for the 
      * contributors.
-     * @param collectionId The id of the collection whose audit trails should be preserved.
+     * @param collectionID The id of the collection whose audit trails should be preserved.
      */
-    private synchronized void performAuditTrailPreservation(String collectionId) {
+    private synchronized void performAuditTrailPreservation(String collectionID) {
         try {
-            File auditPackage = auditPackers.get(collectionId).createNewPackage();
+            File auditPackage = auditPackers.get(collectionID).createNewPackage();
             URL url = uploadFile(auditPackage);
             log.info("Uploaded the file '" + auditPackage + "' to '" + url.toExternalForm() + "'");
             
             ChecksumDataForFileTYPE checksumData = getValidationChecksumDataForFile(auditPackage);
             
             EventHandler eventHandler = new AuditPreservationEventHandler(
-                    auditPackers.get(collectionId).getSequenceNumbersReached(), store, collectionId);
+                    auditPackers.get(collectionID).getSequenceNumbersReached(), store, collectionID);
             client.putFile(preservationSettings.getAuditTrailPreservationCollection(), url,
                     auditPackage.getName(), auditPackage.length(), checksumData, null, eventHandler,
                     "Preservation of audit trails from the AuditTrail service.");

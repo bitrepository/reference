@@ -57,6 +57,7 @@ public class IntegrityWorkflowManager extends WorkflowManager {
     /**
      * Will create a default set of workflows. This is currently just the <code>CompleteIntegrityCheck</code>
      * workflow running once a day on all collections.
+     * @return a default set of workflows
      */
     protected static WorkflowSettings createDefaultWorkflowSettings() {
         WorkflowSettings defaultWorkflowSettings = new WorkflowSettings();

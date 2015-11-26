@@ -64,6 +64,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
     /**
      * Constructor.
      * @param context The context of the message handler.
+     * @param auditManager the audit manager
      */
     public GetAuditTrailsRequestHandler(ContributorContext context, AuditTrailManager auditManager) {
         super(context);
@@ -93,9 +94,9 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
     /**
      * Method for validating the content of the message.
      * @param message The message requesting the operation, which should be validated.
-     * @return Whether it was valid.
+     * @throws InvalidMessageException if the message was invalid
      */
-    protected void validateMessage(GetAuditTrailsRequest message) throws RequestHandlerException {
+    protected void validateMessage(GetAuditTrailsRequest message) throws InvalidMessageException {
         if(!message.getContributor().equals(getContext().getSettings().getComponentID())) {
             throw new InvalidMessageException(
                     ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE, 
@@ -263,9 +264,11 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
     /**
      * Creates a GetStatusFinalResponse based on a GetStatusRequest. Missing the 
      * following fields (besides the ones in dispatchResponse):
-     * <br/> - ResponseInfo
-     * <br/> - ResultingAuditTrails
-     * 
+     * <ul>
+     * <li>ResponseInfo</li>
+     * <li>ResultingAuditTrails</li>
+     * </ul>
+     * @param request the audit trail request. Ignored
      * @return The GetStatusFinalResponse based on the request.
      */
     protected GetAuditTrailsFinalResponse createFinalResponse(GetAuditTrailsRequest request) {

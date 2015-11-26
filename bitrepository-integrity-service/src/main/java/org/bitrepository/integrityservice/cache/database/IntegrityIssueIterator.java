@@ -1,17 +1,18 @@
 package org.bitrepository.integrityservice.cache.database;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.Closeable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Class to handle iteration over large set of integrity issues, delivering only IDs 
  */
-public class IntegrityIssueIterator {
+public class IntegrityIssueIterator implements Closeable {
     
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -25,31 +26,36 @@ public class IntegrityIssueIterator {
     
     /**
      * Method to explicitly close the ResultSet in the IntegrityIssueIterator 
-     * @throws SQLException in case of a sql error
      */
-    public void close() throws SQLException {
+    public void close() {
         if(issueResultSet != null) {
-            issueResultSet.close();
+            try {
+                issueResultSet.close();
+            } catch (SQLException ignored) {}
         }
         
         if(ps != null) {
-            ps.close();
+            try {
+                ps.close();
+            } catch (SQLException ignored) {}
         }
-        
-        if(conn != null) {
-            conn.setAutoCommit(true);
-            conn.close();
+        try {
+            if (conn != null && !conn.isClosed()) {
+                conn.setAutoCommit(true);
+                conn.close();
+            }
             conn = null;
-        }
+        } catch (SQLException ignored) {}
     }
     
     /**
      * Method to return the next AuditTrailEvent in the ResultSet
      * When no more AuditTrailEvents are available, null is returned and the internal ResultSet closed. 
      * @return The next AuditTrailEvent available in the ResultSet, or null if no more events are available. 
-     * @throws SQLException In case of a sql error. 
+     * @throws IllegalStateException In case of a sql error.
+     * @throws RuntimeException in case the close operation failed
      */
-    public String getNextIntegrityIssue() {
+    public String getNextIntegrityIssue() throws IllegalStateException, RuntimeException{
         try {
             String issue = null;
             if(issueResultSet == null) {
@@ -62,7 +68,6 @@ public class IntegrityIssueIterator {
                 log.debug("Finished executing issues query, it took: " + (System.currentTimeMillis() - tStart) + "ms");
             }
             if(issueResultSet.next()) {
-                
                 issue = issueResultSet.getString(1);
             } else {
                 close();
@@ -70,12 +75,8 @@ public class IntegrityIssueIterator {
     
             return issue;
         } catch (Exception e) {
-            try {
-                close();
-            } catch (SQLException e1) {
-                throw new RuntimeException("Failed to close ResultSet or PreparedStatement", e1);
-            }
+            close();
             throw new IllegalStateException("Could not extract the wanted integrity issues", e);
-        } 
+        }
     }
 }

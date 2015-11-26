@@ -84,7 +84,7 @@ public abstract class AbstractContributorMediator implements ContributorMediator
      * Make the inheriting class create the environment for safely handling the request. 
      * E.g. creating the specific fault barrier.
      * @param request The request to handle.
-     * @param messageContext
+     * @param messageContext the message context
      * @param handler The handler for the request.
      */
     protected abstract void handleRequest(MessageRequest request, MessageContext messageContext, RequestHandler handler);

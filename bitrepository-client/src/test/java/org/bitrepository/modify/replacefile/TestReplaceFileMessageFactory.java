@@ -68,13 +68,13 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
      * @return The requested IdentifyPillarsForReplaceFileRequest.
      */
     public IdentifyPillarsForReplaceFileRequest createIdentifyPillarsForReplaceFileRequest(String correlationID, 
-            String replyTo, String toTopic, String fileId, String auditTrailInformation, String from) {
+            String replyTo, String toTopic, String fileID, String auditTrailInformation, String from) {
         IdentifyPillarsForReplaceFileRequest identifyPillarsForReplaceFileRequest = 
                 createIdentifyPillarsForReplaceFileRequest(from);
         identifyPillarsForReplaceFileRequest.setCorrelationID(correlationID);
         identifyPillarsForReplaceFileRequest.setReplyTo(replyTo);
         identifyPillarsForReplaceFileRequest.setDestination(toTopic);
-        identifyPillarsForReplaceFileRequest.setFileID(fileId);
+        identifyPillarsForReplaceFileRequest.setFileID(fileID);
         identifyPillarsForReplaceFileRequest.setAuditTrailInformation(auditTrailInformation);
         return identifyPillarsForReplaceFileRequest;
     }
@@ -82,23 +82,23 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
     /**
      * Creates a IdentifyPillarsForReplaceFileResponse based on a request and some constants.
      * @param receivedIdentifyRequestMessage The request to base the response on.
-     * @param pillarId The id of the pillar, which responds.
+     * @param pillarID The id of the pillar, which responds.
      * @param pillarDestinationId The destination for this pillar.
      * @return The requested IdentifyPillarsForReplaceFileResponse.
      */
     public IdentifyPillarsForReplaceFileResponse createIdentifyPillarsForReplaceFileResponse(
             IdentifyPillarsForReplaceFileRequest receivedIdentifyRequestMessage,
-            String pillarId, String pillarDestinationId) {
+            String pillarID, String pillarDestinationId) {
         IdentifyPillarsForReplaceFileResponse ipfrfResponse = new IdentifyPillarsForReplaceFileResponse();
         initializeMessageDetails(ipfrfResponse);
         ipfrfResponse.setDestination(receivedIdentifyRequestMessage.getReplyTo());
         ipfrfResponse.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
-        ipfrfResponse.setPillarID(pillarId);
+        ipfrfResponse.setPillarID(pillarID);
         ipfrfResponse.setReplyTo(pillarDestinationId);
         ipfrfResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
         ipfrfResponse.setResponseInfo(createPositiveIdentificationResponseInfo());
         ipfrfResponse.setFileID(receivedIdentifyRequestMessage.getFileID());
-        ipfrfResponse.setFrom(pillarId);
+        ipfrfResponse.setFrom(pillarID);
 
         ipfrfResponse.setPillarChecksumSpec(null);
 
@@ -120,7 +120,7 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
 
     /**
      * Method to create specific ReplaceFileRequest.
-     * @param pillarId The id of the pillar to request for Replace.
+     * @param pillarID The id of the pillar to request for Replace.
      * @param toTopic The destination to send the message.
      * @param replyTo The where responses should be received.
      * @param correlationId The id of the message.
@@ -128,17 +128,17 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
      * @param filesize The size of the file.
      * @return The requested ReplaceFileRequest.
      */
-    public ReplaceFileRequest createReplaceFileRequest(String pillarId, String toTopic, String replyTo, String correlationId,
-            String fileAddress, BigInteger filesize, String fileId, String auditTrailInformation, String from, 
+    public ReplaceFileRequest createReplaceFileRequest(String pillarID, String toTopic, String replyTo, String correlationId,
+            String fileAddress, BigInteger filesize, String fileID, String auditTrailInformation, String from,
             ChecksumDataForFileTYPE oldChecksum, ChecksumDataForFileTYPE newChecksum, ChecksumSpecTYPE checksumRequested) {
         ReplaceFileRequest replaceFileRequest = createReplaceFileRequest(from);
-        replaceFileRequest.setPillarID(pillarId);
+        replaceFileRequest.setPillarID(pillarID);
         replaceFileRequest.setDestination(toTopic);
         replaceFileRequest.setReplyTo(replyTo);
         replaceFileRequest.setCorrelationID(correlationId);
         replaceFileRequest.setFileAddress(fileAddress);
         replaceFileRequest.setFileSize(filesize);
-        replaceFileRequest.setFileID(fileId);
+        replaceFileRequest.setFileID(fileID);
         replaceFileRequest.setAuditTrailInformation(auditTrailInformation);
         replaceFileRequest.setChecksumDataForExistingFile(oldChecksum);
         replaceFileRequest.setChecksumDataForNewFile(newChecksum);
@@ -151,23 +151,23 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
     /**
      * Method to create a ProgressResponse to the put operation based on a ReplaceFileRequest.
      * @param request The ReplaceFileRequest to base the final response on.
-     * @param pillarId The id of the pillar to respond.
+     * @param pillarID The id of the pillar to respond.
      * @param pillarDestinationId The destination for the responding pillar.
      * @return The requested ReplaceFileProgressResponse.
      */
     public ReplaceFileProgressResponse createReplaceFileProgressResponse(ReplaceFileRequest request, 
-            String pillarId, String pillarDestinationId) {
+            String pillarID, String pillarDestinationId) {
         ReplaceFileProgressResponse progressResponse = new ReplaceFileProgressResponse();
         initializeMessageDetails(progressResponse);
         progressResponse.setDestination(request.getReplyTo());
         progressResponse.setCorrelationID(request.getCorrelationID());
         progressResponse.setReplyTo(pillarDestinationId);
-        progressResponse.setPillarID(pillarId);
+        progressResponse.setPillarID(pillarID);
         progressResponse.setFileAddress(request.getFileAddress());
         progressResponse.setFileID(request.getFileID());
         progressResponse.setPillarChecksumSpec(null);
         progressResponse.setResponseInfo(PROGRESS_INFO_DEFAULT);
-        progressResponse.setFrom(pillarId);
+        progressResponse.setFrom(pillarID);
         
         return progressResponse;
     }
@@ -176,12 +176,12 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
      * Method to create a FinalResponse to the put operation based on a ReplaceFileRequest.
      * 
      * @param request The ReplaceFileRequest to base the final response on.
-     * @param pillarId The id of the pillar to respond.
+     * @param pillarID The id of the pillar to respond.
      * @param pillarDestinationId The destination for the responding pillar.
      * @return The requested ReplaceFileFinalResponse.
      */
     public ReplaceFileFinalResponse createReplaceFileFinalResponse(ReplaceFileRequest request,
-            String pillarId, String pillarDestinationId, ChecksumDataForFileTYPE checksumData) {
+            String pillarID, String pillarDestinationId, ChecksumDataForFileTYPE checksumData) {
         ReplaceFileFinalResponse finalResponse = new ReplaceFileFinalResponse();
         initializeMessageDetails(finalResponse);
         finalResponse.setChecksumDataForNewFile(checksumData);
@@ -189,11 +189,11 @@ public class TestReplaceFileMessageFactory extends ClientTestMessageFactory {
         finalResponse.setFileAddress(request.getFileAddress());
         finalResponse.setFileID(request.getFileID());
         finalResponse.setPillarChecksumSpec(null);
-        finalResponse.setPillarID(pillarId);
+        finalResponse.setPillarID(pillarID);
         finalResponse.setReplyTo(pillarDestinationId);
         finalResponse.setResponseInfo(createCompleteResponseInfo());
         finalResponse.setDestination(request.getReplyTo());
-        finalResponse.setFrom(pillarId);
+        finalResponse.setFrom(pillarID);
 
         return finalResponse;
     }

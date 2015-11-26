@@ -33,7 +33,8 @@ public class IdentificationCompleteEvent extends AbstractOperationEvent {
     private final List<String> contributorIDs;
 
     /**
-     * @param contributorIDs The lis of IDs of the contributor this event relates to.
+     * @param collectionID the collection ID for the event
+     * @param contributorIDs The list of IDs of the contributor this event relates to.
      */
     public IdentificationCompleteEvent(String collectionID, List<String> contributorIDs) {
         super();
@@ -43,7 +44,7 @@ public class IdentificationCompleteEvent extends AbstractOperationEvent {
     }
 
     /**
-     * Returns the ID of the pillar this event relates to.
+     * @return  the ID of the pillar this event relates to.
      */
     public List<String> getContributorIDs() {
         return contributorIDs;

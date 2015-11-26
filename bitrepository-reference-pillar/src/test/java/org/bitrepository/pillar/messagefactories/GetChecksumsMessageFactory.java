@@ -41,29 +41,29 @@ public class GetChecksumsMessageFactory extends PillarTestMessageFactory {
     }
 
     public IdentifyPillarsForGetChecksumsRequest createIdentifyPillarsForGetChecksumsRequest(ChecksumSpecTYPE csSpec, 
-            FileIDs fileId) {
+            FileIDs fileID) {
         IdentifyPillarsForGetChecksumsRequest res = new IdentifyPillarsForGetChecksumsRequest();
         initializeIdentifyRequest(res);
         res.setChecksumRequestForExistingFile(csSpec);
-        res.setFileIDs(fileId);
+        res.setFileIDs(fileID);
         
         return res;
     }
 
-    public GetChecksumsRequest createGetChecksumsRequest(ChecksumSpecTYPE csSpec, FileIDs fileId, String url) {
+    public GetChecksumsRequest createGetChecksumsRequest(ChecksumSpecTYPE csSpec, FileIDs fileID, String url) {
         GetChecksumsRequest res = new GetChecksumsRequest();
         initializeOperationRequest(res);
         res.setChecksumRequestForExistingFile(csSpec);
-        res.setFileIDs(fileId);
+        res.setFileIDs(fileID);
         res.setPillarID(pillarID);
         res.setResultAddress(url);
 
         return res;
     }
 
-    public GetChecksumsRequest createGetChecksumsRequest(ChecksumSpecTYPE csSpec, FileIDs fileId, String url, 
+    public GetChecksumsRequest createGetChecksumsRequest(ChecksumSpecTYPE csSpec, FileIDs fileID, String url,
             XMLGregorianCalendar minDate, XMLGregorianCalendar maxDate, Long maxResults) {
-        GetChecksumsRequest res = createGetChecksumsRequest(csSpec, fileId, url);
+        GetChecksumsRequest res = createGetChecksumsRequest(csSpec, fileID, url);
         res.setMinTimestamp(minDate);
         res.setMaxTimestamp(maxDate);
         if(maxResults != null) {

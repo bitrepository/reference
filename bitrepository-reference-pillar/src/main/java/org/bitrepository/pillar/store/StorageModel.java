@@ -145,33 +145,33 @@ public abstract class StorageModel {
      * If it otherwise requests a non-default checksum specification, then it will be handled differently for the 
      * Full ReferencePillar and the ChecksumPillar.
      * 
-     * @param fileId The id of the file whose checksum is requested.
-     * @param collectionId The id of the collection of the file.
+     * @param fileID The id of the file whose checksum is requested.
+     * @param collectionID The id of the collection of the file.
      * @param csType The type of checksum.
      * @return The entry for the requested type of checksum for the given file.
      * @return {@link RequestHandlerException} If a non-default checksum is requested from a ChecksumPillar.
      */
-    public ChecksumEntry getChecksumEntryForFile(String fileId, String collectionId, ChecksumSpecTYPE csType) 
+    public ChecksumEntry getChecksumEntryForFile(String fileID, String collectionID, ChecksumSpecTYPE csType)
             throws RequestHandlerException {
         if(csType.equals(defaultChecksumSpec)) {
-            verifyFileToCacheConsistencyIfRequired(fileId, collectionId);
-            return cache.getEntry(fileId, collectionId);            
+            verifyFileToCacheConsistencyIfRequired(fileID, collectionID);
+            return cache.getEntry(fileID, collectionID);
         } else {
-            String checksum = getNonDefaultChecksum(fileId, collectionId, csType);
-            return new ChecksumEntry(fileId, checksum, new Date());
+            String checksum = getNonDefaultChecksum(fileID, collectionID, csType);
+            return new ChecksumEntry(fileID, checksum, new Date());
         }
     }
 
     /**
      * Retrieves the entry for a given file with a given checksumSpec in the ChecksumDataForFileTYPE format.
-     * @param fileId The id of the file to retrieve the data from.
-     * @param collectionId The id of the collection of the file.
+     * @param fileID The id of the file to retrieve the data from.
+     * @param collectionID The id of the collection of the file.
      * @param csType The type of checksum to calculate.
      * @return The entry encapsulated in the ChecksumDataForFileTYPE data format.
      */
-    public ChecksumDataForFileTYPE getChecksumDataForFile(String fileId, String collectionId, ChecksumSpecTYPE csType) 
+    public ChecksumDataForFileTYPE getChecksumDataForFile(String fileID, String collectionID, ChecksumSpecTYPE csType)
             throws RequestHandlerException {
-        ChecksumEntry entry = getChecksumEntryForFile(fileId, collectionId, csType);
+        ChecksumEntry entry = getChecksumEntryForFile(fileID, collectionID, csType);
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
         res.setChecksumSpec(csType);
@@ -361,7 +361,7 @@ public abstract class StorageModel {
     /**
      * Validates that all files in the cache is also in the archive, and that all files in the archive
      * is also in the cache.
-     * @param collectionId The id of the collection where the data should be ensured.
+     * @param collectionID The id of the collection where the data should be ensured.
      */
     public abstract void verifyFileToCacheConsistencyOfAllData(String collectionID);
 
@@ -370,13 +370,13 @@ public abstract class StorageModel {
      * checksum specification.
      * It will also recalculate the default checksum and update the cache with it.
      * A ChecksumPillar will throw an exception, since it does not have the actual files to calculate checksums with.
-     * @param fileId The id of the file.
+     * @param fileID The id of the file.
      * @param collectionID The id of the collection.
      * @param csType The checksum specification to calculate the checksum with.
      * @return The checksum of the file calculated with the given checksum specification.
      * @throws RequestHandlerException If it is a ChecksumPillar.
      */
-    protected abstract String getNonDefaultChecksum(String fileId, String collectionID, ChecksumSpecTYPE csType) 
+    protected abstract String getNonDefaultChecksum(String fileID, String collectionID, ChecksumSpecTYPE csType)
             throws RequestHandlerException;
     
     /**

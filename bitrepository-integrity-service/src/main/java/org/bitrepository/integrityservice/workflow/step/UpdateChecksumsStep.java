@@ -63,7 +63,7 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
     /** The maximum number of results for each conversation.*/
     private final Integer maxNumberOfResultsPerConversation;
     /** The collectionID */
-    protected final String collectionId;
+    protected final String collectionID;
     /** Continue with checks in case of failure, defaults to false */
     private boolean abortInCaseOfFailure = true;
     /** Contributors for collecting information */
@@ -80,12 +80,12 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
      * @param checksumType The type of checksum to collect.
      */
     public UpdateChecksumsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
-            ChecksumSpecTYPE checksumType, Settings settings, String collectionId, IntegrityContributors integrityContributors) {
+            ChecksumSpecTYPE checksumType, Settings settings, String collectionID, IntegrityContributors integrityContributors) {
         this.collector = collector;
         this.store = store;
         this.checksumType = checksumType;
         this.alerter = alerter;
-        this.collectionId = collectionId;
+        this.collectionID = collectionID;
         this.integrityContributors = integrityContributors;
         this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
                 + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
@@ -118,12 +118,12 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
 
             Set<String> pillarsToCollectFrom =  integrityContributors.getActiveContributors();
             log.debug("Collecting checksums from '" + pillarsToCollectFrom + "' for collection '" 
-                    + collectionId + "'.");
+                    + collectionID + "'.");
             while (!pillarsToCollectFrom.isEmpty()) {
                 IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, 
                         timeout, integrityContributors);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
-                collector.getChecksums(collectionId, pillarsToCollectFrom, checksumType, "IntegrityService: " 
+                collector.getChecksums(collectionID, pillarsToCollectFrom, checksumType, "IntegrityService: "
                         + getName(), queries, eventHandler);
                 
                 OperationEvent event = eventHandler.getFinish();
@@ -151,14 +151,14 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
             OperationFailedEvent ofe = (OperationFailedEvent) event;
             if(abortInCaseOfFailure) {
                 alerter.integrityFailed("Integrity check aborted while getting checksums due to failed contributors: " 
-                        + integrityContributors.getFailedContributors(), collectionId);
+                        + integrityContributors.getFailedContributors(), collectionID);
                 throw new WorkflowAbortedException("Aborting workflow due to failure collecting checksums. "
                         + "Cause: " + ofe.toString());
             } else {
                 log.info("Failure occured collecting fileIDs, continuing collecting checksums. Failure {}", ofe.toString());
                 alerter.integrityFailed("Failure while collecting checksums, the check will continue "
                         + "with the information available. The failed contributors were: " 
-                        + integrityContributors.getFailedContributors(), collectionId);
+                        + integrityContributors.getFailedContributors(), collectionID);
             }
         }
     }
@@ -171,7 +171,7 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
     private ContributorQuery[] getQueries(Collection<String> pillars) {
         List<ContributorQuery> res = new ArrayList<ContributorQuery>();
         for(String pillar : pillars) {
-            Date latestChecksumEntry = store.getDateForNewestChecksumEntryForPillar(pillar, collectionId);
+            Date latestChecksumEntry = store.getDateForNewestChecksumEntryForPillar(pillar, collectionID);
             res.add(new ContributorQuery(pillar, latestChecksumEntry, null, maxNumberOfResultsPerConversation));
         }
         

@@ -32,37 +32,37 @@ import javax.xml.datatype.XMLGregorianCalendar;
 public interface ChecksumStore {
     /**
      * Retrieve the calculation date for the checksum of the file.
-     * @param fileId The id of the file.
-     * @param collectionId The id of the collection for the file.
+     * @param fileID The id of the file.
+     * @param collectionID The id of the collection for the file.
      * @return The calculation date for the checksum of the file at the collection.
      */
-    Date getCalculationDate(String fileId, String collectionId);
+    Date getCalculationDate(String fileID, String collectionID);
     
     /**
      * Retrieve the checksum for the given file.
-     * @param fileId The id of the file.
-     * @param collectionId The id of the collection for the file.
+     * @param fileID The id of the file.
+     * @param collectionID The id of the collection for the file.
      * @return The checksum of the file.
      */
-    String getChecksum(String fileId, String collectionId);
+    String getChecksum(String fileID, String collectionID);
     
     /**
-     * @param fileId The id of the file.
-     * @param collectionId The id of the collection for the file.
+     * @param fileID The id of the file.
+     * @param collectionID The id of the collection for the file.
      * @return The entry with the checksum information about the file.
      */
-    ChecksumEntry getEntry(String fileId, String collectionId);
+    ChecksumEntry getEntry(String fileID, String collectionID);
     
     /**
      * Retrieves the checksum result entries for the given restrictions from the store.
      * @param minTimeStamp The minimum date for the timestamp of the extracted checksum entries.
      * @param maxTimeStamp The maximum date for the timestamp of the extracted checksum entries.
      * @param maxNumberOfResults The maximum number of results.
-     * @param collectionId The id of the collection for the files.
+     * @param collectionID The id of the collection for the files.
      * @return The checksum entries from the store.
      */
     ExtractedChecksumResultSet getChecksumResults(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            Long maxNumberOfResults, String collectionId);
+            Long maxNumberOfResults, String collectionID);
 
     /**
      * Retrieves the checksum result entry for the given file from the store.
@@ -77,12 +77,12 @@ public interface ChecksumStore {
 
     /**
      * Inserts a checksum calculation for a given file.
-     * @param fileId The id of the file.
-     * @param collectionId The id of the collection for the file.
+     * @param fileID The id of the file.
+     * @param collectionID The id of the collection for the file.
      * @param checksum The checksum of the file.
      * @param calculationDate The date for the calculation of the checksum for the file.
      */
-    void insertChecksumCalculation(String fileId, String collectionId, String checksum, Date calculationDate);
+    void insertChecksumCalculation(String fileID, String collectionID, String checksum, Date calculationDate);
     
     /**
      * Retrieval of file ids.
@@ -90,33 +90,33 @@ public interface ChecksumStore {
      * @param maxTimeStamp The maximum date for the timestamp of the extracted file ids.
      * @param maxNumberOfResults The maximum number of results.
      * @param fileID The id of the file. If null or empty string, then all files.
-     * @param collectionId The id of the collection for the file.
+     * @param collectionID The id of the collection for the file.
      * @return The file ids in the store within the restrictions.
      */
     ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            Long maxNumberOfResults, String fileID, String collectionId);
+            Long maxNumberOfResults, String fileID, String collectionID);
     
     /**
      * Retrieval of all the file ids in the store.
-     * @param collectionId The id of the collection for the file.
+     * @param collectionID The id of the collection for the file.
      * @return The collection of file ids in the store.
      */
-    Collection<String> getAllFileIDs(String collectionId);
+    Collection<String> getAllFileIDs(String collectionID);
     
     /**
      * Deletes a given entry from the cache.
-     * @param fileId The id of the file, whose entry should be removed from the cache.
-     * @param collectionId The id of the collection for the file.
+     * @param fileID The id of the file, whose entry should be removed from the cache.
+     * @param collectionID The id of the collection for the file.
      */
-    void deleteEntry(String fileId, String collectionId);
+    void deleteEntry(String fileID, String collectionID);
     
     /**
      * Tells whether a given file id can be found in the cache.
-     * @param fileId The id of the file to find in the cache.
-     * @param collectionId The id of the collection for the file.
+     * @param fileID The id of the file to find in the cache.
+     * @param collectionID The id of the collection for the file.
      * @return Whether the file could be found.
      */
-    boolean hasFile(String fileId, String collectionId);
+    boolean hasFile(String fileID, String collectionID);
     
     /**
      * Closes and cleans up the ChecksumStore.

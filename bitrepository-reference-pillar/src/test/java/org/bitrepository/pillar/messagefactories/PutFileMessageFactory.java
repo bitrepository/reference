@@ -54,10 +54,10 @@ public class PutFileMessageFactory extends PillarTestMessageFactory {
         super(collectionID, clientSettings, pillarID, pillarDestination);
     }
     
-    public IdentifyPillarsForPutFileRequest createIdentifyPillarsForPutFileRequest(String fileId, Long fileSize) {
+    public IdentifyPillarsForPutFileRequest createIdentifyPillarsForPutFileRequest(String fileID, Long fileSize) {
         IdentifyPillarsForPutFileRequest res = new IdentifyPillarsForPutFileRequest();
         initializeIdentifyRequest(res);
-        res.setFileID(fileId);
+        res.setFileID(fileID);
         if(fileSize != null) {
             res.setFileSize(BigInteger.valueOf(fileSize));
         }
@@ -68,13 +68,13 @@ public class PutFileMessageFactory extends PillarTestMessageFactory {
     public PutFileRequest createPutFileRequest(
             ChecksumDataForFileTYPE checksumDataForFile,
             ChecksumSpecTYPE csReturnSpec,
-            String url, String fileId, Long fileSize) {
+            String url, String fileID, Long fileSize) {
         PutFileRequest res = new PutFileRequest();
         initializeOperationRequest(res);
         res.setChecksumDataForNewFile(checksumDataForFile);
         res.setChecksumRequestForNewFile(csReturnSpec);
         res.setFileAddress(url);
-        res.setFileID(fileId);
+        res.setFileID(fileID);
         if(fileSize != null) {
             res.setFileSize(BigInteger.valueOf(fileSize));
         }

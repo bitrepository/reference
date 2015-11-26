@@ -58,7 +58,7 @@ public class TestGetChecksumsMessageFactory extends ClientTestMessageFactory {
 
     public IdentifyPillarsForGetChecksumsResponse createIdentifyPillarsForGetChecksumsResponse(
             IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage,
-            String pillarId, String pillarDestinationId) {
+            String pillarID, String pillarDestinationId) {
         IdentifyPillarsForGetChecksumsResponse identifyPillarsForGetChecksumsResponse = new IdentifyPillarsForGetChecksumsResponse();
         initializeMessageDetails(identifyPillarsForGetChecksumsResponse);
         identifyPillarsForGetChecksumsResponse.setDestination(receivedIdentifyRequestMessage.getReplyTo());
@@ -66,30 +66,30 @@ public class TestGetChecksumsMessageFactory extends ClientTestMessageFactory {
         identifyPillarsForGetChecksumsResponse.setCollectionID(
                 receivedIdentifyRequestMessage.getCollectionID());
         identifyPillarsForGetChecksumsResponse.setReplyTo(pillarDestinationId);
-        identifyPillarsForGetChecksumsResponse.setPillarID(pillarId);
+        identifyPillarsForGetChecksumsResponse.setPillarID(pillarID);
         identifyPillarsForGetChecksumsResponse.setFileIDs(receivedIdentifyRequestMessage.getFileIDs());
         identifyPillarsForGetChecksumsResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
         identifyPillarsForGetChecksumsResponse.setResponseInfo(createPositiveIdentificationResponseInfo());
-        identifyPillarsForGetChecksumsResponse.setFrom(pillarId);
+        identifyPillarsForGetChecksumsResponse.setFrom(pillarID);
         return identifyPillarsForGetChecksumsResponse;
     }
 
     /**
      * @param receivedGetChecksumsRequest
-     * @param pillarId
+     * @param pillarID
      * @param pillarDestinationId
      * @return
      */
     public GetChecksumsFinalResponse createGetChecksumsFinalResponse(
-            GetChecksumsRequest receivedGetChecksumsRequest, String pillarId, String pillarDestinationId) {
+            GetChecksumsRequest receivedGetChecksumsRequest, String pillarID, String pillarDestinationId) {
         GetChecksumsFinalResponse getChecksumsFinalResponse = new GetChecksumsFinalResponse();
         initializeMessageDetails(getChecksumsFinalResponse);
         getChecksumsFinalResponse.setDestination(receivedGetChecksumsRequest.getReplyTo());
         getChecksumsFinalResponse.setCorrelationID(receivedGetChecksumsRequest.getCorrelationID());
         getChecksumsFinalResponse.setCollectionID(receivedGetChecksumsRequest.getCollectionID());
         getChecksumsFinalResponse.setReplyTo(pillarDestinationId);
-        getChecksumsFinalResponse.setPillarID(pillarId);
-        getChecksumsFinalResponse.setFrom(pillarId);
+        getChecksumsFinalResponse.setPillarID(pillarID);
+        getChecksumsFinalResponse.setFrom(pillarID);
         getChecksumsFinalResponse.setResponseInfo(createCompleteResponseInfo());
         
         return getChecksumsFinalResponse;

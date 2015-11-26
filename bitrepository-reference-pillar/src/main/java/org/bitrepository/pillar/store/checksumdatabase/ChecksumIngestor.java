@@ -52,37 +52,37 @@ public class ChecksumIngestor {
     
     /**
      * Inserts a new entry into the database.
-     * @param fileId The id of the file for the entry.
-     * @param collectionId The id of the collection of the file.
+     * @param fileID The id of the file for the entry.
+     * @param collectionID The id of the collection of the file.
      * @param checksum The checksum of the file.
      * @param date The calculation timestamp for the file.
      */
-    public synchronized void insertNewEntry(String fileId, String collectionId, String checksum, Date date) {
+    public synchronized void insertNewEntry(String fileID, String collectionID, String checksum, Date date) {
         String sql = "INSERT INTO " + CHECKSUM_TABLE + " ( " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE 
                 + " , " + CS_COLLECTION_ID + " ) VALUES ( ? , ? , ? , ? )";
-        DatabaseUtils.executeStatement(connector, sql, fileId, checksum, date, collectionId);
+        DatabaseUtils.executeStatement(connector, sql, fileID, checksum, date, collectionID);
     }
     
     /**
      * Updates an existing entry in the database.
-     * @param fileId The id of the file to update.
-     * @param collectionId The id of the collection of the file.
+     * @param fileID The id of the file to update.
+     * @param collectionID The id of the collection of the file.
      * @param checksum The new checksum for the file.
      * @param date The new date for the calculation of the checksum of the file.
      */
-    public void updateEntry(String fileId, String collectionId, String checksum, Date date) {
+    public void updateEntry(String fileID, String collectionID, String checksum, Date date) {
         String sql = "UPDATE " + CHECKSUM_TABLE + " SET " + CS_CHECKSUM + " = ? , " + CS_DATE + " = ? WHERE " 
                 + CS_FILE_ID + " = ? AND " + CS_COLLECTION_ID + " = ?";
-        DatabaseUtils.executeStatement(connector, sql, checksum, date, fileId, collectionId);
+        DatabaseUtils.executeStatement(connector, sql, checksum, date, fileID, collectionID);
     }
     
     /**
      * Removes an entry from the database.
-     * @param fileId The id of the file whose entry should be removed.
-     * @param collectionId The id of the collection of the file.
+     * @param fileID The id of the file whose entry should be removed.
+     * @param collectionID The id of the collection of the file.
      */
-    public void removeEntry(String fileId, String collectionId) {
+    public void removeEntry(String fileID, String collectionID) {
         String sql = "DELETE FROM " + CHECKSUM_TABLE + " WHERE " + CS_FILE_ID + " = ? AND " + CS_COLLECTION_ID + " = ?";
-        DatabaseUtils.executeStatement(connector, sql, fileId, collectionId);
+        DatabaseUtils.executeStatement(connector, sql, fileID, collectionID);
     }
 }

@@ -13,8 +13,8 @@ import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 public class IncrementalUpdateChecksumsStep extends UpdateChecksumsStep {
 
     public IncrementalUpdateChecksumsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
-            ChecksumSpecTYPE checksumType, Settings settings, String collectionId, IntegrityContributors integrityContributors) {
-        super(collector, store, alerter, checksumType, settings, collectionId, integrityContributors);
+            ChecksumSpecTYPE checksumType, Settings settings, String collectionID, IntegrityContributors integrityContributors) {
+        super(collector, store, alerter, checksumType, settings, collectionID, integrityContributors);
     }
 
     @Override

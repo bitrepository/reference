@@ -75,7 +75,7 @@ public class TestFileStore implements FileStore {
     }
 
     @Override
-    public FileInfo downloadFileForValidation(String fileID, String collectionId, InputStream inputStream) {
+    public FileInfo downloadFileForValidation(String fileID, String collectionID, InputStream inputStream) {
         File theFile = new File(fileID);
 
         // Check if a file exists.
@@ -110,23 +110,23 @@ public class TestFileStore implements FileStore {
     }
     
     @Override
-    public void moveToArchive(String fileID, String collectionId) {
+    public void moveToArchive(String fileID, String collectionID) {
         // This does nothing.
         return;
     }
 
     @Override
-    public void deleteFile(String fileID, String collectionId) {
+    public void deleteFile(String fileID, String collectionID) {
         (new File(storageDir, fileID)).delete();
     }
 
     @Override
-    public FileInfo getFileInfo(String fileID, String collectionId) {
+    public FileInfo getFileInfo(String fileID, String collectionID) {
         return new DefaultFileInfo(new File(storageDir, fileID));
     }
 
     @Override
-    public Collection<String> getAllFileIds(String collectionId) {
+    public Collection<String> getAllFileIds(String collectionID) {
         String[] ids = new File(storageDir).list();
         List<String> res = new ArrayList<String>();
         for(String id : ids) {
@@ -136,7 +136,7 @@ public class TestFileStore implements FileStore {
     }
 
     @Override
-    public boolean hasFile(String fileID, String collectionId) {
+    public boolean hasFile(String fileID, String collectionID) {
         return (new File(storageDir, fileID)).isFile();
     }
 
@@ -151,22 +151,22 @@ public class TestFileStore implements FileStore {
     }
 
     @Override
-    public void replaceFile(String fileID, String collectionId) {
+    public void replaceFile(String fileID, String collectionID) {
         // TODO Auto-generated method stub
     }
 
     @Override
-    public long sizeLeftInArchive(String collectionId) {
+    public long sizeLeftInArchive(String collectionID) {
         return new File(storageDir).getFreeSpace();
     }
 
     @Override
-    public FileInfo getFileInTmpDir(String fileId, String collectionId) {
-        return getFileInfo(fileId, collectionId);
+    public FileInfo getFileInTmpDir(String fileID, String collectionID) {
+        return getFileInfo(fileID, collectionID);
     }
 
     @Override
-    public void ensureFileNotInTmpDir(String fileId, String collectionId) { }
+    public void ensureFileNotInTmpDir(String fileID, String collectionID) { }
 
     @Override
     public void close() { }

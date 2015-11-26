@@ -188,24 +188,24 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         Assert.assertEquals(fileinfos.size(), 0);
     }
     
-    private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileId, String checksum) {
+    private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileID, String checksum) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
         
         ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
         csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
         csData.setCalculationTimestamp(CalendarUtils.getNow());
-        csData.setFileID(fileId);
+        csData.setFileID(fileID);
         res.add(csData);
         return res;
     }
     
-    private FileIDsData getFileIDsData(String... fileIds) {
+    private FileIDsData getFileIDsData(String... fileIDs) {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems items = new FileIDsDataItems();
         
-        for(String fileId : fileIds) {
+        for(String fileID : fileIDs) {
             FileIDsDataItem dataItem = new FileIDsDataItem();
-            dataItem.setFileID(fileId);
+            dataItem.setFileID(fileID);
             dataItem.setFileSize(BigInteger.valueOf(items.getFileIDsDataItem().size() + 1));
             dataItem.setLastModificationTime(CalendarUtils.getNow());
             items.getFileIDsDataItem().add(dataItem);

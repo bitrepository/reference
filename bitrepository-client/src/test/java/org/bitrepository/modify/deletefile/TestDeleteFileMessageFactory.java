@@ -81,52 +81,52 @@ public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
      * @return The requested IdentifyPillarsForDeleteFileRequest.
      */
     public IdentifyPillarsForDeleteFileRequest createIdentifyPillarsForDeleteFileRequest(String correlationID, 
-            String replyTo, String toTopic, String fileId, String from) {
+            String replyTo, String toTopic, String fileID, String from) {
         IdentifyPillarsForDeleteFileRequest identifyPillarsForDeleteFileRequest = 
                 createIdentifyPillarsForDeleteFileRequest(from);
         identifyPillarsForDeleteFileRequest.setCorrelationID(correlationID);
         identifyPillarsForDeleteFileRequest.setReplyTo(replyTo);
         identifyPillarsForDeleteFileRequest.setDestination(toTopic);
-        identifyPillarsForDeleteFileRequest.setFileID(fileId);
+        identifyPillarsForDeleteFileRequest.setFileID(fileID);
         return identifyPillarsForDeleteFileRequest;
     }
 
     /**
      * Creates a IdentifyPillarsForDeleteFileResponse based on a request and some constants.
      * @param receivedIdentifyRequestMessage The request to base the response on.
-     * @param pillarId The id of the pillar, which responds.
+     * @param pillarID The id of the pillar, which responds.
      * @param pillarDestinationId The destination for this pillar.
      * @return The requested IdentifyPillarsForDeleteFileResponse.
      */
     public IdentifyPillarsForDeleteFileResponse createIdentifyPillarsForDeleteFileResponse(
             IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage,
-            String pillarId, String pillarDestinationId, String fileId) {
+            String pillarID, String pillarDestinationId, String fileID) {
         IdentifyPillarsForDeleteFileResponse identifyResponse = new IdentifyPillarsForDeleteFileResponse();
         initializeMessageDetails(identifyResponse);
         identifyResponse.setDestination(receivedIdentifyRequestMessage.getReplyTo());
         identifyResponse.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
-        identifyResponse.setPillarID(pillarId);
+        identifyResponse.setPillarID(pillarID);
         identifyResponse.setReplyTo(pillarDestinationId);
         identifyResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
-        identifyResponse.setFrom(pillarId);
+        identifyResponse.setFrom(pillarID);
         identifyResponse.setPillarChecksumSpec(null);
-        identifyResponse.setFileID(fileId);
+        identifyResponse.setFileID(fileID);
         identifyResponse.setResponseInfo(createPositiveIdentificationResponseInfo());
 
         return identifyResponse;
     }
 
-    public DeleteFileRequest createDeleteFileRequest(String pillarId, String toTopic, String replyTo, 
-            String correlationId, String fileId, ChecksumDataForFileTYPE checksumData, 
+    public DeleteFileRequest createDeleteFileRequest(String pillarID, String toTopic, String replyTo,
+            String correlationId, String fileID, ChecksumDataForFileTYPE checksumData,
             ChecksumSpecTYPE checksumType, String from) {
         DeleteFileRequest deleteFileRequest = new DeleteFileRequest();
         initializeMessageDetails(deleteFileRequest);
         deleteFileRequest.setFrom(from);
-        deleteFileRequest.setPillarID(pillarId);
+        deleteFileRequest.setPillarID(pillarID);
         deleteFileRequest.setDestination(toTopic);
         deleteFileRequest.setReplyTo(replyTo);
         deleteFileRequest.setCorrelationID(correlationId);
-        deleteFileRequest.setFileID(fileId);
+        deleteFileRequest.setFileID(fileID);
         deleteFileRequest.setChecksumDataForExistingFile(checksumData);
         deleteFileRequest.setChecksumRequestForExistingFile(checksumType);
         
@@ -138,21 +138,21 @@ public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
     /**
      * Method to create a ProgressResponse to the delete operation based on a DeleteFileRequest.
      * @param request The DeleteFileRequest to base the final response on.
-     * @param pillarId The id of the pillar to respond.
+     * @param pillarID The id of the pillar to respond.
      * @param pillarDestinationId The destination for the responding pillar.
      * @return The requested DeleteFileProgressResponse.
      */
     public DeleteFileProgressResponse createDeleteFileProgressResponse(DeleteFileRequest request, 
-            String pillarId, String pillarDestinationId) {
+            String pillarID, String pillarDestinationId) {
         DeleteFileProgressResponse progressResponse = new DeleteFileProgressResponse();
         initializeMessageDetails(progressResponse);
         progressResponse.setDestination(request.getReplyTo());
         progressResponse.setCorrelationID(request.getCorrelationID());
         progressResponse.setReplyTo(pillarDestinationId);
-        progressResponse.setPillarID(pillarId);
+        progressResponse.setPillarID(pillarID);
         progressResponse.setFileID(request.getFileID());
         progressResponse.setResponseInfo(PROGRESS_INFO_DEFAULT);
-        progressResponse.setFrom(pillarId);
+        progressResponse.setFrom(pillarID);
         
         return progressResponse;
     }
@@ -161,21 +161,21 @@ public class TestDeleteFileMessageFactory extends ClientTestMessageFactory {
      * Method to create a FinalResponse to the delete operation based on a DeleteFileRequest.
      * 
      * @param request The DeleteFileRequest to base the final response on.
-     * @param pillarId The id of the pillar to respond.
+     * @param pillarID The id of the pillar to respond.
      * @param pillarDestinationId The destination for the responding pillar.
      * @return The requested DeleteFileFinalResponse.
      */
     public DeleteFileFinalResponse createDeleteFileFinalResponse(DeleteFileRequest request,
-            String pillarId, String pillarDestinationId, String fileId) {
+            String pillarID, String pillarDestinationId, String fileID) {
         DeleteFileFinalResponse finalResponse = new DeleteFileFinalResponse();
         initializeMessageDetails(finalResponse);
         finalResponse.setDestination(request.getReplyTo());
         finalResponse.setCorrelationID(request.getCorrelationID());
         finalResponse.setReplyTo(pillarDestinationId);
-        finalResponse.setPillarID(pillarId);
-        finalResponse.setFileID(fileId);
+        finalResponse.setPillarID(pillarID);
+        finalResponse.setFileID(fileID);
         finalResponse.setResponseInfo(createCompleteResponseInfo());
-        finalResponse.setFrom(pillarId);
+        finalResponse.setFrom(pillarID);
         
         return finalResponse;
     }

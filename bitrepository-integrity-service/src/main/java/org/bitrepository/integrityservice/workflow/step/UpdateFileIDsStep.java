@@ -61,7 +61,7 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
     /** The maximum number of results for each conversation.*/
     private final Integer maxNumberOfResultsPerConversation;
     /** The collectionID */
-    protected final String collectionId;
+    protected final String collectionID;
     /** Continue with checks in case of failure, defaults to false */
     private boolean abortInCaseOfFailure = true;
     /** Contributors for collecting information */
@@ -78,11 +78,11 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
      * @param settings The settings to use.
      */
     public UpdateFileIDsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
-            Settings settings, String collectionId, IntegrityContributors integrityContributors) {
+            Settings settings, String collectionID, IntegrityContributors integrityContributors) {
         this.collector = collector;
         this.store = store;
         this.alerter = alerter;
-        this.collectionId = collectionId;
+        this.collectionID = collectionID;
         this.integrityContributors = integrityContributors;
         this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
                 + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
@@ -114,7 +114,7 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
                 IntegrityCollectorEventHandler eventHandler 
                     = new IntegrityCollectorEventHandler(store, timeout, integrityContributors);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
-                collector.getFileIDs(collectionId, pillarsToCollectFrom,
+                collector.getFileIDs(collectionID, pillarsToCollectFrom,
                         "IntegrityService: " + getName(), queries, eventHandler);
                 
                 OperationEvent event = eventHandler.getFinish();
@@ -140,14 +140,14 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
             OperationFailedEvent ofe = (OperationFailedEvent) event;
             if(abortInCaseOfFailure) {
                 alerter.integrityFailed("Integrity check aborted while getting fileIDs due to failed contributors: " 
-                        + integrityContributors.getFailedContributors(), collectionId);
+                        + integrityContributors.getFailedContributors(), collectionID);
                 throw new WorkflowAbortedException("Aborting workflow due to failure collecting fileIDs. "
                         + "Cause: " + ofe.toString());
             } else {
                 log.info("Failure occured collecting fileIDs, continuing collecting fileIDs. Failure {}", ofe.toString());
                 alerter.integrityFailed("Failure while collecting fileIDs, the check will continue "
                         + "with the information available. The failed contributors were: " 
-                        + integrityContributors.getFailedContributors(), collectionId);
+                        + integrityContributors.getFailedContributors(), collectionID);
             }
         }
     }
@@ -160,7 +160,7 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
     private ContributorQuery[] getQueries(Collection<String> pillars) {
         List<ContributorQuery> res = new ArrayList<ContributorQuery>();
         for(String pillar : pillars) {
-            Date latestFileIDEntry = store.getDateForNewestFileEntryForPillar(pillar, collectionId);
+            Date latestFileIDEntry = store.getDateForNewestFileEntryForPillar(pillar, collectionID);
             res.add(new ContributorQuery(pillar, latestFileIDEntry, null, maxNumberOfResultsPerConversation));
         }
         

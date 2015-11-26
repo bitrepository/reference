@@ -52,7 +52,7 @@ public class BlockingPutFileClient {
      *
      * @param collectionID The ID of the collection
      * @param url The url to where the file being put can be retrieved 
-     * @param fileId The ID of the file
+     * @param fileID The ID of the file
      * @param sizeOfFile [OPTIONAL] the size of the file
      * @param checksumForValidationAtPillar The checksum data of the file for pillar side validation
      * @param checksumRequestsForValidation The checksum request for the pillar to deliver
@@ -64,7 +64,7 @@ public class BlockingPutFileClient {
     public List<ContributorEvent> putFile(
             String collectionID,
             URL url,
-            String fileId,
+            String fileID,
             long sizeOfFile,
             ChecksumDataForFileTYPE checksumForValidationAtPillar,
             ChecksumSpecTYPE checksumRequestsForValidation,
@@ -72,7 +72,7 @@ public class BlockingPutFileClient {
             String auditTrailInformation)
             throws OperationFailedException {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
-        client.putFile(collectionID, url, fileId, sizeOfFile, checksumForValidationAtPillar,
+        client.putFile(collectionID, url, fileID, sizeOfFile, checksumForValidationAtPillar,
                 checksumRequestsForValidation,
                 blocker, auditTrailInformation);
         OperationEvent finishEvent = blocker.awaitFinished();

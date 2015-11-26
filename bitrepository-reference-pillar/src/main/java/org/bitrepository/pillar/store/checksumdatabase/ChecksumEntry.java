@@ -30,7 +30,7 @@ import org.bitrepository.common.ArgumentValidator;
  */
 public class ChecksumEntry {
     /** The id of the file.*/
-    private final String fileId;
+    private final String fileID;
     /** The checksum of the file.*/
     private String checksum;
     /** The calculation date for the checksum of the file.*/
@@ -38,14 +38,14 @@ public class ChecksumEntry {
     
     /**
      * Constructor.
-     * @param fileId The id of the file.
+     * @param fileID The id of the file.
      * @param checksum The checksum of the file.
      * @param calculationDate The calculation date for the checksum of the file.
      */
-    public ChecksumEntry(String fileId, String checksum, Date calculationDate) {
-        ArgumentValidator.checkNotNullOrEmpty(fileId, "String fileId");
+    public ChecksumEntry(String fileID, String checksum, Date calculationDate) {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         
-        this.fileId = fileId;
+        this.fileID = fileID;
         this.checksum = checksum;
         this.calculationDate = calculationDate;
     }
@@ -70,7 +70,7 @@ public class ChecksumEntry {
      * @return The id of the file.
      */
     public String getFileId() {
-        return fileId;
+        return fileID;
     }
     
     /**

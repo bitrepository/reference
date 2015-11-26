@@ -50,16 +50,16 @@ public class ReplaceFileClientTestWrapper implements ReplaceFileClient {
     }
 
     @Override
-    public void replaceFile(String collectionID, String fileId, String pillarId,
+    public void replaceFile(String collectionID, String fileID, String pillarID,
                             ChecksumDataForFileTYPE checksumForDeleteAtPillar,
             ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile,
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile,
             EventHandler eventHandler, String auditTrailInformation) {
-        testEventManager.addStimuli("replaceFile(" + fileId + ", " + pillarId + ", " + checksumForDeleteAtPillar + ", "
+        testEventManager.addStimuli("replaceFile(" + fileID + ", " + pillarID + ", " + checksumForDeleteAtPillar + ", "
                 + checksumRequestedForDeletedFile + ", " + url + ", " + sizeOfNewFile + ", " 
                 + checksumForNewFileValidationAtPillar + ", " + checksumRequestsForNewFile + ", " + eventHandler + ", "
                 + auditTrailInformation);
-        wrappedReplaceClient.replaceFile(collectionID, fileId, pillarId, checksumForDeleteAtPillar,
+        wrappedReplaceClient.replaceFile(collectionID, fileID, pillarID, checksumForDeleteAtPillar,
                 checksumRequestedForDeletedFile,
                 url, sizeOfNewFile, checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, eventHandler, 
                 auditTrailInformation);

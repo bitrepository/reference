@@ -22,8 +22,8 @@ public class IntegrityReportPartWriter {
 
     /**
      * Constructor
-     * @param partName The name of the part (e.g. checksumIssues, missingFiles, etc.)
-     * @param reportDir The directory to store the files in
+     * @param part the part to write
+    * @param reportDir The directory to store the files in
      */
     public IntegrityReportPartWriter(ReportPart part, File reportDir) {
         this.part = part;
@@ -33,7 +33,8 @@ public class IntegrityReportPartWriter {
     /**
      * Add an issue for a given pillar to its file
      * @param pillarID The ID of the pillar 
-     * @param fileID The ID of the file that have issues  
+     * @param fileID The ID of the file that have issues
+     * @throws IOException if an I/O error occurs
      */
     public void writeIssue(String pillarID, String fileID) throws IOException {
         BufferedWriter issueWriter;
@@ -48,7 +49,8 @@ public class IntegrityReportPartWriter {
     }
     
     /**
-     * Flushes all open files 
+     * Flushes all open files
+     * @throws IOException if an I/O error occurs
      */
     public void flushAll() throws IOException {
         for(BufferedWriter writer : pillarParts.values()) {
@@ -57,7 +59,8 @@ public class IntegrityReportPartWriter {
     }
     
     /**
-     * Closes all open files 
+     * Closes all open files
+     * @throws IOException if an I/O error occurs
      */
     public void closeAll() throws IOException {
         for(BufferedWriter writer : pillarParts.values()) {

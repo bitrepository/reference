@@ -59,12 +59,15 @@ public class AuditTrailCollector {
      * @param settings The settings for this collector.
      * @param client The client for handling the conversation for collecting the audit trails.
      * @param store The storage of the audit trails data.
+     * @param alarmDispatcher the alarm dispatcher. Can be null.
      */
     public AuditTrailCollector(Settings settings, AuditTrailClient client, AuditTrailStore store, 
             AlarmDispatcher alarmDispatcher) {
         ArgumentValidator.checkNotNull(settings, "settings");
         ArgumentValidator.checkNotNull(client, "AuditTrailClient client");
         ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
+        ArgumentValidator.checkNotNull(alarmDispatcher, "AlarmDispatcher alarmDispatcher");
+
 
         this.settings = settings;
         this.timer = new Timer(true);
@@ -111,6 +114,7 @@ public class AuditTrailCollector {
     
     /**
      * Instantiates a collection of all the newest audit trails.
+     * @param collectionID the collectionID
      */
     public void collectNewestAudits(String collectionID) {
         collectorTasks.get(collectionID).runCollection();

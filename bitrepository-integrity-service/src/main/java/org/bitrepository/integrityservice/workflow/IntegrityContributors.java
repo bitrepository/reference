@@ -26,13 +26,14 @@ public class IntegrityContributors {
     
     /**
      * Constructor, initializes the set of active contributors 
-     * @param contributors The full set of contributors, all are set as active initially 
+     * @param contributors The full set of contributors, all are set as active initially
+     * @param maxContributorFailures The number of times in a row a contributor must have failed to be marked as failed
      */
     public IntegrityContributors(Collection<String> contributors, int maxContributorFailures) {
         for(String contributor : contributors) {
             activeContributors.put(contributor, 0);
-            this.maxContributorFailures = maxContributorFailures;
         }
+        this.maxContributorFailures = maxContributorFailures;
     }
     
     /**
@@ -46,21 +47,21 @@ public class IntegrityContributors {
     }
     
     /**
-     * Get the set of finished contributors 
+     * @return the set of finished contributors
      */
     public Set<String> getFinishedContributors() {
         return new HashSet<>(finishedContributors);
     }
     
     /**
-     *  Get the set of failed contributors
+     *  @return the set of failed contributors
      */
     public Set<String> getFailedContributors() {
         return new HashSet<>(failedContributors);
     }
     
     /**
-     * Get the set of active contributors 
+     * @return the set of active contributors
      */
     public Set<String> getActiveContributors() {
         return new HashSet<>(activeContributors.keySet());
@@ -86,6 +87,7 @@ public class IntegrityContributors {
     
     /**
      * Mark a contributor as having succeeded the last request. 
+     * @param contributor The contributor which have succeeded
      */
     public synchronized void succeedContributor(String contributor) {
         if(activeContributors.containsKey(contributor)) {
@@ -94,7 +96,8 @@ public class IntegrityContributors {
     }
     
     /**
-     * Mark an contributor as finished 
+     * Mark an contributor as finished
+     * @param contributor The contributor which have finished
      */
     public synchronized void finishContributor(String contributor) {
         if(activeContributors.containsKey(contributor)) {

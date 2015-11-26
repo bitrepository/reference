@@ -54,11 +54,11 @@ public class ReplaceFileMessageFactory extends PillarTestMessageFactory {
     }
     
     public IdentifyPillarsForReplaceFileRequest createIdentifyPillarsForReplaceFileRequest( 
-            String fileId, Long fileSize) {
+            String fileID, Long fileSize) {
         
         IdentifyPillarsForReplaceFileRequest res = new IdentifyPillarsForReplaceFileRequest();
         initializeIdentifyRequest(res);
-        res.setFileID(fileId);
+        res.setFileID(fileID);
         if(fileSize != null) {
             res.setFileSize(BigInteger.valueOf(fileSize));
         }
@@ -72,7 +72,7 @@ public class ReplaceFileMessageFactory extends PillarTestMessageFactory {
             ChecksumSpecTYPE csExistingRequest, 
             ChecksumSpecTYPE csNewRequest, 
             String fileAddress,
-            String fileId, 
+            String fileID,
             long fileSize) {
         ReplaceFileRequest res = new ReplaceFileRequest();
         initializeOperationRequest(res);
@@ -80,7 +80,7 @@ public class ReplaceFileMessageFactory extends PillarTestMessageFactory {
         res.setChecksumDataForNewFile(newChecksumData);
         res.setChecksumRequestForExistingFile(csExistingRequest);
         res.setChecksumRequestForNewFile(csNewRequest);
-        res.setFileID(fileId);
+        res.setFileID(fileID);
         res.setFileSize(BigInteger.valueOf(fileSize));
         res.setFileAddress(fileAddress);
         res.setPillarID(pillarID);

@@ -50,7 +50,7 @@ public class IllegalOperationExceptionTest extends ExtendedTestCase {
             assertEquals(e.getMessage(), errMsg);
             assertEquals(((IllegalOperationException) e).getResponseInfo().getResponseCode(), errCode);
             assertEquals(((IllegalOperationException) e).getResponseInfo().getResponseText(), errMsg);
-            assertEquals(((IllegalOperationException) e).getCollectionId(), TEST_COLLECTION_ID);
+            assertEquals(((IllegalOperationException) e).getCollectionID(), TEST_COLLECTION_ID);
             assertNull(e.getCause());
             assertEquals(((IllegalOperationException) e).getFileId(), FileID);
         }
@@ -64,7 +64,7 @@ public class IllegalOperationExceptionTest extends ExtendedTestCase {
             assertEquals(e.getMessage(), errMsg);
             assertEquals(((IllegalOperationException) e).getResponseInfo().getResponseCode(), errCode);
             assertEquals(((IllegalOperationException) e).getResponseInfo().getResponseText(), errMsg);
-            assertEquals(((IllegalOperationException) e).getCollectionId(), TEST_COLLECTION_ID);
+            assertEquals(((IllegalOperationException) e).getCollectionID(), TEST_COLLECTION_ID);
             assertNotNull(e.getCause());
             assertTrue(e.getCause() instanceof IllegalArgumentException);
             assertEquals(e.getCause().getMessage(), causeMsg);

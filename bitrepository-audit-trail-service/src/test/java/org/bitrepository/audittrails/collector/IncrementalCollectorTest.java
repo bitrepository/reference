@@ -214,7 +214,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
     }
 
     @Test(groups = {"regressiontest"})
-    public void collectionIdFailureTest() throws Exception {
+    public void collectionIDFailureTest() throws Exception {
         addDescription("Tests what happens when a wrong collection id is received.");
         String FALSE_COLLECTION = "FalseCollection" + new Date().getTime();
 
@@ -252,20 +252,20 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         ResultingAuditTrails rats = new ResultingAuditTrails();
         AuditTrailEvents ates = new AuditTrailEvents();
         ates.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.OTHER, 
-                "actor", "auditInfo", "fileId", "info", contributor, seq, "1234", "abab"));
+                "actor", "auditInfo", "fileID", "info", contributor, seq, "1234", "abab"));
         rats.setAuditTrailEvents(ates);
         return rats;
     }
     
     private AuditTrailEvent createSingleEvent(XMLGregorianCalendar datetime, FileAction action, String actor, 
-            String auditInfo, String fileId, String info, String component, BigInteger seqNumber, String operationID,
+            String auditInfo, String fileID, String info, String component, BigInteger seqNumber, String operationID,
             String fingerprint) {
         AuditTrailEvent res = new AuditTrailEvent();
         res.setActionDateTime(datetime);
         res.setActionOnFile(action);
         res.setActorOnFile(actor);
         res.setAuditTrailInformation(auditInfo);
-        res.setFileID(fileId);
+        res.setFileID(fileID);
         res.setInfo(info);
         res.setReportingComponent(component);
         res.setSequenceNumber(seqNumber);

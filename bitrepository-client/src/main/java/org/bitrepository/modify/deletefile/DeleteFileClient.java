@@ -37,8 +37,8 @@ public interface DeleteFileClient extends BitrepositoryClient {
      * Starts the conversation for deleting a file on a given pillar.
      * Takes checksum and checksum specification as argument to validate the file to delete.
      * @param collectionID The colelction to delete the file in.
-     * @param fileId The id of the file to delete.
-     * @param pillarId The id of the pillar, where the file should be deleted.
+     * @param fileID The id of the file to delete.
+     * @param pillarID The id of the pillar, where the file should be deleted.
      * @param checksumForPillar The specifications for the checksum of the file.
      * @param checksumRequested Checksum request for the pillar where the file is deleted
      * @param eventHandler [OPTIONAL] The handler which should receive notifications of the events occurring in 
@@ -48,6 +48,6 @@ public interface DeleteFileClient extends BitrepositoryClient {
      * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation 
      * call.
      */
-    void deleteFile(String collectionID, String fileId, String pillarId, ChecksumDataForFileTYPE checksumForPillar,
+    void deleteFile(String collectionID, String fileID, String pillarID, ChecksumDataForFileTYPE checksumForPillar,
             ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation);
 }

@@ -54,7 +54,8 @@ public class StatisticsCreator {
     }
     
     /**
-     * Method to handle the actual update.  
+     * Method to handle the actual update.
+     * @param statisticsCollector the statistics collector
      */
     public void createStatistics(StatisticsCollector statisticsCollector) {
         try {

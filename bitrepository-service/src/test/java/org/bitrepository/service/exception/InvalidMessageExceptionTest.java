@@ -45,7 +45,7 @@ public class InvalidMessageExceptionTest extends ExtendedTestCase {
             Assert.assertEquals(e.getMessage(), errMsg);
             Assert.assertEquals(((InvalidMessageException) e).getResponseInfo().getResponseCode(), errCode);
             Assert.assertEquals(((InvalidMessageException) e).getResponseInfo().getResponseText(), errMsg);
-            Assert.assertEquals(((InvalidMessageException) e).getCollectionId(), TEST_COLLECTION_ID);
+            Assert.assertEquals(((InvalidMessageException) e).getCollectionID(), TEST_COLLECTION_ID);
             Assert.assertNull(e.getCause());
         }
         
@@ -58,7 +58,7 @@ public class InvalidMessageExceptionTest extends ExtendedTestCase {
             Assert.assertEquals(e.getMessage(), errMsg);
             Assert.assertEquals(((InvalidMessageException) e).getResponseInfo().getResponseCode(), errCode);
             Assert.assertEquals(((InvalidMessageException) e).getResponseInfo().getResponseText(), errMsg);
-            Assert.assertEquals(((InvalidMessageException) e).getCollectionId(), TEST_COLLECTION_ID);
+            Assert.assertEquals(((InvalidMessageException) e).getCollectionID(), TEST_COLLECTION_ID);
             Assert.assertNotNull(e.getCause());
             Assert.assertTrue(e.getCause() instanceof IllegalArgumentException);
             Assert.assertEquals(e.getCause().getMessage(), causeMsg);

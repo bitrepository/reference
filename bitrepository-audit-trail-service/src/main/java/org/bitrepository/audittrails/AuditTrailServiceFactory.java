@@ -158,7 +158,6 @@ public final class AuditTrailServiceFactory {
     
     /**
      * Retrieves the shared settings based on the directory specified in the {@link #initialize(String)} method.
-     * @return The settings to used for the integrity service.
      */
     private static void loadSettings() {
         if(configurationDir == null) {

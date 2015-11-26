@@ -49,13 +49,13 @@ public class PutFileClientTestWrapper implements PutFileClient {
     }
 
     @Override
-    public void putFile(String collectionID, URL url, String fileId, long sizeOfFile,
+    public void putFile(String collectionID, URL url, String fileID, long sizeOfFile,
                         ChecksumDataForFileTYPE checksumForValidationAtPillar,
             ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation) {
-        testEventManager.addStimuli("Calling PutFileWithId(" + url + ", " + fileId + ", " + sizeOfFile + ", " 
+        testEventManager.addStimuli("Calling PutFileWithId(" + url + ", " + fileID + ", " + sizeOfFile + ", "
             + checksumForValidationAtPillar + ", " + checksumRequestsForValidation + ", " + eventHandler + ", "
             + auditTrailInformation + ")");
-        wrappedPutClient.putFile(collectionID, url, fileId, sizeOfFile, checksumForValidationAtPillar,
+        wrappedPutClient.putFile(collectionID, url, fileID, sizeOfFile, checksumForValidationAtPillar,
                 checksumRequestsForValidation,
                 eventHandler, auditTrailInformation);
     }

@@ -44,8 +44,8 @@ public class ChecksumResult {
     
     /**
      * Add a contributor with it's checksum to the result
-     * @param contributor, the ID of the contributor
-     * @param checksum, the checksum that the contributor delivered 
+     * @param contributor the ID of the contributor
+     * @param checksum the checksum that the contributor delivered
      */
     public void addContributor(String contributor, String checksum) {
         if(!dirty && !pillarChecksumMap.containsValue(checksum)) {
@@ -88,7 +88,7 @@ public class ChecksumResult {
     
     /**
      * Determine if we have enough answers to consider the result complete
-     * @param expectedNumberOfContributors, the expected number of contributors. 
+     * @param expectedNumberOfContributors the expected number of contributors.
      * @return true, if there's registered expectedNumberOfContributors of contributors.  
      */
     public boolean isComplete(int expectedNumberOfContributors) {

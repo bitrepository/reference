@@ -36,7 +36,7 @@ public class MockAuditStore implements AuditTrailStore {
     
     private int callsToAddAuditTrails = 0;
     @Override
-    public void addAuditTrails(AuditTrailEvents newAuditTrails, String collectionId, String contributorID) {
+    public void addAuditTrails(AuditTrailEvents newAuditTrails, String collectionID, String contributorID) {
         callsToAddAuditTrails++;
         if(newAuditTrails != null) {
             events.addAll(newAuditTrails.getAuditTrailEvent());
@@ -49,7 +49,7 @@ public class MockAuditStore implements AuditTrailStore {
     private int callsToLargestSequenceNumber = 0;
     private int largestSequenceNumber = 0;
     @Override
-    public long largestSequenceNumber(String contributorId, String collectionId) {
+    public long largestSequenceNumber(String contributorId, String collectionID) {
         callsToLargestSequenceNumber++;
         return largestSequenceNumber;
     }
@@ -71,7 +71,7 @@ public class MockAuditStore implements AuditTrailStore {
     private long preservationSequenceNumber = 0;
     private int callsToGetPreservationSequenceNumber = 0;
     @Override
-    public long getPreservationSequenceNumber(String contributorId, String collectionId) {
+    public long getPreservationSequenceNumber(String contributorId, String collectionID) {
         callsToGetPreservationSequenceNumber++;
         return preservationSequenceNumber;
     }
@@ -81,7 +81,7 @@ public class MockAuditStore implements AuditTrailStore {
     
     private int callsToSetPreservationSequenceNumber = 0;
     @Override
-    public void setPreservationSequenceNumber(String contributorId, String collectionId, long seqNumber) {
+    public void setPreservationSequenceNumber(String contributorId, String collectionID, long seqNumber) {
         callsToSetPreservationSequenceNumber++;
         preservationSequenceNumber = seqNumber;
     }
@@ -90,7 +90,7 @@ public class MockAuditStore implements AuditTrailStore {
     }
     private int callsToGetAuditTrailsByIterator = 0;
     @Override
-    public AuditEventIterator getAuditTrailsByIterator(String fileId,
+    public AuditEventIterator getAuditTrailsByIterator(String fileID,
             String collectionID, String contributorId, Long minSeqNumber,
             Long maxSeqNumber, String actorName, FileAction operation,
             Date startDate, Date endDate, String fingerprint, String operationID) {

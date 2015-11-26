@@ -88,7 +88,7 @@ public class WorkflowStatistic {
     /**
      * Will generate a string of the form 'step duration'/'workflow duration'. If the workflow isn't running
      * a "Not running" string will be returned.
-     * @return
+     * @return a string of the form 'step duration'/'workflow duration'
      */
     public String getPartStatistics() {
         if (start == null) {
@@ -107,7 +107,7 @@ public class WorkflowStatistic {
 
     /**
      * Will return the statistics for the current step if the workflow statistics have an active step.
-     * @return
+     * @return the statistics for the current step
      */
     public WorkflowStatistic getCurrentSubStatistic() {
         if (subStatistics.isEmpty() || finish != null) {

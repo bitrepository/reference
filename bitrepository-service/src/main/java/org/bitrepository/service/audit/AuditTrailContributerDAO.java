@@ -44,7 +44,7 @@ import static org.bitrepository.service.audit.AuditDatabaseConstants.*;
 /**
  * Access interface for communication with the audit trail database.
  *
- * In the case of 'All-FileIDs', then the 'fileId' is given the string-value 'null'. 
+ * In the case of 'All-FileIDs', then the 'fileID' is given the string-value 'null'.
  */
 public abstract class AuditTrailContributerDAO implements AuditTrailManager {
     /** The log.*/
@@ -56,7 +56,7 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
 
     /**
      * Constructor.
-     * @param settings The settings.
+     * @param manager the database manager
      */
     public AuditTrailContributerDAO(DatabaseManager manager) {
         this.dbConnector = manager.getConnector();
@@ -75,8 +75,9 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
      * Retrieve the connection to the database.
      * TODO improve performance (only reconnect every-so-often)... 
      * @return The connection to the database.
+     * @throws IllegalStateException if the connection could not be established
      */
-    protected Connection getConnection() {
+    protected Connection getConnection() throws IllegalStateException {
         try {
             Connection dbConnection = dbConnector.getConnection();
             return dbConnection;
@@ -86,18 +87,18 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
     }
 
     @Override
-    public void addAuditEvent(String collectionId, String fileId, String actor, String info, String auditTrail,
+    public void addAuditEvent(String collectionID, String fileID, String actor, String info, String auditTrail,
                               FileAction operation, String operationID, String fingerprint) {
-        ArgumentValidator.checkNotNull(collectionId, "String collectionId");
+        ArgumentValidator.checkNotNull(collectionID, "String collectionID");
         ArgumentValidator.checkNotNull(operation, "FileAction operation");
-        log.debug("Inserting an audit event for file '" + fileId + "', from actor '" + actor
+        log.debug("Inserting an audit event for file '" + fileID + "', from actor '" + actor
                 + "' performing operation '" + operation + "', with the audit trail information '" + auditTrail + "'");
 
         long fileGuid;
-        if(fileId == null || fileId.isEmpty()) {
-            fileGuid = retrieveFileGuid(collectionId, "null");
+        if(fileID == null || fileID.isEmpty()) {
+            fileGuid = retrieveFileGuid(collectionID, "null");
         } else {
-            fileGuid = retrieveFileGuid(collectionId, fileId);
+            fileGuid = retrieveFileGuid(collectionID, fileID);
         }
         long actorGuid;
         if(actor == null || actor.isEmpty()) {
@@ -130,9 +131,9 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
     }
 
     @Override
-    public AuditTrailDatabaseResults getAudits(String collectionId, String fileId, Long minSeqNumber, 
+    public AuditTrailDatabaseResults getAudits(String collectionID, String fileID, Long minSeqNumber,
             Long maxSeqNumber, Date minDate, Date maxDate, Long maxNumberOfResults) {
-        return extractEvents(new AuditTrailExtractor(collectionId, fileId, minSeqNumber, maxSeqNumber, minDate, 
+        return extractEvents(new AuditTrailExtractor(collectionID, fileID, minSeqNumber, maxSeqNumber, minDate,
                 maxDate, maxNumberOfResults));
     }
 
@@ -242,23 +243,23 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
     /**
      * Retrieve the guid for a given file id. If the file id does not exist within the table, then it is created.
      *
-     * @param collectionId The collection id for the file.
-     * @param fileId The id of the file to retrieve. 
+     * @param collectionID The collection id for the file.
+     * @param fileID The id of the file to retrieve.
      * @return The guid for the given file id.
      */
-    private synchronized long retrieveFileGuid(String collectionId, String fileId) {
+    private synchronized long retrieveFileGuid(String collectionID, String fileID) {
         String sqlRetrieve = "SELECT " + FILE_GUID + " FROM " + FILE_TABLE + " WHERE " + FILE_FILEID + " = ? AND " 
                 + FILE_COLLECTIONID + " = ?";
 
-        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId, collectionId);
+        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileID, collectionID);
 
         if(guid == null) {
-            log.debug("Inserting fileid '" + fileId + "' into the file table.");
+            log.debug("Inserting fileid '" + fileID + "' into the file table.");
             String sqlInsert = "INSERT INTO " + FILE_TABLE + " ( " + FILE_FILEID + " , " + FILE_COLLECTIONID 
                     + " ) VALUES ( ? , ? )";
-            DatabaseUtils.executeStatement(dbConnector, sqlInsert, fileId, collectionId);
+            DatabaseUtils.executeStatement(dbConnector, sqlInsert, fileID, collectionID);
 
-            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileId, collectionId);
+            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileID, collectionID);
         }
 
         return guid;
@@ -302,9 +303,9 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
      */
     private class AuditTrailExtractor {
         /** The collection id limitation for the request.*/
-        private String collectionId;
+        private String collectionID;
         /** The file id limitation for the request. */
-        private String fileId;
+        private String fileID;
         /** The minimum sequence number limitation for the request.*/
         private Long minSeqNumber;
         /** The maximum sequence number limitation for the request.*/
@@ -317,17 +318,17 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
         private Long maxResults;
 
         /**
-         * @param collectionId The id of the collection to retrieve the audit trails for.
-         * @param fileId The file id limitation for the request.
+         * @param collectionID The id of the collection to retrieve the audit trails for.
+         * @param fileID The file id limitation for the request.
          * @param minSeqNumber The minimum sequence number limitation for the request.
          * @param maxSeqNumber The maximum sequence number limitation for the request.
          * @param minDate The minimum date limitation for the request.
          * @param maxDate The maximum date limitation for the request.
          */
-        public AuditTrailExtractor(String collectionId, String fileId, Long minSeqNumber, Long maxSeqNumber, Date minDate,
+        public AuditTrailExtractor(String collectionID, String fileID, Long minSeqNumber, Long maxSeqNumber, Date minDate,
                                    Date maxDate, Long maxResults) {
-            this.collectionId = collectionId;
-            this.fileId = fileId;
+            this.collectionID = collectionID;
+            this.fileID = fileID;
             this.minSeqNumber = minSeqNumber;
             this.maxSeqNumber = maxSeqNumber;
             this.minDate = minDate;
@@ -347,19 +348,19 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
          */
         public String createRestriction() {
             // Handle the case with no restrictions.
-            if(collectionId == null && fileId == null && minSeqNumber == null && maxSeqNumber == null 
+            if(collectionID == null && fileID == null && minSeqNumber == null && maxSeqNumber == null
                     && minDate == null && maxDate == null && maxResults == null) {
                 return "";
             }
 
             StringBuilder res = new StringBuilder();
 
-            if(collectionId != null) {
+            if(collectionID != null) {
                 nextArgument(res);
                 res.append(FILE_COLLECTIONID + " = ?");
             }
 
-            if(fileId != null) {
+            if(fileID != null) {
                 nextArgument(res);
                 res.append(FILE_FILEID + " = ?");
             }
@@ -408,11 +409,11 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
          */
         public Object[] getArguments() {
             List<Object> res = new ArrayList<Object>();
-            if(collectionId != null) {
-                res.add(collectionId);
+            if(collectionID != null) {
+                res.add(collectionID);
             }
-            if(fileId != null) {
-                res.add(fileId);
+            if(fileID != null) {
+                res.add(fileID);
             }
             if(minSeqNumber != null) {
                 res.add(minSeqNumber);

@@ -64,31 +64,33 @@ public class DeletingFile extends PerformingOperationState {
     @Override
     protected void sendRequest() {
         context.getMonitor().requestSent("Sending request for deleting file", activeContributors.keySet().toString());
-        for(String pillar : activeContributors.keySet()) {
-            DeleteFileRequest msg = createRequest(pillar);
+        for(String pillarID : activeContributors.keySet()) {
+            DeleteFileRequest msg = createRequest(pillarID);
             if (context.getChecksumRequestForValidation() != null) {
-                if (!context.isChecksumPillar(pillar) ||
+                if (!context.isChecksumPillar(pillarID) ||
                         context.getChecksumRequestForValidation().equals(ChecksumUtils.getDefault(context.getSettings()))) {
                     msg.setChecksumRequestForExistingFile(context.getChecksumRequestForValidation());
                 }
             }
-            msg.setPillarID(pillar);
-            msg.setDestination(activeContributors.get(pillar));
+            msg.setPillarID(pillarID);
+            msg.setDestination(activeContributors.get(pillarID));
             context.getMessageSender().sendMessage(msg);
         }
     }
 
     /**
-     * Will create a PutFileRequest based on the context. The ChecksumRequestForNewFile parameter is not added as this
+     * @param pillarID the ID of the pillar
+     * @return a newly created PutFileRequest based on the context. The ChecksumRequestForNewFile parameter is not added as this
      * should only be added in case of full pillars.
+     *
      */
-    private DeleteFileRequest createRequest(String pillar) {
+    private DeleteFileRequest createRequest(String pillarID) {
         DeleteFileRequest request = new DeleteFileRequest();
         initializeMessage(request);
         request.setFileID(context.getFileID());
         request.setChecksumDataForExistingFile(context.getChecksumForValidationAtPillar());
-        request.setPillarID(pillar);
-        request.setDestination(activeContributors.get(pillar));
+        request.setPillarID(pillarID);
+        request.setDestination(activeContributors.get(pillarID));
         return request;
     }
 

@@ -70,17 +70,18 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
 
     /**
      * Used to create a <code>AuditTrailQuery[]</code> array in case no array is defined.
+     * @param collectionID the collection ID
      * @return A <code>AuditTrailQuery[]</code> array requesting all audit trails from all the defined contributers.
      */
-    private AuditTrailQuery[] createFullAuditTrailQuery(String collectionId) {
+    private AuditTrailQuery[] createFullAuditTrailQuery(String collectionID) {
         if (settings.getRepositorySettings().getGetAuditTrailSettings() == null) {
             throw new IllegalStateException("Unable getAuditTrails both undefined GetAuditTrailSettings and undefined " +
                     "AuditTrailQuery[] in getAuditTrails call");
-        } else if (SettingsUtils.getAuditContributorsForCollection(collectionId).isEmpty()) {
+        } else if (SettingsUtils.getAuditContributorsForCollection(collectionID).isEmpty()) {
             throw new IllegalStateException("Running AuditTrailClient without any defined contributers and undefined " +
                     "AuditTrailQuery[] in getAuditTrails call.");
         }
-        Collection<String> contributers = SettingsUtils.getAuditContributorsForCollection(collectionId);
+        Collection<String> contributers = SettingsUtils.getAuditContributorsForCollection(collectionID);
         List<AuditTrailQuery> componentQueryList = new ArrayList<AuditTrailQuery>(contributers.size());
         for (String contributer : contributers) {
             componentQueryList.add(new AuditTrailQuery(contributer, null, null, null));

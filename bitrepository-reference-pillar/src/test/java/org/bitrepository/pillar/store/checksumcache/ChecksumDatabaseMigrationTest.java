@@ -97,7 +97,7 @@ public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
         addStep("Validate the entry", "The collection id has been set to the default collection id");
         String retrieveCollectionIdSql = "SELECT " + CS_COLLECTION_ID + " FROM " + CHECKSUM_TABLE + " WHERE " 
                 + CS_FILE_ID + " = ?";
-        String collectionId = DatabaseUtils.selectStringValue(connector, retrieveCollectionIdSql, FILE_ID);
-        Assert.assertEquals(collectionId, settings.getCollections().get(0).getID());
+        String collectionID = DatabaseUtils.selectStringValue(connector, retrieveCollectionIdSql, FILE_ID);
+        Assert.assertEquals(collectionID, settings.getCollections().get(0).getID());
     }
 }

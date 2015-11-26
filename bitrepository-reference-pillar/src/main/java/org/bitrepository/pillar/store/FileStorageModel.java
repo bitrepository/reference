@@ -146,14 +146,14 @@ public class FileStorageModel extends StorageModel {
         ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
 
         long i = 0;
-        for(String fileId : cache.getAllFileIDs(collectionID)) {
+        for(String fileID : cache.getAllFileIDs(collectionID)) {
             if(maxResults != null && i > maxResults) {
                 break;
             }
             i++;
 
-            String checksum = getNonDefaultChecksum(fileId, collectionID, csSpec);
-            ChecksumEntry entry = new ChecksumEntry(fileId, checksum, new Date());
+            String checksum = getNonDefaultChecksum(fileID, collectionID, csSpec);
+            ChecksumEntry entry = new ChecksumEntry(fileID, checksum, new Date());
             res.insertChecksumEntry(entry);
         }
         return res;
@@ -195,25 +195,25 @@ public class FileStorageModel extends StorageModel {
 
     /**
      * Recalculates the checksum of a given file based on the default checksum specification.
-     * @param fileId The id of the file to recalculate its default checksum for.
-     * @param collectionId The id of the collection of the file.
+     * @param fileID The id of the file to recalculate its default checksum for.
+     * @param collectionID The id of the collection of the file.
      */
-    public void verifyFileToCacheConsistency(String fileId, String collectionId) {
-        log.info("Recalculating the checksum of file '" + fileId + "'.");
-        FileInfo fi = fileArchive.getFileInfo(fileId, collectionId);
+    public void verifyFileToCacheConsistency(String fileID, String collectionID) {
+        log.info("Recalculating the checksum of file '" + fileID + "'.");
+        FileInfo fi = fileArchive.getFileInfo(fileID, collectionID);
         String checksum = ChecksumUtils.generateChecksum(fi, defaultChecksumSpec);
-        cache.insertChecksumCalculation(fileId, collectionId, checksum, new Date());
+        cache.insertChecksumCalculation(fileID, collectionID, checksum, new Date());
     }
 
     /**
      * Calculates the checksum of a file within the tmpDir.
-     * @param fileId The id of the file to calculate the checksum for.
-     * @param collectionId The id of the collection of the file.
+     * @param fileID The id of the file to calculate the checksum for.
+     * @param collectionID The id of the collection of the file.
      * @param csType The specification for the type of checksum to calculate.
      * @return The checksum of the given type for the file with the given id.
      */
-    private String getChecksumForTempFile(String fileId, String collectionId, ChecksumSpecTYPE csType) {
-        FileInfo fi = fileArchive.getFileInTmpDir(fileId, collectionId);
+    private String getChecksumForTempFile(String fileID, String collectionID, ChecksumSpecTYPE csType) {
+        FileInfo fi = fileArchive.getFileInTmpDir(fileID, collectionID);
         return ChecksumUtils.generateChecksum(fi, csType);
     }
 
@@ -222,16 +222,16 @@ public class FileStorageModel extends StorageModel {
      * @param minTime The minimum date for the timestamp of the extracted file ids entries.
      * @param maxTime The maximum date for the timestamp of the extracted file ids entries.
      * @param maxNumberOfResults The maximum number of results.
-     * @param collectionId The id of the collection.
+     * @param collectionID The id of the collection.
      * @return The requested file ids.
      */
-    private ExtractedFileIDsResultSet getFileIds(Long minTime, Long maxTime, Long maxNumberOfResults, String collectionId) {
+    private ExtractedFileIDsResultSet getFileIds(Long minTime, Long maxTime, Long maxNumberOfResults, String collectionID) {
         ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
 
         // Map between lastModifiedDate and fileInfo.
         ConcurrentSkipListMap<Long, FileInfo> sortedDateFileIDMap = new ConcurrentSkipListMap<Long, FileInfo>();
-        for(String fileId : fileArchive.getAllFileIds(collectionId)) {
-            FileInfo fi = fileArchive.getFileInfo(fileId, collectionId);
+        for(String fileID : fileArchive.getAllFileIds(collectionID)) {
+            FileInfo fi = fileArchive.getFileInfo(fileID, collectionID);
             if((minTime == null || minTime <= fi.getLastModifiedDate()) &&
                     (maxTime == null || maxTime >= fi.getLastModifiedDate())) {
                 sortedDateFileIDMap.put(fi.getLastModifiedDate(), fi);
@@ -254,58 +254,58 @@ public class FileStorageModel extends StorageModel {
     }
 
     @Override
-    public void verifyFileToCacheConsistencyOfAllData(String collectionId) {
-        for(String fileId : cache.getAllFileIDs(collectionId)) {
-            verifyCacheToArchiveConsistencyForFile(fileId, collectionId);
+    public void verifyFileToCacheConsistencyOfAllData(String collectionID) {
+        for(String fileID : cache.getAllFileIDs(collectionID)) {
+            verifyCacheToArchiveConsistencyForFile(fileID, collectionID);
         }
 
-        for(String fileId : fileArchive.getAllFileIds(collectionId)) {
-            verifyArchiveToCacheConsistencyForFile(fileId, collectionId);
+        for(String fileID : fileArchive.getAllFileIds(collectionID)) {
+            verifyArchiveToCacheConsistencyForFile(fileID, collectionID);
         }
     }
 
     /**
      * Ensures that a file id in the cache is also in the archive.
      * Will send an alarm, if the file is missing, then remove it from index.
-     * @param fileId The id of the file.
-     * @param collectionId The id of the collection of the file.
+     * @param fileID The id of the file.
+     * @param collectionID The id of the collection of the file.
      */
-    private void verifyCacheToArchiveConsistencyForFile(String fileId, String collectionId) {
-        if(!fileArchive.hasFile(fileId, collectionId)) {
-            log.warn("The file '" + fileId + "' in the ChecksumCache is no longer in the archive. "
+    private void verifyCacheToArchiveConsistencyForFile(String fileID, String collectionID) {
+        if(!fileArchive.hasFile(fileID, collectionID)) {
+            log.warn("The file '" + fileID + "' in the ChecksumCache is no longer in the archive. "
                     + "Dispatching an alarm, and removing it from the cache.");
             Alarm alarm = new Alarm();
             alarm.setAlarmCode(AlarmCode.COMPONENT_FAILURE);
-            alarm.setAlarmText("The file '" + fileId + "' has been removed from the archive without it being removed "
+            alarm.setAlarmText("The file '" + fileID + "' has been removed from the archive without it being removed "
                     + "from index. Removing it from index.");
-            alarm.setFileID(fileId);
+            alarm.setFileID(fileID);
             alarmDispatcher.error(alarm);
 
-            cache.deleteEntry(fileId, collectionId);
+            cache.deleteEntry(fileID, collectionID);
         }
     }
 
     /**
      * Ensures that the cache has an non-obsolete checksum for the given file.
      * Also validates, that the checksum is up to date with the file.
-     * @param fileId The id of the file.
-     * @param collectionId The id of the collection of the file.
+     * @param fileID The id of the file.
+     * @param collectionID The id of the collection of the file.
      */
-    private void verifyArchiveToCacheConsistencyForFile(String fileId, String collectionId) {
+    private void verifyArchiveToCacheConsistencyForFile(String fileID, String collectionID) {
         Long maxAgeForChecksums = settings.getReferenceSettings().getPillarSettings()
                 .getMaxAgeForChecksums().longValue();
-        if(!cache.hasFile(fileId, collectionId)) {
-            log.debug("No checksum cached for file '" + fileId + "'. Calculating the checksum.");
-            verifyFileToCacheConsistency(fileId, collectionId);
+        if(!cache.hasFile(fileID, collectionID)) {
+            log.debug("No checksum cached for file '" + fileID + "'. Calculating the checksum.");
+            verifyFileToCacheConsistency(fileID, collectionID);
         } else {
-            long checksumDate = cache.getCalculationDate(fileId, collectionId).getTime();
+            long checksumDate = cache.getCalculationDate(fileID, collectionID).getTime();
             long minDateForChecksum = System.currentTimeMillis() - maxAgeForChecksums;
             if(checksumDate < minDateForChecksum) {
-                log.info("The checksum for the file '" + fileId + "' is too old. Recalculating.");                
-                verifyFileToCacheConsistency(fileId, collectionId);
-            } else if(checksumDate < fileArchive.getFileInfo(fileId, collectionId).getLastModifiedDate()) {
+                log.info("The checksum for the file '" + fileID + "' is too old. Recalculating.");
+                verifyFileToCacheConsistency(fileID, collectionID);
+            } else if(checksumDate < fileArchive.getFileInfo(fileID, collectionID).getLastModifiedDate()) {
                 log.info("The last modified date for the file is newer than the latest checksum.");
-                verifyFileToCacheConsistency(fileId, collectionId);
+                verifyFileToCacheConsistency(fileID, collectionID);
             }
         }
     }

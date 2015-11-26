@@ -69,6 +69,7 @@ public class AlarmMailer implements AlarmHandler {
     
     /**
      * Constructor.
+     * @param settings the AlarmServiceSettings
      */
     public AlarmMailer(AlarmServiceSettings settings) {
         MailingConfiguration config = settings.getMailingConfiguration();
@@ -119,7 +120,6 @@ public class AlarmMailer implements AlarmHandler {
      * Method for generating the body of the mail.
      * @param content The content of the body.
      * @param msg The message which should have the body.
-     * @return The body of the mail.
      */
     private void addMailBody(String content, Message msg) {
         StringBuffer body = new StringBuffer();
@@ -137,8 +137,8 @@ public class AlarmMailer implements AlarmHandler {
     
     /**
      * Method for generating and adding the header to the mail. 
-     * @param subject The subject of 
-     * @param msg
+     * @param subject The subject of the mail
+     * @param msg the message to modify
      */
     private void addMailHeader(String subject, Message msg) {
         try {

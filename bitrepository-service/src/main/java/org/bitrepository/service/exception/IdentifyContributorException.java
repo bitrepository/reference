@@ -37,8 +37,8 @@ public class IdentifyContributorException extends RequestHandlerException {
      * @param rText The text for the response info.
      * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
      */
-    public IdentifyContributorException(ResponseCode rCode, String rText, String collectionId) {
-        super(rCode, rText, collectionId);
+    public IdentifyContributorException(ResponseCode rCode, String rText, String collectionID) {
+        super(rCode, rText, collectionID);
     }
     
     /**
@@ -48,7 +48,7 @@ public class IdentifyContributorException extends RequestHandlerException {
      * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
      * @param e The exception to wrap into the StackTrace.
      */
-    public IdentifyContributorException(ResponseCode rCode, String rText, String collectionId, Exception e) {
-        super(rCode, rText, collectionId, e);
+    public IdentifyContributorException(ResponseCode rCode, String rText, String collectionID, Exception e) {
+        super(rCode, rText, collectionID, e);
     }
 }

@@ -86,7 +86,9 @@ public class IdentifyContributorsForGetAuditTrailsRequestHandler
     /**
      * Creates a IdentifyContributorsForGetAuditTrailsResponse based on a
      * IdentifyContributorsForGetAuditTrailsResponse. The following fields are not inserted:
-     * <br/> - ResponseInfo
+     * <ul>
+     *     <li>ResponseInfo</li>
+     * </ul>
      *
      * @return The response to the request.
      */

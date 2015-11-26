@@ -58,15 +58,15 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
     }
     
     @Override
-    public void replaceFile(String collectionID, String fileID, String pillarId, ChecksumDataForFileTYPE checksumForDeleteAtPillar,
+    public void replaceFile(String collectionID, String fileID, String pillarID, ChecksumDataForFileTYPE checksumForDeleteAtPillar,
             ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile, 
             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile, 
             EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "collectionID");
         ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
         validateFileID(fileID);
-        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileId");
-        ArgumentValidator.checkNotNullOrEmpty(pillarId, "String pillarId");
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
         if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
             ArgumentValidator.checkNotNull(checksumForDeleteAtPillar, "ChecksumDataForFileTYPE checksumForDeleteAtPillar");
         }
@@ -75,7 +75,7 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
                     "ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar");
         }
         
-        log.info("Requesting the replacement of the file '" + fileID + "' at the pillar '" + pillarId + "' from the "
+        log.info("Requesting the replacement of the file '" + fileID + "' at the pillar '" + pillarID + "' from the "
                 + "URL '" + url + "' and with the size '" + sizeOfNewFile + "', where the old file has the checksum '" 
                 + checksumForDeleteAtPillar + "' and is requested the checksum '" + checksumRequestedForDeletedFile 
                 + "', and the new file has the checksum '" + checksumForNewFileValidationAtPillar + "' and requesting "
@@ -84,7 +84,7 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
         ReplaceFileConversationContext context = new ReplaceFileConversationContext(collectionID, fileID,
                 sizeOfNewFile, url, checksumForDeleteAtPillar, checksumRequestedForDeletedFile, 
                 checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, settings, messageBus, 
-                clientID, Arrays.asList(pillarId), eventHandler, auditTrailInformation);
+                clientID, Arrays.asList(pillarID), eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForReplaceFile(context));
     }
 }

@@ -84,11 +84,11 @@ public class CollectionArchiveManager implements FileStore {
     /**
      * Initiates the archives for a set of collection ids and their respective directory paths.
      * Only creates archives for the collection, if it does not already has one.
-     * @param collectionIds The ids of the collections.
+     * @param collectionIDs The ids of the collections.
      * @param fileDirs The paths to the directories.
      */
-    private void initiateArchive(Collection<String> collectionIds, Collection<String> fileDirs) {
-        for(String colId : collectionIds) {
+    private void initiateArchive(Collection<String> collectionIDs, Collection<String> fileDirs) {
+        for(String colId : collectionIDs) {
             List<String> dirs = new ArrayList<String>();
             for(String dir : fileDirs) {
                 dirs.add(new File(dir, colId).getPath());
@@ -101,54 +101,54 @@ public class CollectionArchiveManager implements FileStore {
     }
 
     @Override
-    public FileInfo getFileInfo(String fileID, String collectionId) {
-        return new DefaultFileInfo(getArchive(collectionId).getFile(fileID));
+    public FileInfo getFileInfo(String fileID, String collectionID) {
+        return new DefaultFileInfo(getArchive(collectionID).getFile(fileID));
     }
 
     @Override
-    public boolean hasFile(String fileID, String collectionId) {
-        return getArchive(collectionId).hasFile(fileID);
+    public boolean hasFile(String fileID, String collectionID) {
+        return getArchive(collectionID).hasFile(fileID);
     }
 
     @Override
-    public Collection<String> getAllFileIds(String collectionId) {
-        return getArchive(collectionId).getAllFileIds();
+    public Collection<String> getAllFileIds(String collectionID) {
+        return getArchive(collectionID).getAllFileIds();
     }
 
     @Override
-    public FileInfo downloadFileForValidation(String fileID, String collectionId, InputStream inputStream) 
+    public FileInfo downloadFileForValidation(String fileID, String collectionID, InputStream inputStream)
             throws IOException {
-        return new DefaultFileInfo(getArchive(collectionId).downloadFileForValidation(fileID, inputStream));
+        return new DefaultFileInfo(getArchive(collectionID).downloadFileForValidation(fileID, inputStream));
     }
 
     @Override
-    public void moveToArchive(String fileID, String collectionId) {
-        getArchive(collectionId).moveToArchive(fileID);
+    public void moveToArchive(String fileID, String collectionID) {
+        getArchive(collectionID).moveToArchive(fileID);
     }
 
     @Override
-    public void deleteFile(String fileID, String collectionId) {
-        getArchive(collectionId).deleteFile(fileID);        
+    public void deleteFile(String fileID, String collectionID) {
+        getArchive(collectionID).deleteFile(fileID);
     }
     
     @Override
-    public synchronized void replaceFile(String fileID, String collectionId) {
-        getArchive(collectionId).replaceFile(fileID);
+    public synchronized void replaceFile(String fileID, String collectionID) {
+        getArchive(collectionID).replaceFile(fileID);
     }
     
     @Override
-    public long sizeLeftInArchive(String collectionId) {
-        return getArchive(collectionId).sizeLeftInArchive();
+    public long sizeLeftInArchive(String collectionID) {
+        return getArchive(collectionID).sizeLeftInArchive();
     }
     
     @Override
-    public FileInfo getFileInTmpDir(String fileId, String collectionId) {
-        return new DefaultFileInfo(getArchive(collectionId).getFileInTmpDir(fileId));
+    public FileInfo getFileInTmpDir(String fileID, String collectionID) {
+        return new DefaultFileInfo(getArchive(collectionID).getFileInTmpDir(fileID));
     }
     
     @Override
-    public void ensureFileNotInTmpDir(String fileId, String collectionId) {
-        getArchive(collectionId).ensureFileNotInTmpDir(fileId);
+    public void ensureFileNotInTmpDir(String fileID, String collectionID) {
+        getArchive(collectionID).ensureFileNotInTmpDir(fileID);
     }
     
     @Override
@@ -161,14 +161,14 @@ public class CollectionArchiveManager implements FileStore {
     /**
      * Validates the existence of the archive before accessing it.
      * If it does not exist, then an IllegalStateException is thrown. 
-     * @param collectionId The id of the collection.
+     * @param collectionID The id of the collection.
      * @return The archive for the collection.
      */
-    private ReferenceArchive getArchive(String collectionId) {
-        if(archives.containsKey(collectionId)) {
-            return archives.get(collectionId);
+    private ReferenceArchive getArchive(String collectionID) {
+        if(archives.containsKey(collectionID)) {
+            return archives.get(collectionID);
         } else {
-            throw new IllegalStateException("The collection '" + collectionId + "' has no attached archive.");
+            throw new IllegalStateException("The collection '" + collectionID + "' has no attached archive.");
         }
     }
 }

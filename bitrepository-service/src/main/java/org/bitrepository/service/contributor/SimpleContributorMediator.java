@@ -59,6 +59,7 @@ public class SimpleContributorMediator extends AbstractContributorMediator {
      * @param messageBus The messagebus for the mediator.
      * @param settings the settings for the mediator.
      * @param auditManager [OPTIONAL] The manager of audit trails. Only if the contributor has audit trails.
+     * @param fileExchange the file exchange
      */
     public SimpleContributorMediator(
             MessageBus messageBus, Settings settings, AuditTrailManager auditManager, FileExchange fileExchange) {

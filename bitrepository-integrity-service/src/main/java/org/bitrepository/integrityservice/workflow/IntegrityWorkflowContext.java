@@ -60,10 +60,6 @@ public class IntegrityWorkflowContext implements WorkflowContext {
 
     }
 
-    /**
-     *
-     * @return
-     */
     public Settings getSettings() {
         return settings;
     }

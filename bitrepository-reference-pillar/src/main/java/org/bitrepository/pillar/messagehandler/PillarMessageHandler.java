@@ -26,6 +26,7 @@ package org.bitrepository.pillar.messagehandler;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileIDValidator;
 import org.bitrepository.pillar.common.MessageHandlerContext;
@@ -40,7 +41,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Abstract level for message handling for both types of pillar.
  */
-public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> {
+public abstract class PillarMessageHandler<T extends MessageRequest> extends AbstractRequestHandler<T> {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The response value for a positive identification.*/
@@ -49,7 +50,7 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
     /** The context for the message handler.*/
     protected final MessageHandlerContext context;
     /** The file id validator for validating the file id.*/
-    private final FileIDValidator fileIdValidator;
+    private final FileIDValidator fileIDValidator;
     /** The model for the pillar.*/
     private final StorageModel pillarModel;
     
@@ -59,7 +60,7 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
     protected PillarMessageHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
         super(context);
         this.context = context;
-        this.fileIdValidator = new FileIDValidator(context.getSettings());
+        this.fileIDValidator = new FileIDValidator(context.getSettings());
         this.pillarModel = fileInfoStore;
     }
 
@@ -86,13 +87,13 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
     
     /**
      * Validates that it is the correct pillar id.
-     * @param pillarId The pillar id.
+     * @param pillarID The pillar id.
      */
-    protected void validatePillarId(String pillarId) {
-        if(!pillarId.equals(getSettings().getComponentID())) {
+    protected void validatePillarId(String pillarID) {
+        if(!pillarID.equals(getSettings().getComponentID())) {
             throw new IllegalArgumentException("The message had a wrong PillarId: "
                     + "Expected '" + getSettings().getComponentID()
-                    + "' but was '" + pillarId + "'.");
+                    + "' but was '" + pillarID + "'.");
         }
     }
     
@@ -118,11 +119,11 @@ public abstract class PillarMessageHandler<T> extends AbstractRequestHandler<T> 
     
     /**
      * Uses the FileIDValidator to validate the format of a given file id.
-     * @param fileId The id to validate.
+     * @param fileID The id to validate.
      * @throws RequestHandlerException If the id of the file was invalid.
      */
-    protected void validateFileIDFormat(String fileId) throws RequestHandlerException {
+    protected void validateFileIDFormat(String fileID) throws RequestHandlerException {
 
-        fileIdValidator.validateFileID(fileId);
+        fileIDValidator.validateFileID(fileID);
     }
 }

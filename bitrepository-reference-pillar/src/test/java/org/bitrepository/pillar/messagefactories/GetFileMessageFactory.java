@@ -35,31 +35,31 @@ public class GetFileMessageFactory extends PillarTestMessageFactory {
         super(collectionID, clientSettings, pillarID, pillarDestination);
     }
 
-    public IdentifyPillarsForGetFileRequest createIdentifyPillarsForGetFileRequest(String fileId) {
+    public IdentifyPillarsForGetFileRequest createIdentifyPillarsForGetFileRequest(String fileID) {
         IdentifyPillarsForGetFileRequest res = new IdentifyPillarsForGetFileRequest();
         initializeIdentifyRequest(res);
-        res.setFileID(fileId);
+        res.setFileID(fileID);
         return res;
     }
 
-    public GetFileRequest createGetFileRequest(String url, String fileId) {
+    public GetFileRequest createGetFileRequest(String url, String fileID) {
         GetFileRequest res = new GetFileRequest();
         initializeOperationRequest(res);
-        res.setFileID(fileId);
+        res.setFileID(fileID);
         res.setFileAddress(url);
         res.setPillarID(pillarID);
 
         return res;
     }
 
-    public GetFileRequest createGetFileRequest(String auditTrail, String correlationId, String url, String fileId,
-            FilePart filePart, String from, String pillarId, String replyTo, String toTopic) {
-        GetFileRequest res = createGetFileRequest(url, fileId);
+    public GetFileRequest createGetFileRequest(String auditTrail, String correlationId, String url, String fileID,
+            FilePart filePart, String from, String pillarID, String replyTo, String toTopic) {
+        GetFileRequest res = createGetFileRequest(url, fileID);
         res.setAuditTrailInformation(auditTrail);
         res.setCorrelationID(correlationId);
         res.setFilePart(filePart);
         res.setFrom(from);
-        res.setPillarID(pillarId);
+        res.setPillarID(pillarID);
         res.setReplyTo(replyTo);
         res.setDestination(toTopic);
         return res;

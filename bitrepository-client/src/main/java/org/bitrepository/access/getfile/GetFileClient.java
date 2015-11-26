@@ -42,13 +42,13 @@ public interface GetFileClient extends BitrepositoryClient {
      * The method will return as soon as the communication has been setup.
      *
      * @param  collectionID Identifies the collection the file should be retrieved from.
-     * @param fileId The id of the file to retrieve.
+     * @param fileID The id of the file to retrieve.
      * @param filePart The part of the file, which is wanted. If null, then the whole file is retrieved.
      * @param uploadUrl The url the pillar should upload the file to.
      * @param eventHandler The handler which should receive notifications of the progress events.
      * @param auditTrailInformation Additional information to add to the audit trail created because of this operation.
      */
-    void getFileFromFastestPillar(String collectionID, String fileId, FilePart filePart, URL uploadUrl,
+    void getFileFromFastestPillar(String collectionID, String fileID, FilePart filePart, URL uploadUrl,
                                   EventHandler eventHandler,
                                   String auditTrailInformation);
 
@@ -57,15 +57,15 @@ public interface GetFileClient extends BitrepositoryClient {
      *
      * The method will return as soon as the communication has been setup.
      * @param  collectionID Identifies the collection the file should be retrieved from.
-     * @param fileId The id of the file to retrieve.
+     * @param fileID The id of the file to retrieve.
      * @param filePart The part of the file, which is wanted. If null, then the whole file is retrieved.
      * @param uploadUrl The url the pillar should upload the file to.
-     * @param pillarId The id of pillar, where the file should be retrieved from.
+     * @param pillarID The id of pillar, where the file should be retrieved from.
      * @param eventHandler The handler which should receive notifications of the events occurring in connection with 
      * the pillar communication.
      * @param auditTrailInformation Additional information to add to the audit trail created because of this operation.
      */
-    void getFileFromSpecificPillar(String collectionID, String fileId, FilePart filePart, URL uploadUrl,
-                                   String pillarId,
+    void getFileFromSpecificPillar(String collectionID, String fileID, FilePart filePart, URL uploadUrl,
+                                   String pillarID,
                                    EventHandler eventHandler, String auditTrailInformation);
 }

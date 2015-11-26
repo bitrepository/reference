@@ -54,24 +54,24 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
     }
     
     @Override
-    public void deleteFile(String collectionID, String fileID, String pillarId,
+    public void deleteFile(String collectionID, String fileID, String pillarID,
                            ChecksumDataForFileTYPE checksumForPillar,
             ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "collectionID");
         ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
-        ArgumentValidator.checkNotNullOrEmpty(pillarId, "pillarId");
+        ArgumentValidator.checkNotNullOrEmpty(pillarID, "pillarID");
         validateFileID(fileID);
         if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
             ArgumentValidator.checkNotNull(checksumForPillar, "ChecksumForPillar");
         }
         
-        log.info("Requesting the deletion of the file '" + fileID + "' from the pillar '" + pillarId
+        log.info("Requesting the deletion of the file '" + fileID + "' from the pillar '" + pillarID
                 + "' with checksum '" + checksumForPillar + "', while requested checksum '" + checksumRequested 
                 + "'. And the audit trail information '" + auditTrailInformation + "'.");
         
         DeleteFileConversationContext context = new DeleteFileConversationContext(collectionID, fileID,
                 checksumForPillar, checksumRequested, settings, messageBus, clientID,
-                Arrays.asList(pillarId), eventHandler, auditTrailInformation);
+                Arrays.asList(pillarID), eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForDeleteFile(context));
     }
 }

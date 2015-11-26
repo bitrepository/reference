@@ -43,8 +43,8 @@ public interface GetFileIDsClient {
      * <p>
      * The FileIDs can be requested either through a URL or through the message (give URL = null as argument).
      * <p>
-     * Since every pillar cannot upload their fileids to the same URL, it is extended with the pillarId for the given
-     * pillar, e.g.: 'http://upload.url/mypath' + '-pillarId'.
+     * Since every pillar cannot upload their fileids to the same URL, it is extended with the pillarID for the given
+     * pillar, e.g.: 'http://upload.url/mypath' + '-pillarID'.
      * <p>
      * The results are returned through as an special event through the eventHandler, the FileIDsCompletePillarCompete. 
      *

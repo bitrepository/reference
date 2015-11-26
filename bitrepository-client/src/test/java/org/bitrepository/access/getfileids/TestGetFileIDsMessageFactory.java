@@ -84,29 +84,29 @@ public class TestGetFileIDsMessageFactory extends ClientTestMessageFactory {
     
     public IdentifyPillarsForGetFileIDsResponse createIdentifyPillarsForGetFileIDsResponse(
             IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage,
-            String pillarId, String pillarDestinationId) {
+            String pillarID, String pillarDestinationId) {
         IdentifyPillarsForGetFileIDsResponse identifyPillarsForGetFileIdsResponse = new IdentifyPillarsForGetFileIDsResponse();
         initializeMessageDetails(identifyPillarsForGetFileIdsResponse);
-        setResponseDetails(identifyPillarsForGetFileIdsResponse, receivedIdentifyRequestMessage, pillarId, pillarDestinationId);
-        identifyPillarsForGetFileIdsResponse.setPillarID(pillarId);
+        setResponseDetails(identifyPillarsForGetFileIdsResponse, receivedIdentifyRequestMessage, pillarID, pillarDestinationId);
+        identifyPillarsForGetFileIdsResponse.setPillarID(pillarID);
         identifyPillarsForGetFileIdsResponse.setFileIDs(receivedIdentifyRequestMessage.getFileIDs());
         identifyPillarsForGetFileIdsResponse.setTimeToDeliver(TIME_TO_DELIVER_DEFAULT);
         return identifyPillarsForGetFileIdsResponse;
     }
     
-    public GetFileIDsRequest createGetFileIDsRequest(String pillarId, String toTopic, String from) {
+    public GetFileIDsRequest createGetFileIDsRequest(String pillarID, String toTopic, String from) {
         GetFileIDsRequest getFileIDsRequest = new GetFileIDsRequest();
         getFileIDsRequest.setCorrelationID(CORRELATION_ID_DEFAULT);
         initializeMessageDetails(getFileIDsRequest);
-        getFileIDsRequest.setPillarID(pillarId);
+        getFileIDsRequest.setPillarID(pillarID);
         getFileIDsRequest.setDestination(toTopic);
         getFileIDsRequest.setFrom(from);
         
         return getFileIDsRequest;
     }
     public GetFileIDsRequest createGetFileIDsRequest(GetFileIDsRequest receivedGetFileIDsRequest,
-            String pillarId, String toTopic) {
-        GetFileIDsRequest getFileIDsRequest = createGetFileIDsRequest(pillarId, toTopic, 
+            String pillarID, String toTopic) {
+        GetFileIDsRequest getFileIDsRequest = createGetFileIDsRequest(pillarID, toTopic,
                 receivedGetFileIDsRequest.getFrom());
         getFileIDsRequest.setCorrelationID(receivedGetFileIDsRequest.getCorrelationID());
         getFileIDsRequest.setReplyTo(receivedGetFileIDsRequest.getReplyTo());
@@ -117,17 +117,17 @@ public class TestGetFileIDsMessageFactory extends ClientTestMessageFactory {
     }
 
     public GetFileIDsProgressResponse createGetFileIDsProgressResponse(
-            GetFileIDsRequest receivedMessage, String pillarId, String pillarDestination) {
+            GetFileIDsRequest receivedMessage, String pillarID, String pillarDestination) {
         GetFileIDsProgressResponse getFileIDsProgressResponse = new GetFileIDsProgressResponse();
         initializeMessageDetails(getFileIDsProgressResponse);
         getFileIDsProgressResponse.setDestination(receivedMessage.getReplyTo());
         getFileIDsProgressResponse.setCorrelationID(receivedMessage.getCorrelationID());
         getFileIDsProgressResponse.setCollectionID(receivedMessage.getCollectionID());
         getFileIDsProgressResponse.setReplyTo(pillarDestination);
-        getFileIDsProgressResponse.setPillarID(pillarId);
+        getFileIDsProgressResponse.setPillarID(pillarID);
         getFileIDsProgressResponse.setFileIDs(receivedMessage.getFileIDs());
         getFileIDsProgressResponse.setResponseInfo(PROGRESS_INFO_DEFAULT);
-        getFileIDsProgressResponse.setFrom(pillarId);
+        getFileIDsProgressResponse.setFrom(pillarID);
         getFileIDsProgressResponse.setResultAddress(receivedMessage.getResultAddress());
         
         return getFileIDsProgressResponse;
@@ -140,22 +140,22 @@ public class TestGetFileIDsMessageFactory extends ClientTestMessageFactory {
      * - getFileIDsFinalResponse.setResultingFileIDs(null);
      *  
      * @param receivedGetFileIDsRequest
-     * @param pillarId
+     * @param pillarID
      * @param pillarDestinationId
      * @return
      */
     public GetFileIDsFinalResponse createGetFileIDsFinalResponse(
-            GetFileIDsRequest receivedGetFileIDsRequest, String pillarId, String pillarDestinationId) {
+            GetFileIDsRequest receivedGetFileIDsRequest, String pillarID, String pillarDestinationId) {
         GetFileIDsFinalResponse getFileIDsFinalResponse = new GetFileIDsFinalResponse();
         initializeMessageDetails(getFileIDsFinalResponse);
         getFileIDsFinalResponse.setDestination(receivedGetFileIDsRequest.getReplyTo());
         getFileIDsFinalResponse.setCorrelationID(receivedGetFileIDsRequest.getCorrelationID());
         getFileIDsFinalResponse.setCollectionID(receivedGetFileIDsRequest.getCollectionID());
         getFileIDsFinalResponse.setReplyTo(pillarDestinationId);
-        getFileIDsFinalResponse.setPillarID(pillarId);
+        getFileIDsFinalResponse.setPillarID(pillarID);
         getFileIDsFinalResponse.setFileIDs(receivedGetFileIDsRequest.getFileIDs());
         getFileIDsFinalResponse.setResponseInfo(createCompleteResponseInfo());
-        getFileIDsFinalResponse.setFrom(pillarId);
+        getFileIDsFinalResponse.setFrom(pillarID);
 
         return getFileIDsFinalResponse;
     }

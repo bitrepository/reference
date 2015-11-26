@@ -67,13 +67,13 @@ public interface OutputHandler {
     
     /**
      * Handles the outputting of a line of results 
-     * @param line, the line to output
+     * @param line the line to output
      */
     void resultLine(String line);
     
     /**
      * Handles the outputting of the header (or ledgend) of the following lines
-     * @param header, the header to output 
+     * @param header the header to output
      */
     void resultHeader(String header);
     

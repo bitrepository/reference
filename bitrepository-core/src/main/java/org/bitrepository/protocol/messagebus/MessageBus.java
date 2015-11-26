@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * The communication interface for the message bus.
  */
-public interface MessageBus extends MessageSender {
+public interface MessageBus extends MessageSender, AutoCloseable{
     /**
      * Adds the supplied listener to the indicated destination (non-durable).
      *
@@ -62,7 +62,8 @@ public interface MessageBus extends MessageSender {
     void removeListener(String destinationId, MessageListener listener);
 
     /**
-     * Closes the messagebus connection so that everything can be shutdown nicely.  
+     * Closes the messagebus connection so that everything can be shutdown nicely.
+     * @throws JMSException If the MessageBus cannot be closed
      */
     void close() throws JMSException;
 

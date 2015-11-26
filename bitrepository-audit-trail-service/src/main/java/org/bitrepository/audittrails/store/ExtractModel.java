@@ -30,9 +30,9 @@ import org.bitrepository.bitrepositoryelements.FileAction;
  */
 class ExtractModel {
     /** @see #getFileId(). */
-    private String fileId;
+    private String fileID;
     /** @see #getCollectionId(). */
-    private String collectionId;
+    private String collectionID;
     /** @see #getContributorId(). */
     private String contributorId;
     /** @see #getMinSeqNumber(). */
@@ -60,33 +60,33 @@ class ExtractModel {
     }
     
     /**
-     * @return The fileId;
+     * @return The fileID;
      */
     public String getFileId() {
-        return fileId;
+        return fileID;
     }
     
     /**
-     * @See getFileId();
-     * @param fileId The new file id.
+     * @see getFileId();
+     * @param fileID The new file id.
      */
-    public void setFileId(String fileId) {
-        this.fileId = fileId;
+    public void setFileId(String fileID) {
+        this.fileID = fileID;
     }
     
     /**
-     * @return The collectionId;
+     * @return The collectionID;
      */
     public String getCollectionId() {
-        return collectionId;
+        return collectionID;
     }
     
     /**
-     * @See getCollectionId();
-     * @param collectionId The new collection id.
+     * @see getCollectionID();
+     * @param collectionID The new collection id.
      */
-    public void setCollectionId(String collectionId) {
-        this.collectionId = collectionId;
+    public void setCollectionId(String collectionID) {
+        this.collectionID = collectionID;
     }
     
     /**
@@ -97,7 +97,7 @@ class ExtractModel {
     }
     
     /**
-     * @See getContributorId();
+     * @see getContributorId();
      * @param contributorId The new id of the contributor.
      */
     public void setContributorId(String contributorId) {
@@ -112,7 +112,7 @@ class ExtractModel {
     }
     
     /**
-     * @See getMinSeqNumberId();
+     * @see getMinSeqNumberId();
      * @param minSeqNumber The new minimum sequence number.
      */
     public void setMinSeqNumber(Long minSeqNumber) {
@@ -127,7 +127,7 @@ class ExtractModel {
     }
     
     /**
-     * @See getMaxSeqNumberId();
+     * @see getMaxSeqNumberId();
      * @param maxSeqNumber The new maximum sequence number.
      */
     public void setMaxSeqNumber(Long maxSeqNumber) {
@@ -142,7 +142,7 @@ class ExtractModel {
     }
     
     /**
-     * @See getActorName();
+     * @see getActorName();
      * @param actorName The new name of the actor.
      */
     public void setActorName(String actorName) {
@@ -157,7 +157,7 @@ class ExtractModel {
     }
     
     /**
-     * @See getOperation();
+     * @see getOperation();
      * @param operation The operation.
      */
     public void setOperation(FileAction operation) {
@@ -172,7 +172,7 @@ class ExtractModel {
     }
     
     /**
-     * @See getStartDate();
+     * @see getStartDate();
      * @param startDate The startDate.
      */
     public void setStartDate(Date startDate) {
@@ -187,7 +187,7 @@ class ExtractModel {
     }
     
     /**
-     * @See getEndDate();
+     * @see #getEndDate();
      * @param endDate The endDate.
      */
     public void setEndDate(Date endDate) {
@@ -202,8 +202,8 @@ class ExtractModel {
     }
 
     /**
-     * @see getFingerprint();
-     * @param fingerprint
+     * @see #getFingerprint();
+     * @param fingerprint the fingerprint
      */
     public void setFingerprint(String fingerprint) {
         this.fingerprint = fingerprint;
@@ -217,7 +217,7 @@ class ExtractModel {
     }
 
     /**
-     * @see getOperationID();
+     * @see #getOperationID();
      * @param operationID The ID of the operation
      */
     public void setOperationID(String operationID) {

@@ -39,24 +39,24 @@ public class GetFileIDsMessageFactory extends PillarTestMessageFactory {
         super(collectionID, clientSettings, pillarID, pillarDestination);
     }
     
-    public IdentifyPillarsForGetFileIDsRequest createIdentifyPillarsForGetFileIDsRequest(FileIDs fileId) {
+    public IdentifyPillarsForGetFileIDsRequest createIdentifyPillarsForGetFileIDsRequest(FileIDs fileID) {
         IdentifyPillarsForGetFileIDsRequest res = new IdentifyPillarsForGetFileIDsRequest();
         initializeIdentifyRequest(res);
-        res.setFileIDs(fileId);
+        res.setFileIDs(fileID);
         return res;
     }
     
-    public GetFileIDsRequest createGetFileIDsRequest(FileIDs fileId, String url) {
+    public GetFileIDsRequest createGetFileIDsRequest(FileIDs fileID, String url) {
         GetFileIDsRequest res = new GetFileIDsRequest();
         initializeOperationRequest(res);
-        res.setFileIDs(fileId);
+        res.setFileIDs(fileID);
         res.setResultAddress(url);
         res.setPillarID(pillarID);
         return res;
     }
     
-    public GetFileIDsRequest createGetFileIDsRequest(FileIDs fileId, String url, Long maxResults, XMLGregorianCalendar maxDate, XMLGregorianCalendar minDate) {
-        GetFileIDsRequest res = createGetFileIDsRequest(fileId, url);
+    public GetFileIDsRequest createGetFileIDsRequest(FileIDs fileID, String url, Long maxResults, XMLGregorianCalendar maxDate, XMLGregorianCalendar minDate) {
+        GetFileIDsRequest res = createGetFileIDsRequest(fileID, url);
         if(maxResults != null) { 
             res.setMaxNumberOfResults(BigInteger.valueOf(maxResults));
         }
