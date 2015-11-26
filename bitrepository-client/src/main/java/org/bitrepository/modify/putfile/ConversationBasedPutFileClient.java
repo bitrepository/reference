@@ -48,6 +48,10 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
 
     /**
      * @see AbstractClient
+     * @param messageBus The {@link MessageBus} for handling communication
+     * @param conversationMediator The {@link ConversationMediator} for keeping track of conversations
+     * @param settings The {@link Settings} for the client
+     * @param clientID The ID of the client
      */
     public ConversationBasedPutFileClient(MessageBus messageBus, ConversationMediator conversationMediator, 
             Settings settings, String clientID) {

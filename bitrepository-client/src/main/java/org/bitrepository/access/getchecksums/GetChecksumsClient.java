@@ -38,13 +38,13 @@ public interface GetChecksumsClient extends BitrepositoryClient {
 
     /**
      * Retrieves the checksums for a set of files.
-     * <br/>
+     * <p>
      * If the number of fileIDs in a collection is large (10.000's) the fileIDs should  be retrieved in chunks by
      * using the <code>ContributorQuery</code> functionality.
-     * <br/>
+     * <p>
      * Since every pillar cannot upload their checksums to the same URL, it is extended with the pillarId for the given
      * pillar, e.g.: 'http://upload.url/mypath' + '-pillarId'.
-     * <br/>
+     * <p>
      * The results are returned through as a ChecksumsCompletePillarCompete event as the results are returned by the
      * pillars.
      * @param collectionID Identifies the collection to request checksums for.
@@ -58,14 +58,9 @@ public interface GetChecksumsClient extends BitrepositoryClient {
      * results will be retrieved through the message.
      * @param eventHandler [OPTIONAL] The handler which should receive notifications of the events occurring in
      * connection with the pillar communication.
-     *
+     * @param auditTrailInformation Audittrail information for the contributors
      */
-    public void getChecksums(
-            String collectionID,
-        ContributorQuery[] contributorQueries,
-        String fileID,
-        ChecksumSpecTYPE checksumSpec,
-        URL addressForResult,
-        EventHandler eventHandler,
+    public void getChecksums(String collectionID, ContributorQuery[] contributorQueries, String fileID,
+        ChecksumSpecTYPE checksumSpec, URL addressForResult, EventHandler eventHandler,
         String auditTrailInformation);
 }

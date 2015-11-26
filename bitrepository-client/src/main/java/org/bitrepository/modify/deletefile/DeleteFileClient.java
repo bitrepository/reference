@@ -40,9 +40,10 @@ public interface DeleteFileClient extends BitrepositoryClient {
      * @param fileId The id of the file to delete.
      * @param pillarId The id of the pillar, where the file should be deleted.
      * @param checksumForPillar The specifications for the checksum of the file.
+     * @param checksumRequested Checksum request for the pillar where the file is deleted
      * @param eventHandler [OPTIONAL] The handler which should receive notifications of the events occurring in 
      * connection with the pillar communication. This is allowed to be null.
-     * In a good case scenario this will give the events: <br/> 
+     * In a good case scenario this will give the events: <p> 
      * IdentifyPillarsRequestSent, PillarIdentified, PillarSelected, RequestSent, Progress, PillarComplete, Complete
      * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation 
      * call.

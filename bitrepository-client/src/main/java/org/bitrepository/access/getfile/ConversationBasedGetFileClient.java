@@ -52,6 +52,10 @@ public class ConversationBasedGetFileClient extends AbstractClient implements Ge
 
     /**
      * @see AbstractClient
+     * @param messageBus The MessageBus for communication
+     * @param conversationMediator The ConversationMediator to keep track of conversations
+     * @param settings The settings
+     * @param clientID The ID of the client
      */
     public ConversationBasedGetFileClient(MessageBus messageBus, ConversationMediator conversationMediator, Settings settings,
                                           String clientID) {

@@ -43,6 +43,10 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
 
     /**
      * @see AbstractClient
+     * @param messageBus The {@link MessageBus} used for communication
+     * @param conversationMediator The {@link ConversationMediator} for keeping track of conversations
+     * @param settings The {@link Settings} for the client
+     * @param clientID The ID of the client
      */
     public ConversationBasedDeleteFileClient(MessageBus messageBus, ConversationMediator conversationMediator, 
             Settings settings, String clientID) {

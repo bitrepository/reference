@@ -60,6 +60,7 @@ public abstract class CommandLineClient {
     /**
      * Runs a specific command-line-client operation. 
      * Handles also the closing of connections and deals with exceptions.
+     * @throws Exception if an error occurs
      */
     public void runCommand() throws Exception {
         try {

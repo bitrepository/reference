@@ -43,9 +43,17 @@ public class GetChecksumsConversationContext extends ConversationContext {
     /**
      * Extends the {@link ConversationContext} constructor with
      * {@link org.bitrepository.access.getchecksums.GetChecksumsClient} specific parameters.
+     * @param collectionID The ID of the collection
      * @param contributorQueries See {@link org.bitrepository.access.getchecksums.GetChecksumsClient} for details.
-     * @param urlForResult See {@link org.bitrepository.access.getchecksums.GetChecksumsClient} for details.
+     * @param fileID The ID of the file to get checksums for
      * @param checksumSpec See {@link org.bitrepository.access.getchecksums.GetChecksumsClient} for details.
+     * @param urlForResult See {@link org.bitrepository.access.getchecksums.GetChecksumsClient} for details.
+     * @param settings The settings
+     * @param messageSender The MessageSender to send messages with
+     * @param clientID The ID of the client
+     * @param contributors The contributors for the conversation
+     * @param eventHandler The EventHandler to handle incoming events
+     * @param auditTrailInformation The audittrail information for the contributors
      */
     public GetChecksumsConversationContext(
             String collectionID,

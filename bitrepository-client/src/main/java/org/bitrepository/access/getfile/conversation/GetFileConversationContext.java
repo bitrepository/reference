@@ -39,8 +39,16 @@ public class GetFileConversationContext extends ConversationContext {
 
     /**
      * @see ConversationContext for general parameter documentation.
+     * @param collectionID The ID of the collection
+     * @param fileID The ID of the file
+     * @param urlForResult The URL to deliver the results to
      * @param filePart The part of the file. Null if whole file is wanted.
-     * @param urlForResult
+     * @param contributors The contributors used in the conversation
+     * @param settings The settings 
+     * @param messageSender The MessageSender for sending messages
+     * @param clientID The ID of the client
+     * @param eventHandler The EventHandler for handling incoming events
+     * @param auditTrailInformation The audittrail information for the contributors
      */
     public GetFileConversationContext(String collectionID,
             String fileID, URL urlForResult, FilePart filePart, Collection<String> contributors,

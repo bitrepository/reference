@@ -45,6 +45,13 @@ public class BlockingGetFileClient {
 
     /**
      * @see GetFileClient#getFileFromFastestPillar
+     * @param collectionId The ID of the collection
+     * @param fileID The ID of the file to get
+     * @param filePart The FilePart specification if only requesting parts of a file
+     * @param uploadUrl The URL to upload the file to
+     * @param eventHandler The EventHandler to handle incoming events
+     * @param auditTrailInformation The audittrail information for the contributors
+     * @throws NegativeResponseException in case the operation fails
      */
     public void getFileFromFastestPillar(
             String collectionId,
@@ -65,7 +72,15 @@ public class BlockingGetFileClient {
     }
 
     /**
-     * @see GetFileClient#getFileFromFastestPillar
+     * @see GetFileClient#getFileFromSpecificPillar
+     * @param collectionId The ID of the collection
+     * @param fileID The ID of the file to get
+     * @param filePart The FilePart specification if only requesting parts of a file
+     * @param uploadUrl The URL to upload the file to
+     * @param pillarId The ID of the specific pillar to get the file from
+     * @param eventHandler The EventHandler to handle incoming events
+     * @param auditTrailInformation The audittrail information for the contributors
+     * @throws NegativeResponseException in case the operation fails
      */
     public void getFileFromSpecificPillar(
             String collectionId,

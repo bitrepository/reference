@@ -50,6 +50,15 @@ public class BlockingPutFileClient {
      * org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE, org.bitrepository.client.eventhandler.EventHandler,
      * String)} method.
      *
+     * @param collectionID The ID of the collection
+     * @param url The url to where the file being put can be retrieved 
+     * @param fileId The ID of the file
+     * @param sizeOfFile [OPTIONAL] the size of the file
+     * @param checksumForValidationAtPillar The checksum data of the file for pillar side validation
+     * @param checksumRequestsForValidation The checksum request for the pillar to deliver
+     * @param eventHandler The {@link EventHandler} to handle incoming events 
+     * @param auditTrailInformation The audittrail information for the pillars
+     * @return The list of {@link ContributorEvent}s received during the operation
      * @throws OperationFailedException The operation didn't complete successfully.
      */
     public List<ContributorEvent> putFile(

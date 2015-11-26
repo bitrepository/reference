@@ -79,6 +79,7 @@ public interface OutputHandler {
     
     /**
      * To set or unset if the output handler should behave verbosely or not. 
+     * @param verbose The verbosity setting
      */
     void setVerbosity(boolean verbose);
 }

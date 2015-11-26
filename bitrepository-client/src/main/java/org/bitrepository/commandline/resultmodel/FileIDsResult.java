@@ -46,6 +46,7 @@ public class FileIDsResult {
     
     /**
      * Updates the filesize of the file, if the filesize does not match, mark it as a unknown  
+     * @param updateSize The file size to update with
      */
     public void updateSize(BigInteger updateSize) {
         if(updateSize != null) {
@@ -67,6 +68,7 @@ public class FileIDsResult {
     
     /**
      * Add a contributor to the list of contributors 
+     * @param contributor The contributor to add
      */
     public void addContributor(String contributor) {
         if(!contributors.contains(contributor)) {

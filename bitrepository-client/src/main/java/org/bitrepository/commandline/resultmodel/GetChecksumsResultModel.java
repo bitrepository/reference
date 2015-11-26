@@ -95,7 +95,7 @@ public class GetChecksumsResultModel {
     /**
      * Get the collection of completed results (results from which all expected contributors 
      * delivered their part), the call is NOT idempotent. 
-     * @return Collection<ChecksumResult> 
+     * @return The collection of {@link ChecksumResult}s 
      */    
     public Collection<ChecksumResult> getCompletedResults() {
         List<ChecksumResult> completed = completeResults;
@@ -111,7 +111,7 @@ public class GetChecksumsResultModel {
     /**
      * Get the collection of uncompleted results (the results which does not have had contributions 
      * from all expected contributors)
-     * @return Collection<ChecksumResult> 
+     * @return The collection of {@link ChecksumResult}s  
      */    
     public Collection<ChecksumResult> getUncompletedResults() {
         return uncompleteResults.values();

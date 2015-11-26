@@ -45,11 +45,15 @@ public class GetFileIDsConversationContext extends ConversationContext {
      * @param contributorQueries See {@link org.bitrepository.access.getfileids.GetFileIDsClient} for details.
      * @param fileID The ID of the file to get
      * @param urlForResult See {@link org.bitrepository.access.getfileids.GetFileIDsClient} for details.
+     * @param settings The settings for the context
+     * @param messageSender MessageSender to send messages
+     * @param clientID The ID of the client
+     * @param contributors The expected contributors
+     * @param eventHandler EventHandler to handle incoming events
      */
     public GetFileIDsConversationContext(String collectionID, ContributorQuery[] contributorQueries, String fileID,
-                                         URL urlForResult,
-            Settings settings, MessageSender messageSender, String clientID, Collection<String> contributors,
-            EventHandler eventHandler) {
+            URL urlForResult, Settings settings, MessageSender messageSender, String clientID, 
+            Collection<String> contributors, EventHandler eventHandler) {
         super(collectionID, OperationType.GET_FILE_IDS, settings, messageSender, clientID, fileID, contributors,
                 eventHandler, null);
         this.contributorQueries = contributorQueries;

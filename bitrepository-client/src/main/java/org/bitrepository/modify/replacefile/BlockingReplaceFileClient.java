@@ -50,7 +50,18 @@ public class BlockingReplaceFileClient {
      * {@link org.bitrepository.modify.replacefile.ReplaceFileClient#replaceFile
      * (String, String, String, ChecksumDataForFileTYPE, ChecksumSpecTYPE, URL, long, ChecksumDataForFileTYPE,
      * ChecksumSpecTYPE, EventHandler, String)} method.
-     *
+     * @param collectionID The ID of the collection
+     * @param fileId The ID of the file
+     * @param pillarId The ID of the pillar
+     * @param checksumForDeleteAtPillar The checksum data for pillar side verification of the existing file
+     * @param checksumRequestedForDeletedFile The checksum request for the existing file
+     * @param url The url of where to find the replacement file
+     * @param sizeOfNewFile The size of the new file [OPTIONAL]
+     * @param checksumForNewFileValidationAtPillar The checksum data for pillar side verification of the new file
+     * @param checksumRequestsForNewFile The checksum request for the new file
+     * @param eventHandler The {@link EventHandler} to handle incoming events
+     * @param auditTrailInformation The audit trail information for the pillar
+     * @return The list of received {@link ContributorEvent}'s
      * @throws org.bitrepository.common.exceptions.OperationFailedException The operation didn't complete successfully.
      */
     public List<ContributorEvent> replaceFile(

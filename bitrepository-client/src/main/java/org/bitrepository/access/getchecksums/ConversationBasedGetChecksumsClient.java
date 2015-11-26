@@ -53,6 +53,10 @@ public class ConversationBasedGetChecksumsClient extends AbstractClient implemen
 
     /**
      * @see AbstractClient
+     * @param messageBus The MessageBus for communication
+     * @param conversationMediator The ConversationMediator to keep track of conversations
+     * @param settings The Settings
+     * @param clientID The ID of the client
      */
     public ConversationBasedGetChecksumsClient(MessageBus messageBus, ConversationMediator conversationMediator,
                                                Settings settings, String clientID) {

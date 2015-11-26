@@ -47,6 +47,7 @@ public abstract class CompleteEventAwaiter implements EventHandler {
     /**
      * Constructor.
      * @param settings The settings.
+     * @param outputHandler The {@link OutputHandler} for handling outputting results
      */
     public CompleteEventAwaiter(Settings settings, OutputHandler outputHandler) {
         this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()

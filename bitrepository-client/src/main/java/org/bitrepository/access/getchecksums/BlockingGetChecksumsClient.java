@@ -48,16 +48,19 @@ public class BlockingGetChecksumsClient {
 
     /**
      * @see GetChecksumsClient#getChecksums
+     * @param collectionID The ID of the collection
+     * @param contributorQueries The queries for the contributors
+     * @param fileID The ID of the file that the request is about
+     * @param checksumSpec The checksum specification for the file
+     * @param urlForResult The URL to deliver results
+     * @param eventHandler The EventHandler to handle incoming events
+     * @param auditTrailInformation The audittrail information for the components
+     * @return The list of ContributorEvents containing the results
+     * @throws NegativeResponseException in case of the operation fails. 
      */
-    public List<ContributorEvent> getChecksums(
-        String collectionID,
-        ContributorQuery[] contributorQueries,
-        String fileID,
-        ChecksumSpecTYPE checksumSpec,
-        URL urlForResult,
-        EventHandler eventHandler,
-        String auditTrailInformation)
-        throws NegativeResponseException {
+    public List<ContributorEvent> getChecksums(String collectionID, ContributorQuery[] contributorQueries,
+        String fileID, ChecksumSpecTYPE checksumSpec, URL urlForResult, EventHandler eventHandler,
+        String auditTrailInformation) throws NegativeResponseException {
 
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
         client.getChecksums(collectionID, contributorQueries, fileID, checksumSpec, urlForResult, blocker,

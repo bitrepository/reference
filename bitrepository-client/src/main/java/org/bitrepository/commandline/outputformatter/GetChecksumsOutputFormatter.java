@@ -37,6 +37,7 @@ public interface GetChecksumsOutputFormatter {
     
     /**
      * Format and output a result line 
+     * @param results The results to outout
      */
     void formatResult(Collection<ChecksumResult> results);
 }

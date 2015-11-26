@@ -12,8 +12,8 @@ public class GetFileEventHandler extends CompleteEventAwaiter {
 
     /**
      * Constructor.
-     * @param settings
-     * @param outputHandler
+     * @param settings The {@link Settings} 
+     * @param outputHandler The {@link OutputHandler} for handling output
      */
     public GetFileEventHandler(Settings settings, OutputHandler outputHandler) {
         super(settings, outputHandler);

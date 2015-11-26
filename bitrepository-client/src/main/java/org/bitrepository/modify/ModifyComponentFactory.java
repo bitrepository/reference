@@ -63,6 +63,9 @@ public final class ModifyComponentFactory {
 
     /**
      * Method for initialising the PutClient.
+     * @param settings The {@link Settings} for the client
+     * @param securityManager The {@link SecurityManager} for the client
+     * @param clientID The ID of the client
      * @return The configured PutClient.
      */
     public PutFileClient retrievePutClient(Settings settings, SecurityManager securityManager, String clientID) {
@@ -73,7 +76,9 @@ public final class ModifyComponentFactory {
     }
     
     /**
-     * @param settings The settings for the DeleteFileClient.
+     * @param settings The {@link Settings} for the client
+     * @param securityManager The {@link SecurityManager} for the client
+     * @param clientID The ID of the client
      * @return The requested DeleteClient.
      */
     public DeleteFileClient retrieveDeleteFileClient(Settings settings, SecurityManager securityManager, String clientID) {
@@ -84,7 +89,9 @@ public final class ModifyComponentFactory {
     }
         
     /**
-     * @param settings The settings for the DeleteFileClient.
+     * @param settings The {@link Settings} for the client
+     * @param securityManager The {@link SecurityManager} for the client
+     * @param clientID The ID of the client
      * @return The requested DeleteClient.
      */
     public ReplaceFileClient retrieveReplaceFileClient(Settings settings, SecurityManager securityManager, String clientID) {

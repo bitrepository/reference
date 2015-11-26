@@ -46,12 +46,15 @@ public class BlockingDeleteFileClient {
     /**
      * Method for performing a blocking delete file operation.
      *
+     * @param collectionID The ID of the collection
      * @param fileId The id of the file.
      * @param pillarID The id of the pillar to delete the file on.
      * @param checksumForValidationAtPillar The checksum for validating at pillar side.
      * @param checksumRequestsForValidation The checksum for validating at client side.
      * @param eventHandler The EventHandler for the operation.
      * @param auditTrailInformation The audit trail information.
+     * @return The list of {@link ContributorEvent}s received 
+     * @throws OperationFailedException if the operation failed
      */
     public List<ContributorEvent> deleteFile(
             String collectionID,

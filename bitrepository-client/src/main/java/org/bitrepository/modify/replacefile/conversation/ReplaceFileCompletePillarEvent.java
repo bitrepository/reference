@@ -37,9 +37,10 @@ public class ReplaceFileCompletePillarEvent extends ContributorCompleteEvent {
     private final ChecksumDataForFileTYPE newFileChecksum;
     
     /**
+     * @param pillarID The pillar which generated the result
+     * @param collectionID The ID of the collection
      * @param deletedFile The results of the checksum request for the deleted file from the pillar.
      * @param newFile The results of the checksum request for the new file from the pillar.
-     * @param pillarID The pillar which generated the result
      */
     public ReplaceFileCompletePillarEvent(
             String pillarID, String collectionID, ChecksumDataForFileTYPE deletedFile, ChecksumDataForFileTYPE newFile) {

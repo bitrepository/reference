@@ -36,7 +36,8 @@ public interface GetFileIDsOutputFormatter {
     void formatHeader();
     
     /**
-     * Format and output a result line 
+     * Format and output a result line
+     * @param results The results to format 
      */
     void formatResult(Collection<FileIDsResult> results);
 }

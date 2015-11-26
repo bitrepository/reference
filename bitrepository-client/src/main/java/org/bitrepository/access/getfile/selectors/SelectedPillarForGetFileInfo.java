@@ -35,6 +35,9 @@ public class SelectedPillarForGetFileInfo extends SelectedComponentInfo {
     /** 
      * Delegates to SelectedPillarInfo construct.
      * @see #getTimeToDeliver() 
+     * @param pillarID The ID of the pillar
+     * @param pillarTopic The pillar specific topic
+     * @param timeToDeliver The time the pillar is to start delivery
      */
     public SelectedPillarForGetFileInfo(String pillarID, String pillarTopic, TimeMeasureTYPE timeToDeliver) {
         super(pillarID, pillarTopic);

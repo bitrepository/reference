@@ -34,6 +34,8 @@ public interface AuditTrailIdentificator extends BitrepositoryClient {
     /**
      * Returns the contributors currently available. A identify contributors request is used to lookup the contributors 
      * each time this method is called.
+     * @param eventHandler The EventHandler to handle incoming events
+     * @param auditTrailInformation The audittrail information to the components
      */
     void getAvailableContributors(EventHandler eventHandler, String auditTrailInformation);
 }

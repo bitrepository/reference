@@ -54,7 +54,7 @@ public interface ReplaceFileClient extends BitrepositoryClient {
      * client-side validation.
      * @param eventHandler [OPTIONAL] The handler which should receive notifications of the events occurring in 
      * connection with the pillar communication. This is allowed to be null.
-     * In a good case scenario this will give the events: <br/> 
+     * In a good case scenario this will give the events: <p> 
      * IdentifyPillarsRequestSent, PillarIdentified, PillarSelected, RequestSent, Progress, PillarComplete, Complete
      * @param auditTrailInformation The audit information for the given operation. E.g. who is behind the operation 
      * call.

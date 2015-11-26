@@ -64,14 +64,15 @@ public class ChecksumResult {
     
     /**
      * Get the list of contributors. 
-     * @return Set<String>, the set of contributors which have delivered a checksum 
+     * @return the set of contributors which have delivered a checksum 
      */
     public List<String> getContributors() {
         return new ArrayList<String>(pillarChecksumMap.keySet());
     }
     
     /**
-     * Get the checksum from a given contributor 
+     * @param contributor The contributor to get the checksum for
+     * @return the checksum from a given contributor
      */
     public String getChecksum(String contributor) {
         return pillarChecksumMap.get(contributor);

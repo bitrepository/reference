@@ -79,7 +79,7 @@ public abstract class PagingEventHandler implements EventHandler {
     
     /**
      * Gets the list of pillars who's latest result was partial, i.e. the pillars that needs to deliver more results
-     * @return List<String>, the list of pillarIDs.  
+     * @return the list of pillarIDs.  
      */
     public List<String> getPillarsWithPartialResults() {
         return pillarsWithPartialResults;

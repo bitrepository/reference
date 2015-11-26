@@ -94,7 +94,7 @@ public class GetFileIDsResultModel {
     /**
      * Get the collection of completed results (results from which all expected contributors 
      * delivered their part), the call is NOT idempotent. 
-     * @return Collection<FileIDsResult> 
+     * @return the collection of {@link FileIDsResult}s 
      */    
     public Collection<FileIDsResult> getCompletedResults() {
         List<FileIDsResult> completed = completeResults;
@@ -110,7 +110,7 @@ public class GetFileIDsResultModel {
     /**
      * Get the collection of uncompleted results (the results which does not have had contributions 
      * from all expected contributors)
-     * @return Collection<FileIDsResult> 
+     * @return the collection of {@link FileIDsResult} 
      */    
     public Collection<FileIDsResult> getUncompletedResults() {
         return uncompleteResults.values();

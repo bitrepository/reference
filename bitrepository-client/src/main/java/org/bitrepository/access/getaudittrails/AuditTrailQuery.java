@@ -35,11 +35,11 @@ public class AuditTrailQuery extends ContributorQuery {
 
     /**
      * Queries for all Audit Trails with sequence number between minSequenceNumber and maxSequenceNumber.
+     * @param componentID The ID of the component to query.
      * @param minSequenceNumber Only return audit trail event with sequence number higher than <code>minSequenceNumber</code>.
      * @param maxSequenceNumber Only return audit trail event with sequence number lower than <code>maxSequenceNumber</code>.
-     * param maxNumberOfResults If set will limit the number of results returned. If the result set is limited, only
+     * @param maxNumberOfResults If set will limit the number of results returned. If the result set is limited, only
      * the lowest sequence numbers are returned
-     * @param componentID The ID of the component to query.
      */
     public AuditTrailQuery(String componentID, Long minSequenceNumber, Long maxSequenceNumber,
                            Integer maxNumberOfResults) {
@@ -53,14 +53,16 @@ public class AuditTrailQuery extends ContributorQuery {
     }
 
     /**
-     * @see AuditTrailQuery#AuditTrailQuery(String, Integer, Integer, Integer)
+     * @see AuditTrailQuery#AuditTrailQuery(String, Long, Long, Integer)
+     * @return the minimum sequence number
      */
     public Long getMinSequenceNumber() {
         return minSequenceNumber;
     }
 
     /**
-     * @see AuditTrailQuery#AuditTrailQuery(String, Integer, Integer, Integer)
+     * @see AuditTrailQuery#AuditTrailQuery(String, Long, Long, Integer)
+     * @return the maximum sequence number
      */
     public Long getMaxSequenceNumber() {
         return maxSequenceNumber;

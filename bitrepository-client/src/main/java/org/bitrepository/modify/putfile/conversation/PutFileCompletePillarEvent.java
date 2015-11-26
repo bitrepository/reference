@@ -35,8 +35,9 @@ public class PutFileCompletePillarEvent extends ContributorCompleteEvent {
     private final ChecksumDataForFileTYPE result;
     
     /**
-     * @param result The result returned by the pillar.
      * @param pillarID The pillar which generated the result
+     * @param collectionID The ID of the collection
+     * @param result The result returned by the pillar.
      */
     public PutFileCompletePillarEvent(String pillarID, String collectionID, ChecksumDataForFileTYPE result) {
         super(pillarID, collectionID);

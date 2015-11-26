@@ -44,13 +44,17 @@ public class BlockingAuditTrailClient {
 
     /**
      * @see AuditTrailClient#getAuditTrails
+     * @param collectionID The ID of the collection
+     * @param componentQueries The queries for the different components
+     * @param fileID The ID of the file
+     * @param urlForResult The address for results delivered via url (may be null)
+     * @param eventHandler The EventHandler for handling incoming events
+     * @param auditTrailInformation The audit trail information to send to the components
+     * @return The list of contributor events containing the received results
+     * @throws NegativeResponseException if the operation fails
      */
-    public List<ContributorEvent> getAuditTrails(
-            String collectionID,
-            AuditTrailQuery[] componentQueries,
-            String fileID,
-            String urlForResult,
-            EventHandler eventHandler, String auditTrailInformation)
+    public List<ContributorEvent> getAuditTrails(String collectionID, AuditTrailQuery[] componentQueries,
+            String fileID, String urlForResult, EventHandler eventHandler, String auditTrailInformation)
             throws NegativeResponseException {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
         client.getAuditTrails(collectionID, componentQueries, fileID, urlForResult, blocker, auditTrailInformation);

@@ -39,22 +39,37 @@ public class AuditTrailConversationContext extends ConversationContext {
 
     /**
      * Extends the {@link ConversationContext} constructor with {@link org.bitrepository.access.getaudittrails.AuditTrailClient} specific parameters
+     * @param collectionID The ID of the collection
+     * @param componentQueries The queries for the components
+     * @param fileID The fileID
+     * @param urlForResult The address to deliver results if delivery is requested by url
+     * @param settings The settings
+     * @param messageSender The MessageSender to send messages with
+     * @param clientID The ID of the client
+     * @param contributors The contributors in the conversation
+     * @param eventHandler The EventHandler handling incoming events
+     * @param auditTrailInformation Audit trail information for the components 
      */
     public AuditTrailConversationContext(
             String collectionID, AuditTrailQuery[] componentQueries, String fileID, String urlForResult,
-            Settings settings,
-            MessageSender messageSender, String clientID, Collection<String> contributors, EventHandler eventHandler,
-            String auditTrailInformation) {
+            Settings settings, MessageSender messageSender, String clientID, Collection<String> contributors, 
+            EventHandler eventHandler, String auditTrailInformation) {
         super(collectionID, OperationType.GET_AUDIT_TRAILS, settings, messageSender, clientID, fileID,
                 contributors, eventHandler, auditTrailInformation);
         this.componentQueries = componentQueries;
         this.urlForResult = urlForResult;
     }
 
+    /**
+     * @return The component queries 
+     */
     public AuditTrailQuery[] getComponentQueries() {
         return componentQueries;
     }
 
+    /**
+     * @return The URL for delivery of results  
+     */
     public String getUrlForResult() {
         return urlForResult;
     }

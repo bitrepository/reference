@@ -16,8 +16,9 @@ public class PutFileEventHandler extends CompleteEventAwaiter {
     
     /**
      * Constructor.
-     * @param settings
-     * @param outputHandler
+     * @param settings The {@link Settings}
+     * @param outputHandler The {@link OutputHandler} for handling output
+     * @param printOutput Setting for determining if output should be printet
      */
     public PutFileEventHandler(Settings settings, OutputHandler outputHandler, boolean printOutput) {
         super(settings, outputHandler);
