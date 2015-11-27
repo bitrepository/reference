@@ -52,8 +52,8 @@ public final class MessageBusManager {
     private MessageBusManager() {}
 
     /**
-     * @param settings
-     * @param securityManager
+     * @param settings the message bus settings
+     * @param securityManager the security manager
      * @return A the default message bus instance based on the supplied configuration. If the default message bus
      * doesn't already exist, it is created.
      */
@@ -67,8 +67,7 @@ public final class MessageBusManager {
     }
 
     /**
-     * Returns a messagebus for the given collection if it exists, else null.
-     * @return
+     * @return a messagebus for the given collection if it exists, else null.
      */
     public synchronized static MessageBus getMessageBus() {
         return messageBusMap.get(DEFAULT_MESSAGE_BUS);
@@ -83,7 +82,7 @@ public final class MessageBusManager {
 
     /**
      * Can be used to inject a custom messageBus for a specific name.
-     * @param name
+     * @param name a specific name
      * @param messageBus The custom instance of the messagebus.
      */
     public static void injectCustomMessageBus(String name, MessageBus messageBus) {

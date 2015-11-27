@@ -108,8 +108,8 @@ public class RequestToOperationPermissionMapper {
     }
 
     /**
-     * Get the required permission for the given operation type (bitrepository message request type)
      * @param operationType the operationtype
+     * @return the required permission for the given operation type (bitrepository message request type)
      * @throws UnregisteredPermissionException if no permissions have been registered for this operationType
      */
     public List<Operation> getRequiredPermissions(String operationType) throws UnregisteredPermissionException {

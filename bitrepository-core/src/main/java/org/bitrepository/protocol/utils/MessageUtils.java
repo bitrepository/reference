@@ -76,8 +76,9 @@ public class MessageUtils {
     }
 
     /**
-     * Tells whether the supplied message can be considered a end response for a primitive, eg. ends a serie of
+     * @return  whether the supplied message can be considered a end response for a primitive, eg. ends a serie of
      * identify or operation responses.
+     * @param response the supplied message
      */
     public static boolean isEndMessageForPrimitive(MessageResponse response) {
         ResponseCode responseCode = response.getResponseInfo().getResponseCode();

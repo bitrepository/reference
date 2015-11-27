@@ -59,6 +59,7 @@ public class ReceivedMessageHandler {
         /**
          * @param listener The MessageListener to handle the message.
          * @param message The message to be handled by the MessageListener.
+         * @param messageContext the message context
          */
         MessageProcessor(MessageListener listener, Message message, MessageContext messageContext) {
             this.listener = listener;
@@ -82,6 +83,7 @@ public class ReceivedMessageHandler {
 
         /**
          * Creates the different executor services based on the supplied configuration.
+         * @param messageThreadPools the thread pools of the message system
          */
         ExecutorModel(MessageThreadPools messageThreadPools) {
             if (messageThreadPools != null) {

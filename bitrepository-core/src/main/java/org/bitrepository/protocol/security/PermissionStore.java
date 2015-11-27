@@ -155,7 +155,8 @@ public class PermissionStore {
     }
 
     /**
-     * Returns the store fingerprint for the signers certificate.
+     * @return  the store fingerprint for the signers certificate.
+     * @param signer the id of the signer
      * @throws UnregisteredPermissionException No finger print could be found for the indicated signer.
      */
     public String getCertificateFingerprint(SignerId signer) throws UnregisteredPermissionException {
@@ -170,7 +171,9 @@ public class PermissionStore {
 
     /**
      * Check to see if a certificate has the specified permission. The certificate is identified based 
-     * on the SignerId of the signature. 
+     * on the SignerId of the signature.
+     * @param signer the id of the signer
+     * @param permission the operation to check if is permitted
      * @return true if the requested permission is present for the certificate belonging to the signer, otherwise false.
      * @throws PermissionStoreException in case no certificate and permission set can be found for the provided signer.
      */
@@ -210,6 +213,7 @@ public class PermissionStore {
          * @param certificate the certificate which permissions is to be represented.
          * @param allowedOperations the allowed operations related to the certificate.
          * @param allowedUsers the allowed users of this certificate, if users are not restricted provide null
+         * @throws CertificateEncodingException if the certificate fails to be encoded
          */
         public CertificatePermission(X509Certificate certificate, Collection<Operation> allowedOperations,
                                      Collection<String> allowedUsers) throws CertificateEncodingException {
