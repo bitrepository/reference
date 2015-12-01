@@ -2,6 +2,12 @@ package org.bitrepository.service.database;
 
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 
+/**
+ * DatabaseFactory which knows - based on the driver class - whether to use a Derby or Postgres backend.
+ * @param <T> class
+ */
+// FIXME:  Is tasting on the name of the driver class the right way to detect the database type?
+
 public abstract class DatabaseFactory<T> {
 
     public static final String derbyDriver = "org.apache.derby.jdbc.EmbeddedDriver";

@@ -42,7 +42,7 @@ public class AlarmDatabaseConstants {
     public static final String ALARM_DATE = "alarm_date";
     /** The name of the file id field in the alarm table.*/
     public static final String ALARM_FILE_ID = "file_id";
-    /** The name of the collection id field in the alarm table */
+    /** The name of the collection id field in the alarm table. */
     public static final String ALARM_COLLECTION_ID = "collection_id";
     
     /** The name of the component table.*/
@@ -54,6 +54,6 @@ public class AlarmDatabaseConstants {
     
     /** The name of the version table entry for the alarm table.*/
     public final static String ALARM_TABLE_VERSION_ENTRY = "alarm";
-    /** The name of the version table entry for the database */
+    /** The name of the version table entry for the database. */
     public final static String ALARM_DATABASE_VERSION_ENTRY = "alarmservicedb";
 }

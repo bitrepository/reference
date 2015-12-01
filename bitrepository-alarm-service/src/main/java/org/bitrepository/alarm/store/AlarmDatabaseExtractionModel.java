@@ -21,19 +21,19 @@
  */
 package org.bitrepository.alarm.store;
 
-import java.util.Date;
-
 import org.bitrepository.bitrepositoryelements.AlarmCode;
+
+import java.util.Date;
 
 /**
  * Container for the extraction of data from the alarm database.
  */
 public class AlarmDatabaseExtractionModel {
 
-    /** @see #getComponentId()  */
+    /** @see #getComponentId().  */
     private String componentId;
 
-    /** @see #getAlarmCode()  */
+    /** @see #getAlarmCode().  */
     private AlarmCode alarmCode;
 
     /** @see #getStartDate(). */
@@ -42,10 +42,10 @@ public class AlarmDatabaseExtractionModel {
     /** @see #getEndDate(). */
     private Date endDate;
 
-    /** @see #getFileID() . */
+    /** @see #getFileID(). . */
     private String fileID;
 
-    /** @see #getMaxCount() */
+    /** @see #getMaxCount(). */
     private int maxCount;
 
     /** @see #getAscending().*/
@@ -82,14 +82,15 @@ public class AlarmDatabaseExtractionModel {
         }
     }
     
-    /**
-     * @return The componentId;
+    /** Returns the id to identify this component.
+     * @return The componentId
      */
     public String getComponentId() {
         return componentId;
     }
     
     /**
+     * Sets the id to identify this component.
      * @see #getComponentId();
      * @param componentId The new component id.
      */
@@ -98,7 +99,8 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @return The alarmCode;
+     * Returns the alarm code.
+     * @return The alarmCode
      */
     public AlarmCode getAlarmCode() {
         return alarmCode;
@@ -113,6 +115,7 @@ public class AlarmDatabaseExtractionModel {
     }
    
     /**
+     * Return the starting date for this alarm.
      * @return The startDate;
      */
     public Date getStartDate() {
@@ -128,6 +131,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
+     * Returns the end date for the alarm.
      * @return The endDate;
      */
     public Date getEndDate() {
@@ -135,6 +139,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
+     * Sets the end date for the alarm.
      * @see #getEndDate();
      * @param endDate The endDate.
      */
@@ -143,6 +148,8 @@ public class AlarmDatabaseExtractionModel {
     }    
     
     /**
+     * Returns the file id for this alarm.
+     *
      * @return The fileID;
      */
     public String getFileID() {
@@ -158,6 +165,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
+     * Return the maximum count possible.
      * @return The maxCount;
      */
     public Integer getMaxCount() {

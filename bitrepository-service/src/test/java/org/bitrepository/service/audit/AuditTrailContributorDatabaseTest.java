@@ -33,6 +33,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+/** Run audit trail contributor database test using Derby.  Generates jaccept reports. */
+
 public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
     private Settings settings;
     private DatabaseSpecifics databaseSpecifics;
@@ -197,6 +199,10 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         
         dm.getConnector().destroy();
     }
+
+    /**
+     * Helper class which knows how to create a Derby database with an enclosed script.
+     */
 
     private class TestAuditTrailContributorDBCreator extends DatabaseCreator {
         public static final String DEFAULT_AUDIT_TRAIL_DB_SCRIPT = "sql/derby/auditContributorDBCreation.sql";

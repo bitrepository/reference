@@ -4,6 +4,11 @@ import org.bitrepository.service.database.DatabaseFactory;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 
+/**
+ * A DatabaseFactory which can return Derby and Postgres AuditTrailContributerDAO's.
+ *
+ * FIXME: Code does not reflect generic type.
+ */
 public class AuditTrailContributerDAOFactory extends DatabaseFactory<AuditTrailContributerDAO> {
 
     public AuditTrailContributerDAO getAuditTrailContributorDAO(DatabaseSpecifics ds, String componentID) {

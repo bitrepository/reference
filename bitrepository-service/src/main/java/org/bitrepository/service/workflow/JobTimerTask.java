@@ -45,8 +45,10 @@ public class JobTimerTask extends TimerTask {
 
     /**
      * Initialise trigger.
-     * @param interval The interval between triggering events in milliseconds.
-     * @param job:  The job.
+     *
+     * @param interval     The interval between triggering events in milliseconds.
+     * @param job          The job.
+     * @param jobListeners eventlisteners for this job.
      */
     public JobTimerTask(long interval, SchedulableJob job, List<JobEventListener> jobListeners) {
         this.interval = interval;

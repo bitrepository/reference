@@ -22,6 +22,8 @@
 
 package org.bitrepository.service.database;
 
+import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,8 +34,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
-
+/**
+ * DatabaseMaintainer knows how to connect to a database and run scripts against it.
+ */
 public class DatabaseMaintainer {
 
     /**
@@ -72,7 +75,7 @@ public class DatabaseMaintainer {
     
     /**
      *
-     * Run the script
+     * Run the script given.
      * @param connection the database connection
      * @param scriptName the name of the script
      * @throws IOException if the script could not be read

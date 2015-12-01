@@ -385,13 +385,16 @@ public class DatabaseUtils {
 
         return s;
     }
-    
+
     /**
-     * Method for throwing an exception for a failure for executing a statement.
-     * 
-     * @param e The exception for the execution to fail.
+     * Method for throwing an exception for a failure for executing a statement. // FIXME:  CURRENT JAVADOC IS
+     * OUTDATED.
+     *
+     * @param e     The exception for the execution to fail.
      * @param query The SQL query for the statement, which caused the failure.
-     * @param args The arguments for the statement, which caused the failure.
+     * @param args  The arguments for the statement, which caused the failure.
+     * @return IllegalStateException with humanly readable versions of the parameters as the message.  FIXME:  This is
+     * out of sync with the javadoc.
      * @throws IllegalStateException Always, since it is intended for this method to report the failure.
      */
     private static IllegalStateException failedExecutionOfStatement(Throwable e, String query, Object... args) {

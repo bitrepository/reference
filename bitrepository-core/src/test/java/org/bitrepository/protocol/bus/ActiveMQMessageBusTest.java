@@ -1,15 +1,5 @@
 package org.bitrepository.protocol.bus;
 
-import static org.testng.Assert.assertEquals;
-
-import java.util.Arrays;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.TimeUnit;
-
-import javax.jms.Message;
-import javax.jms.MessageListener;
-
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
@@ -18,8 +8,22 @@ import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.testng.annotations.Test;
 
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import java.util.Arrays;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
+
+import static org.testng.Assert.assertEquals;
+
+/**
+ * Runs the GeneralMessageBusTest using a LocalActiveMQBroker (if useEmbeddedMessageBus is true) and a suitable
+ * MessageBus based on settingsForTestClient.  Regression tests utilized that uses JAccept to generate reports.
+ */
+
 public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
-    
+
     @Override
     protected void setupMessageBus() {
         if (useEmbeddedMessageBus() && broker == null) {

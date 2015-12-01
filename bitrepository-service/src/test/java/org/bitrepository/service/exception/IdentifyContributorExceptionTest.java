@@ -26,6 +26,9 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+/**
+ * jaccept steps to validate that the exception thrown is the exception thrown.
+ */
 public class IdentifyContributorExceptionTest extends ExtendedTestCase {
     private final String TEST_COLLECTION_ID = "test-collection-id";
 

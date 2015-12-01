@@ -21,6 +21,8 @@
  */
 package org.bitrepository.service;
 
+/** Provides start() and shutdown() methods. */
+
 public interface LifeCycledService {
     void start();
     

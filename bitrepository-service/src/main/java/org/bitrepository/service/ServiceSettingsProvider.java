@@ -32,6 +32,9 @@ import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
 import org.bitrepository.settings.referencesettings.ServiceType;
 
+/**
+ * A SettingsProvider which knows how to resolve the settings for @see ServiceType.
+ */
 public class ServiceSettingsProvider extends SettingsProvider {
     private final ServiceType serviceType;
 

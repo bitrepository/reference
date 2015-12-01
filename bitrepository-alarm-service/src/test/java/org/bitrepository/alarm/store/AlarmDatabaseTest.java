@@ -21,11 +21,6 @@
  */
 package org.bitrepository.alarm.store;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.common.settings.Settings;
@@ -42,9 +37,17 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TABLE;
 import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_TABLE;
 
+/**
+ * Sees if alarms are correctly stored in the database.
+ */
 public class AlarmDatabaseTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;

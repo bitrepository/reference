@@ -21,15 +21,18 @@
  */
 package org.bitrepository.service.audit;
 
+import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
+import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.common.utils.CalendarUtils;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
-import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.common.utils.CalendarUtils;
-
+/**
+ * MockAuditManager does stuff.
+ */
 public class MockAuditManager implements AuditTrailManager {
 
     List<AuditTrailEvent> events = new ArrayList<AuditTrailEvent>();

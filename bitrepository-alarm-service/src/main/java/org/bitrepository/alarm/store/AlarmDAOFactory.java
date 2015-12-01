@@ -5,7 +5,7 @@ import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 
 /**
- * Factory class for obtaining the appropriate DAO for the specific database backend 
+ * Factory class for obtaining the appropriate DAO for the specific database backend.
  */
 public class AlarmDAOFactory extends DatabaseFactory<AlarmServiceDAO> {
     

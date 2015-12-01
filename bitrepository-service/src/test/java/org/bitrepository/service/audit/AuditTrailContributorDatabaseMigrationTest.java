@@ -21,8 +21,6 @@
  */
 package org.bitrepository.service.audit;
 
-import java.io.File;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.FileUtils;
@@ -35,9 +33,17 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.bitrepository.service.audit.AuditDatabaseConstants.*;
+import java.io.File;
+
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_AUDIT;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.DATABASE_VERSION_ENTRY;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_FILEID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
 import static org.testng.Assert.assertEquals;
 
+/** Test database migration.  Generates jaccept reports.
+ *
+ */
 public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase {
     protected Settings settings;
     
