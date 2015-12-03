@@ -37,14 +37,14 @@
       <version>10.10.1.1</version>
     </dependency>
     <dependency>
-      <groupId>postgresql</groupId>
+      <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>9.2-1002.jdbc4</version>
+      <version>9.4-1206-jdbc42</version>
     </dependency>
     <dependency>
-      <groupId>c3p0</groupId>
+      <groupId>com.mchange</groupId>
       <artifactId>c3p0</artifactId>
-      <version>0.9.1</version>
+      <version>0.9.5.1</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
