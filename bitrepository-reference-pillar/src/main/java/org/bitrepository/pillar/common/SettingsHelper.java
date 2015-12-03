@@ -34,15 +34,15 @@ import org.bitrepository.settings.repositorysettings.Collection;
 public class SettingsHelper {
     /**
      * Calculates the list of pillars
-     * @param pillarID
-     * @param collections
-     * @return
+     * @param pillarID FIXME
+     * @param collections FIXME
+     * @return all pillars in collections with the provided pillarID
      */
     public static String[] getPillarCollections(String pillarID, List<Collection> collections) {
         List<String> relevantCollectionIDs = new ArrayList<String>();
-        for (Collection collection: collections) {
-            for (String pillar:collection.getPillarIDs().getPillarID()) {
-                if(pillarID.equals(pillar)) {
+        for (Collection collection : collections) {
+            for (String pillar : collection.getPillarIDs().getPillarID()) {
+                if (pillarID.equals(pillar)) {
                     relevantCollectionIDs.add(collection.getID());
                     break;
                 }

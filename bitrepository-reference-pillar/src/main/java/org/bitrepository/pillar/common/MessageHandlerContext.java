@@ -37,6 +37,13 @@ public class MessageHandlerContext extends ContributorContext {
 
     /**
      * Delegates to the ContributorContext constructor.
+     *
+     * @param settings           FIXME
+     * @param pillarCollections  FIXME
+     * @param responseDispatcher FIXME
+     * @param alarmDispatcher    FIXME
+     * @param auditTrailManager  FIXME
+     * @param fileExchange       FIXME
      */
     public MessageHandlerContext(Settings settings,
                                  String[] pillarCollections,

@@ -74,11 +74,11 @@ public abstract class StorageModel {
     protected final FileExchange fileExchange;
 
     /**
-     * @param archives The archive with the data.
-     * @param cache The storage for the checksums.
+     * @param archives        The archive with the data.
+     * @param cache           The storage for the checksums.
      * @param alarmDispatcher The alarm dispatcher.
-     * @param settings The configuration to use.
-     * @param fileExchange
+     * @param settings        The configuration to use.
+     * @param fileExchange    FIXME
      */
     protected StorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher,
                            Settings settings, FileExchange fileExchange) {
@@ -150,6 +150,7 @@ public abstract class StorageModel {
      * @param csType The type of checksum.
      * @return The entry for the requested type of checksum for the given file.
      * @return {@link RequestHandlerException} If a non-default checksum is requested from a ChecksumPillar.
+     * @throws RequestHandlerException FIXME
      */
     public ChecksumEntry getChecksumEntryForFile(String fileID, String collectionID, ChecksumSpecTYPE csType)
             throws RequestHandlerException {
@@ -168,6 +169,7 @@ public abstract class StorageModel {
      * @param collectionID The id of the collection of the file.
      * @param csType The type of checksum to calculate.
      * @return The entry encapsulated in the ChecksumDataForFileTYPE data format.
+     * @throws RequestHandlerException FIXME
      */
     public ChecksumDataForFileTYPE getChecksumDataForFile(String fileID, String collectionID, ChecksumSpecTYPE csType)
             throws RequestHandlerException {
@@ -255,13 +257,13 @@ public abstract class StorageModel {
             fileArchive.ensureFileNotInTmpDir(fileID, collectionID);
         }
     }
-    
+
     /**
      * Verifies the handling of a specific checksum algorithm.
-     * 
-     * @param checksumSpec
-     * @param collectionID
-     * @throws RequestHandlerException
+     *
+     * @param checksumSpec FIXME
+     * @param collectionID FIXME
+     * @throws RequestHandlerException FIXME
      */
     public void verifyChecksumAlgorithm(ChecksumSpecTYPE checksumSpec, String collectionID) 
             throws RequestHandlerException{

@@ -177,11 +177,12 @@ public class ChecksumExtractor {
 
     /**
      * Extracts the file ids within the given optional limitations.
-     * 
-     * @param minTimeStamp The minimum date for the timestamp of the extracted file ids.
-     * @param maxTimeStamp The maximum date for the timestamp of the extracted file ids.
+     *
+     * @param minTimeStamp       The minimum date for the timestamp of the extracted file ids.
+     * @param maxTimeStamp       The maximum date for the timestamp of the extracted file ids.
+     * @param fileID             FIXME
      * @param maxNumberOfResults The maximum number of results.
-     * @param collectionID The collection id for the extraction.
+     * @param collectionID       The collection id for the extraction.
      * @return The requested collection of file ids.
      */
     public ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 

@@ -58,10 +58,14 @@ public class PillarMediator extends AbstractContributorMediator {
     protected final MessageHandlerContext context;
 
     protected final StorageModel pillarModel;
-    
+
     /**
      * Constructor.
      * Sets the parameters of this mediator, and adds itself as a listener to the destinations.
+     *
+     * @param messageBus  FIXME
+     * @param context     FIXME
+     * @param pillarModel FIXME
      */
     public PillarMediator(MessageBus messageBus, MessageHandlerContext context, StorageModel pillarModel) {
         super(messageBus);

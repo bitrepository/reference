@@ -62,8 +62,11 @@ public class Pillar {
 
     /**
      * Constructor.
-     * @param messageBus The messagebus for the communication.
-     * @param settings The settings for the pillar.
+     *
+     * @param messageBus  The messagebus for the communication.
+     * @param settings    The settings for the pillar.
+     * @param pillarModel FIXME
+     * @param context     FIXME
      */
     public Pillar(MessageBus messageBus, Settings settings, StorageModel pillarModel, MessageHandlerContext context) {
         ArgumentValidator.checkNotNull(messageBus, "messageBus");

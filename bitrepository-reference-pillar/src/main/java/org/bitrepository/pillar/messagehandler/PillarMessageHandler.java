@@ -53,9 +53,10 @@ public abstract class PillarMessageHandler<T extends MessageRequest> extends Abs
     private final FileIDValidator fileIDValidator;
     /** The model for the pillar.*/
     private final StorageModel pillarModel;
-    
+
     /**
-     * @param context The context to use for message handling.
+     * @param context       The context to use for message handling.
+     * @param fileInfoStore FIXME
      */
     protected PillarMessageHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
         super(context);

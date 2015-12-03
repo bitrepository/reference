@@ -23,34 +23,36 @@
  * #L%
  */
 /**
+ * <p>
  * This package implementes a reference pillar.
- * <p/>
- * The class {@link org.bitrepository.pillar.PillarAPI} provides the basic interface for the reference pillar towards
- * the {@link org.bitrepository.pillar.PillarMessageListener}.
+ * </p><p>
+ * The class @see org.bitrepository.pillar.PillarAPI provides the basic interface for the reference pillar towards
+ * the @see org.bitrepository.pillar.PillarMessageListener.
  * This gives the opportunity for different reference pillar implementations.
- * <p/>
- * The {@link org.bitrepository.pillar.PillarMessageListener} provides the basic interface for receiving the different
+ * </p><p>
+ * The @see org.bitrepository.pillar.PillarMessageListener provides the basic interface for receiving the different
  * message handled by the reference pillar.
- * <p/>
- * The {@link org.bitrepository.pillar.store.filearchive.ReferenceArchive} handles the deposit of the files. 
+ * </p><p>
+ * The @see org.bitrepository.pillar.store.filearchive.ReferenceArchive handles the deposit of the files.
  * When retrieving a file, it is downloaded to the 'tmp' directory, and when the files is completed, then it is moved 
  * to the file directory.
  * If it at some later point is requested to be removed, then it is moved to an 'retain' directory.
- * <p/>
+ * </p><p>
  * The actual implementation of the reference pillar is in the 
- * {@link org.bitrepository.pillar.referencepillar.ReferencePillar} class.
- * <p/>
- * Automatical creation of the response message for the reference pillar is done in the 
- * {@link org.bitrepository.pillar.ReferencePillarMessageFactory} class.
- * <p/>
- * The {@link org.bitrepository.pillar.checksumpillar.ChecksumPillar} is the implementation of the checksum pillar.
+ *  org.bitrepository.pillar.referencepillar.ReferencePillar class.
+ * </p><p>
+ * Automatical creation of the response message for the reference pillar is done in the
+ *  org.bitrepository.pillar.ReferencePillarMessageFactory class.
+ * </p><p>
+ * The @see org.bitrepository.pillar.checksumpillar.ChecksumPillar is the implementation of the checksum pillar.
  * It does not store the files, only their checksums, and it will therefore not be able to handle some parts of the 
  * org.bitrepository.org.bitrepository.protocol.
+ * </p>
  * 
  * <h3>Exceptions</h3>
- * All methods may throw {@link IllegalArgumentException} if parameters are null
+ * All methods may throw IllegalArgumentException if parameters are null
  * or empty strings, and the documentation does not explicitly allow for this.
  * Also, parameter prerequisites described in documentation may result in an
- * {@link IllegalArgumentException} without this being declared.
+ * IllegalArgumentException without this being declared.
  */
 package org.bitrepository.pillar;

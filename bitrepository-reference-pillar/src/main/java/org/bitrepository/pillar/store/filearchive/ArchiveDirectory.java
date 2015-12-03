@@ -54,7 +54,7 @@ public class ArchiveDirectory {
     /** 
      * Constructor. Initialises the file directory. 
      * 
-     * @param dir The directory for this archive.
+     * @param dirName The directory for this archive.
      */
     public ArchiveDirectory(String dirName) {
         ArgumentValidator.checkNotNullOrEmpty(dirName, "String dirName");

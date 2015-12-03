@@ -63,10 +63,11 @@ public class FileStorageModel extends StorageModel {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /**
-     * @param archives The file archives.
-     * @param cache The checksum store.
+     * @param archives        The file archives.
+     * @param cache           The checksum store.
      * @param alarmDispatcher The alarm dispatcher.
-     * @param settings The settings.
+     * @param settings        The settings.
+     * @param fileExchange    FIXME
      */
     public FileStorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher,
             Settings settings, FileExchange fileExchange) {

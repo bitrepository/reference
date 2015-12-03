@@ -91,7 +91,7 @@ public class AlarmDatabaseExtractionModel {
     
     /**
      * Sets the id to identify this component.
-     * @see #getComponentId();
+     * @see #getComponentId()
      * @param componentId The new component id.
      */
     public void setComponentId(String componentId) {
@@ -107,7 +107,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @see #getAlarmCode();
+     * @see #getAlarmCode()
      * @param alarmCode The new alarm code.
      */
     public void setAlarmCode(AlarmCode alarmCode) {
@@ -123,7 +123,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @see #getStartDate();
+     * @see #getStartDate()
      * @param startDate The startDate.
      */
     public void setStartDate(Date startDate) {
@@ -140,7 +140,7 @@ public class AlarmDatabaseExtractionModel {
     
     /**
      * Sets the end date for the alarm.
-     * @see #getEndDate();
+     * @see #getEndDate()
      * @param endDate The endDate.
      */
     public void setEndDate(Date endDate) {
@@ -157,7 +157,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @see #getFileID();
+     * @see #getFileID()
      * @param fileID The new file id.
      */
     public void setFileID(String fileID) {
@@ -173,7 +173,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @see #getMaxCount();
+     * @see #getMaxCount()
      * @param maxCount The new max count.
      */
     public void setMaxCount(Integer maxCount) {
@@ -188,7 +188,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @see #getAscending();
+     * @see #getAscending()
      * @param ascending Whether the results should be ascending (or alternatively descending).
      */
     public void setAscending(boolean ascending) {
@@ -203,7 +203,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @see #getCollectionID();
+     * @see #getCollectionID()
      * @param collectionID The ID of the collection.
      */
     public void setCollectionID(String collectionID) {
