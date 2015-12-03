@@ -64,7 +64,8 @@ public class MonitoringServiceFactory {
     
     /**
      * Set the configuration directory. 
-     * Should only be run at initialization time. 
+     * Should only be run at initialization time.
+     * @param configurationDir FIXME
      */
     public synchronized static void init(String configurationDir) {
         confDir = configurationDir;
@@ -73,7 +74,7 @@ public class MonitoringServiceFactory {
     /**
      * Retrieves the settings from the defined location.
      * @return The settings.
-     * @see {@link Settings}
+     * @see Settings
      */
     public synchronized static Settings getSettings() {
         if(settings == null) {
@@ -94,7 +95,7 @@ public class MonitoringServiceFactory {
      * Instantiated the security manager for the integrity service.
      * @return The security manager.
      * @see #getSettings()
-     * @see {@link BasicSecurityManager}
+     * @see BasicSecurityManager
      */
     public synchronized static BasicSecurityManager getSecurityManager() {
         if(securityManager == null) {
@@ -117,7 +118,7 @@ public class MonitoringServiceFactory {
      * @return The SimpleIntegrityService
      * @see #getSecurityManager()
      * @see #getSettings()
-     * @see {@link MonitoringService}
+     * @see MonitoringService
      */
     public synchronized static MonitoringService getMonitoringService() {
         if(monitoringService == null) {

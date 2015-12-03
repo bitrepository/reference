@@ -54,6 +54,7 @@ public class ComponentStatus {
     
     /**
      * Update the status of a component with the given results.
+     * @param resultingStatus FIXME
      */
     public void updateStatus(ResultingStatus resultingStatus) {
         numberOfMissingReplies = 0;
