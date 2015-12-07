@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @see WorkflowStep {@link WorkflowStep} 
  */
 public abstract class Workflow implements SchedulableJob {
-    /** The jobID */
+    /** The jobID. */
     protected JobID jobID;
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -85,7 +85,8 @@ public abstract class Workflow implements SchedulableJob {
     }
     
     /**
-     * Get the final state of the workflow
+     * Get the final state of the workflow.
+     * @return ABORTED if current state is ABORTED, SUCCEEDED otherwise.
      */
     private WorkflowState getFinishedWorkflowStatus() {
         return (currentState == WorkflowState.ABORTED ? WorkflowState.ABORTED : WorkflowState.SUCCEEDED);

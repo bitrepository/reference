@@ -14,10 +14,16 @@
             <property name="allowMissingJavadoc" value="true"/>
 
         </module>
+        <!--
+        <module name="JavadocPackage"/>
+        -->
         <module name="JavadocType"/>
         <module name="JavadocStyle">
             <property name="checkFirstSentence" value="false"/>
         </module>
 
+        <module name="SummaryJavadocCheck">
+            <property name="forbiddenSummaryFragments" value="^This method returns.*"/>
+        </module>
     </module>
 </module>

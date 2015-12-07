@@ -22,18 +22,25 @@
 
 package org.bitrepository.service.database;
 
-import java.io.File;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+/**
+ * Database destroyer which knows how to tell derby to delete a database.
+ */
+
 public class DerbyDatabaseDestroyer {
     private static final Logger log = LoggerFactory.getLogger(DerbyDatabaseDestroyer.class);
 
-    /** Will delete the database by directly removing the files on disk based on the DB url */
+    /** Will delete the database by directly removing the files on disk based on the DB url
+     * @param databaseSpecifics necessary information to decide which database.
+     * */
     public static void deleteDatabase(DatabaseSpecifics databaseSpecifics) {
         log.info("Removing database: " + databaseSpecifics);
         String dbUrl = databaseSpecifics.getDatabaseURL();

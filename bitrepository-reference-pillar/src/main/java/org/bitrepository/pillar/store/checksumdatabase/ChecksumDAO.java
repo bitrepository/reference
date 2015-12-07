@@ -43,7 +43,7 @@ public class ChecksumDAO implements ChecksumStore {
     
     /**
      * Constructor.
-     * @param settings The settings.
+     * @param databaseManager FIXME
      */
     public ChecksumDAO(DatabaseManager databaseManager) {
         synchronized(this) {

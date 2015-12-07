@@ -29,6 +29,9 @@ import org.bitrepository.settings.referencesettings.ServiceType;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+/**
+ * jaccept report generating test of whether ServiceSettingsProvider actually <i>knows</i> the enum ServiceType.
+ */
 public class ServiceSettingsProviderTest {
 
     private static final String PATH_TO_TEST_SETTINGS = "settings/xml/bitrepository-devel";

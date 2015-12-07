@@ -56,12 +56,14 @@ public interface SchedulableJob {
     String getDescription();
     
     /**
-     *  @return Provides an ID to identify the SchedulableJob on
+     *  @return Provides an ID to identify the SchedulableJob on.
      */
     JobID getJobID();
 
     /**
      * Initializes a SchedulableJob with a context and a collection to run the SchedulableJob on.
+     * @param context workflow context.
+     * @param collectionID collection id.
      */
     void initialise(WorkflowContext context, String collectionID);
 }

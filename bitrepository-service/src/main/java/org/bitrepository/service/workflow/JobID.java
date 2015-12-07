@@ -22,7 +22,7 @@
 package org.bitrepository.service.workflow;
 
 /**
- * Class to identify a workflow instance, based on the collection it belongs to and the workflow name/type 
+ * Class to identify a workflow instance, based on the collection it belongs to and the workflow name/type.
  */
 public class JobID {
     private final String collectionID;

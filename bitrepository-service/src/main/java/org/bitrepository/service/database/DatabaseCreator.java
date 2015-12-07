@@ -29,6 +29,10 @@ import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * DatabaseCreator is a DatabaseMaintainer which knows how to create a database from a given script.
+ */
+
 public class DatabaseCreator extends DatabaseMaintainer {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -37,6 +41,7 @@ public class DatabaseCreator extends DatabaseMaintainer {
      * @param scriptName The name of the script including path as part of the
      * classpath.
      * @param databaseSpecifics Specifies where to create the database.
+     *
      */
     protected void createDatabase(DatabaseSpecifics databaseSpecifics, String scriptName) {
         DatabaseSpecifics databaseCreationSpecifics = updateDatabaseSpecificsForDBCreation(databaseSpecifics);
@@ -51,6 +56,9 @@ public class DatabaseCreator extends DatabaseMaintainer {
 
     /**
      * Appends the specified database url with <code>;create=true</code> to allow creation of the database.
+     *
+     * @param databaseSpecifics Specifies where to create the database.
+     * @return DatabaseSpecifics instance with ";create=true" added (Derby specific).
      */
     private static DatabaseSpecifics updateDatabaseSpecificsForDBCreation(DatabaseSpecifics databaseSpecifics) {
         DatabaseSpecifics newDatabaseSpecifics = new DatabaseSpecifics();

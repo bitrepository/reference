@@ -116,11 +116,13 @@ public class ReferenceArchive {
 
     /**
      * Creates a file from the data in the inputstream.
-     * The file will be placed in the temporary directory, and requires validation before it can be moved to the 
+     * The file will be placed in the temporary directory, and requires validation before it can be moved to the
      * file archive.
-     * @param fileID The id of the file to create.
+     *
+     * @param fileID      The id of the file to create.
      * @param inputStream The inputstream to extract the content of the file from.
      * @return The file, which should be validated.
+     * @throws IOException FIXME
      */
     public File downloadFileForValidation(String fileID, InputStream inputStream) throws IOException {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");

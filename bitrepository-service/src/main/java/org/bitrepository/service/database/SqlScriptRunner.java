@@ -21,6 +21,9 @@
  */
 package org.bitrepository.service.database;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.Reader;
@@ -29,9 +32,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Runs a sql script as a sequence of JDBC statements.
@@ -68,7 +68,7 @@ public class SqlScriptRunner {
 
     /**
      * @param delimiter The statement delimiter, eg. ';' for mysql.
-     * @param fullLineDelimiter <code>true</code> if the delimiter used to distinguise between lines.
+     * @param fullLineDelimiter <code>true</code> if the delimiter used to distinguish between lines.
      */
     public void setDelimiter(String delimiter, boolean fullLineDelimiter) {
         this.delimiter = delimiter;
@@ -76,7 +76,7 @@ public class SqlScriptRunner {
     }
 
     /**
-     * Runs an SQL script (read in using the Reader parameter)
+     * Runs an SQL script (read in using the Reader parameter).
      *
      * @param reader the source of the script
      * @throws RuntimeException if the script could not be run for any reason
@@ -95,13 +95,19 @@ public class SqlScriptRunner {
     }
 
     /**
-     * Runs an SQL script (read in using the Reader parameter) using the
-     * connection passed in
+     * <p>
+     * Runs an SQL script (read in using the Reader parameter) using the connection passed in.  Lines starting with
+     * <code>--</code> or <code>//</code> are ignored, as well as empty lines. Lines containing "connect" are ignored as
+     * the connection is made in the supplied connection.  The delimiter set determines when a multi line statement is
+     * completely parsed and ready to submit to the database.  If stopOnError is set any SQLException is not caught,
+     * otherwise it is just logged locally.</p>
      *
-     * @param conn the connection to use for the script.
+     * <p>The ResultSet for each statement is logged as a tabulator separated multi-line string.</p>
+     *
+     * @param conn   the connection to use for the script.
      * @param reader the source of the script.
      * @throws SQLException if any SQL errors occur.
-     * @throws IOException if there is an error reading from the Reader.
+     * @throws IOException  if there is an error reading from the Reader.
      */
     private void runScript(Connection conn, Reader reader) throws IOException, SQLException {
         StringBuffer command = null;

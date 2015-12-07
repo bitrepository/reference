@@ -21,19 +21,19 @@
  */
 package org.bitrepository.alarm.store;
 
-import java.util.Date;
-
 import org.bitrepository.bitrepositoryelements.AlarmCode;
+
+import java.util.Date;
 
 /**
  * Container for the extraction of data from the alarm database.
  */
 public class AlarmDatabaseExtractionModel {
 
-    /** @see #getComponentId()  */
+    /** @see #getComponentId().  */
     private String componentId;
 
-    /** @see #getAlarmCode()  */
+    /** @see #getAlarmCode().  */
     private AlarmCode alarmCode;
 
     /** @see #getStartDate(). */
@@ -42,10 +42,10 @@ public class AlarmDatabaseExtractionModel {
     /** @see #getEndDate(). */
     private Date endDate;
 
-    /** @see #getFileID() . */
+    /** @see #getFileID(). . */
     private String fileID;
 
-    /** @see #getMaxCount() */
+    /** @see #getMaxCount(). */
     private int maxCount;
 
     /** @see #getAscending().*/
@@ -82,15 +82,16 @@ public class AlarmDatabaseExtractionModel {
         }
     }
     
-    /**
-     * @return The componentId;
+    /** Returns the id to identify this component.
+     * @return The componentId
      */
     public String getComponentId() {
         return componentId;
     }
     
     /**
-     * @see #getComponentId();
+     * Sets the id to identify this component.
+     * @see #getComponentId()
      * @param componentId The new component id.
      */
     public void setComponentId(String componentId) {
@@ -98,14 +99,15 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @return The alarmCode;
+     * Returns the alarm code.
+     * @return The alarmCode
      */
     public AlarmCode getAlarmCode() {
         return alarmCode;
     }
     
     /**
-     * @see #getAlarmCode();
+     * @see #getAlarmCode()
      * @param alarmCode The new alarm code.
      */
     public void setAlarmCode(AlarmCode alarmCode) {
@@ -113,6 +115,7 @@ public class AlarmDatabaseExtractionModel {
     }
    
     /**
+     * Return the starting date for this alarm.
      * @return The startDate;
      */
     public Date getStartDate() {
@@ -120,7 +123,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @see #getStartDate();
+     * @see #getStartDate()
      * @param startDate The startDate.
      */
     public void setStartDate(Date startDate) {
@@ -128,6 +131,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
+     * Returns the end date for the alarm.
      * @return The endDate;
      */
     public Date getEndDate() {
@@ -135,7 +139,8 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @see #getEndDate();
+     * Sets the end date for the alarm.
+     * @see #getEndDate()
      * @param endDate The endDate.
      */
     public void setEndDate(Date endDate) {
@@ -143,6 +148,8 @@ public class AlarmDatabaseExtractionModel {
     }    
     
     /**
+     * Returns the file id for this alarm.
+     *
      * @return The fileID;
      */
     public String getFileID() {
@@ -150,7 +157,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @see #getFileID();
+     * @see #getFileID()
      * @param fileID The new file id.
      */
     public void setFileID(String fileID) {
@@ -158,6 +165,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
+     * Return the maximum count possible.
      * @return The maxCount;
      */
     public Integer getMaxCount() {
@@ -165,7 +173,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @see #getMaxCount();
+     * @see #getMaxCount()
      * @param maxCount The new max count.
      */
     public void setMaxCount(Integer maxCount) {
@@ -180,7 +188,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @see #getAscending();
+     * @see #getAscending()
      * @param ascending Whether the results should be ascending (or alternatively descending).
      */
     public void setAscending(boolean ascending) {
@@ -195,7 +203,7 @@ public class AlarmDatabaseExtractionModel {
     }
     
     /**
-     * @see #getCollectionID();
+     * @see #getCollectionID()
      * @param collectionID The ID of the collection.
      */
     public void setCollectionID(String collectionID) {

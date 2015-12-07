@@ -42,11 +42,12 @@ public class BasicMonitoringServiceAlerter extends AlarmDispatcher implements Mo
     private final StatusStore statusStore;
     /** The maximum number of missing replies before an alarm is dispatched.*/
     private final BigInteger maxRetries;
-    
+
     /**
+     * @param settings    FIXME
      * @param statusStore The store for the status results from the components.
-     * @param sender Used for sending the alarms.
-     * @param alarmLevel Only send alarms at this alarms level or higher.
+     * @param sender      Used for sending the alarms.
+     * @param alarmLevel  Only send alarms at this alarms level or higher.
      * @param statusStore Used to maintain the status of the components.
      */
     public BasicMonitoringServiceAlerter(

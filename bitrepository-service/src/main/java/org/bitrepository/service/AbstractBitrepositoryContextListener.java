@@ -21,12 +21,12 @@
  */
 package org.bitrepository.service;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
 import org.bitrepository.protocol.utils.LogbackConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 /**
  * The Listener has two intentions
@@ -39,25 +39,25 @@ public abstract class AbstractBitrepositoryContextListener implements ServletCon
     private final Logger log = LoggerFactory.getLogger(getClass());
         
     /**
-     * Return the path to the service's configuration directory
+     * Return the path to the service's configuration directory.
      * @return the path to the service's configuration directory
      */
     public abstract String getSettingsParameter();
     
     /**
-     * Method to get an instance of the service for the context
+     * Method to get an instance of the service for the context.
      * @return an instance of the service for the context
      */
     public abstract LifeCycledService getService();
     
     /**
-     * Sets up the configuration
+     * Sets up the configuration.
      * @param configurationDir the configuration dir
      */
     public abstract void initialize(String configurationDir);
     
     /**
-     * Method called at servlet initialization
+     * Method called at servlet initialization.
      * @param sce the servlet context event for the initialization
      */
     public void contextInitialized(ServletContextEvent sce) {

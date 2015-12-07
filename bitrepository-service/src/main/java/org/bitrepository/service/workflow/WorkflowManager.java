@@ -33,6 +33,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+/**
+ * WorkflowManager manages one or more workflows including statistics and monitors state.
+ *
+ */
 public abstract class WorkflowManager {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final JobScheduler scheduler;
@@ -161,6 +165,7 @@ public abstract class WorkflowManager {
     /**
      * Allows subclasses to define a workflow package where workflow classes defined with a simplename in the settings
      * will be prefixed with the namespace defined here.
+     * @return default workflow package string.
      */
     protected abstract String getDefaultWorkflowPackage();
 

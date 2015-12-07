@@ -23,7 +23,7 @@
 package org.bitrepository.service.workflow;
 
 /**
- * Takes care of general step bookkepping
+ * Takes care of general step bookkeeping.
  */
 public abstract class AbstractWorkFlowStep implements WorkflowStep {
 }

@@ -26,6 +26,9 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+/**
+ * Test that InvalidMessageException works as expected.
+ */
 public class InvalidMessageExceptionTest extends ExtendedTestCase {
     private final String TEST_COLLECTION_ID = "test-collection-id";
     

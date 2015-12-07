@@ -22,6 +22,9 @@ package org.bitrepository.service.scheduler;/*
 
 import org.bitrepository.service.workflow.SchedulableJob;
 
+/**
+ * JobEventListener provides methods for notifying when a job has been started, when it finishes, and when it fails.
+ */
 public interface JobEventListener {
     void jobStarted(SchedulableJob job);
 

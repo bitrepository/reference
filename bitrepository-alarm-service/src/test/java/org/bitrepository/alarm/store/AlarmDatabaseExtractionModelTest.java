@@ -21,12 +21,16 @@
  */
 package org.bitrepository.alarm.store;
 
-import java.util.Date;
-
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.Date;
+
+/**
+ * Runs ExtendedTestCase with a regression test.
+ */
 
 public class AlarmDatabaseExtractionModelTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest"})

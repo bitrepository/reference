@@ -56,7 +56,6 @@ public class AuditEventIterator {
      * Method to return the next AuditTrailEvent in the ResultSet
      * When no more AuditTrailEvents are available, null is returned and the internal ResultSet closed. 
      * @return The next AuditTrailEvent available in the ResultSet, or null if no more events are available. 
-     * @throws SQLException In case of a sql error. 
      */
     public AuditTrailEvent getNextAuditTrailEvent() {
         try {

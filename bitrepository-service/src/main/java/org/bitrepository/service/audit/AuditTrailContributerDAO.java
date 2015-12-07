@@ -21,14 +21,6 @@
  */
 package org.bitrepository.service.audit;
 
-import java.math.BigInteger;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
@@ -39,7 +31,31 @@ import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.bitrepository.service.audit.AuditDatabaseConstants.*;
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_GUID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_NAME;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_TABLE;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_ACTOR_GUID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_AUDIT;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_FILE_GUID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_FINGERPRINT;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_INFORMATION;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_OPERATION;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_OPERATIONID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_OPERATION_DATE;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_SEQUENCE_NUMBER;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDITTRAIL_TABLE;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_COLLECTIONID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_FILEID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_GUID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
 
 /**
  * Access interface for communication with the audit trail database.
@@ -64,7 +80,7 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
     }
     
     /**
-     * Initialization method, needed to setup the instance
+     * Initialization method, needed to setup the instance.
      * @param componentID The ID of the component using the AuditTrailContributerDAO instance 
      */
     public void initialize(String componentID) {
@@ -161,7 +177,7 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
     }
     
     /**
-     * Method to obtain the database specific sql to limit the number of results 
+     * Method to obtain the database specific sql to limit the number of results.
      * @return string The database specific SQL to limit the number of results in a database query 
      */
     protected abstract String createQueryResultsLimit();
@@ -169,7 +185,6 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
     /**
      * Extracts the the audit trail information based on the given sql query and arguments.
      * @param extractor The entity for extracting the audit trails.
-     * @param maxNumberOfResults The maximum number of results.
      * @return The extracted audit trails.
      */
     private AuditTrailDatabaseResults extractEvents(AuditTrailExtractor extractor) {
@@ -299,7 +314,7 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
     }
 
     /**
-     * Class for encapsulating the request for extracting
+     * Class for encapsulating the request for extracting.
      */
     private class AuditTrailExtractor {
         /** The collection id limitation for the request.*/
@@ -314,16 +329,17 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
         private Date minDate;
         /** The maxmimum date limitation for the request.*/
         private Date maxDate;
-        /** The maximum number of results */
+        /** The maximum number of results. */
         private Long maxResults;
 
         /**
          * @param collectionID The id of the collection to retrieve the audit trails for.
-         * @param fileID The file id limitation for the request.
+         * @param fileID       The file id limitation for the request.
          * @param minSeqNumber The minimum sequence number limitation for the request.
          * @param maxSeqNumber The maximum sequence number limitation for the request.
-         * @param minDate The minimum date limitation for the request.
-         * @param maxDate The maximum date limitation for the request.
+         * @param minDate      The minimum date limitation for the request.
+         * @param maxDate      The maximum date limitation for the request.
+         * @param maxResults   the maximum number of results to return.
          */
         public AuditTrailExtractor(String collectionID, String fileID, Long minSeqNumber, Long maxSeqNumber, Date minDate,
                                    Date maxDate, Long maxResults) {
@@ -337,7 +353,7 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
         }
         
         /**
-         * Getter method to obtain the maximum number of results 
+         * @return the maximum number of results as a Long.
          */
         public Long getMaxResults() {
             return maxResults;

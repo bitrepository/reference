@@ -1,11 +1,11 @@
 package org.bitrepository.service.database;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * General class for obtaining a database connection to a service's database. 
@@ -106,7 +106,7 @@ public abstract class DatabaseManager {
     protected abstract DatabaseSpecifics getDatabaseSpecifics();
     
     /**
-     * Get the migrator for the concrete database
+     * Get the migrator for the concrete database.
      * @return DatabaseMigrator The concrete database migrator 
      */
     protected abstract DatabaseMigrator getMigrator();
@@ -141,7 +141,7 @@ public abstract class DatabaseManager {
     }
     
     /**
-     * Perform the actual migration of the concrete database 
+     * Perform the actual migration of the concrete database.
      */
     private void migrateDatabase() {
         DatabaseMigrator migrator = getMigrator();

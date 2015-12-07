@@ -57,9 +57,10 @@ public class ChecksumStorageModel extends StorageModel {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /**
-     * @param cache The storage for the checksums.
+     * @param cache           The storage for the checksums.
      * @param alarmDispatcher The alarm dispatcher.
-     * @param settings The configuration to use.
+     * @param settings        The configuration to use.
+     * @param fileExchange    FIXME
      */
     public ChecksumStorageModel(ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings, FileExchange fileExchange) {
         super(null, cache, alarmDispatcher, settings, fileExchange);
