@@ -24,6 +24,12 @@
  */
 package org.bitrepository.integrityservice;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
+
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
@@ -37,6 +43,7 @@ import org.bitrepository.integrityservice.collector.IntegrityInformationCollecto
 import org.bitrepository.integrityservice.reports.IntegrityReportProvider;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowContext;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowManager;
+import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
@@ -59,12 +66,6 @@ import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.bitrepository.settings.referencesettings.ServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
 
 /**
  * Provides access to the different component in the integrity module.
@@ -121,11 +122,14 @@ public final class IntegrityServiceManager {
         alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus, AlarmLevel.ERROR);
         model = new IntegrityDatabase(settings);
 
+        AccessComponentFactory acf = AccessComponentFactory.getInstance();
+        ModifyComponentFactory mcf = ModifyComponentFactory.getInstance();
+        String id = settings.getReferenceSettings().getIntegrityServiceSettings().getID();
         collector = new DelegatingIntegrityInformationCollector(
-                AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager,
-                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()),
-                AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager,
-                        settings.getReferenceSettings().getIntegrityServiceSettings().getID()));
+                acf.createGetFileIDsClient(settings, securityManager, id),
+                acf.createGetChecksumsClient(settings, securityManager, id),
+                acf.createGetFileClient(settings, securityManager, id),
+                mcf.retrievePutClient(settings, securityManager, id));
         integrityReportProvider = new IntegrityReportProvider(integrityReportStorageDir);
         
         workFlowManager = new IntegrityWorkflowManager(

@@ -41,7 +41,7 @@ public class JobTimerTask extends TimerTask {
     /** The interval between triggers. */
     private final long interval;
     private final SchedulableJob job;
-    private List<JobEventListener> jobListeners;
+    private List<JobEventListener> jobListeners; 
 
     /**
      * Initialise trigger.
@@ -61,7 +61,11 @@ public class JobTimerTask extends TimerTask {
      * @return The date for the next time the encapsulated workflow should run.
      */
     public Date getNextRun() {
-        return new Date(nextRun.getTime());
+        if(interval > 0) {
+            return new Date(nextRun.getTime());            
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -118,8 +122,8 @@ public class JobTimerTask extends TimerTask {
 
     @Override
     public void run() {
-        if( nextRun != null &&
-            getNextRun().getTime() <= System.currentTimeMillis()) {
+        if( nextRun != null && (getNextRun() == null || 
+            getNextRun().getTime() <= System.currentTimeMillis())) {
             runJob();
         }
     }

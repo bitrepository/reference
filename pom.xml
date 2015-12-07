@@ -127,7 +127,7 @@
         <dependency>
             <groupId>org.jvnet.jaxb2_commons</groupId>
             <artifactId>jaxb2-basics-runtime</artifactId>
-            <version>0.6.5.1</version>
+            <version>0.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
@@ -189,6 +189,7 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
                 <configuration>
+                    <verbose>true</verbose>
                     <generateBundle>true</generateBundle>
                     <failIfWarning>true</failIfWarning>
                     <licenseName>lgpl_v2_1</licenseName>
@@ -413,9 +414,9 @@
     <properties>
         <message.xml.version>28</message.xml.version>
         <repository.settings.version>11</repository.settings.version>
-        <activemq.version>5.11.1</activemq.version>
+        <activemq.version>5.12.1</activemq.version>
         <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
-        <slf4j.version>1.7.12</slf4j.version>
+        <slf4j.version>1.7.13</slf4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 </project>
