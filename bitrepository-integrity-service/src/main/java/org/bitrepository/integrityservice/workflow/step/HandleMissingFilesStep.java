@@ -82,7 +82,7 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
             String missingFile;
             while((missingFile = issueIterator.getNextIntegrityIssue()) != null) {
                 Date earliestDate = store.getEarlistFileDate(reporter.getCollectionID(), missingFile);
-                if(earliestDate.after(missingAfterDate)) {
+                if(earliestDate.before(missingAfterDate)) {
                     try {
                         reporter.reportMissingFile(missingFile, pillar);
                         missingFiles++;
