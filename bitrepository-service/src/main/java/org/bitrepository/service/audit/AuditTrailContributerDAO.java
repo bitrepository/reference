@@ -401,6 +401,8 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
                 res.append(AUDITTRAIL_OPERATION_DATE + " <= ?");
             }
             
+            res.append(" ORDER BY " + AUDITTRAIL_SEQUENCE_NUMBER);
+            
             if(maxResults != null) {
                 res.append(createQueryResultsLimit());
             }
