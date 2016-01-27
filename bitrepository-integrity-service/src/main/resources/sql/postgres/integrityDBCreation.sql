@@ -35,15 +35,15 @@ CREATE TABLE tableversions (
     version SMALLINT NOT NULL        -- version of table
 );
 
-INSERT INTO tableversions (tablename, version) VALUES ('fileinfo', 5);
+INSERT INTO tableversions (tablename, version) VALUES ('fileinfo', 6);
 INSERT INTO tableversions (tablename, version) VALUES ('files', 2);
 INSERT INTO tableversions (tablename, version) VALUES ('pillar', 3);
 INSERT INTO tableversions (tablename, version) VALUES ('collections' ,2);
-INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 6);
-INSERT INTO tableversions (tablename, version) VALUES ('stats', 2);
-INSERT INTO tableversions (tablename, version) VALUES ('collectionstats', 2);
+INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 7);
+INSERT INTO tableversions (tablename, version) VALUES ('stats', 3);
+INSERT INTO tableversions (tablename, version) VALUES ('collectionstats', 3);
 INSERT INTO tableversions (tablename, version) VALUES ('pillarstats', 2);
-INSERT INTO tableversions (tablename, version) VALUES ('collection_progress', 1);
+INSERT INTO tableversions (tablename, version) VALUES ('collection_progress', 2);
 
 --*************************************************************************--
 -- Name:     collections
@@ -80,10 +80,10 @@ CREATE TABLE fileinfo (
     pillarID VARCHAR(100) NOT NULL,         -- The pillar ID
     filesize BIGINT,                        -- Size of the file
     checksum VARCHAR(100),                  -- The checksum of the file
-    file_timestamp TIMESTAMP,               -- The last modified time on the pillar
-    checksum_timestamp TIMESTAMP,           -- The calculation timestamp of the checksum
-    last_seen_getfileids TIMESTAMP,         -- The last time the file was seen on a list of fileIDs for the pillar
-    last_seen_getchecksums TIMESTAMP,       -- The last time the files was seen on a list of checksums for the pillar
+    file_timestamp BIGINT,                  -- The last modified time on the pillar
+    checksum_timestamp BIGINT,              -- The calculation timestamp of the checksum
+    last_seen_getfileids BIGINT,            -- The last time the file was seen on a list of fileIDs for the pillar
+    last_seen_getchecksums BIGINT,          -- The last time the files was seen on a list of checksums for the pillar
 
     PRIMARY KEY (collectionID, pillarID, fileID),
     FOREIGN KEY (collectionID) REFERENCES collections(collectionID),
@@ -104,8 +104,8 @@ CREATE INDEX collectionfileidx ON fileinfo(collectionid, fileid);
 CREATE TABLE collection_progress (
     collectionID VARCHAR(255) NOT NULL,
     pillarID VARCHAR(100) NOT NULL,
-    latest_file_timestamp TIMESTAMP DEFAULT NULL,
-    latest_checksum_timestamp TIMESTAMP DEFAULT NULL,
+    latest_file_timestamp BIGINT DEFAULT NULL,
+    latest_checksum_timestamp BIGINT DEFAULT NULL,
 
     FOREIGN KEY (collectionID) REFERENCES collections(collectionID),
     FOREIGN KEY (pillarID) REFERENCES pillar(pillarID)
@@ -119,9 +119,9 @@ CREATE TABLE collection_progress (
 --*************************************************************************--
 CREATE TABLE stats (
     stat_key SERIAL PRIMARY KEY, -- The key for a set of statistics.
-    stat_time TIMESTAMP NOT NULL, 
+    stat_time BIGINT NOT NULL, 
                                  -- The time the statistics entry were made.
-    last_update TIMESTAMP NOT NULL,
+    last_update BIGINT NOT NULL,
                                  -- The last time the statistics were updated
     collectionID VARCHAR(255) NOT NULL, -- The key of the collection that the statistics belongs to 
     FOREIGN KEY (collectionID) REFERENCES collections(collectionID)
@@ -143,7 +143,7 @@ CREATE TABLE collectionstats (
     file_count BIGINT,           -- The number of files that the collection contained when the stats were made
     file_size BIGINT,            -- The total size of the files in the collection when the stats were made
     checksum_errors_count BIGINT,   -- The number of checksum errors in the collection when the stats were made
-    latest_file_date TIMESTAMP NOT NULL, -- The latest ingested file in the collection.
+    latest_file_date BIGINT NOT NULL, -- The latest ingested file in the collection.
     UNIQUE (stat_key),           -- Enforce that there can only be one collectionstat for a statistics
     FOREIGN KEY (stat_key) REFERENCES stats(stat_key)
                                  -- Foreign key constraint on stat_key, enforcing the presence of the referred key
