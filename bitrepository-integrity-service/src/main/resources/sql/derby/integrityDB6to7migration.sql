@@ -58,8 +58,8 @@ CREATE INDEX checksumdateindex ON fileinfo(checksum_timestamp);
 CREATE INDEX lastseenindex ON fileinfo(last_seen_getfileids);
 
 -- Migrate colletion_progress table
-ALTER TABLE collection_progress ADD COLUMN latest_file_timestamp2 BIGINT;
-ALTER TABLE collection_progress ADD COLUMN latest_checksum_timestamp2 BIGINT;
+ALTER TABLE collection_progress ADD COLUMN latest_file_timestamp2 BIGINT DEFAULT NULL;
+ALTER TABLE collection_progress ADD COLUMN latest_checksum_timestamp2 BIGINT DEFAULT NULL;
 
 UPDATE collection_progress SET latest_file_timestamp2 = ({fn timestampdiff(SQL_TSI_FRAC_SECOND, timestamp('1970-1-1-00.00.00.000000'), latest_file_timestamp)} / 1000000);
 UPDATE collection_progress SET latest_checksum_timestamp2 = ({fn timestampdiff(SQL_TSI_FRAC_SECOND, timestamp('1970-1-1-00.00.00.000000'), latest_checksum_timestamp)} / 1000000);
@@ -86,6 +86,9 @@ ALTER TABLE stats DROP COLUMN last_update;
 RENAME COLUMN stats.stat_time2 TO stat_time;
 RENAME COLUMN stats.last_update2 TO last_update;
 
+ALTER TABLE stats ALTER COLUMN stat_time NOT NULL;
+ALTER TABLE stats ALTER COLUMN last_update NOT NULL;
+
 CREATE INDEX lastupdatetimeindex ON stats (last_update);
 
 -- Migrate collectionstats table
@@ -97,5 +100,6 @@ ALTER TABLE collectionstats DROP COLUMN latest_file_date;
 
 RENAME COLUMN collectionstats.latest_file_date2 TO latest_file_date;
 
+ALTER TABLE collectionstats ALTER COLUMN latest_file_date NOT NULL;
 
 

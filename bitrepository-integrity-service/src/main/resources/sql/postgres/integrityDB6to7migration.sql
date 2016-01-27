@@ -57,8 +57,8 @@ CREATE INDEX lastseenindex ON fileinfo(last_seen_getfileids);
 
 
 -- Migrate colletion_progress table
-ALTER TABLE collection_progress ADD COLUMN latest_file_timestamp2 BIGINT;
-ALTER TABLE collection_progress ADD COLUMN latest_checksum_timestamp2 BIGINT;
+ALTER TABLE collection_progress ADD COLUMN latest_file_timestamp2 BIGINT DEFAULT NULL;
+ALTER TABLE collection_progress ADD COLUMN latest_checksum_timestamp2 BIGINT DEFAULT NULL;
 
 UPDATE collection_progress SET latest_file_timestamp2 = (EXTRACT (epoch FROM latest_file_timestamp) * 1000);
 UPDATE collection_progress SET latest_checksum_timestamp2 = (EXTRACT (epoch FROM latest_checksum_timestamp) * 1000);
@@ -85,6 +85,9 @@ ALTER TABLE stats DROP COLUMN last_update;
 ALTER TABLE stats RENAME COLUMN stat_time2 TO stat_time;
 ALTER TABLE stats RENAME COLUMN last_update2 TO last_update;
 
+ALTER TABLE stats ALTER COLUMN stat_time SET NOT NULL;
+ALTER TABLE stats ALTER COLUMN last_update SET NOT NULL;
+
 CREATE INDEX lastupdatetimeindex ON stats (last_update);
 
 
@@ -96,6 +99,8 @@ UPDATE collectionstats SET latest_file_date2 = (EXTRACT (epoch FROM latest_file_
 ALTER TABLE collectionstats DROP COLUMN latest_file_date;
 
 ALTER TABLE collectionstats RENAME COLUMN latest_file_date2 TO latest_file_date;
+
+ALTER TABLE collectionstats ALTER COLUMN latest_file_date SET NOT NULL;
 
 
 
