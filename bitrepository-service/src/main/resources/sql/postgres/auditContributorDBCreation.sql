@@ -34,10 +34,10 @@ CREATE TABLE tableversions (
     version INT NOT NULL             -- version of table
 );
 
-insert into tableversions ( tablename, version ) values ( 'audit', 4);
+insert into tableversions ( tablename, version ) values ( 'audit', 5);
 insert into tableversions ( tablename, version ) values ( 'file', 2);
 insert into tableversions ( tablename, version ) values ( 'actor', 1);
-insert into tableversions ( tablename, version ) values ( 'auditcontributordb', 4);
+insert into tableversions ( tablename, version ) values ( 'auditcontributordb', 5);
 
 --*************************************************************************--
 -- Name:     file
@@ -81,7 +81,7 @@ CREATE TABLE audittrail (
     actor_guid INT,                 -- The identifier for the actor which performed the action for the audit. 
                                     -- Used for looking up in the 
     operation VARCHAR(100),         -- The name of the action behind the audit.
-    operation_date TIMESTAMP,       -- The date when the action was performed.
+    operation_date BIGINT,          -- The date when the action was performed.
     audit TEXT,                     -- The audit trail delivered from the actor. 
     information TEXT,               -- The information about the audit.
     operationID VARCHAR(100),       -- The conversation/operation ID the the audit belongs to.
