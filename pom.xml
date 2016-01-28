@@ -415,7 +415,7 @@
         <message.xml.version>28</message.xml.version>
         <repository.settings.version>11</repository.settings.version>
         <derby.version>10.12.1.1</derby.version>
-        <activemq.version>5.12.1</activemq.version>
+        <activemq.version>5.13.0</activemq.version>
         <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
         <slf4j.version>1.7.14</slf4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
