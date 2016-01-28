@@ -34,13 +34,13 @@ CREATE TABLE tableversions (
     version SMALLINT NOT NULL        -- version of table
 );
 
-INSERT INTO tableversions ( tablename, version ) VALUES ( 'audittrail', 4);
+INSERT INTO tableversions ( tablename, version ) VALUES ( 'audittrail', 5);
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'file', 2);
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'contributor', 2);
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'actor', 2);
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'collection', 1);
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'collection_progress', 1);
-INSERT INTO tableversions ( tablename, version ) VALUES ( 'auditservicedb', 5);
+INSERT INTO tableversions ( tablename, version ) VALUES ( 'auditservicedb', 6);
 
 --*************************************************************************--
 -- Name:     collection
@@ -153,7 +153,7 @@ CREATE TABLE audittrail (
     actor_key INT NOT NULL,         -- The identifier for the actor which performed the action for the audit. 
                                     -- Used for looking up in the actor table.
     operation VARCHAR(100),         -- The name of the action behind the audit.
-    operation_date TIMESTAMP,       -- The date when the action was performed.
+    operation_date BIGINT,       -- The date when the action was performed.
     audit TEXT,                     -- The audit trail delivered from the actor. 
     information TEXT,               -- The information about the audit.
     operationID VARCHAR(100),       -- The conversation/operation ID the the audit belongs to.
@@ -170,6 +170,6 @@ CREATE TABLE audittrail (
 );
 
 CREATE INDEX dateindex ON audittrail ( operation_date );
-CREATE INDEX auditindex ON audittrail ( contributor_key, file_key, actor_key );
+CREATE INDEX auditindex ON audittrail (file_key, contributor_key);
 CREATE INDEX fingerprintindex ON audittrail ( fingerprint );
 CREATE INDEX operationidindex ON audittrail ( operationID );

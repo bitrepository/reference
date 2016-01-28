@@ -92,7 +92,7 @@ public class AuditEventIterator {
             }
             if(auditResultSet.next()) {
                 event = new AuditTrailEvent();
-                event.setActionDateTime(CalendarUtils.getFromMillis(auditResultSet.getTimestamp(POSITION_OPERATION_DATE).getTime()));
+                event.setActionDateTime(CalendarUtils.getFromMillis(auditResultSet.getLong(POSITION_OPERATION_DATE)));
                 event.setActionOnFile(FileAction.fromValue(auditResultSet.getString(POSITION_OPERATION)));
                 event.setAuditTrailInformation(auditResultSet.getString(POSITION_AUDIT_TRAIL));
                 event.setActorOnFile(auditResultSet.getString(POSITION_ACTOR_NAME));

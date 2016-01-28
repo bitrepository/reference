@@ -298,11 +298,11 @@ public class AuditDatabaseExtractor {
         }
         
         if(model.getStartDate() != null) {
-            res.add(model.getStartDate());
+            res.add(model.getStartDate().getTime());
         }
         
         if(model.getEndDate() != null) {
-            res.add(model.getEndDate());
+            res.add(model.getEndDate().getTime());
         }
         
         if(model.getFingerprint() != null) {
