@@ -22,6 +22,7 @@
 package org.bitrepository.pillar.store.checksumcache;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -46,8 +47,9 @@ import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.
 public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
     protected Settings settings;
     
-    static final String PATH_TO_DATABASE_UNPACKED = "target/test/referencepillar/checksumdb-version1";
-    static final String PATH_TO_DATABASE_JAR_FILE = "src/test/resources/checksumdb-version1.jar";
+    static final String PATH_TO_DATABASE_UNPACKED = "target/test/referencepillar/checksumdb-for-migration";
+    static final String PATH_TO_DATABASE_V1_JAR_FILE = "src/test/resources/checksumdb-version1.jar";
+    static final String PATH_TO_DATABASE_V3_JAR_FILE = "src/test/resources/checksumdb-version3.jar";
     
     static final String FILE_ID = "default-file-id";
     static final String CHECKSUM = "default-checksum";
@@ -62,8 +64,6 @@ public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
         DatabaseSpecifics checksumDB =
                 settings.getReferenceSettings().getPillarSettings().getChecksumDatabase();
         DerbyDatabaseDestroyer.deleteDatabase(checksumDB);
-
-        FileUtils.unzip(new File(PATH_TO_DATABASE_JAR_FILE), FileUtils.retrieveDirectory(PATH_TO_DATABASE_UNPACKED));
     }
     
     @AfterMethod (alwaysRun = true)
@@ -71,10 +71,13 @@ public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
         FileUtils.deleteDirIfExists(new File(PATH_TO_DATABASE_UNPACKED));
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
-    public void testMigratingDatabaseChecksumsTable() {
+//    @Test( groups = {"regressiontest", "pillartest"})
+    public void testMigratingChecksumDatabaseFromV1ToV2() throws IOException {
         addDescription("Tests that the checksums table can be migrated from version 1 to 2, e.g. getting the column "
                 + "collectionid, which should be set to the default in settings.");
+        addStep("Unzipping and connecting to checksum database version 1", "");
+        FileUtils.unzip(new File(PATH_TO_DATABASE_V1_JAR_FILE), FileUtils.retrieveDirectory(PATH_TO_DATABASE_UNPACKED));
+        
         DBConnector connector = new DBConnector(
                 settings.getReferenceSettings().getPillarSettings().getChecksumDatabase());
 
@@ -92,12 +95,48 @@ public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
         ChecksumDBMigrator migrator = new ChecksumDBMigrator(connector, settings);
         migrator.migrate();
         int versionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
-        Assert.assertEquals(versionAfter, 3, "Table version after migration");
+        Assert.assertEquals(versionAfter, 4, "Table version after migration");
         
         addStep("Validate the entry", "The collection id has been set to the default collection id");
         String retrieveCollectionIdSql = "SELECT " + CS_COLLECTION_ID + " FROM " + CHECKSUM_TABLE + " WHERE " 
                 + CS_FILE_ID + " = ?";
         String collectionID = DatabaseUtils.selectStringValue(connector, retrieveCollectionIdSql, FILE_ID);
         Assert.assertEquals(collectionID, settings.getCollections().get(0).getID());
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void testMigratingChecksumDatabaseFromV3ToV4() throws Exception {
+        addDescription("Tests that the checksums table can be migrated from version 3 to 4, e.g. changing the column "
+                + "calculatedchecksumdate from timestamp to bigint.");
+        addStep("Unzipping and connecting to checksum database version 3", "");
+        FileUtils.unzip(new File(PATH_TO_DATABASE_V3_JAR_FILE), FileUtils.retrieveDirectory(PATH_TO_DATABASE_UNPACKED));
+        
+        DBConnector connector = new DBConnector(
+                settings.getReferenceSettings().getPillarSettings().getChecksumDatabase());
+        Date testDate = new Date(1453984303527L);
+        Assert.assertFalse(connector.getConnection().isClosed());
+        
+        addStep("Validate setup", "Checksums table has version 3");
+        String extractVersionSql = "SELECT version FROM tableversions WHERE tablename = ?";
+        int versionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
+        Assert.assertEquals(versionBefore, 3, "Table version before migration");
+        
+        addStep("Ingest a entry to the database with a date for the calculationdate", "works in version 3.");
+        String insertSql = "INSERT INTO " + CHECKSUM_TABLE + " ( " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE
+                + " , " + CS_COLLECTION_ID + " ) VALUES ( ? , ? , ? , ? )";
+        DatabaseUtils.executeStatement(connector, insertSql, FILE_ID, CHECKSUM, testDate, settings.getCollections().get(0).getID());
+        
+        addStep("Perform migration", "Checksums table has version 4");
+        ChecksumDBMigrator migrator = new ChecksumDBMigrator(connector, settings);
+        migrator.migrate();
+        int versionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
+        Assert.assertEquals(versionAfter, 4, "Table version after migration");
+        
+        addStep("Validate the migration", "The timestamp is now the millis from epoch");
+        String retrieveCollectionIdSql = "SELECT " + CS_DATE + " FROM " + CHECKSUM_TABLE + " WHERE " 
+                + CS_FILE_ID + " = ?";
+        Long extractedDate = DatabaseUtils.selectFirstLongValue(connector, retrieveCollectionIdSql, FILE_ID);
+        System.err.println(new Date(extractedDate) + " =? " + testDate);
+        Assert.assertEquals(extractedDate.longValue(), testDate.getTime());
     }
 }
