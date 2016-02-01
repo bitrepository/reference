@@ -37,7 +37,7 @@ create table tableversions (
 );
 
 insert into tableversions ( tablename, version )
-            values ( 'checksums', 3);
+            values ( 'checksums', 4);
 
 --*************************************************************************--
 -- Name:     checksums
