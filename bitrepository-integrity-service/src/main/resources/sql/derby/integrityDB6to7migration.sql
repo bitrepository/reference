@@ -53,9 +53,8 @@ RENAME COLUMN fileinfo.file_timestamp2 TO file_timestamp;
 RENAME COLUMN fileinfo.checksum_timestamp2 TO checksum_timestamp;
 RENAME COLUMN fileinfo.last_seen_getfileids2 TO last_seen_getfileids;
 RENAME COLUMN fileinfo.last_seen_getchecksums2 TO last_seen_getchecksums;
+-- Don't recreate checksumdateindex and lastseenindex
 
-CREATE INDEX checksumdateindex ON fileinfo(checksum_timestamp);
-CREATE INDEX lastseenindex ON fileinfo(last_seen_getfileids);
 
 -- Migrate colletion_progress table
 ALTER TABLE collection_progress ADD COLUMN latest_file_timestamp2 BIGINT DEFAULT NULL;

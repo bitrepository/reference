@@ -91,9 +91,7 @@ CREATE TABLE fileinfo (
     FOREIGN KEY (pillarID) REFERENCES pillar(pillarID)
 );
 
-CREATE INDEX checksumdateindex ON fileinfo(checksum_timestamp);
-CREATE INDEX lastseenindex ON fileinfo(last_seen_getfileids);
-CREATE INDEX collectionfileidx on fileinfo(collectionid, fileid);
+CREATE INDEX collectionfileidx ON fileinfo(collectionid, fileid);
 
 --*************************************************************************--
 -- Name:     collection_progress
