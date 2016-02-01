@@ -30,7 +30,7 @@ ALTER TABLE alarm ADD COLUMN alarm_date2 BIGINT;
 
 DROP INDEX alarmdateindex;
 
-UPDATE alarm SET alarm_date2 = (EXTRACT (epoch FROM alarm_date) * 1000);
+UPDATE alarm SET alarm_date2 = (EXTRACT (epoch FROM alarm_date AT TIME ZONE (SELECT current_setting('TIMEZONE'))) * 1000);
 
 ALTER TABLE alarm DROP COLUMN alarm_date;
 

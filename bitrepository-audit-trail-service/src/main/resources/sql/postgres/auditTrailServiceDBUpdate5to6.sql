@@ -28,7 +28,7 @@ ALTER TABLE audittrail ADD COLUMN operation_date2 BIGINT;
 DROP INDEX dateindex;
 DROP INDEX auditindex;
 
-UPDATE audittrail SET operation_date2 = (EXTRACT (epoch FROM operation_date) * 1000);
+UPDATE audittrail SET operation_date2 = (EXTRACT (epoch FROM operation_date AT TIME ZONE (SELECT current_setting('TIMEZONE'))) * 1000);
 
 ALTER TABLE audittrail DROP COLUMN operation_date;
 
