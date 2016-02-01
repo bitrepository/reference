@@ -42,10 +42,11 @@ public class ChecksumDBMigrator extends DatabaseMigrator {
     /** The settings.*/
     private final Settings settings;
     /** The current version of the database. */
-    private final Integer currentVersion = 3;
+    private final Integer currentVersion = 4;
     /** The name of the update script for version 2 to 3.*/
     private static final String UPDATE_SCRIPT_VERSION_2_TO_3 = "sql/derby/checksumDB2to3Migration.sql";
-    
+    /** The name of the update script for version 3 to 4.*/
+    private static final String UPDATE_SCRIPT_VERSION_3_TO_4 = "sql/derby/checksumDB3to4Migration.sql";
     
     /**
      * @param connector The connection to the database.
@@ -71,6 +72,10 @@ public class ChecksumDBMigrator extends DatabaseMigrator {
         if(!versions.containsKey(CHECKSUM_TABLE) || versions.get(CHECKSUM_TABLE) < 3) {
             log.warn("Migrating ChecksumDB from version 2 to 3.");
             migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_2_TO_3);
+        }
+        if(!versions.containsKey(CHECKSUM_TABLE) || versions.get(CHECKSUM_TABLE) < 4) {
+            log.warn("Migrating ChecksumDB from version 3 to 4.");
+            migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_3_TO_4);
         }
     }
     

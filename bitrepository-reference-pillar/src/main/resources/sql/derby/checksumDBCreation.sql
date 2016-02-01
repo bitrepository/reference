@@ -53,7 +53,7 @@ create table checksums (
     fileid varchar(255) not null,       -- The id of the file.
     collectionid varchar(255) not null, -- The id of the collection.
     checksum varchar(255),              -- The checksum of the file.
-    calculationdate timestamp           -- The timestamp for the calculation of the checksum.
+    calculationdate BIGINT              -- The timestamp (in millis since epoch) for the calculation of the checksum.
 );
 
 create index fileindex on checksums ( fileid, collectionid );
