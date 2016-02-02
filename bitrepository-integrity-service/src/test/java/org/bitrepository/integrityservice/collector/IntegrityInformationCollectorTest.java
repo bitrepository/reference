@@ -104,15 +104,15 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         EventHandler eventHandler = mock(EventHandler.class);
         
         addStep("Call the getChecksumsClient on the collector.", "Should go directly to the GetChecksumsClient");
-        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, auditTrailInformation, contributorQueries, eventHandler);
+        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, eventHandler);
         verify(getChecksumsClient).getChecksums(eq(collectionID), any(), anyString(), any(ChecksumSpecTYPE.class), any(URL.class), any(EventHandler.class), anyString());
         
         addStep("Call the getChecksumsClient on the collector four times more.", 
                 "The GetChecksumsClient should have been called 5 times.");
-        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, auditTrailInformation, contributorQueries, null);
-        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, auditTrailInformation, contributorQueries, null);
-        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, auditTrailInformation, contributorQueries, null);
-        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, auditTrailInformation, contributorQueries, null);
+        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, null);
+        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, null);
+        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, null);
+        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, null);
         verify(getChecksumsClient, times(5)).getChecksums(eq(collectionID), any(), anyString(), any(ChecksumSpecTYPE.class), any(URL.class), 
                 any(EventHandler.class), anyString());
                 
@@ -199,7 +199,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         
         addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
                 "Should not throw an unexpected exception");
-        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, auditTrailInformation, contributorQueries, null);
+        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, null);
     }
     
     @Test(groups = {"regressiontest", "integritytest"})

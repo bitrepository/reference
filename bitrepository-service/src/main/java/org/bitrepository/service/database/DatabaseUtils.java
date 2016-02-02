@@ -163,6 +163,41 @@ public class DatabaseUtils {
     }
     
     /**
+     * Retrieves the first string value from the database through the use of a SQL query and the arguments for the query 
+     * to become a proper SQL statement, which requests the wanted set of string values, where only the first is 
+     * returned.
+     * 
+     * @param dbConnector For connecting to the database.
+     * @param query The query for retrieving the long value.
+     * @param args The arguments for the database statement.
+     * @return The string value from the given statement.
+     * @throws IllegalStateException if the connection could not be established,
+     * if the prepared statement could not be created, or the execution failed
+     */
+    public static String selectFirstStringValue(DBConnector dbConnector, String query, Object... args) {
+        ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
+        ArgumentValidator.checkNotNullOrEmpty(query, "String query");
+        ArgumentValidator.checkNotNull(args, "Object... args");
+        
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement ps = createPreparedStatement(conn, query, args)) {
+            try (ResultSet res = ps.executeQuery()) {
+                if (!res.next()) {
+                    log.trace("Got an empty result set for statement '" + query + "' with arguments '"
+                            + Arrays.asList(args) + "' on database '" + conn + "'. Returning a null.");
+                    return null;
+                }
+                String resultString = res.getString(1);
+                if (res.wasNull()) {
+                    resultString = null;
+                }
+                return resultString;
+            }
+        } catch (SQLException e) {
+            throw failedExecutionOfStatement(e, query, args);
+        }
+    }
+    /**
      * Retrieves a list of long values from the database through the use of a SQL query, which requests 
      * the wanted long values, and the arguments for the query to become a proper SQL statement.
      * 

@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The step for collecting the checksums of all files from all pillars.
  */
-public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
+public class GetChecksumForFileStep extends AbstractWorkFlowStep {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     
@@ -60,18 +60,13 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
     private final IntegrityAlerter alerter;
     /** The timeout for waiting for the results of the GetChecksums operation.*/
     private final Long timeout;
-    /** The maximum number of results for each conversation.*/
-    private final Integer maxNumberOfResultsPerConversation;
+    /** The ID of the file to retrieve the checksum of.*/
+    protected final String fileID;
     /** The collectionID */
     protected final String collectionID;
-    /** Continue with checks in case of failure, defaults to false */
-    private boolean abortInCaseOfFailure = true;
     /** Contributors for collecting information */
     private final IntegrityContributors integrityContributors;
     
-    /** The default value for the maximum number of results for each conversation. Is case the setting is missing.*/
-    public static final Integer DEFAULT_MAX_RESULTS = 10000;
-
     /**
      * Constructor.
      * @param collector The client for collecting the checksums.
@@ -79,62 +74,35 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
      * @param alerter The alerter for sending failures.
      * @param checksumType The type of checksum to collect.
      */
-    public UpdateChecksumsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
-            ChecksumSpecTYPE checksumType, Settings settings, String collectionID, IntegrityContributors integrityContributors) {
+    public GetChecksumForFileStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
+            ChecksumSpecTYPE checksumType, String fileID, Settings settings, String collectionID, IntegrityContributors integrityContributors) {
         this.collector = collector;
         this.store = store;
         this.checksumType = checksumType;
         this.alerter = alerter;
         this.collectionID = collectionID;
+        this.fileID = fileID;
         this.integrityContributors = integrityContributors;
         this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
                 + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
-        if(settings.getReferenceSettings().getIntegrityServiceSettings().getMaximumNumberOfResultsPerConversation() 
-                != null) {
-            this.maxNumberOfResultsPerConversation = settings.getReferenceSettings().getIntegrityServiceSettings()
-                    .getMaximumNumberOfResultsPerConversation().intValue();
-        } else {
-            this.maxNumberOfResultsPerConversation = DEFAULT_MAX_RESULTS;
-        }
-        if(settings.getReferenceSettings().getIntegrityServiceSettings().isSetAbortOnFailedContributor()) {
-            abortInCaseOfFailure = settings.getReferenceSettings().getIntegrityServiceSettings().isAbortOnFailedContributor();
-        }
     }
-    
-    /**
-     * Method to implement early/pre-performStep action  
-     */
-    protected void initialStepAction() {}
-    
-    /**
-     * Method to implement late/post-perform actions.
-     */
-    protected void finalStepAction() {}
     
     @Override
     public synchronized void performStep() throws WorkflowAbortedException {
         try {
-            initialStepAction();
-
             Set<String> pillarsToCollectFrom =  integrityContributors.getActiveContributors();
             log.debug("Collecting checksums from '" + pillarsToCollectFrom + "' for collection '" 
                     + collectionID + "'.");
-            while (!pillarsToCollectFrom.isEmpty()) {
-                IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, 
-                        timeout, integrityContributors);
-                ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
-                collector.getChecksums(collectionID, pillarsToCollectFrom, checksumType, null, "IntegrityService: "
-                        + getName(), queries, eventHandler);
-                
-                OperationEvent event = eventHandler.getFinish();
-                if(event.getEventType() == OperationEventType.FAILED) {
-                    handleFailureEvent(event);
-                }
-                log.debug("Collecting of checksums ids had the final event: " + event);
-                pillarsToCollectFrom = integrityContributors.getActiveContributors();
+            IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, 
+                    timeout, integrityContributors);
+            collector.getChecksums(collectionID, pillarsToCollectFrom, checksumType, fileID, "IntegrityService: "
+                    + getName(), null, eventHandler);
+
+            OperationEvent event = eventHandler.getFinish();
+            if(event.getEventType() == OperationEventType.FAILED) {
+                handleFailureEvent(event);
             }
-            
-            finalStepAction();
+            log.debug("Collecting of checksums ids had the final event: " + event);
         } catch (InterruptedException e) {
             log.warn("Interrupted while collecting checksums.", e);
         }
@@ -144,38 +112,20 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
      * Handle a failure event. This includes checking if any contributors have failed (if not just retry), 
      * checking to see if the workflow should be aborted, and sending alarms if needed.  
      */
-    private void handleFailureEvent(OperationEvent event) throws WorkflowAbortedException {
+    private void handleFailureEvent(OperationEvent event) {
         if(integrityContributors.getFailedContributors().isEmpty()) {
-            log.info("Get failure event, but no contributors marked as failed, retrying");
+            log.info("Get failure event, but no contributors marked as failed.");
         } else {
             OperationFailedEvent ofe = (OperationFailedEvent) event;
-            if(abortInCaseOfFailure) {
-                alerter.integrityFailed("Integrity check aborted while getting checksums due to failed contributors: " 
-                        + integrityContributors.getFailedContributors(), collectionID);
-                throw new WorkflowAbortedException("Aborting workflow due to failure collecting checksums. "
-                        + "Cause: " + ofe.toString());
-            } else {
-                log.info("Failure occured collecting fileIDs, continuing collecting checksums. Failure {}", ofe.toString());
-                alerter.integrityFailed("Failure while collecting checksums, the check will continue "
-                        + "with the information available. The failed contributors were: " 
-                        + integrityContributors.getFailedContributors(), collectionID);
-            }
+            log.info("Failure occured collecting fileIDs, continuing collecting checksums. Failure {}", ofe.toString());
+            alerter.integrityFailed("Failure while collecting checksums, the check will continue "
+                    + "with the information available. The failed contributors were: " 
+                    + integrityContributors.getFailedContributors(), collectionID);
         }
-    }
-    
-    /**
-     * Define the queries for the collection of FileIDs for the given pillars.
-     * @param pillars The pillars to collect from.
-     * @return The queries for the pillars for collecting the file ids.
-     */
-    private ContributorQuery[] getQueries(Collection<String> pillars) {
-        List<ContributorQuery> res = new ArrayList<ContributorQuery>();
-        for(String pillar : pillars) {
-            Date latestChecksumEntry = store.getDateForNewestChecksumEntryForPillar(pillar, collectionID);
-            res.add(new ContributorQuery(pillar, latestChecksumEntry, null, maxNumberOfResultsPerConversation));
-        }
-        
-        return res.toArray(new ContributorQuery[pillars.size()]);
     }
 
+    @Override
+    public String getName() {
+        return "Performing the GetChecksum for file '" + fileID + "' with the algorithm '"+ checksumType + "'";
+    }
 }

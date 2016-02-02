@@ -70,13 +70,13 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         addDescription("Test the step for updating the checksums can handle COMPLETE operation event.");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
                 return null;
             }
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
-                any(ContributorQuery[].class), any(EventHandler.class));
+                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
             .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
@@ -85,7 +85,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), 
-                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+                anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
     }
 
@@ -95,14 +95,14 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 + "of FAILURE operation event and AbortOnFailedContributor = true .");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 eventHandler.handleEvent(new ContributorFailedEvent(TEST_PILLAR_1, TEST_COLLECTION, ResponseCode.FAILURE));
                 eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Problem encountered", null));
                 return null;
             }
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
-                any(ContributorQuery[].class), any(EventHandler.class));
+                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
             .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
@@ -118,7 +118,8 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         } catch (WorkflowAbortedException e) {
             // nothing to do here
         }
-        verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+        verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), 
+                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(integrityContributors).failContributor(eq(TEST_PILLAR_1));
         verify(alerter).integrityFailed(anyString(), eq(TEST_COLLECTION));
     }
@@ -131,7 +132,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         doAnswer(new Answer() {
             boolean firstAnswer = true;
             public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 if(firstAnswer) {
                     firstAnswer = false;
                     eventHandler.handleEvent(new ContributorFailedEvent(TEST_PILLAR_1, TEST_COLLECTION, ResponseCode.FAILURE));
@@ -146,7 +147,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
             }
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
-                any(ContributorQuery[].class), any(EventHandler.class));
+                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
             .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
@@ -158,7 +159,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
         verify(collector, times(2)).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
-                any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+                any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(model).addChecksums(resultingChecksums.getChecksumDataItems(), TEST_PILLAR_1, TEST_COLLECTION);
         verifyNoMoreInteractions(alerter);
         verify(integrityContributors).failContributor(eq(TEST_PILLAR_1));
@@ -172,14 +173,14 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 + "of FAILURE operation event and AbortOnFailedContributor = false .");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 eventHandler.handleEvent(new ContributorFailedEvent(TEST_PILLAR_1, TEST_COLLECTION, ResponseCode.FAILURE));
                 eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Problem encountered", null));
                 return null;
             }
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
-                any(ContributorQuery[].class), any(EventHandler.class));
+                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
             .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
@@ -192,7 +193,8 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         step.performStep();
         
         verify(integrityContributors).failContributor(eq(TEST_PILLAR_1));
-        verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+        verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), 
+                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(alerter).integrityFailed(anyString(), eq(TEST_COLLECTION));
     }
     
@@ -202,7 +204,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(TEST_PILLAR_1)));
                 eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION,
                         resultingChecksums, createChecksumSpecTYPE(), false));
@@ -211,7 +213,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
             }
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
-                any(ContributorQuery[].class), any(EventHandler.class));
+                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
             .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
@@ -222,7 +224,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
-                any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+                any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(model).addChecksums(resultingChecksums.getChecksumDataItems(), TEST_PILLAR_1, TEST_COLLECTION);
         verifyNoMoreInteractions(alerter);
     }
@@ -233,7 +235,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(TEST_PILLAR_1)));
                 eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION,
                         resultingChecksums, createChecksumSpecTYPE(), false));
@@ -242,7 +244,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
             }
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
-                any(ContributorQuery[].class), any(EventHandler.class));
+                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
             .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
@@ -251,7 +253,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
-                any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+                any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(model).resetChecksumCollectionProgress(TEST_COLLECTION);
         verify(model).addChecksums(resultingChecksums.getChecksumDataItems(), TEST_PILLAR_1, TEST_COLLECTION);
         verifyNoMoreInteractions(alerter);
@@ -268,7 +270,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         Answer callbackAnswer = new Answer() {
             boolean firstPage = true;
             public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(TEST_PILLAR_1)));
                 eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION,
                         resultingChecksums, createChecksumSpecTYPE(), firstPage));
@@ -279,7 +281,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         };
         doAnswer(callbackAnswer).when(collector).getChecksums(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
-                any(ContributorQuery[].class), any(EventHandler.class));
+                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
             .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
@@ -292,7 +294,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         step.performStep();
         verify(model, times(2)).addChecksums(resultingChecksums.getChecksumDataItems(), TEST_PILLAR_1, TEST_COLLECTION);
         verify(collector, times(2)).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
-                any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+                any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
     }
     
     @Test(groups = {"regressiontest"})
@@ -301,13 +303,13 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
                 return null;
             }
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
-                any(ContributorQuery[].class), any(EventHandler.class));
+                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(model.getDateForNewestChecksumEntryForPillar(anyString(), anyString())).thenReturn(new Date(0));
         when(integrityContributors.getActiveContributors())
@@ -321,7 +323,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 makeFullQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(), model); 
         
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), 
-        		anyString(), eq(expectedContributorQueries), any(EventHandler.class));
+        		anyString(), anyString(), eq(expectedContributorQueries), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
     }
     
@@ -331,13 +333,13 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
                 return null;
             }
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
-                any(ContributorQuery[].class), any(EventHandler.class));
+                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         
         when(integrityContributors.getActiveContributors())
             .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
@@ -350,7 +352,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 makeQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(), model); 
         
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), 
-        		anyString(), eq(expectedContributorQueries), any(EventHandler.class));
+        		anyString(), anyString(), eq(expectedContributorQueries), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
     }
     
