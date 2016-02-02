@@ -75,7 +75,11 @@ public class ChecksumExtractor {
         
         String sql = "SELECT " + CS_DATE + " FROM " + CHECKSUM_TABLE + " WHERE " + CS_FILE_ID + " = ? AND " 
                 + CS_COLLECTION_ID + " = ?";
-        return DatabaseUtils.selectDateValue(connector, sql, fileID, collectionID);
+        Long dateInMillis = DatabaseUtils.selectFirstLongValue(connector, sql, fileID, collectionID);
+        if(dateInMillis == null) {
+            return null;
+        }
+        return new Date(dateInMillis);
     }
     
     /**
@@ -215,7 +219,7 @@ public class ChecksumExtractor {
             try (ResultSet res = ps.executeQuery()){
                 int i = 0;
                 while(res.next() && (maxNumberOfResults == null || i < maxNumberOfResults)) {
-                    results.insertFileID(res.getString(1), res.getTimestamp(2));
+                    results.insertFileID(res.getString(1), new Date(res.getLong(2)));
                     i++;
                 }
                 
@@ -317,7 +321,7 @@ public class ChecksumExtractor {
     private ChecksumEntry extractChecksumEntry(ResultSet resSet) throws SQLException {
         String fileID = resSet.getString(1);
         String checksum = resSet.getString(2);
-        Date date = resSet.getTimestamp(3);
+        Date date = new Date(resSet.getLong(3));
         return new ChecksumEntry(fileID, checksum, date);
     }
 }
