@@ -199,11 +199,11 @@ public class ChecksumExtractor {
         
         if(minTimeStamp != null) {
             sql.append(" AND " + CS_DATE + " >= ? ");
-            args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp));
+            args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp).getTime());
         }
         if(maxTimeStamp != null) {
             sql.append(" AND " + CS_DATE + " <= ? ");
-            args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp));
+            args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp).getTime());
         }
         if(fileID != null) {
             sql.append(" AND " + CS_FILE_ID + " = ? ");
@@ -270,11 +270,11 @@ public class ChecksumExtractor {
         
         if(minTimeStamp != null) {
             sql.append(" AND " + CS_DATE + " >= ? ");
-            args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp));
+            args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp).getTime());
         }
         if(maxTimeStamp != null) {
             sql.append(" AND " + CS_DATE + " <= ? ");
-            args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp));
+            args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp).getTime());
         }
         sql.append(" ORDER BY " + CS_DATE + " ASC ");
         
