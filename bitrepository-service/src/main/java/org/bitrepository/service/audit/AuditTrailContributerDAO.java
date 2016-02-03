@@ -101,10 +101,21 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
             throw new IllegalStateException("Could not instantiate the database", e);
         }
     }
-
+    
     @Override
     public void addAuditEvent(String collectionID, String fileID, String actor, String info, String auditTrail,
-                              FileAction operation, String operationID, String fingerprint) {
+            FileAction operation, String operationID, String fingerprint) {
+        ArgumentValidator.checkNotNull(collectionID, "String collectionID");
+        ArgumentValidator.checkNotNull(operation, "FileAction operation");
+        addAuditEvent(collectionID, fileID, new Date(), actor, info, auditTrail, operation, operationID, fingerprint);
+    }
+    
+    /**
+     * Inner method to handle the insertion of audit events. 
+     * The inner method is separated out to be able to test specifics timestamps. 
+     */
+    protected void addAuditEvent(String collectionID, String fileID, Date auditTime, String actor, String info, 
+            String auditTrail, FileAction operation, String operationID, String fingerprint) {
         ArgumentValidator.checkNotNull(collectionID, "String collectionID");
         ArgumentValidator.checkNotNull(operation, "FileAction operation");
         log.debug("Inserting an audit event for file '" + fileID + "', from actor '" + actor
@@ -142,7 +153,7 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
                     + AUDITTRAIL_AUDIT + " , " + AUDITTRAIL_INFORMATION + " , " + AUDITTRAIL_OPERATIONID + " , " +
                     AUDITTRAIL_FINGERPRINT + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ?)";
             DatabaseUtils.executeStatement(dbConnector, insertSql, fileGuid, actorGuid, operation.toString(),
-                    (new Date()).getTime(), auditTrail, info, operationID, fingerprint);
+                    auditTime.getTime(), auditTrail, info, operationID, fingerprint);
         }
     }
 
