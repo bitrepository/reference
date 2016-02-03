@@ -21,10 +21,6 @@
  */
 package org.bitrepository.integrityservice.workflow;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,15 +30,10 @@ import java.util.UUID;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.SettingsUtils;
-import org.bitrepository.integrityservice.cache.FileInfo;
-import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
-import org.bitrepository.integrityservice.workflow.step.GetFileStep;
-import org.bitrepository.integrityservice.workflow.step.PutFileStep;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.service.exception.StepFailedException;
+import org.bitrepository.integrityservice.workflow.step.GetChecksumForFileStep;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowContext;
@@ -78,6 +69,8 @@ public class SaltedChecksumWorkflow extends Workflow {
         this.context = (IntegrityWorkflowContext)context;
         this.collectionID = collectionID;
         jobID = new JobID(getClass().getSimpleName(), collectionID);
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
+        integrityContributors = new IntegrityContributors(pillars, pillars.size()-1);
     }
     
     @Override
@@ -93,6 +86,8 @@ public class SaltedChecksumWorkflow extends Workflow {
             currentFileID = getRandomFileId();
             Map<String, String> checksums = requestSaltedChecksumForFileStep();
             validateChecksums(checksums);
+        } catch (IllegalStateException e) {
+            context.getAlerter().integrityFailed("Failed trying to check salted checksum: " + e.getMessage(), collectionID);
         } finally {
             finish();
         }
@@ -137,40 +132,57 @@ public class SaltedChecksumWorkflow extends Workflow {
      */
     private String getRandomFileId() {
         long numberOfFiles = context.getStore().getNumberOfFilesInCollection(collectionID);
+        if(numberOfFiles <= 0L) {
+            throw new IllegalStateException("No files in collection '" + collectionID + "'.");
+        }
         long randomFileIndex = (new Random()).nextLong() % numberOfFiles;
         return context.getStore().getFileIDAtPosition(collectionID, randomFileIndex);
     }
     
     /**
-     * 
-     * @return
+     * Performs the conversation with the pillars to retrieve the checksums.
+     * @return The map between pillars and checksums.
      */
     private Map<String, String> requestSaltedChecksumForFileStep() {
-        
-        return null;
+        log.info("Request the file '" + currentFileID + "' with the checksumspec ' " + currentChecksumSpec + "'.");
+        GetChecksumForFileStep step = new GetChecksumForFileStep(context.getCollector(),
+                context.getAlerter(), currentChecksumSpec, currentFileID, context.getSettings(), 
+                collectionID, integrityContributors);
+        performStep(step);
+        return step.getResults();
     }
     
     /**
      * Validates the map of the checksums to ensure, that they all align.
      * @param checksums The map of checksums for 
-     * @return
      */
-    private boolean validateChecksums(Map<String, String> checksums) {
-        String firstCs = null;
-        String firstPillar = null;
+    private void validateChecksums(Map<String, String> checksums) {
+        if(checksums == null || checksums.isEmpty()) {
+            sendFailure("No checksums with checksumSpec '" + currentChecksumSpec + "' received for file '" 
+                    + currentFileID + "'.");
+        }
+        List<String> cs = new ArrayList<String>();
         for(Map.Entry<String, String> entry : checksums.entrySet()) {
-            if(firstCs == null) {
-                firstCs = entry.getValue();
-                firstPillar = entry.getKey();
-            } else {
-                if(!entry.getValue().equalsIgnoreCase(firstCs)) {
-                    log.warn("The pillars '" + firstPillar + "' and '" + entry.getKey() + "' "
-                            + "does not have the same checksums.");
-                    return false;
-                }
+            if(!cs.contains(entry.getValue())) {
+                cs.add(entry.getValue());
             }
         }
-        return true;
+        if(cs.size() > 1) {
+            sendFailure("Inconsistent salted checksum found for file '" + currentFileID + "' with checksumspec '" 
+                    + currentChecksumSpec + "'. The pillars had the checksums: " + checksums);
+        }
+    }
+    
+    /**
+     * Log, audit and send an alarm about the failure.
+     * @param failureMessage The failure message.
+     */
+    private void sendFailure(String failureMessage) {
+        log.warn("Failure in checksum salted checksum: " + failureMessage);
+        context.getAuditManager().addAuditEvent(collectionID, currentFileID, 
+                "IntegrityServiceWorkflow: " + this.getClass().getName(), failureMessage, 
+                "Integrity salted checksum check", FileAction.INTEGRITY_CHECK, null, null);
+        context.getAlerter().integrityFailed(failureMessage, collectionID);
     }
 
 	@Override

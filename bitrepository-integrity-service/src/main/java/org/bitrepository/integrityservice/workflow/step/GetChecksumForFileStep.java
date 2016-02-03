@@ -21,22 +21,20 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
-import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
-import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.collector.IntegrityCollectorEventHandler;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
+import org.bitrepository.integrityservice.collector.SimpleChecksumEventHandler;
 import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
@@ -44,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The step for collecting the checksums of all files from all pillars.
+ * The step for collecting the checksums of a specific file from the pillars.
  */
 public class GetChecksumForFileStep extends AbstractWorkFlowStep {
     /** The log.*/
@@ -52,8 +50,6 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
     
     /** The collector for retrieving the checksums.*/
     private final IntegrityInformationCollector collector;
-    /** The model where the integrity data is stored.*/
-    protected final IntegrityModel store;
     /** The checksum spec type.*/
     private final ChecksumSpecTYPE checksumType;
     /** The integrity alerter.*/
@@ -66,18 +62,22 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
     protected final String collectionID;
     /** Contributors for collecting information */
     private final IntegrityContributors integrityContributors;
+    /** Map between pillar and their checksum results. */
+    private Map<String, ResultingChecksums> checksumResults = null;
     
     /**
      * Constructor.
      * @param collector The client for collecting the checksums.
-     * @param store The storage for the integrity data.
      * @param alerter The alerter for sending failures.
      * @param checksumType The type of checksum to collect.
+     * @param fileID The ID of the file to request.
+     * @param settings The settings.
+     * @param collectionID The id of the collection.
+     * @param integrityContributors The contributors, who should be asked for the checksum.
      */
-    public GetChecksumForFileStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
+    public GetChecksumForFileStep(IntegrityInformationCollector collector, IntegrityAlerter alerter,
             ChecksumSpecTYPE checksumType, String fileID, Settings settings, String collectionID, IntegrityContributors integrityContributors) {
         this.collector = collector;
-        this.store = store;
         this.checksumType = checksumType;
         this.alerter = alerter;
         this.collectionID = collectionID;
@@ -93,16 +93,16 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
             Set<String> pillarsToCollectFrom =  integrityContributors.getActiveContributors();
             log.debug("Collecting checksums from '" + pillarsToCollectFrom + "' for collection '" 
                     + collectionID + "'.");
-            IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, 
-                    timeout, integrityContributors);
+            SimpleChecksumEventHandler eventHandler = new SimpleChecksumEventHandler(timeout, integrityContributors);
             collector.getChecksums(collectionID, pillarsToCollectFrom, checksumType, fileID, "IntegrityService: "
                     + getName(), null, eventHandler);
-
+            
             OperationEvent event = eventHandler.getFinish();
             if(event.getEventType() == OperationEventType.FAILED) {
                 handleFailureEvent(event);
             }
             log.debug("Collecting of checksums ids had the final event: " + event);
+            checksumResults = eventHandler.getResults();
         } catch (InterruptedException e) {
             log.warn("Interrupted while collecting checksums.", e);
         }
@@ -122,6 +122,43 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
                     + "with the information available. The failed contributors were: " 
                     + integrityContributors.getFailedContributors(), collectionID);
         }
+    }
+    
+    /**
+     * Extracts the results from the conversation. 
+     * @return The map between pillars and their checksum for the file.
+     */
+    public Map<String, String> getResults() {
+        if(checksumResults == null) {
+            return null;
+        }
+        Map<String, String> res = new HashMap<String, String>();
+        for(Map.Entry<String, ResultingChecksums> entry : checksumResults.entrySet()) {
+            if(!validateResults(entry.getValue())) {
+                log.warn("No or invalid checksum results from pillar '" + entry.getKey() + "': " + entry.getValue());
+                continue;
+            }
+            String checksum = Base16Utils.decodeBase16(
+                    entry.getValue().getChecksumDataItems().get(0).getChecksumValue());
+            res.put(entry.getKey(), checksum);
+        }
+        return res;
+    }
+
+    /**
+     * Check whether the entry exists and that it is for the right file.
+     * (If more than one results is given, then the first must be the requested file). 
+     * @param checksumData The resulting checksum data to validate.
+     * @return Whether it is valid.
+     */
+    private boolean validateResults(ResultingChecksums checksumData) {
+        if(checksumData.getChecksumDataItems().isEmpty()) {
+            return false;
+        }
+        if(!checksumData.getChecksumDataItems().get(0).getFileID().equalsIgnoreCase(fileID)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
