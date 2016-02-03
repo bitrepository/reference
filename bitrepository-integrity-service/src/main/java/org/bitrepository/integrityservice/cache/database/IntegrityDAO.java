@@ -374,7 +374,7 @@ public abstract class IntegrityDAO {
      */
     public String getFileIdAtIndex(String collectionID, Long index) {
         String getSql = getFileIdAtIndexSql();
-        return DatabaseUtils.selectFirstStringValue(dbConnector, getSql, collectionID, index);
+        return DatabaseUtils.selectFirstStringValue(dbConnector, getSql, collectionID, index, 1);
     }
     
     /**

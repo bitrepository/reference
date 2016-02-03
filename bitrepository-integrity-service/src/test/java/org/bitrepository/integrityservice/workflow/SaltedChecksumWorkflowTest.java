@@ -143,7 +143,8 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         verify(model).getFileIDAtPosition(eq(TEST_COLLECTION), eq(0L));
         verifyNoMoreInteractions(model);
         
-        verifyZeroInteractions(auditManager);
+        verify(auditManager).addAuditEvent(eq(TEST_COLLECTION), anyString(), anyString(), anyString(), anyString(), any(), any(), any());
+        verifyNoMoreInteractions(auditManager);
     }
 
     @Test(groups = {"regressiontest", "integritytest"})

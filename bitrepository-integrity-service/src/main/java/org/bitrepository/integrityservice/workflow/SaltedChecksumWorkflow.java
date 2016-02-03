@@ -160,6 +160,7 @@ public class SaltedChecksumWorkflow extends Workflow {
         if(checksums == null || checksums.isEmpty()) {
             sendFailure("No checksums with checksumSpec '" + currentChecksumSpec + "' received for file '" 
                     + currentFileID + "'.");
+            return;
         }
         List<String> cs = new ArrayList<String>();
         for(Map.Entry<String, String> entry : checksums.entrySet()) {
@@ -169,7 +170,18 @@ public class SaltedChecksumWorkflow extends Workflow {
         }
         if(cs.size() > 1) {
             sendFailure("Inconsistent salted checksum found for file '" + currentFileID + "' with checksumspec '" 
-                    + currentChecksumSpec + "'. The pillars had the checksums: " + checksums);
+                    + currentChecksumSpec.getChecksumType() + "' and salt '" 
+                    + Base16Utils.decodeBase16(currentChecksumSpec.getChecksumSalt()) 
+                    + "'. The pillars had the checksums: " + checksums);
+        } else {
+            String audit = "Validated salted checksum for file '" + currentFileID + "' with checksumspec '" 
+                    + currentChecksumSpec.getChecksumType() + "' and salt '" 
+                    + Base16Utils.decodeBase16(currentChecksumSpec.getChecksumSalt()) + "' for pillars: "
+                    + checksums.keySet();
+            log.info(audit);
+            context.getAuditManager().addAuditEvent(collectionID, currentFileID, 
+                    "IntegrityServiceWorkflow: " + this.getClass().getName(), audit, 
+                    "Integrity salted checksum check", FileAction.INTEGRITY_CHECK, null, null);
         }
     }
     

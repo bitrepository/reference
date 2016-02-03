@@ -638,6 +638,20 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         addStep("Check the reported size of the whole collection", "The reported size matches the precalculated");
         Assert.assertEquals(cache.getCollectionSize(TEST_COLLECTIONID), collectionSize);   
     }
+    
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testGetFileIDAtIndex() throws Exception {
+        addDescription("Tests that the accumulated size of the collection can be extracted");
+        IntegrityDAO cache = createDAO();
+        
+        addStep("Insert test data into database", "Data is ingested");
+        FileIDsData data = makeFileIDsDataWithGivenFileSize(TEST_FILE_ID, 100L);
+        cache.updateFileIDs(data, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileIDs(data, TEST_PILLAR_2, TEST_COLLECTIONID);
+        
+        Assert.assertEquals(cache.getFileIdAtIndex(TEST_COLLECTIONID, 0L), TEST_FILE_ID);
+    }
+    
     /*
     // @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     // TODO fix this failing test.
