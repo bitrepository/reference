@@ -38,6 +38,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -209,6 +211,53 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         List<Alarm> extractedAlarms = database.extractAlarms(null, null, null, null, null, null, null, true);
         Assert.assertEquals(extractedAlarms.size(), 1);
         Assert.assertEquals(extractedAlarms.get(0), alarm);
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest"})
+    public void alarmDatabaseCorrectTimestampTest() throws ParseException {
+        addDescription("Testing the correct ingest and extraction of alarm dates");
+        AlarmDAOFactory alarmDAOFactory = new AlarmDAOFactory();
+        AlarmServiceDAO database = alarmDAOFactory.getAlarmServiceDAOInstance(
+                settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
+        
+        addStep("Prepare, check and ingest alarms", "");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Date summertimeTS = sdf.parse("2015-10-25T02:59:54.000+02:00");
+        Date summertimeUnix = new Date(1445734794000L);
+        Assert.assertEquals(summertimeTS, summertimeUnix);
+        
+        Date winthertimeTS = sdf.parse("2015-10-25T02:59:54.000+01:00");
+        Date winthertimeUnix = new Date(1445738394000L);
+        Assert.assertEquals(winthertimeTS, winthertimeUnix);
+        
+        Alarm summertimeAlarm = new Alarm();
+        summertimeAlarm.setAlarmCode(AlarmCode.CHECKSUM_ALARM);
+        summertimeAlarm.setAlarmRaiser("TEST");
+        summertimeAlarm.setFileID("summertime");
+        summertimeAlarm.setAlarmText("Date summertime test alarm");
+        summertimeAlarm.setOrigDateTime(CalendarUtils.getXmlGregorianCalendar(summertimeTS));
+        
+        Alarm winthertimeAlarm = new Alarm();
+        winthertimeAlarm.setAlarmCode(AlarmCode.CHECKSUM_ALARM);
+        winthertimeAlarm.setAlarmRaiser("TEST");
+        winthertimeAlarm.setFileID("winthertime");
+        winthertimeAlarm.setAlarmText("Date winthertime test alarm");
+        winthertimeAlarm.setOrigDateTime(CalendarUtils.getXmlGregorianCalendar(winthertimeTS));
+        
+        database.addAlarm(summertimeAlarm);
+        database.addAlarm(winthertimeAlarm);
+        
+        addStep("Extract and check alarms", "");
+        List<Alarm> summertimeAlarms = database.extractAlarms(null, null, null, null, "summertime", null, null, true);
+        Assert.assertEquals(summertimeAlarms.size(), 1);
+        Assert.assertEquals(
+                CalendarUtils.convertFromXMLGregorianCalendar(summertimeAlarms.get(0).getOrigDateTime()), summertimeUnix);
+        
+        List<Alarm> winthertimeAlarms = database.extractAlarms(null, null, null, null, "winthertime", null, null, true);
+        Assert.assertEquals(winthertimeAlarms.size(), 1);
+        Assert.assertEquals(
+                CalendarUtils.convertFromXMLGregorianCalendar(winthertimeAlarms.get(0).getOrigDateTime()), winthertimeUnix);
+        
     }
 
     private List<Alarm> makeAlarms() {

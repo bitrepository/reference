@@ -25,6 +25,8 @@
 package org.bitrepository.integrityservice.cache;
 
 import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -130,6 +132,47 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         
         Assert.assertEquals(cache.getNumberOfFilesInCollection(TEST_COLLECTIONID), new Long(0));
         Assert.assertEquals(cache.getNumberOfFilesInCollection(EXTRA_COLLECTION), new Long(0));
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    public void testCorrectDateHandling() throws ParseException  {
+        addDescription("Testing the correct ingest and extraction of file and checksum dates");
+        IntegrityDAO cache = createDAO();
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Date summertimeTS = sdf.parse("2015-10-25T02:59:54.000+02:00");
+        Date summertimeUnix = new Date(1445734794000L);
+        Assert.assertEquals(summertimeTS, summertimeUnix);
+        
+        Date winthertimeTS = sdf.parse("2015-10-25T02:59:54.000+01:00");
+        Date winthertimeUnix = new Date(1445738394000L);
+        Assert.assertEquals(winthertimeTS, winthertimeUnix);
+        
+        FileIDsData summertimeData = getFileIDsData("summertime");
+        summertimeData.getFileIDsDataItems().getFileIDsDataItem().get(0)
+            .setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(summertimeTS));
+        FileIDsData winthertimeData = getFileIDsData("winthertime");
+        winthertimeData.getFileIDsDataItems().getFileIDsDataItem().get(0)
+            .setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(winthertimeTS));
+        cache.updateFileIDs(summertimeData, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileIDs(winthertimeData, TEST_PILLAR_1, TEST_COLLECTIONID);
+                
+        List<ChecksumDataForChecksumSpecTYPE> summertimeCsData = getChecksumResults("summertime", TEST_CHECKSUM);
+        summertimeCsData.get(0).setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(summertimeTS));
+        List<ChecksumDataForChecksumSpecTYPE> winthertimeCsData = getChecksumResults("winthertime", TEST_CHECKSUM);
+        winthertimeCsData.get(0).setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(winthertimeTS));
+        cache.updateChecksums(summertimeCsData, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateChecksums(winthertimeCsData, TEST_PILLAR_1, TEST_COLLECTIONID);
+        
+        List<FileInfo> fis = cache.getFileInfosForFile("summertime", TEST_COLLECTIONID);
+        Assert.assertEquals(fis.size(), 1, fis.toString());
+        Assert.assertEquals(
+                CalendarUtils.convertFromXMLGregorianCalendar(fis.get(0).getDateForLastChecksumCheck()), summertimeUnix);
+        
+        fis = cache.getFileInfosForFile("winthertime", TEST_COLLECTIONID);
+        Assert.assertEquals(fis.size(), 1, fis.toString());
+        Assert.assertEquals(
+                CalendarUtils.convertFromXMLGregorianCalendar(fis.get(0).getDateForLastChecksumCheck()), winthertimeUnix);
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
