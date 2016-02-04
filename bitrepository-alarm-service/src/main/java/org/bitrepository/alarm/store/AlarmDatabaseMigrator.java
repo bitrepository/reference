@@ -43,7 +43,7 @@ public class AlarmDatabaseMigrator extends DatabaseMigrator {
     /** The name of the script for updating the database from version 1 to 2.*/
     private static final String UPDATE_SCRIPT_VERSION_1_TO_2 = "sql/derby/alarmServiceDB1to2migration.sql";
     private static final String UPDATE_SCRIPT_VERSION_2_TO_3 = "sql/derby/alarmServiceDB2to3migration.sql";
-    private static final String UPDATE_SCRIPT_VERSION_3_TO_4 = "sql/derby/alarmServiceDB2to3migration.sql";
+    private static final String UPDATE_SCRIPT_VERSION_3_TO_4 = "sql/derby/alarmServiceDB3to4migration.sql";
     /** The current version of the database. */
     private final Integer currentVersion = 4;
     
