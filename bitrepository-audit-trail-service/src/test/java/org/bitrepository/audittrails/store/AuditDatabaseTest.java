@@ -22,6 +22,8 @@
 package org.bitrepository.audittrails.store;
 
 import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -206,6 +208,45 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         Assert.assertEquals(database.getPreservationSequenceNumber(pillarID, collectionID), givenPreservationIndex);
 
         database.close();
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest"})
+    public void auditDatabaseCorrectTimestampTest() throws ParseException  {
+        addDescription("Testing the correct ingest and extraction of audittrail dates");
+        DatabaseManager dm = new AuditTrailDatabaseManager(
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
+        AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Date summertimeTS = sdf.parse("2015-10-25T02:59:54.000+02:00");
+        Date summertimeUnix = new Date(1445734794000L);
+        Assert.assertEquals(summertimeTS, summertimeUnix);
+        
+        Date wintertimeTS = sdf.parse("2015-10-25T02:59:54.000+01:00");
+        Date wintertimeUnix = new Date(1445738394000L);
+        Assert.assertEquals(wintertimeTS, wintertimeUnix);
+        
+        AuditTrailEvents events = new AuditTrailEvents();
+        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getXmlGregorianCalendar(summertimeTS), 
+                FileAction.CHECKSUM_CALCULATED, "actor", "auditInfo", "summertime", "info", pillarID, new BigInteger("1"), 
+                operationID1, fingerprint1));
+        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getXmlGregorianCalendar(wintertimeTS), 
+                FileAction.CHECKSUM_CALCULATED, "actor", "auditInfo", "wintertime", "info", pillarID, new BigInteger("1"), 
+                operationID1, fingerprint1));
+        database.addAuditTrails(events, collectionID, pillarID);
+        
+        List<AuditTrailEvent> res = getEventsFromIterator(database.getAuditTrailsByIterator("summertime", null, null, null, 
+                null, null, null, null, null, null, null));
+        Assert.assertEquals(res.size(), 1, res.toString());
+        Assert.assertEquals(
+                CalendarUtils.convertFromXMLGregorianCalendar(res.get(0).getActionDateTime()), summertimeUnix);
+        
+        res = getEventsFromIterator(database.getAuditTrailsByIterator("wintertime", null, null, null, null, null, null, 
+                null, null, null, null));
+        Assert.assertEquals(res.size(), 1, res.toString());
+        Assert.assertEquals(
+                CalendarUtils.convertFromXMLGregorianCalendar(res.get(0).getActionDateTime()), wintertimeUnix);
+
     }
     
     @Test(groups = {"regressiontest", "databasetest"})

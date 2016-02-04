@@ -51,8 +51,10 @@ public class AuditTrailServiceDatabaseMigrator extends DatabaseMigrator {
     private static final String UPDATE_SCRIPT_VERSION_3_TO_4 = "sql/derby/auditTrailServiceDBUpdate3to4.sql";
     /** The name of the update script for version 4 to 5.*/
     private static final String UPDATE_SCRIPT_VERSION_4_TO_5 = "sql/derby/auditTrailServiceDBUpdate4to5.sql";
+    /** The name of the update script for version 5 to 6.*/
+    private static final String UPDATE_SCRIPT_VERSION_5_TO_6 = "sql/derby/auditTrailServiceDBUpdate5to6.sql";
     /** The current version of the database. */
-    private final Integer currentVersion = 5;
+    private final Integer currentVersion = 6;
     
     /**
      * Constructor.
@@ -98,6 +100,10 @@ public class AuditTrailServiceDatabaseMigrator extends DatabaseMigrator {
         if(!versions.containsKey(DATABASE_VERSION_ENTRY) || versions.get(DATABASE_VERSION_ENTRY) < 5) {
             log.warn("Migrating AuditServiceDB from version 4 to 5.");
             migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_4_TO_5);
+        }
+        if(!versions.containsKey(DATABASE_VERSION_ENTRY) || versions.get(DATABASE_VERSION_ENTRY) < 6) {
+            log.warn("Migrating AuditServiceDB from version 5 to 6.");
+            migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_5_TO_6);
         }
     }
 

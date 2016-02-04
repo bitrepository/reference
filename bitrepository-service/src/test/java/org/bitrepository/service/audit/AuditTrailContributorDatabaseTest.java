@@ -21,16 +21,21 @@
  */
 package org.bitrepository.service.audit;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.database.DatabaseCreator;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /** Run audit trail contributor database test using Derby.  Generates jaccept reports. */
@@ -40,7 +45,7 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
     private DatabaseSpecifics databaseSpecifics;
     private String firstCollectionID;
 
-    @BeforeClass (alwaysRun = true)
+    @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
 
@@ -117,6 +122,39 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().size(), 0);
         
         dm.getConnector().destroy();
+    }
+    
+    @Test(groups = {"regressiontest", "databasetest"})
+    public void contributorDatabaseCorrectTimestampTest() throws ParseException {
+        addDescription("Testing the correct ingest and extraction of audittrail dates");
+        DatabaseManager dm = new AuditDatabaseManager(databaseSpecifics);
+        AuditTrailContributerDAO daba = new DerbyAuditTrailContributorDAO(dm);
+        daba.initialize(settings.getComponentID());
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Date summertimeTS = sdf.parse("2015-10-25T02:59:54.000+02:00");
+        Date summertimeUnix = new Date(1445734794000L);
+        Assert.assertEquals(summertimeTS, summertimeUnix);
+        
+        Date wintertimeTS = sdf.parse("2015-10-25T02:59:54.000+01:00");
+        Date wintertimeUnix = new Date(1445738394000L);
+        Assert.assertEquals(wintertimeTS, wintertimeUnix);
+        
+        daba.addAuditEvent(firstCollectionID, "summertime", summertimeTS, "actor", "info", "auditTrail", 
+                FileAction.OTHER, null, null);
+        daba.addAuditEvent(firstCollectionID, "wintertime", wintertimeTS, "actor", "info", "auditTrail", 
+                FileAction.OTHER, null, null);
+        
+        AuditTrailDatabaseResults events = daba.getAudits(firstCollectionID, "summertime", null, null, null, null, 2L);
+        Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().size(), 1, events.toString());
+        Assert.assertEquals(CalendarUtils.convertFromXMLGregorianCalendar(
+                        events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionDateTime()), summertimeUnix);
+        
+        events = daba.getAudits(firstCollectionID, "wintertime", null, null, null, null, 2L);
+        Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().size(), 1, events.toString());
+        Assert.assertEquals(CalendarUtils.convertFromXMLGregorianCalendar(
+                        events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionDateTime()), wintertimeUnix);
+        
     }
     
     @Test(groups = {"regressiontest", "databasetest"})

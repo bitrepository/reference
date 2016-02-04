@@ -101,10 +101,21 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
             throw new IllegalStateException("Could not instantiate the database", e);
         }
     }
-
+    
     @Override
     public void addAuditEvent(String collectionID, String fileID, String actor, String info, String auditTrail,
-                              FileAction operation, String operationID, String fingerprint) {
+            FileAction operation, String operationID, String fingerprint) {
+        ArgumentValidator.checkNotNull(collectionID, "String collectionID");
+        ArgumentValidator.checkNotNull(operation, "FileAction operation");
+        addAuditEvent(collectionID, fileID, new Date(), actor, info, auditTrail, operation, operationID, fingerprint);
+    }
+    
+    /**
+     * Inner method to handle the insertion of audit events. 
+     * The inner method is separated out to be able to test specifics timestamps. 
+     */
+    protected void addAuditEvent(String collectionID, String fileID, Date auditTime, String actor, String info, 
+            String auditTrail, FileAction operation, String operationID, String fingerprint) {
         ArgumentValidator.checkNotNull(collectionID, "String collectionID");
         ArgumentValidator.checkNotNull(operation, "FileAction operation");
         log.debug("Inserting an audit event for file '" + fileID + "', from actor '" + actor
@@ -142,7 +153,7 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
                     + AUDITTRAIL_AUDIT + " , " + AUDITTRAIL_INFORMATION + " , " + AUDITTRAIL_OPERATIONID + " , " +
                     AUDITTRAIL_FINGERPRINT + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ?)";
             DatabaseUtils.executeStatement(dbConnector, insertSql, fileGuid, actorGuid, operation.toString(),
-                    new Date(), auditTrail, info, operationID, fingerprint);
+                    auditTime.getTime(), auditTrail, info, operationID, fingerprint);
         }
     }
 
@@ -226,7 +237,7 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
                     event.setSequenceNumber(BigInteger.valueOf(results.getLong(sequencePosition)));
                     event.setFileID(results.getString(filePosition));
                     event.setActorOnFile(retrieveActorName(results.getLong(actorPosition)));
-                    event.setActionDateTime(CalendarUtils.getFromMillis(results.getTimestamp(actionDatePosition).getTime()));
+                    event.setActionDateTime(CalendarUtils.getFromMillis(results.getLong(actionDatePosition)));
                     event.setActionOnFile(FileAction.fromValue(results.getString(operationPosition)));
                     event.setAuditTrailInformation(results.getString(auditTrailInformationPosition));
                     event.setInfo(results.getString(infoPosition));
@@ -438,10 +449,10 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
                 res.add(maxSeqNumber);
             }
             if(minDate != null) {
-                res.add(minDate);
+                res.add(minDate.getTime());
             }
             if(maxDate != null) {
-                res.add(maxDate);
+                res.add(maxDate.getTime());
             }
             if(maxResults != null) {
                 res.add(maxResults);

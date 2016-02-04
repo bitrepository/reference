@@ -412,7 +412,7 @@
     </profiles>
 
     <properties>
-        <message.xml.version>28</message.xml.version>
+        <message.xml.version>29-SNAPSHOT</message.xml.version>
         <repository.settings.version>11</repository.settings.version>
         <derby.version>10.12.1.1</derby.version>
         <activemq.version>5.13.0</activemq.version>

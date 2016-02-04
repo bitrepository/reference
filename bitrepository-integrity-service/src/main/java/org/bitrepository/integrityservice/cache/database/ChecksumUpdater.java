@@ -24,7 +24,6 @@ package org.bitrepository.integrityservice.cache.database;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -60,7 +59,7 @@ public class ChecksumUpdater {
     private final String insertFileInfoWithChecksumSql = "INSERT INTO fileinfo ("
             + " collectionID, pillarID, fileID, file_timestamp, last_seen_getfileids,"
             + " checksum, checksum_timestamp, last_seen_getchecksums)"
-            + " (SELECT collectionID, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, CURRENT_TIMESTAMP FROM collections"
+            + " (SELECT collectionID, ?, ?, ?, ?, ?, ?, ? FROM collections"
                 + " WHERE collectionID = ?"
                 + " AND NOT EXISTS ("
                     + " SELECT * FROM fileinfo "
@@ -71,7 +70,7 @@ public class ChecksumUpdater {
     private final String updateChecksumSql = "UPDATE fileinfo "
             + "	SET checksum = ?,"
             + " checksum_timestamp = ?,"
-            + " last_seen_getchecksums = CURRENT_TIMESTAMP"
+            + " last_seen_getchecksums = ?"
             + " WHERE fileID = ?"
             + "	AND collectionID = ?"
             + " AND pillarID = ?";	
@@ -144,40 +143,43 @@ public class ChecksumUpdater {
     } 
 
     private void addFileInfoWithChecksum(ChecksumDataForChecksumSpecTYPE item) throws SQLException {
-        Timestamp calculationTime = new Timestamp(
-                CalendarUtils.convertFromXMLGregorianCalendar(item.getCalculationTimestamp()).getTime());
+        long calculationTime = CalendarUtils.convertFromXMLGregorianCalendar(item.getCalculationTimestamp()).getTime();
 
+        Date now = new Date();
         insertFileInfoPS.setString(1, pillar);
         insertFileInfoPS.setString(2, item.getFileID());
-        insertFileInfoPS.setTimestamp(3, calculationTime);
-        insertFileInfoPS.setString(4, Base16Utils.decodeBase16(item.getChecksumValue()));
-        insertFileInfoPS.setTimestamp(5, calculationTime);
-        insertFileInfoPS.setString(6, collectionID);
-        insertFileInfoPS.setString(7, item.getFileID());
+        insertFileInfoPS.setLong(3, calculationTime);
+        insertFileInfoPS.setLong(4, now.getTime());
+        insertFileInfoPS.setString(5, Base16Utils.decodeBase16(item.getChecksumValue()));
+        insertFileInfoPS.setLong(6, calculationTime);
+        insertFileInfoPS.setLong(7, now.getTime());
         insertFileInfoPS.setString(8, collectionID);
-        insertFileInfoPS.setString(9, pillar);
+        insertFileInfoPS.setString(9, item.getFileID());
+        insertFileInfoPS.setString(10, collectionID);
+        insertFileInfoPS.setString(11, pillar);
         insertFileInfoPS.addBatch();
     }
 
     private void updateChecksum(ChecksumDataForChecksumSpecTYPE item) throws SQLException {
-        Timestamp calculationTime = new Timestamp(
-                CalendarUtils.convertFromXMLGregorianCalendar(item.getCalculationTimestamp()).getTime());
+        long calculationTime = CalendarUtils.convertFromXMLGregorianCalendar(item.getCalculationTimestamp()).getTime();
 
+        Date now = new Date();
         updateChecksumPS.setString(1, Base16Utils.decodeBase16(item.getChecksumValue()));
-        updateChecksumPS.setTimestamp(2, calculationTime);
-        updateChecksumPS.setString(3, item.getFileID());
-        updateChecksumPS.setString(4, collectionID);
-        updateChecksumPS.setString(5, pillar);
+        updateChecksumPS.setLong(2, calculationTime);
+        updateChecksumPS.setLong(3, now.getTime());
+        updateChecksumPS.setString(4, item.getFileID());
+        updateChecksumPS.setString(5, collectionID);
+        updateChecksumPS.setString(6, pillar);
         updateChecksumPS.addBatch();
     }
 
     private void updateMaxTime(Date maxDate) throws SQLException {
-        updateLatestChecksumTimePS.setTimestamp(1, new Timestamp(maxDate.getTime()));
+        updateLatestChecksumTimePS.setLong(1, maxDate.getTime());
         updateLatestChecksumTimePS.setString(2, collectionID);
         updateLatestChecksumTimePS.setString(3, pillar);
 
         insertLatestChecksumTimePS.setString(1, pillar);
-        insertLatestChecksumTimePS.setTimestamp(2, new Timestamp(maxDate.getTime()));
+        insertLatestChecksumTimePS.setLong(2, maxDate.getTime());
         insertLatestChecksumTimePS.setString(3, collectionID);
         insertLatestChecksumTimePS.setString(4, collectionID);
         insertLatestChecksumTimePS.setString(5, pillar);

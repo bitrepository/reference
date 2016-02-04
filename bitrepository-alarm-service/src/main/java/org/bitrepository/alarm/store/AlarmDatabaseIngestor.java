@@ -174,7 +174,7 @@ public class AlarmDatabaseIngestor {
         }
         
         if(alarm.getOrigDateTime() != null) {
-            res.add(CalendarUtils.convertFromXMLGregorianCalendar(alarm.getOrigDateTime()));
+            res.add(CalendarUtils.convertFromXMLGregorianCalendar(alarm.getOrigDateTime()).getTime());
         }
         
         if(alarm.getFileID() != null) {

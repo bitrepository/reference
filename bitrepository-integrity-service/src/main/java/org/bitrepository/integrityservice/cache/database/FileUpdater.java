@@ -24,7 +24,6 @@ package org.bitrepository.integrityservice.cache.database;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Date;
 
@@ -52,7 +51,7 @@ public class FileUpdater {
      */
     private final String insertFileInfoSql = "INSERT INTO fileinfo ("
     		+ " collectionID, pillarID, fileID, filesize, file_timestamp, last_seen_getfileids)"
-    		+ " (SELECT collectionID, ?, ?, ?, ?, CURRENT_TIMESTAMP FROM collections"
+    		+ " (SELECT collectionID, ?, ?, ?, ?, ? FROM collections"
     		+ " WHERE collectionID = ? "
     		+ " AND NOT EXISTS ("
     			+ " SELECT * FROM fileinfo "
@@ -63,7 +62,7 @@ public class FileUpdater {
     private final String updateFileInfoSql = "UPDATE fileinfo "
     		+ "	SET filesize = ?,"
     		+ " file_timestamp = ?,"
-    		+ " last_seen_getfileids = CURRENT_TIMESTAMP"
+    		+ " last_seen_getfileids = ?"
     		+ " WHERE fileID = ?"
     		+ "	AND collectionID = ?"
     		+ " AND pillarID = ?";	
@@ -134,6 +133,7 @@ public class FileUpdater {
     } 
     
     private void addFileInfo(FileIDsDataItem item) throws SQLException {
+        Date now = new Date();
         insertFileInfoPS.setString(1, pillar);
         insertFileInfoPS.setString(2, item.getFileID());
     	if(item.getFileSize() == null) {
@@ -141,38 +141,39 @@ public class FileUpdater {
         } else {
         	insertFileInfoPS.setLong(3, item.getFileSize().longValue());
         }
-        Timestamp ts = new Timestamp(
-                CalendarUtils.convertFromXMLGregorianCalendar(item.getLastModificationTime()).getTime());
-        insertFileInfoPS.setTimestamp(4, ts);
-        insertFileInfoPS.setString(5, collectionID);
-        insertFileInfoPS.setString(6, item.getFileID());
-    	insertFileInfoPS.setString(7, collectionID);
-    	insertFileInfoPS.setString(8, pillar);
+    	long time = CalendarUtils.convertFromXMLGregorianCalendar(item.getLastModificationTime()).getTime();
+    	insertFileInfoPS.setLong(4, time);
+    	insertFileInfoPS.setLong(5, now.getTime());
+        insertFileInfoPS.setString(6, collectionID);
+        insertFileInfoPS.setString(7, item.getFileID());
+    	insertFileInfoPS.setString(8, collectionID);
+    	insertFileInfoPS.setString(9, pillar);
     	insertFileInfoPS.addBatch();
     }
     
     private void updateFileInfo(FileIDsDataItem item) throws SQLException {
+        Date now = new Date();
         if(item.getFileSize() == null) {
             updateFileInfoPS.setNull(1, Types.BIGINT);
         } else {
             updateFileInfoPS.setLong(1, item.getFileSize().longValue());
         }
-        Timestamp ts = new Timestamp(
-                CalendarUtils.convertFromXMLGregorianCalendar(item.getLastModificationTime()).getTime());
-        updateFileInfoPS.setTimestamp(2, ts);
-        updateFileInfoPS.setString(3, item.getFileID());
-        updateFileInfoPS.setString(4, collectionID);
-        updateFileInfoPS.setString(5, pillar);
+        long time = CalendarUtils.convertFromXMLGregorianCalendar(item.getLastModificationTime()).getTime();
+        updateFileInfoPS.setLong(2, time);
+        updateFileInfoPS.setLong(3, now.getTime());
+        updateFileInfoPS.setString(4, item.getFileID());
+        updateFileInfoPS.setString(5, collectionID);
+        updateFileInfoPS.setString(6, pillar);
         updateFileInfoPS.addBatch();
     }
     
     private void updateMaxTime(Date maxDate) throws SQLException {
-        updateLatestFileTimePS.setTimestamp(1, new Timestamp(maxDate.getTime()));
+        updateLatestFileTimePS.setLong(1, maxDate.getTime());
         updateLatestFileTimePS.setString(2, collectionID);
         updateLatestFileTimePS.setString(3, pillar);
         
         insertLatestFileTimePS.setString(1, pillar);
-        insertLatestFileTimePS.setTimestamp(2, new Timestamp(maxDate.getTime()));
+        insertLatestFileTimePS.setLong(2, maxDate.getTime());
         insertLatestFileTimePS.setString(3, collectionID);
         insertLatestFileTimePS.setString(4, collectionID);
         insertLatestFileTimePS.setString(5, pillar);

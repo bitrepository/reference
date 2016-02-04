@@ -36,13 +36,13 @@ create table tableversions (
     version int not null             -- version of table
 );
 
-insert into tableversions ( tablename, version ) values ( 'audittrail', 4);
+insert into tableversions ( tablename, version ) values ( 'audittrail', 5);
 insert into tableversions ( tablename, version ) values ( 'file', 2);
 insert into tableversions ( tablename, version ) values ( 'contributor', 2);
 insert into tableversions ( tablename, version ) values ( 'actor', 2);
 insert into tableversions ( tablename, version ) values ( 'collection', 1);
 insert into tableversions ( tablename, version ) values ( 'collection_progress', 1);
-insert into tableversions ( tablename, version ) values ( 'auditservicedb', 5);
+insert into tableversions ( tablename, version ) values ( 'auditservicedb', 6);
 
 --*************************************************************************--
 -- Name:     collection
@@ -159,17 +159,17 @@ create table collection_progress (
 -- Expected entry count: Very, very many.
 --*************************************************************************--
 create table audittrail (
-    audit_key bigint not null generated always as identity primary key,
+    audit_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
                                     -- The key for this table.
-    sequence_number bigint not null,-- The sequence number for the given audit trail.
-    contributor_key bigint not null,
+    sequence_number BIGINT NOT NULL,-- The sequence number for the given audit trail.
+    contributor_key BIGINT NOT NULL,
                                     -- The identifier for the contributor of this audittrail.
                                     -- Used for looking up in the contributor table.
-    file_key bigint not null,       -- The identifier for the file. Used to lookup in the file table.
-    actor_key bigint not null,      -- The identifier for the actor which performed the action for the audit. 
+    file_key BIGINT NOT NULL,       -- The identifier for the file. Used to lookup in the file table.
+    actor_key BIGINT NOT NULL,      -- The identifier for the actor which performed the action for the audit. 
                                     -- Used for looking up in the actor table.
-    operation varchar(100),         -- The name of the action behind the audit.
-    operation_date timestamp,       -- The date when the action was performed.
+    operation VARCHAR(100),         -- The name of the action behind the audit.
+    operation_date BIGINT,          -- The date (millis since epoch) when the action was performed.
     audit CLOB,                     -- The audit trail delivered from the actor. 
     information CLOB,               -- The information about the audit.
     operationID VARCHAR(100),       -- The conversation/operation ID the the audit belongs to.
@@ -185,7 +185,7 @@ create table audittrail (
                                  -- Constraint to ensure that audits are not duplicated
 );
 
-create index dateindex on audittrail ( operation_date );
-create index auditindex on audittrail ( contributor_key, file_key, actor_key );
-CREATE INDEX fingerprintindex ON audittrail ( fingerprint );
-CREATE INDEX operationidindex ON audittrail ( operationID );
+CREATE INDEX dateindex ON audittrail (operation_date);
+CREATE INDEX auditindex ON audittrail (file_key, contributor_key);
+CREATE INDEX fingerprintindex ON audittrail (fingerprint);
+CREATE INDEX operationidindex ON audittrail (operationID);
