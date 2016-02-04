@@ -118,7 +118,8 @@ public class AuditDatabaseExtractor {
      */
     public AuditEventIterator extractAuditEventsByIterator() {
         String sql = createSelectString() + " FROM " + AUDITTRAIL_TABLE + joinWithFileTable() + joinWithActorTable() 
-                + joinWithContributorTable() + createRestriction();
+                + joinWithContributorTable() + createRestriction() 
+                + " ORDER BY " + AUDITTRAIL_TABLE + "." + AUDITTRAIL_OPERATION_DATE;
         try {
             log.debug("Creating prepared statement with sql '" + sql + "' and arguments '" 
                     + Arrays.asList(extractArgumentsFromModel()) + " for AuditEventIterator");
