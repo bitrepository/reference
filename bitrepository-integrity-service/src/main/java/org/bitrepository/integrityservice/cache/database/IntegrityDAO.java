@@ -549,9 +549,9 @@ public abstract class IntegrityDAO {
                        Long fileCount = dbResult.getLong("file_count");
                        Long dataSize = dbResult.getLong("file_size");
                        Long checksumErrors = dbResult.getLong("checksum_errors_count");
-                       Date latestFile = dbResult.getTimestamp("latest_file_date");
-                       Date statsTime = dbResult.getTimestamp("stat_time");
-                       Date updateTime = dbResult.getTimestamp("last_update");
+                       Date latestFile = new Date(dbResult.getLong("latest_file_date"));
+                       Date statsTime = new Date(dbResult.getLong("stat_time"));
+                       Date updateTime = new Date(dbResult.getLong("last_update"));
                        
                        CollectionStat stat = new CollectionStat(collectionID, fileCount, dataSize, checksumErrors, 
                                latestFile, statsTime, updateTime);
