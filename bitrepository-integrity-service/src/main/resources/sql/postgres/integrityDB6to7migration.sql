@@ -30,9 +30,9 @@ UPDATE tableversions SET version = 3 WHERE tablename = 'collectionstats';
 
 -- Migrate fileinfo table
 ALTER TABLE fileinfo ADD COLUMN file_timestamp2 BIGINT;
-ALTER TABLE fileinfo ADD COLUMNT checksum_timestamp2 BIGINT;
-ALTER TABLE fileinfo ADD COLUMNT last_seen_getfileids2 BIGINT;
-ALTER TABLE fileinfo ADD COLUMNT last_seen_getchecksums2 BIGINT;
+ALTER TABLE fileinfo ADD COLUMN checksum_timestamp2 BIGINT;
+ALTER TABLE fileinfo ADD COLUMN last_seen_getfileids2 BIGINT;
+ALTER TABLE fileinfo ADD COLUMN last_seen_getchecksums2 BIGINT;
 
 DROP INDEX checksumdateindex;
 DROP INDEX lastseenindex;
