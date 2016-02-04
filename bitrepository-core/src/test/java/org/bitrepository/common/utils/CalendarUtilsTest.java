@@ -21,6 +21,8 @@
  */
 package org.bitrepository.common.utils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -71,5 +73,23 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         Assert.assertTrue(date.getTime() <= afterNow);
         Assert.assertTrue(date.getTime() >= beforeNow);
         Assert.assertTrue(calendar.toGregorianCalendar().getTimeInMillis() == date.getTime());
+    }
+    
+    @Test(groups = {"regressiontest"})
+    public void startDateTest() throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Date expectedStartOfDay = sdf.parse("2015-02-26T00:00:00.000Z");
+        
+        Date parsedStartOfDay = CalendarUtils.makeStartDateObject("02/26/2015");
+        Assert.assertEquals(parsedStartOfDay, expectedStartOfDay);
+    }
+    
+    @Test(groups = {"regressiontest"})
+    public void endDateTest() throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Date expectedStartOfDay = sdf.parse("2015-02-26T23:59:59.999Z");
+        
+        Date parsedStartOfDay = CalendarUtils.makeEndDateObject("02/26/2015");
+        Assert.assertEquals(parsedStartOfDay, expectedStartOfDay);
     }
 }

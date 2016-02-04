@@ -25,7 +25,6 @@
 package org.bitrepository.alarm.alarmservice;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +42,7 @@ import org.bitrepository.alarm.AlarmService;
 import org.bitrepository.alarm.AlarmServiceFactory;
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
+import org.bitrepository.common.utils.CalendarUtils;
 
 @Path("/AlarmService")
 public class RestAlarmService {
@@ -91,8 +91,8 @@ public class RestAlarmService {
             @FormParam("collectionID") String collectionID,
             @DefaultValue("10") @FormParam("maxAlarms") Integer maxAlarms,
             @DefaultValue("true") @FormParam ("oldestAlarmFirst") boolean oldestAlarmFirst) {
-        Date from = makeDateObject(fromDate);
-        Date to = makeDateObject(toDate);
+        Date from = CalendarUtils.makeStartDateObject(fromDate);
+        Date to = CalendarUtils.makeEndDateObject(toDate);
         
         Collection<Alarm> alarms = alarmService.extractAlarms(contentOrNull(reportingComponent), makeAlarmCode(alarmCode), 
                 from, to, contentOrNull(fileID), makeCollectionID(collectionID), maxAlarms, oldestAlarmFirst);
@@ -105,29 +105,14 @@ public class RestAlarmService {
     @Consumes("application/json")
     @Produces("application/json")
     public List<Alarm> queryAlarms(AlarmServiceInput input) {
-        Date from = makeDateObject(input.getFromDate());
-        Date to = makeDateObject(input.getToDate());
+        Date from = CalendarUtils.makeStartDateObject(input.getFromDate());
+        Date to = CalendarUtils.makeEndDateObject(input.getToDate());
        
         Collection<Alarm> alarms = alarmService.extractAlarms(contentOrNull(input.getReportingComponent()), makeAlarmCode(input.getAlarmCode()),
                 from, to, contentOrNull(input.getFileID()), makeCollectionID(input.getCollectionID()), input.getMaxAlarms(), input.isOldestAlarmsFirst());
        
         return new ArrayList<Alarm>(alarms);
         
-    }
-    
-    private Date makeDateObject(String dateStr) {
-        if(dateStr == null || dateStr.trim().isEmpty()) {
-            return null;
-        } else {
-            String[] components = dateStr.split("/");
-            int year = Integer.parseInt(components[2]);
-            int month = Integer.parseInt(components[0]);
-            int day = Integer.parseInt(components[1]);
-            Calendar time = Calendar.getInstance();
-            time.set(year, (month - 1), day);
-            
-            return time.getTime();
-        }
     }
     
     private String makeCollectionID(String collectionID) {

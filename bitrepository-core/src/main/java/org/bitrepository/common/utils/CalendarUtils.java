@@ -24,8 +24,12 @@
  */
 package org.bitrepository.common.utils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -115,4 +119,49 @@ public final class CalendarUtils {
         
         return xmlCal.toGregorianCalendar().getTime();
     }
+    
+    /**
+     * Create a date object representing the start of the day denoted by dateStr
+     * @param dateStr The string representation of the date, in the form '02/26/2015'
+     * @return Date A date object representing the start of the day
+     */
+    public static Date makeStartDateObject(String dateStr) {
+        return makeCalendarObject(dateStr).getTime();
+    }
+    
+    /**
+     * Create a date object representing the end of the day denoted by dateStr
+     * @param dateStr The string representation of the date, in the form '02/26/2015'
+     * @return Date A date object representing the end of the day
+     */
+    public static Date makeEndDateObject(String dateStr) {
+        Calendar cal = makeCalendarObject(dateStr);
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        cal.add(Calendar.MILLISECOND, -1);
+        return cal.getTime();
+    } 
+    
+    /**
+     * Parses the input string and returns a calendar representation of the day in UTC. 
+     * @param dateStr The string representation of the date, in the form '02/26/2015' 
+     * @return Calendar A calendar object representing the start of the date in UTC.
+     */
+    private static Calendar makeCalendarObject(String dateStr) {
+        if(dateStr == null || dateStr.trim().isEmpty()) {
+            return null;
+        } else {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            try {
+                Date basedate = sdf.parse(dateStr);
+                int utcOffset = TimeZone.getDefault().getOffset(basedate.getTime());
+                Calendar time = Calendar.getInstance();
+                time.setTime(basedate);
+                time.add(Calendar.MILLISECOND, utcOffset);
+                return time;
+            } catch (ParseException e) {
+                return null;
+            } 
+        }
+    }
+    
 }
