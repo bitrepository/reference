@@ -64,7 +64,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     public void setup() throws Exception {
         super.setup();
         TEST_COLLECTIONID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-   }
+    }
     
     @Override 
     protected void customizeSettings() {
@@ -684,15 +684,22 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
     public void testGetFileIDAtIndex() throws Exception {
-        addDescription("Tests that the accumulated size of the collection can be extracted");
+        addDescription("Tests that a fileID at a given index can be extracted.");
         IntegrityDAO cache = createDAO();
+        
+        addStep("Extract a fileID from the empty database", "Returns a null");
+        Assert.assertNull(cache.getFileIdAtIndex(TEST_COLLECTIONID, 0L));
         
         addStep("Insert test data into database", "Data is ingested");
         FileIDsData data = makeFileIDsDataWithGivenFileSize(TEST_FILE_ID, 100L);
         cache.updateFileIDs(data, TEST_PILLAR_1, TEST_COLLECTIONID);
         cache.updateFileIDs(data, TEST_PILLAR_2, TEST_COLLECTIONID);
-        
+
+        addStep("Extract the first fileID", "The inserted fileID");
         Assert.assertEquals(cache.getFileIdAtIndex(TEST_COLLECTIONID, 0L), TEST_FILE_ID);
+        
+        addStep("Extract a fileID at an incomprehendable index from the database", "Returns a null");
+        Assert.assertNull(cache.getFileIdAtIndex(TEST_COLLECTIONID, Long.MAX_VALUE));
     }
     
     /*

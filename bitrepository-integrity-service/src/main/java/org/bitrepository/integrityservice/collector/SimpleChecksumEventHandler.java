@@ -33,7 +33,6 @@ import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +52,7 @@ public class SimpleChecksumEventHandler implements EventHandler {
     private final BlockingQueue<OperationEvent> finalEventQueue = new LinkedBlockingQueue<OperationEvent>();
     /** The integrity contributors, keeps track of who have failed, are active or finished */
     private final IntegrityContributors integrityContributors;
-    
+    /** Map between pillars and their checksum results.*/
     private Map<String, ResultingChecksums> checksumResults = new HashMap<String, ResultingChecksums>();
     
     /**
@@ -106,10 +105,10 @@ public class SimpleChecksumEventHandler implements EventHandler {
             log.trace("Receiving GetChecksums result: {}", 
                     checksumEvent.getChecksums().getChecksumDataItems().toString());
             checksumResults.put(checksumEvent.getContributorID(), checksumEvent.getChecksums());
-            if(!checksumEvent.isPartialResult()) {
-                integrityContributors.finishContributor(checksumEvent.getContributorID());
-            } else {
+            if(checksumEvent.isPartialResult()) {
                 integrityContributors.succeedContributor(checksumEvent.getContributorID());
+            } else {
+                integrityContributors.finishContributor(checksumEvent.getContributorID());
             }
         } else {
             log.warn("Unexpected component complete event: " + event.toString());

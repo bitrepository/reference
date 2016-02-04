@@ -94,14 +94,14 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
             log.debug("Collecting checksums from '" + pillarsToCollectFrom + "' for collection '" 
                     + collectionID + "'.");
             SimpleChecksumEventHandler eventHandler = new SimpleChecksumEventHandler(timeout, integrityContributors);
-            collector.getChecksums(collectionID, pillarsToCollectFrom, checksumType, fileID, "IntegrityService: "
-                    + getName(), null, eventHandler);
+            collector.getChecksums(collectionID, pillarsToCollectFrom, checksumType, fileID, "Getting salted " 
+                    + checksumType.getChecksumType() + " checksum for spot integrity check", null, eventHandler);
             
             OperationEvent event = eventHandler.getFinish();
             if(event.getEventType() == OperationEventType.FAILED) {
                 handleFailureEvent(event);
             }
-            log.debug("Collecting of checksums ids had the final event: " + event);
+            log.debug("Collecting of checksums had the final event: " + event);
             checksumResults = eventHandler.getResults();
         } catch (InterruptedException e) {
             log.warn("Interrupted while collecting checksums.", e);
@@ -117,7 +117,7 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
             log.info("Get failure event, but no contributors marked as failed.");
         } else {
             OperationFailedEvent ofe = (OperationFailedEvent) event;
-            log.info("Failure occured collecting fileIDs, continuing collecting checksums. Failure {}", ofe.toString());
+            log.info("Failure occured collecting checksums. Failure {}", ofe.toString());
             alerter.integrityFailed("Failure while collecting checksums, the check will continue "
                     + "with the information available. The failed contributors were: " 
                     + integrityContributors.getFailedContributors(), collectionID);
@@ -163,6 +163,8 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
 
     @Override
     public String getName() {
-        return "Performing the GetChecksum for file '" + fileID + "' with the algorithm '"+ checksumType + "'";
+        return "Performing the GetChecksum for file '" + fileID + "' with the algorithm '" 
+                + checksumType.getChecksumType() + "' and salt '" + Base16Utils.decodeBase16(
+                        checksumType.getChecksumSalt()) + "'.";
     }
 }

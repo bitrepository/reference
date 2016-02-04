@@ -31,7 +31,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
@@ -40,12 +39,14 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.client.eventhandler.CompleteEvent;
+import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
+import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -73,6 +74,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_1);
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_2);
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_3);
+        integrityContributors = new IntegrityContributors(Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2, TEST_PILLAR_3), 0);
     }
 
     
@@ -141,7 +143,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
-    public void testFailure() throws Exception {
+    public void testComponentFailure() throws Exception {
         addDescription("Test step for retrieving the checksum of a single file, when one pillar fails.");
         ChecksumSpecTYPE checksumType = ChecksumUtils.getDefault(settings);
         
@@ -151,10 +153,13 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
 
                 ResultingChecksums res = createResultingChecksums((String) invocation.getArguments()[3], "checksum");
-                eventHandler.handleEvent(new ContributorFailedEvent(TEST_PILLAR_3, TEST_COLLECTION, ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE));
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_2, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
-                eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "", null));
+                ContributorEvent e1 = new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
+                ContributorEvent e2 = new ChecksumsCompletePillarEvent(TEST_PILLAR_2, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
+                ContributorEvent e3 = new ContributorFailedEvent(TEST_PILLAR_3, TEST_COLLECTION, ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+                eventHandler.handleEvent(e1);
+                eventHandler.handleEvent(e2);
+                eventHandler.handleEvent(e3);
+                eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "COMPONENT FAILED", Arrays.asList(e1, e2, e3)));
                 return null;
             }
         }).when(collector).getChecksums(
@@ -172,10 +177,11 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
         Assert.assertTrue(step.getResults().keySet().contains(TEST_PILLAR_2));
         Assert.assertFalse(step.getResults().keySet().contains(TEST_PILLAR_3));
         
-        verifyZeroInteractions(alerter);
+        verify(alerter).integrityFailed(anyString(), eq(TEST_COLLECTION));
+        verifyNoMoreInteractions(alerter);
         verify(collector).getChecksums(anyString(), any(), eq(checksumType), eq(FILE_1), anyString(), any(), any(EventHandler.class));
         verifyNoMoreInteractions(collector);
-   }
+    }
     
     private ResultingChecksums createResultingChecksums(String fileId, String checksum) {
         ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();

@@ -42,8 +42,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simple workflow for repairing missing files.
- * Repairs 100 files per pillars. 
+ * Simple workflow for validating files with random salted checksum.
+ * Only chooses one single file for each run. 
+ * 
+ * The GetChecksumClient automatically ignores any checksum-pillars and other pillars, 
+ * who are not able to handle salted checksums.
  */
 public class SaltedChecksumWorkflow extends Workflow {
     private final static Logger log = LoggerFactory.getLogger(SaltedChecksumWorkflow.class);
@@ -58,7 +61,7 @@ public class SaltedChecksumWorkflow extends Workflow {
     protected String currentFileID = null;
     /** The current ChecksumSpec. Set to null, when not checking any file.*/
     protected ChecksumSpecTYPE currentChecksumSpec = null;
-    
+        
     /**
      * Remember to call the initialize method needs to be called before the start method.
      */
@@ -66,11 +69,11 @@ public class SaltedChecksumWorkflow extends Workflow {
 
     @Override
     public void initialise(WorkflowContext context, String collectionID) {
-        this.context = (IntegrityWorkflowContext)context;
+        this.context = (IntegrityWorkflowContext) context;
         this.collectionID = collectionID;
         jobID = new JobID(getClass().getSimpleName(), collectionID);
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
-        integrityContributors = new IntegrityContributors(pillars, pillars.size()-1);
+        integrityContributors = new IntegrityContributors(pillars, 0); 
     }
     
     @Override

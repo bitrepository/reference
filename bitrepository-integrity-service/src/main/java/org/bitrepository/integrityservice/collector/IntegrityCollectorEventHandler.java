@@ -108,20 +108,20 @@ public class IntegrityCollectorEventHandler implements EventHandler {
                     checksumEvent.getChecksums().getChecksumDataItems().toString());
             store.addChecksums(checksumEvent.getChecksums().getChecksumDataItems(), checksumEvent.getContributorID(), 
                     checksumEvent.getCollectionID());
-            if(!checksumEvent.isPartialResult()) {
-                integrityContributors.finishContributor(checksumEvent.getContributorID());
-            } else {
+            if(checksumEvent.isPartialResult()) {
                 integrityContributors.succeedContributor(checksumEvent.getContributorID());
+            } else {
+                integrityContributors.finishContributor(checksumEvent.getContributorID());
             }
         } else if(event instanceof FileIDsCompletePillarEvent) {
             FileIDsCompletePillarEvent fileidEvent = (FileIDsCompletePillarEvent) event;
             log.trace("Receiving GetFileIDs result: {}", fileidEvent.getFileIDs().getFileIDsData().toString());
             store.addFileIDs(fileidEvent.getFileIDs().getFileIDsData(), fileidEvent.getContributorID(),
                     fileidEvent.getCollectionID());
-            if(!fileidEvent.isPartialResult()) {
-                integrityContributors.finishContributor(fileidEvent.getContributorID());
-            } else {
+            if(fileidEvent.isPartialResult()) {
                 integrityContributors.succeedContributor(fileidEvent.getContributorID());
+            } else {
+                integrityContributors.finishContributor(fileidEvent.getContributorID());
             }
         } else {
             log.warn("Unexpected component complete event: " + event.toString());

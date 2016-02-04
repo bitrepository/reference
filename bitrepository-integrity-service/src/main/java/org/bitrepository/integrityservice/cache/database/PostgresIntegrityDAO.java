@@ -95,7 +95,6 @@ public class PostgresIntegrityDAO extends IntegrityDAO {
         return latestCollectionStatSql;
     }
 
-
     @Override
     protected String getFileIdAtIndexSql() {
         String getFileIDAtIndexSql = "SELECT DISTINCT( fileID ) FROM fileinfo"
