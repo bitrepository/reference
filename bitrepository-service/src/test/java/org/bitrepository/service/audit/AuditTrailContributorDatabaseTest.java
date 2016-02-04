@@ -154,8 +154,11 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         AuditTrailDatabaseResults events = daba.getAudits(firstCollectionID, null, null, null, null, null, 3L);
         Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().size(), 3L);
         Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionOnFile(), FileAction.PUT_FILE);
+        Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().get(0).getSequenceNumber().longValue(), 1L);
         Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().get(1).getActionOnFile(), FileAction.CHECKSUM_CALCULATED);
+        Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().get(1).getSequenceNumber().longValue(), 2L);
         Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().get(2).getActionOnFile(), FileAction.FILE_MOVED);
+        Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().get(2).getSequenceNumber().longValue(), 3L);
         
         long firstSeq = events.getAuditTrailEvents().getAuditTrailEvent().get(0).getSequenceNumber().longValue();
 
