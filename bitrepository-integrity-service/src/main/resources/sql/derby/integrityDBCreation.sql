@@ -81,10 +81,10 @@ CREATE TABLE fileinfo (
     pillarID VARCHAR(100) NOT NULL,         -- The pillar ID
     filesize BIGINT,                        -- Size of the file
     checksum VARCHAR(100),                  -- The checksum of the file
-    file_timestamp BIGINT,                  -- The last modified time on the pillar
-    checksum_timestamp BIGINT,              -- The calculation timestamp of the checksum
-    last_seen_getfileids BIGINT,            -- The last time the file was seen on a list of fileIDs for the pillar
-    last_seen_getchecksums BIGINT,          -- The last time the files was seen on a list of checksums for the pillar
+    file_timestamp BIGINT,                  -- The last modified time (millis since epoch) on the pillar
+    checksum_timestamp BIGINT,              -- The calculation timestamp (millis since epoch) of the checksum
+    last_seen_getfileids BIGINT,            -- The last time (millis since epoch) the file was seen on a list of fileIDs for the pillar
+    last_seen_getchecksums BIGINT,          -- The last time (millis since epoch) the files was seen on a list of checksums for the pillar
 
     PRIMARY KEY (collectionID, pillarID, fileID),
     FOREIGN KEY (collectionID) REFERENCES collections(collectionID),
@@ -121,9 +121,9 @@ CREATE TABLE stats (
     stat_key BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
                                  -- The key for a set of statistics.
     stat_time BIGINT NOT NULL, 
-                                 -- The time the statistics entry were made.
+                                 -- The time (millis since epoch) the statistics entry were made.
     last_update BIGINT NOT NULL,
-                                 -- The last time the statistics were updated
+                                 -- The last time (millis since epoch) the statistics were updated
     collectionID VARCHAR(255) NOT NULL, -- The key of the collection that the statistics belongs to 
     FOREIGN KEY (collectionID) REFERENCES collections(collectionID)
                                  -- Foreign key constraint on collectionID, enforcing the presence of the referred key
@@ -146,7 +146,7 @@ CREATE TABLE collectionstats (
     file_size BIGINT,            -- The total size of the files in the collection when the stats were made
     checksum_errors_count BIGINT, 
                                  -- The number of checksum errors in the collection when the stats were made
-    latest_file_date BIGINT NOT NULL, -- The latest ingested file in the collection.
+    latest_file_date BIGINT NOT NULL, -- The latest (millis since epoch) ingested file in the collection.
     UNIQUE (stat_key), 
                                  -- Enforce that there can only be one collectionstat for a statistics
     FOREIGN KEY (stat_key) REFERENCES stats(stat_key)

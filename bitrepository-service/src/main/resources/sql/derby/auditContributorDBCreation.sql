@@ -85,7 +85,7 @@ create table audittrail (
     actor_guid bigint,              -- The identifier for the actor which performed the action for the audit. 
                                     -- Used for looking up in the 
     operation varchar(100),         -- The name of the action behind the audit.
-    operation_date BIGINT,       -- The date when the action was performed.
+    operation_date BIGINT,          -- The date (millis since epoch) when the action was performed.
     audit CLOB,                     -- The audit trail delivered from the actor. 
     information CLOB,               -- The information about the audit.
     operationID VARCHAR(100),       -- The conversation/operation ID the the audit belongs to.

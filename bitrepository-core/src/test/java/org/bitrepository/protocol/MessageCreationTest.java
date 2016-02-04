@@ -69,7 +69,7 @@ public class MessageCreationTest extends ExtendedTestCase {
     
     @Test(groups = {"regressiontest"}, expectedExceptions = SAXException.class)
     public void badDateMessageTest() throws IOException, SAXException, JAXBException {
-        addDescription("Test to ensure that messages carrying dates will provide offset.");
+        addDescription("Test to ensure that messages carrying dates must provide offset.");
         String messagePath = ExampleMessageFactory.PATH_TO_EXAMPLES + "BadMessages/" + 
                 "BadDateAlarmMessage" + ExampleMessageFactory.EXAMPLE_FILE_POSTFIX;
         String message = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream(messagePath));

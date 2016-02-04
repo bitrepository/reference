@@ -81,7 +81,7 @@ CREATE TABLE audittrail (
     actor_guid INT,                 -- The identifier for the actor which performed the action for the audit. 
                                     -- Used for looking up in the 
     operation VARCHAR(100),         -- The name of the action behind the audit.
-    operation_date BIGINT,          -- The date when the action was performed.
+    operation_date BIGINT,          -- The date (millis since epoch) when the action was performed.
     audit TEXT,                     -- The audit trail delivered from the actor. 
     information TEXT,               -- The information about the audit.
     operationID VARCHAR(100),       -- The conversation/operation ID the the audit belongs to.

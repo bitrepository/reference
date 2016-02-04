@@ -222,16 +222,16 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         Date summertimeUnix = new Date(1445734794000L);
         Assert.assertEquals(summertimeTS, summertimeUnix);
         
-        Date winthertimeTS = sdf.parse("2015-10-25T02:59:54.000+01:00");
-        Date winthertimeUnix = new Date(1445738394000L);
-        Assert.assertEquals(winthertimeTS, winthertimeUnix);
+        Date wintertimeTS = sdf.parse("2015-10-25T02:59:54.000+01:00");
+        Date wintertimeUnix = new Date(1445738394000L);
+        Assert.assertEquals(wintertimeTS, wintertimeUnix);
         
         AuditTrailEvents events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getXmlGregorianCalendar(summertimeTS), 
                 FileAction.CHECKSUM_CALCULATED, "actor", "auditInfo", "summertime", "info", pillarID, new BigInteger("1"), 
                 operationID1, fingerprint1));
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getXmlGregorianCalendar(winthertimeTS), 
-                FileAction.CHECKSUM_CALCULATED, "actor", "auditInfo", "winthertime", "info", pillarID, new BigInteger("1"), 
+        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getXmlGregorianCalendar(wintertimeTS), 
+                FileAction.CHECKSUM_CALCULATED, "actor", "auditInfo", "wintertime", "info", pillarID, new BigInteger("1"), 
                 operationID1, fingerprint1));
         database.addAuditTrails(events, collectionID, pillarID);
         
@@ -241,11 +241,11 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         Assert.assertEquals(
                 CalendarUtils.convertFromXMLGregorianCalendar(res.get(0).getActionDateTime()), summertimeUnix);
         
-        res = getEventsFromIterator(database.getAuditTrailsByIterator("winthertime", null, null, null, null, null, null, 
+        res = getEventsFromIterator(database.getAuditTrailsByIterator("wintertime", null, null, null, null, null, null, 
                 null, null, null, null));
         Assert.assertEquals(res.size(), 1, res.toString());
         Assert.assertEquals(
-                CalendarUtils.convertFromXMLGregorianCalendar(res.get(0).getActionDateTime()), winthertimeUnix);
+                CalendarUtils.convertFromXMLGregorianCalendar(res.get(0).getActionDateTime()), wintertimeUnix);
 
     }
     

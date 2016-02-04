@@ -136,13 +136,13 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         Date summertimeUnix = new Date(1445734794000L);
         Assert.assertEquals(summertimeTS, summertimeUnix);
         
-        Date winthertimeTS = sdf.parse("2015-10-25T02:59:54.000+01:00");
-        Date winthertimeUnix = new Date(1445738394000L);
-        Assert.assertEquals(winthertimeTS, winthertimeUnix);
+        Date wintertimeTS = sdf.parse("2015-10-25T02:59:54.000+01:00");
+        Date wintertimeUnix = new Date(1445738394000L);
+        Assert.assertEquals(wintertimeTS, wintertimeUnix);
         
         daba.addAuditEvent(firstCollectionID, "summertime", summertimeTS, "actor", "info", "auditTrail", 
                 FileAction.OTHER, null, null);
-        daba.addAuditEvent(firstCollectionID, "winthertime", winthertimeTS, "actor", "info", "auditTrail", 
+        daba.addAuditEvent(firstCollectionID, "wintertime", wintertimeTS, "actor", "info", "auditTrail", 
                 FileAction.OTHER, null, null);
         
         AuditTrailDatabaseResults events = daba.getAudits(firstCollectionID, "summertime", null, null, null, null, 2L);
@@ -150,10 +150,10 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         Assert.assertEquals(CalendarUtils.convertFromXMLGregorianCalendar(
                         events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionDateTime()), summertimeUnix);
         
-        events = daba.getAudits(firstCollectionID, "winthertime", null, null, null, null, 2L);
+        events = daba.getAudits(firstCollectionID, "wintertime", null, null, null, null, 2L);
         Assert.assertEquals(events.getAuditTrailEvents().getAuditTrailEvent().size(), 1, events.toString());
         Assert.assertEquals(CalendarUtils.convertFromXMLGregorianCalendar(
-                        events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionDateTime()), winthertimeUnix);
+                        events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionDateTime()), wintertimeUnix);
         
     }
     
