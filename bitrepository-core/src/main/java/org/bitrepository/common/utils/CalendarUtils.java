@@ -126,7 +126,12 @@ public final class CalendarUtils {
      * @return Date A date object representing the start of the day
      */
     public static Date makeStartDateObject(String dateStr) {
-        return makeCalendarObject(dateStr).getTime();
+        Calendar cal = makeCalendarObject(dateStr);
+        if(cal == null) {
+            return null;
+        } else {
+            return cal.getTime();
+        }
     }
     
     /**
@@ -136,9 +141,13 @@ public final class CalendarUtils {
      */
     public static Date makeEndDateObject(String dateStr) {
         Calendar cal = makeCalendarObject(dateStr);
-        cal.add(Calendar.DAY_OF_MONTH, 1);
-        cal.add(Calendar.MILLISECOND, -1);
-        return cal.getTime();
+        if(cal == null) {
+            return null;
+        } else {
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+            cal.add(Calendar.MILLISECOND, -1);
+            return cal.getTime();
+        }
     } 
     
     /**
