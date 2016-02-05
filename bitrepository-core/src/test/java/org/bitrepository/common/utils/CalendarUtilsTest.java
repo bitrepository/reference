@@ -77,6 +77,7 @@ public class CalendarUtilsTest extends ExtendedTestCase {
     
     @Test(groups = {"regressiontest"})
     public void startDateTest() throws ParseException {
+        addDescription("Test that the start date is considered as localtime and converted into UTC.");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         Date expectedStartOfDay = sdf.parse("2015-02-26T00:00:00.000Z");
         
@@ -86,10 +87,43 @@ public class CalendarUtilsTest extends ExtendedTestCase {
     
     @Test(groups = {"regressiontest"})
     public void endDateTest() throws ParseException {
+        addDescription("Test that the end date is considered as localtime and converted into UTC.");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         Date expectedStartOfDay = sdf.parse("2015-02-26T23:59:59.999Z");
         
         Date parsedStartOfDay = CalendarUtils.makeEndDateObject("02/26/2015");
         Assert.assertEquals(parsedStartOfDay, expectedStartOfDay);
+    }
+    
+    @Test(groups = {"regressiontest"})
+    public void endDateRolloverTest() throws ParseException {
+        addDescription("Test that the end date is correctly rolls over a year and month change.");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Date expectedStartOfDay = sdf.parse("2016-01-01T23:59:59.999Z");
+        
+        Date parsedStartOfDay = CalendarUtils.makeEndDateObject("12/32/2015");
+        Assert.assertEquals(parsedStartOfDay, expectedStartOfDay);
+    }
+    
+    @Test(groups = {"regressiontest"})
+    public void testSummerWinterTimeChange() {
+        addDescription("Test that the interval between start and end date on a summertime to "
+                + "wintertime change is 25 hours (-1 millisecond).");
+        Date startDate = CalendarUtils.makeStartDateObject("10/25/2015");
+        Date endDate = CalendarUtils.makeEndDateObject("10/25/2015");
+        long MS_PER_HOUR = 1000 * 60 * 60;
+        long expectedIntervalLength = (MS_PER_HOUR * 25) - 1;
+        Assert.assertEquals(endDate.getTime() - startDate.getTime(), expectedIntervalLength);
+    }
+    
+    @Test(groups = {"regressiontest"})
+    public void testWinterSummerTimeChange() {
+        addDescription("Test that the interval between start and end date on a wintertime to "
+                + "summertime change is 23 hours (-1 millisecond).");
+        Date startDate = CalendarUtils.makeStartDateObject("03/27/2016");
+        Date endDate = CalendarUtils.makeEndDateObject("03/27/2016");
+        long MS_PER_HOUR = 1000 * 60 * 60;
+        long expectedIntervalLength = (MS_PER_HOUR * 23) - 1;
+        Assert.assertEquals(endDate.getTime() - startDate.getTime(), expectedIntervalLength);
     }
 }

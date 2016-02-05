@@ -153,7 +153,8 @@ public final class CalendarUtils {
     /**
      * Parses the input string and returns a calendar representation of the day in UTC. 
      * @param dateStr The string representation of the date, in the form '02/26/2015' 
-     * @return Calendar A calendar object representing the start of the date in UTC.
+     * @return Calendar A calendar object representing the start of the date in UTC, 
+     *         or null if the input cannot be parsed.
      */
     private static Calendar makeCalendarObject(String dateStr) {
         if(dateStr == null || dateStr.trim().isEmpty()) {
