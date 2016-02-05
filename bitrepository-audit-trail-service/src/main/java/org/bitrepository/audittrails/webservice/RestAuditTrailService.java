@@ -26,7 +26,6 @@ package org.bitrepository.audittrails.webservice;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -83,8 +82,8 @@ public class RestAuditTrailService {
             @FormParam("fingerprint") String fingerprint,
             @FormParam("operationID") String operationID,
             @DefaultValue("1000") @FormParam("maxAudittrails") Integer maxResults) {
-        Date from = makeDateObject(fromDate);
-        Date to = makeDateObject(toDate);
+        Date from = CalendarUtils.makeStartDateObject(fromDate);
+        Date to = CalendarUtils.makeEndDateObject(toDate);
         
         final int maxAudits = maxResults;
         final AuditEventIterator it = service.queryAuditTrailEventsByIterator(from, to, contentOrNull(fileID),
@@ -168,22 +167,7 @@ public class RestAuditTrailService {
             return FileAction.fromValue(action);
         }
     }
-    
-    private Date makeDateObject(String dateStr) {
-        if(dateStr == null || dateStr.trim().isEmpty()) {
-            return null;
-        } else {
-            String[] components = dateStr.split("/");
-            int year = Integer.parseInt(components[2]);
-            int month = Integer.parseInt(components[0]);
-            int day = Integer.parseInt(components[1]);
-            Calendar time = Calendar.getInstance();
-            time.set(year, (month - 1), day);
-            
-            return time.getTime();
-        }
-    }
-    
+
     private String contentOrEmptyString(String input) {
         if(input == null) {
             return "";

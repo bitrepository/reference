@@ -35,11 +35,11 @@ CREATE TABLE tableversions (
 );
 
 INSERT INTO tableversions ( tablename, version )
-            VALUES ( 'alarm', 3);
+            VALUES ( 'alarm', 4);
 INSERT INTO tableversions ( tablename, version )
             VALUES ( 'component', 3);
 INSERT INTO tableversions (tablename, version) 
-            VALUES ('alarmservicedb', 3);
+            VALUES ('alarmservicedb', 4);
 
 --*************************************************************************--
 -- Name:     component
@@ -68,7 +68,7 @@ CREATE TABLE alarm (
     component_guid INT NOT NULL,  -- The guid for the component behind the alarm.
     alarm_code VARCHAR(50) NOT NULL, -- The code for the alarm.
     alarm_text TEXT NOT NULL,        -- The text for the alarm.
-    alarm_date TIMESTAMP NOT NULL,   -- The date for the alarm.
+    alarm_date BIGINT NOT NULL,      -- The date (millis since epoch) for the alarm.
     file_id VARCHAR(255),            -- The id for the file (allowed to be null).
     collection_id VARCHAR(255),      -- The id of the collection that the alarm belongs to (allowed to be null)
     FOREIGN KEY ( component_guid ) REFERENCES component ( component_guid )

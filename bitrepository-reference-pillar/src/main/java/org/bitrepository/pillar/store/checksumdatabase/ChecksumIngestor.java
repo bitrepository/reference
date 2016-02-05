@@ -60,7 +60,7 @@ public class ChecksumIngestor {
     public synchronized void insertNewEntry(String fileID, String collectionID, String checksum, Date date) {
         String sql = "INSERT INTO " + CHECKSUM_TABLE + " ( " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE 
                 + " , " + CS_COLLECTION_ID + " ) VALUES ( ? , ? , ? , ? )";
-        DatabaseUtils.executeStatement(connector, sql, fileID, checksum, date, collectionID);
+        DatabaseUtils.executeStatement(connector, sql, fileID, checksum, date.getTime(), collectionID);
     }
     
     /**
@@ -73,7 +73,7 @@ public class ChecksumIngestor {
     public void updateEntry(String fileID, String collectionID, String checksum, Date date) {
         String sql = "UPDATE " + CHECKSUM_TABLE + " SET " + CS_CHECKSUM + " = ? , " + CS_DATE + " = ? WHERE " 
                 + CS_FILE_ID + " = ? AND " + CS_COLLECTION_ID + " = ?";
-        DatabaseUtils.executeStatement(connector, sql, checksum, date, fileID, collectionID);
+        DatabaseUtils.executeStatement(connector, sql, checksum, date.getTime(), fileID, collectionID);
     }
     
     /**

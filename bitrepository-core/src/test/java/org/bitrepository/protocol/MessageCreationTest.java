@@ -24,9 +24,11 @@
  */
 package org.bitrepository.protocol;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -34,12 +36,17 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.activemq.util.ByteArrayInputStream;
+import org.apache.commons.io.IOUtils;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Test whether we are able to create message objects from xml. The input XML is the example code defined in the
@@ -58,6 +65,17 @@ public class MessageCreationTest extends ExtendedTestCase {
             ExampleMessageFactory.createMessage(
                     Class.forName(GetChecksumsFinalResponse.class.getPackage().getName() + "." + messageName));
         }
+    }
+    
+    @Test(groups = {"regressiontest"}, expectedExceptions = SAXException.class)
+    public void badDateMessageTest() throws IOException, SAXException, JAXBException {
+        addDescription("Test to ensure that messages carrying dates must provide offset.");
+        String messagePath = ExampleMessageFactory.PATH_TO_EXAMPLES + "BadMessages/" + 
+                "BadDateAlarmMessage" + ExampleMessageFactory.EXAMPLE_FILE_POSTFIX;
+        String message = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream(messagePath));
+        JaxbHelper jaxbHelper = new JaxbHelper(ExampleMessageFactory.PATH_TO_SCHEMA, ExampleMessageFactory.SCHEMA_NAME);
+        jaxbHelper.validate(new ByteArrayInputStream(message.getBytes()));
+        AlarmMessage am = jaxbHelper.loadXml(AlarmMessage.class, new ByteArrayInputStream(message.getBytes()));
     }
 
     /**

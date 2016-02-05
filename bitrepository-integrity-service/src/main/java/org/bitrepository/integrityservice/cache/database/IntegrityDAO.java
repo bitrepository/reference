@@ -140,7 +140,8 @@ public abstract class IntegrityDAO {
         		+ " WHERE collectionID = ? "
         		+ " AND pillarID = ?";
         
-        return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionID, pillarID);
+        Long time = DatabaseUtils.selectFirstLongValue(dbConnector, retrieveSql, collectionID, pillarID);
+        return (time == null ? null : new Date(time));
     }
     
     /**
@@ -154,7 +155,8 @@ public abstract class IntegrityDAO {
         String retrieveSql = "SELECT MAX(latest_file_timestamp) FROM collection_progress"
                 + " WHERE collectionID = ?";
         
-        return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionID);
+        Long time = DatabaseUtils.selectFirstLongValue(dbConnector, retrieveSql, collectionID);
+        return (time == null ? null : new Date(time));
     }
     
     /**
@@ -170,8 +172,8 @@ public abstract class IntegrityDAO {
         String retrieveSql = "SELECT latest_checksum_timestamp FROM collection_progress" 
         		+ " WHERE collectionID = ? "
         		+ " AND pillarID = ?";
-        
-        return DatabaseUtils.selectFirstDateValue(dbConnector, retrieveSql, collectionID, pillarID);
+        Long time = DatabaseUtils.selectFirstLongValue(dbConnector, retrieveSql, collectionID, pillarID);
+        return (time == null ? null : new Date(time));
     }
     
     /**
@@ -217,7 +219,7 @@ public abstract class IntegrityDAO {
                 + " AND pillarID = ?"
                 + " AND checksum_timestamp < ?";
         
-        return makeIntegrityIssueIterator(retrieveSql, collectionID, pillarID, maxDate);
+        return makeIntegrityIssueIterator(retrieveSql, collectionID, pillarID, maxDate.getTime());
     }
     
     /**
@@ -239,7 +241,7 @@ public abstract class IntegrityDAO {
                 + " AND (checksum is NULL"
                 + " OR last_seen_getchecksums < ?)";
         
-        return makeIntegrityIssueIterator(retrieveSql, collectionID, pillarID, cutoffDate);
+        return makeIntegrityIssueIterator(retrieveSql, collectionID, pillarID, cutoffDate.getTime());
     }
     
     /**
@@ -259,7 +261,7 @@ public abstract class IntegrityDAO {
                 + " AND pillarID = ?"
                 + " AND last_seen_getfileids < ?";
         
-        return makeIntegrityIssueIterator(findOrphansSql, collectionID, pillarID, cutoffDate);
+        return makeIntegrityIssueIterator(findOrphansSql, collectionID, pillarID, cutoffDate.getTime());
     }
     
     /**
@@ -378,13 +380,13 @@ public abstract class IntegrityDAO {
              PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, getFileInfoSql, collectionID, fileID)) {
             try (ResultSet dbResult = ps.executeQuery()) {
                 while(dbResult.next()) {
-                    Date lastFileCheck = dbResult.getTimestamp("file_timestamp");
+                    Date lastFileCheck = new Date(dbResult.getLong("file_timestamp"));
                     String checksum = dbResult.getString("checksum");
-                    Date lastChecksumCheck = dbResult.getTimestamp("checksum_timestamp");
+                    Date lastChecksumCheck = new Date(dbResult.getLong("checksum_timestamp"));
                     Long fileSize = dbResult.getLong("fileSize");
                     String pillarID = dbResult.getString("pillarID");
-                    Date lastSeenGetFileIDs = dbResult.getTimestamp("last_seen_getfileids");
-                    Date lastSeenGetChecksums = dbResult.getTimestamp("last_seen_getchecksums");
+                    Date lastSeenGetFileIDs = new Date(dbResult.getLong("last_seen_getfileids"));
+                    Date lastSeenGetChecksums = new Date(dbResult.getLong("last_seen_getchecksums"));
                     
                     FileInfo f = new FileInfo(fileID, CalendarUtils.getXmlGregorianCalendar(lastFileCheck), checksum,
                             fileSize, CalendarUtils.getXmlGregorianCalendar(lastChecksumCheck), pillarID);
@@ -547,9 +549,9 @@ public abstract class IntegrityDAO {
                        Long fileCount = dbResult.getLong("file_count");
                        Long dataSize = dbResult.getLong("file_size");
                        Long checksumErrors = dbResult.getLong("checksum_errors_count");
-                       Date latestFile = dbResult.getTimestamp("latest_file_date");
-                       Date statsTime = dbResult.getTimestamp("stat_time");
-                       Date updateTime = dbResult.getTimestamp("last_update");
+                       Date latestFile = new Date(dbResult.getLong("latest_file_date"));
+                       Date statsTime = new Date(dbResult.getLong("stat_time"));
+                       Date updateTime = new Date(dbResult.getLong("last_update"));
                        
                        CollectionStat stat = new CollectionStat(collectionID, fileCount, dataSize, checksumErrors, 
                                latestFile, statsTime, updateTime);
@@ -578,8 +580,8 @@ public abstract class IntegrityDAO {
         String getEarliestFileDateSql = "SELECT MIN(file_timestamp) FROM fileinfo"
                 + " WHERE collectionID = ?"
                 + " AND fileID = ?";
-        
-        return DatabaseUtils.selectFirstDateValue(dbConnector, getEarliestFileDateSql, collectionID, fileID);
+        long time = DatabaseUtils.selectFirstLongValue(dbConnector, getEarliestFileDateSql, collectionID, fileID);
+        return new Date(time);
     }
     
     private IntegrityIssueIterator makeIntegrityIssueIterator(String query, Object... args) {

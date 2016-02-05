@@ -24,7 +24,6 @@ package org.bitrepository.integrityservice.cache.database;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -84,8 +83,8 @@ public class StatisticsCreator {
             try {
                 Date statisticsTime = statisticsCollector.getCollectionStat().getStatsTime();
                 Date now = new Date();
-                insertStatisticsEntryPS.setTimestamp(1, new Timestamp(statisticsTime.getTime()));
-                insertStatisticsEntryPS.setTimestamp(2, new Timestamp(now.getTime()));
+                insertStatisticsEntryPS.setLong(1, statisticsTime.getTime());
+                insertStatisticsEntryPS.setLong(2, now.getTime());
                 insertStatisticsEntryPS.setString(3, collectionID);
                 
                 addCollectionStatistics(statisticsCollector.getCollectionStat());
@@ -108,7 +107,7 @@ public class StatisticsCreator {
         insertCollectionStatPS.setLong(1, cs.getFileCount());
         insertCollectionStatPS.setLong(2, cs.getDataSize());
         insertCollectionStatPS.setLong(3, cs.getChecksumErrors());
-        insertCollectionStatPS.setTimestamp(4, new Timestamp(cs.getLatestFileTime().getTime()));
+        insertCollectionStatPS.setLong(4, cs.getLatestFileTime().getTime());
         insertCollectionStatPS.setString(5, cs.getCollectionID());
     }
     

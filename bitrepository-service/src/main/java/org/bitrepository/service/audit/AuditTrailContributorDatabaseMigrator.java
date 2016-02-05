@@ -45,10 +45,12 @@ public class AuditTrailContributorDatabaseMigrator extends DatabaseMigrator {
     private static final String UPDATE_SCRIPT_VERSION_1_TO_2 = "sql/derby/auditContributorDBUpdate1to2.sql";
     /** The name of the script for updating the database from version 2 to 3.*/
     private static final String UPDATE_SCRIPT_VERSION_2_TO_3 = "sql/derby/auditContributorDBUpdate2to3.sql";
-    /** The name of the script for updating the database from version 2 to 3.*/
+    /** The name of the script for updating the database from version 3 to 4.*/
     private static final String UPDATE_SCRIPT_VERSION_3_TO_4 = "sql/derby/auditContributorDBUpdate3to4.sql";
+    /** The name of the script for updating the database from version 4 to 5.*/
+    private static final String UPDATE_SCRIPT_VERSION_4_TO_5 = "sql/derby/auditContributorDBUpdate4to5.sql";
     /** The current version of the database. */
-    public static final int CURRENT_VERSION = 4;
+    public static final int CURRENT_VERSION = 5;
     
     /**
      * Constructor.
@@ -79,6 +81,11 @@ public class AuditTrailContributorDatabaseMigrator extends DatabaseMigrator {
         if(!versions.containsKey(DATABASE_VERSION_ENTRY) || versions.get(DATABASE_VERSION_ENTRY) < 4) {
             log.warn("Migrating AuditContributorDB from version 3 to 4.");
             migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_3_TO_4);
+        }
+        
+        if(!versions.containsKey(DATABASE_VERSION_ENTRY) || versions.get(DATABASE_VERSION_ENTRY) < 5) {
+            log.warn("Migrating AuditContributorDB from version 4 to 5.");
+            migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_4_TO_5);
         }
     }
 

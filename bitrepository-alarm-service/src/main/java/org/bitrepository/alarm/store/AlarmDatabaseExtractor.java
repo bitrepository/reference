@@ -134,7 +134,7 @@ public abstract class AlarmDatabaseExtractor {
         alarm.setAlarmRaiser(componentId);
         alarm.setAlarmText(resultSet.getString(POSITION_ALARM_TEXT));
         alarm.setFileID(resultSet.getString(POSITION_FILE_ID));
-        alarm.setOrigDateTime(CalendarUtils.getFromMillis(resultSet.getTimestamp(POSITION_ALARM_DATE).getTime()));
+        alarm.setOrigDateTime(CalendarUtils.getFromMillis(resultSet.getLong(POSITION_ALARM_DATE)));
         alarm.setCollectionID(resultSet.getString(POSITION_COLLECTION_ID));
         
         return alarm;
@@ -230,11 +230,11 @@ public abstract class AlarmDatabaseExtractor {
         }
         
         if(model.getStartDate() != null) {
-            res.add(model.getStartDate());
+            res.add(model.getStartDate().getTime());
         }
         
         if(model.getEndDate() != null) {
-            res.add(model.getEndDate());
+            res.add(model.getEndDate().getTime());
         }
         
         if(model.getFileID() != null) {

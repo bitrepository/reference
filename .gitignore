@@ -5,6 +5,7 @@ target
 /.idea
 *.iml
 */activemq-data/*
+*/test-output/*
 checksumdb
 auditcontributerdb
 derby.log

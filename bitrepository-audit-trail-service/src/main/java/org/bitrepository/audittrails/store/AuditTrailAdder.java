@@ -24,7 +24,6 @@ package org.bitrepository.audittrails.store;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
@@ -209,8 +208,7 @@ public class AuditTrailAdder {
         addAuditTrailPs.setString(4, event.getFileID());
         addAuditTrailPs.setString(5, event.getActorOnFile());
         addAuditTrailPs.setString(6, event.getActionOnFile().toString());
-        addAuditTrailPs.setTimestamp(7, new Timestamp(
-                CalendarUtils.convertFromXMLGregorianCalendar(event.getActionDateTime()).getTime()));
+        addAuditTrailPs.setLong(7, CalendarUtils.convertFromXMLGregorianCalendar(event.getActionDateTime()).getTime());
         addAuditTrailPs.setString(8, event.getAuditTrailInformation());
         addAuditTrailPs.setString(9, event.getInfo());
         addAuditTrailPs.setString(10, event.getOperationID());
