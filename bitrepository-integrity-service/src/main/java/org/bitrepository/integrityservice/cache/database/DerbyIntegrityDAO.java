@@ -103,4 +103,13 @@ public class DerbyIntegrityDAO extends IntegrityDAO {
         return latestCollectionStatSql;
     }
 
+    @Override
+    protected String getFileIdAtIndexSql() {
+        String getFileIDAtIndexSql = "SELECT DISTINCT( fileID ) FROM fileinfo"
+                + " WHERE collectionID = ?"
+                + " OFFSET ? ROWS"
+                + " FETCH FIRST ? ROWS ONLY";
+        return getFileIDAtIndexSql;
+    }
+
 }

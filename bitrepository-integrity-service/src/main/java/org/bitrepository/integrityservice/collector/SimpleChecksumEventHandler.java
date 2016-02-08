@@ -21,31 +21,30 @@
  */
 package org.bitrepository.integrityservice.collector;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
-import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
+import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The eventhandler for the integrity collector.
+ * Simple eventHandler for retrieving checksum results.
  * 
  * Notifies the monitor 
  */
-public class IntegrityCollectorEventHandler implements EventHandler {
+public class SimpleChecksumEventHandler implements EventHandler {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
-    /** The model where the integrity data is stored.*/
-    private final IntegrityModel store;
     /** The amount of milliseconds before the results are required.*/
     private final long timeout;
     
@@ -53,16 +52,15 @@ public class IntegrityCollectorEventHandler implements EventHandler {
     private final BlockingQueue<OperationEvent> finalEventQueue = new LinkedBlockingQueue<OperationEvent>();
     /** The integrity contributors, keeps track of who have failed, are active or finished */
     private final IntegrityContributors integrityContributors;
+    /** Map between pillars and their checksum results.*/
+    private Map<String, ResultingChecksums> checksumResults = new HashMap<String, ResultingChecksums>();
     
     /**
      * Constructor.
-     * @param model The integrity model, where the results of GetChecksums or GetFileIDs are to be delivered.
      * @param timeout The maximum amount of millisecond to wait for an result.
      * @param integrityContributors the integrity contributors
      */
-    public IntegrityCollectorEventHandler(IntegrityModel model, long timeout, 
-            IntegrityContributors integrityContributors) {
-        this.store = model;
+    public SimpleChecksumEventHandler(long timeout, IntegrityContributors integrityContributors) {
         this.timeout = timeout;
         this.integrityContributors = integrityContributors;
     }
@@ -106,25 +104,21 @@ public class IntegrityCollectorEventHandler implements EventHandler {
             ChecksumsCompletePillarEvent checksumEvent = (ChecksumsCompletePillarEvent) event;
             log.trace("Receiving GetChecksums result: {}", 
                     checksumEvent.getChecksums().getChecksumDataItems().toString());
-            store.addChecksums(checksumEvent.getChecksums().getChecksumDataItems(), checksumEvent.getContributorID(), 
-                    checksumEvent.getCollectionID());
+            checksumResults.put(checksumEvent.getContributorID(), checksumEvent.getChecksums());
             if(checksumEvent.isPartialResult()) {
                 integrityContributors.succeedContributor(checksumEvent.getContributorID());
             } else {
                 integrityContributors.finishContributor(checksumEvent.getContributorID());
             }
-        } else if(event instanceof FileIDsCompletePillarEvent) {
-            FileIDsCompletePillarEvent fileidEvent = (FileIDsCompletePillarEvent) event;
-            log.trace("Receiving GetFileIDs result: {}", fileidEvent.getFileIDs().getFileIDsData().toString());
-            store.addFileIDs(fileidEvent.getFileIDs().getFileIDsData(), fileidEvent.getContributorID(),
-                    fileidEvent.getCollectionID());
-            if(fileidEvent.isPartialResult()) {
-                integrityContributors.succeedContributor(fileidEvent.getContributorID());
-            } else {
-                integrityContributors.finishContributor(fileidEvent.getContributorID());
-            }
         } else {
             log.warn("Unexpected component complete event: " + event.toString());
         }
+    }
+    
+    /**
+     * @return The map of the checksum results for each pillar.
+     */
+    public Map<String, ResultingChecksums> getResults() {
+        return checksumResults;
     }
 }

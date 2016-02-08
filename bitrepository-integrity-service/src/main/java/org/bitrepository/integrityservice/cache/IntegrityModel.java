@@ -228,4 +228,12 @@ public interface IntegrityModel {
      * @return the earliest date a specific file on any pillar in a given collection.
      */
     Date getEarlistFileDate(String collectionID, String fileID);
+    
+    /**
+     * Get the FileID at the specific index position.
+     * @param collectionID The ID of the collection.
+     * @param position The index position for the FileID to retrieve.
+     * @return The FileID at the specific index position.
+     */
+    String getFileIDAtPosition(String collectionID, Long position);
 }

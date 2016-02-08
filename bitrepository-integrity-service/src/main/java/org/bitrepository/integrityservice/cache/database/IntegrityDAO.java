@@ -357,7 +357,24 @@ public abstract class IntegrityDAO {
         }
         String getAllFileIDsSql = getAllFileIDsSql();
         return makeIntegrityIssueIterator(getAllFileIDsSql, collectionID, pillarID, first, maxResults);
-        
+    }
+    
+    /**
+     * Method that should deliver the database specific SQL for retrieving the FileID at 
+     * a specific index.
+     * @return The database specific SQL for delivering the FileID at a specific index.
+     */
+    protected abstract String getFileIdAtIndexSql();
+    
+    /**
+     * Gets the FileID at a given index.
+     * @param collectionID The ID of the collection.
+     * @param index The iterator index for the entry.
+     * @return The FileID.
+     */
+    public String getFileIdAtIndex(String collectionID, Long index) {
+        String getSql = getFileIdAtIndexSql();
+        return DatabaseUtils.selectFirstStringValue(dbConnector, getSql, collectionID, index, 1);
     }
     
     /**

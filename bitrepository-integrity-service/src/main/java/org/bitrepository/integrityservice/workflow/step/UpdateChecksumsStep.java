@@ -123,7 +123,7 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
                 IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, 
                         timeout, integrityContributors);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
-                collector.getChecksums(collectionID, pillarsToCollectFrom, checksumType, "IntegrityService: "
+                collector.getChecksums(collectionID, pillarsToCollectFrom, checksumType, null, "IntegrityService: "
                         + getName(), queries, eventHandler);
                 
                 OperationEvent event = eventHandler.getFinish();

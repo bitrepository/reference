@@ -167,4 +167,9 @@ public class IntegrityDatabase implements IntegrityModel {
     public Date getEarlistFileDate(String collectionID, String fileID) {
         return store.getEarliestFileDate(collectionID, fileID);
     }
+
+    @Override
+    public String getFileIDAtPosition(String collectionID, Long position) {
+        return store.getFileIdAtIndex(collectionID, position);
+    }
 }

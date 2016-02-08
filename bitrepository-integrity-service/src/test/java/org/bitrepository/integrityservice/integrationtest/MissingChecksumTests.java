@@ -162,7 +162,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
                 eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION,
                         resultingChecksums, createChecksumSpecTYPE(), false));
@@ -170,7 +170,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
                 return null;
             }
         }).when(collector).getChecksums(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
+                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
@@ -180,7 +180,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
                 settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
-                any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+                any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
         
         addStep("Check whether checksum is missing", "Should be missing at pillar two only.");
@@ -209,7 +209,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
                 eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION,
                         resultingChecksums, createChecksumSpecTYPE(), false));
@@ -220,7 +220,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
             }
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
-                any(ContributorQuery[].class), any(EventHandler.class));
+                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         
         when(integrityContributors.getActiveContributors())
             .thenReturn(new HashSet<>(Arrays.asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
@@ -229,7 +229,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
                 settings, TEST_COLLECTION, integrityContributors);
         step1.performStep();
         verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
-                any(ChecksumSpecTYPE.class), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+                any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
         
         addStep("Check whether checksum is missing", "Should be missing at pillar two only.");
@@ -244,7 +244,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
         addStep("Add checksum results for only the second pillar.", "");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[5];
+                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
                 eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION,
                         resultingChecksums, createChecksumSpecTYPE(), false));
@@ -253,7 +253,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
             }
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
-                any(ContributorQuery[].class), any(EventHandler.class));
+                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
             .thenReturn(new HashSet<>(Arrays.asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
