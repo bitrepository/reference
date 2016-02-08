@@ -85,7 +85,7 @@ public class SaltedChecksumWorkflow extends Workflow {
         super.start();
 
         try {
-            currentChecksumSpec = getRandomChecksumSpec();
+            currentChecksumSpec = getChecksumSpecWithRandomSalt();
             currentFileID = getRandomFileId();
             Map<String, String> checksums = requestSaltedChecksumForFileStep();
             validateChecksums(checksums);
@@ -98,24 +98,24 @@ public class SaltedChecksumWorkflow extends Workflow {
     
     /**
      * Creates a random checksum spec.
-     * Chooses the algorithm by a random number between 0 and 4 - one for each of the 5 HMAC algorithms.
+     * Chooses the HMAC version of the default checksum algorithm.
      * Then generate a UUID and use it as the salt.
      * @return The checksumspec.
      */
-    private ChecksumSpecTYPE getRandomChecksumSpec() {
+    private ChecksumSpecTYPE getChecksumSpecWithRandomSalt() {
+        ChecksumType defaultChecksum = ChecksumType.valueOf(context.getSettings().getRepositorySettings().getProtocolSettings().getDefaultChecksumType());
         ChecksumSpecTYPE res = new ChecksumSpecTYPE();
-        int csType = (new Random()).nextInt() % 5;
-        switch(csType) {
-        case 1:
+        switch(defaultChecksum) {
+        case SHA1:
             res.setChecksumType(ChecksumType.HMAC_SHA1);
             break;
-        case 2:
+        case SHA256:
             res.setChecksumType(ChecksumType.HMAC_SHA256);
             break;
-        case 3:
+        case SHA384:
             res.setChecksumType(ChecksumType.HMAC_SHA384);
             break;
-        case 4:
+        case SHA512:
             res.setChecksumType(ChecksumType.HMAC_SHA512);
             break;
         default:
