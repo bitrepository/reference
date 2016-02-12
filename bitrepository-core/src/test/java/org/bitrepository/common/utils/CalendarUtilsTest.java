@@ -24,23 +24,17 @@ package org.bitrepository.common.utils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.bitrepository.common.TestValidationUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class CalendarUtilsTest extends ExtendedTestCase {
     long DATE_IN_MILLIS = 123456789L;
-
-    @Test(groups = { "regressiontest" })
-    public void utilityTester() throws Exception {
-        addDescription("Test that the utility class is a proper utility class.");
-        TestValidationUtils.validateUtilityClass(CalendarUtils.class);
-    }
-
+    
     @Test(groups = {"regressiontest"})
     public void calendarTester() throws Exception {
         addDescription("Test the calendar utility class");
@@ -78,39 +72,64 @@ public class CalendarUtilsTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest"})
     public void startDateTest() throws ParseException {
         addDescription("Test that the start date is considered as localtime and converted into UTC.");
+        CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-        Date expectedStartOfDay = sdf.parse("2015-02-26T00:00:00.000Z");
+        Date expectedStartOfDay = sdf.parse("2015-02-25T23:00:00.000Z");
         
-        Date parsedStartOfDay = CalendarUtils.makeStartDateObject("02/26/2015");
+        Date parsedStartOfDay = cu.makeStartDateObject("02/26/2015");
         Assert.assertEquals(parsedStartOfDay, expectedStartOfDay);
     }
     
     @Test(groups = {"regressiontest"})
     public void endDateTest() throws ParseException {
         addDescription("Test that the end date is considered as localtime and converted into UTC.");
+        CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-        Date expectedStartOfDay = sdf.parse("2015-02-26T23:59:59.999Z");
+        Date expectedStartOfDay = sdf.parse("2015-02-26T22:59:59.999Z");
         
-        Date parsedStartOfDay = CalendarUtils.makeEndDateObject("02/26/2015");
+        Date parsedStartOfDay = cu.makeEndDateObject("02/26/2015");
         Assert.assertEquals(parsedStartOfDay, expectedStartOfDay);
     }
     
     @Test(groups = {"regressiontest"})
     public void endDateRolloverTest() throws ParseException {
         addDescription("Test that the end date is correctly rolls over a year and month change.");
+        CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-        Date expectedStartOfDay = sdf.parse("2016-01-01T23:59:59.999Z");
+        Date expectedStartOfDay = sdf.parse("2016-01-01T22:59:59.999Z");
         
-        Date parsedStartOfDay = CalendarUtils.makeEndDateObject("12/32/2015");
+        Date parsedStartOfDay = cu.makeEndDateObject("12/32/2015");
         Assert.assertEquals(parsedStartOfDay, expectedStartOfDay);
+    }
+    
+    @Test(groups = {"regressiontest"})
+    public void testBeginningOfDay() throws ParseException {
+        addDescription("Tests that the time is converted to the beginning of the day localtime, not UTC");
+        CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Date expectedStartOfDayInUTC = sdf.parse("2016-01-31T23:00:00.000Z");
+        System.out.println("expectedSTartofDayInUTC parsed: " + expectedStartOfDayInUTC.getTime());
+        Date parsedStartOfDay = cu.makeStartDateObject("02/01/2016");
+        Assert.assertEquals(parsedStartOfDay, expectedStartOfDayInUTC);
+    }
+    
+    @Test(groups = {"regressiontest"})
+    public void testEndOfDay() throws ParseException {
+        addDescription("Tests that the time is converted to the beginning of the day localtime, not UTC");
+        CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Date expectedEndOfDayInUTC = sdf.parse("2016-02-01T22:59:59.999Z");
+        Date parsedEndOfDay = cu.makeEndDateObject("02/01/2016");
+        Assert.assertEquals(parsedEndOfDay, expectedEndOfDayInUTC);
     }
     
     @Test(groups = {"regressiontest"})
     public void testSummerWinterTimeChange() {
         addDescription("Test that the interval between start and end date on a summertime to "
                 + "wintertime change is 25 hours (-1 millisecond).");
-        Date startDate = CalendarUtils.makeStartDateObject("10/25/2015");
-        Date endDate = CalendarUtils.makeEndDateObject("10/25/2015");
+        CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
+        Date startDate = cu.makeStartDateObject("10/25/2015");
+        Date endDate = cu.makeEndDateObject("10/25/2015");
         long MS_PER_HOUR = 1000 * 60 * 60;
         long expectedIntervalLength = (MS_PER_HOUR * 25) - 1;
         Assert.assertEquals(endDate.getTime() - startDate.getTime(), expectedIntervalLength);
@@ -120,8 +139,9 @@ public class CalendarUtilsTest extends ExtendedTestCase {
     public void testWinterSummerTimeChange() {
         addDescription("Test that the interval between start and end date on a wintertime to "
                 + "summertime change is 23 hours (-1 millisecond).");
-        Date startDate = CalendarUtils.makeStartDateObject("03/27/2016");
-        Date endDate = CalendarUtils.makeEndDateObject("03/27/2016");
+        CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
+        Date startDate = cu.makeStartDateObject("03/27/2016");
+        Date endDate = cu.makeEndDateObject("03/27/2016");
         long MS_PER_HOUR = 1000 * 60 * 60;
         long expectedIntervalLength = (MS_PER_HOUR * 23) - 1;
         Assert.assertEquals(endDate.getTime() - startDate.getTime(), expectedIntervalLength);

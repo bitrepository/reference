@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -62,6 +63,7 @@ public class RestAuditTrailService {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     private AuditTrailService service;
+    private CalendarUtils calendarUtils = CalendarUtils.getInstance(TimeZone.getDefault());
     
     public RestAuditTrailService() {
         service = AuditTrailServiceFactory.getAuditTrailService();	
@@ -82,8 +84,8 @@ public class RestAuditTrailService {
             @FormParam("fingerprint") String fingerprint,
             @FormParam("operationID") String operationID,
             @DefaultValue("1000") @FormParam("maxAudittrails") Integer maxResults) {
-        Date from = CalendarUtils.makeStartDateObject(fromDate);
-        Date to = CalendarUtils.makeEndDateObject(toDate);
+        Date from = calendarUtils.makeStartDateObject(fromDate);
+        Date to = calendarUtils.makeEndDateObject(toDate);
         
         final int maxAudits = maxResults;
         final AuditEventIterator it = service.queryAuditTrailEventsByIterator(from, to, contentOrNull(fileID),

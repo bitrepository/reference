@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import java.util.function.Consumer;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -44,11 +45,27 @@ import org.slf4j.LoggerFactory;
 public final class CalendarUtils {
     /** The log.*/
     private static Logger log = LoggerFactory.getLogger(CalendarUtils.class);
-
+    private TimeZone localTimeZone = TimeZone.getDefault();
+    
     /**
      * Private constructor to prevent instantiation of utility class.
      */
     private CalendarUtils() { }
+    
+    /**
+     * Get an instance of CalendarUtils with a non-server default timezone
+     * @param timezone The TimeZone to use 
+     */
+    public static CalendarUtils getInstance(TimeZone timezone) {
+        CalendarUtils cu = new CalendarUtils();
+        cu.setTimeZone(timezone);
+        return cu;
+    }
+    
+    private void setTimeZone(TimeZone timezone) {
+        this.localTimeZone = timezone;
+    }
+    
     
     /**
      * Turns a date into a XMLGregorianCalendar.
@@ -125,8 +142,10 @@ public final class CalendarUtils {
      * @param dateStr The string representation of the date, in the form '02/26/2015'
      * @return Date A date object representing the start of the day
      */
-    public static Date makeStartDateObject(String dateStr) {
-        Calendar cal = makeCalendarObject(dateStr);
+    public Date makeStartDateObject(String dateStr) {
+        Consumer<Calendar> dateAdjuster = (Calendar calendar) -> {};
+        
+        Calendar cal = makeCalendarObject(dateStr, dateAdjuster);
         if(cal == null) {
             return null;
         } else {
@@ -139,13 +158,16 @@ public final class CalendarUtils {
      * @param dateStr The string representation of the date, in the form '02/26/2015'
      * @return Date A date object representing the end of the day
      */
-    public static Date makeEndDateObject(String dateStr) {
-        Calendar cal = makeCalendarObject(dateStr);
+    public Date makeEndDateObject(String dateStr) {
+        Consumer<Calendar> dateAdjuster = (Calendar calendar)  -> { 
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            calendar.add(Calendar.MILLISECOND, -1); 
+        };
+        
+        Calendar cal = makeCalendarObject(dateStr, dateAdjuster);
         if(cal == null) {
             return null;
         } else {
-            cal.add(Calendar.DAY_OF_MONTH, 1);
-            cal.add(Calendar.MILLISECOND, -1);
             return cal.getTime();
         }
     } 
@@ -156,22 +178,22 @@ public final class CalendarUtils {
      * @return Calendar A calendar object representing the start of the date in UTC, 
      *         or null if the input cannot be parsed.
      */
-    private static Calendar makeCalendarObject(String dateStr) {
+    private Calendar makeCalendarObject(String dateStr, Consumer<Calendar> dateAdjust) {
         if(dateStr == null || dateStr.trim().isEmpty()) {
             return null;
         } else {
             SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            sdf.setTimeZone(localTimeZone);
             try {
                 Date basedate = sdf.parse(dateStr);
-                int utcOffset = TimeZone.getDefault().getOffset(basedate.getTime());
-                Calendar time = Calendar.getInstance();
+                Calendar time = Calendar.getInstance(localTimeZone);
                 time.setTime(basedate);
-                time.add(Calendar.MILLISECOND, utcOffset);
+                dateAdjust.accept(time);
                 return time;
             } catch (ParseException e) {
                 return null;
             } 
         }
     }
-    
+        
 }
