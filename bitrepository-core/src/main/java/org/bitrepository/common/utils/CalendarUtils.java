@@ -63,6 +63,7 @@ public final class CalendarUtils {
     }
     
     private void setTimeZone(TimeZone timezone) {
+        log.info("Using timezone: '{}'", timezone);
         this.localTimeZone = timezone;
     }
     
@@ -140,7 +141,8 @@ public final class CalendarUtils {
     /**
      * Create a date object representing the start of the day denoted by dateStr
      * @param dateStr The string representation of the date, in the form '02/26/2015'
-     * @return Date A date object representing the start of the day
+     * @return Date A date object representing the start of the day, or null if the input cannot
+     *         be turned into a date. 
      */
     public Date makeStartDateObject(String dateStr) {
         Consumer<Calendar> dateAdjuster = (Calendar calendar) -> {};
@@ -156,7 +158,8 @@ public final class CalendarUtils {
     /**
      * Create a date object representing the end of the day denoted by dateStr
      * @param dateStr The string representation of the date, in the form '02/26/2015'
-     * @return Date A date object representing the end of the day
+     * @return Date A date object representing the end of the day, or null if the input cannot
+     *         be turned into a date. 
      */
     public Date makeEndDateObject(String dateStr) {
         Consumer<Calendar> dateAdjuster = (Calendar calendar)  -> { 
@@ -191,6 +194,7 @@ public final class CalendarUtils {
                 dateAdjust.accept(time);
                 return time;
             } catch (ParseException e) {
+                log.warn("Received something that could not be parsed: '{}'", dateStr, e);
                 return null;
             } 
         }
