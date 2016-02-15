@@ -57,7 +57,7 @@ ALTER TABLE fileinfo RENAME COLUMN last_seen_getchecksums2 TO last_seen_getcheck
 ALTER TABLE collection_progress ADD COLUMN latest_file_timestamp2 BIGINT DEFAULT NULL;
 ALTER TABLE collection_progress ADD COLUMN latest_checksum_timestamp2 BIGINT DEFAULT NULL;
 
-UPDATE collection_progress SET latest_file_timestamp2 = (EXTRACT (epoch FROM latest_file_timestamp AT TIME ZONE (SELECT current_setting('TIMEZONE')) * 1000);
+UPDATE collection_progress SET latest_file_timestamp2 = (EXTRACT (epoch FROM latest_file_timestamp AT TIME ZONE (SELECT current_setting('TIMEZONE'))) * 1000);
 UPDATE collection_progress SET latest_checksum_timestamp2 = (EXTRACT (epoch FROM latest_checksum_timestamp AT TIME ZONE (SELECT current_setting('TIMEZONE'))) * 1000);
 
 ALTER TABLE collection_progress DROP COLUMN latest_file_timestamp;
