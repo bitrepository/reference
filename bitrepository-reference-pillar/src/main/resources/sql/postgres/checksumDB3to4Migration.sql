@@ -28,7 +28,6 @@ DROP INDEX calculationindex;
 ALTER TABLE checksums ADD COLUMN calculationdate2 BIGINT;
 UPDATE checksums SET calculationdate2 = (EXTRACT (epoch FROM calculationdate AT TIME ZONE (SELECT current_setting('TIMEZONE'))) * 1000);
 ALTER TABLE checksums DROP COLUMN calculationdate;
-RENAME COLUMN checksums.calculationdate2 TO calculationdate;
-ALTER TABLE audittrail ALTER COLUMN operation_date SET NOT NULL;
+ALTER TABLE checksums RENAME COLUMN calculationdate2 TO calculationdate;
 
 CREATE INDEX calculationindex ON checksums ( calculationdate );
