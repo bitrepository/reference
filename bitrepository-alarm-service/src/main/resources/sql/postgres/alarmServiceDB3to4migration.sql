@@ -34,7 +34,7 @@ UPDATE alarm SET alarm_date2 = (EXTRACT (epoch FROM alarm_date AT TIME ZONE (SEL
 
 ALTER TABLE alarm DROP COLUMN alarm_date;
 
-RENAME COLUMN alarm.alarm_date2 TO alarm_date;
+ALTER TABLE alarm RENAME COLUMN alarm_date2 TO alarm_date;
 
 ALTER TABLE alarm ALTER COLUMN alarm_date SET NOT NULL;
 
