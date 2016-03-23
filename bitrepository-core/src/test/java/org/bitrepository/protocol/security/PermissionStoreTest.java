@@ -111,8 +111,7 @@ public class PermissionStoreTest extends ExtendedTestCase  {
         addStep("Lookup fingerprint based on signerId", "The correct finger print should be returned with openssl" +
                 "used to generate reference finger print");
         String certificateFingerprintFromStore = permissionStore.getCertificateFingerprint(signer.getSID());
-        String referenceCertificateFingerprint =
-                "68:21:C4:C2:B9:AE:9F:AE:A1:F1:F9:93:35:3C:9F:C4:63:CC:92:59";
+        String referenceCertificateFingerprint = SecurityTestConstants.getFingerprintForSignatureCert();
         assertEquals(referenceCertificateFingerprint.toLowerCase().replaceAll(":", ""), certificateFingerprintFromStore);
     }
 }

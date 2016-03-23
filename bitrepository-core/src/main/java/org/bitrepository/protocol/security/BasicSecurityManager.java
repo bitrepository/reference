@@ -320,30 +320,23 @@ public class BasicSecurityManager implements SecurityManager {
             return;
         }
         for(Permission permission : permissions.getPermission()) {
-            if(permission.getInfrastructurePermission().contains(InfrastructurePermission.MESSAGE_BUS_SERVER)) {
-                try {
-                    bs = new ByteArrayInputStream(permission.getCertificate().getCertificateData());
-                    X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance(
-                            SecurityModuleConstants.CertificateType).generateCertificate(bs);
+            try {
+                bs = new ByteArrayInputStream(permission.getCertificate().getCertificateData());
+                X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance(
+                        SecurityModuleConstants.CertificateType).generateCertificate(bs);
+                bs.close();
+                certificate.checkValidity();
+                
+                if(permission.getInfrastructurePermission().contains(InfrastructurePermission.MESSAGE_BUS_SERVER) 
+                        || permission.getInfrastructurePermission().contains(InfrastructurePermission.FILE_EXCHANGE_SERVER)) {
                     keyStore.setEntry(getNewAlias(), new KeyStore.TrustedCertificateEntry(certificate), 
                             SecurityModuleConstants.nullProtectionParameter);
-                    
-                    bs.close();
-                } catch (IOException e) {
-                    
                 }
-            }
-            if(permission.getInfrastructurePermission().contains(InfrastructurePermission.FILE_EXCHANGE_SERVER)) {
-                try {
-                    bs = new ByteArrayInputStream(permission.getCertificate().getCertificateData());
-                    X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance(
-                            SecurityModuleConstants.CertificateType).generateCertificate(bs);
-                    keyStore.setEntry(getNewAlias(), new KeyStore.TrustedCertificateEntry(certificate), 
-                            SecurityModuleConstants.nullProtectionParameter);
-                    bs.close();
-                } catch (IOException e) {
-                    log.debug("Failed closing ByteArrayInputStream", e);
-                }
+            } catch (CertificateException ce) {
+                log.warn("Check of certificate validity failed, not adding certificate ({}) to keystore.", 
+                        permission.getDescription(), ce);
+            } catch (IOException e) {
+                log.debug("Failed closing ByteArrayInputStream", e);
             }
         }      
     }
