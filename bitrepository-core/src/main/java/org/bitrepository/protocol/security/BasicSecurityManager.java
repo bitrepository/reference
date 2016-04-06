@@ -314,29 +314,25 @@ public class BasicSecurityManager implements SecurityManager {
      * @throws KeyStoreException if certificate cannot be put into the keyStore
      */
     private void loadInfrastructureCertificates(PermissionSet permissions) throws CertificateException, KeyStoreException {
-        ByteArrayInputStream bs;
         if(permissions == null) {
             log.info("The provided PermissionSet is empty. Continuing without permissions!");
             return;
         }
         for(Permission permission : permissions.getPermission()) {
-            try {
-                bs = new ByteArrayInputStream(permission.getCertificate().getCertificateData());
-                X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance(
-                        SecurityModuleConstants.CertificateType).generateCertificate(bs);
-                bs.close();
-                certificate.checkValidity();
-                
-                if(permission.getInfrastructurePermission().contains(InfrastructurePermission.MESSAGE_BUS_SERVER) 
-                        || permission.getInfrastructurePermission().contains(InfrastructurePermission.FILE_EXCHANGE_SERVER)) {
-                    keyStore.setEntry(getNewAlias(), new KeyStore.TrustedCertificateEntry(certificate), 
-                            SecurityModuleConstants.nullProtectionParameter);
-                }
-            } catch (CertificateException ce) {
-                log.warn("Check of certificate validity failed, not adding certificate ({}) to keystore.", 
-                        permission.getDescription(), ce);
-            } catch (IOException e) {
-                log.debug("Failed closing ByteArrayInputStream", e);
+            if(permission.getInfrastructurePermission().contains(InfrastructurePermission.MESSAGE_BUS_SERVER) 
+                    || permission.getInfrastructurePermission().contains(InfrastructurePermission.FILE_EXCHANGE_SERVER)) {
+	            try (ByteArrayInputStream bs = new ByteArrayInputStream(permission.getCertificate().getCertificateData())) {
+	                X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance(
+	                        SecurityModuleConstants.CertificateType).generateCertificate(bs);
+	                certificate.checkValidity();
+	                keyStore.setEntry(getNewAlias(), new KeyStore.TrustedCertificateEntry(certificate), 
+	                        SecurityModuleConstants.nullProtectionParameter);
+	            } catch (CertificateException ce) {
+	                log.warn("Check of certificate validity failed, not adding certificate ({}) to keystore.", 
+	                        permission.getDescription(), ce);
+	            } catch (IOException e) {
+	                log.debug("Failed closing ByteArrayInputStream", e);
+	            }
             }
         }      
     }
