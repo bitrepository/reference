@@ -97,6 +97,7 @@ public class HttpsFileExchange extends HttpFileExchange {
                     SystemDefaultDnsResolver.INSTANCE);
 
             SocketConfig socketConfig = SocketConfig.custom()
+                    .setSoKeepAlive(true)
                     .setSndBufSize(HTTP_BUFFER_SIZE)
                     .setRcvBufSize(HTTP_BUFFER_SIZE).build();
             poolingmgr.setDefaultSocketConfig(socketConfig);
