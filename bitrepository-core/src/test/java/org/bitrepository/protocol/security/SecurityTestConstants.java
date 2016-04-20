@@ -35,39 +35,63 @@ public class SecurityTestConstants {
 
     
     /*
-     * Notes about how to update the certificates, signature etc. 
-     * TBD..   
+     * Notes about how to update the certificates, signature etc. found 
+     * as comments in the variables below   
      */
     private static final String DATA = "Hello world!";
-    private static final String SIGNATURE = "MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgMFADCABgkqhkiG9w0BBwEAADGB1zCB1AIBATAuMCExCzAJBgNVBAYTAkRLMRIwEAYDVQQDDAljbGllbnQtMTMCCQDMZo0ssJ6s7zANBglghkgBZQMEAgMFADANBgkqhkiG9w0BAQEFAASBgHhp9p/wAHX8zAEIamAnyIywpI0wBYvR62pkLIrHwpTgsnjFpJRZPYYiF1egsIcy7ZjQrkh4UtMRLZyGbzk/GeuExdSrj66gAG4j8NeS7Ekp1zb16SUH8bKu/H83PqLxYBvIyEks3lMKu5T76Bmwa9x32H2zpzJjSqLRZCNgwQnBAAAAAAAA";
-   
-    /* probably expired certificate */
+    // Use output from SignatureGeneratorTest to make a new signature if certificate changes
+    private static final String SIGNATURE = "MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgMFADCABgkqhkiG9w0BBwEAADGCAZcwggGTAgEBMGwwXzELMAkGA1UEBhMCREsxEDAOBgNVBAgMB0Rlbm1hcmsxDzANBgNVBAcMBkFhcmh1czEaMBgGA1UECgwRQml0cmVwb3NpdG9yeS5vcmcxETAPBgNVBAMMCGNsaWVudDgwAgkAnwg/Emx5gB8wDQYJYIZIAWUDBAIDBQAwDQYJKoZIhvcNAQEBBQAEggEABkj3VQR6B5Lc0LZ7YAHvFCvDn2tCObPlLNpq0U1VRkLgIVMFQkZL4PpvG/MS/nEPI+VFz8Cty/UtODd23il6PnLjwwqYHKGCDnbJSg8YkX+UOO0NBr6Th6a6NWyeOElWiKxJ6pysXTV/b1DtY/uFFprLOPAgLVnp4TjZBtNuPFU+EBvvO1aFzKESpNPCs/qzF8Usf1ZqE+OPh49XLMqlKv4h8w1pjWLaZg4yCcqvPbqu1VjkvjNhkGHpc/k1whblBmMZ8JpdLlKCsWvj0+IuoztnClFQ/aDL1dkexnEaTf/CDhI8tFP1CEJZBUp0MjOtyPQbHGMe+1lxRWbsGYzusgAAAAAAAA==";
+    // When certificate POSITIVECERT is changed, use openssl x509 -in <certificate.pem> -fingerprint to obtain new fingerprint
+    private static final String FINGERPRINT = "D3:CC:F2:AE:36:4C:FB:85:F0:70:9A:59:8F:14:EF:8B:52:D4:A5:30";
+    
+    private static final String POSITIVECERT_KEYFILE = "./target/test-classes/client80-certkey.pem";
+    
+    /* currently client80-certkey.pem */
     private static final String POSITIVECERT = "-----BEGIN CERTIFICATE-----\n" +
-            "MIIBuTCCASICCQDMZo0ssJ6s7zANBgkqhkiG9w0BAQUFADAhMQswCQYDVQQG\n" +
-            "EwJESzESMBAGA1UEAwwJY2xpZW50LTEzMB4XDTExMTAyMTA5MjAwMVoXDTE0\n" +
-            "MDcxNzA5MjAwMVowITELMAkGA1UEBhMCREsxEjAQBgNVBAMMCWNsaWVudC0x\n" +
-            "MzCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEA6DE31oL3v3tuZilsJ4YK\n" +
-            "0fnBRuShVahIh6yTv7BIY6t1+DAT/N+fcnTU73IKGLH+2X67oa3/YhcoySju\n" +
-            "Ei0ZehqvTruKH7UAetS2aPsJBiuWX3giJQkhN62E8a5b63A9Aw3iokuoVWd5\n" +
-            "Ohm+0Ra+6tcZ/IxWsWRcM8RWjOJb6vcCAwEAATANBgkqhkiG9w0BAQUFAAOB\n" +
-            "gQBu3OgpXt/0WluSBmjDPiavLor3lqDoJBGTMn0mr05g0gZFhSfI4vIj5kvW\n" +
-            "QUWR/yBgW0chzA+GZHwctaLQyTxp0AT/F4VsTtlN3YpBbeMlOK/BC+w9MpAO\n" +
-            "me0coE/bZzOuq3gQ15XOkelIxmnrh2xnGotE6thmFFClT6VY8mqEFA==\n" +
+            "MIIDkTCCAnmgAwIBAgIJAJ8IPxJseYAfMA0GCSqGSIb3DQEBBQUAMF8xCzAJBgNV\n" +
+            "BAYTAkRLMRAwDgYDVQQIDAdEZW5tYXJrMQ8wDQYDVQQHDAZBYXJodXMxGjAYBgNV\n" +
+            "BAoMEUJpdHJlcG9zaXRvcnkub3JnMREwDwYDVQQDDAhjbGllbnQ4MDAeFw0xNDA3\n" +
+            "MjkxNDAzMDlaFw0yNDA3MjYxNDAzMDlaMF8xCzAJBgNVBAYTAkRLMRAwDgYDVQQI\n" +
+            "DAdEZW5tYXJrMQ8wDQYDVQQHDAZBYXJodXMxGjAYBgNVBAoMEUJpdHJlcG9zaXRv\n" +
+            "cnkub3JnMREwDwYDVQQDDAhjbGllbnQ4MDCCASIwDQYJKoZIhvcNAQEBBQADggEP\n" +
+            "ADCCAQoCggEBANjHnrczcJaZx5aczK3BpW71Rh2X44qUy2rw1sf65P3WP/vjCNQ0\n" +
+            "7TgyaPxkTOBs34Uavkj6D0ocMNNcwVDS/BtqPR73iYBBBJmpR64AzGIh8jItgUuK\n" +
+            "9X74eL2QrWnty78I1c4lsfq85Ua+MHfEfQcIbVaRrBplAAAbPqdan/2LwmVRNcmQ\n" +
+            "3lBTT0UEUyshhygDvR/wljcDSNPAjTukor88O1mPh3hgBv4yPgmiwQe4BAh0/Imn\n" +
+            "gtyLdmOFS2cQp2S8sFZS3LJ6kl7yaP74esnNmVmngIVtZ3jlP3xDgl7tV+4OSPjD\n" +
+            "PNNhKIXl/ywEY1Q/hEkuNPbBI9nQTYplrIMCAwEAAaNQME4wHQYDVR0OBBYEFB1l\n" +
+            "YxF7a4Blqm/WZ6jcTAb0nrF3MB8GA1UdIwQYMBaAFB1lYxF7a4Blqm/WZ6jcTAb0\n" +
+            "nrF3MAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEBAATWp9ChCvLp22Xj\n" +
+            "c84P+mq4eJhsOtHb/yxHjARpzVu4wi3Uvm9maQuYm7oNk3uhrzTLFDl5wHUUCZbL\n" +
+            "0s3075it+jtBy3d5AGCDLbvoi8uiL2ngy/ScqttSx4ipXNTteM7UI7gnk3LwBVVb\n" +
+            "4sFrtnAJNo8hT9rTJtD/6ZLDs0eYzoUshZW8Xbxd3h/1W+dfQiR7PO5Zqvqkmn+T\n" +
+            "gko3OaiQMCz+IqE+/2tSMFlK7/DlpB/4MFECs5C7U9yqn9ulHEqo8vJF1rUjG5fL\n" +
+            "YEn++kulWJnt4beI6UruCwCqCtBRKR38cPahK6Ic168h99ztO6JuvSm3v9LpDtXl\n" +
+            "vSBi6TA=\n" +
             "-----END CERTIFICATE-----\n";
     
-    /* probably expired certificate */
-    private static final String NEGATIVECERT =
-            "-----BEGIN CERTIFICATE-----\n" +
-            "MIICCzCCAXQCCQCHLeckUtZcJDANBgkqhkiG9w0BAQUFADBKMQswCQYDVQQGEwJESzEgMB4GA1UE\n" +
-            "ChMXRGV0IEtvbmdlbGlnZSBCaWJsaW90ZWsxDDAKBgNVBAsTA0RJUzELMAkGA1UEAxMCQ0EwHhcN\n" +
-            "MTEwOTI4MTExNjQ1WhcNMTMwNDI5MjIyMDEzWjBKMQswCQYDVQQGEwJESzEgMB4GA1UEChMXRGV0\n" +
-            "IEtvbmdlbGlnZSBCaWJsaW90ZWsxDDAKBgNVBAsTA0RJUzELMAkGA1UEAxMCQ0EwgZ8wDQYJKoZI\n" +
-            "hvcNAQEBBQADgY0AMIGJAoGBAJcGvaV2VjjIhq0NGD1sCDPw/Xvu/G0zzJLStStbvAQZ95CKZ52V\n" +
-            "CM7oQ4Ge4Qse+sNNL+DU9ENzFoN/1Xvqip1e0B204arErZaRXc4lThW3vTt7JWx9s/l2TOxnsCuq\n" +
-            "uXhe+VnQkMdGu1WeSKIgzhxJ5vjV5mPXkj/RsVnKSp+PAgMBAAEwDQYJKoZIhvcNAQEFBQADgYEA\n" +
-            "VbQ5VPPDOCW0wuyMLFu8W2W0Tvplv8A458w37qNVo3pvznDSVdEOpPIRznTIM836XSwHWCWhRPN/\n" +
-            "Mo2U+CRkSEaN8nPkqxOY46w1AKqhhgLAPr6/sOCjG6k6jxEITYzYO5mv0nAg4yAVvfE4O715pjwO\n" +
-            "77h9LapqyJ8S1GSKHr8=\n" +
+    /* currently client90-certkey.pem */
+    private static final String NEGATIVECERT = "-----BEGIN CERTIFICATE-----\n" +
+            "MIIDkTCCAnmgAwIBAgIJAK/RxZXju3LcMA0GCSqGSIb3DQEBBQUAMF8xCzAJBgNV\n" +
+            "BAYTAkRLMRAwDgYDVQQIDAdEZW5tYXJrMQ8wDQYDVQQHDAZBYXJodXMxGjAYBgNV\n" +
+            "BAoMEUJpdHJlcG9zaXRvcnkub3JnMREwDwYDVQQDDAhjbGllbnQ5MDAeFw0xNDA3\n" +
+            "MjkxNDAzMTBaFw0yNDA3MjYxNDAzMTBaMF8xCzAJBgNVBAYTAkRLMRAwDgYDVQQI\n" +
+            "DAdEZW5tYXJrMQ8wDQYDVQQHDAZBYXJodXMxGjAYBgNVBAoMEUJpdHJlcG9zaXRv\n" +
+            "cnkub3JnMREwDwYDVQQDDAhjbGllbnQ5MDCCASIwDQYJKoZIhvcNAQEBBQADggEP\n" +
+            "ADCCAQoCggEBAPkJis5DwU/1hha5Z6WZqqnBZqlcQWW3lSOn299UG4IqlMVmjidk\n" +
+            "bc0+m1TGlk9ljnaDuwWWW70ushgOSGWXnskVkIYuUjHqrvf5AYGVH71kgYh9lf6F\n" +
+            "GSayt2MCGrb2CTFJbmrBkKEPDNGynIjXd/J31gya9uOm7xf0K8ILe+HUn4U/4ukg\n" +
+            "rDGQ9pKEfZNZtrKdtPRxvOiCPEuhr/wKCo9lcGsfCzHkpyA7vwmAL8z3h9F6ykNL\n" +
+            "60MrI6bI4wyyDD3/rMTXJQq2IcgqnYL4NuG1dKLvO5XWdS6HvAxytcw+P6wnLKRJ\n" +
+            "FO4EUN03Yy0j1yFUtkSp5jwD7yYAL3MEdDECAwEAAaNQME4wHQYDVR0OBBYEFLj+\n" +
+            "l1tHSxDKqiHz51ICD/snnN35MB8GA1UdIwQYMBaAFLj+l1tHSxDKqiHz51ICD/sn\n" +
+            "nN35MAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEBADiEZhWN9BfxbU0N\n" +
+            "HHmxvW64nNL7mZM1EYak6xGnOg9eryvi02AQMsFosmID4LC1330T9CAzmH5sS8Dx\n" +
+            "62r10ZCaCFMZG1JD2IN24mlantizMzcFDqyl+zaAPfSU3RgjNsD2vjxgB4f9vLY4\n" +
+            "kcQqIV7MAg6pjQOhGEuiQU67+X45DnpVO6pfS9FTafuAg2ogYlTmb1ONQfQw2msc\n" +
+            "3jEDtD878eOHXHhSKU7doN3ymikSUopaAXG/y8zPcH+eYqKbHGYov+nYDfz9MoLp\n" +
+            "ldNjVbpoXMzQcYxC1kzgjAXgazxis4q1DQaAnCfIp3VstK+ilbeZA3p7Tda3Zh/H\n" +
+            "njr8Biw=\n" +
             "-----END CERTIFICATE-----\n";
     
     /* currently client100-certkey.pem */
@@ -103,12 +127,20 @@ public class SecurityTestConstants {
 
     private static final String COMPONENTID = "TEST";
 
+    public static String getPositiveCertKeyFile() {
+        return POSITIVECERT_KEYFILE;
+    }
+    
     public static String getKeyFile() {
         return KEYFILE;
     }
     
     public static String getTestData() {
         return DATA;
+    }
+    
+    public static String getFingerprintForSignatureCert() {
+        return FINGERPRINT;
     }
     
     public static String getSignature() {

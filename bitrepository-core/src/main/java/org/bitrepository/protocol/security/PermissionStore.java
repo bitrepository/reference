@@ -81,39 +81,44 @@ public class PermissionStore {
             Set<Operation> allowedOperations;
             Set<String> allowedUsers;
             for(Permission permission : permissions.getPermission()) {
-                if(permission.getCertificate().getAllowedCertificateUsers() != null) {
-                    allowedUsers = new HashSet<String>();
-                    allowedUsers.addAll(permission.getCertificate().getAllowedCertificateUsers().getIDs());
-                } else {
-                    allowedUsers = null;
-                }
-
-                allowedOperations = new HashSet<Operation>();
-                X509Certificate certificate = null;
-                if(permission.getOperationPermission() != null) {
-                    for(OperationPermission perm : permission.getOperationPermission()) {
-                        if(perm.getAllowedComponents() == null ||
-                                perm.getAllowedComponents().getIDs().contains(componentID)) {
-                            allowedOperations.add(perm.getOperation());
+                try {
+                    if(permission.getCertificate().getAllowedCertificateUsers() != null) {
+                        allowedUsers = new HashSet<String>();
+                        allowedUsers.addAll(permission.getCertificate().getAllowedCertificateUsers().getIDs());
+                    } else {
+                        allowedUsers = null;
+                    }
+    
+                    allowedOperations = new HashSet<Operation>();
+                    X509Certificate certificate = null;
+                    if(permission.getOperationPermission() != null) {
+                        for(OperationPermission perm : permission.getOperationPermission()) {
+                            if(perm.getAllowedComponents() == null ||
+                                    perm.getAllowedComponents().getIDs().contains(componentID)) {
+                                allowedOperations.add(perm.getOperation());
+                            }
+                        }
+                        if(!allowedOperations.isEmpty()) {
+                            certificate = makeCertificate(permission.getCertificate().getCertificateData());
                         }
                     }
-                    if(!allowedOperations.isEmpty()) {
-                        certificate = makeCertificate(permission.getCertificate().getCertificateData());
+                    if(permission.getInfrastructurePermission().contains(InfrastructurePermission.MESSAGE_SIGNER)) {
+                        if(certificate == null) {
+                            certificate = makeCertificate(permission.getCertificate().getCertificateData());
+                        }
                     }
-                }
-                if(permission.getInfrastructurePermission().contains(InfrastructurePermission.MESSAGE_SIGNER)) {
-                    if(certificate == null) {
-                        certificate = makeCertificate(permission.getCertificate().getCertificateData());
+    
+                    if(certificate != null) {
+                        CertificateID certID = new CertificateID(certificate.getIssuerX500Principal(),
+                                certificate.getSerialNumber());
+                        CertificatePermission certificatePermission = new CertificatePermission(certificate, allowedOperations,
+                                allowedUsers);
+                        permissionMap.put(certID, certificatePermission);
                     }
-                }
-
-                if(certificate != null) {
-                    CertificateID certID = new CertificateID(certificate.getIssuerX500Principal(),
-                            certificate.getSerialNumber());
-                    CertificatePermission certificatePermission = new CertificatePermission(certificate, allowedOperations,
-                            allowedUsers);
-                    permissionMap.put(certID, certificatePermission);
-                }
+                } catch (CertificateException ce) {
+                    log.warn("Failed handle certificate with description '{}'. Certificate not added to permission store.", 
+                            permission.getDescription(), ce);
+                } 
             }
         } else {
             log.info("The provided PermissionSet was null");
@@ -188,6 +193,13 @@ public class PermissionStore {
         }
     }
 
+    /**
+     * Creates a X509Certificate and checks its validity
+     * @param certificateData The certificate data 
+     * @return {@link X509Certificate} The certificate represented by the input data
+     * @throws CertificateException upon failure to parse the certificate data to a certificate 
+     * or if the certificate fails the validity check.  
+     */
     private X509Certificate makeCertificate(byte[] certificateData) throws CertificateException {
         ByteArrayInputStream bs = new ByteArrayInputStream(certificateData);
         X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance(
@@ -197,6 +209,7 @@ public class PermissionStore {
         } catch (IOException e) {
             log.debug("Failed to close ByteArrayInputStream", e);
         }
+        certificate.checkValidity();
         return certificate;
     }
 
