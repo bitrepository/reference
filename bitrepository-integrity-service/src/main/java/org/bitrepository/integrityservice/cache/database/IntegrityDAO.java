@@ -434,6 +434,13 @@ public abstract class IntegrityDAO {
         sc.createStatistics(statisticsCollector);
     }
     
+    
+    /**
+     * Method to retreives the metrics for the pillars in the given collection
+     * I.e. the summed filesize and file count per pillar
+     * @param collectionID The ID of the collection to get metrics for
+     * @return A mapping between pillars in the collection and the PillarCollectionMetric
+     */
     public Map<String, PillarCollectionMetric> getPillarCollectionMetrics(String collectionID) {
         Map<String, PillarCollectionMetric> metrics = new HashMap<>();
         String selectSql = "SELECT pillarid, COUNT(fileid) as filecount, SUM(filesize) as sizesum FROM fileinfo"
