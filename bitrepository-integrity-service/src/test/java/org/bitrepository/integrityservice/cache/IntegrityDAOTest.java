@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
@@ -558,9 +559,10 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         addStep("Check the number of files in collection and on pillars", 
                 "The collection should have two files, the first pillar two, the second one");
         Assert.assertTrue(cache.getNumberOfFilesInCollection(TEST_COLLECTIONID) == 2);
-        Assert.assertTrue(cache.getNumberOfFilesInCollectionAtPillar(TEST_COLLECTIONID, TEST_PILLAR_1) == 2);
-        Assert.assertTrue(cache.getNumberOfFilesInCollectionAtPillar(TEST_COLLECTIONID, TEST_PILLAR_2) == 1);
-        
+        Map<String, PillarCollectionMetric> metrics = cache.getPillarCollectionMetrics(TEST_COLLECTIONID);
+        Assert.assertTrue(metrics.get(TEST_PILLAR_1).getPillarFileCount() == 2);
+        Assert.assertTrue(metrics.get(TEST_PILLAR_2).getPillarFileCount() == 1);
+                
         addStep("Extract missing files from the first pillar", "no files should be missing");
         List<String> missingFiles 
             = getIssuesFromIterator(cache.findMissingFilesAtPillar(TEST_COLLECTIONID, TEST_PILLAR_1, 0L, 10L));
@@ -674,10 +676,11 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         long pillar2Size = size2 + size3;
         long collectionSize = size1 + size2 + size3;
         
+        Map<String, PillarCollectionMetric> metrics = cache.getPillarCollectionMetrics(TEST_COLLECTIONID);
         addStep("Check the reported size of the first pillar in the collection", "The reported size matches the precalculated");
-        Assert.assertEquals(cache.getCollectionSizeAtPillar(TEST_COLLECTIONID, TEST_PILLAR_1), pillar1Size);
+        Assert.assertEquals(metrics.get(TEST_PILLAR_1).getPillarCollectionSize(), pillar1Size);
         addStep("Check the reported size of the second pillar in the collection", "The reported size matches the precalculated");
-        Assert.assertEquals(cache.getCollectionSizeAtPillar(TEST_COLLECTIONID, TEST_PILLAR_2), pillar2Size);
+        Assert.assertEquals(metrics.get(TEST_PILLAR_2).getPillarCollectionSize(), pillar2Size);
         addStep("Check the reported size of the whole collection", "The reported size matches the precalculated");
         Assert.assertEquals(cache.getCollectionSize(TEST_COLLECTIONID), collectionSize);   
     }

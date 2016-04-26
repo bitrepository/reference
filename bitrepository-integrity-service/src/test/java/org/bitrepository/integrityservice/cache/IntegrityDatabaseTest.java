@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
@@ -117,9 +118,9 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         Assert.assertNotNull(fileInfos);
         Assert.assertEquals(fileInfos.size(), 0);
         
-        addStep("Test the 'getNumberOfFiles'", "Should be zero for both pillars.");
-        Assert.assertEquals(model.getNumberOfFiles(TEST_PILLAR_1, TEST_COLLECTIONID), 0);
-        Assert.assertEquals(model.getNumberOfFiles(TEST_PILLAR_2, TEST_COLLECTIONID), 0);
+        addStep("Test the 'getPillarCollectionMetrics'", "The set of metrics should be empty.");
+        Map<String, PillarCollectionMetric> metrics = model.getPillarCollectionMetrics(TEST_COLLECTIONID);
+        Assert.assertTrue(metrics.isEmpty());
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})

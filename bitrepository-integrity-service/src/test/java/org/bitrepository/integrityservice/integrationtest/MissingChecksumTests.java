@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -64,6 +65,7 @@ import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.cache.PillarCollectionMetric;
 import org.bitrepository.integrityservice.cache.database.IntegrityDatabaseCreator;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
@@ -184,8 +186,9 @@ public class MissingChecksumTests extends ExtendedTestCase {
         verifyNoMoreInteractions(alerter);
         
         addStep("Check whether checksum is missing", "Should be missing at pillar two only.");
-        assertEquals(model.getNumberOfFiles(PILLAR_1, TEST_COLLECTION), 1);
-        assertEquals(model.getNumberOfFiles(PILLAR_2, TEST_COLLECTION), 1);
+        Map<String, PillarCollectionMetric> metrics = model.getPillarCollectionMetrics(TEST_COLLECTION);
+        assertEquals(metrics.get(PILLAR_1).getPillarFileCount(), 1);
+        assertEquals(metrics.get(PILLAR_2).getPillarFileCount(), 1);
         
         List<String> missingChecksumsPillar1 
             = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTION, PILLAR_1, testStart));
@@ -233,8 +236,10 @@ public class MissingChecksumTests extends ExtendedTestCase {
         verifyNoMoreInteractions(alerter);
         
         addStep("Check whether checksum is missing", "Should be missing at pillar two only.");
-        assertEquals(model.getNumberOfFiles(PILLAR_1, TEST_COLLECTION), 1);
-        assertEquals(model.getNumberOfFiles(PILLAR_2, TEST_COLLECTION), 1);
+        Map<String, PillarCollectionMetric> metrics = model.getPillarCollectionMetrics(TEST_COLLECTION);
+        assertEquals(metrics.get(PILLAR_1).getPillarFileCount(), 1);
+        assertEquals(metrics.get(PILLAR_2).getPillarFileCount(), 1);
+        
         for(String pillar : Arrays.asList(PILLAR_1, PILLAR_2)) {
             List<String> missingChecksums 
                 = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTION, pillar, testStart));
@@ -265,8 +270,9 @@ public class MissingChecksumTests extends ExtendedTestCase {
         verifyNoMoreInteractions(alerter);
         
         addStep("Check whether checksum is missing", "Should be missing at pillar one, and not on pillar two.");
-        assertEquals(model.getNumberOfFiles(PILLAR_1, TEST_COLLECTION), 1);
-        assertEquals(model.getNumberOfFiles(PILLAR_2, TEST_COLLECTION), 1);
+        metrics = model.getPillarCollectionMetrics(TEST_COLLECTION);
+        assertEquals(metrics.get(PILLAR_1).getPillarFileCount(), 1);
+        assertEquals(metrics.get(PILLAR_2).getPillarFileCount(), 1);
         
         List<String> missingChecksumsPillar1 
             = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTION, PILLAR_1, secondUpdate));

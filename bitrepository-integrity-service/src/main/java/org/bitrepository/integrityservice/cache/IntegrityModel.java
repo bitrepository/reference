@@ -27,6 +27,7 @@ package org.bitrepository.integrityservice.cache;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
@@ -79,14 +80,6 @@ public interface IntegrityModel {
      * @return The number of files in the collection
      */
     long getNumberOfFilesInCollection(String collectionID);
-    
-    /**
-     * Retrieves the number of files on a pillar in a collection
-     * @param pillarID The pillar.
-     * @param collectionID The ID of the collection to get the number of files from
-     * @return Retrieves the number of files in the state 'EXISTING' or 'PREVIOUSLY_SEEN' at a given pillar.
-     */
-    long getNumberOfFiles(String pillarID, String collectionID);
     
     /**
      * Get an IntegrityIssueIterator for the files for a given pillar, restricted by min and max ids.
@@ -187,12 +180,12 @@ public interface IntegrityModel {
     Long getCollectionFileSize(String collectionID);
     
     /**
-     * Retrieves the accumulated size of the files in the given collection
-     * @param collectionID The ID of the collection
-     * @param pillarID the ID of the pillar
-     * @return The accumulated size of the files in the collection.
+     * Retreives the metrics for the pillars in the given collection
+     * I.e. the summed filesize and file count per pillar
+     * @param collectionID The ID of the collection to get metrics for
+     * @return A mapping between pillars in the collection and the PillarCollectionMetric
      */
-    Long getCollectionFileSizeAtPillar(String collectionID, String pillarID);
+    Map<String, PillarCollectionMetric> getPillarCollectionMetrics(String collectionID);
     
     /**
      *  Retrieves the latest collection statistics for the given collection

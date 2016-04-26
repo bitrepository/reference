@@ -28,7 +28,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
@@ -36,6 +38,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.FileInfo;
+import org.bitrepository.integrityservice.cache.PillarCollectionMetric;
 import org.bitrepository.integrityservice.cache.PillarCollectionStat;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.bitrepository.service.database.DBConnector;
@@ -431,6 +434,33 @@ public abstract class IntegrityDAO {
         sc.createStatistics(statisticsCollector);
     }
     
+    public Map<String, PillarCollectionMetric> getPillarCollectionMetrics(String collectionID) {
+        Map<String, PillarCollectionMetric> metrics = new HashMap<>();
+        String selectSql = "SELECT pillarid, COUNT(fileid) as filecount, SUM(filesize) as sizesum FROM fileinfo"
+                + " WHERE collectionid = ?"
+                + " GROUP BY pillarid";
+        
+        try (Connection conn = dbConnector.getConnection();
+                PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, selectSql, collectionID)) {
+               try (ResultSet dbResult = ps.executeQuery()) {
+                   while(dbResult.next()) {
+                       String pillarid = dbResult.getString("pillarid");
+                       Long fileCount = dbResult.getLong("filecount");
+                       Long fileSize = dbResult.getLong("sizesum");
+                       PillarCollectionMetric metric = new PillarCollectionMetric();
+                       metric.setPillarFileCount(fileCount == null ? 0 : fileCount);
+                       metric.setPillarCollectionSize(fileSize== null ? 0 : fileSize);
+                       metrics.put(pillarid, metric);
+                   }
+               } 
+           } catch (SQLException e) {
+               throw new IllegalStateException("Could not retrieve PillarCollectionMetrics for collection '" 
+                       + collectionID + "' with the SQL '" + selectSql + "'.", e);
+           }
+        
+        return metrics;
+    }
+    
     /**
      * Get the size of a given collection
      * @param collectionID The ID of the collection
@@ -447,25 +477,6 @@ public abstract class IntegrityDAO {
     }
     
     /**
-     * Get the size of a collection on a given pillar
-     * @param collectionID The ID of the collection
-     * @param pillarID The ID of the pillar
-     * @return The size of the collection on the pillar 
-     */
-    public long getCollectionSizeAtPillar(String collectionID, String pillarID) {
-        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
-        ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
-
-        String getCollectionSizeAtPillarSql = "SELECT SUM(filesize) FROM fileinfo"
-                        + " WHERE collectionID = ?"
-                        + " AND pillarID = ?";
-        Long size = DatabaseUtils.selectFirstLongValue(dbConnector, getCollectionSizeAtPillarSql, 
-                collectionID, pillarID);
-               
-        return (size == null ? 0 : size);
-    }
-    
-    /**
      * Get the number of files in a given collection
      * @param collectionID The ID of the collection
      * @return The number of files in the collection 
@@ -477,24 +488,6 @@ public abstract class IntegrityDAO {
                         + " WHERE collectionID = ?";
         
         return DatabaseUtils.selectFirstLongValue(dbConnector, getNumberOfFilesSql, collectionID);
-    }
-    
-    /**
-     * Get the number of files in a given collection
-     * @param collectionID The ID of the collection
-     * @param pillarID The ID of the pillar
-     * @return The number of files in the collection at the given pillar 
-     */
-    public Long getNumberOfFilesInCollectionAtPillar(String collectionID, String pillarID) {
-        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
-        ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
-        
-        String getNumberOfFilesSql = "SELECT COUNT(fileid) FROM fileinfo"
-                + " WHERE collectionID = ?"
-                + " AND pillarID = ?";
-        
-        return DatabaseUtils.selectFirstLongValue(dbConnector, getNumberOfFilesSql, collectionID, pillarID);
-
     }
     
     /**

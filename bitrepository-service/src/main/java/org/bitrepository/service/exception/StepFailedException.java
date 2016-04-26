@@ -29,4 +29,8 @@ public class StepFailedException extends Exception {
     public StepFailedException(String message, Exception e) {
         super(message, e);
     }
+    
+    public StepFailedException(String message) {
+        super(message);
+    }
 }

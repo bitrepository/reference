@@ -24,6 +24,7 @@ package org.bitrepository.integrityservice.cache;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
@@ -74,11 +75,6 @@ public class IntegrityDatabase implements IntegrityModel {
     @Override
     public long getNumberOfFilesInCollection(String collectionID) {
         return store.getNumberOfFilesInCollection(collectionID);
-    }
-
-    @Override
-    public long getNumberOfFiles(String pillarID, String collectionID) {
-        return store.getNumberOfFilesInCollectionAtPillar(collectionID, pillarID);
     }
 
     @Override
@@ -154,11 +150,6 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public Long getCollectionFileSizeAtPillar(String collectionID, String pillarID) {
-        return store.getCollectionSizeAtPillar(collectionID, pillarID);
-    }
-
-    @Override
     public void createStatistics(String collectionID, StatisticsCollector statisticsCollector) {
         store.createStatistics(collectionID, statisticsCollector);
     }
@@ -171,5 +162,10 @@ public class IntegrityDatabase implements IntegrityModel {
     @Override
     public String getFileIDAtPosition(String collectionID, Long position) {
         return store.getFileIdAtIndex(collectionID, position);
+    }
+
+    @Override
+    public Map<String, PillarCollectionMetric> getPillarCollectionMetrics(String collectionID) {
+        return store.getPillarCollectionMetrics(collectionID);
     }
 }
