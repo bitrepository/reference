@@ -439,27 +439,25 @@ public abstract class IntegrityDAO {
      * Method to retreives the metrics for the pillars in the given collection
      * I.e. the summed filesize and file count per pillar
      * @param collectionID The ID of the collection to get metrics for
-     * @return A mapping between pillars in the collection and the PillarCollectionMetric
+     * @return A mapping between pillars in the collection and the PillarCollectionMetric, 
+     *         the returned map is empty if nothing is found for the collection. Never null.
      */
     public Map<String, PillarCollectionMetric> getPillarCollectionMetrics(String collectionID) {
         Map<String, PillarCollectionMetric> metrics = new HashMap<>();
-        String selectSql = "SELECT pillarid, COUNT(fileid) as filecount, SUM(filesize) as sizesum FROM fileinfo"
-                + " WHERE collectionid = ?"
-                + " GROUP BY pillarid";
+        String selectSql = "SELECT pillarID, COUNT(fileID) as filecount, SUM(filesize) as sizesum FROM fileinfo"
+                + " WHERE collectionID = ?"
+                + " GROUP BY pillarID";
         
         try (Connection conn = dbConnector.getConnection();
-                PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, selectSql, collectionID)) {
-               try (ResultSet dbResult = ps.executeQuery()) {
-                   while(dbResult.next()) {
-                       String pillarid = dbResult.getString("pillarid");
-                       Long fileCount = dbResult.getLong("filecount");
-                       Long fileSize = dbResult.getLong("sizesum");
-                       PillarCollectionMetric metric = new PillarCollectionMetric();
-                       metric.setPillarFileCount(fileCount == null ? 0 : fileCount);
-                       metric.setPillarCollectionSize(fileSize== null ? 0 : fileSize);
-                       metrics.put(pillarid, metric);
-                   }
-               } 
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, selectSql, collectionID);
+             ResultSet dbResult = ps.executeQuery()) {
+               while(dbResult.next()) {
+                   String pillarid = dbResult.getString("pillarID");
+                   Long fileCount = dbResult.getLong("filecount");
+                   Long fileSize = dbResult.getLong("sizesum");
+                   PillarCollectionMetric metric = new PillarCollectionMetric(fileSize, fileCount);
+                   metrics.put(pillarid, metric);
+               }
            } catch (SQLException e) {
                throw new IllegalStateException("Could not retrieve PillarCollectionMetrics for collection '" 
                        + collectionID + "' with the SQL '" + selectSql + "'.", e);

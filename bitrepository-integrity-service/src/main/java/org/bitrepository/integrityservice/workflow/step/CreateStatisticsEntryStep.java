@@ -56,19 +56,20 @@ public class CreateStatisticsEntryStep extends AbstractWorkFlowStep {
     /**
      * Uses IntegrityChecker to validate whether any checksums are missing.
      * Dispatches an alarm if any checksums were missing.
-     * @throws StepFailedException 
      */
     @Override
-    public synchronized void performStep() throws StepFailedException {
+    public synchronized void performStep() {
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         Map<String, PillarCollectionMetric> pillarMetrics = store.getPillarCollectionMetrics(collectionID);
         for(String pillar : pillars) {
             PillarCollectionMetric metric = pillarMetrics.get(pillar);
             if(metric == null) {
-                throw new StepFailedException("Could not locate metrics for pillar '" + pillar + "'");
+                sc.getPillarCollectionStat(pillar).setFileCount(0L);
+                sc.getPillarCollectionStat(pillar).setDataSize(0L);
+            } else {
+                sc.getPillarCollectionStat(pillar).setFileCount(metric.getPillarFileCount());
+                sc.getPillarCollectionStat(pillar).setDataSize(metric.getPillarCollectionSize());    
             }
-            sc.getPillarCollectionStat(pillar).setFileCount(metric.getPillarFileCount());
-            sc.getPillarCollectionStat(pillar).setDataSize(metric.getPillarCollectionSize());
         }
         sc.getCollectionStat().setFileCount(store.getNumberOfFilesInCollection(collectionID));
         sc.getCollectionStat().setDataSize(store.getCollectionFileSize(collectionID));

@@ -126,10 +126,10 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         
         List<String> pillersInDB = cache.getAllPillars();
         Assert.assertTrue(pillersInDB.containsAll(Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2, EXTRA_PILLAR)));
-        Assert.assertTrue(pillersInDB.size() == 3);
+        Assert.assertEquals(pillersInDB.size(), 3);
         List<String> collectionsInDB = cache.getCollections();
         Assert.assertTrue(collectionsInDB.containsAll(Arrays.asList(TEST_COLLECTIONID, EXTRA_COLLECTION)));
-        Assert.assertTrue(collectionsInDB.size() == 2);
+        Assert.assertEquals(collectionsInDB.size(), 2);
         
         Assert.assertEquals(cache.getNumberOfFilesInCollection(TEST_COLLECTIONID), new Long(0));
         Assert.assertEquals(cache.getNumberOfFilesInCollection(EXTRA_COLLECTION), new Long(0));
@@ -534,13 +534,13 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         addStep("Extract with a maximum of 1", "The first file.");
         IntegrityIssueIterator it = cache.getAllFileIDsOnPillar(TEST_COLLECTIONID, TEST_PILLAR_1, new Long(0), new Long(1));
         Collection<String> fileIDs = getIssuesFromIterator(it);
-        Assert.assertTrue(fileIDs.size() == 1);
+        Assert.assertEquals(fileIDs.size(), 1);
         Assert.assertTrue(fileIDs.contains(TEST_FILE_ID));
         
         addStep("Extract with a minimum of 1 and maximum of infinite", "The last file.");
         it = cache.getAllFileIDsOnPillar(TEST_COLLECTIONID, TEST_PILLAR_1, new Long(1), Long.MAX_VALUE);
         fileIDs = getIssuesFromIterator(it);
-        Assert.assertTrue(fileIDs.size() == 1);
+        Assert.assertEquals(fileIDs.size(), 1);
         Assert.assertTrue(fileIDs.contains(file2));
     }
 
@@ -560,8 +560,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
                 "The collection should have two files, the first pillar two, the second one");
         Assert.assertTrue(cache.getNumberOfFilesInCollection(TEST_COLLECTIONID) == 2);
         Map<String, PillarCollectionMetric> metrics = cache.getPillarCollectionMetrics(TEST_COLLECTIONID);
-        Assert.assertTrue(metrics.get(TEST_PILLAR_1).getPillarFileCount() == 2);
-        Assert.assertTrue(metrics.get(TEST_PILLAR_2).getPillarFileCount() == 1);
+        Assert.assertEquals(metrics.get(TEST_PILLAR_1).getPillarFileCount(), 2);
+        Assert.assertEquals(metrics.get(TEST_PILLAR_2).getPillarFileCount(), 1);
                 
         addStep("Extract missing files from the first pillar", "no files should be missing");
         List<String> missingFiles 
@@ -589,13 +589,13 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         addStep("Extract with a maximum of 1", "The first file.");
         IntegrityIssueIterator it = cache.findMissingFilesAtPillar(TEST_COLLECTIONID, TEST_PILLAR_2, 0L, 1L);
         Collection<String> fileIDs = getIssuesFromIterator(it);
-        Assert.assertTrue(fileIDs.size() == 1);
+        Assert.assertEquals(fileIDs.size(), 1);
         Assert.assertTrue(fileIDs.contains(file2));
         
         addStep("Extract with a minimum of 1 and maximum of infinite", "The last file.");
         it = cache.findMissingFilesAtPillar(TEST_COLLECTIONID, TEST_PILLAR_2, 1L, Long.MAX_VALUE);
         fileIDs = getIssuesFromIterator(it);
-        Assert.assertTrue(fileIDs.size() == 1);
+        Assert.assertEquals(fileIDs.size(), 1);
         Assert.assertTrue(fileIDs.contains(file3));
     }
 
