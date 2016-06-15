@@ -37,6 +37,8 @@ Besides the dependency information, usage of the client requires the following:
   * ReferenceSettings.xml - Settings file with client specific settings
   * Client certificate - X509 certificate and key for the client, unencrypted PEM formatted
 
+The two files RepositorySettings.xml and ReferenceSettings.xml are expected to be located in the same directory
+
 The minimal ReferenceSettings.xml needed for usage of a client looks like:
 ```xml
 <ReferenceSettings xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd">
@@ -48,6 +50,12 @@ The minimal ReferenceSettings.xml needed for usage of a client looks like:
 ```
 
 ### Creating a client
+To create a client a few things needs to be done:
+  * Load settings
+  * Create the nescesary helper classes for cryptography
+  * Obtain the client it self
+
+The following code demonstrates how this can be done
 
 ```java
 String pathToSettingDir = "path/to/settings/directory";
@@ -70,7 +78,33 @@ PutFileClient putClient = ModifyComponentFactory.getInstance().retrievePutClient
                 settings.getComponentID());
 ```
 
+### Using the client
+The client operates on non-blocking asynchronious basis, and delivers information about what is happening to the EventHandler provided when starting an operation. This means that when using the various clients the code should wait for the operation to finish or fail.  
 
+```java
+   
+    private class MyEventHandler implements EventHandler {
+        @Override
+        public void handleEvent(OperationEvent event) {
+            // Code to handle event
+        }
+    }
+
+    String collectionID = "test-collection";
+    URL fileURL = "https://file-exchange01/myFile";
+    String fileID = "myFileID";
+    long fileSize = 1000000000L;
+    ChecksumDataForFileTYPE checksumData = getChechsumDataForFile();
+    EventHandler eventHandler = new MyEventHandler();
+    String auditInformation = "ingesting my file";
+
+    putClient.putFile(collectionID, fileURL, fileID, FileSize, checksumData, null, eventHandler, auditInformation);
+
+    // Code to wait for the put operation to finish
+```
+For inspiration of the use of the bitrepository client libraries have a look at the following projects:
+  * The client modules commandline client (this repository)
+  * The Danish State and University library's [youseebitrepositoryingester](https://github.com/statsbiblioteket/youseebitrepositoryingester/) and [newspaper-bitrepository-ingester](https://github.com/statsbiblioteket/newspaper-bitrepository-ingester)
 
 ### Closing after finishing
 When bitrepository.org clients are no longer needed the messagebus connection should be closed.
