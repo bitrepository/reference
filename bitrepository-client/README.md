@@ -1,7 +1,7 @@
 
 # Bitrepository reference client libraries
 
-The bitrepository.org client module contains clients for the various operations available through the protocol. 
+The bitrepository.org client module contains java client libraries for interacting with a bitrepository through the bitrepository.org protocol as described [here](https://sbforge.org/display/BITMAG/Message+flow). 
 The clients are divided into two package hierarchies, 'access' and 'modify'. The clients found under the 'access' package is for read-only operations, and clients found under 'modify' is for write operations. Descriptions of the various operations are available [here](https://sbforge.org/display/BITMAG/Operations+descriptions)
 
 The 'access' package contains the following operations:
@@ -21,8 +21,17 @@ The clients operate on a asynchronious event-driven basis, this means that when 
 ## Usage of clients
 
 The various Bitrepository.org reference maven artifacts can be found on [sbforge nexus](https://sbforge.org/nexus/content/groups/public).
+```xml
+<repository>
+  <id>sbforge-nexus</id>
+  <url>https://sbforge.org/nexus/content/groups/public</url>
+  <releases><enabled>true</enabled></releases>
+  <snapshots><enabled>true</enabled></snapshots>
+</repository>
+```
 
-The specific maven dependency information for the client module can be seen in the following snippit (*NB: the version information should be changed to an actual version*)
+
+The specific maven dependency information for the client module can be seen in the following snippet (*NB: the version information should be changed to an actual version*)
 
 ```xml
 <dependency>
@@ -35,7 +44,7 @@ The specific maven dependency information for the client module can be seen in t
 Besides the dependency information, usage of the client requires the following:
   * RepositorySettings.xml - Settings file describing the repository
   * ReferenceSettings.xml - Settings file with reference client specific settings
-  * Client certificate - X509 certificate and key for the client, unencrypted PEM formatted
+  * Client certificate - X509 certificate and key for the client, unencrypted PEM format
 
 The two files RepositorySettings.xml and ReferenceSettings.xml are expected to be located in the same directory
 
@@ -50,7 +59,7 @@ The minimal ReferenceSettings.xml needed for usage of a client looks like:
 ```
 Schemas for the settings files can be found:
   * [RepositorySettings.xsd](https://github.com/bitrepository/repository-settings/blob/master/repository-settings-xsd/src/main/resources/xsd/RepositorySettings.xsd)
-  * [ReferenceSettings](https://github.com/bitrepository/reference/blob/master/bitrepository-reference-settings/src/main/resources/xsd/ReferenceSettings.xsd)
+  * [ReferenceSettings.xsd](https://github.com/bitrepository/reference/blob/master/bitrepository-reference-settings/src/main/resources/xsd/ReferenceSettings.xsd)
 
 
 ### Creating a client
@@ -82,8 +91,8 @@ The following code demonstrates how this can be done
                     settings, securityManager, settings.getComponentID());
 ```
 
-### Using the client
-The client operates on non-blocking asynchronious basis, and delivers information about what is happening to the EventHandler provided when starting an operation. This means that when using the various clients the code should wait for the operation to finish or fail.  
+### Using a client
+The client operates on non-blocking asynchronious basis, and delivers information about what is happening to the EventHandler provided when starting an operation. This means that when using the various clients, the code should wait for the operation to finish or fail.  
 
 ```java
    
@@ -98,7 +107,7 @@ The client operates on non-blocking asynchronious basis, and delivers informatio
     URL fileURL = new URL("https://file-exchange01/myFile");
     String fileID = "myFileID";
     long fileSize = 1000000000L;
-    ChecksumDataForFileTYPE checksumData = getChechsumDataForFile();
+    ChecksumDataForFileTYPE checksumData = getChecksumDataForFile();
     ChecksumSpecTYPE checksumRequest = null;
     MyEventHandler eventHandler = new MyEventHandler();
     String auditInformation = "ingesting my file";
@@ -113,9 +122,9 @@ For inspiration of the use of the bitrepository client libraries have a look at 
   * The Danish State and University library's [youseebitrepositoryingester](https://github.com/statsbiblioteket/youseebitrepositoryingester/) and [newspaper-bitrepository-ingester](https://github.com/statsbiblioteket/newspaper-bitrepository-ingester)
 
 ### Closing after finishing
-When bitrepository.org clients are no longer needed the messagebus connection should be closed.
+As part of requesting a client from the client factory, a shared message bus connection is created, this should be closed when no more bitrepository.org clients are needed.
  
-Note should be taken that if the messagebus connection is closed while other clients in the same JVM is in use, their connection will also be closed. I.e. only close the messagebus connection when all use of clients are finished. 
+Note should be taken that if the message bus connection is closed while other clients in the same JVM is in use, their connection will also be closed. I.e. only close the message bus connection when all use of clients are finished. 
 
 ```java
 MessageBus messageBus = MessageBusManager.getMessageBus();
@@ -197,7 +206,7 @@ public class BitrepositoryClientExample {
         
     }
     
-    private ChecksumDataForFileTYPE getChechsumDataForFile() {
+    private ChecksumDataForFileTYPE getChecksumDataForFile() {
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         // Beware, checksumData is empty, should be filled in
         return checksumData;
@@ -231,7 +240,7 @@ public class BitrepositoryClientExample {
         URL fileURL = new URL("https://file-exchange01/myFile");
         String fileID = "myFileID";
         long fileSize = 1000000000L;
-        ChecksumDataForFileTYPE checksumData = getChechsumDataForFile();
+        ChecksumDataForFileTYPE checksumData = getChecksumDataForFile();
         ChecksumSpecTYPE checksumRequest = null;
         MyEventHandler eventHandler = new MyEventHandler();
         String auditInformation = "ingesting my file";
