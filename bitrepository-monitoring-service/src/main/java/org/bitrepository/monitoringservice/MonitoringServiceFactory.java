@@ -24,17 +24,14 @@ package org.bitrepository.monitoringservice;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Properties;
+
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
-import org.bitrepository.protocol.security.BasicMessageAuthenticator;
-import org.bitrepository.protocol.security.BasicMessageSigner;
-import org.bitrepository.protocol.security.BasicOperationAuthorizor;
 import org.bitrepository.protocol.security.BasicSecurityManager;
-import org.bitrepository.protocol.security.MessageAuthenticator;
-import org.bitrepository.protocol.security.MessageSigner;
-import org.bitrepository.protocol.security.OperationAuthorizor;
-import org.bitrepository.protocol.security.PermissionStore;
+import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.protocol.security.SecurityManagerUtil;
 import org.bitrepository.service.ServiceSettingsProvider;
 import org.bitrepository.settings.referencesettings.ServiceType;
 
@@ -53,7 +50,7 @@ public class MonitoringServiceFactory {
     /** The settings. */
     private static Settings settings;
     /** The security manager.*/
-    private static BasicSecurityManager securityManager;
+    private static SecurityManager securityManager;
     /** The implementation of the integrity service.*/
     private static MonitoringService monitoringService;
 
@@ -97,15 +94,10 @@ public class MonitoringServiceFactory {
      * @see #getSettings()
      * @see BasicSecurityManager
      */
-    public synchronized static BasicSecurityManager getSecurityManager() {
+    public synchronized static SecurityManager getSecurityManager() {
         if(securityManager == null) {
             getSettings();
-            PermissionStore permissionStore = new PermissionStore();
-            MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
-            MessageSigner signer = new BasicMessageSigner();
-            OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
-            securityManager = new BasicSecurityManager(settings.getRepositorySettings(), privateKeyFile,
-                    authenticator, signer, authorizer, permissionStore, 
+            securityManager = SecurityManagerUtil.getSecurityManager(settings, Paths.get(privateKeyFile),
                     settings.getReferenceSettings().getMonitoringServiceSettings().getID());
         }
         

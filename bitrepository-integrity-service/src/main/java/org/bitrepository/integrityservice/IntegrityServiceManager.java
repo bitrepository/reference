@@ -28,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.bitrepository.access.AccessComponentFactory;
@@ -46,14 +47,8 @@ import org.bitrepository.integrityservice.workflow.IntegrityWorkflowManager;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.security.BasicMessageAuthenticator;
-import org.bitrepository.protocol.security.BasicMessageSigner;
-import org.bitrepository.protocol.security.BasicOperationAuthorizor;
-import org.bitrepository.protocol.security.BasicSecurityManager;
-import org.bitrepository.protocol.security.MessageAuthenticator;
-import org.bitrepository.protocol.security.MessageSigner;
-import org.bitrepository.protocol.security.OperationAuthorizor;
-import org.bitrepository.protocol.security.PermissionStore;
+import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.protocol.security.SecurityManagerUtil;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.ServiceSettingsProvider;
 import org.bitrepository.service.audit.AuditTrailContributerDAOFactory;
@@ -80,7 +75,7 @@ public final class IntegrityServiceManager {
     /** Property key to tell where to locate the path and filename to the private key file. */
     private static final String PRIVATE_KEY_FILE = "org.bitrepository.integrity-service.privateKeyFile";
     private static Settings settings;
-    private static BasicSecurityManager securityManager;
+    private static SecurityManager securityManager;
     private static IntegrityWorkflowManager workFlowManager;
     private static String confDir;
     private static IntegrityLifeCycleHandler lifeCycleHandler;
@@ -111,7 +106,9 @@ public final class IntegrityServiceManager {
     public static synchronized void initialize(String configurationDir) {
         confDir = configurationDir;
         loadSettings();
-        createSecurityManager();
+        String id = settings.getReferenceSettings().getIntegrityServiceSettings().getID();
+        securityManager = SecurityManagerUtil.getSecurityManager(settings, Paths.get(privateKeyFile), id); 
+                
         messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
         
         AuditTrailContributerDAOFactory daoFactory = new AuditTrailContributerDAOFactory();
@@ -124,7 +121,7 @@ public final class IntegrityServiceManager {
 
         AccessComponentFactory acf = AccessComponentFactory.getInstance();
         ModifyComponentFactory mcf = ModifyComponentFactory.getInstance();
-        String id = settings.getReferenceSettings().getIntegrityServiceSettings().getID();
+        
         collector = new DelegatingIntegrityInformationCollector(
                 acf.createGetFileIDsClient(settings, securityManager, id),
                 acf.createGetChecksumsClient(settings, securityManager, id),
@@ -182,20 +179,6 @@ public final class IntegrityServiceManager {
         } catch (IOException e) {
             throw new IllegalStateException("Could not instantiate the properties.", e);
         }
-    }
-
-    /**
-     * Instantiated the security manager for the integrity service.
-     * @see {@link BasicSecurityManager}
-     */
-    private static void createSecurityManager() {
-            PermissionStore permissionStore = new PermissionStore();
-            MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
-            MessageSigner signer = new BasicMessageSigner();
-            OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
-            securityManager = new BasicSecurityManager(settings.getRepositorySettings(), privateKeyFile,
-                    authenticator, signer, authorizer, permissionStore,
-                    settings.getReferenceSettings().getIntegrityServiceSettings().getID());
     }
 
     /**

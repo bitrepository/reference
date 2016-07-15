@@ -28,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.bitrepository.alarm.handling.handlers.AlarmStorer;
@@ -37,15 +38,8 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.security.BasicMessageAuthenticator;
-import org.bitrepository.protocol.security.BasicMessageSigner;
-import org.bitrepository.protocol.security.BasicOperationAuthorizor;
-import org.bitrepository.protocol.security.BasicSecurityManager;
-import org.bitrepository.protocol.security.MessageAuthenticator;
-import org.bitrepository.protocol.security.MessageSigner;
-import org.bitrepository.protocol.security.OperationAuthorizor;
-import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.protocol.security.SecurityManagerUtil;
 import org.bitrepository.service.ServiceSettingsProvider;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
@@ -87,10 +81,6 @@ public class AlarmServiceFactory {
      */
     public static synchronized AlarmService getAlarmService() {
         if(alarmService == null) {
-            MessageAuthenticator authenticator;
-            MessageSigner signer;
-            OperationAuthorizor authorizer;
-            PermissionStore permissionStore;
             SecurityManager securityManager;
             ServiceSettingsProvider settingsLoader =
                     new ServiceSettingsProvider(new XMLFileSettingsLoader(configurationDir), ServiceType.ALARM_SERVICE);
@@ -98,14 +88,8 @@ public class AlarmServiceFactory {
             Settings settings = settingsLoader.getSettings();
             try {
                 loadProperties();
-                permissionStore = new PermissionStore();
-                authenticator = new BasicMessageAuthenticator(permissionStore);
-                signer = new BasicMessageSigner();
-                authorizer = new BasicOperationAuthorizor(permissionStore);
-                securityManager = new BasicSecurityManager(settings.getRepositorySettings(), privateKeyFile,
-                        authenticator, signer, authorizer, permissionStore, 
-                        settings.getReferenceSettings().getAlarmServiceSettings().getID());
-                
+                securityManager = SecurityManagerUtil.getSecurityManager(settings, Paths.get(privateKeyFile), 
+                        settings.getReferenceSettings().getAlarmServiceSettings().getID()); 
                 MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, 
                         securityManager);
                 ContributorMediator contributorMediator = new SimpleContributorMediator(messageBus, settings, null, null);

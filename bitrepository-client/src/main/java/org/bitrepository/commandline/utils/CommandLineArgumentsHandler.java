@@ -21,6 +21,7 @@
  */
 package org.bitrepository.commandline.utils;
 
+import java.nio.file.Paths;
 import java.util.Collection;
 
 import org.apache.commons.cli.CommandLine;
@@ -36,14 +37,8 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.common.utils.SettingsUtils;
-import org.bitrepository.protocol.security.BasicMessageAuthenticator;
-import org.bitrepository.protocol.security.BasicMessageSigner;
-import org.bitrepository.protocol.security.BasicOperationAuthorizor;
-import org.bitrepository.protocol.security.BasicSecurityManager;
-import org.bitrepository.protocol.security.MessageAuthenticator;
-import org.bitrepository.protocol.security.MessageSigner;
-import org.bitrepository.protocol.security.OperationAuthorizor;
-import org.bitrepository.protocol.security.PermissionStore;
+import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.protocol.security.SecurityManagerUtil;
 
 /**
  * Interface for handling the command line arguments.
@@ -160,17 +155,10 @@ public class CommandLineArgumentsHandler {
      * @param settings The settings.
      * @return The security manager.
      */
-    public BasicSecurityManager loadSecurityManager(Settings settings) {
+    public SecurityManager loadSecurityManager(Settings settings) {
         ArgumentValidator.checkNotNull(settings, "Settings settings");
         ensureThatCmdHasBeenInitialised();
         String privateKeyFile = cmd.getOptionValue(Constants.PRIVATE_KEY_ARG, "");
-        
-        PermissionStore permissionStore = new PermissionStore();
-        MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
-        MessageSigner signer = new BasicMessageSigner();
-        OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
-        return new BasicSecurityManager(settings.getRepositorySettings(), privateKeyFile,
-                authenticator, signer, authorizer, permissionStore,
-                settings.getComponentID());
+        return SecurityManagerUtil.getSecurityManager(settings, Paths.get(privateKeyFile));
     }
 }

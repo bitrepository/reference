@@ -28,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.bitrepository.access.AccessComponentFactory;
@@ -45,15 +46,8 @@ import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.security.BasicMessageAuthenticator;
-import org.bitrepository.protocol.security.BasicMessageSigner;
-import org.bitrepository.protocol.security.BasicOperationAuthorizor;
-import org.bitrepository.protocol.security.BasicSecurityManager;
-import org.bitrepository.protocol.security.MessageAuthenticator;
-import org.bitrepository.protocol.security.MessageSigner;
-import org.bitrepository.protocol.security.OperationAuthorizor;
-import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.protocol.security.SecurityManagerUtil;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.ServiceSettingsProvider;
 import org.bitrepository.service.contributor.ContributorMediator;
@@ -100,7 +94,8 @@ public final class AuditTrailServiceFactory {
     public static synchronized void init(String confDir) {
         configurationDir = confDir;
         loadSettings();
-        createSecurityManager();
+        securityManager = SecurityManagerUtil.getSecurityManager(settings, Paths.get(privateKeyFile),
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
         messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
         alarmDispatcher = new AlarmDispatcher(settings, messageBus);
     }
@@ -140,20 +135,6 @@ public final class AuditTrailServiceFactory {
         }
         
         return auditTrailService;
-    }
-    
-    /**
-     * Instantiated the security manager for the integrity service.
-     * @see {@link BasicSecurityManager}
-     */
-    private static void createSecurityManager() {
-            PermissionStore permissionStore = new PermissionStore();
-            MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
-            MessageSigner signer = new BasicMessageSigner();
-            OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
-            securityManager = new BasicSecurityManager(settings.getRepositorySettings(), privateKeyFile,
-                    authenticator, signer, authorizer, permissionStore,
-                    settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
     }
     
     /**
