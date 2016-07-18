@@ -124,7 +124,6 @@ public class CommandLineArgumentsHandler {
     /**
      * @return Lists the possible arguments in a human readable format.
      */
-    @SuppressWarnings("unchecked")
     public String listArguments() {
         StringBuilder res = new StringBuilder();
         res.append("Takes the following arguments:\n");
