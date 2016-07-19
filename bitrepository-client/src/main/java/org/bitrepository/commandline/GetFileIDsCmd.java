@@ -26,6 +26,7 @@ import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.commandline.clients.PagingGetFileIDsClient;
 import org.bitrepository.commandline.outputformatter.GetFileIDsInfoFormatter;
 import org.bitrepository.commandline.outputformatter.GetFileIDsOutputFormatter;
+import org.bitrepository.common.utils.SettingsUtils;
 
 /**
  * Perform the GetFileIDs operation.
@@ -61,7 +62,8 @@ public class GetFileIDsCmd extends CommandLineClient {
         GetFileIDsOutputFormatter outputFormatter = new GetFileIDsInfoFormatter(output);
 
         output.debug("Instantiation GetFileID paging client.");
-        pagingClient = new PagingGetFileIDsClient(client, getTimeout(), outputFormatter, output); 
+        int pageSize = SettingsUtils.getMaxClientPageSize();
+        pagingClient = new PagingGetFileIDsClient(client, getTimeout(), pageSize, outputFormatter, output); 
     }
 
     @Override

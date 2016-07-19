@@ -34,6 +34,7 @@ import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.audittrails.webservice.CollectorInfo;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.settings.repositorysettings.Collection;
@@ -77,7 +78,7 @@ public class AuditTrailCollector {
             IncrementalCollector collector = new IncrementalCollector(c.getID(),
                     settings.getReferenceSettings().getAuditTrailServiceSettings().getID(),
                     client, store,
-                    settings.getReferenceSettings().getAuditTrailServiceSettings().getMaxNumberOfEventsInRequest(), 
+                    SettingsUtils.getMaxClientPageSize(), 
                     alarmDispatcher);
             AuditTrailCollectionTimerTask collectorTask = new AuditTrailCollectionTimerTask( 
                     collector, collectionInterval, getGracePeriod());

@@ -61,6 +61,12 @@
       org.bitrepository.client.componentid.UniqueCommandlineComponentID
      -->
     <ComponentIDFactoryClass>org.bitrepository.client.componentid.DefaultCommandlineComponentID</ComponentIDFactoryClass>
+    
+    <!--
+      The maximum number of results per page when clients are paging through large result sets. 
+      If not set, the default is 10000 results per page.  
+     -->
+     <MaxPageSize>10000</MaxPageSize>
   </ClientSettings>
 
   <!-- 
@@ -398,12 +404,6 @@
         when it is just not finished with the PutFile operation. (1 hour)
     -->
     <TimeBeforeMissingFileCheck>3600000</TimeBeforeMissingFileCheck> 
-    
-    <!-- 
-      The maximum number of results per conversation for updating either the fileids 
-      or the checksums. 
-     -->
-    <MaximumNumberOfResultsPerConversation>10000</MaximumNumberOfResultsPerConversation>
     
     <!-- 
       Database specification object for the Integrity service's audit trail information.

@@ -51,6 +51,7 @@ import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.mockito.Matchers;
@@ -360,7 +361,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         List<ContributorQuery> res = new ArrayList<ContributorQuery>();
         for(String pillar : pillars) {
             Date latestChecksumDate = new Date(0);
-            res.add(new ContributorQuery(pillar, latestChecksumDate, null, UpdateChecksumsStep.DEFAULT_MAX_RESULTS));
+            res.add(new ContributorQuery(pillar, latestChecksumDate, null, SettingsUtils.DEFAULT_MAX_CLIENT_PAGE_SIZE));
         }
         
         return res.toArray(new ContributorQuery[pillars.size()]);
@@ -370,7 +371,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         List<ContributorQuery> res = new ArrayList<ContributorQuery>();
         for(String pillar : pillars) {
         	Date latestChecksumDate = store.getDateForNewestChecksumEntryForPillar(pillar, TEST_COLLECTION);
-            res.add(new ContributorQuery(pillar, latestChecksumDate, null, UpdateChecksumsStep.DEFAULT_MAX_RESULTS));
+            res.add(new ContributorQuery(pillar, latestChecksumDate, null, SettingsUtils.DEFAULT_MAX_CLIENT_PAGE_SIZE));
         }
         
         return res.toArray(new ContributorQuery[pillars.size()]);

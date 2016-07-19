@@ -67,7 +67,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         addStep("Start a collection with two contributors", "A call should be made to the store to find out which " +
             "sequence number to continue from");
         IncrementalCollector collector = new IncrementalCollector(TEST_COLLECTION, "Client1", client, store,
-                BigInteger.ONE, alarmDispatcher);
+                1, alarmDispatcher);
         Collection<String> contributors = Arrays.asList("Contributor1", "Contributors2");
         CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
         Thread t = new Thread(collectionRunner);
@@ -112,7 +112,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         addStep("Start a collection with two contributors", "A call should be made to the store to find out which " +
             "sequence number to continue from");
         IncrementalCollector collector = new IncrementalCollector("dummy-collection", "Client1", client, store,
-                BigInteger.ONE, alarmDispatcher);
+                1, alarmDispatcher);
         Collection<String> contributors = Arrays.asList("Contributor1", "Contributors2");
         CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
         Thread t = new Thread(collectionRunner);
@@ -171,7 +171,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         addStep("Start a collection with two contributors", "A call should be made to the store to find out which " +
             "sequence number to continue from");
         IncrementalCollector collector = new IncrementalCollector("dummy-collection", "Client1", client, store,
-                BigInteger.ONE, alarmDispatcher);
+                1, alarmDispatcher);
         Collection<String> contributors = Arrays.asList("Contributor1", "Contributors2");
         CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
         Thread t = new Thread(collectionRunner);
@@ -227,7 +227,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         addStep("Start a collection with two contributors", "A call should be made to the store to find out which " +
             "sequence number to continue from");
         IncrementalCollector collector = new IncrementalCollector(TEST_COLLECTION, "Client1", client, store,
-                BigInteger.ONE, alarmDispatcher);
+                1, alarmDispatcher);
         Collection<String> contributors = Arrays.asList("Contributor1", "Contributors2");
         CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
         Thread t = new Thread(collectionRunner);

@@ -33,6 +33,7 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityCollectorEventHandler;
@@ -69,9 +70,6 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
     /** Contributors for collecting information */
     private final IntegrityContributors integrityContributors;
     
-    /** The default value for the maximum number of results for each conversation. Is case the setting is missing.*/
-    public static final Integer DEFAULT_MAX_RESULTS = 10000;
-
     /**
      * Constructor.
      * @param collector The client for collecting the checksums.
@@ -89,13 +87,7 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
         this.integrityContributors = integrityContributors;
         this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
                 + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
-        if(settings.getReferenceSettings().getIntegrityServiceSettings().getMaximumNumberOfResultsPerConversation() 
-                != null) {
-            this.maxNumberOfResultsPerConversation = settings.getReferenceSettings().getIntegrityServiceSettings()
-                    .getMaximumNumberOfResultsPerConversation().intValue();
-        } else {
-            this.maxNumberOfResultsPerConversation = DEFAULT_MAX_RESULTS;
-        }
+        this.maxNumberOfResultsPerConversation = SettingsUtils.getMaxClientPageSize();
         if(settings.getReferenceSettings().getIntegrityServiceSettings().isSetAbortOnFailedContributor()) {
             abortInCaseOfFailure = settings.getReferenceSettings().getIntegrityServiceSettings().isAbortOnFailedContributor();
         }

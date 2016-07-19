@@ -59,8 +59,6 @@ public class IncrementalCollector {
     private static final String NO_FILE_ID = null;
     /** When no delivery address is wanted for the collecting of audit trails.*/
     private static final String NO_DELIVERY_URL = null;
-    /** Will be used in case of no MaxNumberOfResult are provided */
-    public static final int DEFAULT_MAX_NUMBER_OF_RESULTS = 10000;
     private final String collectionID;
     private long collectedAudits = 0;
 
@@ -73,13 +71,12 @@ public class IncrementalCollector {
      * @param alarmDispatcher the alarm dispatcher
      */
     public IncrementalCollector(String collectionID, String clientID, AuditTrailClient client, AuditTrailStore store,
-                                BigInteger maxNumberOfResults, AlarmDispatcher alarmDispatcher) {
+                                int maxNumberOfResults, AlarmDispatcher alarmDispatcher) {
         this.collectionID = collectionID;
         this.clientID = clientID;
         this.client = new BlockingAuditTrailClient(client);
         this.store = store;
-        this.maxNumberOfResults = (maxNumberOfResults != null)?
-            maxNumberOfResults.intValue() : DEFAULT_MAX_NUMBER_OF_RESULTS;
+        this.maxNumberOfResults = maxNumberOfResults;
         this.alarmDispatcher = alarmDispatcher;
     }
 

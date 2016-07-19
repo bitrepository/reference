@@ -194,6 +194,17 @@
             </xs:documentation>
           </xs:annotation> 
         </xs:element>
+        <xs:element name="MaxPageSize" type="xs:nonNegativeInteger" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The maximum number of results that the client wants per page.
+              If not MaxPageSize is set, client default to 10000 results per page.
+              This setting is not automatically used when using the reference client libraries. The user
+              of the client is however free to utilize the setting. 
+              The setting applies to: Integrity service, Audittrail service and reference commandline client
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -645,13 +656,6 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="MaxNumberOfEventsInRequest" type="xs:positiveInteger" minOccurs="0">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              The max number of elements to reuest in a single GetAuditTrailsRequest. Default is 10000
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -737,15 +741,6 @@
           <xs:annotation>
             <xs:documentation xml:lang="en">
               The number of milliseconds a file has to be known by the system before it is set to missing.
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="MaximumNumberOfResultsPerConversation" type="xs:positiveInteger" minOccurs="0">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              The maximum number of results for each conversation when updating the database with checksums or
-              file ids from the pillars using the GetChecksumsClient or GetFileIDsClient respectively.
-              Optional. If not set, then the default value is 10000.
             </xs:documentation>
           </xs:annotation>
         </xs:element>

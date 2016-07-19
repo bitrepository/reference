@@ -21,6 +21,7 @@
  */
 package org.bitrepository.common.utils;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +34,8 @@ import org.bitrepository.settings.repositorysettings.Collection;
  * Utility method for handling the settings.
  */
 public class SettingsUtils {
+    public final static Integer DEFAULT_MAX_CLIENT_PAGE_SIZE = 10000;
+    
     private static Settings settings;
 
     /**
@@ -126,6 +129,16 @@ public class SettingsUtils {
             }
         }
         return res;
+    }
+    
+    /**
+     * Get the maximum page size for clients. 
+     * If none have been set in the settings, use the default of 10000.
+     * @return {@link Integer} the maximum number of results per page. 
+     */
+    public static Integer getMaxClientPageSize() {
+        BigInteger maxClientSizeSettings = settings.getReferenceSettings().getClientSettings().getMaxPageSize();
+        return maxClientSizeSettings != null ? maxClientSizeSettings.intValue() : DEFAULT_MAX_CLIENT_PAGE_SIZE;
     }
     
     /**

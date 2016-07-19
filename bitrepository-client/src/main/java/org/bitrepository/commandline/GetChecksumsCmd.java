@@ -29,6 +29,7 @@ import org.bitrepository.commandline.clients.PagingGetChecksumsClient;
 import org.bitrepository.commandline.outputformatter.GetChecksumDistributionFormatter;
 import org.bitrepository.commandline.outputformatter.GetChecksumsInfoFormatter;
 import org.bitrepository.commandline.outputformatter.GetChecksumsOutputFormatter;
+import org.bitrepository.common.utils.SettingsUtils;
 
 /**
  * Perform the GetChecksums operation.
@@ -60,7 +61,8 @@ public class GetChecksumsCmd extends CommandLineClient {
         GetChecksumsClient client = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, 
                 securityManager, getComponentID());
         GetChecksumsOutputFormatter outputFormatter = retrieveOutputFormatter();
-        pagingClient = new PagingGetChecksumsClient(client, getTimeout(), outputFormatter, output); 
+        int pageSize = SettingsUtils.getMaxClientPageSize();
+        pagingClient = new PagingGetChecksumsClient(client, getTimeout(), pageSize, outputFormatter, output); 
     }
 
     @Override

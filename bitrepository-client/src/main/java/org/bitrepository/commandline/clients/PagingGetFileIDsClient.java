@@ -43,13 +43,14 @@ public class PagingGetFileIDsClient {
     private GetFileIDsEventHandler eventHandler;
     private GetFileIDsOutputFormatter outputFormatter;
     private final OutputHandler outputHandler;
-    private final static Integer PAGE_SIZE = 10000;
     private long timeout;
+    private final int pageSize;
       
-    public PagingGetFileIDsClient(GetFileIDsClient client, long timeout, GetFileIDsOutputFormatter outputFormatter,
+    public PagingGetFileIDsClient(GetFileIDsClient client, long timeout, int pageSize, GetFileIDsOutputFormatter outputFormatter,
             OutputHandler outputHandler) {
         this.client = client;
         this.timeout = timeout;
+        this.pageSize = pageSize;
         this.outputFormatter = outputFormatter;
         this.outputHandler = outputHandler;
     }
@@ -79,7 +80,7 @@ public class PagingGetFileIDsClient {
         List<ContributorQuery> res = new ArrayList<ContributorQuery>();
         for(String pillar : pillars) {
             Date latestResult = model.getLatestContribution(pillar);
-            res.add(new ContributorQuery(pillar, latestResult, null, PAGE_SIZE));
+            res.add(new ContributorQuery(pillar, latestResult, null, pageSize));
         }
         return res.toArray(new ContributorQuery[pillars.size()]);
     }
