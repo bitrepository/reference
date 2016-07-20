@@ -162,6 +162,13 @@ public class RestAuditTrailService {
         
     }
 
+    @GET
+    @Path("/contributors")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<String> getContributors() {
+        return service.getContributors();
+    }
+    
     private FileAction filterAction(String action) {
         if(action.equals("ALL")) {
             return null;

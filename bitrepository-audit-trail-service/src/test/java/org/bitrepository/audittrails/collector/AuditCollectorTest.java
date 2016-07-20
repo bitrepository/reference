@@ -21,11 +21,17 @@
  */
 package org.bitrepository.audittrails.collector;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
+import org.bitrepository.access.getaudittrails.AuditTrailClient;
+import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
-import org.bitrepository.audittrails.MockAuditClient;
-import org.bitrepository.audittrails.MockAuditStore;
+import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -35,6 +41,7 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.jaccept.structure.ExtendedTestCase;
+import org.mockito.ArgumentCaptor;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -50,6 +57,7 @@ public class AuditCollectorTest extends ExtendedTestCase {
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("AuditCollectorUnderTest");
         Collection c = settings.getRepositorySettings().getCollections().getCollection().get(0);
+        c.setID(TEST_COLLECTION);
         settings.getRepositorySettings().getCollections().getCollection().clear();
         settings.getRepositorySettings().getCollections().getCollection().add(c);
     }
@@ -64,22 +72,26 @@ public class AuditCollectorTest extends ExtendedTestCase {
         settings.getReferenceSettings().getAuditTrailServiceSettings().setGracePeriod(800L);
 
         SettingsUtils.initialize(settings);
-        MockAuditClient client = new MockAuditClient();
-        MockAuditStore store = new MockAuditStore();
+        AuditTrailClient client = mock(AuditTrailClient.class);
+        AuditTrailStore store = mock(AuditTrailStore.class);
         AlarmDispatcher alarmDispatcher = mock(AlarmDispatcher.class);
         AuditTrailCollector collector = new AuditTrailCollector(settings, client, store, alarmDispatcher);
-        Assert.assertEquals(client.getCallsToGetAuditTrails(), 0);
-        Thread.sleep(1000);
-        EventHandler eventHandler = client.getLatestEventHandler();
+        
+        ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
+        verify(client, timeout(3000).times(1)).getAuditTrails(eq(TEST_COLLECTION), any(AuditTrailQuery[].class),
+                isNull(String.class), isNull(String.class), eventHandlerCaptor.capture(), any(String.class));
+        EventHandler eventHandler = eventHandlerCaptor.getValue(); 
+        
         Assert.assertNotNull(eventHandler, "Should have an event handler");
         eventHandler.handleEvent(new AuditTrailResult(DEFAULT_CONTRIBUTOR, TEST_COLLECTION, new ResultingAuditTrails(), false));
         eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
-        Assert.assertEquals(client.getCallsToGetAuditTrails(), 1);
-        Thread.sleep(1000);
-        eventHandler = client.getLatestEventHandler();
+        
+        verify(client, timeout(3000).times(2)).getAuditTrails(eq(TEST_COLLECTION), any(AuditTrailQuery[].class),
+                isNull(String.class), isNull(String.class), eventHandlerCaptor.capture(), any(String.class));
+        eventHandler = eventHandlerCaptor.getValue();
         eventHandler.handleEvent(new AuditTrailResult(DEFAULT_CONTRIBUTOR, TEST_COLLECTION, new ResultingAuditTrails(), false));
         eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
-        Assert.assertEquals(client.getCallsToGetAuditTrails(), 2);
+        
         collector.close();
     }
 }

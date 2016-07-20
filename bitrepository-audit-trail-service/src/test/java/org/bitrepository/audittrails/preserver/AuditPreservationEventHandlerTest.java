@@ -21,13 +21,19 @@
  */
 package org.bitrepository.audittrails.preserver;
 
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bitrepository.audittrails.MockAuditStore;
+import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class AuditPreservationEventHandlerTest extends ExtendedTestCase {
@@ -40,13 +46,15 @@ public class AuditPreservationEventHandlerTest extends ExtendedTestCase {
         addStep("Setup", "");
         Map<String, Long> map = new HashMap<String, Long>();
         map.put(PILLARID, 1L);
-        MockAuditStore store = new MockAuditStore();
+        AuditTrailStore store = mock(AuditTrailStore.class);
+        when(store.havePreservationKey(eq(PILLARID), eq(TEST_COLLECTION))).thenReturn(true);
         
         AuditPreservationEventHandler eventHandler = new AuditPreservationEventHandler(map, store, TEST_COLLECTION);
-        Assert.assertEquals(store.getCallsToSetPreservationSequenceNumber(), 0);
         
         addStep("Test the handling of another complete event.", "Should make a call");
         eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
-        Assert.assertEquals(store.getCallsToSetPreservationSequenceNumber(), 1);
+        
+        verify(store, timeout(3000).times(1))
+            .setPreservationSequenceNumber(eq(PILLARID), eq(TEST_COLLECTION), anyLong());
     }
 }

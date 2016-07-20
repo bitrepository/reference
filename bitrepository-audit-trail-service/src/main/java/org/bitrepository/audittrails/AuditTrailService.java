@@ -126,6 +126,10 @@ public class AuditTrailService implements LifeCycledService {
         
         return infos;
     }
+    
+    public List<String> getContributors() {
+        return store.getKnownContributors();
+    }
 
     @Override
     public void start() {
