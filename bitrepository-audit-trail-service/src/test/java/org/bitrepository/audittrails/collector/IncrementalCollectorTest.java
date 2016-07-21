@@ -182,6 +182,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         verify(store, timeout(3000).times(2))
             .addAuditTrails(any(AuditTrailEvents.class), eq(TEST_COLLECTION), eq(TEST_CONTRIBUTOR2));
 
+        Thread.sleep(100);
         Assert.assertTrue(collectionRunner.finished, "The collector should have finished after the complete event, as " +
             "no partialResults where received in the second increment.");
         
