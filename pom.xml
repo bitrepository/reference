@@ -127,7 +127,7 @@
         <dependency>
             <groupId>org.jvnet.jaxb2_commons</groupId>
             <artifactId>jaxb2-basics-runtime</artifactId>
-            <version>0.10.0</version>
+            <version>0.11.1</version>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
@@ -413,8 +413,8 @@
     </profiles>
 
     <properties>
-        <message.xml.version>29</message.xml.version>
-        <repository.settings.version>11</repository.settings.version>
+        <message.xml.version>30-SNAPSHOT</message.xml.version>
+        <repository.settings.version>12-SNAPSHOT</repository.settings.version>
         <derby.version>10.12.1.1</derby.version>
         <activemq.version>5.13.3</activemq.version>
         <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
