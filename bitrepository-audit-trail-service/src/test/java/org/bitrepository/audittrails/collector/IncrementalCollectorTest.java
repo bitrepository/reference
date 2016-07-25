@@ -254,6 +254,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
             .addAuditTrails(any(AuditTrailEvents.class), eq(TEST_COLLECTION), eq(TEST_CONTRIBUTOR2));
         verify(alarmDispatcher, timeout(3000)).error(any(Alarm.class));
         
+        Thread.sleep(100);
         Assert.assertTrue(collectionRunner.finished);
         verifyNoMoreInteractions(store);
         verifyNoMoreInteractions(client);
