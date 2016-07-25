@@ -27,12 +27,12 @@
     </dependency> 
     <dependency>
       <groupId>org.bitrepository</groupId>
-      <artifactId>message-xml-xsd</artifactId>
+      <artifactId>bitrepository-message-xml-xsd</artifactId>
       <version>${message.xml.version}</version>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
-      <artifactId>message-xml-java</artifactId>
+      <artifactId>bitrepository-message-xml-java</artifactId>
       <version>${message.xml.version}</version>
     </dependency> 
     <dependency>
