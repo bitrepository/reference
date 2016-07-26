@@ -82,6 +82,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         adder.addAuditTrails(auditTrailEvents);
     }
     
+    @Override
     public List<String> getKnownContributors() {
         String sql = "SELECT contributor_id FROM contributor";
         return DatabaseUtils.selectStringList(dbConnector, sql, new Object[0]);

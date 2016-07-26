@@ -117,6 +117,10 @@ public class AuditTrailService implements LifeCycledService {
         }
     }
     
+    /**
+     * Get the list of {@link CollectorInfo} 
+     * @return The list of CollectorInfo
+     */
     public List<CollectorInfo> getCollectorInfos() {
         List<CollectorInfo> infos = new ArrayList<CollectorInfo>();
         for(org.bitrepository.settings.repositorysettings.Collection c 
@@ -127,6 +131,10 @@ public class AuditTrailService implements LifeCycledService {
         return infos;
     }
     
+    /**
+     *  Get the list of known contributors from the backend. 
+     *  @return The list of known contributors 
+     */
     public List<String> getContributors() {
         return store.getKnownContributors();
     }
