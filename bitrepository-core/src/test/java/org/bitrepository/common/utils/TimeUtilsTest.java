@@ -87,6 +87,6 @@ public class TimeUtilsTest extends ExtendedTestCase {
     public void shortDateTest() {
         Date date = new Date(1360069129256L);
         String shortDateString = TimeUtils.shortDate(date);
-        Assert.assertEquals(shortDateString, "05.02.13 13:58");
+        Assert.assertEquals(shortDateString, "2013/02/05 13:58");
     }
 }
