@@ -34,6 +34,7 @@ import org.bitrepository.settings.repositorysettings.Collection;
  * Utility method for handling the settings.
  */
 public class SettingsUtils {
+    /** Default maximum pagesize / number of results used in clients. Can be overridden by configuration */
     public final static Integer DEFAULT_MAX_CLIENT_PAGE_SIZE = 10000;
     
     private static Settings settings;
