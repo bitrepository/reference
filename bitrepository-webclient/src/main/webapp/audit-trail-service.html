@@ -99,8 +99,7 @@
             </label>              
             <label> Component: <br>
               <div class="input-append">
-                <input class="input-medium" id="componentFilter" type="text" placeholder="ComponentID">
-                <button class="btn" id="componentIDClearButton" type="button"><i class="icon-remove"></i></button>
+                <select class="input-medium" id="componentFilter"></select>
               </div>
             </label>
             <label> Actor: <br>
@@ -259,6 +258,16 @@
         }
       });
     }
+    
+    function getContributorIDs() {
+    	var url = audittrailServiceUrl + '/audittrails/AuditTrailService/contributors';
+        $.getJSON(url, {}, function(ids){
+          $("#componentFilter").append('<option value=""> ALL </option>');
+          for(var i = 0; i < ids.length; i++) {
+            $("#componentFilter").append('<option value="' + ids[i] + '">' + ids[i] + '</option>');
+          }
+        });
+      }
 
     function updateScheduleRow(schedule) {
       $("#" + schedule.collectionID + "-schedule-laststart").html(schedule.lastStart);
@@ -306,6 +315,7 @@
         $("#queryAuditTrails").click(function(event) {event.preventDefault(); getAuditTrails()});
         $("#queryAuditTrails").removeAttr("disabled");
         loadCollectionSchedule();
+        getContributorIDs();
       }, 'html');
     }
 
@@ -313,12 +323,11 @@
       makeMenu("audit-trail-service.html", "#pageMenu");
       initPage();
       getCollectionIDs();
-      $("#fromDate").datepicker();
-      $("#toDate").datepicker();
+      $("#fromDate").datepicker({format: "yyyy/mm/dd"});
+      $("#toDate").datepicker({format: "yyyy/mm/dd"});
       $("#toDateClearButton").click(function(event) {event.preventDefault(); clearElement("#toDate")});
       $("#fromDateClearButton").click(function(event) {event.preventDefault(); clearElement("#fromDate")});
       $("#fileIDClearButton").click(function(event) {event.preventDefault(); clearElement("#fileIDFilter")});
-      $("#componentIDClearButton").click(function(event) {event.preventDefault(); clearElement("#componentFilter")});
       $("#actorClearButton").click(function(event) {event.preventDefault(); clearElement("#actorFilter")});
       $("#fingerprintClearButton").click(function(event) {event.preventDefault(); clearElement("#fingerprintFilter")});
       $("#operationIDClearButton").click(function(event) {event.preventDefault(); clearElement("#operationIDFilter")});

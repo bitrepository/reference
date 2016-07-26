@@ -21,10 +21,22 @@
  */
 package org.bitrepository.audittrails;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
+import java.util.Date;
+
+import org.bitrepository.access.getaudittrails.AuditTrailClient;
+import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
+import org.bitrepository.audittrails.store.AuditTrailStore;
+import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
 import org.bitrepository.client.eventhandler.CompleteEvent;
@@ -35,7 +47,7 @@ import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
+import org.mockito.ArgumentCaptor;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -65,46 +77,49 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         settings.getReferenceSettings().getAuditTrailServiceSettings().setTimerTaskCheckInterval(100L);
         settings.getReferenceSettings().getAuditTrailServiceSettings().setGracePeriod(800L);
 
-        MockAuditStore store = new MockAuditStore();
-        MockAuditClient client = new MockAuditClient();
+        AuditTrailStore store = mock(AuditTrailStore.class);
+        AuditTrailClient client = mock(AuditTrailClient.class);
         AlarmDispatcher alarmDispatcher = mock(AlarmDispatcher.class);
 
-        ContributorMediator mediator = new MockContributorMediator();
+        ContributorMediator mediator = mock(ContributorMediator.class);
         AuditTrailCollector collector = new AuditTrailCollector(settings, client, store, alarmDispatcher);
         
         addStep("Instantiate the service.", "Should work.");
         AuditTrailService service = new AuditTrailService(store, collector, mediator, settings);
-        Assert.assertEquals(client.getCallsToGetAuditTrails(), 0);
         service.start();
         
         addStep("Try to collect audit trails.", "Should make a call to the client.");
         CollectionRunner collectionRunner = new CollectionRunner(service);
         Thread t = new Thread(collectionRunner);
         t.start();
-        Thread.sleep(1000);
-        Assert.assertEquals(client.getCallsToGetAuditTrails(), 1);
-        EventHandler eventHandler = client.getLatestEventHandler();
-        eventHandler.handleEvent(new AuditTrailResult(DEFAULT_CONTRIBUTOR, TEST_COLLECTION, new ResultingAuditTrails(), false));
-        eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+        
+        ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
+        verify(client, timeout(3000).times(1)).getAuditTrails(eq(TEST_COLLECTION), any(AuditTrailQuery[].class),
+                isNull(String.class), isNull(String.class), eventHandlerCaptor.capture(), any(String.class));
+        
+        AuditTrailResult event = new AuditTrailResult(DEFAULT_CONTRIBUTOR, TEST_COLLECTION, new ResultingAuditTrails(), false);
+        eventHandlerCaptor.getValue().handleEvent(event);
+        eventHandlerCaptor.getValue().handleEvent(new CompleteEvent(TEST_COLLECTION, null));
         
         addStep("Retrieve audit trails with and without an action", "Should work.");
-        Assert.assertEquals(store.getCallsToAddAuditTrails(), 1);
-        Assert.assertEquals(store.getCallsToGetAuditTrailsByIterator(), 0);        
+        
+        verify(store, times(1)).addAuditTrails(any(AuditTrailEvents.class), eq(TEST_COLLECTION), eq(DEFAULT_CONTRIBUTOR));
         service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, null, null, null);
-        Assert.assertEquals(store.getCallsToGetAuditTrailsByIterator(), 1);        
+        verify(store, times(1)).getAuditTrailsByIterator(isNull(String.class), isNull(String.class), 
+                isNull(String.class), isNull(Long.class), isNull(Long.class), isNull(String.class), 
+                isNull(FileAction.class), isNull(Date.class), isNull(Date.class), isNull(String.class), 
+                isNull(String.class));
         service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, FileAction.FAILURE, null, null);
-        Assert.assertEquals(store.getCallsToGetAuditTrailsByIterator(), 2);        
+        verify(store, times(1)).getAuditTrailsByIterator(isNull(String.class), isNull(String.class), 
+                isNull(String.class), isNull(Long.class), isNull(Long.class), isNull(String.class), 
+                eq(FileAction.FAILURE), isNull(Date.class), isNull(Date.class), isNull(String.class), 
+                isNull(String.class));
+
         
         addStep("Shutdown", "");
         service.shutdown();
     }
 
-    private class MockContributorMediator implements ContributorMediator {
-        @Override
-        public void start() { }
-        @Override
-        public void close() { }
-    }
 
     public class CollectionRunner implements Runnable {
         private final AuditTrailService service;

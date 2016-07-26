@@ -25,6 +25,7 @@
 package org.bitrepository.audittrails.store;
 
 import java.util.Date;
+import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -98,6 +99,13 @@ public interface AuditTrailStore {
      */
     boolean havePreservationKey(String contributorID, String collectionID);
     
+    /**
+     * Get the list of known audittrail contributors. I.e. those contributors which have delivered
+     * audit trails for the database. 
+     * 
+     * @return List<String> containing the IDs of the contributors that the database have audittrails from.
+     */
+    List<String> getKnownContributors();
     /**
      * Closes the store.
      */

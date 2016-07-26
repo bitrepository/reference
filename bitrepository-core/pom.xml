@@ -17,22 +17,22 @@
     </dependency>
     <dependency>
       <groupId>org.bitrepository.repository-settings</groupId>
-      <artifactId>repository-settings-xsd</artifactId>
+      <artifactId>bitrepository-repository-settings-xsd</artifactId>
       <version>${repository.settings.version}</version>
     </dependency>
     <dependency>
       <groupId>org.bitrepository.repository-settings</groupId>
-      <artifactId>repository-settings-java</artifactId>
+      <artifactId>bitrepository-repository-settings-java</artifactId>
       <version>${repository.settings.version}</version>
     </dependency> 
     <dependency>
       <groupId>org.bitrepository</groupId>
-      <artifactId>message-xml-xsd</artifactId>
+      <artifactId>bitrepository-message-xml-xsd</artifactId>
       <version>${message.xml.version}</version>
     </dependency>
     <dependency>
       <groupId>org.bitrepository</groupId>
-      <artifactId>message-xml-java</artifactId>
+      <artifactId>bitrepository-message-xml-java</artifactId>
       <version>${message.xml.version}</version>
     </dependency> 
     <dependency>
@@ -63,11 +63,6 @@
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-client</artifactId>
-      <version>${activemq.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-openwire-legacy</artifactId>
       <version>${activemq.version}</version>
     </dependency>
     <dependency>

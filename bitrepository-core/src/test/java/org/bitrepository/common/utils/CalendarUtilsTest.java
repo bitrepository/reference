@@ -76,7 +76,7 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         Date expectedStartOfDay = sdf.parse("2015-02-25T23:00:00.000Z");
         
-        Date parsedStartOfDay = cu.makeStartDateObject("02/26/2015");
+        Date parsedStartOfDay = cu.makeStartDateObject("2015/02/26");
         Assert.assertEquals(parsedStartOfDay, expectedStartOfDay);
     }
     
@@ -87,7 +87,7 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         Date expectedStartOfDay = sdf.parse("2015-02-26T22:59:59.999Z");
         
-        Date parsedStartOfDay = cu.makeEndDateObject("02/26/2015");
+        Date parsedStartOfDay = cu.makeEndDateObject("2015/02/26");
         Assert.assertEquals(parsedStartOfDay, expectedStartOfDay);
     }
     
@@ -98,7 +98,7 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         Date expectedStartOfDay = sdf.parse("2016-01-01T22:59:59.999Z");
         
-        Date parsedStartOfDay = cu.makeEndDateObject("12/32/2015");
+        Date parsedStartOfDay = cu.makeEndDateObject("2015/12/32");
         Assert.assertEquals(parsedStartOfDay, expectedStartOfDay);
     }
     
@@ -109,7 +109,7 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         Date expectedStartOfDayInUTC = sdf.parse("2016-01-31T23:00:00.000Z");
         System.out.println("expectedSTartofDayInUTC parsed: " + expectedStartOfDayInUTC.getTime());
-        Date parsedStartOfDay = cu.makeStartDateObject("02/01/2016");
+        Date parsedStartOfDay = cu.makeStartDateObject("2016/02/01");
         Assert.assertEquals(parsedStartOfDay, expectedStartOfDayInUTC);
     }
     
@@ -119,7 +119,7 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         Date expectedEndOfDayInUTC = sdf.parse("2016-02-01T22:59:59.999Z");
-        Date parsedEndOfDay = cu.makeEndDateObject("02/01/2016");
+        Date parsedEndOfDay = cu.makeEndDateObject("2016/02/01");
         Assert.assertEquals(parsedEndOfDay, expectedEndOfDayInUTC);
     }
     
@@ -128,8 +128,8 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         addDescription("Test that the interval between start and end date on a summertime to "
                 + "wintertime change is 25 hours (-1 millisecond).");
         CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
-        Date startDate = cu.makeStartDateObject("10/25/2015");
-        Date endDate = cu.makeEndDateObject("10/25/2015");
+        Date startDate = cu.makeStartDateObject("2015/10/25");
+        Date endDate = cu.makeEndDateObject("2015/10/25");
         long MS_PER_HOUR = 1000 * 60 * 60;
         long expectedIntervalLength = (MS_PER_HOUR * 25) - 1;
         Assert.assertEquals(endDate.getTime() - startDate.getTime(), expectedIntervalLength);
@@ -140,8 +140,8 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         addDescription("Test that the interval between start and end date on a wintertime to "
                 + "summertime change is 23 hours (-1 millisecond).");
         CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
-        Date startDate = cu.makeStartDateObject("03/27/2016");
-        Date endDate = cu.makeEndDateObject("03/27/2016");
+        Date startDate = cu.makeStartDateObject("2016/03/27");
+        Date endDate = cu.makeEndDateObject("2016/03/27");
         long MS_PER_HOUR = 1000 * 60 * 60;
         long expectedIntervalLength = (MS_PER_HOUR * 23) - 1;
         Assert.assertEquals(endDate.getTime() - startDate.getTime(), expectedIntervalLength);

@@ -23,6 +23,7 @@ package org.bitrepository.audittrails.store;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -79,6 +80,11 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         
         AuditTrailAdder adder = new AuditTrailAdder(dbConnector, collectionID, contributorID);
         adder.addAuditTrails(auditTrailEvents);
+    }
+    
+    public List<String> getKnownContributors() {
+        String sql = "SELECT contributor_id FROM contributor";
+        return DatabaseUtils.selectStringList(dbConnector, sql, new Object[0]);
     }
     
     @Override
