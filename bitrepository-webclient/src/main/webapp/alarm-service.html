@@ -184,8 +184,8 @@
     $(document).ready(function(){
       makeMenu("alarm-service.html", "#pageMenu");
       init();
-      $("#fromDate").datepicker();
-      $("#toDate").datepicker();
+      $("#fromDate").datepicker({format: "yyyy/mm/dd"});
+      $("#toDate").datepicker({format: "yyyy/mm/dd"});
       $("#toDateClearButton").click(function(event) {event.preventDefault(); clearElement("#toDate")});
       $("#fromDateClearButton").click(function(event) {event.preventDefault(); clearElement("#fromDate")});
       $("#fileIDClearButton").click(function(event) {event.preventDefault(); clearElement("#fileIDFilter")});

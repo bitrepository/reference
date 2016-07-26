@@ -177,7 +177,7 @@ public final class CalendarUtils {
     
     /**
      * Parses the input string and returns a calendar representation of the day in UTC. 
-     * @param dateStr The string representation of the date, in the form '02/26/2015' 
+     * @param dateStr The string representation of the date, in the form '2015/02/26' 
      * @return Calendar A calendar object representing the start of the date in UTC, 
      *         or null if the input cannot be parsed.
      */
@@ -185,7 +185,7 @@ public final class CalendarUtils {
         if(dateStr == null || dateStr.trim().isEmpty()) {
             return null;
         } else {
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
             sdf.setTimeZone(localTimeZone);
             try {
                 Date basedate = sdf.parse(dateStr);
