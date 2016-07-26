@@ -50,6 +50,7 @@ public final class TimeUtils {
     /** Milliseconds per normal year.*/
     public static final long MS_PER_YEAR = DAYS_PER_YEAR * MS_PER_DAY;
 
+    /** DateFormat used for outputting data strings */
     public final static DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
     
     /** Private constructor, util class.*/
