@@ -545,8 +545,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     }
 
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
-    public void testExtractingAllMissingFilesForPillars() throws Exception {
-        addDescription("Tests that missing files can be extracted for specific pillars.");
+    public void testExtractingAllMissingFiles() throws Exception {
+        addDescription("Tests that missing files can be extracted.");
         IntegrityDAO cache = createDAO();
         String file2 = TEST_FILE_ID + "-2";
         
@@ -562,16 +562,11 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Map<String, PillarCollectionMetric> metrics = cache.getPillarCollectionMetrics(TEST_COLLECTIONID);
         Assert.assertEquals(metrics.get(TEST_PILLAR_1).getPillarFileCount(), 2);
         Assert.assertEquals(metrics.get(TEST_PILLAR_2).getPillarFileCount(), 1);
-                
-        addStep("Extract missing files from the first pillar", "no files should be missing");
+    
+        addStep("Extract missing files", "one file should be missing");
         List<String> missingFiles 
-            = getIssuesFromIterator(cache.findMissingFilesAtPillar(TEST_COLLECTIONID, TEST_PILLAR_1, 0L, 10L));
-        Assert.assertEquals(missingFiles, Arrays.asList());
-        
-        addStep("Extract missing files from the second pillar", "one file should be missing");
-        missingFiles = getIssuesFromIterator(cache.findMissingFilesAtPillar(TEST_COLLECTIONID, TEST_PILLAR_2, 0L, 10L));
+            = getIssuesFromIterator(cache.findFilesWithMissingCopies(TEST_COLLECTIONID, 2, 0L, 10L));
         Assert.assertEquals(missingFiles, Arrays.asList(file2));
-        
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
@@ -587,13 +582,13 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
 
         addStep("Extract with a maximum of 1", "The first file.");
-        IntegrityIssueIterator it = cache.findMissingFilesAtPillar(TEST_COLLECTIONID, TEST_PILLAR_2, 0L, 1L);
+        IntegrityIssueIterator it = cache.findFilesWithMissingCopies(TEST_COLLECTIONID, 2, 0L, 1L);
         Collection<String> fileIDs = getIssuesFromIterator(it);
         Assert.assertEquals(fileIDs.size(), 1);
         Assert.assertTrue(fileIDs.contains(file2));
         
         addStep("Extract with a minimum of 1 and maximum of infinite", "The last file.");
-        it = cache.findMissingFilesAtPillar(TEST_COLLECTIONID, TEST_PILLAR_2, 1L, Long.MAX_VALUE);
+        it = cache.findFilesWithMissingCopies(TEST_COLLECTIONID, 2, 1L, Long.MAX_VALUE);
         fileIDs = getIssuesFromIterator(it);
         Assert.assertEquals(fileIDs.size(), 1);
         Assert.assertTrue(fileIDs.contains(file3));

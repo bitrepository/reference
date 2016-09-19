@@ -38,21 +38,17 @@ public class DerbyIntegrityDAO extends IntegrityDAO {
     }
 
     @Override
-    protected String getFindMissingFilesAtPillarSql() {
-        String findMissingFilesSql = "SELECT a.fileid FROM"
-                + " (SELECT DISTINCT(fileID) FROM fileinfo "
-                    + " WHERE collectionID = ?) AS a"
-                + " LEFT JOIN "
-                + " (SELECT fileID FROM fileinfo "
-                    + " WHERE collectionID = ? "
-                    + " AND pillarID = ?) AS p"
-                + " ON a.fileID = p.fileID"
-                + " WHERE p.fileID IS NULL"
+    protected String getFindFilesWithMissingCopiesSql() {
+        String findFilesSql = "SELECT fileid FROM fileinfo"
+                + " WHERE collectionid = ?"
+                + " GROUP BY fileid"
+                + " HAVING COUNT(fileid) < ?"
                 + " OFFSET ? ROWS"
                 + " FETCH FIRST ? ROWS ONLY";
-        return findMissingFilesSql;
+        
+        return findFilesSql;
     }
-
+    
     @Override
     protected synchronized void initializePillars() {
         List<String> pillars = new ArrayList<>(SettingsUtils.getAllPillarIDs());

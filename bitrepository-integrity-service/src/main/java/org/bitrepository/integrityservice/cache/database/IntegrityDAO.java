@@ -287,23 +287,22 @@ public abstract class IntegrityDAO {
     }
     
     /**
-     * Method that should deliver the database specific SQL for finding missing files at a pillar
-     * @return the database specific SQL for finding missing files at a pillar
+     * Method that should deliver the database specific SQL for finding files with less than N copies
+     * @return the database specific SQL for finding files with less than N copies
      */
-    protected abstract String getFindMissingFilesAtPillarSql();
+    protected abstract String getFindFilesWithMissingCopiesSql();
     
     /**
      * Method to find files in a given collection missing on a given pillar
      * @param collectionID The ID of the collection
-     * @param pillarID The ID of the pillar
+     * @param expectedCopies The number of copies that should be present
      * @param firstIndex start the iterator at this index, or 0 if null
      * @param maxResults maxResults
      * @return Iterator with the fileIDs that could not be found on the pillar
      */
-    public IntegrityIssueIterator findMissingFilesAtPillar(String collectionID, String pillarID,
+    public IntegrityIssueIterator findFilesWithMissingCopies(String collectionID, int expectedCopies, 
             Long firstIndex, Long maxResults) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
-        ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
         
         long first;
         if(firstIndex == null) {
@@ -312,8 +311,8 @@ public abstract class IntegrityDAO {
             first = firstIndex;
         }
         
-        String findMissingFilesSql = getFindMissingFilesAtPillarSql();
-        return makeIntegrityIssueIterator(findMissingFilesSql, collectionID, collectionID, pillarID,
+        String findFileSql = getFindFilesWithMissingCopiesSql();
+        return makeIntegrityIssueIterator(findFileSql, collectionID, expectedCopies,
                 first, maxResults);
     }
     

@@ -23,6 +23,7 @@ package org.bitrepository.integrityservice.workflow;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -34,7 +35,6 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -104,7 +104,8 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     public void testNoMissingFiles() throws Exception {
         addDescription("Test that the workflow does nothing, when it has no missing files.");
         addStep("Prepare for calls to mocks", "");
-        when(model.getMissingFilesAtPillarByIterator(anyString(), anyInt(), anyInt(), eq(TEST_COLLECTION))).thenReturn(createMockIterator(new String[0]));
+        when(model.findFilesWithMissingCopies(anyString(), anyInt(), anyLong(), anyLong()))
+            .thenReturn(createMockIterator(new String[0]));
 
         addStep("Run workflow for repairing missing files.", "Should not try to repair anything.");
 
@@ -118,7 +119,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         verifyNoMoreInteractions(alerter);
         verifyNoMoreInteractions(auditManager);
         
-        verify(model, times(2)).getMissingFilesAtPillarByIterator(anyString(), anyInt(), anyInt(), eq(TEST_COLLECTION));
+        verify(model, times(1)).findFilesWithMissingCopies(eq(TEST_COLLECTION), eq(2), anyLong(), anyLong());
         verifyNoMoreInteractions(model);
     }
     
@@ -126,9 +127,11 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     public void testSuccesRepair() throws Exception {
         addDescription("Test that the workflow makes calls to the collector, when a file is missing");
         addStep("Prepare for calls to mocks to handle a repair", "");
-        when(model.getMissingFilesAtPillarByIterator(anyString(), anyInt(), anyInt(), eq(TEST_COLLECTION))).thenReturn(createMockIterator(TEST_FILE_1));
+        when(model.findFilesWithMissingCopies(eq(TEST_COLLECTION), anyInt(), anyLong(), anyLong()))
+            .thenReturn(createMockIterator(TEST_FILE_1));
 
-        when(model.getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION))).thenReturn(createMockFileInfo(TEST_FILE_1, DEFAULT_CHECKSUM, PILLAR_1));
+        when(model.getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION)))
+            .thenReturn(createMockFileInfo(TEST_FILE_1, DEFAULT_CHECKSUM, PILLAR_1));
 
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
@@ -163,7 +166,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         verify(collector).putFile(eq(TEST_COLLECTION), eq(TEST_FILE_1), any(URL.class), any(), any(EventHandler.class), anyString());
         verifyNoMoreInteractions(collector);
         
-        verify(model, times(2)).getMissingFilesAtPillarByIterator(anyString(), anyInt(), anyInt(), eq(TEST_COLLECTION));
+        verify(model, times(1)).findFilesWithMissingCopies(eq(TEST_COLLECTION), eq(2), anyLong(), anyLong());
         verify(model).getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION));
         verifyNoMoreInteractions(model);
     }
@@ -172,9 +175,11 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     public void testFailedGetFile() throws Exception {
         addDescription("Test that the workflow does not try to put a file, if it fails to get it.");
         addStep("Prepare for calls to mocks to fail when performing get-file", "");
-        when(model.getMissingFilesAtPillarByIterator(anyString(), anyInt(), anyInt(), eq(TEST_COLLECTION))).thenReturn(createMockIterator(TEST_FILE_1));
+        when(model.findFilesWithMissingCopies(eq(TEST_COLLECTION), anyInt(), anyLong(), anyLong()))
+            .thenReturn(createMockIterator(TEST_FILE_1));
 
-        when(model.getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION))).thenReturn(createMockFileInfo(TEST_FILE_1, DEFAULT_CHECKSUM, PILLAR_1));
+        when(model.getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION)))
+            .thenReturn(createMockFileInfo(TEST_FILE_1, DEFAULT_CHECKSUM, PILLAR_1));
 
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
@@ -201,7 +206,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         verify(collector).getFile(eq(TEST_COLLECTION), eq(TEST_FILE_1), any(URL.class), any(EventHandler.class), anyString());
         verifyNoMoreInteractions(collector);
         
-        verify(model, times(2)).getMissingFilesAtPillarByIterator(anyString(), anyInt(), anyInt(), eq(TEST_COLLECTION));
+        verify(model, times(1)).findFilesWithMissingCopies(eq(TEST_COLLECTION), eq(2), anyLong(), anyLong());
         verify(model).getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION));
         verifyNoMoreInteractions(model);
     }
@@ -210,9 +215,11 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     public void testFailedPutFile() throws Exception {
         addDescription("Test that the workflow makes calls to the collector for get and put file, even when put file fails.");
         addStep("Prepare for calls to mocks", "");
-        when(model.getMissingFilesAtPillarByIterator(anyString(), anyInt(), anyInt(), eq(TEST_COLLECTION))).thenReturn(createMockIterator(TEST_FILE_1));
+        when(model.findFilesWithMissingCopies(eq(TEST_COLLECTION), anyInt(), anyLong(), anyLong()))
+            .thenReturn(createMockIterator(TEST_FILE_1));
 
-        when(model.getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION))).thenReturn(createMockFileInfo(TEST_FILE_1, DEFAULT_CHECKSUM, PILLAR_1));
+        when(model.getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION)))
+            .thenReturn(createMockFileInfo(TEST_FILE_1, DEFAULT_CHECKSUM, PILLAR_1));
 
 
         doAnswer(new Answer() {
@@ -250,7 +257,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         verify(collector).putFile(eq(TEST_COLLECTION), eq(TEST_FILE_1), any(URL.class), any(), any(EventHandler.class), anyString());
         verifyNoMoreInteractions(collector);
         
-        verify(model, times(2)).getMissingFilesAtPillarByIterator(anyString(), anyInt(), anyInt(), eq(TEST_COLLECTION));
+        verify(model, times(1)).findFilesWithMissingCopies(eq(TEST_COLLECTION), eq(2), anyLong(), anyLong());
         verify(model).getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION));
         verifyNoMoreInteractions(model);
     }

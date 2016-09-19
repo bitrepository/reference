@@ -82,11 +82,11 @@ public class IntegrityDatabase implements IntegrityModel {
             long maxResults, String collectionID) {
         return store.getAllFileIDsOnPillar(collectionID, pillarID, firstIndex, maxResults);
     }
-
-    @Override
-    public IntegrityIssueIterator getMissingFilesAtPillarByIterator(String pillarID, long firstIndex,
-            long maxResults, String collectionID) {
-        return store.findMissingFilesAtPillar(collectionID, pillarID, firstIndex, maxResults);
+    
+    @Override 
+    public IntegrityIssueIterator findFilesWithMissingCopies(String collectionID, int expectedCopies, 
+            Long firstIndex, Long maxResults) {
+        return store.findFilesWithMissingCopies(collectionID, expectedCopies, firstIndex, maxResults);
     }
     
     @Override

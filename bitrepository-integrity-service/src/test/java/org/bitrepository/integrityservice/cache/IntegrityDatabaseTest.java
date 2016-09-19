@@ -103,13 +103,11 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         }
         
         addStep("Test the 'findMissingFiles'", "Should deliver an empty collection");
-        for(String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTIONID)) {
-            Collection<String> missingFiles 
-                = getIssuesFromIterator(model.getMissingFilesAtPillarByIterator(pillar, 0, Integer.MAX_VALUE, TEST_COLLECTIONID));
-            Assert.assertNotNull(missingFiles);
-            Assert.assertEquals(missingFiles.size(), 0);    
-        }
-        
+        Collection<String> missingFiles = getIssuesFromIterator(model.findFilesWithMissingCopies(TEST_COLLECTIONID, 
+                SettingsUtils.getPillarIDsForCollection(TEST_COLLECTIONID).size(), 0L, Long.MAX_VALUE));
+        Assert.assertNotNull(missingFiles);
+        Assert.assertEquals(missingFiles.size(), 0);    
+
         addStep("Test the 'getAllFileIDs'", "Should deliver an empty collection");
         Assert.assertEquals(model.getNumberOfFilesInCollection(TEST_COLLECTIONID), 0);
         

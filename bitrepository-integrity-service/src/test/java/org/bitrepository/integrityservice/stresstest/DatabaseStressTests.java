@@ -115,9 +115,8 @@ public class DatabaseStressTests extends ExtendedTestCase {
         
         startTime = System.currentTimeMillis();
         String collection = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-        for(String pillar : settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()) {
-            cache.findMissingFilesAtPillar(collection, pillar, 0L, Long.MAX_VALUE);    
-        }
+        int numberOfpillarsInCollection = settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().size();
+        cache.findFilesWithMissingCopies(collection, numberOfpillarsInCollection, 0L, Long.MAX_VALUE);
         System.err.println("Time to find missing files: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
 
         startTime = System.currentTimeMillis();

@@ -22,10 +22,16 @@
 package org.bitrepository.integrityservice.workflow.step;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
@@ -71,32 +77,52 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
     @Override
     public synchronized void performStep() throws StepFailedException {
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
-        Date missingAfterDate = new Date(System.currentTimeMillis() - gracePeriod);
+        Map<String, Long> missingFilesMap = new HashMap<>();
         for(String pillar : pillars) {
-            log.info("Checking for missing files on pillar {}, files needs to be older than {} to be considered missing.", 
-                    pillar, missingAfterDate);
-            Long missingFiles = 0L;
-            IntegrityIssueIterator issueIterator = store.getMissingFilesAtPillarByIterator(pillar, 0, 
-                    Integer.MAX_VALUE, reporter.getCollectionID());
-            
-            String missingFile;
-            while((missingFile = issueIterator.getNextIntegrityIssue()) != null) {
-                Date earliestDate = store.getEarlistFileDate(reporter.getCollectionID(), missingFile);
-                if(earliestDate.before(missingAfterDate)) {
-                    try {
-                        reporter.reportMissingFile(missingFile, pillar);
-                        missingFiles++;
-                    } catch (IOException e) {
-                        throw new StepFailedException("Failed to report file: " + missingFile + " as missing", e);
+            missingFilesMap.put(pillar, 0L);
+        }
+        Date missingAfterDate = new Date(System.currentTimeMillis() - gracePeriod);
+        log.info("Looking for missing files, files needs to be older than {} to be considered missing.", 
+                missingAfterDate);
+        
+        IntegrityIssueIterator issueIterator = store.findFilesWithMissingCopies(reporter.getCollectionID(), 
+                pillars.size(), 0L, Long.MAX_VALUE);
+        
+        String missingFile;
+        while((missingFile = issueIterator.getNextIntegrityIssue()) != null) {
+            Date earliestDate = store.getEarlistFileDate(reporter.getCollectionID(), missingFile);
+            if(earliestDate.before(missingAfterDate)) {
+                try {
+                    Set<String> pillarsWithFile = getPillarsWithFile(missingFile, reporter.getCollectionID());
+                    for(String pillar : pillars) {
+                        if(!pillarsWithFile.contains(pillar)) {
+                            reporter.reportMissingFile(missingFile, pillar);
+                            missingFilesMap.put(pillar, missingFilesMap.get(pillar) + 1);         
+                        }
                     }
-                } else {
-                    log.info("The file '{}' was too recent ({}) to be considered missing.", missingFile, earliestDate);
+                } catch (IOException e) {
+                    throw new StepFailedException("Failed to report file: " + missingFile + " as missing", e);
                 }
+            } else {
+                log.info("The file '{}' was too recent ({}) to be considered missing.", missingFile, earliestDate);
             }
-            sc.getPillarCollectionStat(pillar).setMissingFiles(missingFiles);
+            
+            for(String pillar : missingFilesMap.keySet()) {
+                sc.getPillarCollectionStat(pillar).setMissingFiles(missingFilesMap.get(pillar));
+            }
+            
         }
     }
 
+    private Set<String> getPillarsWithFile(String fileID, String collectionID) {
+        Collection<FileInfo> fileInfos = store.getFileInfos(fileID, collectionID);
+        Set<String> pillarsWithFile = new HashSet<>();
+        for(FileInfo fi : fileInfos) {
+            pillarsWithFile.add(fi.getPillarId());
+        }
+        return pillarsWithFile;
+    }
+    
     public static String getDescription() {
         return "Detects and reports files that are missing from one or more pillars in the collection.";
     }

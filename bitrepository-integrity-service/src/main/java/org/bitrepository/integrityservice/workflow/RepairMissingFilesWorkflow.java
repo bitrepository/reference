@@ -56,7 +56,7 @@ public class RepairMissingFilesWorkflow extends Workflow {
     protected Date workflowStart;
     protected WorkflowStep step = null;
     
-    private static final int MAX_RESULTS = 100;
+    private static final long MAX_RESULTS = 100L;
     /** List to keep track over the files, which have been */
     protected List<String> repairedFiles;
     
@@ -82,25 +82,24 @@ public class RepairMissingFilesWorkflow extends Workflow {
         
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
 
-        repairedFiles = new ArrayList<String>(MAX_RESULTS * pillars.size());
+        repairedFiles = new ArrayList<>();
 
         try {
-            for(String pillarId : pillars) {
-                repairMissingFilesForPillar(pillarId);
-            }
+            repairMissingFiles(pillars);
         } finally {
             finish();
         }
     }
     
     /**
-     * Repairs the missing files on the pillar.
-     * @param pillarId The pillar to repair.
+     * Repairs the missing files.
+     * @param pillarIDs The set of pillars to repair files on.
      */
-    private void repairMissingFilesForPillar(String pillarId) {
+    private void repairMissingFiles(List<String> pillarIDs) {
         List<String> filesNotRepaired = new ArrayList<String>();
-        IntegrityIssueIterator iterator = context.getStore().getMissingFilesAtPillarByIterator(pillarId, 0L, 
-                MAX_RESULTS, collectionID);
+        IntegrityIssueIterator iterator = context.getStore().findFilesWithMissingCopies(collectionID, 
+                pillarIDs.size(), 0L, MAX_RESULTS);
+
         String fileId;
         int i = 0;
         while((fileId = iterator.getNextIntegrityIssue()) != null && i < MAX_RESULTS) {
@@ -213,6 +212,6 @@ public class RepairMissingFilesWorkflow extends Workflow {
 
 	@Override
 	public String getDescription() {
-		return "Can repair 100 files per pillar.";
+		return "Can repair 100 files per run.";
 	}
 }
