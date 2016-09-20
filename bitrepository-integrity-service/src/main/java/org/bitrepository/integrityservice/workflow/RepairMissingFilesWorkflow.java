@@ -97,32 +97,30 @@ public class RepairMissingFilesWorkflow extends Workflow {
      */
     private void repairMissingFiles(List<String> pillarIDs) {
         List<String> filesNotRepaired = new ArrayList<String>();
-        IntegrityIssueIterator iterator = context.getStore().findFilesWithMissingCopies(collectionID, 
-                pillarIDs.size(), 0L, MAX_RESULTS);
-
-        String fileId;
-        int i = 0;
-        while((fileId = iterator.getNextIntegrityIssue()) != null && i < MAX_RESULTS) {
-            // Do not try to repair file, which has already been repaired.
-            if(repairedFiles.contains(fileId)) {
-                continue;
+        try(IntegrityIssueIterator iterator = context.getStore().findFilesWithMissingCopies(collectionID, 
+                pillarIDs.size(), 0L, MAX_RESULTS)) {
+    
+            String fileId;
+            while((fileId = iterator.getNextIntegrityIssue()) != null) {
+                // Do not try to repair file, which has already been repaired.
+                if(repairedFiles.contains(fileId)) {
+                    continue;
+                }
+                repairedFiles.add(fileId);
+                        
+                try {
+                    String checksum = getChecksumForFile(fileId);
+                    URL url = createURL(fileId);
+                    getFileStep(fileId, url);
+                    putFileStep(fileId, url, checksum);
+                    deleteUrl(url);
+                } catch (Exception e) {
+                    // Fault barrier. Just try to continue
+                    log.warn("Error occured during repair of missing file, '" + fileId + "'. Tries to continue.", e);
+                    filesNotRepaired.add(fileId);
+                }
             }
-            repairedFiles.add(fileId);
-            i++;
-            
-            try {
-                String checksum = getChecksumForFile(fileId);
-                URL url = createURL(fileId);
-                getFileStep(fileId, url);
-                putFileStep(fileId, url, checksum);
-                deleteUrl(url);
-            } catch (Exception e) {
-                // Fault barrier. Just try to continue
-                log.warn("Error occured during repair of missing file, '" + fileId + "'. Tries to continue.", e);
-                filesNotRepaired.add(fileId);
-            }
-        }
-        
+        } 
         if(!filesNotRepaired.isEmpty()) {
             context.getAlerter().operationFailed("Failed to repair the files '" + filesNotRepaired + "'.", collectionID);
         }
@@ -212,6 +210,6 @@ public class RepairMissingFilesWorkflow extends Workflow {
 
 	@Override
 	public String getDescription() {
-		return "Can repair 100 files per run.";
+		return "Can repair " + MAX_RESULTS + " files per run.";
 	}
 }

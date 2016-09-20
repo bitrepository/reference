@@ -85,32 +85,33 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
         log.info("Looking for missing files, files needs to be older than {} to be considered missing.", 
                 missingAfterDate);
         
-        IntegrityIssueIterator issueIterator = store.findFilesWithMissingCopies(reporter.getCollectionID(), 
-                pillars.size(), 0L, Long.MAX_VALUE);
-        
-        String missingFile;
-        while((missingFile = issueIterator.getNextIntegrityIssue()) != null) {
-            Date earliestDate = store.getEarlistFileDate(reporter.getCollectionID(), missingFile);
-            if(earliestDate.before(missingAfterDate)) {
-                try {
-                    Set<String> pillarsWithFile = getPillarsWithFile(missingFile, reporter.getCollectionID());
-                    for(String pillar : pillars) {
-                        if(!pillarsWithFile.contains(pillar)) {
-                            reporter.reportMissingFile(missingFile, pillar);
-                            missingFilesMap.put(pillar, missingFilesMap.get(pillar) + 1);         
+        try(IntegrityIssueIterator issueIterator = store.findFilesWithMissingCopies(reporter.getCollectionID(), 
+                pillars.size(), 0L, Long.MAX_VALUE)) {
+            
+            String missingFile;
+            while((missingFile = issueIterator.getNextIntegrityIssue()) != null) {
+                Date earliestDate = store.getEarlistFileDate(reporter.getCollectionID(), missingFile);
+                if(earliestDate.before(missingAfterDate)) {
+                    try {
+                        Set<String> pillarsWithFile = getPillarsWithFile(missingFile, reporter.getCollectionID());
+                        for(String pillar : pillars) {
+                            if(!pillarsWithFile.contains(pillar)) {
+                                reporter.reportMissingFile(missingFile, pillar);
+                                missingFilesMap.put(pillar, missingFilesMap.get(pillar) + 1);         
+                            }
                         }
+                    } catch (IOException e) {
+                        throw new StepFailedException("Failed to report file: " + missingFile + " as missing", e);
                     }
-                } catch (IOException e) {
-                    throw new StepFailedException("Failed to report file: " + missingFile + " as missing", e);
+                } else {
+                    log.info("The file '{}' was too recent ({}) to be considered missing.", missingFile, earliestDate);
                 }
-            } else {
-                log.info("The file '{}' was too recent ({}) to be considered missing.", missingFile, earliestDate);
+                
+                for(String pillar : missingFilesMap.keySet()) {
+                    sc.getPillarCollectionStat(pillar).setMissingFiles(missingFilesMap.get(pillar));
+                }
+                
             }
-            
-            for(String pillar : missingFilesMap.keySet()) {
-                sc.getPillarCollectionStat(pillar).setMissingFiles(missingFilesMap.get(pillar));
-            }
-            
         }
     }
 

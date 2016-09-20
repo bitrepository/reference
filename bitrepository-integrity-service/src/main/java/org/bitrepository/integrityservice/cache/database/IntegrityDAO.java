@@ -304,16 +304,12 @@ public abstract class IntegrityDAO {
             Long firstIndex, Long maxResults) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         
-        long first;
-        if(firstIndex == null) {
-            first = 0;
-        } else {
-            first = firstIndex;
-        }
+        long first = firstIndex == null ? 0 : firstIndex;
+        long maxRes = maxResults == null ? Long.MAX_VALUE : maxResults;
         
         String findFileSql = getFindFilesWithMissingCopiesSql();
         return makeIntegrityIssueIterator(findFileSql, collectionID, expectedCopies,
-                first, maxResults);
+                first, maxRes);
     }
     
     /**

@@ -43,6 +43,7 @@ public class DerbyIntegrityDAO extends IntegrityDAO {
                 + " WHERE collectionid = ?"
                 + " GROUP BY fileid"
                 + " HAVING COUNT(fileid) < ?"
+                + " ORDER BY fileid"
                 + " OFFSET ? ROWS"
                 + " FETCH FIRST ? ROWS ONLY";
         

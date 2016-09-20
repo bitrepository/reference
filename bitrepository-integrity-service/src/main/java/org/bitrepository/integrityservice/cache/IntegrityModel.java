@@ -82,7 +82,7 @@ public interface IntegrityModel {
     long getNumberOfFilesInCollection(String collectionID);
     
     /**
-     * Get an IntegrityIssueIterator for the files for a given pillar, restricted by min and max ids.
+     * Get an IntegrityIssueIterator for the files for a given pillar, restricted by first index and max results.
      * @param pillarID The id of the pillar.
      * @param firstIndex The index of the first result.
      * @param maxResults The maximum number of results.
@@ -92,7 +92,7 @@ public interface IntegrityModel {
     IntegrityIssueIterator getFilesOnPillar(String pillarID, long firstIndex, long maxResults, String collectionID);
     
     /**
-     * An IntegrityIssueIterator for files with less than the expected number of copies, restricted by min and max ids.
+     * An IntegrityIssueIterator for files with less than the expected number of copies, restricted by first index and max results.
      * @param collectionID The ID of the collection to get missing files from
      * @param expectedCopies The number of expected copies.
      * @param firstIndex The first index to get results from.

@@ -66,6 +66,7 @@ public class PostgresIntegrityDAO extends IntegrityDAO {
                 + " WHERE collectionid = ?"
                 + " GROUP BY fileid"
                 + " HAVING COUNT(fileid) < ?"
+                + " ORDER BY fileid"
                 + " OFFSET ?"
                 + " LIMIT ?";
 
