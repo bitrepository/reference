@@ -26,7 +26,7 @@ package org.bitrepository.common.utils;
  */
 public class FileSizeUtils {
 
-    private static final int unitSize = 1024;
+    private static final int unitSize = 1000;
     private static final long byteSize = 1;
     private static final long kiloSize = byteSize * unitSize;
     private static final long megaSize = kiloSize * unitSize;
