@@ -403,5 +403,6 @@
     <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
     <slf4j.version>1.6.5</slf4j.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <additionalparam>-Xdoclint:none</additionalparam>
   </properties>
 </project>
