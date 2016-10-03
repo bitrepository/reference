@@ -1,7 +1,7 @@
 
   function FileSizeUtils() {
     
-    var unitSize = 1024;
+    var unitSize = 1000;
     var byteSize = 1;
     var kiloSize = byteSize * unitSize;
     var megaSize = kiloSize * unitSize;
