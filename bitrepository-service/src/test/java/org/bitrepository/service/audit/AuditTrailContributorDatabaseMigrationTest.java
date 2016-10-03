@@ -84,14 +84,14 @@ public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase
         String sqlInsert = "INSERT INTO " + FILE_TABLE + " ( " + FILE_FILEID + " ) VALUES ( ? )";
         DatabaseUtils.executeStatement(connector, sqlInsert, FILE_ID);
         
-        addStep("Perform migration", "File table has version 2, audit table version 3 and database-version is 3");
+        addStep("Perform migration", "File table has version 2, audit table version 4 and database-version is 4");
         AuditTrailContributorDatabaseMigrator migrator = new AuditTrailContributorDatabaseMigrator(connector);
         migrator.migrate();
         int fileTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, FILE_TABLE);
         Assert.assertEquals(fileTableVersionAfter, 2, "Table version after migration");
         int auditTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, AUDITTRAIL_AUDIT);
-        Assert.assertEquals(auditTableVersionAfter, 3, "Table version after migration");
+        Assert.assertEquals(auditTableVersionAfter, 4, "Table version after migration");
         int dbTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, DATABASE_VERSION_ENTRY);
-        Assert.assertEquals(dbTableVersionAfter, 3, "Table version after migration");
+        Assert.assertEquals(dbTableVersionAfter, 4, "Table version after migration");
     }
 }
