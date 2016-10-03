@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.bitrepository.reference</groupId>
     <artifactId>bitrepository-parent</artifactId>
-    <version>1.2.0.3</version>
+    <version>1.2.0.4-SNAPSHOT</version>
   </parent>
   <artifactId>bitrepository-webclient</artifactId>
   <packaging>war</packaging>
