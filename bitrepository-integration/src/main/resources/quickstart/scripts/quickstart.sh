@@ -23,6 +23,11 @@
 ###
 #Script for initiating the quick start default deployment of  the Bitrepository
 
+if [ -z "$JAVA_HOME" ]; then
+        echo "JAVA_HOME has not been set, cannot run quickstart"
+        exit 1
+fi
+
 #Make sure we are in the scripts folder
 cd $(dirname $(perl -e "use Cwd 'abs_path';print abs_path('$0');"))
 #Go back to the quickstart "root dir"
