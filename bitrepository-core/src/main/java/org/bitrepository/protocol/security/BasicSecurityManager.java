@@ -266,7 +266,7 @@ public class BasicSecurityManager implements SecurityManager {
             CertificateException {
         PrivateKey privKey = null;
         X509Certificate privCert = null;
-        if(!(new File(privateKeyFile)).isFile()) {
+        if(privateKeyFile == null || !(new File(privateKeyFile)).isFile()) {
             log.info("Key file '" + privateKeyFile + "' with private key and certificate does not exist!");
             return;
         }
