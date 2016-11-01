@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.sbforge</groupId>
         <artifactId>sbforge-parent</artifactId>
-        <version>18</version>
+        <version>20-SNAPSHOT</version>
     </parent>
 
     <name>Bitrepository</name>
@@ -263,6 +263,25 @@
                     </packagingExcludes>
                 </configuration>
             </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.7.5.201505241946</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -363,6 +382,39 @@
                     <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
                 </configuration>
             </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.8</version>
+        <configuration>
+          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+        </configuration>
+      </plugin>
+<!--       <plugin> -->
+<!--         <groupId>org.apache.maven.plugins</groupId> -->
+<!--         <artifactId>maven-checkstyle-plugin</artifactId> -->
+<!--         <version>2.14</version> -->
+<!--         <configuration> -->
+<!--           <configLocation>javadocCheckstyle.xml</configLocation> -->
+<!--         </configuration> -->
+<!--       </plugin>       -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>3.0.2</version>
+        <configuration>
+           <failOnError>false</failOnError>
+           <formats>
+               <format>html</format>
+               <format>xml</format>
+           </formats>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.7.5.201505241946</version>
+      </plugin>
         </plugins>
     </reporting>
 
