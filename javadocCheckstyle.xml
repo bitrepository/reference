@@ -22,8 +22,8 @@
             <property name="checkFirstSentence" value="false"/>
         </module>
 
-        <module name="SummaryJavadocCheck">
-            <property name="forbiddenSummaryFragments" value="^This method returns.*"/>
-        </module>
+<!--         <module name="SummaryJavadocCheck"> -->
+<!--             <property name="forbiddenSummaryFragments" value="^This method returns.*"/> -->
+<!--         </module> -->
     </module>
 </module>
