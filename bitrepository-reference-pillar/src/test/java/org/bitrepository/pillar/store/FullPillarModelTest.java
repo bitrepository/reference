@@ -156,6 +156,6 @@ public class FullPillarModelTest extends DefaultFixturePillarTest {
         
         archives.downloadFileForValidation(DEFAULT_FILE_ID, collectionID, new ByteArrayInputStream(new byte[0]));
         archives.moveToArchive(DEFAULT_FILE_ID, collectionID);
-        pillarModel.verifyFileToCacheConsistency(DEFAULT_FILE_ID, collectionID);
+        pillarModel.recalculateChecksum(DEFAULT_FILE_ID, collectionID);
     }
 }

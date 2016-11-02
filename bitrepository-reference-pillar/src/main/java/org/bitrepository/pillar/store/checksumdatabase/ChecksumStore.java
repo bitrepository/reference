@@ -98,10 +98,18 @@ public interface ChecksumStore {
     
     /**
      * Retrieval of all the file ids in the store.
-     * @param collectionID The id of the collection for the file.
+     * @param collectionID The id of the collection for the files.
      * @return The collection of file ids in the store.
      */
     Collection<String> getAllFileIDs(String collectionID);
+    
+    /**
+     * Retrieval of the ids for the files where the checksum was calculated earlier than a certain date.
+     * @param checksumDate The max calculation date for the checksums to retrieve.
+     * @param collectionID The id of the collection for the files.
+     * @return The collection of ids for the files with old checksums.
+     */
+    Collection<String> getFileIDsWithOldChecksums(Date checksumDate, String collectionID);
     
     /**
      * Deletes a given entry from the cache.

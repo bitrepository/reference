@@ -88,7 +88,7 @@ public class FileStorageModel extends StorageModel {
     protected void verifyFileToCacheConsistencyIfRequired(String fileID, String collectionID) {
         Boolean verify = settings.getReferenceSettings().getPillarSettings().isVerifyDataConsistencyOnMessage();
         if(verify != null && verify) {
-            verifyFileToCacheConsistency(fileID, collectionID);
+            recalculateChecksum(fileID, collectionID);
         }
     }
 
@@ -182,7 +182,7 @@ public class FileStorageModel extends StorageModel {
         transferFileToTmp(fileID, collectionID, fileAddress);
         verifyFileInTmp(fileID, collectionID, expectedChecksum);
         fileArchive.moveToArchive(fileID, collectionID);
-        verifyFileToCacheConsistency(fileID, collectionID);
+        recalculateChecksum(fileID, collectionID);
     }
 
     @Override
@@ -191,7 +191,7 @@ public class FileStorageModel extends StorageModel {
         transferFileToTmp(fileID, collectionID, fileAddress);
         verifyFileInTmp(fileID, collectionID, expectedChecksum);
         fileArchive.replaceFile(fileID, collectionID);
-        verifyFileToCacheConsistency(fileID, collectionID);
+        recalculateChecksum(fileID, collectionID);
     }
 
     /**
@@ -199,7 +199,7 @@ public class FileStorageModel extends StorageModel {
      * @param fileID The id of the file to recalculate its default checksum for.
      * @param collectionID The id of the collection of the file.
      */
-    public void verifyFileToCacheConsistency(String fileID, String collectionID) {
+    protected void recalculateChecksum(String fileID, String collectionID) {
         log.info("Recalculating the checksum of file '" + fileID + "'.");
         FileInfo fi = fileArchive.getFileInfo(fileID, collectionID);
         String checksum = ChecksumUtils.generateChecksum(fi, defaultChecksumSpec);
@@ -263,6 +263,14 @@ public class FileStorageModel extends StorageModel {
         for(String fileID : fileArchive.getAllFileIds(collectionID)) {
             verifyArchiveToCacheConsistencyForFile(fileID, collectionID);
         }
+
+        Long maxAgeForChecksums = settings.getReferenceSettings().getPillarSettings()
+                .getMaxAgeForChecksums().longValue();
+        Date checksumDate = new Date(System.currentTimeMillis() - maxAgeForChecksums);
+        for(String fileID : cache.getFileIDsWithOldChecksums(checksumDate, collectionID)) {
+            recalculateChecksum(fileID, collectionID);
+        }
+        // TODO: validate the 'last modified' timestamp ? 
     }
 
     /**
@@ -293,21 +301,9 @@ public class FileStorageModel extends StorageModel {
      * @param collectionID The id of the collection of the file.
      */
     private void verifyArchiveToCacheConsistencyForFile(String fileID, String collectionID) {
-        Long maxAgeForChecksums = settings.getReferenceSettings().getPillarSettings()
-                .getMaxAgeForChecksums().longValue();
         if(!cache.hasFile(fileID, collectionID)) {
             log.debug("No checksum cached for file '" + fileID + "'. Calculating the checksum.");
-            verifyFileToCacheConsistency(fileID, collectionID);
-        } else {
-            long checksumDate = cache.getCalculationDate(fileID, collectionID).getTime();
-            long minDateForChecksum = System.currentTimeMillis() - maxAgeForChecksums;
-            if(checksumDate < minDateForChecksum) {
-                log.info("The checksum for the file '" + fileID + "' is too old. Recalculating.");
-                verifyFileToCacheConsistency(fileID, collectionID);
-            } else if(checksumDate < fileArchive.getFileInfo(fileID, collectionID).getLastModifiedDate()) {
-                log.info("The last modified date for the file is newer than the latest checksum.");
-                verifyFileToCacheConsistency(fileID, collectionID);
-            }
+            recalculateChecksum(fileID, collectionID);
         }
     }
 
