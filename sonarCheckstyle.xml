@@ -4,8 +4,18 @@
 <module name="Checker">
 	<module name="SuppressionCommentFilter" />
 	<module name="FileTabCharacter">
+		<property name="eachLine" value="true" />
+		<property name="fileExtensions" value="java" />
 		<property name="severity" value="info" />
 	</module>
+	<module name="NewlineAtEndOfFile">
+		<property name="severity" value="warning" />
+	</module>
+	<module name="FileLength">
+		<property name="max" value="2000" />
+		<property name="fileExtensions" value="java" />
+	</module>
+
 	<module name="TreeWalker">
 		<module name="FileContentsHolder" />
 		<module name="CyclomaticComplexity">
@@ -29,6 +39,9 @@
 			<property name="severity" value="info" />
 		</module>
 		<module name="IllegalThrows">
+			<property name="severity" value="warning" />
+		</module>
+        <module name="IllegalImport">
 			<property name="severity" value="warning" />
 		</module>
 		<module name="AnonInnerLength">
@@ -107,6 +120,27 @@
 			<property name="severity" value="warning" />
 		</module>
 		<module name="MagicNumber">
+			<property name="severity" value="info" />
+		</module>
+		<module name="TodoComment">
+			<property name="format" value="(TODO)|(FIXME)" />
+			<property name="severity" value="info" />
+		</module>
+		<module name="JavadocType">
+			<property name="scope" value="public" />
+			<property name="severity" value="info" />
+		</module>
+		<module name="JavadocVariable">
+			<property name="scope" value="public" />
+			<property name="severity" value="info" />
+		</module>
+		<module name="NoWhitespaceAfter">
+			<property name="severity" value="info" />
+		</module>
+		<module name="NoWhitespaceBefore">
+			<property name="severity" value="info" />
+		</module>
+        <module name="MultipleVariableDeclarations">
 			<property name="severity" value="info" />
 		</module>
 	</module>
