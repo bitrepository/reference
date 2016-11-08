@@ -21,8 +21,10 @@
  */
 package org.bitrepository.protocol;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,6 +32,12 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.common.utils.StreamUtils;
+
+/**
+ * File exchange used for exchanging files on a local filesystem 
+ */
 public class LocalFileExchange implements FileExchange {
     private final File storageDir;
 
@@ -39,37 +47,69 @@ public class LocalFileExchange implements FileExchange {
 
     @Override
     public void putFile(InputStream in, URL url) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public InputStream getFile(URL url) throws IOException {
-        File file = new File(storageDir, url.getFile());
-        return new FileInputStream(file);
+        FileUtils.writeStreamToFile(in, new File(url.getFile()));
     }
 
     @Override
     public URL putFile(File dataFile) {
-        throw new UnsupportedOperationException();
+        URL url;
+        try {
+            url = getURL(dataFile.toString());
+            File dest = new File(url.getFile());
+            FileUtils.copyFile(dataFile, dest);
+            return url;
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException("Cannot create the URL.", e);
+        }
     }
 
     @Override
+    public InputStream getFile(URL url) throws IOException {
+        File file = new File(url.getFile());
+        return new FileInputStream(file);
+    }
+    
+    @Override
     public void getFile(OutputStream out, URL url) throws IOException {
-        throw new UnsupportedOperationException();
+        try(FileInputStream fis = new FileInputStream(new File(url.getFile()))) {
+            StreamUtils.copyInputStreamToOutputStream(fis, out);    
+        }
     }
 
     @Override
     public void getFile(File outputFile, String fileAddress) {
-        throw new UnsupportedOperationException();
+        URL url; 
+        try {
+            url = new URL(fileAddress);
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException("Cannot create the URL.", e);
+        }
+        
+        try(OutputStream out = new BufferedOutputStream(new FileOutputStream(outputFile))) {
+            getFile(out, url);
+        } catch (IOException e) {
+            throw new CoordinationLayerException("Could not download data "
+                    + "from '" + fileAddress + "' (url: '" + url + "') to the file '" 
+                    + outputFile.getAbsolutePath() + "'.", e);
+        }
+        
     }
 
     @Override
     public URL getURL(String filename) throws MalformedURLException {
-        throw new UnsupportedOperationException();
+        File dest = new File(storageDir, new File(filename).getName());
+        URL url;
+        try {
+            url = dest.toURI().toURL();
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException("Cannot create the URL.", e);
+        } 
+        return url;
     }
 
     @Override
     public void deleteFile(URL url) throws IOException, URISyntaxException {
-        throw new UnsupportedOperationException();
+        File fileToDelete = new File(url.getFile());
+        fileToDelete.delete();
     }
 }

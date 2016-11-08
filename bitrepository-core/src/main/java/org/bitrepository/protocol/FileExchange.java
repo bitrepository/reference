@@ -48,26 +48,24 @@ public interface FileExchange {
     void putFile(InputStream in, URL url) throws IOException;
 
     /**
-     * Puts a given file onto a http-server.
+     * Places a given file onto the file exchange
      *
-     * @param file The file to be put into the http-server.
+     * @param file The file to be put into the file exchange.
      * @return The url for the file, when it has been placed onto the
-     * http-server.
+     * file exchange.
      */
     URL putFile(File file);
 
     /**
      * Retrieves the data from a given url and puts it onto a given
-     * outputstream. It has to be a 'HTTP' url, since the data is retrieved
-     * through a HTTP-request.
+     * outputstream. 
      *
      * @param out The output stream to put the data.
      * @param url The url for where the data should be retrieved.
      * @throws IOException If any problems occurs during the retrieval of the
      * data.
      */
-    void getFile(OutputStream out, URL url)
-            throws IOException;
+    void getFile(OutputStream out, URL url) throws IOException;
     /**
      * Method for retrieving a specific URL as a stream.
      * @param url The URL to retrieve.
@@ -78,7 +76,7 @@ public interface FileExchange {
     InputStream getFile(URL url) throws IOException;
 
     /**
-     * Method for downloading a file at a given adress.
+     * Method for downloading a file at a given address.
      *
      * @param outputFile The file where the data at the address should be
      * placed.
