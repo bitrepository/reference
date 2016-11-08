@@ -32,7 +32,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -310,23 +309,21 @@ public class ChecksumExtractor {
     }
     
     /**
-     * Extracts the checksum entries within the given optional limitations.
+     * Extracts the file ids of the entries where the checksum calculation date is lower than a given date.
      * 
      * @param maxTimeStamp The maximum date for the checksum calculation date.
      * @param collectionID The collection id for the extraction.
      * @return The requested collection of file ids.
      */
-    public Collection<String> extractFileIDsWithMaxChecksumDate(Long maxTimeStamp, String collectionID) {
+    public List<String> extractFileIDsWithMaxChecksumDate(Long maxTimeStamp, String collectionID) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
+        ArgumentValidator.checkNotNull(maxTimeStamp, "Long maxTimeStamp");
         List<Object> args = new ArrayList<Object>(); 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT " + CS_FILE_ID + " WHERE " + CS_COLLECTION_ID + " = ?");
+        sql.append("SELECT " + CS_FILE_ID + " WHERE " + CS_COLLECTION_ID + " = ? AND " + CS_DATE + " <= ? "
+                + " ORDER BY " + CS_DATE + " ASC ");
         args.add(collectionID);
-        
-        if(maxTimeStamp != null) {
-            sql.append(" AND " + CS_DATE + " <= ? ");
-            args.add(maxTimeStamp);
-        }
-        sql.append(" ORDER BY " + CS_DATE + " ASC ");
+        args.add(maxTimeStamp);
         
         List<String> results = new ArrayList<String>();
         try (Connection conn = connector.getConnection();

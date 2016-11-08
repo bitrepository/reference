@@ -131,7 +131,7 @@ public class MemoryCacheMock implements ChecksumStore {
     }
 
     @Override
-    public Collection<String> getFileIDsWithOldChecksums(Date checksumDate, String collectionID) {
+    public List<String> getFileIDsWithOldChecksums(Date checksumDate, String collectionID) {
         List<String> res = new ArrayList<String>();
         for(ChecksumEntry ce : checksumMap.values()) {
             if(ce.getCalculationDate().getTime() < checksumDate.getTime()) {
