@@ -309,6 +309,48 @@ public class ChecksumExtractor {
     }
     
     /**
+     * Extracts the file ids of the entries where the checksum calculation date is lower than a given date.
+     * 
+     * @param maxTimeStamp The maximum date for the checksum calculation date.
+     * @param collectionID The collection id for the extraction.
+     * @return The requested collection of file ids.
+     */
+    public List<String> extractFileIDsWithMaxChecksumDate(Long maxTimeStamp, String collectionID) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
+        ArgumentValidator.checkNotNull(maxTimeStamp, "Long maxTimeStamp");
+        List<Object> args = new ArrayList<Object>(); 
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT " + CS_FILE_ID + " WHERE " + CS_COLLECTION_ID + " = ? AND " + CS_DATE + " <= ? "
+                + " ORDER BY " + CS_DATE + " ASC ");
+        args.add(collectionID);
+        args.add(maxTimeStamp);
+        
+        List<String> results = new ArrayList<String>();
+        try (Connection conn = connector.getConnection();
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())){
+            conn.setAutoCommit(false);
+            ps.setFetchSize(100);
+            try (ResultSet res = ps.executeQuery()) {
+                while(res.next() ) {
+                    if(!res.wasNull()) {
+                        results.add(res.getString(0));
+                    }
+                }
+            } finally {
+                if(conn != null) {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot extract the checksum entries with the arguments, maxTimestamp = '"
+                    + maxTimeStamp + "'", e);
+        }
+        
+        return results;
+    }
+    
+    /**
      * Extracts a checksum entry from a result set. 
      * The result set needs to have requested the elements in the right order:
      *  - File id.

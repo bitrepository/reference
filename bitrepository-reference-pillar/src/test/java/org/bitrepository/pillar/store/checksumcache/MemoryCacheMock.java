@@ -21,9 +21,11 @@
  */
 package org.bitrepository.pillar.store.checksumcache;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -126,5 +128,17 @@ public class MemoryCacheMock implements ChecksumStore {
         res.insertChecksumEntry(checksumMap.get(fileID));
 
         return res;
+    }
+
+    @Override
+    public List<String> getFileIDsWithOldChecksums(Date checksumDate, String collectionID) {
+        List<String> res = new ArrayList<String>();
+        for(ChecksumEntry ce : checksumMap.values()) {
+            if(ce.getCalculationDate().getTime() < checksumDate.getTime()) {
+                res.add(ce.getFileId());
+            }
+        }
+        return res;
+        
     }
 }

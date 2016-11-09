@@ -21,7 +21,9 @@
  */
 package org.bitrepository.pillar.store.checksumdatabase;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -152,5 +154,12 @@ public class ChecksumDAO implements ChecksumStore {
             res.insertChecksumEntry(entry);
         }
         return res;
+    }
+
+    @Override
+    public List<String> getFileIDsWithOldChecksums(Date checksumDate, String collectionID) {
+        ArgumentValidator.checkNotNull(checksumDate, "Date checksumDate");
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
+        return extractor.extractFileIDsWithMaxChecksumDate(checksumDate.getTime(), collectionID);
     }
 }

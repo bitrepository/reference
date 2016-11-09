@@ -57,10 +57,13 @@ public class RecalculateChecksumJob implements SchedulableJob {
     
     @Override
     public void start() {
-        log.info("Recalculating old checksums.");
-        state = WorkflowState.RUNNING;
-        model.verifyFileToCacheConsistencyOfAllData(collectionID);
-        state = WorkflowState.NOT_RUNNING;
+        log.info("Recalculating old checksums for collection '" + collectionID + "'.");
+        try {
+            state = WorkflowState.RUNNING;
+            model.verifyFileToCacheConsistencyOfAllData(collectionID);
+        } finally {
+            state = WorkflowState.NOT_RUNNING;
+        }
     }
 
     @Override
