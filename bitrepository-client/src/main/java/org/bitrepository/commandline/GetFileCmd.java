@@ -151,7 +151,7 @@ public class GetFileCmd extends CommandLineClient {
      */
     private URL extractUrl(String fileID) {
         try {
-            FileExchange fileexchange = new HttpFileExchange(settings);
+            FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
             return fileexchange.getURL(fileID);
         } catch (MalformedURLException e) {
             throw new IllegalStateException("Could not make an URL for the file '" + fileID + "'.", e);
