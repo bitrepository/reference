@@ -52,9 +52,8 @@ public class LocalFileExchange implements FileExchange {
 
     @Override
     public URL putFile(File dataFile) {
-        URL url;
         try {
-            url = getURL(dataFile.toString());
+            URL url = getURL(dataFile.toString());
             File dest = new File(url.getFile());
             FileUtils.copyFile(dataFile, dest);
             return url;
@@ -92,7 +91,6 @@ public class LocalFileExchange implements FileExchange {
                     + "from '" + fileAddress + "' (url: '" + url + "') to the file '" 
                     + outputFile.getAbsolutePath() + "'.", e);
         }
-        
     }
 
     @Override
