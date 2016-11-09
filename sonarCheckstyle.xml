@@ -14,6 +14,7 @@
 	<module name="FileLength">
 		<property name="max" value="2000" />
 		<property name="fileExtensions" value="java" />
+		<property name="severity" value="warning" />
 	</module>
 
 	<module name="TreeWalker">
@@ -41,7 +42,7 @@
 		<module name="IllegalThrows">
 			<property name="severity" value="warning" />
 		</module>
-        <module name="IllegalImport">
+		<module name="IllegalImport">
 			<property name="severity" value="warning" />
 		</module>
 		<module name="AnonInnerLength">
@@ -140,7 +141,7 @@
 		<module name="NoWhitespaceBefore">
 			<property name="severity" value="info" />
 		</module>
-        <module name="MultipleVariableDeclarations">
+		<module name="MultipleVariableDeclarations">
 			<property name="severity" value="info" />
 		</module>
 	</module>
