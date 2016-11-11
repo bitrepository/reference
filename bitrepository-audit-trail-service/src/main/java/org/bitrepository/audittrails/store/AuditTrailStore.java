@@ -103,7 +103,7 @@ public interface AuditTrailStore {
      * Get the list of known audittrail contributors. I.e. those contributors which have delivered
      * audit trails for the database. 
      * 
-     * @return List<String> containing the IDs of the contributors that the database have audittrails from.
+     * @return List containing the IDs of the contributors that the database have audittrails from.
      */
     List<String> getKnownContributors();
     /**
