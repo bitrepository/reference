@@ -97,7 +97,7 @@ public class PutFileCmd extends CommandLineClient {
         super.createOptionsForCmdArgumentHandler();
 
         Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT,
-                "The path to the file, which is wanted to be put. Is required, unless a URL is given.");
+                "The path to the file, which needs to be  uploaded. Is required, unless a URL is given.");
         fileOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(fileOption);
 
@@ -107,7 +107,7 @@ public class PutFileCmd extends CommandLineClient {
         cmdHandler.addOption(urlOption);
 
         Option checksumOption = new Option(Constants.CHECKSUM_ARG, Constants.HAS_ARGUMENT, 
-                "The checksum for the file to be retreived. Required if using an URL.");
+                "The checksum for the file to be retrieved. Required if using an URL.");
         checksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumOption);
 
