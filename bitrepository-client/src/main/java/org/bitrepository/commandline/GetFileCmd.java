@@ -79,7 +79,7 @@ public class GetFileCmd extends CommandLineClient {
         super.createOptionsForCmdArgumentHandler();
         Option checksumOption = new Option(Constants.LOCATION, Constants.HAS_ARGUMENT,
                 "[OPTIONAL] The location where the file should be placed (either total path or directory). "
-                        + "If no argument, then in the file is placed the directory where the script is located.");
+                        + "If no argument, then the file is placed in the directory where the script is located.");
         checksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumOption);
     }
