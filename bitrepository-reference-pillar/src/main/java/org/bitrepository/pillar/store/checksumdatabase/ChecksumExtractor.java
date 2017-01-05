@@ -320,7 +320,8 @@ public class ChecksumExtractor {
         ArgumentValidator.checkNotNull(maxTimeStamp, "Long maxTimeStamp");
         List<Object> args = new ArrayList<Object>(); 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT " + CS_FILE_ID + " WHERE " + CS_COLLECTION_ID + " = ? AND " + CS_DATE + " <= ? "
+        sql.append("SELECT " + CS_FILE_ID + " FROM " + CHECKSUM_TABLE 
+                + " WHERE " + CS_COLLECTION_ID + " = ? AND " + CS_DATE + " <= ? "
                 + " ORDER BY " + CS_DATE + " ASC ");
         args.add(collectionID);
         args.add(maxTimeStamp);
