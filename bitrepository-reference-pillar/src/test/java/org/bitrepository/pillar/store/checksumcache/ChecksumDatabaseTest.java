@@ -24,6 +24,8 @@ package org.bitrepository.pillar.store.checksumcache;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -276,6 +278,63 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         Assert.assertEquals(efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size(), 0);
     }
 
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void testGetChecksumResult() {
+        addDescription("Tests the restrictions on the GetChecksumResult call to the database.");
+        addStep("Instantiate database with appropriate data.", "");
+        ChecksumDAO cache = getCacheWithData();
+        
+        addStep("Test with no time restrictions", "Retrieves the file");
+        ExtractedChecksumResultSet extractedChecksums = cache.getChecksumResult(null,  null,  DEFAULT_FILE_ID, collectionID);
+        Assert.assertEquals(extractedChecksums.getEntries().size(), 1);
+        Assert.assertEquals(extractedChecksums.getEntries().get(0).getFileID(), DEFAULT_FILE_ID);
+        
+        addStep("Test with time restrictions from epoc to now", "Retrieves the file");
+        extractedChecksums = cache.getChecksumResult(CalendarUtils.getEpoch(),  CalendarUtils.getNow(),  DEFAULT_FILE_ID, collectionID);
+        Assert.assertEquals(extractedChecksums.getEntries().size(), 1);
+        
+        addStep("Test with very strict time restrictions around the default date", "Retrieves the file");
+        extractedChecksums = cache.getChecksumResult(CalendarUtils.getFromMillis(DEFAULT_DATE.getTime() - 1),  CalendarUtils.getFromMillis(DEFAULT_DATE.getTime() + 1),  DEFAULT_FILE_ID, collectionID);
+        Assert.assertEquals(extractedChecksums.getEntries().size(), 1);
+        
+        addStep("Test with too new a lower limit", "Does not retrieve the file");
+        extractedChecksums = cache.getChecksumResult(CalendarUtils.getFromMillis(DEFAULT_DATE.getTime() + 1),  CalendarUtils.getNow(),  DEFAULT_FILE_ID, collectionID);
+        Assert.assertEquals(extractedChecksums.getEntries().size(), 0);
+
+        addStep("Test with too old an upper limit", "Does not retrieve the file");
+        extractedChecksums = cache.getChecksumResult(CalendarUtils.getEpoch(),  CalendarUtils.getFromMillis(DEFAULT_DATE.getTime() - 1),  DEFAULT_FILE_ID, collectionID);
+        Assert.assertEquals(extractedChecksums.getEntries().size(), 0);
+    }
+
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void testGetFileIDsWithOldChecksums() {
+        addDescription("Tests the restrictions on the GetFileIDsWithOldChecksums call to the database.");
+        addStep("Instantiate database with appropriate data.", "");
+        ChecksumDAO cache = new ChecksumDAO(new ChecksumDatabaseManager(settings));
+        String FILE_ID_1 = DEFAULT_FILE_ID + "_1";
+        String FILE_ID_2 = DEFAULT_FILE_ID + "_2";
+        Date FILE_1_DATE = new Date(12345);
+        Date FILE_2_DATE = new Date(34567);
+        Date MIDDLE_DATE = new Date(23456);
+        cache.insertChecksumCalculation(FILE_ID_1, collectionID, DEFAULT_CHECKSUM, FILE_1_DATE);
+        cache.insertChecksumCalculation(FILE_ID_2, collectionID, DEFAULT_CHECKSUM, FILE_2_DATE);
+        
+        addStep("Extract all entries with checksum date older than now", "Returns both file ids");
+        List<String> extractedFileIDs = cache.getFileIDsWithOldChecksums(new Date(), collectionID);
+        Assert.assertEquals(extractedFileIDs.size(), 2);
+        Assert.assertTrue(extractedFileIDs.contains(FILE_ID_1));
+        Assert.assertTrue(extractedFileIDs.contains(FILE_ID_2));
+        
+        addStep("Extract all entries with checksum date older than epoch", "Returns no file ids");
+        extractedFileIDs = cache.getFileIDsWithOldChecksums(new Date(0), collectionID);
+        Assert.assertEquals(extractedFileIDs.size(), 0);
+        
+        addStep("Extract all entries with checksum date older than middle date", "Returns the first file id");
+        extractedFileIDs = cache.getFileIDsWithOldChecksums(MIDDLE_DATE, collectionID);
+        Assert.assertEquals(extractedFileIDs.size(), 1);
+        Assert.assertTrue(extractedFileIDs.contains(FILE_ID_1));
+    }
+    
 
     private ChecksumDAO getCacheWithData() {
         ChecksumDAO res = new ChecksumDAO(new ChecksumDatabaseManager(settings));

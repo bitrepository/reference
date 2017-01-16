@@ -156,11 +156,11 @@ public class ChecksumExtractor {
         
         if(minTimeStamp != null) {
             sql.append(" AND " + CS_DATE + " > ? ");
-            args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp));
+            args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp).getTime());
         }
         if(maxTimeStamp != null) {
             sql.append(" AND " + CS_DATE + " <= ? ");
-            args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp));
+            args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp).getTime());
         }
         sql.append(" ORDER BY " + CS_DATE + " ASC ");
 
@@ -328,13 +328,13 @@ public class ChecksumExtractor {
         
         List<String> results = new ArrayList<String>();
         try (Connection conn = connector.getConnection();
-             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())){
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())) {
             conn.setAutoCommit(false);
             ps.setFetchSize(100);
             try (ResultSet res = ps.executeQuery()) {
                 while(res.next() ) {
                     if(!res.wasNull()) {
-                        results.add(res.getString(0));
+                        results.add(res.getString(1));
                     }
                 }
             } finally {
