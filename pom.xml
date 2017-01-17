@@ -415,8 +415,13 @@
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>0.7.5.201505241946</version>
       </plugin>
-        </plugins>
-    </reporting>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>3.7</version>
+      </plugin>
+    </plugins>
+  </reporting>
 
     <profiles>
         <profile>
