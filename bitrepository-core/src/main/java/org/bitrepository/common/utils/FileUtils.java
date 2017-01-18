@@ -176,7 +176,7 @@ public final class FileUtils {
         ArgumentValidator.checkNotNull(from, "File from");
         ArgumentValidator.checkNotNull(to, "File to");
         
-        if(!from.isFile()) {
+        if(!from.exists()) {
             throw new IllegalArgumentException("No downloaded file to archive '" + from.getName() + "'");
         }
         if(to.exists()) {
@@ -184,7 +184,7 @@ public final class FileUtils {
         }
         
         if(!from.renameTo(to)) {
-            log.warn("Could move the file '" + from.getAbsolutePath() + "' to the location '" + to.getAbsolutePath() 
+            log.warn("Could not move the file '" + from.getAbsolutePath() + "' to the location '" + to.getAbsolutePath() 
                     + "'");
         }
     }

@@ -72,7 +72,7 @@ public class ReferenceArchive {
         
         for(ArchiveDirectory dir : directories) {
             if(dir.hasFile(fileID)) {
-                return dir.getFile(fileID);
+                return dir.retrieveFile(fileID);
             }
         }
         throw new IllegalArgumentException("The file '" + fileID + "' is not within the archives.");
