@@ -28,8 +28,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import javax.xml.bind.JAXBException;
@@ -219,7 +221,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
             JaxbHelper jaxb = new JaxbHelper(XSD_CLASSPATH, XSD_BR_DATA);
             String xmlMessage = jaxb.serializeToXml(results);
             jaxb.validate(new ByteArrayInputStream(xmlMessage.getBytes()));
-            is.write(xmlMessage.getBytes());
+            is.write(xmlMessage.getBytes(StandardCharsets.UTF_8));
             is.flush();
         } finally {
             if(is != null) {
@@ -242,7 +244,9 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
 
         // Upload the file.
         log.debug("Uploading file: " + fileToUpload.getName() + " to " + url);
-        context.getFileExchange().putFile(new FileInputStream(fileToUpload), uploadUrl);
+        try (InputStream in = new FileInputStream(fileToUpload)) {
+            context.getFileExchange().putFile(in, uploadUrl);
+        }
     }
 
     /**

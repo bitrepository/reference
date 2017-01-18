@@ -54,7 +54,7 @@ public class MessageHandlerContext extends ContributorContext {
         super(responseDispatcher, alarmDispatcher, settings, fileExchange);
         ArgumentValidator.checkNotNull(auditTrailManager, "AuditTrailManager");
         this.auditTrailManager = auditTrailManager;
-        this.pillarCollections = pillarCollections;
+        this.pillarCollections = pillarCollections.clone();
     }
 
     /**
@@ -64,8 +64,10 @@ public class MessageHandlerContext extends ContributorContext {
         return auditTrailManager;
     }
 
+    /**
+     * @return The collections of the pillar.
+     */
     public String[] getPillarCollections() {
-        return pillarCollections;
+        return pillarCollections.clone();
     }
-
 }

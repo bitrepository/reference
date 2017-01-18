@@ -160,7 +160,7 @@ public class ChecksumStorageModel extends StorageModel {
             if(expectedChecksum != null) {
                 return extractChecksum(expectedChecksum, collectionID);
             } else {
-                return downloadFileAndCalculateChecksum(fileID, collectionID, fileAddress, expectedChecksum);
+                return downloadFileAndCalculateChecksum(fileID, collectionID, fileAddress, null);
             }
         }
     }

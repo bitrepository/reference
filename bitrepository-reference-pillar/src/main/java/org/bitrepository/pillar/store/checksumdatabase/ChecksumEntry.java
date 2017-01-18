@@ -47,7 +47,7 @@ public class ChecksumEntry {
         
         this.fileID = fileID;
         this.checksum = checksum;
-        this.calculationDate = calculationDate;
+        this.calculationDate = new Date(calculationDate.getTime());
     }
     
     /**
@@ -63,7 +63,7 @@ public class ChecksumEntry {
      * @param date The new date for the calculation of the checksum.
      */
     public void setCalculationDate(Date date) {
-        this.calculationDate = date;
+        this.calculationDate = new Date(date.getTime());
     }
     
     /**
@@ -84,6 +84,6 @@ public class ChecksumEntry {
      * @return The calculation date for the checksum of the file.
      */
     public Date getCalculationDate() {
-        return calculationDate;
+        return new Date(calculationDate.getTime());
     }
 }

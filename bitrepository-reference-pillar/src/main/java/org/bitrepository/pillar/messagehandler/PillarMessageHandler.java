@@ -124,7 +124,6 @@ public abstract class PillarMessageHandler<T extends MessageRequest> extends Abs
      * @throws RequestHandlerException If the id of the file was invalid.
      */
     protected void validateFileIDFormat(String fileID) throws RequestHandlerException {
-
         fileIDValidator.validateFileID(fileID);
     }
 }
