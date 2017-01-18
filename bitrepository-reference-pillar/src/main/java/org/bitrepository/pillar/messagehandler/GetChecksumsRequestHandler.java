@@ -116,7 +116,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
         ExtractedChecksumResultSet extractedChecksums = extractChecksumResults(request);
         ResultingChecksums checksumResults;
         if(request.getResultAddress() == null) {
-            checksumResults = compileResultsForMessage(request, extractedChecksums);
+            checksumResults = compileResultsForMessage(extractedChecksums);
         } else {
             checksumResults = createAndUploadResults(request, extractedChecksums);
         }
@@ -173,12 +173,10 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
     
     /**
      * Compiles the extracted checksum results into the message format.
-     * @param request The GetChecksumsRequest.
      * @param checksumResultSet The checksum results extracted from the database.
      * @return The extracted results in the ResultingChecksums format.
      */
-    private ResultingChecksums compileResultsForMessage(GetChecksumsRequest request, 
-            ExtractedChecksumResultSet checksumResultSet) {
+    private ResultingChecksums compileResultsForMessage(ExtractedChecksumResultSet checksumResultSet) {
         ResultingChecksums res = new ResultingChecksums();
         
         for(ChecksumDataForChecksumSpecTYPE cs : checksumResultSet.getEntries()) {

@@ -134,7 +134,7 @@ public class ChecksumDAO implements ChecksumStore {
     }
 
     @Override
-    public java.util.Collection<String> getAllFileIDs(String collectionID) {
+    public Collection<String> getAllFileIDs(String collectionID) {
         ArgumentValidator.checkNotNull(collectionID, "String collectionID");
         return extractor.extractAllFileIDs(collectionID);
     }
