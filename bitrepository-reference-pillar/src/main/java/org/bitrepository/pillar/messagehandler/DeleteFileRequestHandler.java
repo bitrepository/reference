@@ -74,7 +74,8 @@ public class DeleteFileRequestHandler extends PerformRequestHandler<DeleteFileRe
             throws RequestHandlerException {
         validateCollectionID(request);
         validatePillarId(request.getPillarID());
-        getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile(), request.getCollectionID());
+        getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile(), 
+                request.getCollectionID());
         if(request.getChecksumDataForExistingFile() != null) {
             getPillarModel().verifyChecksumAlgorithm(request.getChecksumDataForExistingFile().getChecksumSpec(), 
                     request.getCollectionID());
@@ -110,7 +111,7 @@ public class DeleteFileRequestHandler extends PerformRequestHandler<DeleteFileRe
                         + "due to inconsistency between checksums.", request.getCollectionID(), request.getFileID());
             }
         } else {
-            log.debug("No checksum for validation of the existing file before delete the file '" + request.getFileID() 
+            log.debug("No checksum for validation of the existing file before delete the file '" + request.getFileID()
                     + "'");
         }
         
@@ -152,7 +153,8 @@ public class DeleteFileRequestHandler extends PerformRequestHandler<DeleteFileRe
      * @return The requested checksum, or null if no such checksum is requested.
      * @throws RequestHandlerException If the requested checksum specification is not supported.
      */
-    private ChecksumDataForFileTYPE calculatedRequestedChecksum(DeleteFileRequest message) throws RequestHandlerException {
+    private ChecksumDataForFileTYPE calculatedRequestedChecksum(DeleteFileRequest message) 
+            throws RequestHandlerException {
         ChecksumSpecTYPE checksumType = message.getChecksumRequestForExistingFile();
         if(checksumType == null) {
             return null;

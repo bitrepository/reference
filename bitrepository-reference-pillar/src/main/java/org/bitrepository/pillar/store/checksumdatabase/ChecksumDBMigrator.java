@@ -103,10 +103,6 @@ public class ChecksumDBMigrator extends DatabaseMigrator {
                     + "' table as required.");
         }
                 
-        if(versions.get(CHECKSUM_TABLE) < currentVersion) {
-            return true;
-        } else {
-            return false;
-        }
+        return versions.get(CHECKSUM_TABLE) < currentVersion;
     }
 }

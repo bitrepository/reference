@@ -131,7 +131,8 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
      * @return The extracted results for the requested checksum.
      * @throws RequestHandlerException If the requested checksum specification is not supported.
      */
-    private ExtractedChecksumResultSet extractChecksumResults(GetChecksumsRequest request) throws RequestHandlerException {
+    private ExtractedChecksumResultSet extractChecksumResults(GetChecksumsRequest request) 
+            throws RequestHandlerException {
         log.debug("Starting to extracting the checksum of the requested files.");
 
         if(request.getFileIDs().isSetFileID()) {
@@ -143,8 +144,8 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
             if(request.getMaxNumberOfResults() != null) {
                 maxResults = request.getMaxNumberOfResults().longValue();
             }
-            return getPillarModel().getChecksumResultSet(request.getMinTimestamp(), request.getMaxTimestamp(), maxResults,
-                    request.getCollectionID(), request.getChecksumRequestForExistingFile());
+            return getPillarModel().getChecksumResultSet(request.getMinTimestamp(), request.getMaxTimestamp(), 
+                    maxResults, request.getCollectionID(), request.getChecksumRequestForExistingFile());
         }
     }
 

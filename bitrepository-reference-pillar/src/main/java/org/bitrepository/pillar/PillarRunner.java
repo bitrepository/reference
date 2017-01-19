@@ -24,7 +24,13 @@ package org.bitrepository.pillar;
 /**
  * Launches a given pillar.
  */
-public class PillarRunner {
+public final class PillarRunner {
+    /** Private constructor, to avoid instantiation of this utility class.*/
+    private PillarRunner() {}
+    /**
+     * Method for launching the pillar.
+     * @param pillar The pillar to run.
+     */
     public static void launchPillar(Pillar pillar) {
         try {
             synchronized(pillar) {

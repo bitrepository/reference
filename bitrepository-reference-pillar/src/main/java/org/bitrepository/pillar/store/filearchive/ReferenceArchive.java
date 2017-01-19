@@ -122,7 +122,7 @@ public class ReferenceArchive {
      * @param fileID      The id of the file to create.
      * @param inputStream The inputstream to extract the content of the file from.
      * @return The file, which should be validated.
-     * @throws IOException FIXME
+     * @throws IOException If it fails to download the file.
      */
     public File downloadFileForValidation(String fileID, InputStream inputStream) throws IOException {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");

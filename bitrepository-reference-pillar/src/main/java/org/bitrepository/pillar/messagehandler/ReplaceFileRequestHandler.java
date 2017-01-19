@@ -178,8 +178,8 @@ public class ReplaceFileRequestHandler extends PerformRequestHandler<ReplaceFile
             String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
             if(!calculatedChecksum.equals(requestedChecksum)) {
                 // Log the different checksums, but do not send the right checksum back!
-                log.warn("Failed to handle replace operation on file '" + request.getFileID() + "' since the request had "
-                        + "the checksum '" + requestedChecksum + "' where our local file has the value '" 
+                log.warn("Failed to handle replace operation on file '" + request.getFileID() + "' since the request "
+                        + "had the checksum '" + requestedChecksum + "' where our local file has the value '" 
                         + calculatedChecksum + "'. Sending alarm and respond failure.");
                 String errMsg = "Requested to replace the file '" + request.getFileID() + "' with checksum '"
                         + requestedChecksum + "', but our file had a different checksum.";
@@ -201,7 +201,8 @@ public class ReplaceFileRequestHandler extends PerformRequestHandler<ReplaceFile
      * If no checksum specification for the 'old' file has been defined, then an null is returned.
      * @throws RequestHandlerException If the checksum of the requested type cannot be retrieved.
      */
-    private ChecksumDataForFileTYPE calculateChecksumOnOldFile(ReplaceFileRequest message) throws RequestHandlerException {
+    private ChecksumDataForFileTYPE calculateChecksumOnOldFile(ReplaceFileRequest message) 
+            throws RequestHandlerException {
         ChecksumSpecTYPE csType = message.getChecksumRequestForExistingFile();
         if(csType != null) {
             return getPillarModel().getChecksumDataForFile(message.getFileID(), message.getCollectionID(), csType);

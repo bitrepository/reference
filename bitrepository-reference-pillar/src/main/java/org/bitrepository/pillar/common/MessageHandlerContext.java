@@ -38,12 +38,12 @@ public class MessageHandlerContext extends ContributorContext {
     /**
      * Delegates to the ContributorContext constructor.
      *
-     * @param settings           FIXME
-     * @param pillarCollections  FIXME
-     * @param responseDispatcher FIXME
-     * @param alarmDispatcher    FIXME
-     * @param auditTrailManager  FIXME
-     * @param fileExchange       FIXME
+     * @param settings           The settings.
+     * @param pillarCollections  The collections which the pillar is part of.
+     * @param responseDispatcher The component for sending responses on the messagebus.
+     * @param alarmDispatcher    The component for dispatching alarms on the messagebus.
+     * @param auditTrailManager  The audit trail storage / manager.
+     * @param fileExchange       The file exchange.
      */
     public MessageHandlerContext(Settings settings,
                                  String[] pillarCollections,

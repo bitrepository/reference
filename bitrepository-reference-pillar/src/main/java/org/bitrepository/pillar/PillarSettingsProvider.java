@@ -25,6 +25,9 @@ import org.bitrepository.common.settings.SettingsLoader;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
 
+/**
+ * The settings provider for the pillar.
+ */
 public class PillarSettingsProvider extends SettingsProvider {
     private String pillarID;
 

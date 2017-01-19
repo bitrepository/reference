@@ -45,6 +45,9 @@ public class ChecksumExtractor {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
+    /** The default amount of results to fetch out of the database for each call.*/
+    protected static final int DEFAULT_FETCH_SIZE = 100;
+    
     /** The connector for the database.*/
     private final DBConnector connector;
     
@@ -180,7 +183,7 @@ public class ChecksumExtractor {
      *
      * @param minTimeStamp       The minimum date for the timestamp of the extracted file ids.
      * @param maxTimeStamp       The maximum date for the timestamp of the extracted file ids.
-     * @param fileID             FIXME
+     * @param fileID             The ID of the file to retrieve. Null if all file-ids.
      * @param maxNumberOfResults The maximum number of results.
      * @param collectionID       The collection id for the extraction.
      * @return The requested collection of file ids.
@@ -211,7 +214,7 @@ public class ChecksumExtractor {
         try (Connection conn = connector.getConnection();
             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())){
             conn.setAutoCommit(false);
-            ps.setFetchSize(100);
+            ps.setFetchSize(DEFAULT_FETCH_SIZE);
             try (ResultSet res = ps.executeQuery()){
                 int i = 0;
                 while(res.next() && (maxNumberOfResults == null || i < maxNumberOfResults)) {
@@ -280,7 +283,7 @@ public class ChecksumExtractor {
         try (Connection conn = connector.getConnection();
              PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())){
             conn.setAutoCommit(false);
-            ps.setFetchSize(100);
+            ps.setFetchSize(DEFAULT_FETCH_SIZE);
             try (ResultSet res = ps.executeQuery()) {
                 int i = 0;
                 while(res.next() && (maxNumberOfResults == null || i < maxNumberOfResults)) {
@@ -328,7 +331,7 @@ public class ChecksumExtractor {
         try (Connection conn = connector.getConnection();
              PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())) {
             conn.setAutoCommit(false);
-            ps.setFetchSize(100);
+            ps.setFetchSize(DEFAULT_FETCH_SIZE);
             try (ResultSet res = ps.executeQuery()) {
                 while(res.next() ) {
                     if(!res.wasNull()) {

@@ -78,7 +78,7 @@ public abstract class StorageModel {
      * @param cache           The storage for the checksums.
      * @param alarmDispatcher The alarm dispatcher.
      * @param settings        The configuration to use.
-     * @param fileExchange    FIXME
+     * @param fileExchange    The file exchange.
      */
     protected StorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher,
                            Settings settings, FileExchange fileExchange) {
@@ -169,7 +169,7 @@ public abstract class StorageModel {
      * @param collectionID The id of the collection of the file.
      * @param csType The type of checksum to calculate.
      * @return The entry encapsulated in the ChecksumDataForFileTYPE data format.
-     * @throws RequestHandlerException FIXME
+     * @throws RequestHandlerException If an issue occurs when retrieving the checksum for the file.
      */
     public ChecksumDataForFileTYPE getChecksumDataForFile(String fileID, String collectionID, ChecksumSpecTYPE csType)
             throws RequestHandlerException {
@@ -261,9 +261,9 @@ public abstract class StorageModel {
     /**
      * Verifies the handling of a specific checksum algorithm.
      *
-     * @param checksumSpec FIXME
-     * @param collectionID FIXME
-     * @throws RequestHandlerException FIXME
+     * @param checksumSpec The checksum specification to verify.
+     * @param collectionID The ID for the collection.
+     * @throws RequestHandlerException If the checksum specification is not supported.
      */
     public void verifyChecksumAlgorithm(ChecksumSpecTYPE checksumSpec, String collectionID) 
             throws RequestHandlerException{

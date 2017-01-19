@@ -40,6 +40,11 @@ import org.bitrepository.settings.referencesettings.PillarType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Class for the Reference Pillar.
+ * This will either be a File Reference Pillar or a Checksum Reference Pillar, depending on the type of
+ * storage model.
+ */
 public class Pillar {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -65,8 +70,8 @@ public class Pillar {
      *
      * @param messageBus  The messagebus for the communication.
      * @param settings    The settings for the pillar.
-     * @param pillarModel FIXME
-     * @param context     FIXME
+     * @param pillarModel The storage model for the pillar.
+     * @param context     The context for the message handler.
      */
     public Pillar(MessageBus messageBus, Settings settings, StorageModel pillarModel, MessageHandlerContext context) {
         ArgumentValidator.checkNotNull(messageBus, "messageBus");

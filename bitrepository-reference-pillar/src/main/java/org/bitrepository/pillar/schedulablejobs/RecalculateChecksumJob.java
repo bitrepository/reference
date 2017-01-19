@@ -47,7 +47,7 @@ public class RecalculateChecksumJob implements SchedulableJob {
     /**
      * Constructor.
      * @param collectionID The id of the collection to recalculate checksum for.
-     * @param model FIXME
+     * @param model The storage model for the pillar.
      */
     public RecalculateChecksumJob(String collectionID, StorageModel model) {
         this.collectionID = collectionID;

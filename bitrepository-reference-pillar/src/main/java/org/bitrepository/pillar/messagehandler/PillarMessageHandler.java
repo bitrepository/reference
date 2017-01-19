@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Abstract level for message handling for both types of pillar.
+ * @param <T> The type of request message to handle.
  */
 public abstract class PillarMessageHandler<T extends MessageRequest> extends AbstractRequestHandler<T> {
     /** The log.*/
@@ -56,7 +57,7 @@ public abstract class PillarMessageHandler<T extends MessageRequest> extends Abs
 
     /**
      * @param context       The context to use for message handling.
-     * @param fileInfoStore FIXME
+     * @param fileInfoStore The storage model for the pillar.
      */
     protected PillarMessageHandler(MessageHandlerContext context, StorageModel fileInfoStore) {
         super(context);

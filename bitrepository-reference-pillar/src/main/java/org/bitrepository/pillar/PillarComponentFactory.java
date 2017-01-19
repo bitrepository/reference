@@ -201,12 +201,15 @@ public final class PillarComponentFactory {
      * @return The settings.
      */
     private static Settings loadSettings(String pillarID, String pathToSettings) {
+        String settingsPath;
         if(pathToSettings == null || pathToSettings.isEmpty()) {
-            pathToSettings = DEFAULT_PATH_TO_SETTINGS;
+            settingsPath = DEFAULT_PATH_TO_SETTINGS;
+        } else {
+            settingsPath = pathToSettings;
         }
 
         PillarSettingsProvider settingsLoader =
-                new PillarSettingsProvider(new XMLFileSettingsLoader(pathToSettings), pillarID);
+                new PillarSettingsProvider(new XMLFileSettingsLoader(settingsPath), pillarID);
 
         return settingsLoader.getSettings();
     }

@@ -31,11 +31,14 @@ import org.bitrepository.settings.repositorysettings.Collection;
  *
  Provides functionality for creating data derived from the pillar settings
  */
-public class SettingsHelper {
+public final class SettingsHelper {
+    /** Private constructor, to avoid instantiation of this utility class.*/
+    private SettingsHelper() {}
+    
     /**
      * Calculates the list of pillars
-     * @param pillarID FIXME
-     * @param collections FIXME
+     * @param pillarID The ID of the pillar.
+     * @param collections The collection for the whole repository.
      * @return all pillars in collections with the provided pillarID
      */
     public static String[] getPillarCollections(String pillarID, List<Collection> collections) {

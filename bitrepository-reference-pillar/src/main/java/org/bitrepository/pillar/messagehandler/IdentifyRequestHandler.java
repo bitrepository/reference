@@ -27,6 +27,11 @@ import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.RequestHandlerException;
 
+/**
+ * Abstract class for the methods for handing the identify request messages.
+ * Contains the common methods for handling identify request messages.
+ *  @param <T> The type of identify request message to handle.
+ */
 public abstract class IdentifyRequestHandler<T extends MessageRequest> extends PillarMessageHandler<T> {
 
     /**
@@ -52,7 +57,7 @@ public abstract class IdentifyRequestHandler<T extends MessageRequest> extends P
      * @throws RequestHandlerException If something in the request is inconsistent with the possibilities of the pillar.
      */
     protected abstract void validateRequest(T request, MessageContext requestContext)
-            throws RequestHandlerException ;
+            throws RequestHandlerException;
     
     /**
      * Sends a identification response.
