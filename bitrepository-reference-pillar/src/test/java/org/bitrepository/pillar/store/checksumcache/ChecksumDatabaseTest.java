@@ -24,8 +24,6 @@ package org.bitrepository.pillar.store.checksumcache;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -299,6 +297,18 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         
         addStep("Test with too new a lower limit", "Does not retrieve the file");
         extractedChecksums = cache.getChecksumResult(CalendarUtils.getFromMillis(DEFAULT_DATE.getTime() + 1),  CalendarUtils.getNow(),  DEFAULT_FILE_ID, collectionID);
+        Assert.assertEquals(extractedChecksums.getEntries().size(), 0);
+        
+        addStep("Test with exact date as both upper and lower limit", "Does not retrieve the file");
+        extractedChecksums = cache.getChecksumResult(CalendarUtils.getFromMillis(DEFAULT_DATE.getTime()), CalendarUtils.getFromMillis(DEFAULT_DATE.getTime()),  DEFAULT_FILE_ID, collectionID);
+        Assert.assertEquals(extractedChecksums.getEntries().size(), 0);
+
+        addStep("Test with date limit from 1 millis before as lower and exact date a upper limit", "Does retrieve the file");
+        extractedChecksums = cache.getChecksumResult(CalendarUtils.getFromMillis(DEFAULT_DATE.getTime()-1), CalendarUtils.getFromMillis(DEFAULT_DATE.getTime()),  DEFAULT_FILE_ID, collectionID);
+        Assert.assertEquals(extractedChecksums.getEntries().size(), 1);
+
+        addStep("Test with date limit from exact date as lower and 1 millis after date a upper limit", "Does not retrieve the file");
+        extractedChecksums = cache.getChecksumResult(CalendarUtils.getFromMillis(DEFAULT_DATE.getTime()), CalendarUtils.getFromMillis(DEFAULT_DATE.getTime()+1),  DEFAULT_FILE_ID, collectionID);
         Assert.assertEquals(extractedChecksums.getEntries().size(), 0);
 
         addStep("Test with too old an upper limit", "Does not retrieve the file");
