@@ -31,6 +31,8 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.common.utils.StreamUtils;
@@ -53,10 +55,9 @@ public class LocalFileExchange implements FileExchange {
     @Override
     public URL putFile(File dataFile) {
         try {
-            URL url = getURL(dataFile.toString());
-            File dest = new File(url.getFile());
+            File dest = new File(storageDir, new File(dataFile.toString()).getName());
             FileUtils.copyFile(dataFile, dest);
-            return url;
+            return dest.toURI().toURL();
         } catch (MalformedURLException e) {
             throw new IllegalStateException("Cannot create the URL.", e);
         }
@@ -64,13 +65,12 @@ public class LocalFileExchange implements FileExchange {
 
     @Override
     public InputStream getFile(URL url) throws IOException {
-        File file = new File(url.getFile());
-        return new FileInputStream(file);
+        return url.openStream();
     }
     
     @Override
     public void getFile(OutputStream out, URL url) throws IOException {
-        try(FileInputStream fis = new FileInputStream(new File(url.getFile()))) {
+        try(InputStream fis = url.openStream()) {
             StreamUtils.copyInputStreamToOutputStream(fis, out);    
         }
     }

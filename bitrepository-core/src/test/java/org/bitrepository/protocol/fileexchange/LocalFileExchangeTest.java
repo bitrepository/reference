@@ -8,10 +8,12 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.io.IOUtils;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.LocalFileExchange;
@@ -46,6 +48,32 @@ public class LocalFileExchangeTest {
         Assert.assertEquals(actualUrl, expectedUrl);
         File actualFile = new File(actualUrl.getFile());
         Assert.assertFalse(actualFile.exists());
+    }
+
+    /**
+     * Test that filenames containing '#' character can be ingested in bitrepository
+     * Filenames needs to be ingested URLEncoded meaning that the url to filenames is delivered as "getUrlTestfileHashchar%23Testfragment" instead of getUrlTestfileHashchar#Testfragment
+     * @throws IOException
+     */
+    @Test
+    public void handleHash2() throws Exception {
+        String testFileName = "getUrlTestfileHashchar#Testfragment";
+        String testFileLocation = "target/" + testFileName;
+        String testFileContent = "lorem ipsum1";
+        File testFile = createTestFile(testFileLocation, testFileContent);
+
+        FileExchange lfe = new LocalFileExchange(BASE_FILE_EXCHANGE_DIR);
+
+        File basedir = new File(BASE_FILE_EXCHANGE_DIR);
+        URL expectedUrl = new URL("file:" + basedir.getAbsolutePath() + "/" + URLEncoder.encode(testFileName, CharEncoding.UTF_8));
+
+        URL fileExchangeUrl = lfe.putFile(testFile);
+        Assert.assertEquals(fileExchangeUrl, expectedUrl);
+        File actualFile = new File(fileExchangeUrl.toURI());
+        Assert.assertTrue(actualFile.exists());
+        String fileExchangeContent = readTestFileContent(actualFile);
+        Assert.assertEquals(fileExchangeContent, testFileContent);
+        actualFile.delete();
     }
     
     @Test
