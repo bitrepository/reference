@@ -21,6 +21,8 @@
  */
 package org.bitrepository.pillar.common;
 
+import java.util.List;
+
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.FileExchange;
@@ -33,7 +35,7 @@ import org.bitrepository.service.contributor.ResponseDispatcher;
  */
 public class MessageHandlerContext extends ContributorContext {
     private final AuditTrailManager auditTrailManager;
-    private final String[] pillarCollections;
+    private final List<String> pillarCollections;
 
     /**
      * Delegates to the ContributorContext constructor.
@@ -46,7 +48,7 @@ public class MessageHandlerContext extends ContributorContext {
      * @param fileExchange       The file exchange.
      */
     public MessageHandlerContext(Settings settings,
-                                 String[] pillarCollections,
+                                 List<String> pillarCollections,
                                  ResponseDispatcher responseDispatcher,
                                  PillarAlarmDispatcher alarmDispatcher,
                                  AuditTrailManager auditTrailManager,
@@ -54,7 +56,7 @@ public class MessageHandlerContext extends ContributorContext {
         super(responseDispatcher, alarmDispatcher, settings, fileExchange);
         ArgumentValidator.checkNotNull(auditTrailManager, "AuditTrailManager");
         this.auditTrailManager = auditTrailManager;
-        this.pillarCollections = pillarCollections.clone();
+        this.pillarCollections = pillarCollections;
     }
 
     /**
@@ -67,7 +69,7 @@ public class MessageHandlerContext extends ContributorContext {
     /**
      * @return The collections of the pillar.
      */
-    public String[] getPillarCollections() {
-        return pillarCollections.clone();
+    public List<String> getPillarCollections() {
+        return pillarCollections;
     }
 }

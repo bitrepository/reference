@@ -28,12 +28,14 @@ import java.util.List;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.common.utils.ListUtils;
 
 /**
- * Manager interface for a given archival directory, with the subdirectories 'tempDir', 'fileDir' and 'retainDir'.
- * A new file is ingested into the 'tempDir', where it can be validated before it is moved to the 'fileDir'.
- * If a file is to be deleted, then it is moved from the 'fileDir' to the 'retainDir'.
+ * Manager interface for a given archival directory, with the subdirectories 'tempDir', 'fileDir', 'folderDir' 
+ * and 'retainDir'.
+ * A new file is ingested into the 'tempDir', where it can be validated before it is moved to the actual archive.
+ * Depending on whether the file-id contains a directory-structure path, then it is either moved to the 'fileDir' 
+ * or the 'folderDir'.
+ * If a file is to be deleted, then it is moved from the 'fileDir' or 'folderDir' to the 'retainDir'.
  */
 public class ArchiveDirectory {
     /** Constant for the temporary directory name.*/
@@ -45,7 +47,7 @@ public class ArchiveDirectory {
     /** The constant for the folder directory name.*/
     public static final String FOLDER_DIR = "folderDir";
     
-    /** The character for file-ids */
+    /** The character to check whether file-ids contains a directory-path. */
     public static final String FOLDER_SEPARATOR_CHAR = "/";
 
     /** The directory for the files. Contains three sub directories: tempDir, fileDir and retainDir.*/
@@ -96,11 +98,20 @@ public class ArchiveDirectory {
      * @return The file.
      */
     protected File getFile(String fileID) {
-        if(fileID.contains(FOLDER_SEPARATOR_CHAR)) {
+        if(isFolderFile(fileID)) {
             return new File(folderDir, fileID);
         } else {
             return new File(fileDir, fileID);
         }
+    }
+    
+    /**
+     * Checks whether the fileID contains a directory-path, and thus should be placed in the folderDir.
+     * @param fileID The fileID to check.
+     * @return Whether the fileID contains a directory-path.
+     */
+    protected boolean isFolderFile(String fileID) {
+        return fileID.contains(FOLDER_SEPARATOR_CHAR);
     }
     
     /**
@@ -115,8 +126,9 @@ public class ArchiveDirectory {
      * @return Retrieves the list of archived files.
      */
     public List<String> getFileIds() {
-        List<String> res = Arrays.asList(fileDir.list());
-        res = ListUtils.mergeLists(res, getSubFolderFileIDs(folderDir, ""));
+        List<String> res = new ArrayList<String>();
+        res.addAll(Arrays.asList(fileDir.list()));
+        res.addAll(getSubFolderFileIDs(folderDir, ""));
         return res;
     }
     
@@ -149,7 +161,9 @@ public class ArchiveDirectory {
             throw new IllegalStateException("Cannot create a new file in the temporary directory.");
         }
         if(!res.getParentFile().isDirectory()) {
-            FileUtils.retrieveDirectory(res.getParent());
+            synchronized(tmpDir) {
+                FileUtils.retrieveDirectory(res.getParent());
+            }
         }
         return res;
     }
@@ -177,13 +191,16 @@ public class ArchiveDirectory {
             throw new IllegalStateException("The file '" + fileID + "' does already exist within the fileDir.");
         }
         
+        // Ensure that the parent-folder of a folder-file is created before the file is archived. 
         if(!archiveFile.getParentFile().isDirectory()) {
-            FileUtils.retrieveDirectory(archiveFile.getParent());
+            synchronized(folderDir) {
+                FileUtils.retrieveDirectory(archiveFile.getParent());
+            }
         }
         
         // Move the file to the fileDir.
         FileUtils.moveFile(tmpFile, archiveFile);
-        // TODO: cleanup folder-structure in the tmp-dir?
+        cleanupDirs(fileID, tmpDir);
     }
     
     /**
@@ -205,6 +222,7 @@ public class ArchiveDirectory {
         }
         
         FileUtils.moveFile(oldFile, retainFile);
+        cleanupDirs(fileID, folderDir);
     }
 
     /**
@@ -220,6 +238,7 @@ public class ArchiveDirectory {
         File retainFile = new File(retainDir, fileID);
         
         // If a version of the file already has been retained, then it should be deprecated.
+        // If it does not exist, then it must be ensured that the parent folder exists. 
         if(retainFile.exists()) {
             FileUtils.deprecateFile(retainFile);
         } else if(!retainFile.getParentFile().exists()) {
@@ -227,14 +246,15 @@ public class ArchiveDirectory {
         }
         
         FileUtils.moveFile(oldFile, retainFile);
+        cleanupDirs(fileID, tmpDir);
     }
     
     /**
      * Retrieves the file-ids of the files within the subdirs of the folder-dir.
      * It recursive goes through the sub-directories
-     * @param dir The current
-     * @param dirPath
-     * @return
+     * @param dir The current directory.
+     * @param dirPath The relative path to the current directory. Is used as prefix for the files in this folder.
+     * @return The list of file-ids in the current folder and all the sub-folders.
      */
     protected List<String> getSubFolderFileIDs(File dir, String dirPath) {
         List<String> res = new ArrayList<String>();
@@ -244,10 +264,29 @@ public class ArchiveDirectory {
                 if(f.isFile()) {
                     res.add(path);
                 } else {
-                    res = ListUtils.mergeLists(res, getSubFolderFileIDs(f, path + FOLDER_SEPARATOR_CHAR));
+                    res.addAll(getSubFolderFileIDs(f, path + FOLDER_SEPARATOR_CHAR));
                 }
             }
         }
         return res;
+    }
+    
+    /**
+     * Cleanup directories after use.
+     * Only removes empty directories.
+     * @param fileID The ID of the file.
+     * @param rootDir The root directory.
+     */
+    protected void cleanupDirs(String fileID, File rootDir) {
+        if(!isFolderFile(fileID)) {
+            return;
+        }
+        File origFile = new File(rootDir, fileID);
+        if(origFile.getParentFile() == null) {
+            return;
+        }
+        synchronized(rootDir) {
+            FileUtils.cleanupEmptyDirectories(origFile.getParentFile(), rootDir);
+        }
     }
 }

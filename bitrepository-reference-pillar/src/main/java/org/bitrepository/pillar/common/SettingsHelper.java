@@ -41,7 +41,7 @@ public final class SettingsHelper {
      * @param collections The collection for the whole repository.
      * @return all pillars in collections with the provided pillarID
      */
-    public static String[] getPillarCollections(String pillarID, List<Collection> collections) {
+    public static List<String> getPillarCollections(String pillarID, List<Collection> collections) {
         List<String> relevantCollectionIDs = new ArrayList<String>();
         for (Collection collection : collections) {
             for (String pillar : collection.getPillarIDs().getPillarID()) {
@@ -51,6 +51,6 @@ public final class SettingsHelper {
                 }
             }
         }
-        return relevantCollectionIDs.toArray(new String[relevantCollectionIDs.size()]);
+        return relevantCollectionIDs;
     }
 }

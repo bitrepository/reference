@@ -333,4 +333,24 @@ public final class FileUtils {
             }
         }
     }
+    
+    /**
+     * Cleanup empty directories until it reaches the root folder.
+     * It terminates when it reaches a non-empty folder, or if the current dir is the same as the root.
+     * Runs recursively on the parent of the current dir.
+     * @param currentDir The current directory to remove, if it is empty and not identical to the root.
+     * @param root The limit for cleaning up empty directories.
+     */
+    public static void cleanupEmptyDirectories(File currentDir, File root) {
+        if(!currentDir.isDirectory() || currentDir.list().length > 0) {
+            return;
+        }
+        if(currentDir.getAbsolutePath().equals(root.getAbsolutePath())) {
+            return;
+        }
+        currentDir.delete();
+        if(currentDir.getParentFile() != null) {
+            cleanupEmptyDirectories(currentDir.getParentFile(), root);
+        }
+    }
 }

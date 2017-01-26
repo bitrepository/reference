@@ -41,15 +41,5 @@ public class ChecksumEntryTest extends ExtendedTestCase {
         Assert.assertEquals(ce.getFileId(), CE_FILE);
         Assert.assertEquals(ce.getChecksum(), CE_CHECKSUM);
         Assert.assertEquals(ce.getCalculationDate(), CE_DATE);
-        
-        addStep("Change the value of the checksum", "The new checksum should be extracted.");
-        String newChecksum = "newChecksum" + new Date().getTime();
-        ce.setChecksum(newChecksum);
-        Assert.assertEquals(ce.getChecksum(), newChecksum);
-        
-        addStep("Change the value of the calculation date", "The new date should be extracted.");
-        Date newDate = new Date(9876543210l);
-        ce.setCalculationDate(newDate);
-        Assert.assertEquals(ce.getCalculationDate(), newDate);
     }
 }

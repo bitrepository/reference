@@ -24,6 +24,7 @@ package org.bitrepository.pillar.store.archive;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.bitrepository.common.utils.FileUtils;
@@ -40,7 +41,7 @@ public class ArchiveDirectoryTest extends ExtendedTestCase {
     private static String FOLDER_DIR_NAME = DIR_NAME + "/" + ArchiveDirectory.FOLDER_DIR;
     
     private static String FILE_ID = "file1";
-    private static String FOLDER_FILE_ID = "folder/file1";
+    private static String FOLDER_FILE_ID = "folder1/folder2/file1";
     
     @AfterMethod (alwaysRun=true)
     public void shutdownTests() throws Exception {
@@ -215,7 +216,7 @@ public class ArchiveDirectoryTest extends ExtendedTestCase {
         Assert.assertNotNull(directory.retrieveFile(FOLDER_FILE_ID));
         Assert.assertEquals(directory.getFileIds(), Arrays.asList(FOLDER_FILE_ID));
         
-        addStep("Delete the file.", "Should not be extractable.");
+        addStep("Delete the file.", "Should not be retrievable.");
         directory.removeFileFromArchive(FOLDER_FILE_ID);
         Assert.assertFalse(directory.hasFile(FOLDER_FILE_ID));
         Assert.assertNull(directory.retrieveFile(FOLDER_FILE_ID));
@@ -228,10 +229,10 @@ public class ArchiveDirectoryTest extends ExtendedTestCase {
         
         ArchiveDirectory directory = new ArchiveDirectory(DIR_NAME);
         
-        addStep("Validate the existence of the file", "Should exist and be retrievable.");
+        addStep("Validate the existence of the file", "Should neither exist nor be retrievable.");
         Assert.assertFalse(directory.hasFile(FOLDER_FILE_ID));
         Assert.assertNull(directory.retrieveFile(FOLDER_FILE_ID));
-        Assert.assertEquals(directory.getFileIds(), Arrays.asList());
+        Assert.assertEquals(directory.getFileIds(), Collections.EMPTY_LIST);
         
         addStep("Delete the file.", "exception since the file does not exist.");
         try {
@@ -309,9 +310,11 @@ public class ArchiveDirectoryTest extends ExtendedTestCase {
         addStep("Remove the file from archive and try again", "File in tmp moved to archive.");
         Assert.assertTrue(directory.hasFile(FOLDER_FILE_ID));
         Assert.assertTrue(directory.hasFileInTempDir(FOLDER_FILE_ID));
+        
         directory.removeFileFromArchive(FOLDER_FILE_ID);
         Assert.assertFalse(directory.hasFile(FOLDER_FILE_ID));
         Assert.assertTrue(directory.hasFileInTempDir(FOLDER_FILE_ID));
+        
         directory.moveFromTmpToArchive(FOLDER_FILE_ID);
         Assert.assertTrue(directory.hasFile(FOLDER_FILE_ID));
         Assert.assertFalse(directory.hasFileInTempDir(FOLDER_FILE_ID));

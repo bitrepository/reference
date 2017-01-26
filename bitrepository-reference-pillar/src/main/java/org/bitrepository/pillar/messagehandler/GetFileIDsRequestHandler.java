@@ -194,7 +194,7 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
                 log.error(errMsg, e);
                 throw new JAXBException(errMsg, e);
             }
-            is.write(file.getBytes());
+            is.write(file.getBytes(StandardCharsets.UTF_8));
             is.flush();
         } finally {
             if(is != null) {

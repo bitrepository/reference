@@ -21,8 +21,6 @@
  */
 package org.bitrepository.pillar;
 
-import java.util.Arrays;
-
 import javax.jms.JMSException;
 
 import org.bitrepository.common.ArgumentValidator;
@@ -83,7 +81,7 @@ public class Pillar {
         this.pillarType = settings.getReferenceSettings().getPillarSettings().getPillarType(); 
 
         log.info("Starting the ReferencePillar of type '" + pillarType + "'.");
-        messageBus.setCollectionFilter(Arrays.asList(context.getPillarCollections()));
+        messageBus.setCollectionFilter(context.getPillarCollections());
         mediator = new PillarMediator(messageBus, context, pillarModel);
         mediator.start();
         

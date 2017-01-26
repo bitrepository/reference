@@ -221,7 +221,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
             is = new FileOutputStream(checksumResultFile);
             JaxbHelper jaxb = new JaxbHelper(XSD_CLASSPATH, XSD_BR_DATA);
             String xmlMessage = jaxb.serializeToXml(results);
-            jaxb.validate(new ByteArrayInputStream(xmlMessage.getBytes()));
+            jaxb.validate(new ByteArrayInputStream(xmlMessage.getBytes(StandardCharsets.UTF_8)));
             is.write(xmlMessage.getBytes(StandardCharsets.UTF_8));
             is.flush();
         } finally {

@@ -30,11 +30,11 @@ import org.bitrepository.common.ArgumentValidator;
  */
 public class ChecksumEntry {
     /** The id of the file.*/
-    private final String fileID;
+    protected final String fileID;
     /** The checksum of the file.*/
-    private String checksum;
+    protected final String checksum;
     /** The calculation date for the checksum of the file.*/
-    private Date calculationDate;
+    protected final Date calculationDate;
     
     /**
      * Constructor.
@@ -48,22 +48,6 @@ public class ChecksumEntry {
         this.fileID = fileID;
         this.checksum = checksum;
         this.calculationDate = new Date(calculationDate.getTime());
-    }
-    
-    /**
-     * Set a new value for the checksum.
-     * @param checksum The new checksum value.
-     */
-    public void setChecksum(String checksum) {
-        this.checksum = checksum;
-    }
-    
-    /**
-     * Set a new timestamp for the calculation date of the checksum.
-     * @param date The new date for the calculation of the checksum.
-     */
-    public void setCalculationDate(Date date) {
-        this.calculationDate = new Date(date.getTime());
     }
     
     /**

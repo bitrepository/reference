@@ -202,18 +202,37 @@ public class FileUtilsTest extends ExtendedTestCase {
         Assert.assertEquals(dir.listFiles().length, 2);
     }
     
-//    @Test(groups = {"regressiontest"})
-//    public void unzipFileTester() throws Exception {
-//        addDescription("Test unzipping a file.");
-//        addStep("Setup", "");
-//        File dir = FileUtils.retrieveDirectory(DIR);
-//        File zipFile = new File("src/test/resources/test-files/test.jar");
-//        Assert.assertTrue(zipFile.isFile(), zipFile.getAbsolutePath());
-//        Assert.assertEquals(dir.listFiles().length, 0);
-//
-//        addStep("Unzip the zipfile to the directory", "Should place a file and a directory inside the dir");
-//        FileUtils.unzip(zipFile, dir);
-//        Assert.assertEquals(dir.listFiles().length, 2);
-//    }
-
+    @Test(groups = {"regressiontest"})
+    public void cleanupEmptyDirectoriesTester() throws Exception {
+        addDescription("Test the cleanup of empty directories.");
+        File dir = FileUtils.retrieveDirectory(DIR);
+        File subDir = FileUtils.retrieveSubDirectory(dir, SUB_DIR);
+        File subSubDir = FileUtils.retrieveSubDirectory(subDir, SUB_DIR);
+        
+        addStep("Cleanup non-empty folder", "Should not do anything");
+        Assert.assertTrue(subSubDir.isDirectory());
+        FileUtils.cleanupEmptyDirectories(subDir, dir);
+        Assert.assertTrue(subSubDir.isDirectory());
+        Assert.assertTrue(subDir.isDirectory());
+        Assert.assertTrue(dir.isDirectory());
+        
+        addStep("Cleanup when dir and root are the same", "Should do nothing");
+        Assert.assertTrue(subSubDir.isDirectory());
+        FileUtils.cleanupEmptyDirectories(subSubDir, subSubDir);
+        Assert.assertTrue(subSubDir.isDirectory());
+        
+        addStep("Test succes case, when the directory is empty", "Removes sub-dir");
+        Assert.assertTrue(subSubDir.isDirectory());
+        FileUtils.cleanupEmptyDirectories(subSubDir, dir);
+        Assert.assertFalse(subSubDir.isDirectory());
+        Assert.assertFalse(subDir.isDirectory());
+        Assert.assertTrue(dir.isDirectory());
+        
+        addStep("Test with a file.", "Should do nothing.");
+        File file = new File(dir, TEST_FILE_NAME);
+        Assert.assertTrue(file.createNewFile());
+        FileUtils.cleanupEmptyDirectories(file, dir);
+        Assert.assertTrue(file.exists());
+    }
+    
 }

@@ -42,15 +42,15 @@ public class SettingsHelperTest {
         collection.add(createCollection("mySecondCollection", new String[] {myPillarID, otherPillarID}));
         collection.add(createCollection("otherCollection", new String[] {otherPillarID}));
 
-        String[] myCollections = SettingsHelper.getPillarCollections(myPillarID, collection);
-        Assert.assertEquals(myCollections.length, 2);
-        Assert.assertEquals("myFirstCollection", myCollections[0]);
-        Assert.assertEquals("mySecondCollection", myCollections[1]);
+        List<String> myCollections = SettingsHelper.getPillarCollections(myPillarID, collection);
+        Assert.assertEquals(myCollections.size(), 2);
+        Assert.assertEquals("myFirstCollection", myCollections.get(0));
+        Assert.assertEquals("mySecondCollection", myCollections.get(1));
 
-        String[] otherCollections = SettingsHelper.getPillarCollections(otherPillarID, collection);
-        Assert.assertEquals(otherCollections.length, 2);
-        Assert.assertEquals("mySecondCollection", otherCollections[0]);
-        Assert.assertEquals("otherCollection", otherCollections[1]);
+        List<String> otherCollections = SettingsHelper.getPillarCollections(otherPillarID, collection);
+        Assert.assertEquals(otherCollections.size(), 2);
+        Assert.assertEquals("mySecondCollection", otherCollections.get(0));
+        Assert.assertEquals("otherCollection", otherCollections.get(1));
     }
 
     private Collection createCollection(String collectionID, String[] pillarIDs) {
