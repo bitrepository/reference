@@ -67,7 +67,7 @@ public class FileStorageModel extends StorageModel {
      * @param cache           The checksum store.
      * @param alarmDispatcher The alarm dispatcher.
      * @param settings        The settings.
-     * @param fileExchange    FIXME
+     * @param fileExchange    The file exchange.
      */
     public FileStorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher,
             Settings settings, FileExchange fileExchange) {
@@ -226,7 +226,8 @@ public class FileStorageModel extends StorageModel {
      * @param collectionID The id of the collection.
      * @return The requested file ids.
      */
-    private ExtractedFileIDsResultSet getFileIds(Long minTime, Long maxTime, Long maxNumberOfResults, String collectionID) {
+    private ExtractedFileIDsResultSet getFileIds(Long minTime, Long maxTime, Long maxNumberOfResults, 
+            String collectionID) {
         ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
 
         // Map between lastModifiedDate and fileInfo.
@@ -315,7 +316,8 @@ public class FileStorageModel extends StorageModel {
      * @param fileAddress The address to download the file from.
      * @throws RequestHandlerException If the download fails.
      */
-    private void transferFileToTmp(String fileID, String collectionID, String fileAddress) throws RequestHandlerException {
+    private void transferFileToTmp(String fileID, String collectionID, String fileAddress) 
+            throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + fileAddress + "'");
 
         try {
@@ -339,9 +341,11 @@ public class FileStorageModel extends StorageModel {
     private void verifyFileInTmp(String fileID, String collectionID, ChecksumDataForFileTYPE expectedChecksum) 
             throws RequestHandlerException {
         if(expectedChecksum != null) {
-            String calculatedChecksum = getChecksumForTempFile(fileID, collectionID, expectedChecksum.getChecksumSpec());
+            String calculatedChecksum = getChecksumForTempFile(fileID, collectionID, 
+                    expectedChecksum.getChecksumSpec());
             String expectedChecksumValue = Base16Utils.decodeBase16(expectedChecksum.getChecksumValue());
-            log.debug("Validating newly downloaded file, '" + fileID + "', against expected checksum '" + expectedChecksumValue + "'.");
+            log.debug("Validating newly downloaded file, '" + fileID + "', against expected checksum '" 
+                    + expectedChecksumValue + "'.");
             if(!calculatedChecksum.equals(expectedChecksumValue)) {
                 log.warn("Wrong checksum! Expected: [" + expectedChecksumValue 
                         + "], but calculated: [" + calculatedChecksum + "]");

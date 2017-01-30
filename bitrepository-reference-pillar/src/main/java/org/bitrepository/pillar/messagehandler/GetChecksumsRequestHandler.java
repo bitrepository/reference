@@ -28,8 +28,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import javax.xml.bind.JAXBException;
@@ -116,7 +118,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
         ExtractedChecksumResultSet extractedChecksums = extractChecksumResults(request);
         ResultingChecksums checksumResults;
         if(request.getResultAddress() == null) {
-            checksumResults = compileResultsForMessage(request, extractedChecksums);
+            checksumResults = compileResultsForMessage(extractedChecksums);
         } else {
             checksumResults = createAndUploadResults(request, extractedChecksums);
         }
@@ -129,7 +131,8 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
      * @return The extracted results for the requested checksum.
      * @throws RequestHandlerException If the requested checksum specification is not supported.
      */
-    private ExtractedChecksumResultSet extractChecksumResults(GetChecksumsRequest request) throws RequestHandlerException {
+    private ExtractedChecksumResultSet extractChecksumResults(GetChecksumsRequest request) 
+            throws RequestHandlerException {
         log.debug("Starting to extracting the checksum of the requested files.");
 
         if(request.getFileIDs().isSetFileID()) {
@@ -141,8 +144,8 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
             if(request.getMaxNumberOfResults() != null) {
                 maxResults = request.getMaxNumberOfResults().longValue();
             }
-            return getPillarModel().getChecksumResultSet(request.getMinTimestamp(), request.getMaxTimestamp(), maxResults,
-                    request.getCollectionID(), request.getChecksumRequestForExistingFile());
+            return getPillarModel().getChecksumResultSet(request.getMinTimestamp(), request.getMaxTimestamp(), 
+                    maxResults, request.getCollectionID(), request.getChecksumRequestForExistingFile());
         }
     }
 
@@ -173,12 +176,10 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
     
     /**
      * Compiles the extracted checksum results into the message format.
-     * @param request The GetChecksumsRequest.
      * @param checksumResultSet The checksum results extracted from the database.
      * @return The extracted results in the ResultingChecksums format.
      */
-    private ResultingChecksums compileResultsForMessage(GetChecksumsRequest request, 
-            ExtractedChecksumResultSet checksumResultSet) {
+    private ResultingChecksums compileResultsForMessage(ExtractedChecksumResultSet checksumResultSet) {
         ResultingChecksums res = new ResultingChecksums();
         
         for(ChecksumDataForChecksumSpecTYPE cs : checksumResultSet.getEntries()) {
@@ -221,7 +222,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
             JaxbHelper jaxb = new JaxbHelper(XSD_CLASSPATH, XSD_BR_DATA);
             String xmlMessage = jaxb.serializeToXml(results);
             jaxb.validate(new ByteArrayInputStream(xmlMessage.getBytes()));
-            is.write(xmlMessage.getBytes());
+            is.write(xmlMessage.getBytes(StandardCharsets.UTF_8));
             is.flush();
         } finally {
             if(is != null) {
@@ -244,7 +245,9 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
 
         // Upload the file.
         log.debug("Uploading file: " + fileToUpload.getName() + " to " + url);
-        context.getFileExchange().putFile(new FileInputStream(fileToUpload), uploadUrl);
+        try (InputStream in = new FileInputStream(fileToUpload)) {
+            context.getFileExchange().putFile(in, uploadUrl);
+        }
     }
 
     /**

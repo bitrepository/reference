@@ -28,8 +28,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import javax.xml.bind.JAXBException;
@@ -185,7 +187,7 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
             JaxbHelper jaxbHelper = new JaxbHelper(XSD_CLASSPATH, XSD_BR_DATA);
             String file = jaxbHelper.serializeToXml(result);
             try {
-                jaxbHelper.validate(new ByteArrayInputStream(file.getBytes()));
+                jaxbHelper.validate(new ByteArrayInputStream(file.getBytes(StandardCharsets.UTF_8)));
             } catch (SAXException e) {
                 String errMsg = "The resulting XML for the GetFileIDsRequest does not validate. \n"
                         + file;
@@ -214,7 +216,9 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
         URL uploadUrl = new URL(url);
 
         log.debug("Uploading file: " + fileToUpload.getName() + " to " + url);
-        context.getFileExchange().putFile(new FileInputStream(fileToUpload), uploadUrl);
+        try (InputStream in = new FileInputStream(fileToUpload)) {
+            context.getFileExchange().putFile(in, uploadUrl);
+        }
     }
     
     /**

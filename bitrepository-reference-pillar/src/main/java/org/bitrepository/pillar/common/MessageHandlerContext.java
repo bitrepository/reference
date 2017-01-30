@@ -38,12 +38,12 @@ public class MessageHandlerContext extends ContributorContext {
     /**
      * Delegates to the ContributorContext constructor.
      *
-     * @param settings           FIXME
-     * @param pillarCollections  FIXME
-     * @param responseDispatcher FIXME
-     * @param alarmDispatcher    FIXME
-     * @param auditTrailManager  FIXME
-     * @param fileExchange       FIXME
+     * @param settings           The settings.
+     * @param pillarCollections  The collections which the pillar is part of.
+     * @param responseDispatcher The component for sending responses on the messagebus.
+     * @param alarmDispatcher    The component for dispatching alarms on the messagebus.
+     * @param auditTrailManager  The audit trail storage / manager.
+     * @param fileExchange       The file exchange.
      */
     public MessageHandlerContext(Settings settings,
                                  String[] pillarCollections,
@@ -54,7 +54,7 @@ public class MessageHandlerContext extends ContributorContext {
         super(responseDispatcher, alarmDispatcher, settings, fileExchange);
         ArgumentValidator.checkNotNull(auditTrailManager, "AuditTrailManager");
         this.auditTrailManager = auditTrailManager;
-        this.pillarCollections = pillarCollections;
+        this.pillarCollections = pillarCollections.clone();
     }
 
     /**
@@ -64,8 +64,10 @@ public class MessageHandlerContext extends ContributorContext {
         return auditTrailManager;
     }
 
+    /**
+     * @return The collections of the pillar.
+     */
     public String[] getPillarCollections() {
-        return pillarCollections;
+        return pillarCollections.clone();
     }
-
 }

@@ -67,7 +67,8 @@ public class IdentifyPillarsForDeleteFileRequestHandler
         
 
     @Override
-    protected void validateRequest(IdentifyPillarsForDeleteFileRequest message, MessageContext messageContext) throws RequestHandlerException {
+    protected void validateRequest(IdentifyPillarsForDeleteFileRequest message, MessageContext messageContext) 
+            throws RequestHandlerException {
         validateCollectionID(message);
         validateFileIDFormat(message.getFileID());
         checkThatRequestedFileIsAvailable(message);

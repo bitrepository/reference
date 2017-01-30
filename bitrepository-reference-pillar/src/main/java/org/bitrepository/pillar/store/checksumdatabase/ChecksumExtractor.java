@@ -21,12 +21,6 @@
  */
 package org.bitrepository.pillar.store.checksumdatabase;
 
-import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CHECKSUM_TABLE;
-import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_CHECKSUM;
-import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_COLLECTION_ID;
-import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_DATE;
-import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_FILE_ID;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -51,6 +45,9 @@ public class ChecksumExtractor {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
+    /** The default amount of results to fetch out of the database for each call.*/
+    protected static final int DEFAULT_FETCH_SIZE = 100;
+    
     /** The connector for the database.*/
     private final DBConnector connector;
     
@@ -73,8 +70,8 @@ public class ChecksumExtractor {
     public Date extractDateForFile(String fileID, String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         
-        String sql = "SELECT " + CS_DATE + " FROM " + CHECKSUM_TABLE + " WHERE " + CS_FILE_ID + " = ? AND " 
-                + CS_COLLECTION_ID + " = ?";
+        String sql = "SELECT " + DatabaseConstants.CS_DATE + " FROM " + DatabaseConstants.CHECKSUM_TABLE + " WHERE " 
+                + DatabaseConstants.CS_FILE_ID + " = ? AND " + DatabaseConstants.CS_COLLECTION_ID + " = ?";
         Long dateInMillis = DatabaseUtils.selectFirstLongValue(connector, sql, fileID, collectionID);
         if(dateInMillis == null) {
             return null;
@@ -91,8 +88,8 @@ public class ChecksumExtractor {
     public String extractChecksumForFile(String fileID, String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         
-        String sql = "SELECT " + CS_CHECKSUM + " FROM " + CHECKSUM_TABLE + " WHERE " + CS_FILE_ID + " = ? AND "
-                + CS_COLLECTION_ID + " = ?";
+        String sql = "SELECT " + DatabaseConstants.CS_CHECKSUM + " FROM " + DatabaseConstants.CHECKSUM_TABLE 
+                + " WHERE " + DatabaseConstants.CS_FILE_ID + " = ? AND " + DatabaseConstants.CS_COLLECTION_ID + " = ?";
         return DatabaseUtils.selectStringValue(connector, sql, fileID, collectionID);
     }
     
@@ -105,8 +102,8 @@ public class ChecksumExtractor {
     public boolean hasFile(String fileID, String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
-        String sql = "SELECT COUNT(*) FROM " + CHECKSUM_TABLE + " WHERE " + CS_FILE_ID + " = ? AND "
-                + CS_COLLECTION_ID + " = ?";
+        String sql = "SELECT COUNT(*) FROM " + DatabaseConstants.CHECKSUM_TABLE + " WHERE " 
+                + DatabaseConstants.CS_FILE_ID + " = ? AND " + DatabaseConstants.CS_COLLECTION_ID + " = ?";
         return DatabaseUtils.selectIntValue(connector, sql, fileID, collectionID) != 0;
     }
     
@@ -119,8 +116,9 @@ public class ChecksumExtractor {
     public ChecksumEntry extractSingleEntry(String fileID, String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
-        String sql = "SELECT " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE 
-                + " WHERE " + CS_FILE_ID + " = ? AND " + CS_COLLECTION_ID + " = ?";
+        String sql = "SELECT " + DatabaseConstants.CS_FILE_ID + " , " + DatabaseConstants.CS_CHECKSUM + " , " 
+                + DatabaseConstants.CS_DATE + " FROM " + DatabaseConstants.CHECKSUM_TABLE + " WHERE " 
+                + DatabaseConstants.CS_FILE_ID + " = ? AND " + DatabaseConstants.CS_COLLECTION_ID + " = ?";
         try (Connection conn = connector.getConnection();
              PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql, fileID, collectionID)) {
             try (ResultSet res = ps.executeQuery()) {
@@ -148,21 +146,22 @@ public class ChecksumExtractor {
 
         List<Object> args = new ArrayList<Object>();
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE 
-                + " WHERE " + CS_FILE_ID + " = ? AND " + CS_COLLECTION_ID + " = ?");
+        sql.append("SELECT " + DatabaseConstants.CS_FILE_ID + " , " + DatabaseConstants.CS_CHECKSUM + " , " 
+                + DatabaseConstants.CS_DATE + " FROM " + DatabaseConstants.CHECKSUM_TABLE + " WHERE " 
+                + DatabaseConstants.CS_FILE_ID + " = ? AND " + DatabaseConstants.CS_COLLECTION_ID + " = ?");
 
         args.add(fileID);
         args.add(collectionID);
         
         if(minTimeStamp != null) {
-            sql.append(" AND " + CS_DATE + " > ? ");
-            args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp));
+            sql.append(" AND " + DatabaseConstants.CS_DATE + " > ? ");
+            args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp).getTime());
         }
         if(maxTimeStamp != null) {
-            sql.append(" AND " + CS_DATE + " <= ? ");
-            args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp));
+            sql.append(" AND " + DatabaseConstants.CS_DATE + " <= ? ");
+            args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp).getTime());
         }
-        sql.append(" ORDER BY " + CS_DATE + " ASC ");
+        sql.append(" ORDER BY " + DatabaseConstants.CS_DATE + " ASC ");
 
         try (Connection conn = connector.getConnection();
              PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())) {
@@ -184,7 +183,7 @@ public class ChecksumExtractor {
      *
      * @param minTimeStamp       The minimum date for the timestamp of the extracted file ids.
      * @param maxTimeStamp       The maximum date for the timestamp of the extracted file ids.
-     * @param fileID             FIXME
+     * @param fileID             The ID of the file to retrieve. Null if all file-ids.
      * @param maxNumberOfResults The maximum number of results.
      * @param collectionID       The collection id for the extraction.
      * @return The requested collection of file ids.
@@ -193,29 +192,29 @@ public class ChecksumExtractor {
             Long maxNumberOfResults, String fileID, String collectionID) {
         List<Object> args = new ArrayList<Object>(); 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT " + CS_FILE_ID + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE + " WHERE " + CS_COLLECTION_ID
-                + " = ?");
+        sql.append("SELECT " + DatabaseConstants.CS_FILE_ID + " , " + DatabaseConstants.CS_DATE + " FROM " 
+                + DatabaseConstants.CHECKSUM_TABLE + " WHERE " + DatabaseConstants.CS_COLLECTION_ID + " = ?");
         args.add(collectionID);
         
         if(minTimeStamp != null) {
-            sql.append(" AND " + CS_DATE + " >= ? ");
+            sql.append(" AND " + DatabaseConstants.CS_DATE + " >= ? ");
             args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp).getTime());
         }
         if(maxTimeStamp != null) {
-            sql.append(" AND " + CS_DATE + " <= ? ");
+            sql.append(" AND " + DatabaseConstants.CS_DATE + " <= ? ");
             args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp).getTime());
         }
         if(fileID != null) {
-            sql.append(" AND " + CS_FILE_ID + " = ? ");
+            sql.append(" AND " + DatabaseConstants.CS_FILE_ID + " = ? ");
             args.add(fileID);
         }
-        sql.append(" ORDER BY " + CS_DATE + " ASC ");
+        sql.append(" ORDER BY " + DatabaseConstants.CS_DATE + " ASC ");
         
         ExtractedFileIDsResultSet results = new ExtractedFileIDsResultSet();
         try (Connection conn = connector.getConnection();
             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())){
             conn.setAutoCommit(false);
-            ps.setFetchSize(100);
+            ps.setFetchSize(DEFAULT_FETCH_SIZE);
             try (ResultSet res = ps.executeQuery()){
                 int i = 0;
                 while(res.next() && (maxNumberOfResults == null || i < maxNumberOfResults)) {
@@ -247,7 +246,8 @@ public class ChecksumExtractor {
      * @return The list of file ids extracted from the database.
      */
     public List<String> extractAllFileIDs(String collectionID) {
-        String sql = "SELECT " + CS_FILE_ID + " FROM " + CHECKSUM_TABLE + " WHERE " + CS_COLLECTION_ID + " = ?";
+        String sql = "SELECT " + DatabaseConstants.CS_FILE_ID + " FROM " + DatabaseConstants.CHECKSUM_TABLE 
+                + " WHERE " + DatabaseConstants.CS_COLLECTION_ID + " = ?";
         return DatabaseUtils.selectStringList(connector, sql, collectionID);
     }
     
@@ -264,25 +264,26 @@ public class ChecksumExtractor {
             XMLGregorianCalendar maxTimeStamp, Long maxNumberOfResults, String collectionID) {
         List<Object> args = new ArrayList<Object>(); 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE 
-                + " WHERE " + CS_COLLECTION_ID + " = ?");
+        sql.append("SELECT " + DatabaseConstants.CS_FILE_ID + " , " + DatabaseConstants.CS_CHECKSUM + " , " 
+                + DatabaseConstants.CS_DATE + " FROM " + DatabaseConstants.CHECKSUM_TABLE + " WHERE " 
+                + DatabaseConstants.CS_COLLECTION_ID + " = ?");
         args.add(collectionID);
         
         if(minTimeStamp != null) {
-            sql.append(" AND " + CS_DATE + " >= ? ");
+            sql.append(" AND " + DatabaseConstants.CS_DATE + " >= ? ");
             args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp).getTime());
         }
         if(maxTimeStamp != null) {
-            sql.append(" AND " + CS_DATE + " <= ? ");
+            sql.append(" AND " + DatabaseConstants.CS_DATE + " <= ? ");
             args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp).getTime());
         }
-        sql.append(" ORDER BY " + CS_DATE + " ASC ");
+        sql.append(" ORDER BY " + DatabaseConstants.CS_DATE + " ASC ");
         
         ExtractedChecksumResultSet results = new ExtractedChecksumResultSet();
         try (Connection conn = connector.getConnection();
              PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())){
             conn.setAutoCommit(false);
-            ps.setFetchSize(100);
+            ps.setFetchSize(DEFAULT_FETCH_SIZE);
             try (ResultSet res = ps.executeQuery()) {
                 int i = 0;
                 while(res.next() && (maxNumberOfResults == null || i < maxNumberOfResults)) {
@@ -320,20 +321,21 @@ public class ChecksumExtractor {
         ArgumentValidator.checkNotNull(maxTimeStamp, "Long maxTimeStamp");
         List<Object> args = new ArrayList<Object>(); 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT " + CS_FILE_ID + " WHERE " + CS_COLLECTION_ID + " = ? AND " + CS_DATE + " <= ? "
-                + " ORDER BY " + CS_DATE + " ASC ");
+        sql.append("SELECT " + DatabaseConstants.CS_FILE_ID + " FROM " + DatabaseConstants.CHECKSUM_TABLE 
+                + " WHERE " + DatabaseConstants.CS_COLLECTION_ID + " = ? AND " + DatabaseConstants.CS_DATE + " <= ? "
+                + " ORDER BY " + DatabaseConstants.CS_DATE + " ASC ");
         args.add(collectionID);
         args.add(maxTimeStamp);
         
         List<String> results = new ArrayList<String>();
         try (Connection conn = connector.getConnection();
-             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())){
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())) {
             conn.setAutoCommit(false);
-            ps.setFetchSize(100);
+            ps.setFetchSize(DEFAULT_FETCH_SIZE);
             try (ResultSet res = ps.executeQuery()) {
                 while(res.next() ) {
                     if(!res.wasNull()) {
-                        results.add(res.getString(0));
+                        results.add(res.getString(1));
                     }
                 }
             } finally {

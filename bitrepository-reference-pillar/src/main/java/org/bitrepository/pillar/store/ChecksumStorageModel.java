@@ -60,9 +60,10 @@ public class ChecksumStorageModel extends StorageModel {
      * @param cache           The storage for the checksums.
      * @param alarmDispatcher The alarm dispatcher.
      * @param settings        The configuration to use.
-     * @param fileExchange    FIXME
+     * @param fileExchange    The file exchange.
      */
-    public ChecksumStorageModel(ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings, FileExchange fileExchange) {
+    public ChecksumStorageModel(ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings, 
+            FileExchange fileExchange) {
         super(null, cache, alarmDispatcher, settings, fileExchange);
     }
     
@@ -160,7 +161,7 @@ public class ChecksumStorageModel extends StorageModel {
             if(expectedChecksum != null) {
                 return extractChecksum(expectedChecksum, collectionID);
             } else {
-                return downloadFileAndCalculateChecksum(fileID, collectionID, fileAddress, expectedChecksum);
+                return downloadFileAndCalculateChecksum(fileID, collectionID, fileAddress, null);
             }
         }
     }

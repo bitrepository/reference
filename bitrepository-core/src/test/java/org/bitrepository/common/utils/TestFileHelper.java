@@ -23,7 +23,10 @@ package org.bitrepository.common.utils;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -72,5 +75,22 @@ public class TestFileHelper {
             fileIDs[i] = uniquePrefix + "-" + (i+1) +".txt";
         }
         return fileIDs;
+    }
+    
+    public static List<File> getAllFilesFromSubDirs(File dir) {
+        List<File> res = new ArrayList<File>();
+        if(dir.list() != null) {
+            for(File f : dir.listFiles()) {
+                if(f.isFile()) {
+                    res.add(f);
+                } else {
+                    for(File sf : getAllFilesFromSubDirs(f)) {
+                        res.add(sf);
+                    }
+                }
+
+            }
+        }
+        return res;
     }
 }

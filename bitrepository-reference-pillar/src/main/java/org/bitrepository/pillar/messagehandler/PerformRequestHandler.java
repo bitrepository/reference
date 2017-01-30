@@ -27,6 +27,11 @@ import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.RequestHandlerException;
 
+/**
+ * Abstract class for the methods for handing the perform request messages.
+ * Contains the common methods for handling perform request messages.
+ *  @param <T> The type of perform request message to handle.
+ */
 public abstract class PerformRequestHandler<T extends MessageRequest> extends PillarMessageHandler<T> {
 
     /**
@@ -53,7 +58,7 @@ public abstract class PerformRequestHandler<T extends MessageRequest> extends Pi
      * @throws RequestHandlerException If something in the request is inconsistent with the possibilities of the pillar.
      */
     protected abstract void validateRequest(T request, MessageContext requestContext)
-            throws RequestHandlerException ;
+            throws RequestHandlerException;
     
     /**
      * Sends a progress response.
@@ -62,7 +67,7 @@ public abstract class PerformRequestHandler<T extends MessageRequest> extends Pi
      * @throws RequestHandlerException If something data necessary for the progress response could not be extracted. 
      */
     protected abstract void sendProgressResponse(T request, MessageContext requestContext)
-            throws RequestHandlerException ;
+            throws RequestHandlerException;
     
     /**
      * Perform the operation behind the request.
@@ -71,5 +76,5 @@ public abstract class PerformRequestHandler<T extends MessageRequest> extends Pi
      * @throws RequestHandlerException If the request is unable to be performed.
      */
     protected abstract void performOperation(T request, MessageContext requestContext)
-            throws RequestHandlerException ;
+            throws RequestHandlerException;
 }

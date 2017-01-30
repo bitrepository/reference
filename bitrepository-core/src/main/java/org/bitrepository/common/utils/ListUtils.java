@@ -1,8 +1,11 @@
 /*
  * #%L
- * Bitrepository Reference Pillar
+ * bitrepository-core
+ * 
+ * $Id$
+ * $HeadURL$
  * %%
- * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as 
@@ -19,26 +22,21 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar;
+package org.bitrepository.common.utils;
 
-/**
- * Launches a given pillar.
- */
-public final class PillarRunner {
-    /** Private constructor, to avoid instantiation of this utility class.*/
-    private PillarRunner() {}
-    /**
-     * Method for launching the pillar.
-     * @param pillar The pillar to run.
-     */
-    public static void launchPillar(Pillar pillar) {
-        try {
-            synchronized(pillar) {
-                pillar.wait();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(0);
+import java.util.ArrayList;
+import java.util.List;
+
+public final class ListUtils {
+
+    public static List<String> mergeLists(List<String> list1, List<String> list2) {
+        List<String> res = new ArrayList<String>(list1.size() + list2.size());
+        for(String element : list1) {
+            res.add(element);
         }
+        for(String element : list2) {
+            res.add(element);
+        }
+        return res;
     }
 }

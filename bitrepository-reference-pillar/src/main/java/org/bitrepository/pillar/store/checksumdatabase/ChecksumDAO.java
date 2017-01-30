@@ -45,7 +45,7 @@ public class ChecksumDAO implements ChecksumStore {
     
     /**
      * Constructor.
-     * @param databaseManager FIXME
+     * @param databaseManager The manager for the checksum database.
      */
     public ChecksumDAO(DatabaseManager databaseManager) {
         synchronized(this) {
@@ -87,8 +87,8 @@ public class ChecksumDAO implements ChecksumStore {
     }
     
     @Override
-    public ExtractedChecksumResultSet getChecksumResults(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
-            Long maxNumberOfResults, String collectionID) {
+    public ExtractedChecksumResultSet getChecksumResults(XMLGregorianCalendar minTimeStamp, 
+            XMLGregorianCalendar maxTimeStamp, Long maxNumberOfResults, String collectionID) {
         ArgumentValidator.checkNotNull(collectionID, "String collectionID");
         return extractor.extractEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults, collectionID);
     }
@@ -134,7 +134,7 @@ public class ChecksumDAO implements ChecksumStore {
     }
 
     @Override
-    public java.util.Collection<String> getAllFileIDs(String collectionID) {
+    public Collection<String> getAllFileIDs(String collectionID) {
         ArgumentValidator.checkNotNull(collectionID, "String collectionID");
         return extractor.extractAllFileIDs(collectionID);
     }

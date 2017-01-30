@@ -26,7 +26,11 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.service.database.DatabaseCreator;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 
+/**
+ * Class for creating the audit trail contributor database for the pillar.
+ */
 public class PillarAuditTrailDatabaseCreator extends DatabaseCreator {
+    /** Default location of the script for creating the audit trail contributor database.*/
     public static final String DEFAULT_AUDIT_TRAIL_DB_SCRIPT = "sql/derby/auditContributorDBCreation.sql";
 
     /**
@@ -44,14 +48,16 @@ public class PillarAuditTrailDatabaseCreator extends DatabaseCreator {
         dbCreatorPillar.createAuditTrailContributorDatabase(settings, args[1]);
     }
 
+    /**
+     * Creates the audit trail contributor database for the pillar.
+     * @param settings The settings for the pillar.
+     * @param pathToSqlCreationScript The path to the script for creating the audit trail contributor database.
+     */
     public void createAuditTrailContributorDatabase(Settings settings, String pathToSqlCreationScript) {
         DatabaseSpecifics databaseSpecifics =
                 settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase();
 
-        if (pathToSqlCreationScript == null) {
-            pathToSqlCreationScript = DEFAULT_AUDIT_TRAIL_DB_SCRIPT;
-        }
-
-        createDatabase(databaseSpecifics, pathToSqlCreationScript);
+        createDatabase(databaseSpecifics, pathToSqlCreationScript == null ? 
+                DEFAULT_AUDIT_TRAIL_DB_SCRIPT : pathToSqlCreationScript);
     }
 }

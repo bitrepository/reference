@@ -83,6 +83,7 @@
 		</module>
 		<module name="VisibilityModifier">
 			<property name="severity" value="warning" />
+			<property name="protectedAllowed" value="true" />
 		</module>
 		<module name="PackageName">
 			<property name="severity" value="warning" />

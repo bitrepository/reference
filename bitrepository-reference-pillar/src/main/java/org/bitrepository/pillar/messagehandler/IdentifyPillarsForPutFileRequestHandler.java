@@ -37,7 +37,6 @@ import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.utils.MessageUtils;
-import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +75,7 @@ public class IdentifyPillarsForPutFileRequestHandler
     }
     
     @Override
-    protected void sendPositiveResponse(IdentifyPillarsForPutFileRequest request, MessageContext requestContext)  
+    protected void sendPositiveResponse(IdentifyPillarsForPutFileRequest request, MessageContext requestContext)
                     throws RequestHandlerException {
         if(checkThatTheFileDoesNotAlreadyExist(request)) {
             respondDuplicateFile(request);
@@ -137,7 +136,8 @@ public class IdentifyPillarsForPutFileRequestHandler
         response.setResponseInfo(irInfo);
 
         dispatchResponse(response, message);
-        log.debug(MessageUtils.createMessageIdentifier(message) + " Duplicate file identification for PutFile operation");
+        log.debug(MessageUtils.createMessageIdentifier(message) 
+                + " Duplicate file identification for PutFile operation");
     }
     
     /**

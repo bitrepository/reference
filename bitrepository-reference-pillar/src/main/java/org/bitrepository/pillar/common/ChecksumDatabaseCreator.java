@@ -34,6 +34,7 @@ import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
  * @see DatabaseCreator
  */
 public class ChecksumDatabaseCreator extends DatabaseCreator {
+    /** Default location for the script for creating the Checksum database.*/
     public static final String DEFAULT_CHECKSUM_DB_SCRIPT = "sql/derby/checksumDBCreation.sql";
 
     /**
@@ -55,10 +56,7 @@ public class ChecksumDatabaseCreator extends DatabaseCreator {
         DatabaseSpecifics databaseSpecifics =
                 settings.getReferenceSettings().getPillarSettings().getChecksumDatabase();
 
-        if (pathToSqlCreationScript == null) {
-            pathToSqlCreationScript = DEFAULT_CHECKSUM_DB_SCRIPT;
-        }
-
-        createDatabase(databaseSpecifics, pathToSqlCreationScript);
+        createDatabase(databaseSpecifics, pathToSqlCreationScript == null ? 
+                DEFAULT_CHECKSUM_DB_SCRIPT : pathToSqlCreationScript);
     }
 }

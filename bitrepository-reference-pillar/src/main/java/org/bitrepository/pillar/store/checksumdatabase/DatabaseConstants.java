@@ -24,7 +24,7 @@ package org.bitrepository.pillar.store.checksumdatabase;
 /**
  * Container for the constants for the checksum database.
  */
-public class DatabaseConstants {
+public final class DatabaseConstants {
     /** Private constructor to prevent instantiation of this constant container.*/
     private DatabaseConstants() {}
     
