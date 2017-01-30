@@ -56,7 +56,7 @@ public class LocalFileExchangeTest {
      * @throws IOException
      */
     @Test
-    public void handleHash2() throws Exception {
+    public void putFileByFileContainingHashTest() throws Exception {
         String testFileName = "getUrlTestfileHashchar#Testfragment";
         String testFileLocation = "target/" + testFileName;
         String testFileContent = "lorem ipsum1";
@@ -98,7 +98,7 @@ public class LocalFileExchangeTest {
         actualFile.delete();
     }
     
-    @Test 
+    @Test
     public void putFileByStreamTest() throws IOException {
         String testFileName = "putFileByStreamTestFile";
         String testFileContent = "lorem ipsum2";
@@ -148,7 +148,7 @@ public class LocalFileExchangeTest {
         Assert.assertEquals(os.toString(), testFileContent);
     }
     
-    @Test 
+    @Test
     public void getFileByAddressTest() throws IOException {
         String testFileName = "getFileByAddressTestFile";
         String testFileContent = "lorem ipsum5";

@@ -23,7 +23,6 @@ package org.bitrepository.protocol;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,8 +30,6 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.common.utils.StreamUtils;
@@ -52,6 +49,11 @@ public class LocalFileExchange implements FileExchange {
         FileUtils.writeStreamToFile(in, new File(url.getFile()));
     }
 
+    /**
+     * Put the file into bitrepository and return the url of the ingested file
+     * @param dataFile File to get ingested
+     * @return URL encoded url test#file is returned as test%23file
+     */
     @Override
     public URL putFile(File dataFile) {
         try {
