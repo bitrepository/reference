@@ -24,6 +24,7 @@ package org.bitrepository.protocol.security;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -79,6 +80,11 @@ import org.slf4j.LoggerFactory;
  * - Authorization of operations
  */
 public class BasicSecurityManager implements SecurityManager {
+	/** Key to environment variable for default truststore */
+	private static final String DEFAULT_TRUSTSTORE_PARAM="javax.net.ssl.trustStore";
+	/** Key to environment variable for default truststore password */
+	private static final String DEFAULT_TRUSTSTORE_PASS_PARAM="javax.net.ssl.trustStorePassword";
+	
     private final Logger log = LoggerFactory.getLogger(BasicSecurityManager.class);
     /** Default password for the in-memory keystore */
     private static final String defaultPassword = "123456";
@@ -220,8 +226,6 @@ public class BasicSecurityManager implements SecurityManager {
             } catch (UnregisteredPermissionException e) {
                 log.info(e.getMessage());
             }
-            
-            
         }
     }
     
@@ -235,8 +239,7 @@ public class BasicSecurityManager implements SecurityManager {
     private void initialize() {
         Security.addProvider(new BouncyCastleProvider());
         try {
-            keyStore = KeyStore.getInstance(SecurityModuleConstants.keyStoreType);
-            keyStore.load(null);
+        	keyStore = getKeyStore();
             loadPrivateKey(privateKeyFile);
             loadInfrastructureCertificates(repositorySettings.getPermissionSet());
             permissionStore.loadPermissions(repositorySettings.getPermissionSet(), componentID);
@@ -245,6 +248,28 @@ public class BasicSecurityManager implements SecurityManager {
         } catch (Exception e) {
             throw new SecurityException(e.getMessage(), e);
         } 
+    }
+    
+    /**
+     * Obtain the keystore in which to place certificates loaded by the bitrepository. 
+     * Default is to create a new empty keystore. If a truststore is specified by environment variables
+     * then the returned keystore have been pre-loaded with the certificate data from that source. 
+     * This is in order to not throw out default trust.  
+     */
+    private KeyStore getKeyStore() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+    	KeyStore store = KeyStore.getInstance(SecurityModuleConstants.keyStoreType);
+    	store.load(null);
+    	String defaultTrustStoreLocation = System.getProperty(DEFAULT_TRUSTSTORE_PARAM);
+    	if(defaultTrustStoreLocation != null) {
+	    	File defaultTrustStore = new File(defaultTrustStoreLocation);
+	    	if(defaultTrustStore.isFile() && defaultTrustStore.canRead()) {
+	    		String trustStorePassword = System.getProperty(DEFAULT_TRUSTSTORE_PASS_PARAM);
+	    		try (FileInputStream fis = new FileInputStream(defaultTrustStore)) {
+	    	        store.load(fis, trustStorePassword.toCharArray());
+	    	    }
+	    	}
+    	}
+    	return store;
     }
     
     /**
