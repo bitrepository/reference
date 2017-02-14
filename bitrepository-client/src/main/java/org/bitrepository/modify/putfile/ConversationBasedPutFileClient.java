@@ -35,6 +35,7 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.modify.putfile.conversation.IdentifyPillarsForPutFile;
 import org.bitrepository.modify.putfile.conversation.PutFileConversationContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.MessageDataTypeValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +68,8 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
         validateFileID(fileID);
         ArgumentValidator.checkNotNull(url, "URL url");
         ArgumentValidator.checkNotNegative(sizeOfFile, "long sizeOfFile");
+        MessageDataTypeValidator.validate(checksumForValidationAtPillar, "checksumForValidationAtPillar");
+        MessageDataTypeValidator.validate(checksumRequestsForValidation, "checksumRequestsForValidation");
 
         log.info("Starting putFile of " + fileID + " for client " + clientID + ". " + auditTrailInformation);
         if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {

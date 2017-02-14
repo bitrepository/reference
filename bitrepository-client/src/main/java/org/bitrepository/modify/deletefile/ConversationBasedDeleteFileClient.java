@@ -35,6 +35,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.deletefile.conversation.DeleteFileConversationContext;
 import org.bitrepository.modify.deletefile.conversation.IdentifyPillarsForDeleteFile;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.MessageDataTypeValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +61,8 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "collectionID");
         ArgumentValidator.checkNotNullOrEmpty(fileID, "fileID");
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "pillarID");
+        MessageDataTypeValidator.validate(checksumForPillar, "checksumForPillar");
+        MessageDataTypeValidator.validate(checksumRequested, "checksumRequested");
         validateFileID(fileID);
         if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
             ArgumentValidator.checkNotNull(checksumForPillar, "ChecksumForPillar");

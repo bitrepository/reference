@@ -36,6 +36,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.replacefile.conversation.IdentifyPillarsForReplaceFile;
 import org.bitrepository.modify.replacefile.conversation.ReplaceFileConversationContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.MessageDataTypeValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,11 +70,15 @@ public class ConversationBasedReplaceFileClient extends AbstractClient implement
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
         if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
             ArgumentValidator.checkNotNull(checksumForDeleteAtPillar, "ChecksumDataForFileTYPE checksumForDeleteAtPillar");
+            MessageDataTypeValidator.validate(checksumForDeleteAtPillar, "checksumForDeleteAtPillar");
         }
         if(settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
             ArgumentValidator.checkNotNull(checksumForNewFileValidationAtPillar,
                     "ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar");
+            MessageDataTypeValidator.validate(checksumForNewFileValidationAtPillar, "checksumForNewFileValidationAtPillar");
         }
+        MessageDataTypeValidator.validate(checksumRequestedForDeletedFile, "checksumRequestedForDeletedFile");
+        MessageDataTypeValidator.validate(checksumRequestsForNewFile, "checksumRequestsForNewFile");
         
         log.info("Requesting the replacement of the file '" + fileID + "' at the pillar '" + pillarID + "' from the "
                 + "URL '" + url + "' and with the size '" + sizeOfNewFile + "', where the old file has the checksum '" 

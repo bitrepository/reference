@@ -36,6 +36,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.utils.MessageDataTypeValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,21 +66,17 @@ public class ConversationBasedGetChecksumsClient extends AbstractClient implemen
 
 
     @Override
-    public void getChecksums(
-            String collectionID,
-            ContributorQuery[] contributorQueries,
-            String fileID,
-            ChecksumSpecTYPE checksumSpec,
-            URL addressForResult,
-            EventHandler eventHandler,
+    public void getChecksums(String collectionID, ContributorQuery[] contributorQueries, String fileID,
+            ChecksumSpecTYPE checksumSpec, URL addressForResult, EventHandler eventHandler,
             String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "collectionID");
+        MessageDataTypeValidator.validate(checksumSpec, "checksumSpec");
         validateFileID(fileID);
         if (contributorQueries == null) {
             contributorQueries = ContributorQueryUtils.createFullContributorQuery(
                     SettingsUtils.getPillarIDsForCollection(collectionID));
         }
-
+                
         log.info("Requesting the checksums for file '" + "' with the specifications '" + checksumSpec + fileID +
                 "' with query "+ Arrays.asList(contributorQueries) + "." +
                 (addressForResult != null ?  "The result should be uploaded to '" + addressForResult + "'." : ""));
