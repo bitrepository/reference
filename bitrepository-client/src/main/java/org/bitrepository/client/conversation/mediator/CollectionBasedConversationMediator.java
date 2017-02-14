@@ -29,11 +29,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ThreadFactory;
 
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.client.conversation.Conversation;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
+import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
@@ -62,6 +64,8 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     private static final Timer cleanTimer = new Timer(NAME_OF_TIMER, TIMER_IS_DAEMON);
     private final MessageBus messagebus;
 
+    /** ThreadFactory for any threads the mediator needs to create*/
+    private static final ThreadFactory threadFactory = new DefaultThreadFactory(CollectionBasedConversationMediator.class.getSimpleName()+"-", Thread.NORM_PRIORITY , false);
 
     @Override
     public void start() {
@@ -107,9 +111,10 @@ public class CollectionBasedConversationMediator implements ConversationMediator
      */
     private void failConversation(final Conversation conversation, final String message) {
         String conversationID = conversation.getConversationID();
+
         if (conversationID != null) {
             conversations.remove(conversationID);
-            Thread t = new FailingConversation(conversation, message);
+            Thread t = threadFactory.newThread(new FailingConversation(conversation, message));
             t.start();
         }
     }
@@ -167,7 +172,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     /**
      * Thread for handling the failing of a conversation.
      */
-    private static class FailingConversation extends Thread {
+    private static class FailingConversation implements Runnable {
         /** The conversation to fail.*/
         private final Conversation conversation;
         /** The message telling the reason for the conversation to fail.*/

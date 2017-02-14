@@ -37,18 +37,26 @@ import org.slf4j.LoggerFactory;
 public class DefaultThreadFactory implements ThreadFactory {
     private final String prefix;
     private final int priority;
+    private final boolean daemonic;
     private int counter = 0;
 
     public DefaultThreadFactory(String prefix, int priority) {
         this.prefix = prefix;
         this.priority = priority;
+        daemonic = true;
+    }
+
+    public DefaultThreadFactory(String prefix, int priority, boolean daemonic) {
+        this.prefix = prefix;
+        this.priority = priority;
+        this.daemonic = daemonic;
     }
 
     @Override
     public Thread newThread(Runnable r) {
         Thread newThread = new Thread(r, prefix + "-Thread" +counter);
         newThread.setPriority(priority);
-        newThread.setDaemon(true);
+        newThread.setDaemon(daemonic);
         newThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
