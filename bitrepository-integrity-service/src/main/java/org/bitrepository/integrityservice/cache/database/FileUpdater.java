@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *  This means that we currently can't use the functionality, and is forced
  *  to use the two call way. I.e. the conditional update, the conditional insert 
  */
-public class FileUpdater {
+public class FileUpdater implements AutoCloseable {
 
     /**
      * SQL for conditional insert of the fileID in the files table.
@@ -186,8 +186,9 @@ public class FileUpdater {
         insertLatestFileTimePS.execute();
         conn.commit();
     }
-    
-    private void close() throws SQLException {
+
+    @Override
+    public void close() throws SQLException {
         if(updateFileInfoPS != null) {
             updateFileInfoPS.close();
         }

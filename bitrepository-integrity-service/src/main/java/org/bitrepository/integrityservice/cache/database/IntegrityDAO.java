@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * Common parts of the implementation of the access to the integrity db. 
  * Database specific backends are abstracted out in concrete classes.  
  */
-public abstract class IntegrityDAO {
+public abstract class IntegrityDAO implements AutoCloseable {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
     /** The connector to the database.*/
@@ -65,6 +65,7 @@ public abstract class IntegrityDAO {
     /**
      * Destroys the DB connector.
      */
+    @Override
     public void close() {
         dbConnector.destroy();
     }

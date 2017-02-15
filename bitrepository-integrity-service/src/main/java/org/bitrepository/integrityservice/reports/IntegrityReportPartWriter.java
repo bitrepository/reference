@@ -35,7 +35,7 @@ import org.bitrepository.integrityservice.reports.IntegrityReportConstants.Repor
  * Class to write files for a specific part of the report. 
  * Files are written as list of fileIDs per component (one file per component) 
  */
-public class IntegrityReportPartWriter {
+public class IntegrityReportPartWriter implements AutoCloseable {
 
     private final ReportPart part;
     private final File reportDir;
@@ -83,7 +83,8 @@ public class IntegrityReportPartWriter {
      * Closes all open files
      * @throws IOException if an I/O error occurs
      */
-    public void closeAll() throws IOException {
+    @Override
+    public void close() throws IOException {
         for(BufferedWriter writer : pillarParts.values()) {
             writer.close();
         } 

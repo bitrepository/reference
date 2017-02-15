@@ -37,7 +37,7 @@ import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 /**
  * Store of cached integrity information.
  */
-public interface IntegrityModel {
+public interface IntegrityModel extends AutoCloseable {
     /**
      * Add file ID data to cache.
      * @param data The received data.
@@ -206,6 +206,7 @@ public interface IntegrityModel {
     /**
      * Shutdown the model. This will typically consist of closing DB connections.
      */
+    @Override
     void close();
 
     /**

@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * and potentially having the actual files in a file store (file system).
  * Handles all requests or operations regarding files.
  */
-public abstract class StorageModel {
+public abstract class StorageModel implements AutoCloseable {
 
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -428,6 +428,7 @@ public abstract class StorageModel {
     /**
      * Closes the pillar model.
      */
+    @Override
     public void close() {
         cache.close();
         if(fileArchive != null) {

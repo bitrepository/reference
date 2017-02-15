@@ -31,7 +31,7 @@ import java.util.Collection;
 /**
  * Interface for the file stores and the reference archive.
  */
-public interface FileStore {
+public interface FileStore extends AutoCloseable {
     /**
      * Retrieves the wanted file.
      * @param fileID The id of the wanted file.
@@ -120,5 +120,6 @@ public interface FileStore {
     /**
      * Closes all the archives.
      */
+    @Override
     void close();
 }

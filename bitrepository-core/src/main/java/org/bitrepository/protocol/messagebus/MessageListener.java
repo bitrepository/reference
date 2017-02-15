@@ -32,7 +32,7 @@ import org.bitrepository.protocol.MessageContext;
  *
  * If an implementation does not support a method, it may throw {@link UnsupportedOperationException}
  */
-public interface MessageListener {
+public interface MessageListener extends AutoCloseable {
     /**
      * Action to perform upon receiving a general message.
      *
@@ -40,4 +40,6 @@ public interface MessageListener {
      * @param messageContext Includes information about the message not already included in the message object.
      */
     void onMessage(Message message, MessageContext messageContext);
+
+    default void close(){ }
 }

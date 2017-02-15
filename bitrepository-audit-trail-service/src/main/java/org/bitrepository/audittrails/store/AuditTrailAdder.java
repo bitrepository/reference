@@ -32,7 +32,7 @@ import org.bitrepository.service.database.DBConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AuditTrailAdder {
+public class AuditTrailAdder implements AutoCloseable {
 
     /**
      * SQL for conditionally adding an collectionID to the database.
@@ -243,8 +243,9 @@ public class AuditTrailAdder {
             throw new SQLException("Rolled back transaction due to failure", e);
         }
     }
-    
-    private void close() {
+
+    @Override
+    public void close() {
         try {
             if(addCollectionIDPs != null) {
                 addCollectionIDPs.close();

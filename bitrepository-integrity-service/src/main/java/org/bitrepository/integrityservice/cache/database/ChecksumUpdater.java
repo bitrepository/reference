@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  *  and 2) the pillar calculated a checksum meaning that at that time the pillar must have had the 
  *  file.  
  */
-public class ChecksumUpdater {
+public class ChecksumUpdater implements AutoCloseable {
 
     /**
      * SQL for conditional insert of the fileID in the files table.
@@ -193,7 +193,8 @@ public class ChecksumUpdater {
         conn.commit();
     }
 
-    private void close() throws SQLException {
+    @Override
+    public void close() throws SQLException {
         if(updateChecksumPS != null) {
             updateChecksumPS.close();
         }

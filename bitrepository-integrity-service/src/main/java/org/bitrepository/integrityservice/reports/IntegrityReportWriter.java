@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Class to handle writing (streaming) report parts, and generation (writing) of the final report 
  */
-public class IntegrityReportWriter {
+public class IntegrityReportWriter implements AutoCloseable{
     private static final Logger log = LoggerFactory.getLogger(IntegrityReportWriter.class);
     
     private final IntegrityReportPartWriter missingFilesWriter;
@@ -162,16 +162,17 @@ public class IntegrityReportWriter {
      * Only call close after finished using object.
      * @throws IOException if an I/O error occurs
      */
+    @Override
     public void close() throws IOException {
         if(reportFileWriter != null) {
             reportFileWriter.close();
         }
         
-        deletedFilesWriter2.closeAll();
-        missingChecksumsWriter.closeAll();
-        checksumIssuesWriter.closeAll();
-        missingFilesWriter.closeAll();
-        obsoleteChecksumsWriter.closeAll();
+        deletedFilesWriter2.close();
+        missingChecksumsWriter.close();
+        checksumIssuesWriter.close();
+        missingFilesWriter.close();
+        obsoleteChecksumsWriter.close();
     }
     
     /**

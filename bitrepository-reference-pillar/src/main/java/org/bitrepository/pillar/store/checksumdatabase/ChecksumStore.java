@@ -30,7 +30,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 /**
  * Interface for the storage of checksums.
  */
-public interface ChecksumStore {
+public interface ChecksumStore extends AutoCloseable {
     /**
      * Retrieve the calculation date for the checksum of the file.
      * @param fileID The id of the file.
@@ -130,5 +130,6 @@ public interface ChecksumStore {
     /**
      * Closes and cleans up the ChecksumStore.
      */
+    @Override
     void close();
 }

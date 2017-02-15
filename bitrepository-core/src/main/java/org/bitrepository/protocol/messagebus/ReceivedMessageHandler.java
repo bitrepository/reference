@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Takes care of handling the further processing by the listeners in separated thread.
  */
-public class ReceivedMessageHandler {
+public class ReceivedMessageHandler implements AutoCloseable {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final ExecutorModel executorModel;
     private final ThreadFactory threadFactory = new DefaultThreadFactory("ReceivedMessageHandler-", Thread.NORM_PRIORITY ,false);
@@ -65,6 +65,7 @@ public class ReceivedMessageHandler {
     /**
      * Use this to close down the running executors.
      */
+    @Override
     public void close() {
         log.debug("Shutting down handling of received messages");
         executorModel.shutdown();

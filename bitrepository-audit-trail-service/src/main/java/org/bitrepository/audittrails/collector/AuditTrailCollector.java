@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Manages the retrieval of of AuditTrails from contributors.
  */
-public class AuditTrailCollector {
+public class AuditTrailCollector implements AutoCloseable {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The task for collecting the audits.*/
     private final Map<String, AuditTrailCollectionTimerTask> collectorTasks = new HashMap<String, 
@@ -136,6 +136,7 @@ public class AuditTrailCollector {
     /**
      * Closes the AuditTrailCollector.
      */
+    @Override
     public void close() {
         for(AuditTrailCollectionTimerTask atctt : collectorTasks.values()) {
             atctt.cancel();

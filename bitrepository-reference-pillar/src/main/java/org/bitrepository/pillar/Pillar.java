@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * This will either be a File Reference Pillar or a Checksum Reference Pillar, depending on the type of
  * storage model.
  */
-public class Pillar {
+public class Pillar implements AutoCloseable {
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The messagebus for the pillar.*/
@@ -110,6 +110,7 @@ public class Pillar {
     /**
      * Closes the ReferencePillar.
      */
+    @Override
     public void close() {
         try {
             mediator.close();

@@ -24,7 +24,7 @@ package org.bitrepository.service.contributor;
 /**
  * The interface for the contributor mediator.
  */
-public interface ContributorMediator {
+public interface ContributorMediator extends AutoCloseable {
 
     /**
      * Start the mediator before use.

@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * Class to handle the creation of a new statistics entry.
  * The entries covers the entry point (stat) and detailed statistics for the collection and each of its pillars. 
  */
-public class StatisticsCreator {
+public class StatisticsCreator implements AutoCloseable {
 
     private final String insertStatisticEntrySql = "INSERT INTO stats (stat_time, last_update, collectionID)"
             + " VALUES (?, ?, ?)";
@@ -131,8 +131,9 @@ public class StatisticsCreator {
         insertPillarStatPS.executeBatch();
         conn.commit();
     }
-    
-    private void close() throws SQLException {
+
+    @Override
+    public void close() throws SQLException {
         if(insertStatisticsEntryPS != null) {
         	insertStatisticsEntryPS.close();
         }

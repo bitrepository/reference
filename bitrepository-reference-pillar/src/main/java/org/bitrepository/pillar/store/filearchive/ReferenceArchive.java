@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Class for managing the files for the reference pillar. This supports a single CollectionID.
  */
-public class ReferenceArchive {
+public class ReferenceArchive implements AutoCloseable {
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The maximum buffer for the stream interaction.*/
     public static final int MAX_BUFFER_SIZE = 32 * 1024;
@@ -273,6 +273,7 @@ public class ReferenceArchive {
     /**
      * Closes the reference archive.
      */
+    @Override
     public void close() {
         directories.clear();
     }

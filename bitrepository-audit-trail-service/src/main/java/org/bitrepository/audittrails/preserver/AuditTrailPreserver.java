@@ -21,11 +21,12 @@
  */
 package org.bitrepository.audittrails.preserver;
 
+
 /**
  * Interface for the preservation of audit trails.
  * This will automatically preserve the audit trails with a given interval.
  */
-public interface AuditTrailPreserver {
+public interface AuditTrailPreserver extends AutoCloseable {
     /**
      * Start the preservation of audit trails.
      */

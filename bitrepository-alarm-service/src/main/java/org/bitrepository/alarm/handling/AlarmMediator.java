@@ -83,6 +83,7 @@ public class AlarmMediator implements MessageListener {
     /**
      * Close the handlers respectively and remove this mediator from the destination.
      */
+    @Override
     public void close() {
         if(handlers != null) {
             for(AlarmHandler handler : handlers) {

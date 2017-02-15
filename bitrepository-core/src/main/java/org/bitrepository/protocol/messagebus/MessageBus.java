@@ -65,6 +65,7 @@ public interface MessageBus extends MessageSender, AutoCloseable{
      * Closes the messagebus connection so that everything can be shutdown nicely.
      * @throws JMSException If the MessageBus cannot be closed
      */
+    @Override
     void close() throws JMSException;
 
     /**

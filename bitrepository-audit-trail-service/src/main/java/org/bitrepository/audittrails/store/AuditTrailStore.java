@@ -33,7 +33,7 @@ import org.bitrepository.bitrepositoryelements.FileAction;
 /**
  * Interface for the storage of audit trail information for the AuditTrailService.
  */
-public interface AuditTrailStore {
+public interface AuditTrailStore extends AutoCloseable {
     /** 
      * Obtain AuditEventIterator for extracting audit trails from the store.
      * When done with the iterator, the user should ensure that it is closed. 
@@ -109,5 +109,6 @@ public interface AuditTrailStore {
     /**
      * Closes the store.
      */
+    @Override
     public void close();
 }

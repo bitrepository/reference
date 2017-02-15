@@ -38,7 +38,7 @@ import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.*;
 /**
  * Class to iterate over the set of AuditTrailEvents produced by a resultset.  
  */
-public class AuditEventIterator {
+public class AuditEventIterator implements AutoCloseable {
 
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -57,6 +57,7 @@ public class AuditEventIterator {
      * Method to explicitly close the ResultSet in the AuditEventIterator 
      * @throws SQLException in case of a sql error
      */
+    @Override
     public void close() throws SQLException {
         if(auditResultSet != null) {
             auditResultSet.close();

@@ -29,7 +29,7 @@ import org.bitrepository.bitrepositorymessages.AlarmMessage;
 /**
  * Interface for alarm handling.
  */
-public interface AlarmHandler {
+public interface AlarmHandler extends AutoCloseable {
     
     /**
      * Handle the actual alarm messages.
