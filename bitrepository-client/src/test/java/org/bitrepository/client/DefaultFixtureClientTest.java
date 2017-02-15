@@ -81,14 +81,14 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
      */
     protected void renewConversationMediator() {
         if (conversationMediator != null) {
-            conversationMediator.shutdown();
+            conversationMediator.close();
         }
         conversationMediator = new CollectionBasedConversationMediator(settingsForCUT, securityManager);
     }
 
     private void shutdownConversationMediator() {
         if (conversationMediator != null) {
-            conversationMediator.shutdown();
+            conversationMediator.close();
         }
         conversationMediator = null;
     }

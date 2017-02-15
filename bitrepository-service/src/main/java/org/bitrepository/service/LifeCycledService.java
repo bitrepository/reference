@@ -23,11 +23,11 @@ package org.bitrepository.service;
 
 /** Provides start() and shutdown() methods. */
 
-public interface LifeCycledService {
+public interface LifeCycledService extends AutoCloseable {
     void start();
     
     /**
      * Method called to shutdown the service. 
      */
-    void shutdown();
+    void close();
 }

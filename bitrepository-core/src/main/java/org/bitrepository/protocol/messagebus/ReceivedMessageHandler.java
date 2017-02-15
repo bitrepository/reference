@@ -68,7 +68,7 @@ public class ReceivedMessageHandler implements AutoCloseable {
     @Override
     public void close() {
         log.debug("Shutting down handling of received messages");
-        executorModel.shutdown();
+        executorModel.close();
     }
 
     /**
@@ -101,7 +101,7 @@ public class ReceivedMessageHandler implements AutoCloseable {
     /**
      * Contains the different executors based on collections and message types.
      */
-    private class ExecutorModel {
+    private class ExecutorModel implements AutoCloseable {
         private CollectionExecutorModel defaultCollectionExecutorModel;
         private final Map<String, CollectionExecutorModel> collectionExecutorModelMap =
                 new HashMap<String, CollectionExecutorModel>();
@@ -153,9 +153,10 @@ public class ReceivedMessageHandler implements AutoCloseable {
             return executor;
         }
 
-        public void shutdown() {
+        @Override
+        public void close() {
             if (defaultCollectionExecutorModel != null) {
-                defaultCollectionExecutorModel.shutdown();
+                defaultCollectionExecutorModel.close();
             }
         }
 
@@ -172,7 +173,7 @@ public class ReceivedMessageHandler implements AutoCloseable {
         /**
          * Contain the executors for a single collection.
          */
-        private class CollectionExecutorModel {
+        private class CollectionExecutorModel implements AutoCloseable {
             private ExecutorService defaultexecutor;
             private final Map<MessageCategory, ExecutorService> categoryExecutorMap = new HashMap<MessageCategory, ExecutorService>();
             private final Map<String, ExecutorService> messageExecutorMap = new HashMap<String, ExecutorService>();
@@ -204,7 +205,7 @@ public class ReceivedMessageHandler implements AutoCloseable {
                 return executor;
             }
 
-            void shutdown() {
+            public void close() {
                 if (defaultexecutor != null) {
                     defaultexecutor.shutdown();
                 }

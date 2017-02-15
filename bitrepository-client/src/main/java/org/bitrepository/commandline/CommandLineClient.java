@@ -54,7 +54,7 @@ import org.bitrepository.protocol.security.SecurityManager;
 /**
  * Defines the common functionality for command-line-clients.
  */
-public abstract class CommandLineClient {
+public abstract class CommandLineClient implements AutoCloseable {
     private final String componentID;
 
     /**
@@ -71,7 +71,7 @@ public abstract class CommandLineClient {
                 System.exit(Constants.EXIT_OPERATION_FAILURE);
             }
         } finally {
-            shutdown();
+            close();
         }
     }
 
@@ -405,7 +405,8 @@ public abstract class CommandLineClient {
      * Closes the connections, e.g. to the message-bus.
      * @throws JMSException If the message-bus cannot be closed.
      */
-    public void shutdown() throws JMSException {
+    @Override
+    public void close() throws JMSException {
         MessageBus bus = MessageBusManager.getMessageBus();
         if(bus != null) {
             bus.close();

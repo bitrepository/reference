@@ -212,7 +212,7 @@ public final class IntegrityServiceManager {
         public void start() {}
 
         @Override
-        public void shutdown() {
+        public void close() {
             if(messageBus != null) {
                 try {
                     messageBus.close();

@@ -60,7 +60,7 @@ public abstract class AlarmServiceDAO implements AlarmStore {
     }
 
     @Override
-    public void shutdown() {
+    public void close() {
         dbConnector.destroy();
     }
 }

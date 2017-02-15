@@ -80,7 +80,7 @@ public class BasicAlarmService implements AlarmService {
     }
     
     @Override
-    public void shutdown() {
+    public void close() {
         if(alarmMediator != null) {
             alarmMediator.close();
         }
@@ -88,7 +88,7 @@ public class BasicAlarmService implements AlarmService {
             contributorMediator.close();
         }
         if (store != null) {
-            store.shutdown();
+            store.close();
         }
         try {
             messageBus.close();

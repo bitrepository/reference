@@ -75,7 +75,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     }
 
     @Override
-    public void shutdown() {
+    public void close() {
         messagebus.removeListener(settings.getReceiverDestinationID(), this);
     }
 

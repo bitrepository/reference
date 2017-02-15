@@ -41,7 +41,8 @@ public interface ConversationMediator extends MessageListener {
     /**
      * Will stop this <code>ConversationMediator</code> from listening to the message bus.
      */
-    void shutdown();
+    @Override
+    void close();
 
     /**
      * Start a conversation of type T and begin delegating messages to this conversation when received.

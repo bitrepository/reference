@@ -117,7 +117,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
 
         
         addStep("Shutdown", "");
-        service.shutdown();
+        service.close();
     }
 
 

@@ -49,7 +49,7 @@ public class EmbeddedPillar implements LifeCycledService {
     public void start() {}
 
     @Override
-    public void shutdown() {
+    public void close() {
         pillar.close();
     }
 

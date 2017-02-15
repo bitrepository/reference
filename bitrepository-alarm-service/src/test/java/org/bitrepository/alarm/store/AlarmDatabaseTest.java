@@ -50,7 +50,7 @@ import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_TAB
 /**
  * Sees if alarms are correctly stored in the database.
  */
-public class AlarmDatabaseTest extends ExtendedTestCase {
+public class AlarmDatabaseTest extends ExtendedTestCase implements AutoCloseable {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
     String fileID = "TEST-FILE-ID-" + new Date().getTime();
@@ -83,7 +83,8 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
     }
 
     @AfterClass (alwaysRun = true)
-    public void shutdown() throws Exception {
+    @Override
+    public void close() throws Exception {
         addStep("Cleanup after test.", "Should remove directory with test material.");
         if(dbDir != null) {
             FileUtils.delete(dbDir);

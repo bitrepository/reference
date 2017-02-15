@@ -91,7 +91,7 @@ public abstract class AbstractBitrepositoryContextListener implements ServletCon
      * @param sce the servlet context event for the shutdown
      */
     public void contextDestroyed(ServletContextEvent sce) {
-        getService().shutdown();
+        getService().close();
         log.debug("Servlet context destroyed");
     }
 }

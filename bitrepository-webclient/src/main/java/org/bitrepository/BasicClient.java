@@ -30,7 +30,7 @@ import org.bitrepository.settings.repositorysettings.RepositorySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BasicClient {
+public class BasicClient implements AutoCloseable {
     private Settings settings;
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -49,7 +49,8 @@ public class BasicClient {
         return collections;
     }
 
-    public void shutdown() {
+    @Override
+    public void close() {
         // currently nothing to do here
     }
 

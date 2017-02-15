@@ -45,7 +45,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeSuite;
 
 import java.util.Arrays;
 
@@ -169,7 +168,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
     protected void stopEmbeddedReferencePillar() {
         if (embeddedPillar != null) {
-            embeddedPillar.shutdown();
+            embeddedPillar.close();
         }
     }
     @Override

@@ -145,7 +145,7 @@ public class AuditTrailService implements LifeCycledService {
     }
 
     @Override
-    public void shutdown() {
+    public void close() {
         collector.close();
         store.close();
         mediator.close();

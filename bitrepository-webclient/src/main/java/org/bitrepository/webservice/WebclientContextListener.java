@@ -68,7 +68,7 @@ public class WebclientContextListener implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         BasicClient client = BasicClientFactory.getInstance();
-        client.shutdown(); 
+        client.close();
         log.debug("Servlet context destroyed");
     }
 }
