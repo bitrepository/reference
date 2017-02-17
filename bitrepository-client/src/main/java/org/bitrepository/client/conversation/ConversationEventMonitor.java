@@ -417,4 +417,19 @@ public class ConversationEventMonitor {
             }
         }
     }
+
+
+    @Override
+    public String toString() {
+        return "ConversationEventMonitor{" +
+               ", collectionID='" + collectionID + '\'' +
+               ", conversationID='" + conversationID + '\'' +
+               ", operationType=" + operationType +
+               ", fileID='" + fileID + '\'' +
+               ", eventHandler=" + eventHandler +
+               ", contributorCompleteEvents=" + contributorCompleteEvents +
+               ", contributorFailedEvents=" + contributorFailedEvents +
+               ", failOnComponentFailure=" + failOnComponentFailure +
+               '}';
+    }
 }

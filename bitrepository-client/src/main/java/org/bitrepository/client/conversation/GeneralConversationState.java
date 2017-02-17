@@ -152,9 +152,10 @@ public abstract class GeneralConversationState implements ConversationState {
 
     private void failConversation(Exception exception) {
         scheduledTimeout.cancel(true);
-        getContext().getMonitor().operationFailed(exception.getMessage());
-        getContext().setState(new FinishedState(getContext()));
-        log.error("Failing conversation with exception", exception);
+        ConversationContext context = getContext();
+        context.getMonitor().operationFailed(exception.getMessage());
+        context.setState(new FinishedState(context));
+        log.error("Failing conversation '{}' with exception", context, exception);
     }
 
     protected void initializeMessage(MessageRequest msg) {
