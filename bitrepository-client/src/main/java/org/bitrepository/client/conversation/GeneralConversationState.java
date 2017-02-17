@@ -186,7 +186,7 @@ public abstract class GeneralConversationState implements ConversationState {
     /**
      * Implement by concrete states for sending the request starting this state.
      */
-    protected abstract void sendRequest() throws Exception;
+    protected abstract void sendRequest();
 
     /**
      * Implement by concrete states. Only messages from the indicated contributors and with the right type
