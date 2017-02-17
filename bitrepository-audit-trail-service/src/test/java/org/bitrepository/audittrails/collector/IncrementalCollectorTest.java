@@ -52,11 +52,14 @@ import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
+import org.bitrepository.common.DefaultThreadFactory;
+import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.AlarmDispatcher;
 import org.jaccept.structure.ExtendedTestCase;
 import org.mockito.ArgumentCaptor;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class IncrementalCollectorTest extends ExtendedTestCase{
@@ -64,7 +67,13 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
     public static final String TEST_COLLECTION = "dummy-collection";
     public static final String TEST_CONTRIBUTOR1 = "Contributor1";
     public static final String TEST_CONTRIBUTOR2 = "Contributor2";
-    
+    private DefaultThreadFactory threadFactory;
+
+    @BeforeClass(alwaysRun = true)
+    public void setup() throws Exception {
+        threadFactory = new DefaultThreadFactory(this.getClass().getSimpleName(), Thread.NORM_PRIORITY, false);
+    }
+
     @Test(groups = {"regressiontest"})
     public void singleIncrementTest() throws InterruptedException {
         addDescription("Verifies the behaviour in the simplest case with just one result set ");
@@ -79,7 +88,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
                 1, alarmDispatcher);
         Collection<String> contributors = Arrays.asList("Contributor1", "Contributors2");
         CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
-        Thread t = new Thread(collectionRunner);
+        Thread t = threadFactory.newThread(collectionRunner);
         t.start();
         
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
@@ -135,7 +144,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
                 1, alarmDispatcher);
         Collection<String> contributors = Arrays.asList(TEST_CONTRIBUTOR1, TEST_CONTRIBUTOR2);
         CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
-        Thread t = new Thread(collectionRunner);
+        Thread t = threadFactory.newThread(collectionRunner);
         t.start();
      
         verify(store, timeout(3000).times(contributors.size()))
@@ -213,7 +222,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         Collection<String> contributors = Arrays.asList(TEST_CONTRIBUTOR1, TEST_CONTRIBUTOR2);
 
         CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
-        Thread t = new Thread(collectionRunner);
+        Thread t = threadFactory.newThread(collectionRunner);
         t.start();
 
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
@@ -283,7 +292,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         Collection<String> contributors = Arrays.asList(TEST_CONTRIBUTOR1, TEST_CONTRIBUTOR2);
 
         CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
-        Thread t = new Thread(collectionRunner);
+        Thread t = threadFactory.newThread(collectionRunner);
         t.start();
         Thread.sleep(100);
 
