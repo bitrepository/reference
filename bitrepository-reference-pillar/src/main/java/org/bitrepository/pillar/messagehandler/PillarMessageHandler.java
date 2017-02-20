@@ -129,7 +129,7 @@ public abstract class PillarMessageHandler<T extends MessageRequest> extends Abs
     protected void validateFileIDFormat(String fileID, String collectionID) throws RequestHandlerException {
         ResponseInfo ri = fileIDValidator.validateFileID(fileID);
         if(ri == null) {
-            if(fileID.startsWith("/") || fileID.contains("[..]")) {
+            if(fileID.startsWith("/") || fileID.contains("..")) {
                 ri = new ResponseInfo();
                 ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
                 ri.setResponseText("Invalid");                
