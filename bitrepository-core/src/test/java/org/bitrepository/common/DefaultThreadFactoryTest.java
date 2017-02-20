@@ -2,14 +2,14 @@ package org.bitrepository.common;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.IThrowableProxy;
-import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
-import org.mockito.ArgumentMatcher;
+import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
-import static org.mockito.Matchers.argThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,13 +26,20 @@ public class DefaultThreadFactoryTest {
         // Technique from https://dzone.com/articles/unit-testing-asserting-line
 
         //Get the logger as a logback logger so we can set properties on it
-        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(
+        ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(
                 ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
 
         //We mock an appender so we can catch the log messages
         final Appender<ILoggingEvent> mockAppender = mock(Appender.class);
+
+        //Nessesary for the logback framework, all appenders must have a name
         when(mockAppender.getName()).thenReturn("MOCK");
-        root.addAppender(mockAppender);
+        //Add the appender to the root logger
+        rootLogger.addAppender(mockAppender);
+
+        //Setup a argumentCaptor for the ILoggingEvent that the appender will be called with
+        ArgumentCaptor<ILoggingEvent> argument = ArgumentCaptor.forClass(ILoggingEvent.class);
+
 
         //Create the new thread factory
         DefaultThreadFactory factory = new DefaultThreadFactory(this.getClass().getSimpleName(), Thread.NORM_PRIORITY,
@@ -42,26 +49,19 @@ public class DefaultThreadFactoryTest {
         Thread thread = factory.newThread(() -> {
             throw new RuntimeException(message);
         });
-        //Start the thread and wait for it to die.
+        //Start the thread
         thread.start();
+        //Wait for the thread to die
         thread.join();
 
-        //An error message should now have been logged
-        verify(mockAppender).doAppend(argThat(new ArgumentMatcher<LoggingEvent>() {
-            @Override
-            public boolean matches(final Object argument) {
-                LoggingEvent loggingEvent = (LoggingEvent) argument;
+        //Capture the argument from the appender
+        verify(mockAppender).doAppend(argument.capture());
+        ILoggingEvent logLine = argument.getValue();
 
-                boolean level = loggingEvent.getLevel() == Level.ERROR;
+        assertThat( logLine.getLevel(), is( equalTo( Level.ERROR)));
 
-                String expectedName = DefaultThreadFactoryTest.class.getName();
-                String loggerName = loggingEvent.getLoggerName();
-                boolean name = loggerName.equals(expectedName);
+        assertThat( logLine.getLoggerName(), is( equalTo( DefaultThreadFactoryTest.class.getName())));
 
-                IThrowableProxy throwException = loggingEvent.getThrowableProxy();
-                boolean message = throwException.getMessage().equals(DefaultThreadFactoryTest.this.message);
-                return level && name && message;
-            }
-        }));
+        assertThat( logLine.getThrowableProxy().getMessage(), is( equalTo( DefaultThreadFactoryTest.this.message)));
     }
 }
