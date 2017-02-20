@@ -135,4 +135,19 @@ public class ConversationContext {
     public void addChecksumPillar(String pillarID) {
         checksumPillars.add(pillarID);
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName()+"{" +
+               "collectionID='" + collectionID + '\'' +
+               ", conversationID='" + conversationID + '\'' +
+               ", clientID='" + clientID + '\'' +
+               ", fileID='" + fileID + '\'' +
+               ", contributors=" + contributors +
+               ", monitor=" + monitor +
+               ", auditTrailInformation='" + auditTrailInformation + '\'' +
+               ", state=" + state +
+               ", checksumPillars=" + checksumPillars +
+               '}';
+    }
 }

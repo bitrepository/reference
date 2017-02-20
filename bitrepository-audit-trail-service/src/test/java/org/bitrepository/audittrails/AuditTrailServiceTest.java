@@ -30,6 +30,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Date;
+import java.util.concurrent.ThreadFactory;
 
 import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
@@ -41,6 +42,7 @@ import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.service.AlarmDispatcher;
@@ -57,8 +59,9 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
     
     public static final String TEST_COLLECTION = "dummy-collection";
     public static final String DEFAULT_CONTRIBUTOR = "Contributor1";
- 
-    
+    private ThreadFactory threadFactory;
+
+
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("AuditTrailServiceUnderTest");
@@ -66,6 +69,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         settings.getRepositorySettings().getCollections().getCollection().clear();
         c.setID(TEST_COLLECTION);
         settings.getRepositorySettings().getCollections().getCollection().add(c);
+        threadFactory = new DefaultThreadFactory(this.getClass().getSimpleName(),Thread.NORM_PRIORITY);
     }
     
     @Test(groups = {"unstable"})
@@ -90,7 +94,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         
         addStep("Try to collect audit trails.", "Should make a call to the client.");
         CollectionRunner collectionRunner = new CollectionRunner(service);
-        Thread t = new Thread(collectionRunner);
+        Thread t = threadFactory.newThread(collectionRunner);
         t.start();
         
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);

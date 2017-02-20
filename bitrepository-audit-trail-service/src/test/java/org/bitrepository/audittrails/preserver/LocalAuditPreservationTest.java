@@ -41,6 +41,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -63,8 +64,9 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
     String ACTOR = "actor";
     String collectionID;
     private URL testUploadUrl;
+    private DefaultThreadFactory threadFactory;
 
-    
+
     @BeforeClass (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("LocalAuditPreservationUnderTest");
@@ -75,6 +77,8 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         
         collectionID = c.getID();
         testUploadUrl = new URL("http://TestURL.com");
+        threadFactory = new DefaultThreadFactory(this.getClass().getSimpleName(), Thread.NORM_PRIORITY, false);
+
     }
 
 
@@ -194,7 +198,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
                 ChecksumDataForFileTYPE checksumForValidationAtPillar, ChecksumSpecTYPE checksumRequestsForValidation,
                 final EventHandler eventHandler, String auditTrailInformation) {
             callsToPutFile++;
-            new Thread(new Runnable() {
+            threadFactory.newThread(new Runnable() {
                 @Override
                 public void run() {
                     try {

@@ -42,14 +42,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implements the generic conversation state functionality, 
+ * Implements the generic conversation state functionality,
  * like timeouts and the definition of the common state attributes.
  */
 public abstract class GeneralConversationState implements ConversationState {
     private final Logger log = LoggerFactory.getLogger(getClass());
     /** The scheduler used for timeout checks. */
     private static final ScheduledExecutorService timer = Executors.newScheduledThreadPool(1,
-            new DefaultThreadFactory("ConversationState-Timeout-", Thread.NORM_PRIORITY));
+                                                                                           new DefaultThreadFactory("ConversationState-Timeout-", Thread.NORM_PRIORITY));
     private ScheduledFuture<?> scheduledTimeout;
     /** For response bookkeeping */
     private final ContributorResponseStatus responseStatus;
@@ -69,14 +69,18 @@ public abstract class GeneralConversationState implements ConversationState {
      * </ol>
      */
     public void start() {
-        if (!responseStatus.getOutstandComponents().isEmpty()) {
-            if (getTimeoutValue() > 0) {
-                scheduledTimeout = timer.schedule(new TimeoutHandler(), getTimeoutValue(), TimeUnit.MILLISECONDS);
+        try {
+            if (!responseStatus.getOutstandComponents().isEmpty()) {
+                if (getTimeoutValue() > 0) {
+                    scheduledTimeout = timer.schedule(new TimeoutHandler(), getTimeoutValue(), TimeUnit.MILLISECONDS);
+                }
+                sendRequest();
+            } else {
+                // No contributors need to be called for the operation to finish.
+                changeState();
             }
-            sendRequest();
-        } else {
-            // No contributors need to be called for the operation to finish.
-            changeState();
+        } catch (Exception e) {
+            failConversation(e);
         }
     }
 
@@ -112,8 +116,8 @@ public abstract class GeneralConversationState implements ConversationState {
             }
         } catch (UnexpectedResponseException e) {
             getContext().getMonitor().invalidMessage(message, e);
-        } catch (UnableToFinishException e) {
-            failConversation(e.getMessage());
+        } catch (Exception e) {
+            failConversation(e);
         }
     }
 
@@ -128,8 +132,8 @@ public abstract class GeneralConversationState implements ConversationState {
             try {
                 logStateTimeout();
                 changeState();
-            } catch (UnableToFinishException e) {
-                failConversation(e.getMessage());
+            } catch (Exception e) {
+                failConversation(e);
             } catch (Throwable throwable) {
                 log.error("Failed to handle timeout correctly", throwable);
             }
@@ -139,20 +143,19 @@ public abstract class GeneralConversationState implements ConversationState {
     /**
      * Changes to the next state.
      */
-    private void changeState() {
-        try {
-            GeneralConversationState nextState = completeState();
-            getContext().setState(nextState);
-            nextState.start();
-        } catch (UnableToFinishException e) {
-            failConversation(e.getMessage());
-        }
+    private void changeState() throws UnableToFinishException {
+        GeneralConversationState nextState = completeState();
+        getContext().setState(nextState);
+        nextState.start();
+
     }
 
-    private void failConversation(String message) {
+    private void failConversation(Exception exception) {
         scheduledTimeout.cancel(true);
-        getContext().getMonitor().operationFailed(message);
-        getContext().setState(new FinishedState(getContext()));
+        ConversationContext context = getContext();
+        context.getMonitor().operationFailed(exception.getMessage());
+        context.setState(new FinishedState(context));
+        log.error("Failing conversation '{}' with exception", context, exception);
     }
 
     protected void initializeMessage(MessageRequest msg) {
@@ -176,8 +179,8 @@ public abstract class GeneralConversationState implements ConversationState {
         return responseStatus.getOutstandComponents();
     }
 
-    /** Must be implemented by subclasses to log informative timeout information 
-     * @throws UnableToFinishException when failing to finish in due time 
+    /** Must be implemented by subclasses to log informative timeout information
+     * @throws UnableToFinishException when failing to finish in due time
      */
     protected abstract void logStateTimeout() throws UnableToFinishException ;
 
@@ -190,13 +193,13 @@ public abstract class GeneralConversationState implements ConversationState {
      * Implement by concrete states. Only messages from the indicated contributors and with the right type
      * will be delegate to this method.
      * @param response The MessageResponse to process
-     * @return boolean Return true if response should be considered a final response, false if not. 
-     *      This is intended for use when a failure response results in a retry, so the component is not finished. 
+     * @return boolean Return true if response should be considered a final response, false if not.
+     *      This is intended for use when a failure response results in a retry, so the component is not finished.
      * @throws UnexpectedResponseException The response could not be processed successfully.
-     * @throws UnableToFinishException when unable to finish 
+     * @throws UnableToFinishException when unable to finish
      */
-    protected abstract boolean processMessage(MessageResponse response) throws UnexpectedResponseException, 
-        UnableToFinishException;
+    protected abstract boolean processMessage(MessageResponse response) throws UnexpectedResponseException,
+            UnableToFinishException;
 
     /**
      * @return The conversation context used for this conversation.

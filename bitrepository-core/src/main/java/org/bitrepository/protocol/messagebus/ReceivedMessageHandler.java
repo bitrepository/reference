@@ -27,8 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.utils.MessageCategoryUtils;
 import org.bitrepository.settings.referencesettings.MessageCategory;
@@ -43,6 +45,7 @@ import org.slf4j.LoggerFactory;
 public class ReceivedMessageHandler {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final ExecutorModel executorModel;
+    private final ThreadFactory threadFactory = new DefaultThreadFactory("ReceivedMessageHandler-", Thread.NORM_PRIORITY ,false);
 
     public ReceivedMessageHandler(MessageThreadPools messageThreadPools) {
         executorModel = new ExecutorModel(messageThreadPools);
@@ -130,7 +133,7 @@ public class ReceivedMessageHandler {
                 defaultCollectionExecutorModel = new CollectionExecutorModel();
             }
             if (defaultCollectionExecutorModel.defaultexecutor == null) {
-                defaultCollectionExecutorModel.defaultexecutor = Executors.newCachedThreadPool();
+                defaultCollectionExecutorModel.defaultexecutor = Executors.newCachedThreadPool(threadFactory);
             }
         }
 
@@ -157,11 +160,11 @@ public class ReceivedMessageHandler {
 
         private ExecutorService createExecutorService(BigInteger poolSize) {
             if (poolSize == null) {
-                return Executors.newCachedThreadPool();
+                return Executors.newCachedThreadPool(threadFactory);
             } else if (poolSize.intValue() == 1) {
-                return Executors.newSingleThreadExecutor();
+                return Executors.newSingleThreadExecutor(threadFactory);
             } else {
-                return Executors.newFixedThreadPool(poolSize.intValue());
+                return Executors.newFixedThreadPool(poolSize.intValue(),threadFactory);
             }
         }
 
