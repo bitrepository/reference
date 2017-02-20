@@ -58,10 +58,13 @@ public class DefaultThreadFactory implements ThreadFactory {
         Thread newThread = new Thread(r, prefix + "-Thread" +counter);
         newThread.setPriority(priority);
         newThread.setDaemon(daemonic);
-        newThread.setUncaughtExceptionHandler((thread, throwable) -> {
-            String throwingClass = throwable.getStackTrace()[0].getClassName();
-            Logger logger = LoggerFactory.getLogger(throwingClass);
-            logger.error("UncaughtExceptionHandler caught Exception:", throwable);
+        newThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread thread, Throwable throwable) {
+                String throwingClass = throwable.getStackTrace()[0].getClassName();
+                Logger logger = LoggerFactory.getLogger(throwingClass);
+                logger.error("UncaughtExceptionHandler caught Exception:", throwable);
+            }
         });
         counter++;
         return newThread;
