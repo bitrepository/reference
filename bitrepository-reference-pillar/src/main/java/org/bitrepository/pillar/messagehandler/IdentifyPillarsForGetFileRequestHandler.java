@@ -74,7 +74,7 @@ public class IdentifyPillarsForGetFileRequestHandler
         }
 
         validateCollectionID(request);
-        validateFileIDFormat(request.getFileID());
+        validateFileIDFormat(request.getFileID(), request.getCollectionID());
         
         checkThatFileIsAvailable(request);
     }
@@ -102,7 +102,6 @@ public class IdentifyPillarsForGetFileRequestHandler
      */
     private void checkThatFileIsAvailable(IdentifyPillarsForGetFileRequest message) 
             throws RequestHandlerException {
-        validateFileIDFormat(message.getFileID());
         getPillarModel().verifyFileExists(message.getFileID(), message.getCollectionID());
     }
     

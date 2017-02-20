@@ -71,7 +71,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
     protected void validateRequest(IdentifyPillarsForReplaceFileRequest request, MessageContext messageContext) 
             throws RequestHandlerException {
         validateCollectionID(request);
-        validateFileIDFormat(request.getFileID());
+        validateFileIDFormat(request.getFileID(), request.getCollectionID());
         checkThatRequestedFileIsAvailable(request);
         checkSpaceForStoringNewFile(request);
     }

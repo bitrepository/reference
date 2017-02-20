@@ -84,7 +84,7 @@ public class ReplaceFileRequestHandler extends PerformRequestHandler<ReplaceFile
             throws RequestHandlerException {
         validateCollectionID(request);
         validatePillarId(request.getPillarID());
-        validateFileIDFormat(request.getFileID());
+        validateFileIDFormat(request.getFileID(), request.getCollectionID());
         
         if(!getPillarModel().hasFileID(request.getFileID(), request.getCollectionID())) {
             throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "The file '" + request.getFileID() 

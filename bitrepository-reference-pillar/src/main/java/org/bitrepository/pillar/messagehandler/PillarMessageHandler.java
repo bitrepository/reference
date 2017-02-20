@@ -26,6 +26,7 @@ package org.bitrepository.pillar.messagehandler;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileIDValidator;
@@ -121,10 +122,22 @@ public abstract class PillarMessageHandler<T extends MessageRequest> extends Abs
     
     /**
      * Uses the FileIDValidator to validate the format of a given file id.
+     * Also validates, that the file-id does not start with illegal 'path' characters (e.g. '..' or starts with a '/').
      * @param fileID The id to validate.
      * @throws RequestHandlerException If the id of the file was invalid.
      */
-    protected void validateFileIDFormat(String fileID) throws RequestHandlerException {
-        fileIDValidator.validateFileID(fileID);
+    protected void validateFileIDFormat(String fileID, String collectionID) throws RequestHandlerException {
+        ResponseInfo ri = fileIDValidator.validateFileID(fileID);
+        if(ri == null) {
+            if(fileID.startsWith("/") || fileID.contains("[..]")) {
+                ri = new ResponseInfo();
+                ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+                ri.setResponseText("Invalid");                
+            }
+        }
+        
+        if(ri != null) {
+            throw new InvalidMessageException(ri.getResponseCode(), ri.getResponseText(), collectionID);
+        }
     }
 }

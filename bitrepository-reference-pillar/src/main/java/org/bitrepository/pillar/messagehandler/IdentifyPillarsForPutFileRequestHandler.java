@@ -71,7 +71,7 @@ public class IdentifyPillarsForPutFileRequestHandler
     public void validateRequest(IdentifyPillarsForPutFileRequest request, MessageContext messageContext) 
             throws RequestHandlerException {
         validateCollectionID(request);
-        validateFileIDFormat(request.getFileID());
+        validateFileIDFormat(request.getFileID(), request.getCollectionID());
     }
     
     @Override

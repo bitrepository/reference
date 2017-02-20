@@ -36,7 +36,7 @@
   </Collections>
   <ProtocolSettings>
     <DefaultChecksumType>MD5</DefaultChecksumType>
-    <AllowedFileIDPattern>[a-zA-Z0-9\-_.]{5,250}</AllowedFileIDPattern>
+    <AllowedFileIDPattern>^[^ \./\p{Cntrl}][^\p{Cntrl}]{0,199}[^\s\p{Cntrl}]$</AllowedFileIDPattern>
     <RequireMessageAuthentication>false</RequireMessageAuthentication>
     <RequireOperationAuthorization>false</RequireOperationAuthorization>
     <RequireChecksumForDestructiveRequests>true</RequireChecksumForDestructiveRequests>

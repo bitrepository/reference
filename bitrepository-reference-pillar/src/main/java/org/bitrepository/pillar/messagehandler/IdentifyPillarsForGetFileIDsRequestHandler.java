@@ -69,7 +69,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
             throws RequestHandlerException {
         validateCollectionID(request);
         if (request.getFileIDs() != null && request.getFileIDs().getFileID() != null) {
-            validateFileIDFormat(request.getFileIDs().getFileID());
+            validateFileIDFormat(request.getFileIDs().getFileID(), request.getCollectionID());
             verifyFileIDExistence(request.getFileIDs(), request.getCollectionID());
         }
     }

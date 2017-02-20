@@ -80,7 +80,7 @@ public class PutFileRequestHandler extends PerformRequestHandler<PutFileRequest>
         }
         
         getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForNewFile(), request.getCollectionID());
-        validateFileIDFormat(request.getFileID());
+        validateFileIDFormat(request.getFileID(), request.getCollectionID());
         
         checkThatTheFileDoesNotAlreadyExist(request);
         checkSpaceForStoringNewFile(request);

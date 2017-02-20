@@ -89,7 +89,7 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
         validateCollectionID(request);
         validatePillarId(request.getPillarID());
         if (request.getFileIDs() != null && request.getFileIDs().getFileID() != null) {
-            validateFileIDFormat(request.getFileIDs().getFileID());
+            validateFileIDFormat(request.getFileIDs().getFileID(), request.getCollectionID());
             verifyFileIDExistence(request.getFileIDs(), request.getCollectionID());
         }
 

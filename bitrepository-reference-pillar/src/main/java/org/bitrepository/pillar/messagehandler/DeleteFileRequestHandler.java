@@ -85,7 +85,7 @@ public class DeleteFileRequestHandler extends PerformRequestHandler<DeleteFileRe
                     + "for destructive operation was supplied.", request.getCollectionID(), request.getFileID());
         }
         
-        validateFileIDFormat(request.getFileID());
+        validateFileIDFormat(request.getFileID(), request.getCollectionID());
 
         // Validate, that we have the requested file.
         if(!getPillarModel().hasFileID(request.getFileID(), request.getCollectionID())) {

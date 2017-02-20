@@ -77,7 +77,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
             throws RequestHandlerException {
         validateCollectionID(request);
         validatePillarId(request.getPillarID());
-        validateFileIDFormat(request.getFileID());
+        validateFileIDFormat(request.getFileID(), request.getCollectionID());
 
         getPillarModel().verifyFileExists(request.getFileID(), request.getCollectionID());
 
