@@ -36,22 +36,22 @@
     <PillarType>FILE</PillarType>
     <CollectionDirs>
       <CollectionID>books</CollectionID>
-      <FileDirs><!--foobarpattern-->var/reference2pillar</FileDirs>
+      <FileDirs><!--foobarpattern-->var/file2pillar/files</FileDirs>
     </CollectionDirs>
     <CollectionDirs>
       <CollectionID>dvds</CollectionID>
-      <FileDirs><!--foobarpattern-->var/reference2pillar</FileDirs>
+      <FileDirs><!--foobarpattern-->var/file2pillar/files</FileDirs>
     </CollectionDirs>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>
     <MaxAgeForChecksums>3600000</MaxAgeForChecksums>
     <AuditTrailContributerDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
-      <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/reference2pillar/auditcontributerdb</DatabaseURL>
+      <DatabaseURL>jdbc:derby:<!--foobarpattern-->var/file2pillar/auditcontributerdb</DatabaseURL>
     </AuditTrailContributerDatabase>
     <ChecksumDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
-      <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/reference2pillar/checksumdb</DatabaseURL>
+      <DatabaseURL>jdbc:derby:<!--foobarpattern-->var/file2pillar/checksumdb</DatabaseURL>
     </ChecksumDatabase>
     <AlarmLevel>ERROR</AlarmLevel>
   </PillarSettings>
