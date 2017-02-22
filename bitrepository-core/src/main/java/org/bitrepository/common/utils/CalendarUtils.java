@@ -54,7 +54,8 @@ public final class CalendarUtils {
     
     /**
      * Get an instance of CalendarUtils with a non-server default timezone
-     * @param timezone The TimeZone to use 
+     * @param timezone The TimeZone to use
+     * @return The CelandarUtils instance for the non-standard timezone 
      */
     public static CalendarUtils getInstance(TimeZone timezone) {
         CalendarUtils cu = new CalendarUtils();

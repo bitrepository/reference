@@ -24,6 +24,8 @@
  */
 package org.bitrepository.pillar;
 
+import org.bitrepository.common.settings.XMLFileSettingsLoader;
+
 /**
  * Method for launching the ReferencePillar. 
  * It just loads the configurations and uses them to create the PillarSettings needed for starting the ReferencePillar.

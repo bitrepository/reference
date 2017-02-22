@@ -36,7 +36,7 @@ public interface OperationAuthorizor {
      * @param operationType operationType, the type of operation that should be authorized.
      * @param signer The signer of the request.
      * @throws OperationAuthorizationException if the authorization fails.  
-     * @throws UnregisteredPermissionException 
+     * @throws UnregisteredPermissionException if no permissions could be found for the signer
      */
     abstract void authorizeOperation(String operationType, SignerId signer) throws OperationAuthorizationException, 
             UnregisteredPermissionException;
