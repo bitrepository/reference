@@ -33,19 +33,28 @@ import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class GeneralMessageHandlingTest extends MockedPillarTest {
+    
+    MockRequestHandler requestHandler;
+    
+    @BeforeMethod
+    public void setup() {
+        this.requestHandler = new MockRequestHandler(context, model);
+    }
+    
     @Test( groups = {"regressiontest", "pillartest"})
     public void testPillarMessageHandler() throws Exception {
         addDescription("Test the handling of the PillarMessageHandler super-class.");
         addStep("Setup", "Should be OK.");
-        MockRequestHandler mockRequestHandler = new MockRequestHandler(context, model);
         
         addStep("Test the pillar ID", "Should be Ok, with the id from settings, but not with another pillar id");
-        mockRequestHandler.validatePillarID(getPillarID());
+        requestHandler.validatePillarID(getPillarID());
         try {
-            mockRequestHandler.validatePillarID("asdfghjklæwetyguvpbmopijå.døtphstiøyizhdfvgnayegtxtæhjmdtuilsfm,s");
+            requestHandler.validatePillarID("asdfghjklæwetyguvpbmopijå.døtphstiøyizhdfvgnayegtxtæhjmdtuilsfm,s");
             Assert.fail("Should throw an IllegalArgumentException here!");
         } catch (IllegalArgumentException e) {
             // expected
@@ -53,44 +62,49 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void testPillarMessageHandlerValidateFileIDFormat() throws Exception {
-        addDescription("Test the validation of file id formats of the PillarMessageHandler super-class.");
-        addStep("Setup", "Should be OK.");
-        MockRequestHandler mockRequestHandler = new MockRequestHandler(context, model);
+    public void testPillarMessageHandlerValidateFileIDFormatDefaultFileId() throws Exception {
+        addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on the default file id");
+        requestHandler.validateFileIDFormat(DEFAULT_FILE_ID, collectionID);
+    }
         
-        addStep("Test default valid file id", "Should be Ok");
-        mockRequestHandler.validateFileIDFormat(DEFAULT_FILE_ID, collectionID);
-        
-        addStep("Test file id with folder structure", "Should be OK");
-        mockRequestHandler.validateFileIDFormat("paht/" + DEFAULT_FILE_ID, collectionID);
-        
-        addStep("Test file id with a path which tries to use a parent directory", "should throw an exception");
-        try {
-            mockRequestHandler.validateFileIDFormat("../../OTHER_COLLECTION/folderDir/test.txt", collectionID);
-            Assert.fail("Should throw an IllegalArgumentException here!");
-        } catch (RequestHandlerException e) {
-            // expected
+    @Test( groups = {"regressiontest", "pillartest"})
+    public void testPillarMessageHandlerValidateFileIDFormatFolderFileId() throws Exception {
+        addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id with directory path");
+        requestHandler.validateFileIDFormat("path/" + DEFAULT_FILE_ID, collectionID);
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"}, expectedExceptions = RequestHandlerException.class)
+    public void testPillarMessageHandlerValidateFileIDFormatParentFolderFileId() throws Exception {
+        addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id containing path to a parent directory");
+        requestHandler.validateFileIDFormat("../../OTHER_COLLECTION/folderDir/test.txt", collectionID);
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"}, expectedExceptions = RequestHandlerException.class)
+    public void testPillarMessageHandlerValidateFileIDFormatRootPathFileId() throws Exception {
+        addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id containing path from the root folder");
+        requestHandler.validateFileIDFormat("/usr/local/bin/execute.sh", collectionID);
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"}, expectedExceptions = RequestHandlerException.class)
+    public void testPillarMessageHandlerValidateFileIDFormatEnvHomePathFileId() throws Exception {
+        addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id containing path relative paths from the environment variable home folder");
+        requestHandler.validateFileIDFormat("$HOME/bin/execute.sh", collectionID);
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"}, expectedExceptions = RequestHandlerException.class)
+    public void testPillarMessageHandlerValidateFileIDFormatTildeHomePathFileId() throws Exception {
+        addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id containing path relative paths from the tilde home folder");
+        requestHandler.validateFileIDFormat("~/bin/execute.sh", collectionID);
+    }
+    
+    @Test( groups = {"regressiontest", "pillartest"}, expectedExceptions = RequestHandlerException.class)
+    public void testPillarMessageHandlerValidateFileIDFormatTooLong() throws Exception {
+        addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id which has more characters than required");
+        String fileId = "";
+        for(int i = 0; i < 300; i++) {
+            fileId += Integer.toString(i);
         }
-
-        addStep("Test file id with a path from root", "should throw an exception");
-        try {
-            mockRequestHandler.validateFileIDFormat("/usr/local/bin/execute.sh", collectionID);
-            Assert.fail("Should throw an IllegalArgumentException here!");
-        } catch (RequestHandlerException e) {
-            // expected
-        }
-        
-        addStep("Test a too long file id", "Should throw an exception");
-        try {
-            String fileId = "";
-            for(int i = 0; i < 300; i++) {
-                fileId += Integer.toString(i);
-            }
-            mockRequestHandler.validateFileIDFormat(fileId, collectionID);
-            Assert.fail("Should throw an IllegalArgumentException here!");
-        } catch (RequestHandlerException e) {
-            // expected
-        }
+        requestHandler.validateFileIDFormat(fileId, collectionID);
     }
     
     private class MockRequestHandler extends PillarMessageHandler<MessageRequest> {

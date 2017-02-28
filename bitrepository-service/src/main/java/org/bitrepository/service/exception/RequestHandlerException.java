@@ -64,6 +64,17 @@ public abstract class RequestHandlerException extends Exception {
     }
     
     /**
+     * Constructor.
+     * @param rInfo The response info.
+     * @param collectionID The id collection.
+     */
+    public RequestHandlerException(ResponseInfo rInfo, String collectionID) {
+        super(rInfo.getResponseText());
+        this.responseInfo = rInfo;
+        this.collectionID = collectionID;
+    }
+    
+    /**
      * @return The wrapped ResponseInfo.
      */
     public ResponseInfo getResponseInfo() {

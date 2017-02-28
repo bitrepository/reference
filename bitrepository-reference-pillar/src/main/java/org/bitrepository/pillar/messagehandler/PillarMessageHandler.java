@@ -137,7 +137,7 @@ public abstract class PillarMessageHandler<T extends MessageRequest> extends Abs
         }
         
         if(ri != null) {
-            throw new InvalidMessageException(ri.getResponseCode(), ri.getResponseText(), collectionID);
+            throw new InvalidMessageException(ri, collectionID);
         }
     }
 }
