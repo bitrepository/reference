@@ -47,9 +47,6 @@ public class ArchiveDirectory {
     /** The constant for the folder directory name.*/
     public static final String FOLDER_DIR = "folderDir";
     
-    /** The character to check whether file-ids contains a directory-path. */
-    public static final String FOLDER_SEPARATOR_CHAR = "/";
-
     /** The directory for the files. Contains three sub directories: tempDir, fileDir and retainDir.*/
     private File baseDepositDir;
 
@@ -111,7 +108,7 @@ public class ArchiveDirectory {
      * @return Whether the fileID contains a directory-path.
      */
     protected boolean isFolderFile(String fileID) {
-        return fileID.contains(FOLDER_SEPARATOR_CHAR);
+        return fileID.contains(File.separator);
     }
     
     /**
@@ -191,15 +188,10 @@ public class ArchiveDirectory {
             throw new IllegalStateException("The file '" + fileID + "' does already exist within the fileDir.");
         }
         
-        // Ensure that the parent-folder of a folder-file is created before the file is archived. 
-        if(!archiveFile.getParentFile().isDirectory()) {
-            synchronized(folderDir) {
-                FileUtils.retrieveDirectory(archiveFile.getParent());
-            }
-        }
-        
         // Move the file to the fileDir.
-        FileUtils.moveFile(tmpFile, archiveFile);
+        synchronized(folderDir) {
+            FileUtils.moveFile(tmpFile, archiveFile);
+        }
         cleanupDirs(fileID, tmpDir);
     }
     
@@ -210,15 +202,14 @@ public class ArchiveDirectory {
     public void removeFileFromArchive(String fileID) {
         File oldFile = getFile(fileID);
         if(!oldFile.isFile()) {
-            throw new IllegalStateException("Cannot locate the file to delete '" + fileID + "'!");
+            throw new IllegalStateException("Cannot locate the file to delete '" + fileID + "' from location '"
+                    + oldFile.getAbsolutePath() + "'!");
         }
         File retainFile = new File(retainDir, fileID);
         
         // If a version of the file already has been retained, then it should be deprecated.
         if(retainFile.exists()) {
             FileUtils.deprecateFile(retainFile);
-        } else if(!retainFile.getParentFile().exists()) {
-            FileUtils.retrieveDirectory(retainFile.getParent());
         }
         
         FileUtils.moveFile(oldFile, retainFile);
@@ -241,8 +232,6 @@ public class ArchiveDirectory {
         // If it does not exist, then it must be ensured that the parent folder exists. 
         if(retainFile.exists()) {
             FileUtils.deprecateFile(retainFile);
-        } else if(!retainFile.getParentFile().exists()) {
-            FileUtils.retrieveDirectory(retainFile.getParent());
         }
         
         FileUtils.moveFile(oldFile, retainFile);
@@ -264,7 +253,7 @@ public class ArchiveDirectory {
                 if(f.isFile()) {
                     res.add(path);
                 } else {
-                    res.addAll(getSubFolderFileIDs(f, path + FOLDER_SEPARATOR_CHAR));
+                    res.addAll(getSubFolderFileIDs(f, path + File.separator));
                 }
             }
         }
@@ -281,11 +270,8 @@ public class ArchiveDirectory {
         if(!isFolderFile(fileID)) {
             return;
         }
-        File origFile = new File(rootDir, fileID);
-        if(origFile.getParentFile() == null) {
-            return;
-        }
         synchronized(rootDir) {
+            File origFile = new File(rootDir, fileID);
             FileUtils.cleanupEmptyDirectories(origFile.getParentFile(), rootDir);
         }
     }

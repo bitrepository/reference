@@ -24,6 +24,7 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -216,7 +217,7 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
         URL uploadUrl = new URL(url);
 
         log.debug("Uploading file: " + fileToUpload.getName() + " to " + url);
-        try (InputStream in = new FileInputStream(fileToUpload)) {
+        try (InputStream in = new BufferedInputStream(new FileInputStream(fileToUpload))) {
             context.getFileExchange().putFile(in, uploadUrl);
         }
     }

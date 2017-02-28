@@ -79,7 +79,7 @@ public class TestFileHelper {
     
     public static List<File> getAllFilesFromSubDirs(File dir) {
         List<File> res = new ArrayList<File>();
-        if(dir.list() != null) {
+        if(dir.isDirectory()) {
             for(File f : dir.listFiles()) {
                 if(f.isFile()) {
                     res.add(f);

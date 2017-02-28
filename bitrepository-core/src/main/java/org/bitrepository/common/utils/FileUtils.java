@@ -163,7 +163,7 @@ public final class FileUtils {
         }
         
         if(!f.renameTo(deprecatedLocation)) {
-            log.warn("Could not deprecate the file '" + f.getAbsolutePath() + "'.");
+            throw new IllegalStateException("Could not deprecate the file '" + f.getAbsolutePath() + "'.");
         }
     }
     
@@ -182,10 +182,13 @@ public final class FileUtils {
         if(to.exists()) {
             throw new IllegalArgumentException("The file already exists within the archive. Cannot archive again!");
         }
+        if(!to.getParentFile().exists()) {
+            retrieveDirectory(to.getParent());
+        }
         
         if(!from.renameTo(to)) {
-            log.warn("Could not move the file '" + from.getAbsolutePath() + "' to the location '" + to.getAbsolutePath() 
-                    + "'");
+            throw new IllegalStateException("Could not move the file '" + from.getAbsolutePath() 
+                    + "' to the location '" + to.getAbsolutePath() + "'");
         }
     }
     
@@ -342,6 +345,9 @@ public final class FileUtils {
      * @param root The limit for cleaning up empty directories.
      */
     public static void cleanupEmptyDirectories(File currentDir, File root) {
+        ArgumentValidator.checkNotNull(currentDir, "File currentDir");
+        ArgumentValidator.checkNotNull(root, "File root");
+        
         if(!currentDir.isDirectory() || currentDir.list().length > 0) {
             return;
         }
