@@ -11,7 +11,7 @@ public final class MessageDataTypeValidator {
     /**
      * Check if a ChecksumDataForFileTYPE has the mandatory elements present.
      *
-     * @param val  the value to check, if null, all checks are skipped
+     * @param obj  the value to check, if null, all checks are skipped
      * @param name the name of the object to check
      * @throws IllegalArgumentException if validation fails
      */
@@ -36,7 +36,7 @@ public final class MessageDataTypeValidator {
     /**
      * Check if a ChecksumSpecTYPE has the mandatory elements present.
      *
-     * @param val  the value to check, if null, all checks are skipped
+     * @param obj  the value to check, if null, all checks are skipped
      * @param name the name of the object to check
      * @throws IllegalArgumentException if validation fails
      */

@@ -222,7 +222,7 @@ public class ChecksumExtractor {
             try (ResultSet res = ps.executeQuery()){
                 int i = 0;
                 while(res.next() && (maxNumberOfResults == null || i < maxNumberOfResults)) {
-                    results.insertFileID(res.getString(CS_FILE_ID), new Date(res.getLong(CS_DATE)));
+                    results.insertFileID(res.getString(DatabaseConstants.CS_FILE_ID), new Date(res.getLong(DatabaseConstants.CS_DATE)));
                     i++;
                 }
                 
@@ -337,7 +337,7 @@ public class ChecksumExtractor {
             try (ResultSet res = ps.executeQuery()) {
                 while(res.next() ) {
                     if(!res.wasNull()) {
-                        results.add(res.getString(CS_FILE_ID));
+                        results.add(res.getString(DatabaseConstants.CS_FILE_ID));
                     }
                 }
             } finally {
@@ -365,9 +365,9 @@ public class ChecksumExtractor {
      * @return The checksum entry extracted from the result set.
      */
     private ChecksumEntry extractChecksumEntry(ResultSet resSet) throws SQLException {
-        String fileID = resSet.getString(CS_FILE_ID);
-        String checksum = resSet.getString(CS_CHECKSUM);
-        Date date = new Date(resSet.getLong(CS_DATE));
+        String fileID = resSet.getString(DatabaseConstants.CS_FILE_ID);
+        String checksum = resSet.getString(DatabaseConstants.CS_CHECKSUM);
+        Date date = new Date(resSet.getLong(DatabaseConstants.CS_DATE));
         return new ChecksumEntry(fileID, checksum, date);
     }
 }

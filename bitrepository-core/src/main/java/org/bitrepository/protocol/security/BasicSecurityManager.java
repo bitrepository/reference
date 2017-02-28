@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -40,6 +41,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Enumeration;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -251,27 +253,55 @@ public class BasicSecurityManager implements SecurityManager {
     }
     
     /**
-     * Obtain the keystore in which to place certificates loaded by the bitrepository. 
-     * Default is to create a new empty keystore. If a truststore is specified by environment variables
-     * then the returned keystore have been pre-loaded with the certificate data from that source. 
-     * This is in order to not throw out default trust.  
+     * Obtain the keystore in which to place certificates loaded by the bitrepository.
+     * Attempt to load trusted certificates from a truststore specified by environment variables.
+     * If a truststore is specified by environment variables, the returned KeyStore will have its trusted
+     * certificates loaded. Otherwise the returned keystore will be empty.
+     * This is in order to not throw out default trust.
+     * @return KeyStore, conditionally containing trusted certificates from the external truststore.
      */
     private KeyStore getKeyStore() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
-    	KeyStore store = KeyStore.getInstance(SecurityModuleConstants.keyStoreType);
-    	store.load(null);
-    	String defaultTrustStoreLocation = System.getProperty(DEFAULT_TRUSTSTORE_PARAM);
-    	if(defaultTrustStoreLocation != null) {
-	    	File defaultTrustStore = new File(defaultTrustStoreLocation);
-	    	if(defaultTrustStore.isFile() && defaultTrustStore.canRead()) {
-	    		String trustStorePassword = System.getProperty(DEFAULT_TRUSTSTORE_PASS_PARAM);
-	    		try (FileInputStream fis = new FileInputStream(defaultTrustStore)) {
-	    	        store.load(fis, trustStorePassword.toCharArray());
-	    	    }
-	    	}
-    	}
-    	return store;
+        KeyStore store = KeyStore.getInstance(SecurityModuleConstants.keyStoreType);
+        store.load(null);
+
+        KeyStore systemTrustStore = loadSystemTrustStore();
+        if(systemTrustStore != null) {
+            Enumeration<String> systemAliases = systemTrustStore.aliases();
+            while(systemAliases.hasMoreElements()) {
+                String alias = systemAliases.nextElement();
+                Certificate certificate = systemTrustStore.getCertificate(alias);
+                store.setEntry(getNewAlias(), new KeyStore.TrustedCertificateEntry(certificate),
+                        SecurityModuleConstants.nullProtectionParameter);
+            }
+        }
+        return store;
     }
-    
+
+
+    /**
+     * Load the truststore specified by environment variables, if specified
+     * @return KeyStore representing the truststore provided by environment variable. If no truststore is specified
+     * by environment variables null is returned.
+     */
+    private KeyStore loadSystemTrustStore() throws KeyStoreException, IOException, NoSuchAlgorithmException,
+                CertificateException {
+        KeyStore store = null;
+        String defaultTrustStoreLocation = System.getProperty(DEFAULT_TRUSTSTORE_PARAM);
+        if(defaultTrustStoreLocation != null) {
+            File defaultTrustStore = new File(defaultTrustStoreLocation);
+            if(defaultTrustStore.isFile() && defaultTrustStore.canRead()) {
+                    store = KeyStore.getInstance(KeyStore.getDefaultType());
+                    String trustStorePassword = System.getProperty(DEFAULT_TRUSTSTORE_PASS_PARAM);
+                    try (FileInputStream fis = new FileInputStream(defaultTrustStore)) {
+                        store.load(fis, trustStorePassword.toCharArray());
+                    }
+            }
+        }
+
+        return store;
+    }
+
+
     /**
      * Alias generator for the keystore entries.
      * @return returns a String containing the alias for the next keystore entry 

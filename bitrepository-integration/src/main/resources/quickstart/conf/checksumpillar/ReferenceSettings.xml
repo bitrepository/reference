@@ -36,18 +36,18 @@
     <PillarType>CHECKSUM</PillarType>
     <CollectionDirs>
       <CollectionID>not-used</CollectionID>
-      <FileDirs><!--foobarpattern-->var/checksumpillar</FileDirs>
+      <FileDirs><!--foobarpattern-->var/checksumpillar/files</FileDirs>
     </CollectionDirs>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>1000</TimeToStartDeliver>
     <MaxAgeForChecksums>3600000000000</MaxAgeForChecksums>
     <AuditTrailContributerDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
-      <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/checksumpillar/auditcontributerdb</DatabaseURL>
+      <DatabaseURL>jdbc:derby:<!--foobarpattern-->var/checksumpillar/auditcontributerdb</DatabaseURL>
     </AuditTrailContributerDatabase>
     <ChecksumDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
-      <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/checksumpillar/checksumdb</DatabaseURL>
+      <DatabaseURL>jdbc:derby:<!--foobarpattern-->var/checksumpillar/checksumdb</DatabaseURL>
     </ChecksumDatabase>
     <AlarmLevel>ERROR</AlarmLevel>
   </PillarSettings>
