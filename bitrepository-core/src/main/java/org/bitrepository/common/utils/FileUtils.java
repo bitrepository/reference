@@ -354,7 +354,10 @@ public final class FileUtils {
         if(currentDir.getAbsolutePath().equals(root.getAbsolutePath())) {
             return;
         }
-        currentDir.delete();
+        boolean success = currentDir.delete();
+        if(!success) {
+            throw new IllegalStateException("Could not remove directory '" + currentDir.getAbsolutePath() + "'");
+        }
         if(currentDir.getParentFile() != null) {
             cleanupEmptyDirectories(currentDir.getParentFile(), root);
         }
