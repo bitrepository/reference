@@ -25,7 +25,6 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -241,7 +240,7 @@ public class BasicSecurityManager implements SecurityManager {
     private void initialize() {
         Security.addProvider(new BouncyCastleProvider());
         try {
-        	keyStore = getKeyStore();
+            keyStore = getKeyStore();
             loadPrivateKey(privateKeyFile);
             loadInfrastructureCertificates(repositorySettings.getPermissionSet());
             permissionStore.loadPermissions(repositorySettings.getPermissionSet(), componentID);
@@ -257,7 +256,7 @@ public class BasicSecurityManager implements SecurityManager {
      * Attempt to load trusted certificates from a truststore specified by environment variables.
      * If a truststore is specified by environment variables, the returned KeyStore will have its trusted
      * certificates loaded. Otherwise the returned keystore will be empty.
-     * This is in order to not throw out default trust.
+     * This is in order to not throw out default trust store.
      * @return KeyStore, conditionally containing trusted certificates from the external truststore.
      */
     private KeyStore getKeyStore() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
@@ -277,7 +276,6 @@ public class BasicSecurityManager implements SecurityManager {
         return store;
     }
 
-
     /**
      * Load the truststore specified by environment variables, if specified
      * @return KeyStore representing the truststore provided by environment variable. If no truststore is specified
@@ -290,17 +288,16 @@ public class BasicSecurityManager implements SecurityManager {
         if(defaultTrustStoreLocation != null) {
             File defaultTrustStore = new File(defaultTrustStoreLocation);
             if(defaultTrustStore.isFile() && defaultTrustStore.canRead()) {
-                    store = KeyStore.getInstance(KeyStore.getDefaultType());
-                    String trustStorePassword = System.getProperty(DEFAULT_TRUSTSTORE_PASS_PARAM);
-                    try (FileInputStream fis = new FileInputStream(defaultTrustStore)) {
-                        store.load(fis, trustStorePassword.toCharArray());
-                    }
+                store = KeyStore.getInstance(KeyStore.getDefaultType());
+                String trustStorePassword = System.getProperty(DEFAULT_TRUSTSTORE_PASS_PARAM);
+                try (FileInputStream fis = new FileInputStream(defaultTrustStore)) {
+                    store.load(fis, trustStorePassword.toCharArray());
+                }
             }
         }
 
         return store;
     }
-
 
     /**
      * Alias generator for the keystore entries.
