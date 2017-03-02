@@ -82,15 +82,14 @@ public class DeleteFileRequestHandler extends PerformRequestHandler<DeleteFileRe
         } else if(getSettings().getRepositorySettings().getProtocolSettings()
                 .isRequireChecksumForDestructiveRequests()) {
             throw new IllegalOperationException(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, "No mandatory checksum "
-                    + "for destructive operation was supplied.", request.getCollectionID(), request.getFileID());
+                    + "for destructive operation was supplied.", request.getFileID());
         }
         
-        validateFileIDFormat(request.getFileID(), request.getCollectionID());
+        validateFileIDFormat(request.getFileID());
 
         // Validate, that we have the requested file.
         if(!getPillarModel().hasFileID(request.getFileID(), request.getCollectionID())) {
-            throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
-                    request.getCollectionID());
+            throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.");
         }
         
         // calculate and validate the checksum of the file.
@@ -108,7 +107,7 @@ public class DeleteFileRequestHandler extends PerformRequestHandler<DeleteFileRe
                         + calculatedChecksum + "'. Sending alarm and respond failure.");
 
                 throw new IllegalOperationException(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, "Cannot delete file "
-                        + "due to inconsistency between checksums.", request.getCollectionID(), request.getFileID());
+                        + "due to inconsistency between checksums.", request.getFileID());
             }
         } else {
             log.debug("No checksum for validation of the existing file before delete the file '" + request.getFileID()

@@ -42,25 +42,23 @@ public class IdentifyContributorExceptionTest extends ExtendedTestCase {
         
         addStep("Try to throw such an exception", "Should be able to be caught and validated");
         try {
-            throw new IdentifyContributorException(errCode, errMsg, TEST_COLLECTION_ID);
+            throw new IdentifyContributorException(errCode, errMsg);
         } catch(Exception e) {
             Assert.assertTrue(e instanceof IdentifyContributorException);
             Assert.assertEquals(e.getMessage(), errMsg);
             Assert.assertEquals(((IdentifyContributorException) e).getResponseInfo().getResponseCode(), errCode);
             Assert.assertEquals(((IdentifyContributorException) e).getResponseInfo().getResponseText(), errMsg);
-            Assert.assertEquals(((IdentifyContributorException) e).getCollectionID(), TEST_COLLECTION_ID);
             Assert.assertNull(e.getCause());
         }
         
         addStep("Throw the exception with an embedded exception", "The embedded exception should be the same.");
         try {
-            throw new IdentifyContributorException(errCode, errMsg, TEST_COLLECTION_ID, new IllegalArgumentException(causeMsg));
+            throw new IdentifyContributorException(errCode, errMsg, new IllegalArgumentException(causeMsg));
         } catch(Exception e) {
             Assert.assertTrue(e instanceof IdentifyContributorException);
             Assert.assertEquals(e.getMessage(), errMsg);
             Assert.assertEquals(((IdentifyContributorException) e).getResponseInfo().getResponseCode(), errCode);
             Assert.assertEquals(((IdentifyContributorException) e).getResponseInfo().getResponseText(), errMsg);
-            Assert.assertEquals(((IdentifyContributorException) e).getCollectionID(), TEST_COLLECTION_ID);
             Assert.assertNotNull(e.getCause());
             Assert.assertTrue(e.getCause() instanceof IllegalArgumentException);
             Assert.assertEquals(e.getCause().getMessage(), causeMsg);

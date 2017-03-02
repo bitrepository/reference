@@ -92,7 +92,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
         getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile(), 
                 request.getCollectionID());
         if (request.getFileIDs() != null && request.getFileIDs().getFileID() != null) {
-            validateFileIDFormat(request.getFileIDs().getFileID(), request.getCollectionID());
+            validateFileIDFormat(request.getFileIDs().getFileID());
             verifyFileIDExistence(request.getFileIDs(), request.getCollectionID());
         }
 
@@ -168,7 +168,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
             uploadFile(fileToUpload, url);
         } catch (Exception e) {
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, "Could not handle the creation "
-                    + "and upload of the results due to: " + e.getMessage(), request.getCollectionID(), e);
+                    + "and upload of the results due to: " + e.getMessage(), e);
         }
 
         res.setResultAddress(url);

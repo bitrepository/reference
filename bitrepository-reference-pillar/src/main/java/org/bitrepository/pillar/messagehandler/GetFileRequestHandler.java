@@ -77,7 +77,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
             throws RequestHandlerException {
         validateCollectionID(request);
         validatePillarId(request.getPillarID());
-        validateFileIDFormat(request.getFileID(), request.getCollectionID());
+        validateFileIDFormat(request.getFileID());
 
         getPillarModel().verifyFileExists(request.getFileID(), request.getCollectionID());
 
@@ -134,7 +134,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
             log.warn("The file '" + message.getFileID() + "' from collection '" + message.getCollectionID() 
                     + "' could not be uploaded at '" + message.getFileAddress() + "'");
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, "Could not deliver file to address '" 
-                    + message.getFileAddress() + "'", message.getCollectionID(), e);
+                    + message.getFileAddress() + "'", e);
         }
     }
     

@@ -105,8 +105,7 @@ public class GetFileTest extends MockedPillarTest {
                 "Should cause the FILE_NOT_FOUND_FAILURE later.");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) throws RequestHandlerException {
-                throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
-                        collectionID);
+                throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.");
             }
         }).when(model).verifyFileExists(eq(FILE_ID), anyString());
         doAnswer(new Answer() {
@@ -145,8 +144,7 @@ public class GetFileTest extends MockedPillarTest {
                 "Should cause the FILE_NOT_FOUND_FAILURE later.");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) throws RequestHandlerException {
-                throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
-                        collectionID);
+                throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.");
             }
         }).when(model).verifyFileExists(eq(FILE_ID), anyString());
         doAnswer(new Answer() {

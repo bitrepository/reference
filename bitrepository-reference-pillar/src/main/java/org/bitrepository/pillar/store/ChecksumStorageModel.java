@@ -107,14 +107,14 @@ public class ChecksumStorageModel extends StorageModel {
     protected String getNonDefaultChecksum(String fileID, String collectionID, ChecksumSpecTYPE csType)
             throws RequestHandlerException {
         throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "The ChecksumPillar cannot handle a "
-                + "non-default checksum specification '" + csType + "'.'", collectionID);
+                + "non-default checksum specification '" + csType + "'.'");
     }
 
     @Override
     public FileInfo getFileInfoForActualFile(String fileID, String collectionID)
             throws RequestHandlerException {
         throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "This is a checksum pillar and it does "
-                + "not have the actual file. Only it's checksum.", collectionID);
+                + "not have the actual file. Only it's checksum.");
     }
 
     @Override
@@ -127,13 +127,13 @@ public class ChecksumStorageModel extends StorageModel {
     protected ExtractedChecksumResultSet getNonDefaultChecksumResultSet(Long maxResults, String collectionID, 
             ChecksumSpecTYPE csSpec) throws RequestHandlerException {
         throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "This is a checksum pillar and it does "
-                + "not have the actual file. Only it's checksum.", collectionID);
+                + "not have the actual file. Only it's checksum.");
     }
 
     @Override
     public void verifyFileExists(String fileID, String collectionID) throws RequestHandlerException {
         throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "This is a checksum pillar and it does "
-                + "not have the actual file. Only it's checksum.", collectionID);
+                + "not have the actual file. Only it's checksum.");
     }
     
     /**
@@ -156,10 +156,10 @@ public class ChecksumStorageModel extends StorageModel {
         case ALWAYS_DOWNLOAD:
             return downloadFileAndCalculateChecksum(fileID, collectionID, fileAddress, expectedChecksum);
         case NEVER_DOWNLOAD:
-            return extractChecksum(expectedChecksum, collectionID);
+            return extractChecksum(expectedChecksum);
         default:
             if(expectedChecksum != null) {
-                return extractChecksum(expectedChecksum, collectionID);
+                return extractChecksum(expectedChecksum);
             } else {
                 return downloadFileAndCalculateChecksum(fileID, collectionID, fileAddress, null);
             }
@@ -183,17 +183,16 @@ public class ChecksumStorageModel extends StorageModel {
     /**
      * Extracts the checksum from ChecksumDataForFileTYPE. 
      * @param checksumData The message to extract the checksum from.
-     * @param collectionID The id of the collection.
      * @return The checksum from the message.
      * @throws RequestHandlerException If the checksum data does not contain the checksum.
      */
-    private String extractChecksum(ChecksumDataForFileTYPE checksumData, String collectionID) 
+    private String extractChecksum(ChecksumDataForFileTYPE checksumData) 
             throws RequestHandlerException {
         if(checksumData != null) {
             return Base16Utils.decodeBase16(checksumData.getChecksumValue());
         } else {
             throw new InvalidMessageException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, "The checksum should have been "
-                    + "provided with the message", collectionID);
+                    + "provided with the message");
         }
     }
 
@@ -211,7 +210,7 @@ public class ChecksumStorageModel extends StorageModel {
             log.error("Wrong checksum for file '" + fileID + "' at '" + collectionID + "'! Expected: [" 
                     + givenChecksum + "], but calculated: [" + calculatedChecksum + "]");
             throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, "Expected checksums '" 
-                    + givenChecksum + "' but the checksum was '" + calculatedChecksum + "'.", collectionID, fileID);
+                    + givenChecksum + "' but the checksum was '" + calculatedChecksum + "'.", fileID);
         }
 
         return calculatedChecksum;

@@ -71,7 +71,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
     protected void validateRequest(IdentifyPillarsForReplaceFileRequest request, MessageContext messageContext) 
             throws RequestHandlerException {
         validateCollectionID(request);
-        validateFileIDFormat(request.getFileID(), request.getCollectionID());
+        validateFileIDFormat(request.getFileID());
         checkThatRequestedFileIsAvailable(request);
         checkSpaceForStoringNewFile(request);
     }
@@ -103,7 +103,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
             throws RequestHandlerException {
         if(!getPillarModel().hasFileID(message.getFileID(), message.getCollectionID())) {
             throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "Could not find the "
-                    + "requested file to delete.", message.getCollectionID());
+                    + "requested file to delete.");
         }
     }
     

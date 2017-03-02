@@ -90,7 +90,7 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
         validateCollectionID(request);
         validatePillarId(request.getPillarID());
         if (request.getFileIDs() != null && request.getFileIDs().getFileID() != null) {
-            validateFileIDFormat(request.getFileIDs().getFileID(), request.getCollectionID());
+            validateFileIDFormat(request.getFileIDs().getFileID());
             verifyFileIDExistence(request.getFileIDs(), request.getCollectionID());
         }
 
@@ -154,8 +154,7 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
             File outputFile = makeTemporaryResultFile(request, extractedFileIDs.getEntries());
             uploadFile(outputFile, resultingAddress);
         } catch (Exception e) {
-            throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, "Could not deliver results.", 
-                    request.getCollectionID(), e);
+            throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, "Could not deliver results.", e);
         }
     }
     

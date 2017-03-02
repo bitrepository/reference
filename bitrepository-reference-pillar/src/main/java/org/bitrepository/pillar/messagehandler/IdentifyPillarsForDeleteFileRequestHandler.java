@@ -70,7 +70,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
     protected void validateRequest(IdentifyPillarsForDeleteFileRequest request, MessageContext messageContext) 
             throws RequestHandlerException {
         validateCollectionID(request);
-        validateFileIDFormat(request.getFileID(), request.getCollectionID());
+        validateFileIDFormat(request.getFileID());
         checkThatRequestedFileIsAvailable(request);
     }
 
@@ -99,8 +99,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
     private void checkThatRequestedFileIsAvailable(IdentifyPillarsForDeleteFileRequest message) 
             throws RequestHandlerException {
         if(!getPillarModel().hasFileID(message.getFileID(), message.getCollectionID())) {
-            throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
-                    message.getCollectionID());
+            throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.");
         }
     }
 

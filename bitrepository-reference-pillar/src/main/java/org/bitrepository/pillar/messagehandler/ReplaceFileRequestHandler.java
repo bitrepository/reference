@@ -84,11 +84,11 @@ public class ReplaceFileRequestHandler extends PerformRequestHandler<ReplaceFile
             throws RequestHandlerException {
         validateCollectionID(request);
         validatePillarId(request.getPillarID());
-        validateFileIDFormat(request.getFileID(), request.getCollectionID());
+        validateFileIDFormat(request.getFileID());
         
         if(!getPillarModel().hasFileID(request.getFileID(), request.getCollectionID())) {
             throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "The file '" + request.getFileID() 
-                    + "' has been requested, but we do not have that file!", request.getCollectionID());
+                    + "' has been requested, but we do not have that file!");
         }
 
         getPillarModel().verifyEnoughFreeSpaceLeftForFile(request.getFileSize().longValue(), 
@@ -151,7 +151,7 @@ public class ReplaceFileRequestHandler extends PerformRequestHandler<ReplaceFile
                 .isRequireChecksumForDestructiveRequests()) {
             throw new IllegalOperationException(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, "According to the "
                     + "contract a checksum for file to be deleted during the replacing operation is required.", 
-                    request.getCollectionID(), request.getFileID());
+                    request.getFileID());
         }
         if(request.getChecksumDataForNewFile() != null) {
             getPillarModel().verifyChecksumAlgorithm(request.getChecksumDataForNewFile().getChecksumSpec(), 
@@ -160,7 +160,7 @@ public class ReplaceFileRequestHandler extends PerformRequestHandler<ReplaceFile
                 .isRequireChecksumForNewFileRequests()) {
             throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, "According to the contract a "
                     + "checksum for new file in the replacing operation is required.",
-                    request.getCollectionID(), request.getFileID());
+                    request.getFileID());
         }
     }
     
@@ -184,8 +184,8 @@ public class ReplaceFileRequestHandler extends PerformRequestHandler<ReplaceFile
                 String errMsg = "Requested to replace the file '" + request.getFileID() + "' with checksum '"
                         + requestedChecksum + "', but our file had a different checksum.";
                 
-                throw new IllegalOperationException(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, errMsg, 
-                        request.getCollectionID(), request.getFileID());
+                throw new IllegalOperationException(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, errMsg,
+                        request.getFileID());
             }
         } else {
             log.debug("No checksum for validation of the existing file before replace.");

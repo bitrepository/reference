@@ -21,14 +21,14 @@
  */
 package org.bitrepository.service.exception;
 
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.Test;
-
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
+
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.jaccept.structure.ExtendedTestCase;
+import org.testng.annotations.Test;
 
 /**
  * Test that IllegalOperationException behaves as expected.
@@ -48,27 +48,25 @@ public class IllegalOperationExceptionTest extends ExtendedTestCase {
         
         addStep("Try to throw such an exception", "Should be able to be caught and validated");
         try {
-            throw new IllegalOperationException(errCode, errMsg, TEST_COLLECTION_ID, FileID);
+            throw new IllegalOperationException(errCode, errMsg, FileID);
         } catch(Exception e) {
             assertTrue(e instanceof IllegalOperationException);
             assertEquals(e.getMessage(), errMsg);
             assertEquals(((IllegalOperationException) e).getResponseInfo().getResponseCode(), errCode);
             assertEquals(((IllegalOperationException) e).getResponseInfo().getResponseText(), errMsg);
-            assertEquals(((IllegalOperationException) e).getCollectionID(), TEST_COLLECTION_ID);
             assertNull(e.getCause());
             assertEquals(((IllegalOperationException) e).getFileId(), FileID);
         }
         
         addStep("Throw the exception with an embedded exception", "The embedded exception should be the same.");
         try {
-            throw new IllegalOperationException(errCode, errMsg, TEST_COLLECTION_ID, FileID, new IllegalArgumentException(causeMsg));
+            throw new IllegalOperationException(errCode, errMsg, FileID, new IllegalArgumentException(causeMsg));
         } catch(Exception e) {
             assertTrue(e instanceof IllegalOperationException);
             assertTrue(e instanceof RequestHandlerException);
             assertEquals(e.getMessage(), errMsg);
             assertEquals(((IllegalOperationException) e).getResponseInfo().getResponseCode(), errCode);
             assertEquals(((IllegalOperationException) e).getResponseInfo().getResponseText(), errMsg);
-            assertEquals(((IllegalOperationException) e).getCollectionID(), TEST_COLLECTION_ID);
             assertNotNull(e.getCause());
             assertTrue(e.getCause() instanceof IllegalArgumentException);
             assertEquals(e.getCause().getMessage(), causeMsg);

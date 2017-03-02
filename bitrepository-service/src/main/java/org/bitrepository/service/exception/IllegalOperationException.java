@@ -35,11 +35,10 @@ public class IllegalOperationException extends RequestHandlerException {
      * Constructor.
      * @param rCode The response code.
      * @param rText The text for the response info.
-     * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
      * @param fileID The id of the file regarding the illegal operation. Use null, if no file.
      */
-    public IllegalOperationException(ResponseCode rCode, String rText, String collectionID, String fileID) {
-        super(rCode, rText, collectionID);
+    public IllegalOperationException(ResponseCode rCode, String rText, String fileID) {
+        super(rCode, rText);
         this.fileID = fileID;
     }
     
@@ -47,12 +46,11 @@ public class IllegalOperationException extends RequestHandlerException {
      * Constructor.
      * @param rCode The response code.
      * @param rText The text for the response info.
-     * @param collectionID The id of the collection. Use 'null' if no collection is relevant.
      * @param fileID The id of the file regarding the illegal operation. Use null, if no file.
      * @param e The exception to wrap into the StackTrace.
      */
-    public IllegalOperationException(ResponseCode rCode, String rText, String collectionID, String fileID, Exception e) {
-        super(rCode, rText, collectionID, e);
+    public IllegalOperationException(ResponseCode rCode, String rText, String fileID, Exception e) {
+        super(rCode, rText, e);
         this.fileID = fileID;
     }
     

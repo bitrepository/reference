@@ -70,11 +70,11 @@ public class IdentifyPillarsForGetFileRequestHandler
             throws RequestHandlerException {
         if(getPillarModel().getChecksumPillarSpec() != null) {
             throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "A ChecksumPillar cannot deliver "
-                    + "actual files.", request.getCollectionID());
+                    + "actual files.");
         }
 
         validateCollectionID(request);
-        validateFileIDFormat(request.getFileID(), request.getCollectionID());
+        validateFileIDFormat(request.getFileID());
         
         checkThatFileIsAvailable(request);
     }

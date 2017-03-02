@@ -100,8 +100,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
         if(!message.getContributor().equals(getContext().getSettings().getComponentID())) {
             throw new InvalidMessageException(
                     ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE, 
-                    "Invalid contributor id.", 
-                    message.getCollectionID());
+                    "Invalid contributor id.");
         }
     }
     
@@ -180,8 +179,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
         } catch (Exception e) {
             throw new InvalidMessageException(
                     ResponseCode.FILE_TRANSFER_FAILURE, 
-                    "Could not handle the creation and upload of the results due to: " + e.getMessage(), 
-                    message.getCollectionID(), e);
+                    "Could not handle the creation and upload of the results due to: " + e.getMessage(), e);
         }
     }
     

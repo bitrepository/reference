@@ -80,8 +80,9 @@ public class PillarAlarmDispatcher extends AlarmDispatcher {
     /**
      * Handles the case when the request causes a RequestHandlerException.
      * @param e The exception causing this alarm case.
+     * @param collectionID The ID of the collection, where the exception occurred.
      */
-    public void handleRequestException(RequestHandlerException e) {
+    public void handleRequestException(RequestHandlerException e, String collectionID) {
         Alarm alarm = new Alarm();
         
         if(e.getResponseInfo().getResponseCode() == ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE) {
@@ -94,7 +95,7 @@ public class PillarAlarmDispatcher extends AlarmDispatcher {
         }
 
         alarm.setAlarmText(e.getResponseInfo().getResponseText());
-        alarm.setCollectionID(e.getCollectionID());
+        alarm.setCollectionID(collectionID);
         
         if(e instanceof IllegalOperationException) {
             IllegalOperationException ioe = (IllegalOperationException) e;

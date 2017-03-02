@@ -86,9 +86,9 @@ public class PillarMediator extends AbstractContributorMediator {
             dispatchNegativeResponse(request, handler, responseInfo);
             getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RequestHandlerException e) {
-            log.debug("Stack trace for request handler exception.", e);
+            log.debug("Failed to handle request '" + request + "'", e);
             dispatchNegativeResponse(request, handler, e.getResponseInfo());
-            getAlarmDispatcher().handleRequestException(e);
+            getAlarmDispatcher().handleRequestException(e, request.getCollectionID());
         } catch (RuntimeException e) {
             log.warn("Unexpected exception caught.", e);
             ResponseInfo responseInfo = new ResponseInfo();

@@ -76,11 +76,11 @@ public class PutFileRequestHandler extends PerformRequestHandler<PutFileRequest>
                     request.getCollectionID());
         } else if(getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
             throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, "A checksum is required for "
-                    + "the PutFile operation to be performed.", request.getCollectionID(), request.getFileID());
+                    + "the PutFile operation to be performed.", request.getFileID());
         }
         
         getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForNewFile(), request.getCollectionID());
-        validateFileIDFormat(request.getFileID(), request.getCollectionID());
+        validateFileIDFormat(request.getFileID());
         
         checkThatTheFileDoesNotAlreadyExist(request);
         checkSpaceForStoringNewFile(request);
@@ -122,8 +122,7 @@ public class PutFileRequestHandler extends PerformRequestHandler<PutFileRequest>
      */
     private void checkThatTheFileDoesNotAlreadyExist(PutFileRequest message) throws RequestHandlerException {
         if(getPillarModel().hasFileID(message.getFileID(), message.getCollectionID())) {
-            throw new InvalidMessageException(ResponseCode.DUPLICATE_FILE_FAILURE, "We already have the file", 
-                    message.getCollectionID());
+            throw new InvalidMessageException(ResponseCode.DUPLICATE_FILE_FAILURE, "We already have the file");
         }
     }
     

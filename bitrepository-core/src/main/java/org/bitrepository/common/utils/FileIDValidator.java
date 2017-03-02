@@ -35,8 +35,8 @@ import org.bitrepository.common.settings.Settings;
 public class FileIDValidator {
     /** The regex pattern for the file ids.*/
     protected String regex;
-    /** The system limitation for a file id (length 1-254, and no control letters).*/
-    private static final String SYSTEM_LIMIT = "[^\\p{Cntrl}]{1,254}";
+    /** The system limitation for a file id (length 2-251, no control letters, and path restrictions).*/
+    private static final String SYSTEM_LIMIT = "^[^ \\./\\p{Cntrl}][^\\p{Cntrl}]{0,250}[^\\s\\p{Cntrl}]$";
 
     /**
      * @param settings The context for the pillar.

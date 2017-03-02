@@ -275,14 +275,13 @@ public abstract class StorageModel {
         if(getChecksumPillarSpec() != null && !(getChecksumPillarSpec().equals(checksumSpec))) {
             throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "Cannot handle the checksum "
                     + "specification '" + checksumSpec + "'.This checksum pillar can only handle '" 
-                    + getChecksumPillarSpec() + "'", collectionID);
+                    + getChecksumPillarSpec() + "'");
         }
 
         try {
             ChecksumUtils.verifyAlgorithm(checksumSpec);
         } catch (NoSuchAlgorithmException e) {
-            throw new InvalidMessageException(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE, e.getMessage(), 
-                    collectionID, e);
+            throw new InvalidMessageException(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE, e.getMessage(), e);
         }
     }
 

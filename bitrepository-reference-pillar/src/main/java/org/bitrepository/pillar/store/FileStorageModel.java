@@ -137,7 +137,7 @@ public class FileStorageModel extends StorageModel {
 
         if(useableSizeLeft < fileSize) {
             throw new IdentifyContributorException(ResponseCode.FAILURE, "Not enough space left in this pillar. "
-                    + "Requires '" + fileSize + "' but has only '" + useableSizeLeft + "'", collectionID);
+                    + "Requires '" + fileSize + "' but has only '" + useableSizeLeft + "'");
         }
     }
 
@@ -166,7 +166,7 @@ public class FileStorageModel extends StorageModel {
         if(!hasFileID(fileID, collectionID)) {
             log.warn("The file '" + fileID + "' has been requested, but we do not have that file in collection '" 
                     + collectionID + "'!");
-            throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", collectionID);
+            throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.");
         }
     }
 
@@ -326,7 +326,7 @@ public class FileStorageModel extends StorageModel {
         } catch (IOException e) {
             String errMsg = "Could not retrieve the file from '" + fileAddress + "'";
             log.error(errMsg, e);
-            throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, errMsg, collectionID, e);
+            throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, errMsg, e);
         }        
     }
 
@@ -350,7 +350,7 @@ public class FileStorageModel extends StorageModel {
                 log.warn("Wrong checksum! Expected: [" + expectedChecksumValue 
                         + "], but calculated: [" + calculatedChecksum + "]");
                 throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, "The downloaded file does "
-                        + "not have the expected checksum", collectionID, fileID);
+                        + "not have the expected checksum", fileID);
             }
         } else {
             log.debug("No checksums for validating the newly downloaded file '" + fileID + "'.");

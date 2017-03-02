@@ -31,21 +31,17 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 public abstract class RequestHandlerException extends Exception {
     /** The ResponseInfo wrapped by this exception. Tells the reason for the exception.*/
     private final ResponseInfo responseInfo;
-    /** The id of the collection, which this exception is relevant for, if any. */
-    private String collectionID;
     
     /**
      * Constructor.
      * @param rCode The response code.
      * @param rText The text for the response info.
-     * @param collectionID The id of the collection.
      */
-    public RequestHandlerException(ResponseCode rCode, String rText, String collectionID) {
+    public RequestHandlerException(ResponseCode rCode, String rText) {
         super(rText);
         this.responseInfo = new ResponseInfo();
         this.responseInfo.setResponseCode(rCode);
         this.responseInfo.setResponseText(rText);
-        this.collectionID = collectionID;
     }
     
     /**
@@ -55,23 +51,20 @@ public abstract class RequestHandlerException extends Exception {
      * @param collectionID The id of the collection.
      * @param e The exception to wrap into the StackTrace.
      */
-    public RequestHandlerException(ResponseCode rCode, String rText, String collectionID, Exception e) {
+    public RequestHandlerException(ResponseCode rCode, String rText, Exception e) {
         super(rText, e);
         this.responseInfo = new ResponseInfo();
         this.responseInfo.setResponseCode(rCode);
         this.responseInfo.setResponseText(rText);
-        this.collectionID = collectionID;
     }
     
     /**
      * Constructor.
      * @param rInfo The response info.
-     * @param collectionID The id collection.
      */
-    public RequestHandlerException(ResponseInfo rInfo, String collectionID) {
+    public RequestHandlerException(ResponseInfo rInfo) {
         super(rInfo.getResponseText());
         this.responseInfo = rInfo;
-        this.collectionID = collectionID;
     }
     
     /**
@@ -79,20 +72,6 @@ public abstract class RequestHandlerException extends Exception {
      */
     public ResponseInfo getResponseInfo() {
         return responseInfo;
-    }
-    
-    /**
-     * @return The id of the collection regarding this exception.
-     */
-    public String getCollectionID() {
-        return collectionID;
-    }
-    
-    /**
-     * @param collectionID The id of the collection.
-     */
-    public void setCollectionID(String collectionID) {
-        this.collectionID = collectionID;
     }
     
     @Override

@@ -222,7 +222,8 @@ public class ChecksumExtractor {
             try (ResultSet res = ps.executeQuery()){
                 int i = 0;
                 while(res.next() && (maxNumberOfResults == null || i < maxNumberOfResults)) {
-                    results.insertFileID(res.getString(DatabaseConstants.CS_FILE_ID), new Date(res.getLong(DatabaseConstants.CS_DATE)));
+                    results.insertFileID(res.getString(DatabaseConstants.CS_FILE_ID), 
+                            new Date(res.getLong(DatabaseConstants.CS_DATE)));
                     i++;
                 }
                 

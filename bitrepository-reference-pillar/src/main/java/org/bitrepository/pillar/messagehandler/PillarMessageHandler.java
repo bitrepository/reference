@@ -115,8 +115,7 @@ public abstract class PillarMessageHandler<T extends MessageRequest> extends Abs
         if(!getPillarModel().hasFileID(fileIDs.getFileID(), collectionID)) {
             log.warn("The following file is missing '" + fileIDs.getFileID() + "' at collection '" + collectionID 
                     + "'.");
-            throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
-                    collectionID);
+            throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.");
         }
     }
     
@@ -126,10 +125,10 @@ public abstract class PillarMessageHandler<T extends MessageRequest> extends Abs
      * @param fileID The id to validate.
      * @throws RequestHandlerException If the id of the file was invalid.
      */
-    protected void validateFileIDFormat(String fileID, String collectionID) throws RequestHandlerException {
+    protected void validateFileIDFormat(String fileID) throws RequestHandlerException {
         ResponseInfo ri = fileIDValidator.validateFileID(fileID);
         if(ri == null) {
-            if(fileID.startsWith("/") || fileID.contains("..")) {
+            if(fileID.contains("/..") || fileID.contains("../")) {
                 ri = new ResponseInfo();
                 ri.setResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
                 ri.setResponseText("Invalid");                
@@ -137,7 +136,7 @@ public abstract class PillarMessageHandler<T extends MessageRequest> extends Abs
         }
         
         if(ri != null) {
-            throw new InvalidMessageException(ri, collectionID);
+            throw new InvalidMessageException(ri);
         }
     }
 }

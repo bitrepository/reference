@@ -73,7 +73,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile(),
                 request.getCollectionID());
         if (request.getFileIDs() != null && request.getFileIDs().getFileID() != null) {
-            validateFileIDFormat(request.getFileIDs().getFileID(), request.getCollectionID());
+            validateFileIDFormat(request.getFileIDs().getFileID());
             checkThatAllRequestedFilesAreAvailable(request);
         }
     }
@@ -106,8 +106,7 @@ public class IdentifyPillarsForGetChecksumsRequestHandler
         FileIDs fileids = message.getFileIDs();
         
         if(fileids.getFileID() != null && !getPillarModel().hasFileID(fileids.getFileID(), message.getCollectionID())) {
-            throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.", 
-                    message.getCollectionID());
+            throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.");
         }
     }
     
