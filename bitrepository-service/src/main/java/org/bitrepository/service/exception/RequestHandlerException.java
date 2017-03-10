@@ -48,7 +48,6 @@ public abstract class RequestHandlerException extends Exception {
      * Constructor.
      * @param rCode The response code.
      * @param rText The text for the response info.
-     * @param collectionID The id of the collection.
      * @param e The exception to wrap into the StackTrace.
      */
     public RequestHandlerException(ResponseCode rCode, String rText, Exception e) {

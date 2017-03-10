@@ -182,7 +182,7 @@ public abstract class WorkflowManager {
         /**
          * Adds the workflow statistics to the statistics list for this workflow. Will also remove older statistisics
          * if the number of statistics exceeds <code>MAX_NUMBER_OF_STATISTISCS_FOR_A_WORKFLOW</code>.
-         * @param job
+         * @param job The job which finished and to add statistics from 
          */
         @Override
         public void jobFinished(SchedulableJob job) {
