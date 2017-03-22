@@ -35,6 +35,7 @@ import java.util.Map;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.FileInfo;
@@ -55,13 +56,19 @@ public abstract class IntegrityDAO {
 	
     /** The connector to the database.*/
     protected final DBConnector dbConnector;
-    
-    public IntegrityDAO(DBConnector dbConnector) {
+    protected final Settings settings;
+
+    public IntegrityDAO(DBConnector dbConnector, Settings settings) {
     	this.dbConnector = dbConnector;
-    	initializePillars();
+        this.settings = settings;
+        initializePillars();
     	initializeCollections();
     }
-    
+
+    private Settings getSettings() {
+        return settings;
+    }
+
     /**
      * Destroys the DB connector.
      */
@@ -425,7 +432,7 @@ public abstract class IntegrityDAO {
      */
     public void createStatistics(String collectionID, StatisticsCollector statisticsCollector) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
-        StatisticsCreator sc = new StatisticsCreator(dbConnector.getConnection(), collectionID);
+        StatisticsCreator sc = new StatisticsCreator(dbConnector.getConnection(), collectionID, settings);
         sc.createStatistics(statisticsCollector);
     }
     

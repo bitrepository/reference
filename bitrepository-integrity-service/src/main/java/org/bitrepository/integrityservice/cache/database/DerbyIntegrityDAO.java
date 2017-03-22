@@ -24,6 +24,7 @@ package org.bitrepository.integrityservice.cache.database;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
@@ -33,8 +34,8 @@ import org.bitrepository.service.database.DatabaseUtils;
  */
 public class DerbyIntegrityDAO extends IntegrityDAO {
 
-    public DerbyIntegrityDAO(DBConnector dbConnector) {
-        super(dbConnector);
+    public DerbyIntegrityDAO(DBConnector dbConnector, Settings settings) {
+        super(dbConnector, settings);
     }
 
     @Override
@@ -52,7 +53,7 @@ public class DerbyIntegrityDAO extends IntegrityDAO {
     
     @Override
     protected synchronized void initializePillars() {
-        List<String> pillars = new ArrayList<>(SettingsUtils.getAllPillarIDs());
+        List<String> pillars = new ArrayList<>(SettingsUtils.getAllPillarIDs(settings));
         
         String getExistingPillars = "SELECT pillarID FROM pillar";
         
@@ -67,7 +68,7 @@ public class DerbyIntegrityDAO extends IntegrityDAO {
 
     @Override
     protected synchronized void initializeCollections() {
-        List<String> collections = new ArrayList<>(SettingsUtils.getAllCollectionsIDs());
+        List<String> collections = new ArrayList<>(SettingsUtils.getAllCollectionsIDs(settings));
         
         String getExistingPillars = "SELECT collectionID FROM collections";
         

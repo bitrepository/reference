@@ -42,5 +42,9 @@
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->target/database/auditcontributerdb</DatabaseURL>
     </AuditTrailContributerDatabase>
+    <ObsoleteChecksumSettings>
+
+    </ObsoleteChecksumSettings>
+    <IntegrityReportsDir>target/</IntegrityReportsDir>
   </IntegrityServiceSettings>
 </ReferenceSettings>

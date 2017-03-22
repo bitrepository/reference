@@ -67,7 +67,7 @@ public class MonitoringService implements LifeCycledService {
         this.settings = settings;
         SettingsUtils.initialize(settings);
         MessageBus messageBus = MessageBusManager.getMessageBus(settings, securityManager);
-        statusStore = new ComponentStatusStore(SettingsUtils.getStatusContributorsForCollection());
+        statusStore = new ComponentStatusStore(SettingsUtils.getStatusContributorsForCollection(settings));
         alerter = new BasicMonitoringServiceAlerter(settings, messageBus, AlarmLevel.ERROR, statusStore);
         getStatusClient = AccessComponentFactory.getInstance().createGetStatusClient(settings, securityManager,
                 settings.getReferenceSettings().getMonitoringServiceSettings().getID());

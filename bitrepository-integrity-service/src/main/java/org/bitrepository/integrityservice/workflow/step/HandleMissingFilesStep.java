@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
@@ -55,13 +56,15 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
     private final StatisticsCollector sc;
     /** The period in which a file should not be considered as missing. */
     private final Long gracePeriod;
-    
-    public HandleMissingFilesStep(IntegrityModel store, IntegrityReporter reporter, 
-            StatisticsCollector statisticsCollector, Long missingFileGracePeriod) {
+    private final Settings settings;
+
+    public HandleMissingFilesStep(IntegrityModel store, IntegrityReporter reporter,
+                                  StatisticsCollector statisticsCollector, Long missingFileGracePeriod, Settings settings) {
         this.store = store;
         this.reporter = reporter;
         this.sc = statisticsCollector;
         this.gracePeriod = missingFileGracePeriod;
+        this.settings = settings;
     }
     
     @Override
@@ -76,7 +79,7 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
      */
     @Override
     public synchronized void performStep() throws StepFailedException {
-        List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID(), settings);
         Map<String, Long> missingFilesMap = new HashMap<>();
         for(String pillar : pillars) {
             missingFilesMap.put(pillar, 0L);

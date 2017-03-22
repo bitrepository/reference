@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.cache.database;
 
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.IntegrityDatabaseManager;
 import org.bitrepository.service.database.DatabaseFactory;
 import org.bitrepository.service.database.DatabaseManager;
@@ -32,19 +33,19 @@ import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
  */
 public class IntegrityDAOFactory extends DatabaseFactory<IntegrityDAO> {
 
-    public IntegrityDAO getIntegrityDAOInstance(DatabaseSpecifics ds) {
-        IntegrityDAO dao = getDAOInstance(ds);
+    public IntegrityDAO getIntegrityDAOInstance(DatabaseSpecifics ds, Settings settings) {
+        IntegrityDAO dao = getDAOInstance(ds, settings);
         return dao;
     }
 
     @Override
-    protected IntegrityDAO getDerbyDAO(DatabaseManager dm) {
-        return new DerbyIntegrityDAO(dm.getConnector());
+    protected IntegrityDAO getDerbyDAO(DatabaseManager dm, Settings settings) {
+        return new DerbyIntegrityDAO(dm.getConnector(),settings);
     }
 
     @Override
-    protected IntegrityDAO getPostgresDAO(DatabaseManager dm) {
-        return new PostgresIntegrityDAO(dm.getConnector());
+    protected IntegrityDAO getPostgresDAO(DatabaseManager dm, Settings settings) {
+        return new PostgresIntegrityDAO(dm.getConnector(), settings);
     }
 
     @Override

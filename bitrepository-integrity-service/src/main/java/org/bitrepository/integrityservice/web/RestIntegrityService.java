@@ -49,6 +49,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileSizeUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
@@ -75,6 +76,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 @Path("/IntegrityService")
 public class RestIntegrityService {
     private final Logger log = LoggerFactory.getLogger(getClass());
+    private final Settings settings;
     private IntegrityModel model;
     private WorkflowManager workflowManager;
     private IntegrityReportProvider integrityReportProvider;
@@ -83,6 +85,7 @@ public class RestIntegrityService {
         this.model = IntegrityServiceManager.getIntegrityModel();
         this.workflowManager = IntegrityServiceManager.getWorkflowManager();
         this.integrityReportProvider = IntegrityServiceManager.getIntegrityReportProvider();
+        this.settings = IntegrityServiceManager.getSettings();
     }
 
     /**
@@ -211,7 +214,7 @@ public class RestIntegrityService {
         StringWriter writer = new StringWriter();
         JsonFactory jf = new JsonFactory();
         JsonGenerator jg = jf.createGenerator(writer);
-        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID, settings);
         Map<String, PillarCollectionStat> stats = new HashMap<String, PillarCollectionStat>();
         for(PillarCollectionStat stat : model.getLatestPillarStats(collectionID)) {
             if(pillars.contains(stat.getPillarID())) {

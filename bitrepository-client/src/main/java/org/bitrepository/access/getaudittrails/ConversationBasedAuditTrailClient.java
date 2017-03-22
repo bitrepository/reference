@@ -77,11 +77,11 @@ public class ConversationBasedAuditTrailClient extends AbstractClient implements
         if (settings.getRepositorySettings().getGetAuditTrailSettings() == null) {
             throw new IllegalStateException("Unable getAuditTrails both undefined GetAuditTrailSettings and undefined " +
                     "AuditTrailQuery[] in getAuditTrails call");
-        } else if (SettingsUtils.getAuditContributorsForCollection(collectionID).isEmpty()) {
+        } else if (SettingsUtils.getAuditContributorsForCollection(settings, collectionID).isEmpty()) {
             throw new IllegalStateException("Running AuditTrailClient without any defined contributers and undefined " +
                     "AuditTrailQuery[] in getAuditTrails call.");
         }
-        Collection<String> contributers = SettingsUtils.getAuditContributorsForCollection(collectionID);
+        Collection<String> contributers = SettingsUtils.getAuditContributorsForCollection(settings, collectionID);
         List<AuditTrailQuery> componentQueryList = new ArrayList<AuditTrailQuery>(contributers.size());
         for (String contributer : contributers) {
             componentQueryList.add(new AuditTrailQuery(contributer, null, null, null));

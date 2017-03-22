@@ -74,7 +74,7 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
         validateFileID(fileID);
         if (contributorQueries == null) {
             contributorQueries = ContributorQueryUtils.createFullContributorQuery(
-                    SettingsUtils.getPillarIDsForCollection(collectionID));
+                    SettingsUtils.getPillarIDsForCollection(collectionID, settings));
         }
 
         log.info("Requesting the fileIDs for file '" + fileID + "' with query "+

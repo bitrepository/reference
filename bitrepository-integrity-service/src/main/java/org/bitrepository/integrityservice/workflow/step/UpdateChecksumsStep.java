@@ -87,7 +87,7 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
         this.integrityContributors = integrityContributors;
         this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
                 + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
-        this.maxNumberOfResultsPerConversation = SettingsUtils.getMaxClientPageSize();
+        this.maxNumberOfResultsPerConversation = SettingsUtils.getMaxClientPageSize(settings);
         if(settings.getReferenceSettings().getIntegrityServiceSettings().isSetAbortOnFailedContributor()) {
             abortInCaseOfFailure = settings.getReferenceSettings().getIntegrityServiceSettings().isAbortOnFailedContributor();
         }

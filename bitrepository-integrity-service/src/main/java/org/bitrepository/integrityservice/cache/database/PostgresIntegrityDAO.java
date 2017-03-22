@@ -23,6 +23,7 @@ package org.bitrepository.integrityservice.cache.database;
 
 import java.util.List;
 
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
@@ -32,13 +33,13 @@ import org.bitrepository.service.database.DatabaseUtils;
  */
 public class PostgresIntegrityDAO extends IntegrityDAO {
 
-    public PostgresIntegrityDAO(DBConnector dbConnector) {
-        super(dbConnector);
+    public PostgresIntegrityDAO(DBConnector dbConnector, Settings settings) {
+        super(dbConnector, settings);
     }
 
     @Override
     protected synchronized void initializePillars() {
-        List<String> pillars = SettingsUtils.getAllPillarIDs();
+        List<String> pillars = SettingsUtils.getAllPillarIDs(settings);
         for(String pillar : pillars) {
             String sql = "INSERT INTO pillar (pillarID)"
                     + " (SELECT ? WHERE NOT EXISTS ("
@@ -50,7 +51,7 @@ public class PostgresIntegrityDAO extends IntegrityDAO {
     
     @Override
     protected synchronized void initializeCollections() {
-        List<String> collections = SettingsUtils.getAllCollectionsIDs();
+        List<String> collections = SettingsUtils.getAllCollectionsIDs(settings);
         for(String collection : collections) {
             String sql = "INSERT INTO collections (collectionID)"
                     + " (SELECT ? WHERE NOT EXISTS ("

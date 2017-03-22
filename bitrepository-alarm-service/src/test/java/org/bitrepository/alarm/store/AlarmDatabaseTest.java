@@ -100,7 +100,7 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
         AlarmDAOFactory alarmDAOFactory = new AlarmDAOFactory();
         AlarmServiceDAO database = alarmDAOFactory.getAlarmServiceDAOInstance(
-                settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
+                settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase(), settings);
         
         addStep("Populate the database with two alarms.", "Should be inserted.");
         for(Alarm alarm : makeAlarms()) {
@@ -188,7 +188,7 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         addStep("Setup and create alarm", "");
         AlarmDAOFactory alarmDAOFactory = new AlarmDAOFactory();
         AlarmServiceDAO database = alarmDAOFactory.getAlarmServiceDAOInstance(
-                settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
+                settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase(), settings);
         
         Alarm alarm = new Alarm();
         alarm.setAlarmCode(AlarmCode.CHECKSUM_ALARM);
@@ -218,7 +218,7 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
         addDescription("Testing the correct ingest and extraction of alarm dates");
         AlarmDAOFactory alarmDAOFactory = new AlarmDAOFactory();
         AlarmServiceDAO database = alarmDAOFactory.getAlarmServiceDAOInstance(
-                settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
+                settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase(), settings);
         
         addStep("Prepare, check and ingest alarms", "");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");

@@ -102,7 +102,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         DatabaseManager dm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
                         
-        IntegrityDAO cache = new DerbyIntegrityDAO(dm.getConnector());
+        IntegrityDAO cache = new DerbyIntegrityDAO(dm.getConnector(), settings);
         Assert.assertNotNull(cache);
 
         addStep("Close the connection and create another one.", "Should not fail");
@@ -116,7 +116,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         DatabaseManager newdm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
          
-        cache = new DerbyIntegrityDAO(newdm.getConnector());
+        cache = new DerbyIntegrityDAO(newdm.getConnector(), settings);
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
@@ -742,7 +742,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     private IntegrityDAO createDAO() {
         DatabaseManager dm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        return new DerbyIntegrityDAO(dm.getConnector());
+        return new DerbyIntegrityDAO(dm.getConnector(), settings);
     }
     
     /**

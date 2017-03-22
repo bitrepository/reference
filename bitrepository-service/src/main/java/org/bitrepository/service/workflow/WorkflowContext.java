@@ -20,8 +20,12 @@ package org.bitrepository.service.workflow;/*
  * #L%
  */
 
+import org.bitrepository.common.settings.Settings;
+
 /**
  * Marker interface defining a workflow context.
  */
 public interface WorkflowContext {
+
+    public Settings getSettings();
 }

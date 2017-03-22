@@ -78,10 +78,10 @@ public class AuditTrailCollector {
             IncrementalCollector collector = new IncrementalCollector(c.getID(),
                     settings.getReferenceSettings().getAuditTrailServiceSettings().getID(),
                     client, store,
-                    SettingsUtils.getMaxClientPageSize(), 
+                    SettingsUtils.getMaxClientPageSize(settings),
                     alarmDispatcher);
-            AuditTrailCollectionTimerTask collectorTask = new AuditTrailCollectionTimerTask( 
-                    collector, collectionInterval, getGracePeriod());
+            AuditTrailCollectionTimerTask collectorTask = new AuditTrailCollectionTimerTask(
+                    collector, collectionInterval, getGracePeriod(), settings);
             log.info("Will start collection of audit trail every " +
                     TimeUtils.millisecondsToHuman(collectionInterval) + ", " +
                     "after a grace period of " + TimeUtils.millisecondsToHuman(getGracePeriod()));
@@ -132,7 +132,7 @@ public class AuditTrailCollector {
             return DEFAULT_GRACE_PERIOD;
         }
     }
-    
+
     /**
      * Closes the AuditTrailCollector.
      */

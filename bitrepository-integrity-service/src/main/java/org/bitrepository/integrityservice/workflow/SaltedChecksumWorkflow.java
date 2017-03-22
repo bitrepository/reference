@@ -72,7 +72,7 @@ public class SaltedChecksumWorkflow extends Workflow {
         this.context = (IntegrityWorkflowContext) context;
         this.collectionID = collectionID;
         jobID = new JobID(getClass().getSimpleName(), collectionID);
-        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID, context.getSettings());
         integrityContributors = new IntegrityContributors(pillars, 0); 
     }
     

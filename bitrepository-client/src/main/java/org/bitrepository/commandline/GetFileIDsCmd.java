@@ -62,7 +62,7 @@ public class GetFileIDsCmd extends CommandLineClient {
         GetFileIDsOutputFormatter outputFormatter = new GetFileIDsInfoFormatter(output);
 
         output.debug("Instantiation GetFileID paging client.");
-        int pageSize = SettingsUtils.getMaxClientPageSize();
+        int pageSize = SettingsUtils.getMaxClientPageSize(settings);
         pagingClient = new PagingGetFileIDsClient(client, getTimeout(), pageSize, outputFormatter, output); 
     }
 

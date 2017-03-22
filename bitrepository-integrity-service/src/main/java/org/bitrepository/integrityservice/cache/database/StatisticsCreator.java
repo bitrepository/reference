@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.PillarCollectionStat;
@@ -56,13 +57,15 @@ public class StatisticsCreator {
     
     private final String collectionID;
     private final Connection conn;
+    private final Settings settings;
     private PreparedStatement insertStatisticsEntryPS;
     private PreparedStatement insertCollectionStatPS;
     private PreparedStatement insertPillarStatPS;
     
-    public StatisticsCreator(Connection dbConnection, String collectionID) {
+    public StatisticsCreator(Connection dbConnection, String collectionID, Settings settings) {
         this.collectionID = collectionID;
         conn = dbConnection;
+        this.settings = settings;
     }
     
     private void init() throws SQLException {
@@ -88,7 +91,7 @@ public class StatisticsCreator {
                 insertStatisticsEntryPS.setString(3, collectionID);
                 
                 addCollectionStatistics(statisticsCollector.getCollectionStat());
-                List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
+                List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID, settings);
                 for(String pillar : pillars) {
                     addPillarStat(statisticsCollector.getPillarCollectionStat(pillar));
                 }

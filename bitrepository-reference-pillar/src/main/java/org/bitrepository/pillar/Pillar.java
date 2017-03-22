@@ -101,7 +101,7 @@ public class Pillar {
                     .getRecalculateOldChecksumsInterval().longValue();
         }
         for(String collectionID : SettingsUtils.getCollectionIDsForPillar(
-                settings.getReferenceSettings().getPillarSettings().getPillarID())) {
+                settings.getReferenceSettings().getPillarSettings().getPillarID(), settings)) {
             SchedulableJob workflow = new RecalculateChecksumJob(collectionID, pillarModel);
             scheduler.schedule(workflow, interval);
         }

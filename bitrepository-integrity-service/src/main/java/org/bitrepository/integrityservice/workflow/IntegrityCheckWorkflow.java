@@ -93,10 +93,11 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
         
         super.start();
         try {
-            StatisticsCollector statisticsCollector = new StatisticsCollector(collectionID);
+            StatisticsCollector statisticsCollector = new StatisticsCollector(collectionID, context.getSettings());
             Integer maxRetries 
                 = context.getSettings().getReferenceSettings().getIntegrityServiceSettings().getComponentRetries();
-            integrityContributors = new IntegrityContributors(SettingsUtils.getPillarIDsForCollection(collectionID), 
+            integrityContributors = new IntegrityContributors(SettingsUtils.getPillarIDsForCollection(collectionID,
+                                                                                                      context.getSettings()),
                     maxRetries == null ? DEFAULT_MAX_RETRIES : maxRetries);
             
             UpdateFileIDsStep updateFileIDsStep = getUpdateFileIDsStep();
@@ -117,25 +118,27 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             Long missingFileGracePeriod 
                 = context.getSettings().getReferenceSettings().getIntegrityServiceSettings().getTimeBeforeMissingFileCheck();
             HandleMissingFilesStep handleMissingFilesStep = new HandleMissingFilesStep(context.getStore(), reporter,
-                    statisticsCollector, missingFileGracePeriod);
+                                                                                       statisticsCollector, missingFileGracePeriod,
+                                                                                       context.getSettings());
             performStep(handleMissingFilesStep);
             
             HandleChecksumValidationStep handleChecksumValidationStep 
-                    = new HandleChecksumValidationStep(context.getStore(), context.getAuditManager(), reporter, 
-                            statisticsCollector);
+                    = new HandleChecksumValidationStep(context.getStore(), context.getAuditManager(), reporter,
+                                                       statisticsCollector, context.getSettings());
             performStep(handleChecksumValidationStep);
             
-            HandleMissingChecksumsStep handleMissingChecksumsStep = new HandleMissingChecksumsStep(context.getStore(), 
-                    reporter, statisticsCollector, getChecksumUpdateCutoffDate());
+            HandleMissingChecksumsStep handleMissingChecksumsStep = new HandleMissingChecksumsStep(context.getStore(),
+                                                                                                   reporter, statisticsCollector, getChecksumUpdateCutoffDate(),
+                                                                                                   context.getSettings());
             performStep(handleMissingChecksumsStep);
             
             HandleObsoleteChecksumsStep handleObsoleteChecksumsStep 
-                    = new HandleObsoleteChecksumsStep(context.getSettings(), context.getStore(), reporter, 
-                            statisticsCollector);
+                    = new HandleObsoleteChecksumsStep(context.getStore(), reporter, statisticsCollector, context.getSettings()
+            );
             performStep(handleObsoleteChecksumsStep);
             
             CreateStatisticsEntryStep createStatistics = new CreateStatisticsEntryStep(
-                    context.getStore(), collectionID, statisticsCollector);
+                    context.getStore(), collectionID, statisticsCollector, context.getSettings());
             performStep(createStatistics);
 
             if(currentState() != WorkflowState.ABORTED) {

@@ -33,6 +33,7 @@ import java.util.Map;
 import org.bitrepository.audittrails.store.AuditEventIterator;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.settings.referencesettings.AuditTrailPreservation;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * contributor.
  */
 public class AuditPacker {
+    private final Settings settings;
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The audit trail store.*/
@@ -64,14 +66,16 @@ public class AuditPacker {
     /**
      * Constructor.
      * @param store The audit trail store
-     * @param settings the settings
+     * @param auditTrailPreservation the settings
+     * @param settings
      * @param collectionID the collection ID
      */
-    public AuditPacker(AuditTrailStore store, AuditTrailPreservation settings, String collectionID) {
+    public AuditPacker(AuditTrailStore store, AuditTrailPreservation auditTrailPreservation, Settings settings, String collectionID) {
         this.store = store;
+        this.settings = settings;
         this.collectionID = collectionID;
-        this.directory = FileUtils.retrieveDirectory(settings.getAuditTrailPreservationTemporaryDirectory());
-        this.contributors.addAll(SettingsUtils.getAuditContributorsForCollection(collectionID));
+        this.directory = FileUtils.retrieveDirectory(auditTrailPreservation.getAuditTrailPreservationTemporaryDirectory());
+        this.contributors.addAll(SettingsUtils.getAuditContributorsForCollection(settings, collectionID));
         
         initialiseReachedSequenceNumbers();
     }
@@ -184,4 +188,5 @@ public class AuditPacker {
         FileUtils.zipFile(fileToCompress, zippedFile);
         return zippedFile;
     }
+
 }

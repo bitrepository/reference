@@ -95,7 +95,7 @@ public class AlarmServiceFactory {
                 ContributorMediator contributorMediator = new SimpleContributorMediator(messageBus, settings, null, null);
                 AlarmDAOFactory alarmDAOFactory = new AlarmDAOFactory();
                 AlarmStore store = alarmDAOFactory.getAlarmServiceDAOInstance(
-                        settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
+                        settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase(), settings);
                 alarmService = new BasicAlarmService(messageBus, settings, store, contributorMediator);
                 
                 // Add the default handler for putting the alarms into the database.

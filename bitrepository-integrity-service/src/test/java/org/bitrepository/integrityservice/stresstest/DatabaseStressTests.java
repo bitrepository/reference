@@ -129,7 +129,7 @@ public class DatabaseStressTests extends ExtendedTestCase {
     private IntegrityDAO createDAO() {
         DatabaseManager dm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        return new DerbyIntegrityDAO(dm.getConnector());
+        return new DerbyIntegrityDAO(dm.getConnector(), settings);
     }
 
 }

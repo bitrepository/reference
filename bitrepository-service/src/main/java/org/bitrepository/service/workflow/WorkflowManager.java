@@ -111,7 +111,7 @@ public abstract class WorkflowManager {
     private void loadWorkFlows(WorkflowSettings configuration) {
         for (WorkflowConfiguration workflowConf:configuration.getWorkflow()) {
             log.info("Scheduling from configuration: " + workflowConf);
-            List<String> unscheduledCollections = new LinkedList<String>(SettingsUtils.getAllCollectionsIDs());
+            List<String> unscheduledCollections = new LinkedList<String>(SettingsUtils.getAllCollectionsIDs(context.getSettings()));
             try {
                 if (workflowConf.getSchedules() != null) {
                     for (Schedule schedule:workflowConf.getSchedules().getSchedule()) {
@@ -119,7 +119,7 @@ public abstract class WorkflowManager {
                         if (schedule.isSetCollections()) {
                             collectionsToScheduleWorkflowFor = schedule.getCollections().getCollectionID();
                         } else {
-                            collectionsToScheduleWorkflowFor = SettingsUtils.getAllCollectionsIDs();
+                            collectionsToScheduleWorkflowFor = SettingsUtils.getAllCollectionsIDs(context.getSettings());
                         }
                         for (String collectionID:collectionsToScheduleWorkflowFor) {
                             Workflow workflow =

@@ -44,7 +44,7 @@ public class IntegrityDatabase implements IntegrityModel {
     public IntegrityDatabase(Settings settings) {
         IntegrityDAOFactory daoFactory = new IntegrityDAOFactory();
         this.store = daoFactory.getIntegrityDAOInstance(
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
+                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase(), settings);
     }
 
     @Override

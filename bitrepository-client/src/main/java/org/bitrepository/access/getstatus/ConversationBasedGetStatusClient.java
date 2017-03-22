@@ -49,7 +49,7 @@ public class ConversationBasedGetStatusClient extends AbstractClient implements 
         log.info("Requesting status for collection of components.");
         GetStatusConversationContext context = new GetStatusConversationContext(
                 settings, messageBus, eventHandler, clientID,
-                SettingsUtils.getStatusContributorsForCollection());
+                SettingsUtils.getStatusContributorsForCollection(settings));
         startConversation(context, new IdentifyingContributorsForGetStatus(context));
     }
 }

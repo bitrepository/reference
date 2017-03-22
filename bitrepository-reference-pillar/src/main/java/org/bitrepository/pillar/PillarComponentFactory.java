@@ -144,7 +144,7 @@ public final class PillarComponentFactory {
         AuditTrailContributerDAOFactory daoFactory = new AuditTrailContributerDAOFactory();
         return daoFactory.getAuditTrailContributorDAO(
                 settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase(),
-                settings.getComponentID());
+                settings.getComponentID(), settings);
     }
 
     

@@ -55,8 +55,7 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
     /** A year. */
     public static final long DEFAULT_MAX_CHECKSUM_AGE = TimeUtils.MS_PER_YEAR;
     
-    public HandleObsoleteChecksumsStep(Settings settings, IntegrityModel store, IntegrityReporter reporter,
-            StatisticsCollector statisticsCollector) {
+    public HandleObsoleteChecksumsStep(IntegrityModel store, IntegrityReporter reporter, StatisticsCollector statisticsCollector, Settings settings) {
         this.settings = settings;
         this.store = store;
         this.reporter = reporter;
@@ -78,7 +77,7 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
         MaxChecksumAgeProvider maxChecksumAgeProvider = new MaxChecksumAgeProvider(DEFAULT_MAX_CHECKSUM_AGE,
                 settings.getReferenceSettings().getIntegrityServiceSettings().getObsoleteChecksumSettings());
         
-        List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID(), settings);
         
         for(String pillar : pillars) {
             Long obsolteteChecksums = 0L;

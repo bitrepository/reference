@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
@@ -59,14 +60,14 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
     private Long allPillarChecksumErrors = 0L;
     private Long collectionChecksumErrors = 0L; 
     
-    public HandleChecksumValidationStep(IntegrityModel store, AuditTrailManager auditManager, 
-            IntegrityReporter reporter, StatisticsCollector statisticsCollector) {
+    public HandleChecksumValidationStep(IntegrityModel store, AuditTrailManager auditManager,
+                                        IntegrityReporter reporter, StatisticsCollector statisticsCollector, Settings settings) {
         this.store = store;
         this.auditManager = auditManager;
         this.reporter = reporter;
         this.sc = statisticsCollector;
         pillarChecksumErrors = new HashMap<>();
-        List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID(), settings);
         for(String pillar : pillars) {
             pillarChecksumErrors.put(pillar, new Long(0));
         }

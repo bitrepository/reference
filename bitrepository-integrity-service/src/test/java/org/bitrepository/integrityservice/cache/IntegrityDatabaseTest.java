@@ -95,7 +95,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         Assert.assertEquals(oldChecksums.size(), 0);
         
         addStep("Test the 'findMissingChecksums'", "Should deliver an empty collection");
-        for(String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTIONID)) {
+        for(String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTIONID, settings)) {
             Collection<String> missingChecksums 
                 = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTIONID, pillar, new Date(0)));
             Assert.assertNotNull(missingChecksums);
@@ -103,8 +103,8 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         }
         
         addStep("Test the 'findMissingFiles'", "Should deliver an empty collection");
-        Collection<String> missingFiles = getIssuesFromIterator(model.findFilesWithMissingCopies(TEST_COLLECTIONID, 
-                SettingsUtils.getPillarIDsForCollection(TEST_COLLECTIONID).size(), 0L, Long.MAX_VALUE));
+        Collection<String> missingFiles = getIssuesFromIterator(model.findFilesWithMissingCopies(TEST_COLLECTIONID,
+                                                                                                 SettingsUtils.getPillarIDsForCollection(TEST_COLLECTIONID, settings).size(), 0L, Long.MAX_VALUE));
         Assert.assertNotNull(missingFiles);
         Assert.assertEquals(missingFiles.size(), 0);    
 

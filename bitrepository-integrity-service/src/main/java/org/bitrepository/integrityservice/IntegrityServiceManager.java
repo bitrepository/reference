@@ -114,7 +114,7 @@ public final class IntegrityServiceManager {
         AuditTrailContributerDAOFactory daoFactory = new AuditTrailContributerDAOFactory();
         auditManager = daoFactory.getAuditTrailContributorDAO(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getAuditTrailContributerDatabase(),
-                settings.getComponentID());
+                settings.getComponentID(), settings);
                 
         alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus, AlarmLevel.ERROR);
         model = new IntegrityDatabase(settings);
@@ -199,7 +199,11 @@ public final class IntegrityServiceManager {
     public static IntegrityReportProvider getIntegrityReportProvider() {
         return integrityReportProvider;
     }
-    
+
+    public static Settings getSettings() {
+        return settings;
+    }
+
     /**
      * @return Gets you the <code>WorkflowManager</code> exposing the workflow model.
      */

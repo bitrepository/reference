@@ -21,6 +21,7 @@
  */
 package org.bitrepository.service.audit;
 
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.service.database.DatabaseFactory;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
@@ -32,19 +33,19 @@ import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
  */
 public class AuditTrailContributerDAOFactory extends DatabaseFactory<AuditTrailContributerDAO> {
 
-    public AuditTrailContributerDAO getAuditTrailContributorDAO(DatabaseSpecifics ds, String componentID) {
-        AuditTrailContributerDAO dao = getDAOInstance(ds);
+    public AuditTrailContributerDAO getAuditTrailContributorDAO(DatabaseSpecifics ds, String componentID, Settings settings) {
+        AuditTrailContributerDAO dao = getDAOInstance(ds, settings);
         dao.initialize(componentID);
         return dao;
     }
     
     @Override
-    protected AuditTrailContributerDAO getDerbyDAO(DatabaseManager dm) {
+    protected AuditTrailContributerDAO getDerbyDAO(DatabaseManager dm, Settings settings) {
         return new DerbyAuditTrailContributorDAO(dm);
     }
 
     @Override
-    protected AuditTrailContributerDAO getPostgresDAO(DatabaseManager dm) {
+    protected AuditTrailContributerDAO getPostgresDAO(DatabaseManager dm, Settings settings) {
         return new PostgresAuditTrailContributorDAO(dm);
     }
 

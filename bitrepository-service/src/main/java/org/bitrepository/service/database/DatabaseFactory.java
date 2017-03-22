@@ -21,6 +21,7 @@
  */
 package org.bitrepository.service.database;
 
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 
 /**
@@ -37,27 +38,28 @@ public abstract class DatabaseFactory<T> {
     /**
      * Obtain the appropriate DAO instance for the concrete backend.
      * @param ds the database specifics
+     * @param settings
      * @return the appropriate DAO instance for the concrete backend.
      * @throws UnsupportedDatabaseTypeException if the driver is not either derby or postgres
      * @see #derbyDriver
      * @see #postgressDriver
      */
-    protected T getDAOInstance(DatabaseSpecifics ds) throws UnsupportedDatabaseTypeException{
+    protected T getDAOInstance(DatabaseSpecifics ds, Settings settings) throws UnsupportedDatabaseTypeException{
         DatabaseManager dm = getDatabaseManager(ds);
         String dbDriver = ds.getDriverClass();
         if(dbDriver.equals(derbyDriver)) {
-            return getDerbyDAO(dm);
+            return getDerbyDAO(dm, settings);
         } else if(dbDriver.equals(postgressDriver)) {
-            return getPostgresDAO(dm);
+            return getPostgresDAO(dm, settings);
         } else {
             throw new UnsupportedDatabaseTypeException("The database for driver: '" + dbDriver
                     + "' is not supported, use '" + derbyDriver + "' or '" + postgressDriver + "'");
         }
     }
     
-    protected abstract T getDerbyDAO(DatabaseManager dm);
+    protected abstract T getDerbyDAO(DatabaseManager dm, Settings settings);
     
-    protected abstract T getPostgresDAO(DatabaseManager dm);
+    protected abstract T getPostgresDAO(DatabaseManager dm, Settings settings);
     
     protected abstract DatabaseManager getDatabaseManager(DatabaseSpecifics ds);
 }

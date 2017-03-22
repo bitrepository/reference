@@ -59,8 +59,8 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
         workflowSettings.getWorkflow().add(workflowConfiguration);
         settings.getReferenceSettings().getIntegrityServiceSettings().setWorkflows(workflowSettings);
         SettingsUtils.initialize(settings);
-        collection1ID = SettingsUtils.getAllCollectionsIDs().get(0);
-        collection2ID = SettingsUtils.getAllCollectionsIDs().get(1);
+        collection1ID = SettingsUtils.getAllCollectionsIDs(settings).get(0);
+        collection2ID = SettingsUtils.getAllCollectionsIDs(settings).get(1);
 
         workflow1 = new TestWorkflow(collection1ID);
         workflow2 = new TestWorkflow(collection2ID);

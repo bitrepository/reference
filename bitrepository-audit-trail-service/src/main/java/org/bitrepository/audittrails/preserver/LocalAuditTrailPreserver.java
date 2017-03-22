@@ -94,8 +94,8 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         this.store = store;
         this.client = new BlockingPutFileClient(client);
         this.exchange = exchange;
-        for(String collectionID : SettingsUtils.getAllCollectionsIDs()) {
-            this.auditPackers.put(collectionID, new AuditPacker(store, preservationSettings, collectionID));
+        for(String collectionID : SettingsUtils.getAllCollectionsIDs(settings)) {
+            this.auditPackers.put(collectionID, new AuditPacker(store, preservationSettings, settings, collectionID));
         }
     }
     
@@ -128,7 +128,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         } else {
             auditTask.resetTime();
         }
-        for(String collectionID : SettingsUtils.getAllCollectionsIDs()) {
+        for(String collectionID : SettingsUtils.getAllCollectionsIDs(settings)) {
             performAuditTrailPreservation(collectionID);
         }
     }

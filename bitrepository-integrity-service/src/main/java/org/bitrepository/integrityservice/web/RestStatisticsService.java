@@ -34,6 +34,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileSizeUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
@@ -47,10 +48,12 @@ import org.bitrepository.integrityservice.cache.PillarCollectionStat;
 
 @Path("/Statistics")
 public class RestStatisticsService {
+    private final Settings settings;
     private IntegrityModel model;
 
     public RestStatisticsService() {
         this.model = IntegrityServiceManager.getIntegrityModel();
+        this.settings = IntegrityServiceManager.getSettings();
     }
      
     @GET
@@ -89,7 +92,7 @@ public class RestStatisticsService {
         for(CollectionStat stat : stats) {
             StatisticsCollectionSize obj = new StatisticsCollectionSize();
             obj.setCollectionID(stat.getCollectionID());
-            obj.setCollectionName(SettingsUtils.getCollectionName(stat.getCollectionID()));
+            obj.setCollectionName(SettingsUtils.getCollectionName(stat.getCollectionID(), settings));
             obj.setDataSize(stat.getDataSize());
             obj.setHumanSize(FileSizeUtils.toHumanShortDecimal(stat.getDataSize()));
             data.add(obj);
@@ -99,7 +102,7 @@ public class RestStatisticsService {
 
     public List<CollectionStat> getLatestCollectionStatistics() {
         List<CollectionStat> res = new ArrayList<CollectionStat>();
-        for(String collection : SettingsUtils.getAllCollectionsIDs()) {
+        for(String collection : SettingsUtils.getAllCollectionsIDs(settings)) {
             List<CollectionStat> stats = model.getLatestCollectionStat(collection, 1);
             if(!stats.isEmpty()) {
                 res.add(stats.get(0));
@@ -110,14 +113,14 @@ public class RestStatisticsService {
 
     public List<StatisticsPillarSize> getCurrentPillarsDataSize() {
         Map<String, StatisticsPillarSize> stats = new HashMap<String, StatisticsPillarSize>();
-        for(String pillar: SettingsUtils.getAllPillarIDs()) {
+        for(String pillar: SettingsUtils.getAllPillarIDs(settings)) {
             StatisticsPillarSize stat = new StatisticsPillarSize();
             stat.setPillarID(pillar);
             stat.setDataSize(0L);
             stat.setHumanSize("0 B");
             stats.put(pillar, stat);
         }
-        for(String collection : SettingsUtils.getAllCollectionsIDs()) {
+        for(String collection : SettingsUtils.getAllCollectionsIDs(settings)) {
             for(PillarCollectionStat pillarStat : model.getLatestPillarStats(collection)) {
                 StatisticsPillarSize stat = stats.get(pillarStat.getPillarID());
                 stat.setDataSize(stat.getDataSize() + pillarStat.getDataSize());

@@ -24,6 +24,7 @@ package org.bitrepository.audittrails.collector;
 import java.util.Date;
 import java.util.TimerTask;
 
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,13 +35,16 @@ public class AuditTrailCollectionTimerTask extends TimerTask {
     private final IncrementalCollector collector;
     /** The collection schedule */
     private final CollectionSchedule schedule;
-    
+    private final Settings settings;
+
     /**
      * @param collector The collector doing the actual work.
      * @param interval The interval between running this timer task.
      * @param gracePeriod The period that should pass before the first scheduled collection
+     * @param settings
      */
-    public AuditTrailCollectionTimerTask(IncrementalCollector collector, long interval, int gracePeriod) {
+    public AuditTrailCollectionTimerTask(IncrementalCollector collector, long interval, int gracePeriod, Settings settings) {
+        this.settings = settings;
         this.schedule = new CollectionSchedule(interval, gracePeriod);
         this.collector = collector;
         log.info("Scheduled next collection of audit trails for {}", schedule.getNextRun());
@@ -77,7 +81,7 @@ public class AuditTrailCollectionTimerTask extends TimerTask {
     public synchronized void runCollection() {
         log.info("Starting collection of audit trails for collection: '{}'", collector.getCollectionID());
         schedule.start();
-        collector.performCollection(SettingsUtils.getAuditContributorsForCollection(collector.getCollectionID()));
+        collector.performCollection(SettingsUtils.getAuditContributorsForCollection(settings, collector.getCollectionID()));
         schedule.finish();
         log.info("Scheduled next collection of audit trails from {} for {}", collector.getCollectionID(), schedule.getNextRun());
     }

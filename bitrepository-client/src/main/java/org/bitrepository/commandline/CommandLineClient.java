@@ -167,7 +167,7 @@ public abstract class CommandLineClient {
             fileIDValidator.checkFileID(cmdHandler.getOptionValue(Constants.FILE_ID_ARG));
         }
         if(cmdHandler.hasOption(Constants.COLLECTION_ID_ARG)) {
-            List<String> collections = SettingsUtils.getAllCollectionsIDs();
+            List<String> collections = SettingsUtils.getAllCollectionsIDs(settings);
             String collectionArgument = cmdHandler.getOptionValue(Constants.COLLECTION_ID_ARG);
             if (!collections.contains(collectionArgument)) {
                 throw new IllegalArgumentException(collectionArgument + " is not a valid collection." +
@@ -176,7 +176,7 @@ public abstract class CommandLineClient {
         }
         if(cmdHandler.hasOption(Constants.PILLAR_ARG)) {
             String pillarArgument = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
-            List<String> pillarsInCollection = SettingsUtils.getPillarIDsForCollection(getCollectionID());
+            List<String> pillarsInCollection = SettingsUtils.getPillarIDsForCollection(getCollectionID(), settings);
             if (!pillarsInCollection.contains(pillarArgument)) {
                 throw new IllegalArgumentException(pillarArgument + " is not a valid pillar for collection " +
                         getCollectionID() + "\nThe collection contains the following pillars: " + pillarsInCollection);
@@ -212,7 +212,7 @@ public abstract class CommandLineClient {
         if(cmdHandler.hasOption(Constants.PILLAR_ARG)) {
             return Arrays.asList(cmdHandler.getOptionValue(Constants.PILLAR_ARG));
         } else {
-            return SettingsUtils.getPillarIDsForCollection(getCollectionID());
+            return SettingsUtils.getPillarIDsForCollection(getCollectionID(), settings);
         }
     }
 

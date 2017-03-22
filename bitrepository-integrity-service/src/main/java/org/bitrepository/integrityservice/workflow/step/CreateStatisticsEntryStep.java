@@ -24,6 +24,7 @@ package org.bitrepository.integrityservice.workflow.step;
 import java.util.List;
 import java.util.Map;
 
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.PillarCollectionMetric;
@@ -40,11 +41,13 @@ public class CreateStatisticsEntryStep extends AbstractWorkFlowStep {
     /** The collectionID */
     private final String collectionID;
     private final StatisticsCollector sc;
-    
-    public CreateStatisticsEntryStep(IntegrityModel store, String collectionID, StatisticsCollector statisticsCollector) {
+    private final Settings settings;
+
+    public CreateStatisticsEntryStep(IntegrityModel store, String collectionID, StatisticsCollector statisticsCollector, Settings settings) {
         this.store = store;        
         this.collectionID = collectionID;
         this.sc = statisticsCollector;
+        this.settings = settings;
     }
     
     @Override
@@ -58,7 +61,7 @@ public class CreateStatisticsEntryStep extends AbstractWorkFlowStep {
      */
     @Override
     public synchronized void performStep() {
-        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID, settings);
         Map<String, PillarCollectionMetric> pillarMetrics = store.getPillarCollectionMetrics(collectionID);
         for(String pillar : pillars) {
             PillarCollectionMetric metric = pillarMetrics.get(pillar);

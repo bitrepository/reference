@@ -77,8 +77,8 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
         }
         
         PutFileConversationContext context = new PutFileConversationContext(collectionID, fileID, url, sizeOfFile,
-                checksumForValidationAtPillar, checksumRequestsForValidation, settings, messageBus,
-                clientID, SettingsUtils.getPillarIDsForCollection(collectionID), eventHandler, auditTrailInformation);
+                                                                            checksumForValidationAtPillar, checksumRequestsForValidation, settings, messageBus,
+                                                                             clientID, SettingsUtils.getPillarIDsForCollection(collectionID,settings), eventHandler, auditTrailInformation);
         startConversation(context, new IdentifyPillarsForPutFile(context));
     }
 }

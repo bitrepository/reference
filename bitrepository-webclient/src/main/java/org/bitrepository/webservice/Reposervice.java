@@ -21,26 +21,24 @@
  */
 package org.bitrepository.webservice;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
 import org.bitrepository.BasicClient;
 import org.bitrepository.BasicClientFactory;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.ProtocolSettings;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonGenerator;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The class exposes the REST webservices provided by the Bitrepository-webclient using Jersey. 
@@ -67,21 +65,25 @@ public class Reposervice {
     @Path("/getCollectionName")
     @Produces(MediaType.APPLICATION_JSON)
     public String getCollectionName(@QueryParam("collectionID") String collectionID) {
-        return SettingsUtils.getCollectionName(collectionID);
+        return SettingsUtils.getCollectionName(collectionID, client.getSettings());
     }
     
     @GET
     @Path("/getCollections")
     @Produces(MediaType.APPLICATION_JSON)
     public List<WebCollection> getCollections() {
-        return client.getCollectionIDs().stream().map(c -> new WebCollection(c, SettingsUtils.getCollectionName(c))).collect(Collectors.toList());
+        return client.getCollectionIDs().stream().map(
+                (String collectionID) -> {
+                    String collectionName = SettingsUtils.getCollectionName(collectionID, client.getSettings());
+                    return new WebCollection(collectionID, collectionName);
+                }).collect(Collectors.toList());
     }
     
     @GET
     @Path("/getRepositoryName")
     @Produces(MediaType.APPLICATION_JSON)
     public String getRepositoryName() {
-        return SettingsUtils.getRepositoryName();
+        return SettingsUtils.getRepositoryName(client.getSettings());
     }
     
     @GET
@@ -92,7 +94,7 @@ public class Reposervice {
         JsonFactory jf = new JsonFactory();
         JsonGenerator jg = jf.createGenerator(writer);
         jg.writeStartObject();
-        jg.writeObjectField("repositoryName", SettingsUtils.getRepositoryName());
+        jg.writeObjectField("repositoryName", SettingsUtils.getRepositoryName(client.getSettings()));
         writeCollectionsArray(jg);
         writeProtocolSettingsObj(jg);
         jg.writeEndObject();
@@ -107,7 +109,7 @@ public class Reposervice {
         for(Collection c : collections) {
             jg.writeStartObject();
             jg.writeObjectField("collectionID", c.getID());
-            jg.writeObjectField("collectionName", SettingsUtils.getCollectionName(c.getID()));
+            jg.writeObjectField("collectionName", SettingsUtils.getCollectionName(c.getID(), client.getSettings()));
             jg.writeArrayFieldStart("pillars");
             List<String> pillars = c.getPillarIDs().getPillarID();
             for(String p : pillars) {

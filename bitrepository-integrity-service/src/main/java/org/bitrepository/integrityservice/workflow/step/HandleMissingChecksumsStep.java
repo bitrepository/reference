@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
@@ -48,13 +49,15 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
     private final IntegrityReporter reporter;
     private final StatisticsCollector sc;
     private final Date cutoff;
-    
-    public HandleMissingChecksumsStep(IntegrityModel store, IntegrityReporter reporter, 
-            StatisticsCollector statisticsCollector, Date latestChecksumUpdate) {
+    private final Settings settings;
+
+    public HandleMissingChecksumsStep(IntegrityModel store, IntegrityReporter reporter,
+                                      StatisticsCollector statisticsCollector, Date latestChecksumUpdate, Settings settings) {
         this.store = store;
         this.reporter = reporter;
         this.sc = statisticsCollector;
         this.cutoff = latestChecksumUpdate;
+        this.settings = settings;
     }
     
     @Override
@@ -69,7 +72,7 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
      */
     @Override
     public synchronized void performStep() throws StepFailedException {
-        List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID(), settings);
 
         for(String pillar : pillars) {
             Long missingChecksums = 0L;

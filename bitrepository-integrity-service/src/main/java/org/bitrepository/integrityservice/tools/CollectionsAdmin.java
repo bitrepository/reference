@@ -73,7 +73,7 @@ public class CollectionsAdmin {
      * @throws UnknownCollectionException if the collection is not present 
      */
     private void hasCollection() throws UnknownCollectionException {
-        List<String> collections = SettingsUtils.getAllCollectionsIDs();
+        List<String> collections = SettingsUtils.getAllCollectionsIDs(settings);
         if(!collections.contains(collectionID)) {
             throw new UnknownCollectionException("The collection '" + collectionID + "' is not present in RepositorySettings");
         }

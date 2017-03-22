@@ -80,7 +80,7 @@ public class RepairMissingFilesWorkflow extends Workflow {
         }
         super.start();
         
-        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID, context.getSettings());
 
         repairedFiles = new ArrayList<>();
 
