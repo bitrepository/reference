@@ -76,7 +76,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
 
     @Test(groups = {"regressiontest"})
     public void verifyAuditTrailClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createAuditTrailClient(
+        Assert.assertTrue(AccessComponentFactory.createAuditTrailClient(
                 settingsForCUT, securityManager, settingsForTestClient.getComponentID())
                 instanceof ConversationBasedAuditTrailClient,
                 "The default AuditTrailClient from the Access factory should be of the type '" +

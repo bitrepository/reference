@@ -107,7 +107,7 @@ public final class AuditTrailServiceFactory {
     public static synchronized AuditTrailService getAuditTrailService() {
         if(auditTrailService == null) {
             ContributorMediator mediator = new SimpleContributorMediator(
-                    ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
+                    ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager),
                     settings, null, ProtocolComponentFactory.getInstance().getFileExchange(settings));
             
             PutFileClient putClient = ModifyComponentFactory.getInstance().retrievePutClient(settings, 
@@ -118,7 +118,7 @@ public final class AuditTrailServiceFactory {
             DatabaseManager auditTrailServiceDatabaseManager = new AuditTrailDatabaseManager(
                     serviceSettings.getAuditTrailServiceDatabase());
             AuditTrailStore store = new AuditTrailServiceDAO(auditTrailServiceDatabaseManager);
-            AuditTrailClient client = AccessComponentFactory.getInstance().createAuditTrailClient(settings, 
+            AuditTrailClient client = AccessComponentFactory.createAuditTrailClient(settings,
                     securityManager, serviceSettings.getID());
             
             AuditTrailCollector collector = new AuditTrailCollector(settings, client, store, alarmDispatcher);

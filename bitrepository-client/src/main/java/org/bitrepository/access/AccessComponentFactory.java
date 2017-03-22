@@ -44,21 +44,6 @@ import org.bitrepository.protocol.security.SecurityManager;
  * Instantiates the instances of the interfaces within this module.
  */
 public final class AccessComponentFactory {
-    /** The singleton instance. */
-    private static AccessComponentFactory instance;
-    
-    /**
-     * Instantiation of this singleton.
-     *
-     * @return The singleton instance of this factory class.
-     */
-    public static synchronized AccessComponentFactory getInstance() {
-        // ensure singleton.
-        if(instance == null) {
-            instance = new AccessComponentFactory();
-        }
-        return instance;
-    }
 
     /**
      * Private constructor for initialization of the singleton.
@@ -74,10 +59,10 @@ public final class AccessComponentFactory {
      * @param clientID The ID of the client
      * @return A GetFileClient.
      */
-    public GetFileClient createGetFileClient(Settings settings, SecurityManager securityManager, String clientID) {
+    public static GetFileClient createGetFileClient(Settings settings, SecurityManager securityManager, String clientID) {
         return new ConversationBasedGetFileClient(
-                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
-                ConversationMediatorManager.getConversationMediator(settings, securityManager), 
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager),
+                ConversationMediatorManager.getConversationMediator(settings, securityManager),
                 settings, clientID);
     }
     
@@ -88,9 +73,9 @@ public final class AccessComponentFactory {
      * @param clientID The ID of the client
      * @return The GetChecksumsClient
      */
-    public GetChecksumsClient createGetChecksumsClient(Settings settings, SecurityManager securityManager, String clientID) {
+    public static GetChecksumsClient createGetChecksumsClient(Settings settings, SecurityManager securityManager, String clientID) {
         return new ConversationBasedGetChecksumsClient(
-                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager),
                 ConversationMediatorManager.getConversationMediator(settings, securityManager),
                 settings, clientID);
     }
@@ -102,9 +87,9 @@ public final class AccessComponentFactory {
      * @param clientID The ID of the client
      * @return A GetFileIDsClient.
      */
-    public GetFileIDsClient createGetFileIDsClient(Settings settings, SecurityManager securityManager, String clientID) {
+    public static GetFileIDsClient createGetFileIDsClient(Settings settings, SecurityManager securityManager, String clientID) {
         return new ConversationBasedGetFileIDsClient(
-                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager),
                 ConversationMediatorManager.getConversationMediator(settings, securityManager),
                 settings, clientID);
     }
@@ -116,9 +101,9 @@ public final class AccessComponentFactory {
      * @param clientID The ID of the client
      * @return A GetStatusClient.
      */
-    public GetStatusClient createGetStatusClient(Settings settings, SecurityManager securityManager, String clientID) {
+    public static GetStatusClient createGetStatusClient(Settings settings, SecurityManager securityManager, String clientID) {
         return new ConversationBasedGetStatusClient(
-                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager),
                 ConversationMediatorManager.getConversationMediator(settings, securityManager),
                 settings, clientID);
     }
@@ -130,7 +115,7 @@ public final class AccessComponentFactory {
      * @param clientID The ID of the client
      * @return A AuditTrailClient.
      */
-    public AuditTrailClient createAuditTrailClient(Settings settings, SecurityManager securityManager, String clientID) {
+    public static AuditTrailClient createAuditTrailClient(Settings settings, SecurityManager securityManager, String clientID) {
         return new ConversationBasedAuditTrailClient(
                 settings, ConversationMediatorManager.getConversationMediator(settings, securityManager),
                 ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager),

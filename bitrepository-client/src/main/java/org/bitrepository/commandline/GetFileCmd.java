@@ -65,7 +65,7 @@ public class GetFileCmd extends CommandLineClient {
      */
     protected GetFileCmd(String ... args) {
         super(args);
-        client = AccessComponentFactory.getInstance().createGetFileClient(settings, securityManager,
+        client = AccessComponentFactory.createGetFileClient(settings, securityManager,
                 getComponentID());
     }
 

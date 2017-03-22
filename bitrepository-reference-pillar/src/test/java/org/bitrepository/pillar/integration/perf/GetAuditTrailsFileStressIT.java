@@ -35,7 +35,7 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
-        auditTrailClient = AccessComponentFactory.getInstance().createAuditTrailClient(
+        auditTrailClient = AccessComponentFactory.createAuditTrailClient(
                 settingsForCUT, new DummySecurityManager(), settingsForCUT.getComponentID()
         );
     }

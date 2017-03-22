@@ -58,7 +58,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     @Test(groups = {"regressiontest"})
     public void verifyGetFileClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(
+        Assert.assertTrue(AccessComponentFactory.createGetFileClient(
                 settingsForCUT, securityManager, settingsForTestClient.getComponentID())
                 instanceof ConversationBasedGetFileClient,
                 "The default GetFileClient from the Access factory should be of the type '" +

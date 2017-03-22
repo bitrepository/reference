@@ -66,7 +66,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
 
         @Test(groups = {"regressiontest"})
         public void verifyGetStatusClientFromFactory() throws Exception {
-            Assert.assertTrue(AccessComponentFactory.getInstance().createGetStatusClient(
+            Assert.assertTrue(AccessComponentFactory.createGetStatusClient(
                     settingsForCUT, securityManager, settingsForTestClient.getComponentID())
                     instanceof ConversationBasedGetStatusClient,
                     "The default GetStatusClient from the Access factory should be of the type '" +

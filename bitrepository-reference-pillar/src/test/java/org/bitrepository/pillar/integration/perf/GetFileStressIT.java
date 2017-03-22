@@ -40,7 +40,7 @@ public class GetFileStressIT extends PillarPerformanceTest {
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
-        getFileClient = AccessComponentFactory.getInstance().createGetFileClient(
+        getFileClient = AccessComponentFactory.createGetFileClient(
                 settingsForTestClient, createSecurityManager(), settingsForTestClient.getComponentID()
         );
     }

@@ -54,7 +54,7 @@ public class CollectionTestHelper {
         putClient = ModifyComponentFactory.getInstance().retrievePutClient(
                 settings, new DummySecurityManager(), settings.getComponentID()
         );
-        getFileIDsClient = AccessComponentFactory.getInstance().createGetFileIDsClient(
+        getFileIDsClient = AccessComponentFactory.createGetFileIDsClient(
                 settings, securityManager, settings.getComponentID()
         );
         deleteFileClient = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(

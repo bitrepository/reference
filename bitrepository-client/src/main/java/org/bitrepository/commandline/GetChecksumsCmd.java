@@ -58,7 +58,7 @@ public class GetChecksumsCmd extends CommandLineClient {
      */
     protected GetChecksumsCmd(String ... args) {
         super(args);
-        GetChecksumsClient client = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, 
+        GetChecksumsClient client = AccessComponentFactory.createGetChecksumsClient(settings,
                 securityManager, getComponentID());
         GetChecksumsOutputFormatter outputFormatter = retrieveOutputFormatter();
         int pageSize = SettingsUtils.getMaxClientPageSize(settings);

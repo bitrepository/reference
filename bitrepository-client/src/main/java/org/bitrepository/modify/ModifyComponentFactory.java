@@ -70,8 +70,8 @@ public final class ModifyComponentFactory {
      */
     public PutFileClient retrievePutClient(Settings settings, SecurityManager securityManager, String clientID) {
         return new ConversationBasedPutFileClient(
-                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
-                ConversationMediatorManager.getConversationMediator(settings, securityManager), 
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager),
+                ConversationMediatorManager.getConversationMediator(settings, securityManager),
                 settings, clientID);
     }
     
@@ -83,8 +83,8 @@ public final class ModifyComponentFactory {
      */
     public DeleteFileClient retrieveDeleteFileClient(Settings settings, SecurityManager securityManager, String clientID) {
         return new ConversationBasedDeleteFileClient(
-                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
-                ConversationMediatorManager.getConversationMediator(settings, securityManager), 
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager),
+                ConversationMediatorManager.getConversationMediator(settings, securityManager),
                 settings, clientID);
     }
         
@@ -96,8 +96,8 @@ public final class ModifyComponentFactory {
      */
     public ReplaceFileClient retrieveReplaceFileClient(Settings settings, SecurityManager securityManager, String clientID) {
         return new ConversationBasedReplaceFileClient(
-                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
-                ConversationMediatorManager.getConversationMediator(settings, securityManager), 
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager),
+                ConversationMediatorManager.getConversationMediator(settings, securityManager),
                 settings, clientID);
     }
 }

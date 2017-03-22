@@ -91,8 +91,8 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
 
     @Test(groups = {"regressiontest"})
     public void verifyGetChecksumsClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,
-                settingsForTestClient.getComponentID()) instanceof ConversationBasedGetChecksumsClient,
+        Assert.assertTrue(AccessComponentFactory.createGetChecksumsClient(settingsForCUT, securityManager,
+                                                                          settingsForTestClient.getComponentID()) instanceof ConversationBasedGetChecksumsClient,
                 "The default GetFileClient from the Access factory should be of the type '" +
                         ConversationBasedGetChecksumsClient.class.getName() + "'.");
     }

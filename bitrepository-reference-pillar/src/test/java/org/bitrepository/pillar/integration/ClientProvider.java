@@ -110,7 +110,7 @@ public class ClientProvider {
         if (getChecksumsClient == null) {
             getChecksumsClient = new BlockingGetChecksumsClient(
                 new GetChecksumsClientTestWrapper(
-                    AccessComponentFactory.getInstance().createGetChecksumsClient(
+                        AccessComponentFactory.createGetChecksumsClient(
                         settings, securityManager, settings.getComponentID()
                     ), eventManager
                 )
@@ -123,7 +123,7 @@ public class ClientProvider {
         if (getFileIDsClient == null) {
             getFileIDsClient = new BlockingGetFileIDsClient(
                 new GetFileIDsClientTestWrapper(
-                    AccessComponentFactory.getInstance().createGetFileIDsClient(
+                        AccessComponentFactory.createGetFileIDsClient(
                         settings, securityManager, settings.getComponentID()
                     ), eventManager
                 )
@@ -137,7 +137,7 @@ public class ClientProvider {
         if (getAuditTrailsClient == null) {
             getAuditTrailsClient = new BlockingAuditTrailClient(
                     new AuditTrailClientTestWrapper(
-                            AccessComponentFactory.getInstance().createAuditTrailClient(
+                            AccessComponentFactory.createAuditTrailClient(
                                     settings, securityManager, settings.getComponentID()
                             ), eventManager
                     )
