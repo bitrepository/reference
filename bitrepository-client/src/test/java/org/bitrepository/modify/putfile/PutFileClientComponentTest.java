@@ -39,7 +39,6 @@ import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.TestFileHelper;
-import org.bitrepository.modify.ModifyComponentFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -57,17 +56,6 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         messageFactory = new TestPutFileMessageFactory(settingsForTestClient.getComponentID());
 
 }
-
-    @Test(groups={"regressiontest"})
-    public void verifyPutClientFromFactory() {
-        addDescription("Testing the initialization through the ModifyComponentFactory.");
-        addStep("Use the ModifyComponentFactory to instantiate a PutFileClient.",
-                "It should be an instance of SimplePutFileClient");
-        PutFileClient pfc = ModifyComponentFactory.getInstance().retrievePutClient(
-                settingsForCUT, securityManager, settingsForTestClient.getComponentID());
-        Assert.assertTrue(pfc instanceof ConversationBasedPutFileClient, "The PutFileClient '" + pfc + "' should be instance of '"
-                + ConversationBasedPutFileClient.class.getName() + "'");
-    }
 
     @Test(groups={"regressiontest"})
     public void normalPutFile() throws Exception {

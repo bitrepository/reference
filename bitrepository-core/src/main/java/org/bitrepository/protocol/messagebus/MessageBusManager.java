@@ -24,30 +24,24 @@
  */
 package org.bitrepository.protocol.messagebus;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import javax.jms.JMSException;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jms.JMSException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The place to get message buses. Only one message bus is created for each collection ID.
  */
 public final class MessageBusManager {
-    public static final String DEFAULT_MESSAGE_BUS = "Default message bus";
     private static Logger log = LoggerFactory.getLogger(MessageBusManager.class);
 
-    /**
-     * Map of the loaded mediators for the different collectionsIDs.
-     * The keys are the collectionID and the values are the message buses
-     */
-    private static final Map<String,MessageBus> messageBusMap = new HashMap<String,MessageBus>();
-    
     /** Do not instantiate */
     private MessageBusManager() {}
 
@@ -57,51 +51,10 @@ public final class MessageBusManager {
      * @return A the default message bus instance based on the supplied configuration. If the default message bus
      * doesn't already exist, it is created.
      */
-    public synchronized static MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
-        if (!messageBusMap.containsKey(DEFAULT_MESSAGE_BUS)) {
-            MessageBus messageBus = createMessageBus(settings, securityManager);
-            messageBusMap.put(DEFAULT_MESSAGE_BUS, messageBus);
-            messageBus.setComponentFilter(Arrays.asList(new String[] {settings.getComponentID()}));
-        }
-        return messageBusMap.get(DEFAULT_MESSAGE_BUS);
-    }
-
-    /**
-     * @return a messagebus for the given collection if it exists, else null.
-     */
-    public synchronized static MessageBus getMessageBus() {
-        return messageBusMap.get(DEFAULT_MESSAGE_BUS);
-    }
-
-    private static MessageBus createMessageBus(
-            Settings settings,
-            SecurityManager securityManager) {
-        ActiveMQMessageBus messageBus = new ActiveMQMessageBus(settings, securityManager);
+    public synchronized static MessageBus createMessageBus(Settings settings, SecurityManager securityManager) {
+        MessageBus messageBus = new ActiveMQMessageBus(settings, securityManager);
+        messageBus.setComponentFilter(Collections.singletonList(settings.getComponentID()));
         return messageBus;
     }
 
-    /**
-     * Can be used to inject a custom messageBus for a specific name.
-     * @param name a specific name
-     * @param messageBus The custom instance of the messagebus.
-     */
-    public static void injectCustomMessageBus(String name, MessageBus messageBus) {
-        messageBusMap.put(name, messageBus);
-    }
-
-    /**
-     * Can be used to clear the current messagebuses, eg. new messagebuses will be created on access.
-     *
-     * All messagebusses will be closed.
-     */
-    public static void clear() {
-        messageBusMap.clear();
-        for (MessageBus bus:messageBusMap.values()) {
-            try {
-                bus.close();
-            } catch (JMSException e) {
-                log.warn("Failed to close messagebus " + bus + " during clear()");
-            }
-        }
-    }
 }

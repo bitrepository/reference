@@ -24,6 +24,10 @@ package org.bitrepository.commandline;
 import java.util.Date;
 
 import org.bitrepository.client.DefaultFixtureClientTest;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.SimpleMessageBus;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -48,7 +52,13 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
                 "-C" + DEFAULT_CHECKSUM,
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-i" + DEFAULT_FILE_ID};
-        new DeleteFileCmd(args);
+        new DeleteFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
+
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -59,7 +69,12 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
                 "-p" + PILLAR1_ID,
                 "-C" + DEFAULT_CHECKSUM,
                 "-i" + DEFAULT_FILE_ID};
-        new DeleteFileCmd(args);
+        new DeleteFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -70,7 +85,12 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
                 "-C" + DEFAULT_CHECKSUM,
                 "-c" + DEFAULT_COLLECTION_ID,
                 "-i" + DEFAULT_FILE_ID};
-        new DeleteFileCmd(args);
+        new DeleteFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -82,7 +102,12 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID,
                 "-p" + "Random" + (new Date()).getTime() + "pillar",
                 "-i" + DEFAULT_FILE_ID};
-        new DeleteFileCmd(args);
+        new DeleteFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -93,7 +118,12 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
                 "-p" + PILLAR1_ID,
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-C" + DEFAULT_CHECKSUM};
-        new DeleteFileCmd(args);
+        new DeleteFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" })
@@ -106,7 +136,12 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-i" + DEFAULT_FILE_ID,
                 "-R" + "MD5"};
-        new DeleteFileCmd(args);
+        new DeleteFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" })
@@ -120,6 +155,11 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
                 "-i" + DEFAULT_FILE_ID,
                 "-R" + "HMAC_SHA256",
                 "-S" + "SALT"};
-        new DeleteFileCmd(args);
+        new DeleteFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 }

@@ -22,15 +22,12 @@
 package org.bitrepository.commandline;
 
 import org.apache.commons.cli.Option;
-import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getfile.ConversationBasedGetFileClient;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
 import org.bitrepository.commandline.eventhandler.GetFileEventHandler;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.http.HttpFileExchange;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -65,8 +62,7 @@ public class GetFileCmd extends CommandLineClient {
      */
     protected GetFileCmd(String ... args) {
         super(args);
-        client = AccessComponentFactory.createGetFileClient(settings, securityManager,
-                getComponentID());
+        client = new ConversationBasedGetFileClient(messageBus,mediator,settings,getComponentID());
     }
 
     @Override
@@ -140,7 +136,6 @@ public class GetFileCmd extends CommandLineClient {
         } else {
             outputFile = new File(cmdHandler.getOptionValue(Constants.FILE_ID_ARG));
         }
-        FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
         fileexchange.getFile(outputFile, fileUrl.toExternalForm());
     }
 
@@ -151,7 +146,6 @@ public class GetFileCmd extends CommandLineClient {
      */
     private URL extractUrl(String fileID) {
         try {
-            FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
             return fileexchange.getURL(fileID);
         } catch (MalformedURLException e) {
             throw new IllegalStateException("Could not make an URL for the file '" + fileID + "'.", e);

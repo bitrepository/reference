@@ -21,8 +21,6 @@
  */
 package org.bitrepository.pillar.integration;
 
-import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
-import org.bitrepository.client.conversation.mediator.ConversationMediatorManager;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.exceptions.OperationFailedException;
@@ -45,7 +43,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeSuite;
 
 import java.util.Arrays;
 
@@ -79,7 +76,6 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     @Override
     protected void initializeCUT() {
         super.initializeCUT();
-        reloadMessageBus();
         clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
         pillarFileManager = new PillarFileManager(collectionID,
             getPillarID(), settingsForTestClient, clientProvider, testEventManager, httpServerConfiguration);
@@ -95,7 +91,6 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         //MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
         setupRealMessageBus();
         startEmbeddedPillar(testContext);
-        reloadMessageBus();
         clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
         nonDefaultCollectionId = settingsForTestClient.getCollections().get(1).getID();
         irrelevantCollectionId = settingsForTestClient.getCollections().get(2).getID();
@@ -105,7 +100,6 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     @AfterClass(alwaysRun = true)
     public void shutdownRealMessageBus() {
         if(!useEmbeddedMessageBus()) {
-            MessageBusManager.clear();
             if(messageBus != null) {
                 try {
                     messageBus.close();
@@ -130,10 +124,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
     protected void setupRealMessageBus() {
         if(!useEmbeddedMessageBus()) {
-            MessageBusManager.clear();
-            messageBus = MessageBusManager.getMessageBus(settingsForCUT, securityManager);
-        } else {
-            MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);    
+            messageBus = MessageBusManager.createMessageBus(settingsForCUT, securityManager);
         }
     }
 
@@ -221,11 +212,6 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     @Override
     protected String getComponentID() {
         return getPillarID() + "-test-client";
-    }
-
-    protected void reloadMessageBus() {
-        ConversationMediatorManager.injectCustomConversationMediator(
-                new CollectionBasedConversationMediator(settingsForTestClient, securityManager));
     }
 
     @Override

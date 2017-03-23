@@ -21,17 +21,22 @@ package org.bitrepository.pillar.integration.perf;
  * #L%
  */
 
-import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getfile.BlockingGetFileClient;
+import org.bitrepository.access.getfile.ConversationBasedGetFileClient;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -40,9 +45,15 @@ public class GetFileStressIT extends PillarPerformanceTest {
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
-        getFileClient = AccessComponentFactory.createGetFileClient(
-                settingsForTestClient, createSecurityManager(), settingsForTestClient.getComponentID()
-        );
+        SecurityManager securityManager1 = createSecurityManager();
+        MessageBus messageBus = MessageBusManager.createMessageBus(settingsForTestClient, securityManager1);
+        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settingsForTestClient,
+                                                                                            messageBus);
+
+        getFileClient = new ConversationBasedGetFileClient(
+                messageBus,
+                conversationMediator,
+                settingsForTestClient, settingsForTestClient.getComponentID());
     }
 
     @Test( groups = {"pillar-stress-test"})

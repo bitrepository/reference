@@ -24,9 +24,12 @@ package org.bitrepository.protocol.bus;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
-import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import javax.jms.Message;
@@ -45,14 +48,15 @@ import static org.testng.Assert.assertEquals;
 
 public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
 
+    @BeforeClass(alwaysRun = true)
     @Override
-    protected void setupMessageBus() {
+    public void initMessagebus() {
         if (useEmbeddedMessageBus() && broker == null) {
             broker = new LocalActiveMQBroker(settingsForTestClient.getMessageBusConfiguration());
             broker.start();
         }
-        messageBus = new MessageBusWrapper(ProtocolComponentFactory.getInstance().getMessageBus(
-                settingsForTestClient, securityManager), testEventManager);
+        MessageBus messageBus = MessageBusManager.createMessageBus(settingsForTestClient, securityManager);
+        this.messageBus = new MessageBusWrapper(messageBus, testEventManager);
 
     }
 

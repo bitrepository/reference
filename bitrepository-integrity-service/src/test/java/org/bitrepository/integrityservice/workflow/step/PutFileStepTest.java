@@ -35,7 +35,6 @@ import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowContext;
-import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.annotations.Test;
@@ -58,7 +57,8 @@ public class PutFileStepTest extends WorkflowstepTest {
         }).when(collector).putFile(
                 eq(TEST_COLLECTION), eq(TEST_FILE_1), any(URL.class), any(ChecksumDataForFileTYPE.class), any(EventHandler.class), anyString());
 
-        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
+        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager,
+                                                                        fileExchange);
         URL uploadUrl = new URL("http://localhost/dav/test.txt");
         PutFileStep step = new PutFileStep(context, TEST_COLLECTION, TEST_FILE_1, uploadUrl, TEST_CHECKSUM);
 
@@ -82,7 +82,8 @@ public class PutFileStepTest extends WorkflowstepTest {
         }).when(collector).putFile(
                 eq(TEST_COLLECTION), eq(TEST_FILE_1), any(URL.class), any(ChecksumDataForFileTYPE.class), any(EventHandler.class), anyString());
 
-        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
+        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager,
+                                                                        fileExchange);
         URL uploadUrl = new URL("http://localhost/dav/test.txt");
         PutFileStep step = new PutFileStep(context, TEST_COLLECTION, TEST_FILE_1, uploadUrl, TEST_CHECKSUM);
 

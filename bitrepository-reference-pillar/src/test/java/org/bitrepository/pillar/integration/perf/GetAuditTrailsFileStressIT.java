@@ -21,12 +21,17 @@ package org.bitrepository.pillar.integration.perf;
  * #L%
  */
 
-import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.access.getaudittrails.BlockingAuditTrailClient;
+import org.bitrepository.access.getaudittrails.ConversationBasedAuditTrailClient;
+import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.DummySecurityManager;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -35,9 +40,13 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
-        auditTrailClient = AccessComponentFactory.createAuditTrailClient(
-                settingsForCUT, new DummySecurityManager(), settingsForCUT.getComponentID()
-        );
+        SecurityManager securityManager1 = new DummySecurityManager();
+        MessageBus messageBus = MessageBusManager.createMessageBus(settingsForCUT, securityManager1);
+        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settingsForCUT, messageBus);
+        auditTrailClient = new ConversationBasedAuditTrailClient(
+                settingsForCUT, conversationMediator,
+                messageBus,
+                settingsForCUT.getComponentID());
     }
 
     @Test( groups = {"pillar-stress-test"}, dependsOnGroups={"stress-test-pillar-population"})

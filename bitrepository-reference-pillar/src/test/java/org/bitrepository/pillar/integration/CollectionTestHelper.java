@@ -23,14 +23,18 @@ package org.bitrepository.pillar.integration;
 
 import java.util.Collection;
 
-import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getfileids.ConversationBasedGetFileIDsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
+import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.modify.ModifyComponentFactory;
+import org.bitrepository.modify.deletefile.ConversationBasedDeleteFileClient;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
+import org.bitrepository.modify.putfile.ConversationBasedPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
-import org.bitrepository.protocol.fileexchange.HttpServerConnector;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 
@@ -42,6 +46,8 @@ public class CollectionTestHelper {
 
     private final GetFileIDsClient getFileIDsClient;
     private final DeleteFileClient deleteFileClient;
+    private final ConversationMediator conversationMediator;
+    private final MessageBus messageBus;
     protected PutFileClient putClient;
 
     public CollectionTestHelper(
@@ -51,15 +57,22 @@ public class CollectionTestHelper {
         this.securityManager = new DummySecurityManager();
         this.httpServerConfiguration = httpServerConfiguration;
 
-        putClient = ModifyComponentFactory.getInstance().retrievePutClient(
-                settings, new DummySecurityManager(), settings.getComponentID()
-        );
-        getFileIDsClient = AccessComponentFactory.createGetFileIDsClient(
-                settings, securityManager, settings.getComponentID()
-        );
-        deleteFileClient = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(
-                settings, securityManager, settings.getComponentID()
-        );
+        SecurityManager securityManager1 = new DummySecurityManager();
+        messageBus = MessageBusManager.createMessageBus(settings, securityManager1);
+        conversationMediator = new CollectionBasedConversationMediator(settings, messageBus);
+
+        putClient = new ConversationBasedPutFileClient(
+                messageBus,
+                conversationMediator,
+                settings, settings.getComponentID());
+        getFileIDsClient = new ConversationBasedGetFileIDsClient(
+                messageBus,
+                conversationMediator,
+                settings, settings.getComponentID());
+        deleteFileClient = new ConversationBasedDeleteFileClient(
+                messageBus,
+                conversationMediator,
+                settings, settings.getComponentID());
     }
 
     public void cleanCollection(Collection<String> pillarIDs) {

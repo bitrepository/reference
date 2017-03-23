@@ -52,6 +52,8 @@ import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
+import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.settings.referencesettings.ProtocolType;
@@ -76,7 +78,9 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     protected IntegrityAlerter alerter;
     protected IntegrityModel model;
     protected AuditTrailManager auditManager;
-    
+    private MessageBus messageBus;
+    private FileExchange fileExchange;
+
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityWorkflowTest");
@@ -98,6 +102,9 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         alerter = mock(IntegrityAlerter.class);
         model = mock(IntegrityModel.class);
         auditManager = mock(AuditTrailManager.class);
+        messageBus = mock(MessageBus.class);
+        fileExchange = mock(FileExchange.class);
+
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
@@ -110,7 +117,8 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         addStep("Run workflow for repairing missing files.", "Should not try to repair anything.");
 
         Workflow workflow = new RepairMissingFilesWorkflow();
-        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
+        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager,
+                                                                        fileExchange);
         workflow.initialise(context, TEST_COLLECTION);
 
         workflow.start();
@@ -154,7 +162,8 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         addStep("Run workflow for repairing missing files.", "Should find one missing file and try to repair it by using put-file and get-file operations on the collector.");
 
         Workflow workflow = new RepairMissingFilesWorkflow();
-        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
+        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager,
+                                                                        fileExchange);
         workflow.initialise(context, TEST_COLLECTION);
 
         workflow.start();
@@ -193,7 +202,8 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         addStep("Run missing checksum step.", "Should fail during get-file, thus not performing put-file. Also workflow should send an alarm.");
 
         Workflow workflow = new RepairMissingFilesWorkflow();
-        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
+        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager,
+                                                                        fileExchange);
         workflow.initialise(context, TEST_COLLECTION);
 
         workflow.start();
@@ -243,7 +253,8 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         addStep("Run workflow to repair missing files.", "Should both get-file and put-file, but fail at put-file and then send an alarm.");
 
         Workflow workflow = new RepairMissingFilesWorkflow();
-        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
+        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager,
+                                                                        fileExchange);
         workflow.initialise(context, TEST_COLLECTION);
 
         workflow.start();

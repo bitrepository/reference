@@ -24,6 +24,10 @@ package org.bitrepository.commandline;
 import java.util.Date;
 
 import org.bitrepository.client.DefaultFixtureClientTest;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.SimpleMessageBus;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -45,7 +49,13 @@ public class GetFileCmdTest extends DefaultFixtureClientTest {
                 "-k" + KEY_FILE,
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-i" + DEFAULT_FILE_ID};
-        new GetFileCmd(args);
+
+        new GetFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -54,7 +64,12 @@ public class GetFileCmdTest extends DefaultFixtureClientTest {
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
                 "-k" + KEY_FILE,
                 "-i" + DEFAULT_FILE_ID};
-        new GetFileCmd(args);
+        new GetFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" })
@@ -65,7 +80,12 @@ public class GetFileCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-p" + PILLAR1_ID,
                 "-i" + DEFAULT_FILE_ID};
-        new GetFileCmd(args);
+        new GetFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -76,7 +96,12 @@ public class GetFileCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-p" + "Random" + (new Date()).getTime() + "pillar",
                 "-i" + DEFAULT_FILE_ID};
-        new GetFileCmd(args);
+        new GetFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -85,6 +110,11 @@ public class GetFileCmdTest extends DefaultFixtureClientTest {
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
                 "-k" + KEY_FILE,
                 "-c" + DEFAULT_COLLECTION_ID};
-        new GetFileCmd(args);
+        new GetFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 }

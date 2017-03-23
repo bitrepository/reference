@@ -27,5 +27,5 @@ import org.bitrepository.common.settings.Settings;
  */
 public interface WorkflowContext {
 
-    public Settings getSettings();
+    Settings getSettings();
 }

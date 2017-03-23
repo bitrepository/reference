@@ -24,6 +24,10 @@ package org.bitrepository.commandline;
 import java.util.Date;
 
 import org.bitrepository.client.DefaultFixtureClientTest;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.SimpleMessageBus;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -44,7 +48,13 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
                 "-k" + KEY_FILE,
                 "-c" + DEFAULT_COLLECTION_ID};
-        new GetChecksumsCmd(args);
+        new GetChecksumsCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
+
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -53,7 +63,12 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
                 "-k" + KEY_FILE,
                 "-i" + DEFAULT_FILE_ID};
-        new GetChecksumsCmd(args);
+        new GetChecksumsCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" })
@@ -64,7 +79,12 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID,
                 "-p" + PILLAR1_ID,
                 "-i" + DEFAULT_FILE_ID};
-        new GetChecksumsCmd(args);
+        new GetChecksumsCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -76,7 +96,12 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
                 "-p" + "Random" + (new Date()).getTime() + "pillar",
                 "-i" + DEFAULT_FILE_ID};
 
-        new GetChecksumsCmd(args);
+        new GetChecksumsCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" })
@@ -86,7 +111,12 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
                 "-k" + KEY_FILE,
                 "-c" + DEFAULT_COLLECTION_ID,
                 "-i" + DEFAULT_FILE_ID};
-        new GetChecksumsCmd(args);
+        new GetChecksumsCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" })
@@ -97,7 +127,12 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-i" + DEFAULT_FILE_ID,
                 "-R" + "MD5"};
-        new GetChecksumsCmd(args);
+        new GetChecksumsCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" })
@@ -109,6 +144,11 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
                 "-i" + DEFAULT_FILE_ID,
                 "-R" + "HMAC_SHA256",
                 "-S" + "SALT"};
-        new GetChecksumsCmd(args);
+        new GetChecksumsCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 }

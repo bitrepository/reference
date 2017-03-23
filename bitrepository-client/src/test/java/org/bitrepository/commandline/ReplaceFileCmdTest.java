@@ -24,6 +24,10 @@ package org.bitrepository.commandline;
 import java.util.Date;
 
 import org.bitrepository.client.DefaultFixtureClientTest;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.SimpleMessageBus;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -48,7 +52,12 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
                 "-f" + DEFAULT_FILE_ID,
                 "-C" + DEFAULT_CHECKSUM,
                 "-c" + DEFAULT_COLLECTION_ID};
-        new ReplaceFileCmd(args);
+        new ReplaceFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" })
@@ -62,7 +71,12 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
                 "-C" + DEFAULT_CHECKSUM,
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        new ReplaceFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -75,7 +89,12 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
                 "-r" + DEFAULT_CHECKSUM,
                 "-C" + DEFAULT_CHECKSUM,
                 "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        new ReplaceFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -88,7 +107,12 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
                 "-C" + DEFAULT_CHECKSUM,
                 "-c" + DEFAULT_COLLECTION_ID,
                 "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        new ReplaceFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -102,7 +126,12 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID,
                 "-p" + "Random" + (new Date()).getTime() + "pillar",
                 "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        new ReplaceFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -115,7 +144,12 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-C" + DEFAULT_CHECKSUM,
                 "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        new ReplaceFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
     
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -130,7 +164,12 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-C" + DEFAULT_CHECKSUM,
                 "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        new ReplaceFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
     
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -143,7 +182,12 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
                 "-r" + DEFAULT_CHECKSUM,
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-C" + DEFAULT_CHECKSUM};
-        new ReplaceFileCmd(args);
+        new ReplaceFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" })
@@ -155,7 +199,12 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
                 "-f" + DEFAULT_FILE_ID,
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-C" + DEFAULT_CHECKSUM};
-        new ReplaceFileCmd(args);
+        new ReplaceFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -168,7 +217,12 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
                 "-C" + DEFAULT_CHECKSUM,
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        new ReplaceFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" })
@@ -181,7 +235,12 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
                 "-C" + DEFAULT_CHECKSUM,
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        new ReplaceFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -194,7 +253,12 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
                 "-r" + DEFAULT_CHECKSUM,
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        new ReplaceFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -207,7 +271,12 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
                 "-r" + DEFAULT_CHECKSUM,
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        new ReplaceFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
     
     @Test(groups = { "regressiontest" })
@@ -222,7 +291,12 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-i" + DEFAULT_FILE_ID,
                 "-R" + "MD5"};
-        new ReplaceFileCmd(args);
+        new ReplaceFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" })
@@ -238,6 +312,11 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
                 "-i" + DEFAULT_FILE_ID,
                 "-R" + "HMAC_SHA256",
                 "-S" + "SALT"};
-        new ReplaceFileCmd(args);
+        new ReplaceFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 }

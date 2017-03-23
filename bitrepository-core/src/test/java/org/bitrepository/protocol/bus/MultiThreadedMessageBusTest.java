@@ -31,11 +31,13 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.MessageContext;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /**
@@ -46,20 +48,21 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
      * have been consumed by a listener.*/
     static final int TIME_FOR_WAIT = 2500;
     private final static int threadCount = 3;
+    private final String busActivityTest = "BusActivityTest";
     private int count = 0;
     private final static String FINISH = "FINISH";
     private BlockingQueue<String> finishQueue = new LinkedBlockingQueue<String>(1);
     MultiMessageListener listener;
-    
+
+    @BeforeClass(alwaysRun = true)
     @Override
-    protected void setupMessageBus() {
+    public void initMessagebus() {
         if (useEmbeddedMessageBus() && broker == null) {
             broker = new LocalActiveMQBroker(settingsForTestClient.getMessageBusConfiguration());
             broker.start();
         }
-        messageBus = new MessageBusWrapper(ProtocolComponentFactory.getInstance().getMessageBus(
-                settingsForTestClient, securityManager), testEventManager);
-
+        MessageBus messageBus = MessageBusManager.createMessageBus(settingsForTestClient, securityManager);
+        this.messageBus = new MessageBusWrapper(messageBus, testEventManager);
     }
     
     @Test(groups = { "regressiontest" })
@@ -68,8 +71,8 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
         IdentifyPillarsForGetFileRequest content =
                 ExampleMessageFactory.createMessage(IdentifyPillarsForGetFileRequest.class);
         listener = new MultiMessageListener();
-        messageBus.addListener("BusActivityTest", listener);
-        content.setDestination("BusActivityTest");
+        messageBus.addListener(busActivityTest, listener);
+        content.setDestination(busActivityTest);
         
         addStep("Send one message for each listener", "When all have receiver, then they give respond on 'finishQueue'");
         for(int i = 0; i < threadCount; i++) {
@@ -81,7 +84,7 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
 
     @AfterMethod(alwaysRun = true)
     public void removeListener() {
-        messageBus.removeListener("BusActivityTest", listener);
+        messageBus.removeListener(busActivityTest, listener);
     }
 
     protected class MultiMessageListener implements MessageListener {

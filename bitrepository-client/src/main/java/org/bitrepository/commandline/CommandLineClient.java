@@ -35,6 +35,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.commandline.output.DefaultOutputHandler;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.utils.ChecksumExtractionUtils;
@@ -56,6 +58,19 @@ import org.bitrepository.protocol.security.SecurityManager;
  */
 public abstract class CommandLineClient {
     private final String componentID;
+    protected final FileExchange fileexchange;
+    protected final ConversationMediator mediator;
+    protected final MessageBus messageBus;
+    /** For handling the output.*/
+    protected final OutputHandler output = new DefaultOutputHandler(getClass());
+
+    /** The settings for the client.*/
+    protected final Settings settings;
+    /** The security manager.*/
+    protected final SecurityManager securityManager;
+    /** The handler for the command line arguments.*/
+    protected final CommandLineArgumentsHandler cmdHandler;
+    private final FileIDValidator fileIDValidator;
 
     /**
      * Runs a specific command-line-client operation. 
@@ -74,17 +89,6 @@ public abstract class CommandLineClient {
             shutdown();
         }
     }
-
-    /** For handling the output.*/
-    protected final OutputHandler output = new DefaultOutputHandler(getClass());
-
-    /** The settings for the client.*/
-    protected final Settings settings;
-    /** The security manager.*/
-    protected final SecurityManager securityManager;
-    /** The handler for the command line arguments.*/
-    protected final CommandLineArgumentsHandler cmdHandler;
-    private final FileIDValidator fileIDValidator;
 
     /**
      * @param args The generic command line arguments for defining the operation.
@@ -107,6 +111,7 @@ public abstract class CommandLineClient {
         securityManager = cmdHandler.loadSecurityManager(settings);
         fileIDValidator = new FileIDValidator(settings);
 
+
         try {
             validateArguments();
         } catch (IllegalArgumentException iae) {
@@ -115,6 +120,14 @@ public abstract class CommandLineClient {
         }
 
         output.startupInfo("Creating client.");
+        messageBus = getMessageBus(settings, securityManager);
+        mediator = new CollectionBasedConversationMediator(settings, messageBus);
+        fileexchange = ProtocolComponentFactory.createFileExchange(settings);
+
+    }
+
+    protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+        return MessageBusManager.createMessageBus(settings, securityManager);
     }
 
     /**
@@ -306,11 +319,11 @@ public abstract class CommandLineClient {
 
     /**
      * Removes the file at the webserver after the operation has finished..
+     * @param fileexchange
      * @param url The URL where the file should be removed from.
      */
-    protected void deleteFileAfterwards(URL url) {
+    protected void deleteFileAfterwards(FileExchange fileexchange, URL url) {
         try {
-            FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
             fileexchange.deleteFile(url);
         } catch (Exception e) {
             System.err.println("Issue regarding removing file from server: " + e.getMessage());
@@ -327,7 +340,6 @@ public abstract class CommandLineClient {
     protected URL getURLOrUploadFile() {
         if(cmdHandler.hasOption(Constants.FILE_ARG)) {
             File f = findTheFile();
-            FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
             return fileexchange.putFile(f);
         } else {
             try {
@@ -406,9 +418,8 @@ public abstract class CommandLineClient {
      * @throws JMSException If the message-bus cannot be closed.
      */
     public void shutdown() throws JMSException {
-        MessageBus bus = MessageBusManager.getMessageBus();
-        if(bus != null) {
-            bus.close();
+        if(messageBus != null) {
+            messageBus.close();
         }
     }
 }

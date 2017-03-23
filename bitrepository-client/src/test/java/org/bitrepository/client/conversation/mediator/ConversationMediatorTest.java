@@ -29,6 +29,7 @@ import org.bitrepository.client.conversation.StateBasedConversation;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.MessageContext;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.testng.annotations.Test;
@@ -47,12 +48,12 @@ public abstract class ConversationMediatorTest {
      */
     @Test (groups = {"testfirst"})
     public void messagedelegationTest() {
-        ConversationMediator mediator = createMediator(settings);
+        ConversationMediator mediator = createMediator(settings, null);
 
         mediator.addConversation(new ConversationStub());
     }
 
-    abstract ConversationMediator createMediator(Settings settings);
+    abstract ConversationMediator createMediator(Settings settings, MessageBus messageBus);
 
     @SuppressWarnings("unused")
     private class ConversationStub extends StateBasedConversation {

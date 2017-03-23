@@ -28,21 +28,37 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.jms.JMSException;
-
+import org.bitrepository.access.getaudittrails.AuditTrailClient;
+import org.bitrepository.access.getaudittrails.ConversationBasedAuditTrailClient;
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
+import org.bitrepository.audittrails.preserver.AuditTrailPreserver;
+import org.bitrepository.audittrails.preserver.LocalAuditTrailPreserver;
+import org.bitrepository.audittrails.store.AuditTrailDatabaseManager;
+import org.bitrepository.audittrails.store.AuditTrailServiceDAO;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.modify.putfile.ConversationBasedPutFileClient;
+import org.bitrepository.modify.putfile.PutFileClient;
+import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
+import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.audittrails.webservice.CollectorInfo;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.audittrails.store.AuditEventIterator;
+import org.bitrepository.service.contributor.SimpleContributorMediator;
+import org.bitrepository.service.database.DatabaseManager;
+import org.bitrepository.settings.referencesettings.AuditTrailServiceSettings;
+import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jms.JMSException;
 
 /**
  * Class to expose the functionality of the AuditTrailService. 
@@ -55,35 +71,47 @@ public class AuditTrailService implements LifeCycledService {
     /** The collector of new audit trails.*/
     private final AuditTrailCollector collector;
     /** The mediator for handling the messages.*/
-    private final ContributorMediator mediator;
+    private final ContributorMediator contributorMediator;
     /** The settings.*/
     private final Settings settings;
+    private final MessageBus messageBus;
+    private final CollectionBasedConversationMediator conversationMediator;
+    private final LocalAuditTrailPreserver preserver;
 
-    /**
-     * Constructor.
-     * @param store The store for the audit trail data.
-     * @param collector The collector of new audit trail data.
-     * @param mediator The mediator for the communication of this contributor.
-     * @param settings The AuditTrailService settings.
-     */
-    public AuditTrailService(
-            AuditTrailStore store,
-            AuditTrailCollector collector,
-            ContributorMediator mediator,
-            Settings settings) {
-        ArgumentValidator.checkNotNull(collector, "AuditTrailCollector collector");
-        ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
-        ArgumentValidator.checkNotNull(mediator, "ContributorMediator mediator");
-        ArgumentValidator.checkNotNull(settings, "Settings settings");
 
-        this.store = store;
-        this.collector = collector;
-        this.mediator = mediator;
+    public AuditTrailService(Settings settings, SecurityManager securityManager) {
+
         this.settings = settings;
+        messageBus = MessageBusManager.createMessageBus(settings, securityManager);
+        conversationMediator = new CollectionBasedConversationMediator(settings, messageBus);
 
-        mediator.start();
+        FileExchange fileExchange = ProtocolComponentFactory.createFileExchange(settings);
+        contributorMediator = new SimpleContributorMediator(messageBus, settings, null, fileExchange);
+
+
+        PutFileClient putClient = new ConversationBasedPutFileClient(messageBus, conversationMediator, this.settings, "audit-trail-preserver");
+
+        AuditTrailServiceSettings serviceSettings = settings.getReferenceSettings().getAuditTrailServiceSettings();
+        DatabaseSpecifics auditTrailServiceDatabase = serviceSettings.getAuditTrailServiceDatabase();
+
+        DatabaseManager auditTrailServiceDatabaseManager = new AuditTrailDatabaseManager(auditTrailServiceDatabase);
+        store = new AuditTrailServiceDAO(auditTrailServiceDatabaseManager);
+
+        AuditTrailClient client = new ConversationBasedAuditTrailClient(settings, conversationMediator, messageBus, serviceSettings.getID());
+        AlarmDispatcher alarmDispatcher = new AlarmDispatcher(settings, messageBus);
+        collector = new AuditTrailCollector(settings, client, store, alarmDispatcher);
+
+
+        if (serviceSettings.isSetAuditTrailPreservation()) {
+            preserver = new LocalAuditTrailPreserver(
+                    settings, store, putClient, fileExchange);
+            preserver.start();
+        } else {
+            preserver = null;
+            log.info("Audit trail preservation disabled, no configuration defined.");
+        }
     }
-    
+
     /**
      * Retrieve an iterator to all AuditTrailEvents matching the criteria from the parameters.
      * All parameters are allowed to be null, meaning that the parameter imposes no restriction on the result
@@ -141,21 +169,22 @@ public class AuditTrailService implements LifeCycledService {
 
     @Override
     public void start() {
-        mediator.start();
+        contributorMediator.start();
     }
 
     @Override
     public void shutdown() {
         collector.close();
         store.close();
-        mediator.close();
-        MessageBus messageBus = MessageBusManager.getMessageBus();
-        if ( messageBus != null) {
-            try {
-                messageBus.close();
-            } catch (JMSException e) {
-                log.warn("Failed to close message bus cleanly, " + e.getMessage());
-            }
+        contributorMediator.shutdown();
+        conversationMediator.shutdown();
+        if (preserver != null) {
+            preserver.close();
+        }
+        try {
+            messageBus.close();
+        } catch (JMSException e) {
+            throw new Error(e);
         }
     }
 }

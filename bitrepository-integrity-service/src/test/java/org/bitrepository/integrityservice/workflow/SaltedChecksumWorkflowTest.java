@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow;
 
+import static org.bitrepository.protocol.IntegrationTest.messageBus;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -52,6 +53,8 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
+import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.Workflow;
 import org.jaccept.structure.ExtendedTestCase;
@@ -75,7 +78,8 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
     protected IntegrityAlerter alerter;
     protected IntegrityModel model;
     protected AuditTrailManager auditManager;
-    
+    private FileExchange fileExchange;
+
     @BeforeMethod (alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityWorkflowTest");
@@ -92,6 +96,9 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         alerter = mock(IntegrityAlerter.class);
         model = mock(IntegrityModel.class);
         auditManager = mock(AuditTrailManager.class);
+        messageBus = mock(MessageBus.class);
+        fileExchange = mock(FileExchange.class);
+
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
@@ -103,7 +110,8 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         addStep("Run workflow for checking salted checksum.", "Should send alarm about failure");
 
         Workflow workflow = new SaltedChecksumWorkflow();
-        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
+        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager,
+                                                                        fileExchange);
         workflow.initialise(context, TEST_COLLECTION);
         workflow.start();
         
@@ -138,7 +146,8 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         addStep("Run workflow for checking salted checksum.", "Should send alarm about failure");
 
         Workflow workflow = new SaltedChecksumWorkflow();
-        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
+        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager,
+                                                                        fileExchange);
         workflow.initialise(context, TEST_COLLECTION);
         workflow.start();
         
@@ -180,7 +189,8 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         addStep("Run workflow for checking salted checksum.", "Should send alarm about failure");
 
         Workflow workflow = new SaltedChecksumWorkflow();
-        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
+        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager,
+                                                                        fileExchange);
         workflow.initialise(context, TEST_COLLECTION);
         workflow.start();
         
@@ -224,7 +234,8 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         addStep("Run workflow for checking salted checksum.", "Should send alarm about failure");
 
         Workflow workflow = new SaltedChecksumWorkflow();
-        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
+        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager,
+                                                                        fileExchange);
         workflow.initialise(context, TEST_COLLECTION);
         workflow.start();
         
@@ -264,7 +275,8 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         addStep("Run workflow for checking salted checksum.", "Should send alarm about failure");
 
         Workflow workflow = new SaltedChecksumWorkflow();
-        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
+        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager,
+                                                                        fileExchange);
         workflow.initialise(context, TEST_COLLECTION);
         workflow.start();
         
@@ -301,7 +313,8 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         addStep("Run workflow for checking salted checksum.", "Should send alarm about failure");
 
         Workflow workflow = new SaltedChecksumWorkflow();
-        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
+        IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager,
+                                                                        fileExchange);
         workflow.initialise(context, TEST_COLLECTION);
         workflow.start();
         

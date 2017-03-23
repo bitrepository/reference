@@ -115,7 +115,7 @@ public abstract class AbstractContributorMediator implements ContributorMediator
     * Closes the mediator by removing all the message handler.
     */
     @Override
-    public void close() {
+    public void shutdown() {
         messageBus.removeListener(getContext().getSettings().getCollectionDestination(), messageHandler);
         messageBus.removeListener(getContext().getSettings().getReceiverDestinationID(), messageHandler);
     }

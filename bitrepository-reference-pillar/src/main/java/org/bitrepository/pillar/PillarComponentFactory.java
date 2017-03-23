@@ -29,9 +29,6 @@ import java.lang.reflect.Constructor;
 import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
-import org.bitrepository.pillar.common.MessageHandlerContext;
-import org.bitrepository.pillar.common.PillarAlarmDispatcher;
-import org.bitrepository.pillar.common.SettingsHelper;
 import org.bitrepository.pillar.store.ChecksumStorageModel;
 import org.bitrepository.pillar.store.FileStorageModel;
 import org.bitrepository.pillar.store.StorageModel;
@@ -40,8 +37,8 @@ import org.bitrepository.pillar.store.checksumdatabase.ChecksumDatabaseManager;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.filearchive.CollectionArchiveManager;
 import org.bitrepository.protocol.CoordinationLayerException;
+import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
 import org.bitrepository.protocol.security.BasicMessageSigner;
 import org.bitrepository.protocol.security.BasicOperationAuthorizor;
@@ -54,7 +51,6 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.audit.AuditTrailContributerDAOFactory;
 import org.bitrepository.service.audit.AuditTrailManager;
-import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.settings.referencesettings.PillarType;
 
@@ -62,21 +58,6 @@ import org.bitrepository.settings.referencesettings.PillarType;
  * Component factory for this module.
  */
 public final class PillarComponentFactory {
-    /** The singleton instance. */
-    private static PillarComponentFactory instance;
-
-    /**
-     * Instantiation of this singleton.
-     *
-     * @return The singleton instance of this factory class.
-     */
-    public static synchronized PillarComponentFactory getInstance() {
-        // ensure singleton.
-        if(instance == null) {
-            instance = new PillarComponentFactory();
-        }
-        return instance;
-    }
 
     /**
      * Private constructor for initialization of the singleton.
@@ -91,46 +72,18 @@ public final class PillarComponentFactory {
      * @param pillarID The id of the pillar (if null, the pillar-id in settings are used).
      * @return The pillar.
      */
-    public Pillar createPillar(String pathToSettings, String pathToKeyFile, String pillarID) {
+    public static Pillar createPillar(String pathToSettings, String pathToKeyFile, String pillarID) {
         Settings settings = loadSettings(pillarID, pathToSettings);
-
         SecurityManager securityManager = loadSecurityManager(pathToKeyFile, settings);
-        MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
-        
-        return createPillar(settings, messageBus);
+        return new Pillar(settings, securityManager);
     }
-    
-    /**
-     * Creates a pillar from settings and message-bus.
-     * @param settings The instantiated settings.
-     * @param messageBus The messagebus.
-     * @return The pillar.
-     */
-    public Pillar createPillar(Settings settings, MessageBus messageBus) {
-        ChecksumStore cache = getChecksumStore(settings);
-        AuditTrailManager audits = getAuditTrailManager(settings);        
-        PillarAlarmDispatcher alarmDispatcher = new PillarAlarmDispatcher(settings, messageBus);
-        ResponseDispatcher responseDispatcher = new ResponseDispatcher(settings, messageBus);
 
-        StorageModel pillarModel = getPillarModel(settings, cache, alarmDispatcher);
-
-        MessageHandlerContext context = new MessageHandlerContext(
-                settings,
-                SettingsHelper.getPillarCollections(settings.getComponentID(), settings.getCollections()),
-                responseDispatcher,
-                alarmDispatcher,
-                audits,
-                ProtocolComponentFactory.getInstance().getFileExchange(settings));
-        
-        return new Pillar(messageBus, settings, pillarModel, context);        
-    }
-    
     /**
      * Instantiates the ChecksumStore.
      * @param settings The settings.
      * @return The ChecksumStore.
      */
-    private ChecksumStore getChecksumStore(Settings settings) {
+    public static ChecksumStore getChecksumStore(Settings settings) {
         DatabaseManager checksumDatabaseManager = new ChecksumDatabaseManager(settings);
         return new ChecksumDAO(checksumDatabaseManager);
     }
@@ -140,7 +93,7 @@ public final class PillarComponentFactory {
      * @param settings The settings.
      * @return The AuditTrailManager.
      */
-    private AuditTrailManager getAuditTrailManager(Settings settings) {
+    public static AuditTrailManager getAuditTrailManager(Settings settings) {
         AuditTrailContributerDAOFactory daoFactory = new AuditTrailContributerDAOFactory();
         return daoFactory.getAuditTrailContributorDAO(
                 settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase(),
@@ -154,7 +107,7 @@ public final class PillarComponentFactory {
      * @return The filestore from settings, or the CollectionArchiveManager, if the setting is missing.
      */
     @SuppressWarnings("unchecked")
-    private FileStore getFileStore(Settings settings) {
+    public static FileStore getFileStore(Settings settings) {
         if(settings.getReferenceSettings().getPillarSettings().getFileStoreClass() == null) {
             return new CollectionArchiveManager(settings);
         }
@@ -176,15 +129,14 @@ public final class PillarComponentFactory {
      * @param alarmDispatcher The alarm dispatcher.
      * @return The PillarModel, either for FullReferencePillar or ChecksumPillar.
      */
-    private StorageModel getPillarModel(Settings settings, ChecksumStore cache, AlarmDispatcher alarmDispatcher) {
+    public static StorageModel getPillarModel(Settings settings, ChecksumStore cache, AlarmDispatcher alarmDispatcher) {
         PillarType pillarType = settings.getReferenceSettings().getPillarSettings().getPillarType();
+        FileExchange fileExchange = ProtocolComponentFactory.createFileExchange(settings);
         if(pillarType == PillarType.CHECKSUM) {
-            return new ChecksumStorageModel(cache, alarmDispatcher, settings,
-                    ProtocolComponentFactory.getInstance().getFileExchange(settings));
+            return new ChecksumStorageModel(cache, alarmDispatcher, settings, fileExchange);
         } else if(pillarType == PillarType.FILE) {
             FileStore archive = getFileStore(settings);
-            return new FileStorageModel(archive, cache, alarmDispatcher, settings,
-                    ProtocolComponentFactory.getInstance().getFileExchange(settings));
+            return new FileStorageModel(archive, cache, alarmDispatcher, settings, fileExchange);
         } else {
             throw new IllegalStateException("Cannot instantiate a pillar of type '" + pillarType + "'.");
         }

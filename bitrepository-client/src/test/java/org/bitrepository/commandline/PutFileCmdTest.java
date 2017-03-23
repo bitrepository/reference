@@ -24,6 +24,10 @@ package org.bitrepository.commandline;
 import java.util.Date;
 
 import org.bitrepository.client.DefaultFixtureClientTest;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.SimpleMessageBus;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -46,7 +50,13 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
                 "-k" + KEY_FILE,
                 "-c" + DEFAULT_COLLECTION_ID,
                 "-f" + DEFAULT_FILE_ID};
-        new PutFileCmd(args);
+        new PutFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
+
     }
 
     @Test(groups = { "regressiontest" })
@@ -58,7 +68,12 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
                 "-C" + DEFAULT_CHECKSUM,
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-i" + DEFAULT_FILE_ID};
-        new PutFileCmd(args);
+        new PutFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -69,7 +84,12 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
                 "-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
                 "-C" + DEFAULT_CHECKSUM,
                 "-i" + DEFAULT_FILE_ID};
-        new PutFileCmd(args);
+        new PutFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" })
@@ -82,7 +102,12 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID,
                 "-p" + PILLAR1_ID,
                 "-i" + DEFAULT_FILE_ID};
-        new PutFileCmd(args);
+        new PutFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -95,7 +120,12 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID,
                 "-p" + "Random" + (new Date()).getTime() + "pillar",
                 "-i" + DEFAULT_FILE_ID};
-        new PutFileCmd(args);
+        new PutFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -106,7 +136,12 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-C" + DEFAULT_CHECKSUM,
                 "-i" + DEFAULT_FILE_ID};
-        new PutFileCmd(args);
+        new PutFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -117,7 +152,12 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS,
                 "-i" + DEFAULT_FILE_ID};
-        new PutFileCmd(args);
+        new PutFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" })
@@ -128,7 +168,12 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-f" + DEFAULT_FILE_ID,
                 "-i" + DEFAULT_FILE_ID};
-        new PutFileCmd(args);
+        new PutFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
@@ -139,7 +184,12 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-C" + DEFAULT_CHECKSUM,
                 "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS};
-        new PutFileCmd(args);
+        new PutFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" })
@@ -150,7 +200,12 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-C" + DEFAULT_CHECKSUM,
                 "-f" + DEFAULT_FILE_ID};
-        new PutFileCmd(args);
+        new PutFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" })
@@ -163,7 +218,12 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
                 "-c" + DEFAULT_COLLECTION_ID, 
                 "-i" + DEFAULT_FILE_ID,
                 "-R" + "MD5"};
-        new PutFileCmd(args);
+        new PutFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 
     @Test(groups = { "regressiontest" })
@@ -177,6 +237,11 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
                 "-i" + DEFAULT_FILE_ID,
                 "-R" + "HMAC_SHA256",
                 "-S" + "SALT"};
-        new PutFileCmd(args);
+        new PutFileCmd(args){
+            @Override
+            protected MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
+                return new SimpleMessageBus();
+            }
+        };
     }
 }

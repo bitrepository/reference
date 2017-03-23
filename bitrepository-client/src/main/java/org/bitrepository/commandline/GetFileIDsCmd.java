@@ -21,12 +21,16 @@
  */
 package org.bitrepository.commandline;
 
-import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getfileids.ConversationBasedGetFileIDsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
+import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.commandline.clients.PagingGetFileIDsClient;
 import org.bitrepository.commandline.outputformatter.GetFileIDsInfoFormatter;
 import org.bitrepository.commandline.outputformatter.GetFileIDsOutputFormatter;
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 
 /**
  * Perform the GetFileIDs operation.
@@ -56,8 +60,10 @@ public class GetFileIDsCmd extends CommandLineClient {
     protected GetFileIDsCmd(String ... args) {
         super(args);
         output.debug("Instantiation GetFileIDClient.");
-        GetFileIDsClient client = AccessComponentFactory.createGetFileIDsClient(settings,
-                securityManager, getComponentID());
+        GetFileIDsClient client = new ConversationBasedGetFileIDsClient(
+                messageBus,
+                mediator,
+                settings, getComponentID());
         output.debug("Instantiation GetFileID outputFormatter.");
         GetFileIDsOutputFormatter outputFormatter = new GetFileIDsInfoFormatter(output);
 

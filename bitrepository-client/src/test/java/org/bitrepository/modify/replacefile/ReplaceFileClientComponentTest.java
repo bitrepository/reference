@@ -40,7 +40,6 @@ import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.modify.ModifyComponentFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -60,17 +59,6 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         DEFAULT_CHECKSUM_SPEC = ChecksumUtils.getDefault(settingsForCUT);
         DEFAULT_OLD_CHECKSUM_DATA = createChecksumData("123checksum321");
         DEFAULT_NEW_CHECKSUM_DATA = createChecksumData("123checksum321");
-    }
-
-    @Test(groups = {"regressiontest"})
-    public void verifyReplaceFileClientFromFactory() {
-        addDescription("Testing the initialization through the ModifyComponentFactory.");
-        addStep("Use the ModifyComponentFactory to instantiate a ReplaceFileClient.",
-                "It should be an instance of ConversationBasedReplaceFileClient");
-        ReplaceFileClient rfc = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(
-                settingsForCUT, securityManager, settingsForTestClient.getComponentID());
-        Assert.assertTrue(rfc instanceof ConversationBasedReplaceFileClient, "The ReplaceFileClient '" + rfc
-                + "' should be instance of '" + ConversationBasedReplaceFileClient.class.getName() + "'");
     }
 
     @Test(groups = {"regressiontest"})

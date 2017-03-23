@@ -23,17 +23,13 @@ package org.bitrepository.pillar.integration;
 
 
 import java.io.File;
-import java.util.Arrays;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.Pillar;
-import org.bitrepository.pillar.PillarComponentFactory;
-import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
-import org.bitrepository.protocol.messagebus.SimpleMessageBus;
-import org.bitrepository.protocol.security.DummySecurityManager;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.settings.referencesettings.CollectionDirs;
 import org.bitrepository.settings.referencesettings.PillarType;
@@ -56,13 +52,19 @@ public class EmbeddedPillar implements LifeCycledService {
     public static EmbeddedPillar createReferencePillar(Settings pillarSettings) {
         MessageBus messageBus = initialize(pillarSettings);
         pillarSettings.getReferenceSettings().getPillarSettings().setPillarType(PillarType.FILE);
-        return new EmbeddedPillar(PillarComponentFactory.getInstance().createPillar(pillarSettings, messageBus));
+
+
+        Pillar pillar = new Pillar(pillarSettings, (SecurityManager) messageBus);
+        return new EmbeddedPillar(pillar);
     }
 
     public static EmbeddedPillar createChecksumPillar(Settings pillarSettings) {
         MessageBus messageBus = initialize(pillarSettings);
         pillarSettings.getReferenceSettings().getPillarSettings().setPillarType(PillarType.CHECKSUM);
-        return new EmbeddedPillar(PillarComponentFactory.getInstance().createPillar(pillarSettings, messageBus));
+
+
+        Pillar pillar = new Pillar(pillarSettings, (SecurityManager) messageBus);
+        return new EmbeddedPillar(pillar);
     }
 
     private static MessageBus initialize(Settings pillarSettings) {
@@ -73,6 +75,7 @@ public class EmbeddedPillar implements LifeCycledService {
                 FileUtils.deleteDirIfExists(new File(dir));
             }
         }
-        return MessageBusManager.getMessageBus();
+        //TODO securitymanager
+        return MessageBusManager.createMessageBus(pillarSettings, null);
     }
 }

@@ -21,11 +21,10 @@
  */
 package org.bitrepository.monitoringservice;
 
-import java.util.Map;
-import javax.jms.JMSException;
-
-import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getstatus.ConversationBasedGetStatusClient;
 import org.bitrepository.access.getstatus.GetStatusClient;
+import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.monitoringservice.alarm.BasicMonitoringServiceAlerter;
@@ -42,6 +41,9 @@ import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jms.JMSException;
+import java.util.Map;
+
 /**
  * The monitoring service.
  */
@@ -53,11 +55,11 @@ public class MonitoringService implements LifeCycledService {
     private final StatusStore statusStore;
     /** The client for getting statuses. */
     private final GetStatusClient getStatusClient;
-    /** The alerter for sending alarms */
-    private final MonitorAlerter alerter;
     /** The status collector */
     private final StatusCollector collector;
-    
+    private final MessageBus messageBus;
+    private final ConversationMediator mediator;
+
     /**
      * Constructor.
      * @param settings The settings.
@@ -66,43 +68,48 @@ public class MonitoringService implements LifeCycledService {
     public MonitoringService(Settings settings, SecurityManager securityManager) {
         this.settings = settings;
         SettingsUtils.initialize(settings);
-        MessageBus messageBus = MessageBusManager.getMessageBus(settings, securityManager);
+        messageBus = MessageBusManager.createMessageBus(settings, securityManager);
         statusStore = new ComponentStatusStore(SettingsUtils.getStatusContributorsForCollection(settings));
-        alerter = new BasicMonitoringServiceAlerter(settings, messageBus, AlarmLevel.ERROR, statusStore);
-        getStatusClient = AccessComponentFactory.createGetStatusClient(settings, securityManager,
-                                                                       settings.getReferenceSettings().getMonitoringServiceSettings().getID());
+        mediator = new CollectionBasedConversationMediator(settings, messageBus);
+
+        getStatusClient = new ConversationBasedGetStatusClient(messageBus, mediator, settings,
+                                                               settings.getReferenceSettings().getMonitoringServiceSettings().getID());
+
+        /* The alerter for sending alarms */
+        MonitorAlerter alerter = new BasicMonitoringServiceAlerter(settings, messageBus, AlarmLevel.ERROR, statusStore);
         collector = new StatusCollector(getStatusClient, settings, statusStore, alerter);
         collector.start();
     }
-    
+
     /**
      * @return The map of the status for the components.
      */
     public Map<String, ComponentStatus> getStatus() {
         return statusStore.getStatusMap();
     }
-    
+
     @Override
     public void start() {}
-    
+
     /**
      * @return The maximum number of attempts to retrieve a status from a component before dispatching an alarm.
      */
     public int getMaxRetries() {
         return settings.getReferenceSettings().getMonitoringServiceSettings().getMaxRetries().intValue();
-    } 
-    
+    }
+
     /**
      * @return The interval between collecting status from the components.
      */
     public long getCollectionInterval() {
         return settings.getReferenceSettings().getMonitoringServiceSettings().getCollectionInterval();
     }
-    
+
     @Override
     public void shutdown() {
         collector.stop();
-        MessageBus messageBus = MessageBusManager.getMessageBus();
+        mediator.shutdown();
+
         if ( messageBus != null) {
             try {
                 messageBus.close();

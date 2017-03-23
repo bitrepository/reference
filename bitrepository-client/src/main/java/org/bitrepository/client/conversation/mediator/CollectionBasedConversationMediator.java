@@ -39,8 +39,6 @@ import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.messagebus.MessageBusManager;
-import org.bitrepository.protocol.security.SecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,13 +82,14 @@ public class CollectionBasedConversationMediator implements ConversationMediator
      * given destination on the given messagebus.
      *
      * @param settings The general client settings.
-     * @param securityManager Used by the message bus to authenticate messages.
+     * @param messagebus
      */
-    public CollectionBasedConversationMediator(Settings settings, SecurityManager securityManager) {
+    public CollectionBasedConversationMediator(Settings settings, MessageBus messagebus) {
+        this.messagebus = messagebus;
         log.debug("Initializing the CollectionBasedConversationMediator");
         this.conversations = Collections.synchronizedMap(new HashMap<String, Conversation>());
         this.settings = settings;
-        messagebus = MessageBusManager.getMessageBus(settings, securityManager);
+
         start();
     }
 

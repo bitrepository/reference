@@ -40,7 +40,6 @@ import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.TestFileHelper;
-import org.bitrepository.modify.ModifyComponentFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -53,17 +52,6 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     @BeforeMethod(alwaysRun=true)
     public void initialise() throws Exception {
         messageFactory = new TestDeleteFileMessageFactory(collectionID);
-    }
-
-    @Test(groups={"regressiontest"})
-    public void verifyDeleteClientFromFactory() {
-        addDescription("Testing the initialization through the ModifyComponentFactory.");
-        addStep("Use the ModifyComponentFactory to instantiate a PutFileClient.",
-                "It should be an instance of SimplePutFileClient");
-        DeleteFileClient dfc = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(
-                settingsForCUT, securityManager, settingsForTestClient.getComponentID());
-        Assert.assertTrue(dfc instanceof ConversationBasedDeleteFileClient, "The DeleteFileClient '" + dfc
-                + "' should be instance of '" + ConversationBasedDeleteFileClient.class.getName() + "'");
     }
 
     @Test(groups={"regressiontest"})

@@ -22,14 +22,18 @@
 package org.bitrepository.commandline;
 
 import org.apache.commons.cli.Option;
-import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getchecksums.ConversationBasedGetChecksumsClient;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.commandline.clients.PagingGetChecksumsClient;
 import org.bitrepository.commandline.outputformatter.GetChecksumDistributionFormatter;
 import org.bitrepository.commandline.outputformatter.GetChecksumsInfoFormatter;
 import org.bitrepository.commandline.outputformatter.GetChecksumsOutputFormatter;
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 
 /**
  * Perform the GetChecksums operation.
@@ -58,8 +62,10 @@ public class GetChecksumsCmd extends CommandLineClient {
      */
     protected GetChecksumsCmd(String ... args) {
         super(args);
-        GetChecksumsClient client = AccessComponentFactory.createGetChecksumsClient(settings,
-                securityManager, getComponentID());
+        GetChecksumsClient client = new ConversationBasedGetChecksumsClient(
+                messageBus,
+                mediator,
+                settings, getComponentID());
         GetChecksumsOutputFormatter outputFormatter = retrieveOutputFormatter();
         int pageSize = SettingsUtils.getMaxClientPageSize(settings);
         pagingClient = new PagingGetChecksumsClient(client, getTimeout(), pageSize, outputFormatter, output); 

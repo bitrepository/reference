@@ -29,7 +29,7 @@ import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
-import org.bitrepository.protocol.messagebus.MessageBusManager;
+import org.testng.annotations.BeforeMethod;
 
 /**
  * Contains the generic parts for tests integrating to the message bus. 
@@ -49,14 +49,21 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
 
     protected ConversationMediator conversationMediator;
 
-    @Override
-    protected void initializeCUT() {
-        MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
-        renewConversationMediator();
+
+    @BeforeMethod(alwaysRun = true)
+    public void setupConversationMediator(){
+        if (conversationMediator != null) {
+            conversationMediator.shutdown();
+        }
+        conversationMediator = new CollectionBasedConversationMediator(settingsForCUT, messageBus);
     }
+
     @Override
     protected void shutdownCUT() {
-        shutdownConversationMediator();
+        if (conversationMediator != null) {
+            conversationMediator.shutdown();
+        }
+        conversationMediator = null;
     }
 
     @Override
@@ -75,21 +82,4 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
         addReceiver(pillar2Receiver);
     }
 
-    /**
-     * Used for creating a new conversationMediator between tests, and for tests needing to use a differently configured
-     * mediator.
-     */
-    protected void renewConversationMediator() {
-        if (conversationMediator != null) {
-            conversationMediator.shutdown();
-        }
-        conversationMediator = new CollectionBasedConversationMediator(settingsForCUT, securityManager);
-    }
-
-    private void shutdownConversationMediator() {
-        if (conversationMediator != null) {
-            conversationMediator.shutdown();
-        }
-        conversationMediator = null;
-    }
 }

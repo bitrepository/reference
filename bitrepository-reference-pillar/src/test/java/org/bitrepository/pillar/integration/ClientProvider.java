@@ -20,21 +20,29 @@ package org.bitrepository.pillar.integration;/*
  * #L%
  */
 
-import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.AuditTrailClientTestWrapper;
 import org.bitrepository.access.getaudittrails.BlockingAuditTrailClient;
+import org.bitrepository.access.getaudittrails.ConversationBasedAuditTrailClient;
 import org.bitrepository.access.getchecksums.BlockingGetChecksumsClient;
+import org.bitrepository.access.getchecksums.ConversationBasedGetChecksumsClient;
 import org.bitrepository.access.getchecksums.GetChecksumsClientTestWrapper;
 import org.bitrepository.access.getfileids.BlockingGetFileIDsClient;
+import org.bitrepository.access.getfileids.ConversationBasedGetFileIDsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClientTestWrapper;
+import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.deletefile.BlockingDeleteFileClient;
+import org.bitrepository.modify.deletefile.ConversationBasedDeleteFileClient;
 import org.bitrepository.modify.deletefile.DeleteFileClientTestWrapper;
 import org.bitrepository.modify.putfile.BlockingPutFileClient;
+import org.bitrepository.modify.putfile.ConversationBasedPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClientTestWrapper;
 import org.bitrepository.modify.replacefile.BlockingReplaceFileClient;
+import org.bitrepository.modify.replacefile.ConversationBasedReplaceFileClient;
 import org.bitrepository.modify.replacefile.ReplaceFileClientTestWrapper;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.jaccept.TestEventManager;
 
 /**
@@ -44,6 +52,8 @@ public class ClientProvider {
     private final org.bitrepository.protocol.security.SecurityManager securityManager;
     private final Settings settings;
     private final TestEventManager eventManager;
+    private final ConversationMediator conversationMediator;
+    private final MessageBus messageBus;
 
     private BlockingPutFileClient putFileClient;
     private BlockingReplaceFileClient replaceFileClient;
@@ -65,15 +75,18 @@ public class ClientProvider {
         this.settings = settings;
         this.eventManager = eventManager;
 
+        messageBus = MessageBusManager.createMessageBus(settings, securityManager);
+        conversationMediator = new CollectionBasedConversationMediator(settings, messageBus);
     }
 
     public synchronized BlockingPutFileClient getPutClient() {
         if (putFileClient == null) {
             putFileClient = new BlockingPutFileClient(
                 new PutFileClientTestWrapper(
-                    ModifyComponentFactory.getInstance().retrievePutClient(
-                        settings, securityManager, settings.getComponentID()
-                    ), eventManager
+                        new ConversationBasedPutFileClient(
+                                messageBus,
+                                conversationMediator,
+                                settings, settings.getComponentID()), eventManager
                 )
             );
         }
@@ -84,9 +97,10 @@ public class ClientProvider {
         if (replaceFileClient == null) {
             replaceFileClient = new BlockingReplaceFileClient(
                     new ReplaceFileClientTestWrapper(
-                            ModifyComponentFactory.getInstance().retrieveReplaceFileClient(
-                                    settings, securityManager, settings.getComponentID()
-                            ), eventManager
+                            new ConversationBasedReplaceFileClient(
+                                    messageBus,
+                                    conversationMediator,
+                                    settings, settings.getComponentID()), eventManager
                     )
             );
         }
@@ -97,9 +111,10 @@ public class ClientProvider {
         if (getDeleteFileClient == null) {
             getDeleteFileClient = new BlockingDeleteFileClient(
                 new DeleteFileClientTestWrapper(
-                    ModifyComponentFactory.getInstance().retrieveDeleteFileClient(
-                        settings, securityManager, settings.getComponentID()
-                    ), eventManager
+                        new ConversationBasedDeleteFileClient(
+                                messageBus,
+                                conversationMediator,
+                                settings, settings.getComponentID()), eventManager
                 )
             );
         }
@@ -110,9 +125,10 @@ public class ClientProvider {
         if (getChecksumsClient == null) {
             getChecksumsClient = new BlockingGetChecksumsClient(
                 new GetChecksumsClientTestWrapper(
-                        AccessComponentFactory.createGetChecksumsClient(
-                        settings, securityManager, settings.getComponentID()
-                    ), eventManager
+                        new ConversationBasedGetChecksumsClient(
+                                messageBus,
+                                conversationMediator,
+                                settings, settings.getComponentID()), eventManager
                 )
             );
         }
@@ -123,9 +139,10 @@ public class ClientProvider {
         if (getFileIDsClient == null) {
             getFileIDsClient = new BlockingGetFileIDsClient(
                 new GetFileIDsClientTestWrapper(
-                        AccessComponentFactory.createGetFileIDsClient(
-                        settings, securityManager, settings.getComponentID()
-                    ), eventManager
+                        new ConversationBasedGetFileIDsClient(
+                                messageBus,
+                                conversationMediator,
+                                settings, settings.getComponentID()), eventManager
                 )
             );
         }
@@ -137,9 +154,11 @@ public class ClientProvider {
         if (getAuditTrailsClient == null) {
             getAuditTrailsClient = new BlockingAuditTrailClient(
                     new AuditTrailClientTestWrapper(
-                            AccessComponentFactory.createAuditTrailClient(
-                                    settings, securityManager, settings.getComponentID()
-                            ), eventManager
+                            new ConversationBasedAuditTrailClient(
+                                    settings,
+                                    conversationMediator,
+                                    messageBus,
+                                    settings.getComponentID()), eventManager
                     )
             );
         }

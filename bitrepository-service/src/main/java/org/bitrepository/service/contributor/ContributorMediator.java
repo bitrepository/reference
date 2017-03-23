@@ -21,10 +21,12 @@
  */
 package org.bitrepository.service.contributor;
 
+import org.bitrepository.service.LifeCycledService;
+
 /**
  * The interface for the contributor mediator.
  */
-public interface ContributorMediator {
+public interface ContributorMediator extends LifeCycledService {
 
     /**
      * Start the mediator before use.
@@ -34,5 +36,5 @@ public interface ContributorMediator {
     /**
      * Close the mediator after use.
      */
-    void close();
+    void shutdown();
 }

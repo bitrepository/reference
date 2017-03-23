@@ -22,9 +22,7 @@
 package org.bitrepository.access.getaudittrails;
 
 import java.math.BigInteger;
-import java.util.concurrent.TimeUnit;
 
-import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
@@ -45,7 +43,6 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.settings.repositorysettings.Collection;
-import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -72,15 +69,6 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().add(c);
         
         settingsForCUT.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
-    }
-
-    @Test(groups = {"regressiontest"})
-    public void verifyAuditTrailClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.createAuditTrailClient(
-                settingsForCUT, securityManager, settingsForTestClient.getComponentID())
-                instanceof ConversationBasedAuditTrailClient,
-                "The default AuditTrailClient from the Access factory should be of the type '" +
-                ConversationBasedAuditTrailClient.class.getName() + "'.");
     }
 
     @Test(groups = {"regressiontest"})

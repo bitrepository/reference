@@ -24,10 +24,7 @@
  */
 package org.bitrepository.access.getfileids;
 
-import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.ContributorQuery;
-import org.bitrepository.access.getfileids.ConversationBasedGetFileIDsClient;
-import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
@@ -74,14 +71,6 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
     public void setUp() throws JAXBException {
         // TODO getFileIDsFromFastestPillar settings
         messageFactory = new TestGetFileIDsMessageFactory(settingsForTestClient.getComponentID());
-    }
-
-    @Test(groups = {"regressiontest"})
-    public void verifyGetFileIDsClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.createGetFileIDsClient(settingsForCUT, securityManager,
-                                                                        settingsForTestClient.getComponentID()) instanceof ConversationBasedGetFileIDsClient,
-                "The default GetFileClient from the Access factory should be of the type '" +
-                        ConversationBasedGetFileIDsClient.class.getName() + "'.");
     }
 
     @Test(groups = {"regressiontest"})

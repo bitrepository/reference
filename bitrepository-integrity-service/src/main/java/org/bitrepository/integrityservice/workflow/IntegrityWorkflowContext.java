@@ -26,6 +26,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
+import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.WorkflowContext;
 
@@ -39,6 +40,7 @@ public class IntegrityWorkflowContext implements WorkflowContext {
     private final IntegrityModel store;
     private final IntegrityAlerter alerter;
     private final AuditTrailManager auditManager;
+    private final FileExchange fileExchange;
 
     /**
      * @param settings The <code>Settings</code> to use in the workflow.
@@ -46,20 +48,22 @@ public class IntegrityWorkflowContext implements WorkflowContext {
      * @param store The <code>IntegrityModel</code> to use in the workflow.
      * @param alerter The <code>IntegrityAlerter</code> to use in the workflow.
      * @param auditManager The <code>AuditTrailManager</code> to use in the workflow.
+     * @param fileExchange
      */
     public IntegrityWorkflowContext(Settings settings,
-            IntegrityInformationCollector collector,
-            IntegrityModel store,
-            IntegrityAlerter alerter,
-            AuditTrailManager auditManager) {
+                                    IntegrityInformationCollector collector,
+                                    IntegrityModel store,
+                                    IntegrityAlerter alerter,
+                                    AuditTrailManager auditManager, FileExchange fileExchange) {
         this.settings = settings;
         this.collector = collector;
         this.store = store;
         this.alerter = alerter;
         this.auditManager = auditManager;
-
+        this.fileExchange = fileExchange;
     }
 
+    @Override
     public Settings getSettings() {
         return settings;
     }
@@ -89,5 +93,9 @@ public class IntegrityWorkflowContext implements WorkflowContext {
                 ", alerter=" + alerter +
                 ", auditManager=" + auditManager + '\'' +
                 '}';
+    }
+
+    public FileExchange getFileExchange() {
+        return fileExchange;
     }
 }

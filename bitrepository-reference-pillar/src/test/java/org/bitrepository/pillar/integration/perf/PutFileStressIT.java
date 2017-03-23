@@ -23,13 +23,19 @@ package org.bitrepository.pillar.integration.perf;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.utils.TestFileHelper;
-import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.BlockingPutFileClient;
+import org.bitrepository.modify.putfile.ConversationBasedPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
+import org.bitrepository.protocol.security.SecurityManager;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -38,9 +44,14 @@ public class PutFileStressIT extends PillarPerformanceTest {
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
-        putClient = ModifyComponentFactory.getInstance().retrievePutClient(
-                settingsForTestClient, createSecurityManager(), settingsForTestClient.getComponentID()
-        );
+        SecurityManager securityManager1 = createSecurityManager();
+        MessageBus messageBus = MessageBusManager.createMessageBus(settingsForTestClient, securityManager1);
+        ConversationMediator conversationMediator = new CollectionBasedConversationMediator(settingsForTestClient,
+                                                                                            messageBus);
+        putClient = new ConversationBasedPutFileClient(
+                messageBus,
+                conversationMediator,
+                settingsForTestClient, settingsForTestClient.getComponentID());
     }
 
     @Test( groups = {"pillar-stress-test", "stress-test-pillar-population"})

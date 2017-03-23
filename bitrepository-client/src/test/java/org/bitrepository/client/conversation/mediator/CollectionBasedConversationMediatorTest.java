@@ -25,13 +25,14 @@
 package org.bitrepository.client.conversation.mediator;
 
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.testng.annotations.Test;
 
 @Test
 public class CollectionBasedConversationMediatorTest extends ConversationMediatorTest {
 
     @Override
-    ConversationMediator createMediator(Settings settings) {
-        return new CollectionBasedConversationMediator(settings, securityManager);
+    ConversationMediator createMediator(Settings settings, MessageBus messagebus) {
+        return new CollectionBasedConversationMediator(settings, messagebus);
     }
 }

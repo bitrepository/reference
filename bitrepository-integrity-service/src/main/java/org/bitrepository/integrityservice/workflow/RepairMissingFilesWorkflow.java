@@ -22,8 +22,6 @@
 package org.bitrepository.integrityservice.workflow;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,8 +32,6 @@ import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.workflow.step.GetFileStep;
 import org.bitrepository.integrityservice.workflow.step.PutFileStep;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowContext;
@@ -110,10 +106,16 @@ public class RepairMissingFilesWorkflow extends Workflow {
                         
                 try {
                     String checksum = getChecksumForFile(fileId);
-                    URL url = createURL(fileId);
+                    URL url = context.getFileExchange().getURL(fileId);
                     getFileStep(fileId, url);
                     putFileStep(fileId, url, checksum);
-                    deleteUrl(url);
+
+                    try {
+                        context.getFileExchange().deleteFile(url);
+                    } catch(IOException e) {
+                        // Not critical, if we cannot remove the file.
+                        log.warn("Issue deleting file from FileExchange", e);
+                    }
                 } catch (Exception e) {
                     // Fault barrier. Just try to continue
                     log.warn("Error occured during repair of missing file, '" + fileId + "'. Tries to continue.", e);
@@ -151,18 +153,7 @@ public class RepairMissingFilesWorkflow extends Workflow {
         }
         return res;
     }
-    
-    /**
-     * Creates a URL a given file id at our file-exchange.
-     * @param fileId The id of the file to get the URL for.
-     * @return The URL for the file.
-     * @throws MalformedURLException If a wellformed URL cannot be created.
-     */
-    private URL createURL(String fileId) throws MalformedURLException {
-        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(context.getSettings());
-        return fe.getURL(fileId);
-    }
-    
+
     /**
      * Performs the GetFile operation for the fileId for having the file delivered at the given URL.
      * @param fileId The id of the file.
@@ -191,24 +182,8 @@ public class RepairMissingFilesWorkflow extends Workflow {
             step = null;
         }
     }
-    
-    /**
-     * Deletes the file at the file-exchange.
-     * @param url The URL for the file to delete.
-     * @throws IOException If an issue occur while deleting the file.
-     * @throws URISyntaxException If the URL is invalid.
-     */
-    private void deleteUrl(URL url) throws URISyntaxException {
-        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(context.getSettings());
-        try {
-            fe.deleteFile(url);
-        } catch(IOException e) {
-            // Not critical, if we cannot remove the file.
-            log.warn("Issue deleting file from FileExchange", e);
-        }
-    }
 
-	@Override
+    @Override
 	public String getDescription() {
 		return "Can repair " + MAX_RESULTS + " files per run.";
 	}

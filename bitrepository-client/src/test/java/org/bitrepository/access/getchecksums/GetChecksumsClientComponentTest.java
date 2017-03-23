@@ -45,10 +45,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 
-import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.ContributorQuery;
-import org.bitrepository.access.getchecksums.ConversationBasedGetChecksumsClient;
-import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -65,7 +62,6 @@ import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -89,13 +85,6 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         messageFactory = new TestGetChecksumsMessageFactory(settingsForTestClient.getComponentID());
     }
 
-    @Test(groups = {"regressiontest"})
-    public void verifyGetChecksumsClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.createGetChecksumsClient(settingsForCUT, securityManager,
-                                                                          settingsForTestClient.getComponentID()) instanceof ConversationBasedGetChecksumsClient,
-                "The default GetFileClient from the Access factory should be of the type '" +
-                        ConversationBasedGetChecksumsClient.class.getName() + "'.");
-    }
 
     @Test(groups = {"regressiontest"})
     public void getChecksumsFromSinglePillar() throws Exception {

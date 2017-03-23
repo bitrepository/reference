@@ -26,16 +26,24 @@ package org.bitrepository.alarm;
 
 import org.bitrepository.alarm.handling.AlarmHandler;
 import org.bitrepository.alarm.handling.AlarmMediator;
+import org.bitrepository.alarm.handling.handlers.AlarmStorer;
+import org.bitrepository.alarm.store.AlarmDAOFactory;
 import org.bitrepository.alarm.store.AlarmStore;
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
+import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.protocol.security.SecurityManagerUtil;
 import org.bitrepository.service.contributor.ContributorMediator;
+import org.bitrepository.service.contributor.SimpleContributorMediator;
+import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Date;
 
@@ -43,6 +51,7 @@ import java.util.Date;
  * The basic alarm service
  */
 public class BasicAlarmService implements AlarmService {
+    private final AlarmStorer handler;
     /** The logger for the AlarmService.*/
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -57,20 +66,20 @@ public class BasicAlarmService implements AlarmService {
     /** The conversation mediator to keep track of the conversations.*/
     private final AlarmMediator alarmMediator;
 
-    /**
-     * Constructor.
-     * @param messageBus The message bus.
-     * @param settings The settings.
-     * @param store The store for the alarms.
-     * @param contributorMediator The contributor
-     */
-    public BasicAlarmService(MessageBus messageBus, Settings settings, AlarmStore store, ContributorMediator contributorMediator) {
-        this.messageBus = messageBus;
-        this.store = store;
-        this.contributorMediator = contributorMediator;
-        
+    public BasicAlarmService(Settings settings, SecurityManager securityManager) {
+        messageBus = MessageBusManager.createMessageBus(settings, securityManager);
+        contributorMediator = new SimpleContributorMediator(messageBus, settings, null, null);
+
+        AlarmDAOFactory alarmDAOFactory = new AlarmDAOFactory();
+        DatabaseSpecifics alarmServiceDatabase = settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase();
+        store = alarmDAOFactory.getAlarmServiceDAOInstance(alarmServiceDatabase, settings);
+
         contributorMediator.start();
         alarmMediator = new AlarmMediator(messageBus, settings.getAlarmDestination());
+
+        // Add the default handler for putting the alarms into the database.
+        handler = new AlarmStorer(store);
+        addHandler(handler);
     }
 
     @Override
@@ -85,11 +94,12 @@ public class BasicAlarmService implements AlarmService {
             alarmMediator.close();
         }
         if(contributorMediator != null) {
-            contributorMediator.close();
+            contributorMediator.shutdown();
         }
         if (store != null) {
             store.shutdown();
         }
+        handler.close();
         try {
             messageBus.close();
             // TODO Kill any lingering timer threads

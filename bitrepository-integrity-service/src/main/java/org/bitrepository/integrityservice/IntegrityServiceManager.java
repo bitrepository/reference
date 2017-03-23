@@ -24,14 +24,11 @@
  */
 package org.bitrepository.integrityservice;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Properties;
-
-import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getchecksums.ConversationBasedGetChecksumsClient;
+import org.bitrepository.access.getfile.ConversationBasedGetFileClient;
+import org.bitrepository.access.getfileids.ConversationBasedGetFileIDsClient;
+import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -44,9 +41,11 @@ import org.bitrepository.integrityservice.collector.IntegrityInformationCollecto
 import org.bitrepository.integrityservice.reports.IntegrityReportProvider;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowContext;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowManager;
-import org.bitrepository.modify.ModifyComponentFactory;
+import org.bitrepository.modify.putfile.ConversationBasedPutFileClient;
+import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.protocol.security.SecurityManagerUtil;
 import org.bitrepository.service.LifeCycledService;
@@ -62,6 +61,13 @@ import org.bitrepository.settings.referencesettings.ServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Properties;
+
 /**
  * Provides access to the different component in the integrity module.
  */
@@ -75,16 +81,12 @@ public final class IntegrityServiceManager {
     /** Property key to tell where to locate the path and filename to the private key file. */
     private static final String PRIVATE_KEY_FILE = "org.bitrepository.integrity-service.privateKeyFile";
     private static Settings settings;
-    private static SecurityManager securityManager;
     private static IntegrityWorkflowManager workFlowManager;
     private static String confDir;
     private static IntegrityLifeCycleHandler lifeCycleHandler;
     private static IntegrityModel model;
     private static ContributorMediator contributor;
     private static MessageBus messageBus;
-    private static IntegrityInformationCollector collector;
-    private static AuditTrailManager auditManager;
-    private static IntegrityAlerter alarmDispatcher;
     private static IntegrityReportProvider integrityReportProvider;
 
     /**
@@ -107,30 +109,33 @@ public final class IntegrityServiceManager {
         confDir = configurationDir;
         loadSettings();
         String id = settings.getReferenceSettings().getIntegrityServiceSettings().getID();
-        securityManager = SecurityManagerUtil.getSecurityManager(settings, Paths.get(privateKeyFile), id); 
-                
-        messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
-        
+        SecurityManager securityManager = SecurityManagerUtil.getSecurityManager(settings,
+                                                                                 Paths.get(privateKeyFile),
+                                                                                 id);
+
+        messageBus = MessageBusManager.createMessageBus(settings, securityManager);
+
         AuditTrailContributerDAOFactory daoFactory = new AuditTrailContributerDAOFactory();
-        auditManager = daoFactory.getAuditTrailContributorDAO(
+        AuditTrailManager auditManager = daoFactory.getAuditTrailContributorDAO(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getAuditTrailContributerDatabase(),
                 settings.getComponentID(), settings);
-                
-        alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus, AlarmLevel.ERROR);
+
+        IntegrityAlerter alarmDispatcher = new IntegrityAlarmDispatcher(settings, messageBus, AlarmLevel.ERROR);
         model = new IntegrityDatabase(settings);
 
-        AccessComponentFactory acf = AccessComponentFactory.getInstance();
-        ModifyComponentFactory mcf = ModifyComponentFactory.getInstance();
-        
-        collector = new DelegatingIntegrityInformationCollector(
-                acf.createGetFileIDsClient(settings, securityManager, id),
-                acf.createGetChecksumsClient(settings, securityManager, id),
-                acf.createGetFileClient(settings, securityManager, id),
-                mcf.retrievePutClient(settings, securityManager, id));
+        ConversationMediator mediator = new CollectionBasedConversationMediator(settings, messageBus);
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(
+                new ConversationBasedGetFileIDsClient(messageBus, mediator, settings, id),
+                new ConversationBasedGetChecksumsClient(messageBus, mediator, settings, id),
+                new ConversationBasedGetFileClient(messageBus, mediator, settings, id),
+                new ConversationBasedPutFileClient(messageBus, mediator, settings, id));
         integrityReportProvider = new IntegrityReportProvider(integrityReportStorageDir);
-        
+
+        FileExchange fileExchange = ProtocolComponentFactory.createFileExchange(settings);
+
         workFlowManager = new IntegrityWorkflowManager(
-                new IntegrityWorkflowContext(settings, collector, model, alarmDispatcher, auditManager),
+                new IntegrityWorkflowContext(settings, collector, model, alarmDispatcher, auditManager, fileExchange
+                ),
                 new TimerbasedScheduler());
         contributor = new SimpleContributorMediator(messageBus, settings, auditManager, null);
         contributor.start();
@@ -225,7 +230,7 @@ public final class IntegrityServiceManager {
                 }
             }
             if(contributor != null) {
-                contributor.close();
+                contributor.shutdown();
             }
 
             if(model != null) {

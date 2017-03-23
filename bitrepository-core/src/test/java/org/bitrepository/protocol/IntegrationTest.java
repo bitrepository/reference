@@ -43,7 +43,6 @@ import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
 import org.bitrepository.protocol.http.EmbeddedHttpServer;
 import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.messagebus.SimpleMessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
@@ -64,10 +63,10 @@ import org.testng.annotations.BeforeTest;
  */
 public abstract class IntegrationTest extends ExtendedTestCase {
     protected static TestEventManager testEventManager = TestEventManager.getInstance();
-    public static LocalActiveMQBroker broker;
-    public static EmbeddedHttpServer server;
-    public static HttpServerConfiguration httpServerConfiguration;
-    public static MessageBus messageBus;
+    public LocalActiveMQBroker broker;
+    public EmbeddedHttpServer server;
+    public HttpServerConfiguration httpServerConfiguration;
+    public MessageBus messageBus;
 
     private MessageReceiverManager receiverManager;
     protected static String alarmDestinationID;
@@ -111,6 +110,32 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         }
     }
 
+
+    @AfterSuite(alwaysRun = true)
+    public void shutdownSuite() {
+        if (messageBus != null) {
+            try {
+                messageBus.close();
+                messageBus = null;
+            } catch (JMSException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        if(broker != null) {
+            try {
+                broker.stop();
+                broker = null;
+            } catch (Exception e) {
+                // No reason to pollute the test output with this
+            }
+        }
+        if (System.getProperty("useEmbeddedHttpServer", "false").equals("true")) {
+            server.stop();
+        }
+    }
+
+
     /**
      * May be extended by subclasses needing to have their receivers managed. Remember to still call
      * <code>super.registerReceivers()</code> when overriding
@@ -123,15 +148,14 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         receiverManager.addReceiver(receiver);
     }
 
+
     @BeforeClass(alwaysRun = true)
     public void initMessagebus() {
-        setupMessageBus();
-    }
-    
-    @AfterSuite(alwaysRun = true)
-    public void shutdownSuite() {
-        teardownMessageBus();
-        teardownHttpServer();
+        if(useEmbeddedMessageBus()) {
+            if (messageBus == null) {
+                messageBus = new SimpleMessageBus();
+            }
+        }
     }
 
     /**
@@ -223,55 +247,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     /** Indicated whether an embedded active MQ should be started and used */
     public boolean useEmbeddedMessageBus() {
         return System.getProperty("useEmbeddedMessageBus", "true").equals("true");
-    }
-
-    /** Indicated whether an embedded http server should be started and used */
-    public boolean useEmbeddedHttpServer() {
-        return System.getProperty("useEmbeddedHttpServer", "false").equals("true");
-    }
-
-    /**
-     * Hooks up the message bus.
-     */
-    protected void setupMessageBus() {
-        if(useEmbeddedMessageBus()) {
-            if (messageBus == null) {
-                messageBus = new SimpleMessageBus();
-            }
-        }
-    }
-
-    /**
-     * Shutdown the message bus.
-     */
-    private void teardownMessageBus() {
-        MessageBusManager.clear();
-        if (messageBus != null) {
-            try {
-                messageBus.close();
-                messageBus = null;
-            } catch (JMSException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        if(broker != null) {
-            try {
-                broker.stop();
-                broker = null;
-            } catch (Exception e) {
-                // No reason to pollute the test output with this
-            }
-        }
-    }
-
-    /**
-     * Shutdown the embedded http server if any.
-     */
-    protected void teardownHttpServer() {
-        if (useEmbeddedHttpServer()) {
-            server.stop();
-        }
     }
 
     /**

@@ -21,9 +21,6 @@
  */
 package org.bitrepository.access.getstatus;
 
-import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.access.getstatus.ConversationBasedGetStatusClient;
-import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.access.getstatus.conversation.StatusCompleteContributorEvent;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.bitrepositoryelements.StatusCode;
@@ -38,7 +35,6 @@ import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.message.TestGetStatusMessageFactory;
 import org.bitrepository.settings.repositorysettings.GetStatusSettings;
-import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -64,15 +60,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
             contributers.add(PILLAR2_ID);
         }
 
-        @Test(groups = {"regressiontest"})
-        public void verifyGetStatusClientFromFactory() throws Exception {
-            Assert.assertTrue(AccessComponentFactory.createGetStatusClient(
-                    settingsForCUT, securityManager, settingsForTestClient.getComponentID())
-                    instanceof ConversationBasedGetStatusClient,
-                    "The default GetStatusClient from the Access factory should be of the type '" +
-                            ConversationBasedGetStatusClient.class.getName() + "'.");
-        }
-        
+
         @Test(groups = {"regressiontest"})
         public void incompleteSetOfIdendifyResponses() throws Exception {
             addDescription("Verify that the GetStatus client works correct without receiving responses from all " +

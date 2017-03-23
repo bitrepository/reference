@@ -26,12 +26,18 @@ import java.net.URL;
 import org.apache.commons.cli.Option;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
 import org.bitrepository.commandline.eventhandler.ReplaceFileEventHandler;
-import org.bitrepository.modify.ModifyComponentFactory;
+import org.bitrepository.modify.replacefile.ConversationBasedReplaceFileClient;
 import org.bitrepository.modify.replacefile.ReplaceFileClient;
+import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 
 /**
  * Replace a file from the collection.
@@ -61,8 +67,10 @@ public class ReplaceFileCmd extends CommandLineClient {
      */
     protected ReplaceFileCmd(String ... args) {
         super(args);
-        client = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings, securityManager,
-                getComponentID());
+        client = new ConversationBasedReplaceFileClient(
+                messageBus,
+                mediator,
+                settings, getComponentID());
     }
 
     @Override
@@ -186,7 +194,7 @@ public class ReplaceFileCmd extends CommandLineClient {
         OperationEvent finalEvent = eventHandler.getFinish(); 
 
         if(cmdHandler.hasOption(Constants.DELETE_FILE_ARG)) {
-            deleteFileAfterwards(url);
+            deleteFileAfterwards(fileexchange, url);
         }
 
         return finalEvent;

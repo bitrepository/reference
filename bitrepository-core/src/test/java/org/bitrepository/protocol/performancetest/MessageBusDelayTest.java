@@ -63,7 +63,7 @@ public class MessageBusDelayTest extends ExtendedTestCase {
     }
     
     
-    @Test( groups = {"StressTest"} )
+    @Test( groups = {"StressTest"}, enabled = false)
     public void testManyTimes() throws Exception {
         for(int i = 0; i < NUMBER_OF_TESTS; i++) {
             try {
@@ -78,7 +78,7 @@ public class MessageBusDelayTest extends ExtendedTestCase {
         addDescription("This test has the purpose of sending a lot of messages and calculating some statistics "
                 + "on the delay between the sending and the receival of the message.");
         addStep("Setup the variables and connections for the test.", "Should connect to the messagebus.");
-        MessageBus messageBus = MessageBusManager.getMessageBus(settings, securityManager);
+        MessageBus messageBus = MessageBusManager.createMessageBus(settings, securityManager);
         MessageReceiver destinationReceiver;
         String destination = "DelayPerformanceTestDestination-" + new Date().getTime();
         destinationReceiver = new MessageReceiver("Performance test topic receiver", null); //testEventManager);

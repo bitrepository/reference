@@ -275,7 +275,6 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
 
         addStep("Set a 100 ms ConversationTimeout.", "");
         settingsForCUT.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(100));
-        renewConversationMediator();
 
         addStep("Start the operation",
                 "A IDENTIFY_REQUEST_SENT event should be generated followed by a FAILED event after 100 ms.");

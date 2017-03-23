@@ -24,12 +24,16 @@ package org.bitrepository.commandline;
 import org.apache.commons.cli.Option;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
 import org.bitrepository.commandline.eventhandler.DeleteFileEventHandler;
-import org.bitrepository.modify.ModifyComponentFactory;
+import org.bitrepository.modify.deletefile.ConversationBasedDeleteFileClient;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 
 /**
  * Deleting a file from the collection.
@@ -58,8 +62,10 @@ public class DeleteFileCmd extends CommandLineClient {
      */
     protected DeleteFileCmd(String ... args) {
         super(args);
-        client = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, securityManager,
-                getComponentID());
+        client = new ConversationBasedDeleteFileClient(
+                messageBus,
+                mediator,
+                settings, getComponentID());
     }
 
     @Override

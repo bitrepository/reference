@@ -24,28 +24,25 @@
  */
 package org.bitrepository.audittrails;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Properties;
-
-import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.AuditTrailClient;
+import org.bitrepository.access.getaudittrails.ConversationBasedAuditTrailClient;
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
 import org.bitrepository.audittrails.preserver.AuditTrailPreserver;
 import org.bitrepository.audittrails.preserver.LocalAuditTrailPreserver;
 import org.bitrepository.audittrails.store.AuditTrailDatabaseManager;
 import org.bitrepository.audittrails.store.AuditTrailServiceDAO;
 import org.bitrepository.audittrails.store.AuditTrailStore;
+import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
+import org.bitrepository.client.conversation.mediator.ConversationMediator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.common.utils.SettingsUtils;
-import org.bitrepository.modify.ModifyComponentFactory;
+import org.bitrepository.modify.putfile.ConversationBasedPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
+import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.protocol.security.SecurityManagerUtil;
 import org.bitrepository.service.AlarmDispatcher;
@@ -54,9 +51,18 @@ import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.settings.referencesettings.AuditTrailServiceSettings;
+import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.bitrepository.settings.referencesettings.ServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Properties;
 
 /**
  * Factory class for accessing the AuditTrailService 
@@ -69,19 +75,14 @@ public final class AuditTrailServiceFactory {
     private static AuditTrailService auditTrailService;
     /** The path to the directory containing the configuration files.*/
     private static String configurationDir;
-    /** The path to the private key file.*/
-    private static String privateKeyFile;
-    
+
     /** The properties file holding implementation specifics for the alarm service. */
     private static final String CONFIGFILE = "audittrails.properties";
     /** Property key to tell where to locate the path and filename to the private key file. */
     private static final String PRIVATE_KEY_FILE = "org.bitrepository.audit-trail-service.privateKeyFile";
-       
-    private static AlarmDispatcher alarmDispatcher;
+
     private static Settings settings;
-    private static SecurityManager securityManager;
-    private static MessageBus messageBus;
-    
+
     /**
      * Private constructor as the class is meant to be used in a static way.
      */
@@ -91,47 +92,29 @@ public final class AuditTrailServiceFactory {
      * Initialize the factory with configuration. 
      * @param confDir String containing the path to the AuditTrailService's configuration directory
      */
-    public static synchronized void init(String confDir) {
+    public static synchronized void init(String confDir) throws IOException {
         configurationDir = confDir;
         loadSettings();
-        securityManager = SecurityManagerUtil.getSecurityManager(settings, Paths.get(privateKeyFile),
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
-        messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
-        alarmDispatcher = new AlarmDispatcher(settings, messageBus);
+
     }
     
     /**
      * Factory method to retrieve AuditTrailService  
      * @return The AuditTrailService.
      */
-    public static synchronized AuditTrailService getAuditTrailService() {
+    public static synchronized AuditTrailService getAuditTrailService() throws IOException {
         if(auditTrailService == null) {
-            ContributorMediator mediator = new SimpleContributorMediator(
-                    ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager),
-                    settings, null, ProtocolComponentFactory.getInstance().getFileExchange(settings));
-            
-            PutFileClient putClient = ModifyComponentFactory.getInstance().retrievePutClient(settings, 
-                    securityManager, "audit-trail-preserver");
-            
+
             AuditTrailServiceSettings serviceSettings = settings.getReferenceSettings().getAuditTrailServiceSettings();
-            
-            DatabaseManager auditTrailServiceDatabaseManager = new AuditTrailDatabaseManager(
-                    serviceSettings.getAuditTrailServiceDatabase());
-            AuditTrailStore store = new AuditTrailServiceDAO(auditTrailServiceDatabaseManager);
-            AuditTrailClient client = AccessComponentFactory.createAuditTrailClient(settings,
-                    securityManager, serviceSettings.getID());
-            
-            AuditTrailCollector collector = new AuditTrailCollector(settings, client, store, alarmDispatcher);
-            AuditTrailPreserver preserver;
-            if (serviceSettings.isSetAuditTrailPreservation()) {
-                preserver = new LocalAuditTrailPreserver(
-                        settings, store, putClient, ProtocolComponentFactory.getInstance().getFileExchange(settings));
-                preserver.start();
-            } else {
-                log.info("Audit trail preservation disabled, no configuration defined.");
-            }
-            
-            auditTrailService = new AuditTrailService(store, collector, mediator, settings);
+            String componentID = serviceSettings.getID();
+
+            Path componentCertificate = Paths.get(getPrivateKeyFile());
+            SecurityManager securityManager = SecurityManagerUtil.getSecurityManager(settings,
+                                                                                     componentCertificate,
+                                                                                     componentID);
+
+
+            auditTrailService = new AuditTrailService(settings, securityManager);
         }
         
         return auditTrailService;
@@ -144,26 +127,23 @@ public final class AuditTrailServiceFactory {
         if(configurationDir == null) {
             throw new IllegalStateException("No configuration directory has been set!");
         }
-        loadProperties();
+
         ServiceSettingsProvider settingsLoader =
                 new ServiceSettingsProvider(new XMLFileSettingsLoader(configurationDir), ServiceType.AUDIT_TRAIL_SERVICE);
         settings = settingsLoader.getSettings();
         SettingsUtils.initialize(settings);        
     }
-    
+
     /**
      * Loads the properties.
      * @throws IOException If any input/output issues occurs.
      */
-    private static void loadProperties() {
-        try {
+    private static String getPrivateKeyFile() throws IOException {
         Properties properties = new Properties();
         File propertiesFile = new File(configurationDir, CONFIGFILE);
-        BufferedReader propertiesReader = new BufferedReader(new FileReader(propertiesFile));
-        properties.load(propertiesReader);
-        privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not instantiate the properties.", e);
+        try (BufferedReader propertiesReader = new BufferedReader(new FileReader(propertiesFile))) {
+            properties.load(propertiesReader);
         }
+        return properties.getProperty(PRIVATE_KEY_FILE);
     }
 }

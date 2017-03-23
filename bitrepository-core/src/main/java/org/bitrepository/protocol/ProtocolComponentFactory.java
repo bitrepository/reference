@@ -27,9 +27,6 @@ package org.bitrepository.protocol;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.http.HttpFileExchange;
 import org.bitrepository.protocol.http.HttpsFileExchange;
-import org.bitrepository.protocol.messagebus.MessageBus;
-import org.bitrepository.protocol.messagebus.MessageBusManager;
-import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.referencesettings.ProtocolType;
 
 /**
@@ -37,61 +34,32 @@ import org.bitrepository.settings.referencesettings.ProtocolType;
  */
 public final class ProtocolComponentFactory {
 
-    /** The singleton instance */
-    private static ProtocolComponentFactory instance;
-
     /**
-     * The singletonic access to the instance of this class
-     * @return The one and only instance
-     */
-    public static synchronized ProtocolComponentFactory getInstance() {
-        if (instance == null) {
-            instance = new ProtocolComponentFactory();
-        }
-        return instance;
-    }
-
-    /**
-     * The singleton constructor.
-     */
-    protected ProtocolComponentFactory() { }
-
-    /** @see #getFileExchange(Settings) */
-    protected FileExchange fileExchange;
-
-    /**
-     * Gets you an <code>MessageBus</code> instance for accessing the Bitrepositorys message bus. If a messagebus 
-     * already exists for the collection ID defined in the settings, the existing instance is returned.
-     * @param settings The settings to get the MessageBus 
-     * @param securityManager The SecurityManager for the messagebus
-     * @return The messagebus for this collection.
-     */
-    public MessageBus getMessageBus(Settings settings, SecurityManager securityManager) {
-        return MessageBusManager.getMessageBus(settings, securityManager);
-    }
-
-    /**
-     * Gets you an <code>FileExchange</code> instance for data communication. Is instantiated based on the 
+     * Gets you an <code>FileExchange</code> instance for data communication. Is instantiated based on the
      * configurations.
+     *
      * @param settings The settings for the file exchange.
      * @return The FileExchange according to the configuration.
      */
-    public FileExchange getFileExchange(Settings settings) {
-        if (fileExchange == null) {
-            if((settings.getReferenceSettings().getFileExchangeSettings() != null )) {
-                ProtocolType protocolType = settings.getReferenceSettings().getFileExchangeSettings().getProtocolType();
-                if(protocolType == ProtocolType.HTTP) {
-                    fileExchange = new HttpFileExchange(settings);
-                } else if (protocolType == ProtocolType.HTTPS) {
-                    fileExchange = new HttpsFileExchange(settings);
-                } else if (protocolType == ProtocolType.FILE) {
-                    fileExchange = new LocalFileExchange(
-                            settings.getReferenceSettings().getFileExchangeSettings().getPath());
-                }
-            } else {
+    public static FileExchange createFileExchange(Settings settings) {
+
+        FileExchange fileExchange;
+        if ((settings.getReferenceSettings().getFileExchangeSettings() != null)) {
+            ProtocolType protocolType = settings.getReferenceSettings().getFileExchangeSettings().getProtocolType();
+            if (protocolType == ProtocolType.HTTP) {
                 fileExchange = new HttpFileExchange(settings);
+            } else if (protocolType == ProtocolType.HTTPS) {
+                fileExchange = new HttpsFileExchange(settings);
+            } else if (protocolType == ProtocolType.FILE) {
+                fileExchange = new LocalFileExchange(
+                        settings.getReferenceSettings().getFileExchangeSettings().getPath());
+            } else {
+                fileExchange = null;
             }
+        } else {
+            fileExchange = new HttpFileExchange(settings);
         }
+
         return fileExchange;
     }
 }

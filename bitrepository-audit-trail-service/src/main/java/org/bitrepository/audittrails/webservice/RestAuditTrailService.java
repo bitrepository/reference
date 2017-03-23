@@ -65,8 +65,8 @@ public class RestAuditTrailService {
     private AuditTrailService service;
     private CalendarUtils calendarUtils = CalendarUtils.getInstance(TimeZone.getDefault());
     
-    public RestAuditTrailService() {
-        service = AuditTrailServiceFactory.getAuditTrailService();	
+    public RestAuditTrailService() throws IOException {
+        service = AuditTrailServiceFactory.getAuditTrailService();
     }
         
     @POST

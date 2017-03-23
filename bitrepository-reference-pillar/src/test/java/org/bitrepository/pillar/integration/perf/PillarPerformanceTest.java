@@ -32,14 +32,13 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.utils.TimeUtils;
-import org.bitrepository.pillar.integration.CollectionTestHelper;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.pillar.integration.perf.metrics.ConsoleMetricAppender;
 import org.bitrepository.pillar.integration.perf.metrics.MetricAppender;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.bitrepository.protocol.MessageContext;
-import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,8 +72,7 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
      */
     @Override
     protected void setupMessageBus() {
-        super.setupMessageBus();
-        messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settingsForCUT, securityManager);
+        messageBus = MessageBusManager.createMessageBus(settingsForCUT, securityManager);
     }
 
     /**

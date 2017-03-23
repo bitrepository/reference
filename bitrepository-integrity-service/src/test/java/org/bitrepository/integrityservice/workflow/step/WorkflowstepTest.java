@@ -29,6 +29,8 @@ import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityservice.workflow.IntegrityContributors;
+import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.BeforeMethod;
@@ -47,6 +49,8 @@ public class WorkflowstepTest extends ExtendedTestCase {
     protected IntegrityInformationCollector collector;
     protected AuditTrailManager auditManager;
     protected IntegrityContributors integrityContributors;
+    protected FileExchange fileExchange;
+    protected MessageBus messageBus;
 
     @BeforeMethod(alwaysRun = true)
     public void setup() {
@@ -62,5 +66,7 @@ public class WorkflowstepTest extends ExtendedTestCase {
         collector = mock(IntegrityInformationCollector.class);
         auditManager = mock(AuditTrailManager.class);
         integrityContributors = mock(IntegrityContributors.class);
+        messageBus = mock(MessageBus.class);
+        fileExchange = mock(FileExchange.class);
     }
 }

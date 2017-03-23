@@ -28,21 +28,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.bitrepository.alarm.handling.handlers.AlarmStorer;
-import org.bitrepository.alarm.store.AlarmDAOFactory;
-import org.bitrepository.alarm.store.AlarmStore;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.protocol.security.SecurityManagerUtil;
 import org.bitrepository.service.ServiceSettingsProvider;
-import org.bitrepository.service.contributor.ContributorMediator;
-import org.bitrepository.service.contributor.SimpleContributorMediator;
 import org.bitrepository.settings.referencesettings.ServiceType;
 
 /**
@@ -54,9 +49,7 @@ public class AlarmServiceFactory {
     private static AlarmService alarmService;
     /** The path to the directory containing the configuration files.*/
     private static String configurationDir;
-    /** The path to the private key file.*/
-    private static String privateKeyFile;
-    
+
     /** The properties file holding implementation specifics for the alarm service. */
     private static final String CONFIGFILE = "alarmservice.properties";
     /** Property key to tell where to locate the path and filename to the private key file. */
@@ -81,30 +74,28 @@ public class AlarmServiceFactory {
      */
     public static synchronized AlarmService getAlarmService() {
         if(alarmService == null) {
-            SecurityManager securityManager;
+
             ServiceSettingsProvider settingsLoader =
                     new ServiceSettingsProvider(new XMLFileSettingsLoader(configurationDir), ServiceType.ALARM_SERVICE);
 
+
             Settings settings = settingsLoader.getSettings();
             try {
-                loadProperties();
-                securityManager = SecurityManagerUtil.getSecurityManager(settings, Paths.get(privateKeyFile), 
-                        settings.getReferenceSettings().getAlarmServiceSettings().getID()); 
-                MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, 
-                        securityManager);
-                ContributorMediator contributorMediator = new SimpleContributorMediator(messageBus, settings, null, null);
-                AlarmDAOFactory alarmDAOFactory = new AlarmDAOFactory();
-                AlarmStore store = alarmDAOFactory.getAlarmServiceDAOInstance(
-                        settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase(), settings);
-                alarmService = new BasicAlarmService(messageBus, settings, store, contributorMediator);
-                
-                // Add the default handler for putting the alarms into the database.
-                alarmService.addHandler(new AlarmStorer(store));
+                String componentID = settings.getReferenceSettings().getAlarmServiceSettings().getID();
+
+                Path certificate = Paths.get(getPrivateKeyFile());
+
+                SecurityManager securityManager = SecurityManagerUtil.getSecurityManager(settings,
+                                                                                         certificate,
+                                                                                         componentID);
+
+                alarmService = new BasicAlarmService(settings, securityManager);
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        
+
         return alarmService;
     }
     
@@ -112,11 +103,12 @@ public class AlarmServiceFactory {
      * Loads the properties.
      * @throws IOException If any input/output issues occurs.
      */
-    private static void loadProperties() throws IOException {
+    private static String getPrivateKeyFile() throws IOException {
         Properties properties = new Properties();
         File propertiesFile = new File(configurationDir, CONFIGFILE);
-        BufferedReader propertiesReader = new BufferedReader(new FileReader(propertiesFile));
-        properties.load(propertiesReader);
-        privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);
+        try (BufferedReader propertiesReader = new BufferedReader(new FileReader(propertiesFile))) {
+            properties.load(propertiesReader);
+        }
+        return properties.getProperty(PRIVATE_KEY_FILE);
     }
 }
