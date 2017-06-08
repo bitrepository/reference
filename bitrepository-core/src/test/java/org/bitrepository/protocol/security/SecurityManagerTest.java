@@ -22,6 +22,7 @@
 package org.bitrepository.protocol.security;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -32,6 +33,7 @@ import org.bitrepository.protocol.security.exception.MessageAuthenticationExcept
 import org.bitrepository.protocol.security.exception.MessageSigningException;
 import org.bitrepository.protocol.security.exception.OperationAuthorizationException;
 import org.bitrepository.settings.repositorysettings.Certificate;
+import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.ComponentIDs;
 import org.bitrepository.settings.repositorysettings.Operation;
 import org.bitrepository.settings.repositorysettings.OperationPermission;
@@ -49,41 +51,72 @@ public class SecurityManagerTest extends ExtendedTestCase  {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private org.bitrepository.protocol.security.SecurityManager securityManager;
     private PermissionStore permissionStore;
+    private Settings settings;
     
     @BeforeMethod(alwaysRun = true)
     public void setUp() throws Exception {
+        settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
+        settings.getRepositorySettings().getProtocolSettings().setRequireMessageAuthentication(true);
+        settings.getRepositorySettings().getProtocolSettings().setRequireOperationAuthorization(true);
+        settings.getRepositorySettings().setPermissionSet(SecurityTestConstants.getDefaultPermissions());
+        setupSecurityManager(settings);
+    }
+    
+    private void setupSecurityManager(Settings settings) {
         permissionStore = new PermissionStore();
         MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
         OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
         MessageSigner messageSigner = new BasicMessageSigner();
-        Settings settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
-        settings.getRepositorySettings().getProtocolSettings().setRequireMessageAuthentication(true);
-        settings.getRepositorySettings().getProtocolSettings().setRequireOperationAuthorization(true);
-        settings.getRepositorySettings().setPermissionSet(SecurityTestConstants.getDefaultPermissions());
         securityManager = new BasicSecurityManager(settings.getRepositorySettings(),
-                        SecurityTestConstants.getKeyFile(), 
-                        authenticator, 
-                        messageSigner, 
-                        authorizer, 
-                        permissionStore,
-                        SecurityTestConstants.getComponentID());
+                SecurityTestConstants.getKeyFile(), 
+                authenticator, 
+                messageSigner, 
+                authorizer, 
+                permissionStore,
+                SecurityTestConstants.getComponentID());
     }
     
     @Test(groups = {"regressiontest"})
     public void operationAuthorizationBehaviourTest() throws Exception {
         addDescription("Tests that a signature only allows the correct requests.");
-        addStep("Check that GET_FILE is allowed.", "GET_FILE is allowed.");
-
+        
+        List<Collection> collections = settings.getRepositorySettings().getCollections().getCollection(); 
+        Assert.assertEquals(collections.size(), 2, 
+                "There should be two collections present to test the collection limited authorization");
+        settings.getRepositorySettings().setPermissionSet(getCollectionLimitedPermissionSet());
+        setupSecurityManager(settings);
+        
+        String collectionID1 = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
+        String collectionID2 = settings.getRepositorySettings().getCollections().getCollection().get(1).getID();
+        
+        addStep("Check that PUT_FILE is allowed for both collections.", "PUT_FILE is allowed.");
+        try {
+            securityManager.authorizeOperation(PutFileRequest.class.getSimpleName(), 
+                    SecurityTestConstants.getTestData(), SecurityTestConstants.getSignature(), collectionID1);
+        } catch (OperationAuthorizationException e) {
+            Assert.fail(e.getMessage());
+        }
+        try {
+            securityManager.authorizeOperation(PutFileRequest.class.getSimpleName(), 
+                    SecurityTestConstants.getTestData(), SecurityTestConstants.getSignature(), collectionID2);
+        } catch (OperationAuthorizationException e) {
+            Assert.fail(e.getMessage());
+        }
+        
+        addStep("Check that GET_FILE is only allowed for the first collection.", 
+                "GET_FILE is allowed for first collection, and disallowed for the second collection (exception thrown).");
+        
+        
         try {
             securityManager.authorizeOperation(GetFileRequest.class.getSimpleName(), 
-                    SecurityTestConstants.getTestData(), SecurityTestConstants.getSignature());
+                    SecurityTestConstants.getTestData(), SecurityTestConstants.getSignature(), collectionID1);
         } catch (OperationAuthorizationException e) {
             Assert.fail(e.getMessage());
         }
                
         try {
-            securityManager.authorizeOperation(PutFileRequest.class.getSimpleName(), 
-                    SecurityTestConstants.getTestData(), SecurityTestConstants.getSignature());
+            securityManager.authorizeOperation(GetFileRequest.class.getSimpleName(), 
+                    SecurityTestConstants.getTestData(), SecurityTestConstants.getSignature(), collectionID2);
             Assert.fail("SecurityManager did not throw the expected OperationAuthorizationException");
         } catch (OperationAuthorizationException e) {
             
@@ -187,6 +220,29 @@ public class SecurityManagerTest extends ExtendedTestCase  {
             log.info(e.getMessage());
         }  
     }
+
+    private PermissionSet getCollectionLimitedPermissionSet() throws UnsupportedEncodingException {
+        PermissionSet permissions = new PermissionSet();
+        Permission signingCertPerm = new Permission();
+        
+        Certificate signingCert = new Certificate();
+        signingCert.setCertificateData(SecurityTestConstants.getPositiveCertificate()
+                .getBytes(SecurityModuleConstants.defaultEncodingType));
+        
+        signingCertPerm.setCertificate(signingCert);
+        OperationPermission opPerm1 = new OperationPermission();
+        opPerm1.setOperation(Operation.PUT_FILE);
+        signingCertPerm.getOperationPermission().add(opPerm1);
+        
+        OperationPermission opPerm2 = new OperationPermission();
+        opPerm2.setOperation(Operation.GET_FILE);
+        opPerm2.getCollections().add(settings.getCollections().get(0).getID());
+        signingCertPerm.getOperationPermission().add(opPerm2);   
+        
+        permissions.getPermission().add(signingCertPerm); 
+        return permissions;
+    }
+
     
     private PermissionSet getSigningCertPermission() throws UnsupportedEncodingException {
         PermissionSet permissions = new PermissionSet();

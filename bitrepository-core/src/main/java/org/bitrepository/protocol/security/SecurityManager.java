@@ -51,9 +51,10 @@ public interface SecurityManager {
      * @param operationType the type of operation that is to be authorized.
      * @param messageData the data of the message request.
      * @param signature the signature belonging to the message request.
+     * @param collectionID the collection to authorize the operation for
      * @throws OperationAuthorizationException in case of failure. 
      */
-    void authorizeOperation(String operationType, String messageData, String signature) 
+    void authorizeOperation(String operationType, String messageData, String signature, String collectionID) 
             throws OperationAuthorizationException;
     
     /** 

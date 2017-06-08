@@ -32,6 +32,7 @@ import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -78,7 +79,7 @@ public class PermissionStore {
      */
     public void loadPermissions(PermissionSet permissions, String componentID) throws CertificateException {
         if(permissions != null) {
-            Set<Operation> allowedOperations;
+            Set<OperationPermission> allowedOperationPermissions;
             Set<String> allowedUsers;
             for(Permission permission : permissions.getPermission()) {
                 try {
@@ -89,16 +90,16 @@ public class PermissionStore {
                         allowedUsers = null;
                     }
     
-                    allowedOperations = new HashSet<Operation>();
+                    allowedOperationPermissions = new HashSet<>();
                     X509Certificate certificate = null;
                     if(permission.getOperationPermission() != null) {
                         for(OperationPermission perm : permission.getOperationPermission()) {
                             if(perm.getAllowedComponents() == null ||
                                     perm.getAllowedComponents().getIDs().contains(componentID)) {
-                                allowedOperations.add(perm.getOperation());
+                                allowedOperationPermissions.add(perm);
                             }
                         }
-                        if(!allowedOperations.isEmpty()) {
+                        if(!allowedOperationPermissions.isEmpty()) {
                             certificate = makeCertificate(permission.getCertificate().getCertificateData());
                         }
                     }
@@ -111,7 +112,8 @@ public class PermissionStore {
                     if(certificate != null) {
                         CertificateID certID = new CertificateID(certificate.getIssuerX500Principal(),
                                 certificate.getSerialNumber());
-                        CertificatePermission certificatePermission = new CertificatePermission(certificate, allowedOperations,
+                        CertificatePermission certificatePermission = new CertificatePermission(certificate, 
+                                allowedOperationPermissions, /*allowedOperations,*/
                                 allowedUsers);
                         permissionMap.put(certID, certificatePermission);
                     }
@@ -175,21 +177,22 @@ public class PermissionStore {
     }
 
     /**
-     * Check to see if a certificate has the specified permission. The certificate is identified based 
-     * on the SignerId of the signature.
+     * Check to see if a certificate has the specified permission for the specified collection. 
+     * The certificate is identified based on the SignerId of the signature.
      * @param signer the id of the signer
      * @param permission the operation to check if is permitted
+     * @param collectionID The ID of the collection to check for permission
      * @return true if the requested permission is present for the certificate belonging to the signer, otherwise false.
      * @throws PermissionStoreException in case no certificate and permission set can be found for the provided signer.
      */
-    public boolean checkPermission(SignerId signer, Operation permission) throws PermissionStoreException {
+    public boolean checkPermission(SignerId signer, Operation permission, String collectionID) throws PermissionStoreException {
         CertificateID certificateID = new CertificateID(signer.getIssuer(), signer.getSerialNumber());
         CertificatePermission certificatePermission = permissionMap.get(certificateID);
         if(certificatePermission == null) {
             throw new PermissionStoreException("Failed to find certificate and permissions for the requested signer: " +
                     certificateID.toString());
         } else {
-            return certificatePermission.hasPermission(permission);
+            return certificatePermission.hasPermission(permission, collectionID);
         }
     }
 
@@ -217,7 +220,11 @@ public class PermissionStore {
      * Class to contain a X509Certificate and the permissions associated with it.    
      */
     private final class CertificatePermission {
-        private final Set<Operation> permissions;
+        /**
+         * Mapping between Operation and collections allowed to use them. If the list of collections is either
+         * null or empty, then no collection limitation/restriction is applied.  
+         */
+        private final Map<Operation, List<String>> permissions;
         private final Set<String> allowedUsers;
         private final X509Certificate certificate;
         private final String fingerprint;
@@ -228,27 +235,37 @@ public class PermissionStore {
          * @param allowedUsers the allowed users of this certificate, if users are not restricted provide null
          * @throws CertificateEncodingException if the certificate fails to be encoded
          */
-        public CertificatePermission(X509Certificate certificate, Collection<Operation> allowedOperations,
-                                     Collection<String> allowedUsers) throws CertificateEncodingException {
+        public CertificatePermission(X509Certificate certificate, Set<OperationPermission> allowedOperationPermissions, 
+                Collection<String> allowedUsers) throws CertificateEncodingException {
             if(allowedUsers == null) {
                 this.allowedUsers = null;
             } else {
                 this.allowedUsers = new HashSet<String>();
                 this.allowedUsers.addAll(allowedUsers);
             }
-            this.permissions = new HashSet<Operation>();
+            this.permissions = new HashMap<>();
             this.certificate = certificate;
-            this.permissions.addAll(allowedOperations);
+            for(OperationPermission opPerm : allowedOperationPermissions) {
+                this.permissions.put(opPerm.getOperation(), opPerm.getCollections());
+            }
             this.fingerprint = DigestUtils.sha1Hex(certificate.getEncoded());
         }
 
         /**
          *  Test if a certain permission has been registered for this object. 
          *  @param permission the permission to test for
+         *  @param collectionID the collection to check for the permission in
          *  @return true if the permission is registered, false otherwise.
          */
-        public boolean hasPermission(Operation permission) {
-            return permissions.contains(permission);
+        public boolean hasPermission(Operation permission, String collectionID) {
+            boolean allowed = false;
+            if(permissions.containsKey(permission)) {
+                List<String> allowedCollections = permissions.get(permission);
+                if(allowedCollections == null || allowedCollections.isEmpty() || allowedCollections.contains(collectionID)) {
+                    allowed = true;
+                }
+            }
+            return allowed;
         }
 
         /**
