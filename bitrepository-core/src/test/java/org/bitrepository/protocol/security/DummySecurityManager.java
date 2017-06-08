@@ -48,7 +48,7 @@ public class DummySecurityManager implements SecurityManager {
     }
 
     @Override
-    public void authorizeOperation(String operationType, String messageData, String signature) 
+    public void authorizeOperation(String operationType, String messageData, String signature, String collectionID) 
             throws OperationAuthorizationException {
         // Safe empty implementation
     }

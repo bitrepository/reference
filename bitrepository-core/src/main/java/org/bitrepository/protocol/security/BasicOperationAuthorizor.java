@@ -71,16 +71,17 @@ public class BasicOperationAuthorizor implements OperationAuthorizor {
      * @param operationType the type of operation to authorize
      * @param signer the signerId of the certificate used to create the signature belonging to the request 
      * which is to be authorized.  
+     * @param collectionID The ID to authorize the operation for.
      * @throws OperationAuthorizationException if authorization fails
      * @throws UnregisteredPermissionException 
      */
     @Override
-    public void authorizeOperation(String operationType, SignerId signer) throws OperationAuthorizationException, 
-            UnregisteredPermissionException {
+    public void authorizeOperation(String operationType, SignerId signer, String collectionID) 
+            throws OperationAuthorizationException, UnregisteredPermissionException {
         List<Operation> permissions = requestToPermissionMapper.getRequiredPermissions(operationType);
         for(Operation permission : permissions) {
             try {
-                if(permissionStore.checkPermission(signer, permission)) {
+                if(permissionStore.checkPermission(signer, permission, collectionID)) {
                     return ;
                 }
             } catch (PermissionStoreException e) {

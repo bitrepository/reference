@@ -35,11 +35,12 @@ public interface OperationAuthorizor {
      * Authorize an operation based on its signature
      * @param operationType operationType, the type of operation that should be authorized.
      * @param signer The signer of the request.
+     * @param collectionID The ID of the collection to autorize the operation for.
      * @throws OperationAuthorizationException if the authorization fails.  
      * @throws UnregisteredPermissionException if no permissions could be found for the signer
      */
-    abstract void authorizeOperation(String operationType, SignerId signer) throws OperationAuthorizationException, 
-            UnregisteredPermissionException;
+    abstract void authorizeOperation(String operationType, SignerId signer, String collectionID) 
+            throws OperationAuthorizationException, UnregisteredPermissionException;
     
     /**
      * Method to determine whether a given componentID is allowed to sign an operation with the given certificate.

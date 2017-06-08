@@ -210,7 +210,7 @@ public class BasicSecurityManager implements SecurityManager {
      * @param signature the signature belonging to the message request.
      * @throws OperationAuthorizationException in case of failure. 
      */
-    public void authorizeOperation(String operationType, String messageData, String signature) 
+    public void authorizeOperation(String operationType, String messageData, String signature, String collectionID) 
             throws OperationAuthorizationException {
         if(repositorySettings.getProtocolSettings().isRequireOperationAuthorization()) {
             byte[] decodeSig = Base64.decode(signature.getBytes());
@@ -223,7 +223,7 @@ public class BasicSecurityManager implements SecurityManager {
     
             SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
             try {
-                authorizer.authorizeOperation(operationType, signer.getSID());    
+                authorizer.authorizeOperation(operationType, signer.getSID(), collectionID);    
             } catch (UnregisteredPermissionException e) {
                 log.info(e.getMessage());
             }

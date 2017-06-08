@@ -439,15 +439,15 @@ public class ActiveMQMessageBus implements MessageBus {
                 text = ((TextMessage) jmsMessage).getText();
                 log.trace("Received xml message: " + text);
                 jaxbHelper.validate(new ByteArrayInputStream(text.getBytes("UTF-8")));
-                Message content = (Message) jaxbHelper.loadXml(Class.forName("org.bitrepository.bitrepositorymessages."
-                        + type),
+                Message content = (Message) jaxbHelper.loadXml(
+                        Class.forName("org.bitrepository.bitrepositorymessages." + type),
                         new ByteArrayInputStream(text.getBytes("UTF-8")));
                 log.trace("Checking signature " + signature);
-                SignerId signer =
-                    securityManager.authenticateMessage(text, signature);
+                SignerId signer = securityManager.authenticateMessage(text, signature);
                 securityManager.authorizeCertificateUse((content).getFrom(), text, signature);
                 if (content instanceof MessageRequest) {
-                    securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature);
+                    securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature,
+                            content.getCollectionID());
                 }
                 MessageVersionValidator.validateMessageVersion(content);
                 MessageLoggerProvider.getInstance().logMessageReceived(content);

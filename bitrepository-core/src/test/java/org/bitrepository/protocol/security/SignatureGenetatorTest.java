@@ -27,7 +27,7 @@ public class SignatureGenetatorTest {
                 permissionStore,
                 SecurityTestConstants.getComponentID());
         
-        String messageToSign = "Hello world!";
+        String messageToSign = SecurityTestConstants.getTestData();
         String signature = securityManager.signMessage(messageToSign);
         System.out.println("messageToSign = '" + messageToSign + "', signature = '" + signature + "'");
     }
