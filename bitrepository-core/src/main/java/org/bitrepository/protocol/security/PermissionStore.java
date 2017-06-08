@@ -113,8 +113,7 @@ public class PermissionStore {
                         CertificateID certID = new CertificateID(certificate.getIssuerX500Principal(),
                                 certificate.getSerialNumber());
                         CertificatePermission certificatePermission = new CertificatePermission(certificate, 
-                                allowedOperationPermissions, /*allowedOperations,*/
-                                allowedUsers);
+                                allowedOperationPermissions, allowedUsers);
                         permissionMap.put(certID, certificatePermission);
                     }
                 } catch (CertificateException ce) {
