@@ -24,8 +24,6 @@
  */
 package org.bitrepository.pillar;
 
-import java.lang.reflect.Constructor;
-
 import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
@@ -57,6 +55,8 @@ import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.settings.referencesettings.PillarType;
+
+import java.lang.reflect.Constructor;
 
 /**
  * Component factory for this module.

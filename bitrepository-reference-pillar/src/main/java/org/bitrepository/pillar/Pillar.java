@@ -21,8 +21,6 @@
  */
 package org.bitrepository.pillar;
 
-import javax.jms.JMSException;
-
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -37,6 +35,8 @@ import org.bitrepository.service.workflow.SchedulableJob;
 import org.bitrepository.settings.referencesettings.PillarType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jms.JMSException;
 
 /**
  * Class for the Reference Pillar.

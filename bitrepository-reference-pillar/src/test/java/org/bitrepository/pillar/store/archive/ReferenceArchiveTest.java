@@ -24,10 +24,6 @@
  */
 package org.bitrepository.pillar.store.archive;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.util.Arrays;
-
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultPillarTest;
 import org.bitrepository.pillar.common.MessageHandlerContext;
@@ -36,6 +32,10 @@ import org.bitrepository.pillar.store.filearchive.ReferenceArchive;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.util.Arrays;
 
 public class ReferenceArchiveTest extends DefaultPillarTest {
     protected ReferenceArchive archive;

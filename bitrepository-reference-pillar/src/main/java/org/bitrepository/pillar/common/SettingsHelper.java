@@ -22,10 +22,10 @@
 
 package org.bitrepository.pillar.common;
 
+import org.bitrepository.settings.repositorysettings.Collection;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bitrepository.settings.repositorysettings.Collection;
 
 /**
  *

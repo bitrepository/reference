@@ -21,14 +21,14 @@
  */
 package org.bitrepository.pillar.common;
 
-import java.util.List;
-
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorContext;
 import org.bitrepository.service.contributor.ResponseDispatcher;
+
+import java.util.List;
 
 /**
  * Container for the context of the pillar, e.g. all the components needed for the message handling.

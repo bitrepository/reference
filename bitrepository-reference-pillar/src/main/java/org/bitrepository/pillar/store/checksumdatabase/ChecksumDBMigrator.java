@@ -21,14 +21,14 @@
  */
 package org.bitrepository.pillar.store.checksumdatabase;
 
-import java.util.Map;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseMigrator;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CHECKSUM_TABLE;
 import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_COLLECTION_ID;

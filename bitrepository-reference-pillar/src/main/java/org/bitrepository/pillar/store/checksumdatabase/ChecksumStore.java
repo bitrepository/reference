@@ -21,11 +21,10 @@
  */
 package org.bitrepository.pillar.store.checksumdatabase;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
-import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * Interface for the storage of checksums.

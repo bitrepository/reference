@@ -24,11 +24,6 @@
  */
 package org.bitrepository.pillar.store;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -48,6 +43,10 @@ import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 
 /**
  * Storage model for the file data.

@@ -22,8 +22,6 @@
 
 package org.bitrepository.pillar.integration.model;
 
-import java.util.List;
-
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
@@ -38,8 +36,9 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.integration.ClientProvider;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
-import org.bitrepository.protocol.fileexchange.HttpServerConnector;
 import org.jaccept.TestEventManager;
+
+import java.util.List;
 
 public class PillarFileManager {
     private final String collectionID;

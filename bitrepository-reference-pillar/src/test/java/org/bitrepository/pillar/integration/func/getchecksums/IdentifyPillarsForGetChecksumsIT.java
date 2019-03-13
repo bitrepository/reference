@@ -21,9 +21,6 @@
  */
 package org.bitrepository.pillar.integration.func.getchecksums;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -38,6 +35,9 @@ import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest
 import org.bitrepository.pillar.messagefactories.GetChecksumsMessageFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificationTest {
     protected GetChecksumsMessageFactory msgFactory;

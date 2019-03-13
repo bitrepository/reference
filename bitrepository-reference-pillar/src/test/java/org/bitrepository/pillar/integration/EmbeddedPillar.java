@@ -22,21 +22,17 @@ package org.bitrepository.pillar.integration;
  */
 
 
-import java.io.File;
-import java.util.Arrays;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.Pillar;
 import org.bitrepository.pillar.PillarComponentFactory;
-import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
-import org.bitrepository.protocol.messagebus.SimpleMessageBus;
-import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.settings.referencesettings.CollectionDirs;
 import org.bitrepository.settings.referencesettings.PillarType;
+
+import java.io.File;
 
 public class EmbeddedPillar implements LifeCycledService {
     private final Pillar pillar;

@@ -21,16 +21,15 @@
  */
 package org.bitrepository.pillar.store.checksumdatabase;
 
-import java.math.BigInteger;
-import java.util.Date;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.common.utils.CalendarUtils;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.math.BigInteger;
+import java.util.Date;
 
 /**
  * Container of the results of a checksum database extraction for file ids. 

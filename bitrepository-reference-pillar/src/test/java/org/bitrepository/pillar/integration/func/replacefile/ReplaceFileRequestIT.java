@@ -21,8 +21,6 @@
  */
 package org.bitrepository.pillar.integration.func.replacefile;
 
-import java.lang.reflect.Method;
-
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
@@ -38,6 +36,8 @@ import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.lang.reflect.Method;
 
 public class ReplaceFileRequestIT extends DefaultPillarOperationTest {
     protected ReplaceFileMessageFactory msgFactory;

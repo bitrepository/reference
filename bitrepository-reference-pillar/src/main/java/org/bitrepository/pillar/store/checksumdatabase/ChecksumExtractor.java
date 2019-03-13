@@ -21,12 +21,14 @@
  */
 package org.bitrepository.pillar.store.checksumdatabase;
 
-import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CHECKSUM_TABLE;
-import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_CHECKSUM;
-import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_COLLECTION_ID;
-import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_DATE;
-import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_FILE_ID;
+import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,14 +37,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.service.database.DBConnector;
-import org.bitrepository.service.database.DatabaseUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CHECKSUM_TABLE;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_CHECKSUM;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_COLLECTION_ID;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_DATE;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_FILE_ID;
 
 /**
  * Extracts data from the checksum database.

@@ -21,9 +21,6 @@
  */
 package org.bitrepository.pillar.integration.func.getfileids;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
@@ -36,6 +33,9 @@ import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest
 import org.bitrepository.pillar.messagefactories.GetFileIDsMessageFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationTest {
     protected GetFileIDsMessageFactory msgFactory;

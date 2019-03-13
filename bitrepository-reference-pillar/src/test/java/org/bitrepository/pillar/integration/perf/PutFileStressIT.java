@@ -21,8 +21,6 @@ package org.bitrepository.pillar.integration.perf;
  * #L%
  */
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.utils.TestFileHelper;
@@ -32,6 +30,9 @@ import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class PutFileStressIT extends PillarPerformanceTest {
     protected PutFileClient putClient;

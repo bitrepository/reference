@@ -21,13 +21,13 @@
  */
 package org.bitrepository.pillar.store.filearchive;
 
+import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.utils.FileUtils;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.utils.FileUtils;
 
 /**
  * Manager interface for a given archival directory, with the subdirectories 'tempDir', 'fileDir', 'folderDir' 

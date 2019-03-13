@@ -21,9 +21,6 @@
  */
 package org.bitrepository.pillar.integration.func.multicollection;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.common.utils.TestFileHelper;
@@ -32,6 +29,9 @@ import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.testng.annotations.Test;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 public class MultipleCollectionIT extends PillarIntegrationTest {
     /** Used for receiving responses from the pillar */

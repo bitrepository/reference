@@ -21,11 +21,6 @@
  */
 package org.bitrepository.pillar.integration.func.getchecksums;
 
-import java.util.GregorianCalendar;
-import java.util.List;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -33,6 +28,10 @@ import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.testng.annotations.Test;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 public class GetChecksumQueryTest extends PillarFunctionTest {
     

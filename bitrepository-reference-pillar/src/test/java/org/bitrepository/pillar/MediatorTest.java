@@ -21,10 +21,6 @@
  */
 package org.bitrepository.pillar;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
@@ -35,7 +31,7 @@ import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.SettingsHelper;
 import org.bitrepository.pillar.messagehandler.PillarMediator;
 import org.bitrepository.pillar.store.StorageModel;
-import org.bitrepository.protocol.*;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.contributor.handler.RequestHandler;
@@ -43,6 +39,11 @@ import org.bitrepository.service.exception.RequestHandlerException;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class MediatorTest extends DefaultFixturePillarTest {
     MockAuditManager audits;

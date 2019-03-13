@@ -24,15 +24,14 @@
  */
 package org.bitrepository.pillar.messagefactories;
 
-import java.math.BigInteger;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.common.settings.Settings;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.math.BigInteger;
 
 public class GetChecksumsMessageFactory extends PillarTestMessageFactory {
     public GetChecksumsMessageFactory(String collectionID, Settings clientSettings, String pillarID,

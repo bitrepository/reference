@@ -24,6 +24,10 @@
  */
 package org.bitrepository.pillar.store.filearchive;
 
+import org.bitrepository.common.ArgumentValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,10 +37,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.bitrepository.common.ArgumentValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class for managing the files for the reference pillar. This supports a single CollectionID.

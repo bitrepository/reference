@@ -24,12 +24,6 @@
  */
 package org.bitrepository.pillar.store;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.Date;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -48,6 +42,11 @@ import org.bitrepository.service.exception.RequestHandlerException;
 import org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Date;
 
 /**
  * The storage model for a pillar without a file store.

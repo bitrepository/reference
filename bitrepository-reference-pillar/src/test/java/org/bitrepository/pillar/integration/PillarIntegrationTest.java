@@ -36,7 +36,14 @@ import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.model.PillarFileManager;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
-import org.bitrepository.protocol.security.*;
+import org.bitrepository.protocol.security.BasicMessageAuthenticator;
+import org.bitrepository.protocol.security.BasicMessageSigner;
+import org.bitrepository.protocol.security.BasicOperationAuthorizor;
+import org.bitrepository.protocol.security.BasicSecurityManager;
+import org.bitrepository.protocol.security.MessageAuthenticator;
+import org.bitrepository.protocol.security.MessageSigner;
+import org.bitrepository.protocol.security.OperationAuthorizor;
+import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
 import org.testng.ITestContext;
@@ -45,11 +52,9 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeSuite;
-
-import java.util.Arrays;
 
 import javax.jms.JMSException;
+import java.util.Arrays;
 
 /**
  * Super class for all tests which should test functionality on a single pillar.

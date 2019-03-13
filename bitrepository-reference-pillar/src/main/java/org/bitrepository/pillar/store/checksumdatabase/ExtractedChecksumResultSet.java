@@ -21,12 +21,12 @@
  */
 package org.bitrepository.pillar.store.checksumdatabase;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Container of the results of a checksum database exctraction.

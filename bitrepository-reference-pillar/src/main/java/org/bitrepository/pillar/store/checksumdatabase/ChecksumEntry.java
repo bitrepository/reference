@@ -21,9 +21,9 @@
  */
 package org.bitrepository.pillar.store.checksumdatabase;
 
-import java.util.Date;
-
 import org.bitrepository.common.ArgumentValidator;
+
+import java.util.Date;
 
 /**
  * Container for the information about the checksum of a file.

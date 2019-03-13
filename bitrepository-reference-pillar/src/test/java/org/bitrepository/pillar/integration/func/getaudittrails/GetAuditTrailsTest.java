@@ -21,11 +21,6 @@
  */
 package org.bitrepository.pillar.integration.func.getaudittrails;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
-
-import java.util.List;
-
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
@@ -33,6 +28,11 @@ import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.testng.annotations.Test;
+
+import java.util.List;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 public class GetAuditTrailsTest extends PillarFunctionTest {
     @Override

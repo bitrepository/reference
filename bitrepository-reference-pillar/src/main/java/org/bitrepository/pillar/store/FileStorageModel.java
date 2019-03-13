@@ -24,14 +24,6 @@
  */
 package org.bitrepository.pillar.store;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.ConcurrentSkipListMap;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
@@ -55,6 +47,13 @@ import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
  * The storage model for a pillar with a file store, where it can store its actual files.

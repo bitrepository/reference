@@ -24,8 +24,6 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import java.math.BigInteger;
-
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
@@ -40,6 +38,8 @@ import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
 
 /**
  * Class for handling the identification of this pillar for the purpose of performing the PutFile operation.

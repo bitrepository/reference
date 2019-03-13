@@ -24,9 +24,6 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
@@ -46,6 +43,9 @@ import org.bitrepository.service.contributor.handler.RequestHandler;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the abstract instance for delegating the conversations for the pillar.

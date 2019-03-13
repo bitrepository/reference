@@ -21,11 +21,6 @@
  */
 package org.bitrepository.pillar.integration.func.getchecksums;
 
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.assertNotNull;
-
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -35,6 +30,11 @@ import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.util.List;
+
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 public class GetChecksumTest extends PillarFunctionTest {
 

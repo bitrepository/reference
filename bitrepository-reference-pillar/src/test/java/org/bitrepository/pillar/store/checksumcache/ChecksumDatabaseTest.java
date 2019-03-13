@@ -21,9 +21,6 @@
  */
 package org.bitrepository.pillar.store.checksumcache;
 
-import java.util.Date;
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -42,6 +39,9 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.util.Date;
+import java.util.List;
 
 public class ChecksumDatabaseTest extends ExtendedTestCase {
     private String collectionID;

@@ -21,17 +21,17 @@
  */
 package org.bitrepository.pillar.store.checksumdatabase;
 
+import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseUtils;
+
+import java.util.Date;
+
 import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CHECKSUM_TABLE;
 import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_CHECKSUM;
 import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_COLLECTION_ID;
 import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_DATE;
 import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_FILE_ID;
-
-import java.util.Date;
-
-import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.service.database.DBConnector;
-import org.bitrepository.service.database.DatabaseUtils;
 
 /**
  * Ingests data to the checksum database. And also deals with the deletion of entries.

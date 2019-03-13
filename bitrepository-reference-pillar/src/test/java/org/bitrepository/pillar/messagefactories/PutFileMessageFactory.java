@@ -39,13 +39,13 @@
  */
 package org.bitrepository.pillar.messagefactories;
 
-import java.math.BigInteger;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.settings.Settings;
+
+import java.math.BigInteger;
 
 public class PutFileMessageFactory extends PillarTestMessageFactory {
     

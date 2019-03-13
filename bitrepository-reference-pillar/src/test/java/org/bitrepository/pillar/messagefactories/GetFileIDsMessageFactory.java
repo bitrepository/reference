@@ -24,14 +24,13 @@
  */
 package org.bitrepository.pillar.messagefactories;
 
-import java.math.BigInteger;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.common.settings.Settings;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.math.BigInteger;
 
 public class GetFileIDsMessageFactory extends PillarTestMessageFactory {
     public GetFileIDsMessageFactory(String collectionID, Settings clientSettings, String pillarID, 

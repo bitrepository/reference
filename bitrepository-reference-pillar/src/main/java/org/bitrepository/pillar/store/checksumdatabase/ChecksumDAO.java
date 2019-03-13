@@ -21,15 +21,14 @@
  */
 package org.bitrepository.pillar.store.checksumdatabase;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The checksum store backed by a database.

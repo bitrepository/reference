@@ -21,19 +21,18 @@
  */
 package org.bitrepository.pillar.store.checksumcache;
 
+import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
+import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
+import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
+import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
+
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
-import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
-import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
-import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
 
 /**
  * Very simple memory based implementation of the ChecksumCache.

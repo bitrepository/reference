@@ -21,11 +21,11 @@
  */
 package org.bitrepository.pillar.messagefactories;
 
-import java.util.UUID;
-
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.message.ComponentTestMessageFactory;
+
+import java.util.UUID;
 
 public abstract class PillarTestMessageFactory {
     private final ComponentTestMessageFactory componentTestMessageFactory;
