@@ -27,9 +27,9 @@ public class HdfsArchive {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /** The name for the directory with the temporary files (those about to be put into file-dir).*/
-    protected final String TEMP_PATH_NAME = "tempDir";
+    protected static final String TEMP_PATH_NAME = "tempDir";
     /** The name of the directory with the archived files.*/
-    protected final String FILE_PATH_NAME = "fileDir";
+    protected static final String FILE_PATH_NAME = "fileDir";
 
     protected final String collectionID;
     protected final FileSystem fileSystem;
