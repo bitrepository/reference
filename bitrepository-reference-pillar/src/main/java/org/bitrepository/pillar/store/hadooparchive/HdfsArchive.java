@@ -1,6 +1,5 @@
 package org.bitrepository.pillar.store.hadooparchive;
 
-import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.bitrepository.common.ArgumentValidator;
@@ -12,9 +11,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * HDFS archive for a single given collection.
@@ -70,7 +69,7 @@ public class HdfsArchive {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         ArgumentValidator.checkTrue(hasFile(fileID), "hasFile()");
 
-        HadoopFileInfo res = new HadoopFileInfo(fileSystem, new Path(fileDirPath, fileID), fileID);
+        HadoopFileInfo res = new HadoopFileInfo(fileSystem, inArchive(fileID), fileID);
         return res;
     }
 
@@ -82,7 +81,7 @@ public class HdfsArchive {
     public boolean hasFile(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         try {
-            return fileSystem.exists(new Path(fileDirPath, fileID));
+            return fileSystem.exists(inArchive(fileID));
         } catch (IOException e) {
             log.warn("Issue occurred while trying to file find '" + fileID + "'", e);
             return false;
@@ -95,11 +94,9 @@ public class HdfsArchive {
      */
     public Collection<String> getAllFileIds() {
         try {
-            List<String> res = new ArrayList<>();
-            for(FileStatus fileStatus : fileSystem.listStatus(fileDirPath)) {
-                res.add(fileStatus.getPath().getName());
-            }
-            return res;
+            return Arrays.stream(fileSystem.listStatus(fileDirPath))
+                         .map(status -> status.getPath().getName())
+                         .collect(Collectors.toList());
         } catch (IOException e) {
             throw new IllegalStateException("Issue occurred while trying to retrieve all file ids for collection '"
                     + collectionID + "'", e);
@@ -117,11 +114,10 @@ public class HdfsArchive {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         ArgumentValidator.checkNotNull(inputStream, "InputStream inputStream");
 
-        Path tempPath = new Path(tempDirPath, fileID);
-        OutputStream out = fileSystem.create(tempPath, true);
-
-        StreamUtils.copyInputStreamToOutputStream(inputStream, out);
-
+        Path tempPath = inTemp(fileID);
+        try (OutputStream out = fileSystem.create(tempPath, true);) {
+            StreamUtils.copyInputStreamToOutputStream(inputStream, out);
+        }
         return new HadoopFileInfo(fileSystem, tempPath, fileID);
     }
 
@@ -132,8 +128,8 @@ public class HdfsArchive {
     public void moveToArchive(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
-        Path tempFile = new Path(tempDirPath, fileID);
-        Path archiveFile = new Path(fileDirPath, fileID);
+        Path tempFile = inTemp(fileID);
+        Path archiveFile = inArchive(fileID);
 
         try {
             if(fileSystem.exists(archiveFile)) {
@@ -150,20 +146,24 @@ public class HdfsArchive {
                     + "' to archive.", e);
         }
     }
-
+    
+    private Path inArchive(String fileID) {
+        return new Path(fileDirPath, fileID);
+    }
+    
     /**
      * Deletes a file.
      * @param fileID The ID of the file to delete.
      */
-    public void deleteFile(String fileID) {
+    public boolean deleteFile(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
         if(!hasFile(fileID)) {
             log.info("Trying to delete file, which does not exist.");
-            return;
+            return false;
         }
         try {
-            fileSystem.delete(new Path(fileDirPath, fileID), false);
+            return fileSystem.delete(inArchive(fileID), false);
         } catch (IOException e) {
             throw new IllegalStateException("Failure when trying to delete '" + fileID + "'.", e);
         }
@@ -200,9 +200,13 @@ public class HdfsArchive {
     public FileInfo getFileInTmpDir(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
-        return new HadoopFileInfo(fileSystem, new Path(tempDirPath, fileID), fileID);
+        return new HadoopFileInfo(fileSystem, inTemp(fileID), fileID);
     }
-
+    
+    private Path inTemp(String fileID) {
+        return new Path(tempDirPath, fileID);
+    }
+    
     /**
      * Removes the file from tempDir, if it exist therein.
      * @param fileID The ID of the file, which must not exist in the tempDir.
@@ -210,7 +214,7 @@ public class HdfsArchive {
     public void ensureFileNotInTmpDir(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
-        Path tempFilePath = new Path(fileDirPath, fileID);
+        Path tempFilePath = inArchive(fileID);
         try {
             if(fileSystem.exists(tempFilePath)) {
                 fileSystem.delete(tempFilePath, false);

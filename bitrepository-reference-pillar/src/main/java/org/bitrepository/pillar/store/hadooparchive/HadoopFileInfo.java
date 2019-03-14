@@ -47,14 +47,18 @@ public class HadoopFileInfo implements FileInfo {
 
     @Override
     public Long getLastModifiedDate() {
-        log.debug("Cannot find a method to extract last modified date from HDSF. Returning -1.");
-        return -1L;
+        try {
+            return fileSystem.getFileStatus(filePath).getModificationTime();
+        } catch (IOException e) {
+            log.warn("Cannot get file modification date for '" + fileID + "'. Returning -1.", e);
+            return -1l;
+        }
     }
 
     @Override
     public long getSize() {
         try {
-            return fileSystem.getContentSummary(filePath).getLength();
+            return fileSystem.getFileStatus(filePath).getLen();
         } catch (IOException e) {
             log.warn("Cannot get file size for '" + fileID + "'. Returning -1.", e);
             return -1;

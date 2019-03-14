@@ -1,8 +1,10 @@
 package org.bitrepository.pillar.store.hadooparchive;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.HdfsConfiguration;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.settings.Settings;
@@ -20,7 +22,7 @@ import java.util.Map;
 /**
  * Collection managed HDFS file store.
  */
-public class CollectionHdfsManager implements FileStore {
+public class CollectionHdfsManager implements FileStore, AutoCloseable{
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -41,7 +43,8 @@ public class CollectionHdfsManager implements FileStore {
         this.settings = settings;
 
         try {
-            Configuration conf = new Configuration();
+            Configuration conf = new HdfsConfiguration();
+            
             fileSystem = FileSystem.get(conf);
             // TODO: make a setting for this root path. And perhaps other hadoop stuff.
             Path rootPath = new Path(".");
@@ -119,11 +122,7 @@ public class CollectionHdfsManager implements FileStore {
 
     @Override
     public void close() {
-        try {
-            fileSystem.close();
-        } catch (IOException e) {
-            log.warn("Error when trying to close.", e);
-        }
+        IOUtils.closeQuietly(fileSystem);
     }
 
     /**
