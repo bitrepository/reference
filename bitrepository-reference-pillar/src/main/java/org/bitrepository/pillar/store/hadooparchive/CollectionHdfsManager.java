@@ -92,17 +92,23 @@ public class CollectionHdfsManager implements FileStore, AutoCloseable{
 
     @Override
     public void moveToArchive(String fileID, String collectionID) {
-        getArchive(collectionID).moveToArchive(fileID);
+        if (!getArchive(collectionID).moveToArchive(fileID)){
+            throw new IllegalStateException("FileID" + fileID + " in collection "+collectionID + " not moved");
+        };
     }
 
     @Override
     public void deleteFile(String fileID, String collectionID) {
-        getArchive(collectionID).deleteFile(fileID);
+        if (!getArchive(collectionID).deleteFile(fileID)){
+            throw new IllegalStateException("FileID" + fileID + " in collection "+collectionID + " not deleted");
+        }
     }
 
     @Override
     public void replaceFile(String fileID, String collectionID) {
-        getArchive(collectionID).replaceFile(fileID);
+        if (!getArchive(collectionID).replaceFile(fileID)){
+            throw new IllegalStateException("FileID" + fileID + " in collection "+collectionID + " not replaced");
+        }
     }
 
     @Override
@@ -117,7 +123,9 @@ public class CollectionHdfsManager implements FileStore, AutoCloseable{
 
     @Override
     public void ensureFileNotInTmpDir(String fileID, String collectionID) {
-        getArchive(collectionID).ensureFileNotInTmpDir(fileID);
+        if (!getArchive(collectionID).ensureFileNotInTmpDir(fileID)){
+            throw new IllegalStateException("FileID" + fileID + " in collection "+collectionID + " not deleted from tmpdir");
+        }
     }
 
     @Override

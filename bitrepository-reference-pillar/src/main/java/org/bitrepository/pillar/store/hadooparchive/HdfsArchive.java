@@ -125,7 +125,7 @@ public class HdfsArchive {
      * Moves a file from tempDir to fileDir.
      * @param fileID The ID of the file to move.
      */
-    public void moveToArchive(String fileID) {
+    public boolean moveToArchive(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
         Path tempFile = inTemp(fileID);
@@ -140,7 +140,7 @@ public class HdfsArchive {
             }
 
             // TODO: is it local from local seems wrong?
-            fileSystem.moveFromLocalFile(tempFile, archiveFile);
+            return fileSystem.rename(tempFile, archiveFile);
         } catch (IOException e) {
             throw new IllegalStateException("Error occurred while trying to move the file '" + fileID
                     + "' to archive.", e);
@@ -173,11 +173,10 @@ public class HdfsArchive {
      * Replaces a file. First removes it from the fileDir, then moves the one from tempDir.
      * @param fileID The ID of the file to replace.
      */
-    public void replaceFile(String fileID) {
+    public boolean replaceFile(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
-        deleteFile(fileID);
-        moveToArchive(fileID);
+        return deleteFile(fileID) && moveToArchive(fileID);
     }
 
     /**
@@ -211,13 +210,15 @@ public class HdfsArchive {
      * Removes the file from tempDir, if it exist therein.
      * @param fileID The ID of the file, which must not exist in the tempDir.
      */
-    public void ensureFileNotInTmpDir(String fileID) {
+    public boolean ensureFileNotInTmpDir(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
         Path tempFilePath = inArchive(fileID);
         try {
-            if(fileSystem.exists(tempFilePath)) {
-                fileSystem.delete(tempFilePath, false);
+            if (fileSystem.exists(tempFilePath)){
+                return fileSystem.delete(tempFilePath, false);
+            } else {
+                return true;
             }
         } catch (IOException e) {
             throw new IllegalStateException("Cannot ensure that the file '" + fileID + "' from tempDir at collection '"
