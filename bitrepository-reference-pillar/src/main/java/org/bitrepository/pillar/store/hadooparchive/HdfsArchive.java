@@ -44,8 +44,8 @@ public class HdfsArchive {
     protected HdfsArchive(String collectionID, FileSystem fileSystem, Path rootPath) {
         this.collectionID = collectionID;
         this.fileSystem = fileSystem;
-        this.tempDirPath = new Path(rootPath, collectionID + Path.SEPARATOR + TEMP_PATH_NAME);
-        this.fileDirPath = new Path(rootPath, collectionID + Path.SEPARATOR + FILE_PATH_NAME);
+        this.tempDirPath = new Path(rootPath, new Path(collectionID,TEMP_PATH_NAME));
+        this.fileDirPath = new Path(rootPath, new Path(collectionID , FILE_PATH_NAME));
 
         try {
             if(!fileSystem.isDirectory(tempDirPath)) {
