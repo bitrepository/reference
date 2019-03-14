@@ -303,7 +303,7 @@
             <xs:documentation xml:lang="en">
               Classpath for the FileStore backend of the ReferencePillar.
               Default value, when undefined is:
-              'org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager'.
+              'org.bitrepository.pillar.store.filearchive.CollectionArchiveManager'.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
@@ -319,6 +319,31 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element name="HadoopCoreSitePath" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Path to the core-site.xml file for the hdfs reference pillar. Only relevant when FileStoreClass is
+              'org.bitrepository.pillar.store.hadooparchive.CollectionHdfsManager'.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="HdfsSitePath" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Path to the hdfs-site.xml file for the hdfs reference pillar. Only relevant when FileStoreClass is
+              'org.bitrepository.pillar.store.hadooparchive.CollectionHdfsManager'.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="HdfsRootPath" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              The root dir on the hdfs filesystem. Only relevant when FileStoreClass is
+              'org.bitrepository.pillar.store.hadooparchive.CollectionHdfsManager'.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+
       </xs:sequence>
     </xs:complexType>
   </xs:element>

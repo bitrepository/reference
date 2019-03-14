@@ -1,7 +1,6 @@
 package org.bitrepository.pillar.store.hadooparchive;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.HdfsConfiguration;
@@ -12,6 +11,7 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -43,13 +43,29 @@ public class CollectionHdfsManager implements FileStore, AutoCloseable{
         this.settings = settings;
 
         try {
-            Configuration conf = new HdfsConfiguration();
+            
+            HdfsConfiguration conf = new HdfsConfiguration();
+    
+            File coreSiteConfigFile = new File(settings.getReferenceSettings()
+                                                       .getPillarSettings()
+                                                       .getHadoopCoreSitePath());
+            conf.addResource(new Path(coreSiteConfigFile.toURI()));
+
+            File hdfsSiteConfigFile = new File(settings.getReferenceSettings()
+                                                       .getPillarSettings()
+                                                       .getHdfsSitePath());
+            conf.addResource(new Path(hdfsSiteConfigFile.toURI()));
+
+            conf.reloadConfiguration();
             
             fileSystem = FileSystem.get(conf);
-            // TODO: make a setting for this root path. And perhaps other hadoop stuff.
-            Path rootPath = new Path(".");
+    
+            Path rootPath = new Path(settings.getReferenceSettings()
+                                            .getPillarSettings()
+                                            .getHdfsRootPath());
 
-            this.archives = initialiseCollections(SettingsUtils.getCollectionIDsForPillar(settings.getComponentID()),
+            this.archives = initialiseCollections(
+                    SettingsUtils.getCollectionIDsForPillar(settings.getComponentID()),
                     rootPath);
         } catch (IOException e) {
             throw new RuntimeException("Cannot instantiate the HDFS archives", e);
